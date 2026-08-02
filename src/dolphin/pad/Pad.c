@@ -1,6 +1,7 @@
 #include <dolphin/pad.h>
 #include <dolphin/si.h>
 #include <global.h>
+#include <string.h>
 
 #define PAD_ALL                                                                                                        \
     (                      \

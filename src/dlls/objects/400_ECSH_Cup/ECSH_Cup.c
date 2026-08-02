@@ -11,8 +11,11 @@
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
+#include "main/objtype.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
+#include "main/objhits.h"
+#include "main/vecmath.h"
 
 typedef struct ECSHShrineCallbackTable {
     void* unknown00[9];
@@ -107,7 +110,7 @@ void ecshCup_update(GameObject* obj) {
     spiritCup = 0;
     if (gECSHCupShrineObject == NULL) {
         gECSHCupShrineObject =
-            (GameObject*)objGetNearestTypeTo(ECSH_CUP_SHRINE_OBJECT_GROUP, obj, &searchDistance);
+            objGetNearestTypeTo(ECSH_CUP_SHRINE_OBJECT_GROUP, obj, &searchDistance);
     }
     if (gECSHCupShrineObject != NULL && gECSHCupShrineObject->anim.classId != 0) {
         (*(ECSHShrineCallbackTable**)gECSHCupShrineObject->anim.dll)->getPhaseAndSpiritCup(&mode, &spiritCup);
@@ -248,7 +251,7 @@ void ecshCup_init(GameObject* obj, const ECSHCupPlacement* placement) {
     state->particleTimer = 0.0f;
     if (gECSHCupShrineObject == NULL) {
         gECSHCupShrineObject =
-            (GameObject*)objGetNearestTypeTo(ECSH_CUP_SHRINE_OBJECT_GROUP, obj, &searchDistance);
+            objGetNearestTypeTo(ECSH_CUP_SHRINE_OBJECT_GROUP, obj, &searchDistance);
     }
     ObjHits_EnableObject(obj);
     ObjHits_SetHitVolumeSlot(&obj->anim, ECSH_CUP_INACTIVE_HIT_VOLUME_SLOT, 0, 0);

@@ -1,4 +1,5 @@
 #include "dlls/object_descriptor.h"
+#include "main/dll/dll_003A_dummy3a.h"
 
 void Dummy3A_render(void)
 {

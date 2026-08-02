@@ -298,7 +298,7 @@ int Lightfoot_UpdateWanderSteering(GameObject* obj, int state, f32 fv)
     Dll1B5ControlState* sub = inner->control;
     if (sub->wanderTimer <= 0.0f)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_htop_hurry1);
+        Sfx_PlayFromObject(obj, SFXTRIG_htop_hurry1);
         sub->wanderTimer = (f32)randomGetRange(0x78, 0xb4);
     }
     ((BaddieState*)state)->moveSpeed =
@@ -354,7 +354,7 @@ int Lightfoot_UpdateRandomTurn(int obj, int state, f32 fv)
     GroundBaddieState* inner = ((GameObject*)obj)->extra;
     if (((BaddieState*)state)->moveJustStartedA != 0)
     {
-        Sfx_PlayFromObject(obj, ((Dll1B5ControlState*)inner->control)->movementSfxId);
+        Sfx_PlayFromObject((GameObject*)(u32)obj, ((Dll1B5ControlState*)inner->control)->movementSfxId);
         if (randomGetRange(0, 1) != 0)
         {
             ((GameObject*)obj)->anim.rotX += 0x8AA9;
@@ -590,41 +590,41 @@ void Lightfoot_ProcessHitResponseFlags(int obj, BaddieState* inner)
     if (inner->eventFlags & 4)
     {
         inner->eventFlags &= ~4;
-        Sfx_PlayFromObject(obj, SFXTRIG_sc_spotfox02);
+        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_sc_spotfox02);
     }
     if (inner->eventFlags & 2)
     {
         inner->eventFlags &= ~2;
-        Sfx_PlayFromObject(obj, SFXTRIG_sc_spotfox02);
+        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_sc_spotfox02);
     }
     if (inner->eventFlags & 1)
     {
         inner->eventFlags &= ~1;
         if (randomGetRange(0, 2) == 0)
         {
-            Sfx_PlayFromObject(obj, SFXTRIG_skeep_mumb4);
+            Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_skeep_mumb4);
         }
     }
     if (inner->eventFlags & 0x80)
     {
         inner->eventFlags &= ~0x80;
-        Sfx_PlayFromObject(obj, SFXTRIG_wp_swdtest322);
+        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_wp_swdtest322);
     }
     if (inner->eventFlags & 0x200)
     {
         inner->eventFlags &= ~0x200;
-        Sfx_PlayFromObject(obj, SFXTRIG_sk_trwhin3);
+        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_sk_trwhin3);
     }
     if (inner->eventFlags & 0x40)
     {
         inner->eventFlags &= ~0x40;
-        Sfx_PlayFromObject(obj, SFXTRIG_wp_swdtest322_135);
+        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_wp_swdtest322_135);
     }
     if (inner->eventFlags & 0x800)
     {
         inner->eventFlags &= ~0x800;
         ObjHits_RecordObjectHit(Obj_GetPlayerObject(), (GameObject*)obj, 0x19, 2, 1);
-        Sfx_PlayFromObject(obj, SFXTRIG_wp_simp1_c);
+        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_wp_simp1_c);
         CameraShake_StartDampened(2.5f, 5.0f, 4.0f);
         doRumble(11.0f);
     }
@@ -632,7 +632,7 @@ void Lightfoot_ProcessHitResponseFlags(int obj, BaddieState* inner)
 
 void Lightfoot_ResetScriptedPosition(GameObject* obj)
 {
-    switch (*(int*)((char*)obj->anim.placementDataAddress + 0x14))
+    switch (obj->anim.placement->ident)
     {
     case 0x34316:
         obj->anim.worldPosX = -2692.46f;

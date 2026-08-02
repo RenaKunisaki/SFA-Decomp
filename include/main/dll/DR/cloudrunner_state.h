@@ -25,7 +25,8 @@ typedef struct CloudRunnerState {
     int unkB04;
     u8 padB08[0xb50 - 0xb08];
     f32 pathFollowSpeed;
-    u8 padB54[0xbae - 0xb54];
+    f32 randomTimerB54;
+    u8 padB58[0xbae - 0xb58];
     s16 unkBAE;
     s16 airTimeRemaining;
     u8 flightState;

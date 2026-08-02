@@ -1,4 +1,5 @@
 #include "dolphin/exi.h"
+#include "string.h"
 
 
 #define STATE_DMA      1

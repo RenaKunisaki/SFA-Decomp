@@ -1,3 +1,5 @@
+#include "Runtime.PPCEABI.H/NMWException.h"
+
 
 typedef struct ProcessInfo {
     struct __eti_init_info* exception_info;

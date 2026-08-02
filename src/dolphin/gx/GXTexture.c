@@ -1,5 +1,6 @@
 
 #include "dolphin/gx/__gx.h"
+#include "string.h"
 
 
 typedef struct __GXTexObjInt_struct {
@@ -739,4 +740,4 @@ void __GXSetTmemConfig(u32 config) {
 }
 
 /* .sdata2 const referenced via extern by GXBump */
-const f32 lbl_803E76F8[2] = {1024.0f, 0.0f};
+const f32 GXIndTexMtxScale[2] = {1024.0f, 0.0f};

@@ -50,6 +50,11 @@
 #include "main/player_control_interface.h"
 #include "dlls/object_descriptor.h"
 #include "dolphin/pad.h"
+#include "main/dll/dll_0000_gameui_api.h"
+#include "main/dll/tricky_api.h"
+#include "main/maketex_random_api.h"
+#include "main/maketex_timer_api.h"
+#include "main/pad_api.h"
 
 void* gHighTopDefaultStateHandler;
 f32 gHighTopGroundMarkerMtx[16];
@@ -447,7 +452,7 @@ int hightop_stateHandler04(GameObject* obj, HighTopRuntime* stateArg)
         state->flagsC40 |= HIGHTOP_FLAG_CURVE_FOLLOW;
         state->flagsC40 |= HIGHTOP_FLAG_CURVE_ARMED;
         state->flagsC49.b1 = 0;
-        curve->initFromCurveId((RomCurveWalker*)((char*)state + 0xa10), obj, 0x3463a,
+        curve->initFromCurveId(&state->curveWalker, obj, 0x3463a,
                                (curve = *gRomCurveInterface));
         state2 = obj->extra;
         state2->flagsC49.b7 = 1;
@@ -465,7 +470,7 @@ int hightop_stateHandler04(GameObject* obj, HighTopRuntime* stateArg)
     state->stateTimer -= (f32)(u32)framesThisStep;
     if (obj->anim.currentMove != 9 && obj->anim.currentMove != 0x11)
     {
-        RandomTimer_UpdateRangeTrigger((char*)state + 0xc34, 4.0f, 8.0f);
+        RandomTimer_UpdateRangeTrigger(&state->randomTimerC34, 4.0f, 8.0f);
         if (count == 0)
         {
             if (state->stateTimer < 0.0f)
@@ -761,7 +766,7 @@ int hightop_stateHandler02(GameObject* obj, HighTopRuntime* stateArg, f32 dt)
         ObjAnim_SetCurrentEventStepFrames(&obj->anim, 0xa);
     }
     ObjAnim_SampleRootCurvePhase(&obj->anim, stateArg->baddie.animSpeedA,
-                                 (f32*)((char*)stateArg + 0x2a0));
+                                 &stateArg->baddie.moveSpeed);
     return 0;
 }
 
@@ -843,12 +848,12 @@ void hightop_playMovementSfx(GameObject* obj, HighTopRuntime* state2, HighTopRun
         {
             idx = 1;
         }
-        Sfx_PlayFromObject((u32)obj, (u16)gHighTopMovementSfxIds[idx]);
+        Sfx_PlayFromObject(obj, (u16)gHighTopMovementSfxIds[idx]);
     }
     if ((s32)state->baddie.eventFlags & 0x100)
     {
         objfx_shakeCameraByDistance(obj, 1000.0f);
-        Sfx_PlayFromObject((u32)obj, gHighTopMovementSfxIds[0]);
+        Sfx_PlayFromObject(obj, gHighTopMovementSfxIds[0]);
     }
 }
 
@@ -1177,7 +1182,7 @@ void HighTop_update(GameObject* obj)
         if (runtime->sfxIntervalTimer > 60.0f)
         {
             runtime->sfxIntervalTimer -= 60.0f;
-            Sfx_PlayFromObject((u32)self, SFXTRIG_hightop_fstep);
+            Sfx_PlayFromObject((GameObject*)(u32)self, SFXTRIG_hightop_fstep);
         }
     }
 }

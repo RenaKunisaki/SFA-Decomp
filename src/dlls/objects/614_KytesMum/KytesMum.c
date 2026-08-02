@@ -39,6 +39,11 @@
 #include "main/audio/sfx_play_api.h"
 #include "main/vecmath.h"
 #include "dolphin/pad.h"
+#include "main/dll/player_api.h"
+#include "main/dll/savegame_object_api.h"
+#include "main/object_update_list.h"
+#include "main/pad_api.h"
+#include "sys/objects/lifecycle.h"
 
 s16 gKytesMumRoamEventSfxTable[4] = {0x1B4, 0x1B5, 0x1B6, 0};
 s16 gKytesMumQuestEventSfxTable[4] = {0x336, 0x337, 0x337, 0};
@@ -158,13 +163,13 @@ void kytesmum_playAnimationEventSfx(u32 obj, u8* arg, s16* sfxData)
         case 0:
             if (sfxData != 0)
             {
-                Sfx_PlayFromObject(obj, sfxData[0]);
+                Sfx_PlayFromObject((GameObject*)obj, sfxData[0]);
             }
             break;
         case 7:
             if (sfxData != 0)
             {
-                Sfx_PlayFromObject(obj, sfxData[1]);
+                Sfx_PlayFromObject((GameObject*)obj, sfxData[1]);
             }
             break;
         case 1:
@@ -186,7 +191,7 @@ void kytesmum_playAnimationEventSfx(u32 obj, u8* arg, s16* sfxData)
     }
     if (flags != 0 && sfxData != 0)
     {
-        Sfx_PlayFromObject(obj, sfxData[3]);
+        Sfx_PlayFromObject((GameObject*)obj, sfxData[3]);
     }
 }
 
@@ -313,7 +318,7 @@ void kytesmum_update(GameObject* obj)
     s16 diff;
     int absDiff;
     short moveIdx;
-    int nearest;
+    GameObject* nearest;
 
     nearDist = 200.0f;
     if (runtime->questComplete == 0)
@@ -368,10 +373,10 @@ void kytesmum_update(GameObject* obj)
     characterDoEyeAnims(obj, &runtime->eyeAnimState);
     objSoundUpdateMouth(obj, &runtime->modelSoundState);
     nearest = objGetNearestTypeTo(KYTESMUM_TARGET_OBJGROUP, obj, &nearDist);
-    if ((void*)nearest != NULL)
+    if (nearest != NULL)
     {
         TRICKY_INTERFACE(nearest)
-            ->sideCommandEnable((GameObject*)nearest, obj, KYTESMUM_TRICKY_COMMAND_KIND,
+            ->sideCommandEnable(nearest, obj, KYTESMUM_TRICKY_COMMAND_KIND,
                                 KYTESMUM_TRICKY_COMMAND_TYPE);
     }
 }

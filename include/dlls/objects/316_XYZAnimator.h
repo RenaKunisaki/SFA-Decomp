@@ -50,7 +50,7 @@ typedef struct XyzAnimatorPlacement {
 typedef struct XyzAnimatorState {
     int polygonGroupCount; /* 0x00 */
     int vertexCount;       /* 0x04 */
-    int edgeCount;         /* 0x08 */
+    int displayListCount;  /* 0x08 */
     u8* geometryBuffer;    /* 0x0C: packed XYZ s16 stream */
     u8* posABuffer;        /* 0x10: polygon-group posA s16 stream */
     u8* posBBuffer;        /* 0x14: polygon-group posB s16 stream */
@@ -58,12 +58,12 @@ typedef struct XyzAnimatorState {
     u8* polygonBuffer1;    /* 0x1C */
     u8* polygonBuffer4;    /* 0x20 */
     u8* polygonBuffer5;    /* 0x24 */
-    u8* edgeV0xBuffer;     /* 0x28 */
-    u8* edgeV1xBuffer;     /* 0x2C */
-    u8* edgeV0yBuffer;     /* 0x30 */
-    u8* edgeV1yBuffer;     /* 0x34 */
-    u8* edgeV0zBuffer;     /* 0x38 */
-    u8* edgeV1zBuffer;     /* 0x3C */
+    u8* minXBuffer;        /* 0x28 */
+    u8* maxXBuffer;        /* 0x2C */
+    u8* minYBuffer;        /* 0x30 */
+    u8* maxYBuffer;        /* 0x34 */
+    u8* minZBuffer;        /* 0x38 */
+    u8* maxZBuffer;        /* 0x3C */
     f32 offsetX;           /* 0x40 */
     f32 offsetY;           /* 0x44 */
     f32 offsetZ;           /* 0x48 */
@@ -89,7 +89,7 @@ STATIC_ASSERT(offsetof(XyzAnimatorPlacement, mode) == 0x2C);
 
 STATIC_ASSERT(offsetof(XyzAnimatorState, polygonGroupCount) == 0x00);
 STATIC_ASSERT(offsetof(XyzAnimatorState, vertexCount) == 0x04);
-STATIC_ASSERT(offsetof(XyzAnimatorState, edgeCount) == 0x08);
+STATIC_ASSERT(offsetof(XyzAnimatorState, displayListCount) == 0x08);
 STATIC_ASSERT(offsetof(XyzAnimatorState, geometryBuffer) == 0x0C);
 STATIC_ASSERT(offsetof(XyzAnimatorState, posABuffer) == 0x10);
 STATIC_ASSERT(offsetof(XyzAnimatorState, posBBuffer) == 0x14);
@@ -97,12 +97,12 @@ STATIC_ASSERT(offsetof(XyzAnimatorState, polygonBuffer0) == 0x18);
 STATIC_ASSERT(offsetof(XyzAnimatorState, polygonBuffer1) == 0x1C);
 STATIC_ASSERT(offsetof(XyzAnimatorState, polygonBuffer4) == 0x20);
 STATIC_ASSERT(offsetof(XyzAnimatorState, polygonBuffer5) == 0x24);
-STATIC_ASSERT(offsetof(XyzAnimatorState, edgeV0xBuffer) == 0x28);
-STATIC_ASSERT(offsetof(XyzAnimatorState, edgeV1xBuffer) == 0x2C);
-STATIC_ASSERT(offsetof(XyzAnimatorState, edgeV0yBuffer) == 0x30);
-STATIC_ASSERT(offsetof(XyzAnimatorState, edgeV1yBuffer) == 0x34);
-STATIC_ASSERT(offsetof(XyzAnimatorState, edgeV0zBuffer) == 0x38);
-STATIC_ASSERT(offsetof(XyzAnimatorState, edgeV1zBuffer) == 0x3C);
+STATIC_ASSERT(offsetof(XyzAnimatorState, minXBuffer) == 0x28);
+STATIC_ASSERT(offsetof(XyzAnimatorState, maxXBuffer) == 0x2C);
+STATIC_ASSERT(offsetof(XyzAnimatorState, minYBuffer) == 0x30);
+STATIC_ASSERT(offsetof(XyzAnimatorState, maxYBuffer) == 0x34);
+STATIC_ASSERT(offsetof(XyzAnimatorState, minZBuffer) == 0x38);
+STATIC_ASSERT(offsetof(XyzAnimatorState, maxZBuffer) == 0x3C);
 STATIC_ASSERT(offsetof(XyzAnimatorState, offsetX) == 0x40);
 STATIC_ASSERT(offsetof(XyzAnimatorState, offsetY) == 0x44);
 STATIC_ASSERT(offsetof(XyzAnimatorState, offsetZ) == 0x48);

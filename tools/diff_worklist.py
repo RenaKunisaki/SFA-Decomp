@@ -4,20 +4,35 @@
 The normal report gives one percentage, but a 99.9% function with a real
 branch/opcode mismatch is usually more actionable than one containing only a
 register permutation or anonymous-constant relocation identity.  This tool
-runs one-shot objdiff over the highest-matching incomplete units and summarizes
-those categories into a compact worklist.
+disassembles the highest-matching incomplete units and summarizes normalized
+diff regions into a compact worklist.
 """
 
 from __future__ import annotations
 
 import argparse
+import difflib
 import json
-import subprocess
+import re
 from collections import Counter
 from pathlib import Path
 
+from function_objdump import objdump_symbol, strip_preamble
+from ndiff import classify, normalize, regions
+
 
 ROOT = Path(__file__).resolve().parents[1]
+REGISTER_RE = re.compile(r"\b[rf]\d+\b")
+POOL_RELOC_RE = re.compile(
+    r"^RELOC (@\d+|lbl_[0-9A-Fa-f]{6,}|jumptable_[0-9A-Fa-f]{6,})$"
+)
+
+
+def objdump() -> Path:
+    executable = ROOT / "build" / "binutils" / "powerpc-eabi-objdump.exe"
+    if not executable.is_file():
+        executable = executable.with_suffix("")
+    return executable
 
 
 def object_paths(version: str, source_path: str) -> tuple[Path, Path] | None:
@@ -33,42 +48,57 @@ def object_paths(version: str, source_path: str) -> tuple[Path, Path] | None:
     return target, base
 
 
-def classify(instruction: dict) -> str | None:
-    kind = instruction.get("diff_kind")
-    if kind is None:
-        return None
-    item = instruction.get("instruction") or {}
-    relocation = item.get("relocation")
-    if relocation is not None and relocation.get("type_name") == "R_PPC_NONE":
-        return "local_reloc"
-    if kind != "DIFF_ARG_MISMATCH":
-        return kind.removeprefix("DIFF_").lower()
-
-    if relocation is not None:
-        return "reloc_arg"
-    return "arg"
+def blind(instructions: list[str], fold_pools: bool) -> list[str]:
+    result = []
+    for instruction in instructions:
+        instruction = REGISTER_RE.sub("R", instruction)
+        if fold_pools and POOL_RELOC_RE.match(instruction):
+            instruction = "RELOC POOL"
+        result.append(instruction)
+    return result
 
 
-def load_unit_diff(tool: Path, target: Path, base: Path) -> dict:
-    result = subprocess.run(
-        [
-            str(tool),
-            "diff",
-            "-1",
-            str(target),
-            "-2",
-            str(base),
-            "-o",
-            "-",
-            "--format",
-            "json",
-        ],
-        cwd=ROOT,
-        check=True,
-        capture_output=True,
-        text=True,
+def difference_size(target: list[str], base: list[str]) -> int:
+    return sum(
+        max(target_end - target_start, base_end - base_start)
+        for tag, target_start, target_end, base_start, base_end in difflib.SequenceMatcher(
+            None, target, base, autojunk=False
+        ).get_opcodes()
+        if tag != "equal"
     )
-    return json.loads(result.stdout)
+
+
+def classify_symbol(
+    objdump_path: Path, target: Path, base: Path, symbol: str
+) -> Counter[str]:
+    target_instructions = normalize(
+        strip_preamble(objdump_symbol(objdump_path, target, symbol)), symbol
+    )
+    base_instructions = normalize(
+        strip_preamble(objdump_symbol(objdump_path, base, symbol)), symbol
+    )
+    blind_target = blind(target_instructions, fold_pools=False)
+    blind_base = blind(base_instructions, fold_pools=False)
+    folded_target = blind(target_instructions, fold_pools=True)
+    folded_base = blind(base_instructions, fold_pools=True)
+
+    counts: Counter[str] = Counter()
+    raw_size = difference_size(target_instructions, base_instructions)
+    blind_size = difference_size(blind_target, blind_base)
+    folded_size = difference_size(folded_target, folded_base)
+    if raw_size > blind_size:
+        counts["reg-perm"] = raw_size - blind_size
+    if blind_size > folded_size:
+        counts["pool-reloc"] = blind_size - folded_size
+
+    for _, target_start, target_end, base_start, base_end in regions(
+        folded_target, folded_base
+    ):
+        target_region = folded_target[target_start:target_end]
+        base_region = folded_base[base_start:base_end]
+        category = classify(target_region, base_region) or "structural"
+        counts[category] += max(len(target_region), len(base_region))
+    return counts
 
 
 def main() -> None:
@@ -105,29 +135,24 @@ def main() -> None:
         candidates.append((best, unit))
     candidates.sort(reverse=True, key=lambda item: item[0])
 
-    tool = ROOT / "tools" / "objdiff-cli.exe"
+    objdump_path = objdump()
     rows: list[tuple[int, float, str, str, Counter[str]]] = []
     for _, unit in candidates[: args.unit_limit]:
         source_path = unit.get("metadata", {}).get("source_path", "")
         paths = object_paths(args.version, source_path)
         if paths is None:
             continue
-        diff = load_unit_diff(tool, *paths)
-        for symbol in diff["left"].get("symbols", []):
-            match = symbol.get("match_percent")
+        for symbol in unit.get("functions", []):
+            match = symbol.get("fuzzy_match_percent")
             if match is None or not args.min_match <= match < 100:
                 continue
-            counts = Counter(
-                category
-                for instruction in symbol.get("instructions", [])
-                if (category := classify(instruction)) is not None
-            )
+            counts = classify_symbol(objdump_path, *paths, symbol["name"])
             substantive = sum(
                 count
                 for category, count in counts.items()
-                if category not in {"arg", "reloc_arg", "local_reloc"}
+                if category not in {"pool-reloc", "reg-perm"}
             )
-            if not args.include_reloc_only and substantive == 0 and counts["arg"] == 0:
+            if not args.include_reloc_only and counts and set(counts) == {"pool-reloc"}:
                 continue
             rows.append(
                 (substantive, float(match), source_path, symbol["name"], counts)

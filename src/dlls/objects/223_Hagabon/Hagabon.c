@@ -21,6 +21,11 @@
 #include "main/vecmath.h"
 #include "string.h"
 #include "sys/objects.h"
+#include "main/curve.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/audio/sfx_stop_object_api.h"
+#include "main/objtype.h"
 
 #define HAGABON_HIT_VOLUME_SLOT 10
 #define HAGABON_OBJECT_GROUP    3
@@ -176,7 +181,7 @@ int Hagabon_getObjectTypeId(void) {
 void Hagabon_free(int objAddress) {
     void** curveSlot = ((GameObject*)objAddress)->extra;
     objFreeObjectType(objAddress, HAGABON_OBJECT_GROUP);
-    Sfx_StopFromObject(objAddress, SFXTRIG_en_twiggysnap11);
+    Sfx_StopFromObject((GameObject*)objAddress, SFXTRIG_en_twiggysnap11);
     if (*curveSlot != NULL) {
         mm_free(*curveSlot);
         *curveSlot = NULL;
@@ -208,7 +213,7 @@ void Hagabon_hitDetect(GameObject* obj) {
 
     hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
     if (hitState->lastHitObject != 0) {
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_32b);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_32b);
     }
 }
 
@@ -240,16 +245,16 @@ void Hagabon_update(GameObject* obj) {
         obj->userData1 = 0;
         obj->anim.alpha = 1;
         state->flags |= HAGABON_FLAG_FADE_IN;
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_seal4_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_seal4_c);
         return;
     }
 
     player = Obj_GetPlayerObject();
     dist = Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX);
     if (dist < HAGABON_SOUND_START_DISTANCE) {
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_en_twiggysnap11);
+        Sfx_PlayFromObject(obj, SFXTRIG_en_twiggysnap11);
     } else if (dist > HAGABON_SOUND_STOP_DISTANCE) {
-        Sfx_StopFromObject((int)obj, SFXTRIG_en_twiggysnap11);
+        Sfx_StopFromObject(obj, SFXTRIG_en_twiggysnap11);
     }
 
     if ((obj->anim.alpha != 0) && (((flags = state->flags) & (HAGABON_FLAG_FADE_IN | HAGABON_FLAG_FADE_OUT)) != 0)) {
@@ -259,7 +264,7 @@ void Hagabon_update(GameObject* obj) {
                 obj->userData1 = 1;
                 obj->anim.alpha = 0;
                 state->flags &= ~HAGABON_FLAG_FADE_OUT;
-                Sfx_StopFromObject((int)obj, SFXTRIG_en_twiggysnap11);
+                Sfx_StopFromObject(obj, SFXTRIG_en_twiggysnap11);
             }
             ObjHits_DisableObject(obj);
         }
@@ -273,12 +278,12 @@ void Hagabon_update(GameObject* obj) {
     } else {
         if (ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitSphereIndex, &hitVolume, &lightPos[0], &lightPos[1],
                                                &lightPos[2]) != 0) {
-            Sfx_StopObjectChannel((int)obj, HAGABON_SOUND_CHANNEL_ALL);
+            Sfx_StopObjectChannel(obj, HAGABON_SOUND_CHANNEL_ALL);
             state->flags |= HAGABON_FLAG_FADE_OUT;
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_en_rfall5_c);
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_iceywindlp16_233);
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_238);
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_stftest122_1f2);
+            Sfx_PlayFromObject(obj, SFXTRIG_en_rfall5_c);
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_iceywindlp16_233);
+            Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_238);
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_stftest122_1f2);
             lightPos[0] += playerMapOffsetX;
             lightPos[2] += playerMapOffsetZ;
             objDoHitParticleFx((void*)obj, 0.014f, effectPos, 3, 0);

@@ -1,4 +1,5 @@
 #include "dolphin/os.h"
+#include "Runtime.PPCEABI.H/GCN_mem_alloc.h"
 
 int gDefaultHeapInitialized;
 

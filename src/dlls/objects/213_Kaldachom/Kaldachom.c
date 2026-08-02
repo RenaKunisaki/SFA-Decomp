@@ -24,6 +24,11 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/player_state_api.h"
+#include "main/gamebits_api.h"
+#include "main/obj_path.h"
+#include "main/objtype.h"
 
 typedef struct KaldachomCombatParams {
     u32 unk00;
@@ -72,6 +77,7 @@ STATIC_ASSERT(sizeof(KaldachomCombatStack) == 0x1C);
 
 const KaldachomCombatParams gKaldachomCombatParams = {8, 255, 255, 120};
 f32 gKaldachomMouthSpawnScratch;
+int lbl_803DDA9C;
 f32 gKaldachomDustSpawnScratch;
 void* gKaldachomEffectResource;
 u8 gKaldachomHitLightWork[0x18];
@@ -232,9 +238,9 @@ int kaldachom_stateHandlerA07(GameObject* obj, GroundBaddieState* state) {
     }
     control = objectState->control;
     if ((control->soundFlags & KALDACHOM_SOUND_FLAG_PULLUP_BURST) == 0) {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_mn_impyflap16);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_277);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_en_rfall5_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_mn_impyflap16);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_277);
+        Sfx_PlayFromObject(obj, SFXTRIG_en_rfall5_c);
         control->soundFlags |= KALDACHOM_SOUND_FLAG_PULLUP_BURST;
         {
             GameObject* linkedObj;
@@ -252,7 +258,7 @@ int kaldachom_stateHandlerA07(GameObject* obj, GroundBaddieState* state) {
     }
     if ((control->soundFlags & KALDACHOM_SOUND_FLAG_DOOR_CREAK) == 0) {
         if (obj->anim.currentMoveProgress > 0.3f) {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_wp_iceywindlp16_233);
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_iceywindlp16_233);
             control->soundFlags |= KALDACHOM_SOUND_FLAG_DOOR_CREAK;
         }
     }
@@ -266,7 +272,7 @@ int kaldachom_stateHandlerA06(GameObject* obj, GroundBaddieState* state) {
             ObjAnim_SetCurrentMove((int)obj, 8, 0.0f, 0);
             state->baddie.moveDone = 0;
         }
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_277);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_277);
     }
     obj->anim.rotX += 546;
     state->baddie.stateTag = 1;
@@ -296,7 +302,7 @@ int kaldachom_stateHandlerA04(GameObject* obj, GroundBaddieState* state) {
             ObjAnim_SetCurrentMove((int)obj, 3, 0.0f, 0);
             state->baddie.moveDone = 0;
         }
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_277);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_277);
     }
     state->baddie.stateTag = 3;
     state->baddie.moveSpeed = 0.015f;
@@ -389,7 +395,7 @@ void kaldachom_spawnDustEffects(GameObject* obj, KaldachomControl* control) {
     placement = (KaldachomPlacement*)obj->anim.placementData;
     gKaldachomDustSpawnScratch = 0.5f + (f32)(s32)placement->scale / 15.0f;
     control->hitFlashTimer = 255.0f;
-    Sfx_PlayFromObject((int)obj, SFXTRIG_wp_beamgenlp16_276);
+    Sfx_PlayFromObject(obj, SFXTRIG_wp_beamgenlp16_276);
     work = 40;
     do {
         (*gPartfxInterface)
@@ -460,12 +466,12 @@ void kaldachom_handleAnimEvents(GameObject* obj, KaldachomState* objectState, Gr
 
     if (((s32)state->baddie.eventFlags & BADDIE_EVENT_FOOTSTEP) != 0) {
         state->baddie.eventFlags &= ~BADDIE_EVENT_FOOTSTEP;
-        Sfx_PlayFromObject((int)obj, SFXTRIG_mn_lummy211_273);
+        Sfx_PlayFromObject(obj, SFXTRIG_mn_lummy211_273);
     }
     if (((s32)state->baddie.eventFlags & KALDACHOM_EVENT_CLIMB_FX) != 0) {
         control->climbFxIndex = randomGetRange(0, 2);
         state->baddie.eventFlags &= ~KALDACHOM_EVENT_CLIMB_FX;
-        Sfx_PlayFromObject((int)obj, SFXTRIG_mn_impyflap16);
+        Sfx_PlayFromObject(obj, SFXTRIG_mn_impyflap16);
         for (spawnCount = (2 - control->climbFxIndex) * 10; spawnCount != 0; spawnCount--) {
             (*gPartfxInterface)
                 ->spawnObject((void*)obj, KALDACHOM_PARTFX_CLIMB, 0, 4, -1, &gKaldachomMouthSpawnScratch);
@@ -481,7 +487,7 @@ void kaldachom_handleAnimEvents(GameObject* obj, KaldachomState* objectState, Gr
     }
     if (((s32)state->baddie.eventFlags & BADDIE_EVENT_LANDING) != 0) {
         state->baddie.eventFlags &= ~BADDIE_EVENT_LANDING;
-        Sfx_PlayFromObject((int)obj, SFXTRIG_mn_cling03);
+        Sfx_PlayFromObject(obj, SFXTRIG_mn_cling03);
     }
     if (((s32)state->baddie.eventFlags & KALDACHOM_EVENT_ATTACK_FX) != 0) {
         control->climbFxIndex = 3;
@@ -496,7 +502,7 @@ void kaldachom_handleAnimEvents(GameObject* obj, KaldachomState* objectState, Gr
 }
 
 static const f32 gKaldachomScrollSteps[1] = {127.0f};
-static const f32 gKaldachomPiConst[1] = {3.1415927f};
+const f32 gKaldachomPi[1] = {3.1415927f};
 static const f32 gKaldachomHalfTurn[1] = {32768.0f};
 
 void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAddress) {
@@ -535,7 +541,7 @@ void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAd
                 (*gPlayerInterface)->setState(obj, (void*)stateAddress, 4);
                 ((GroundBaddieState*)stateAddress)->baddie.hitPoints -= 1;
                 Obj_SetModelColorFadeRecursive(obj, 0xf, 200, 0, 0, 1);
-                Sfx_PlayFromObject((int)obj, SFXTRIG_stftest);
+                Sfx_PlayFromObject(obj, SFXTRIG_stftest);
             }
             if (((GroundBaddieState*)stateAddress)->baddie.hitPoints < 1) {
                 ((GroundBaddieState*)stateAddress)->baddie.substate = 2;
@@ -559,7 +565,7 @@ void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAd
                     playerSetHitReactionVariant(playerObj, 2);
                     (*gPlayerInterface)->setState(obj, (void*)stateAddress, 5);
                     objDoHitParticleFx((void*)obj, 0.014f, gKaldachomHitLightWork, 4, 0);
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_swdout1);
+                    Sfx_PlayFromObject(obj, SFXTRIG_swdout1);
                 }
             } else {
                 if (((GroundBaddieState*)stateAddress)->baddie.substate != 1) {
@@ -568,8 +574,8 @@ void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAd
                     ((GroundBaddieState*)stateAddress)->baddie.moveJustStartedA = 1;
                     ((GroundBaddieState*)stateAddress)->baddie.substate = 1;
                     objDoHitParticleFx((void*)obj, 0.014f, gKaldachomHitLightWork, 1, 0);
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_stftest);
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_rach_call3);
+                    Sfx_PlayFromObject(obj, SFXTRIG_stftest);
+                    Sfx_PlayFromObject(obj, SFXTRIG_baddie_rach_call3);
                 }
             }
         }
@@ -662,7 +668,7 @@ void kaldachom_update(GameObject* obj) {
             (cond = (*gMapEventInterface)->shouldNotSaveTime(placement->ident), cond != 0)) {
             (*gBaddieControlInterface)->initGroundBaddie(obj, (u8*)placement, (u8*)objectState, 8, 6, 0, 0x26, 20.0f);
             objectState->targetState = 0;
-            Sfx_PlayFromObject((int)obj, SFXTRIG_mn_lummy211);
+            Sfx_PlayFromObject(obj, SFXTRIG_mn_lummy211);
             ObjAnim_SetCurrentMove((int)obj, 4, 0.0f, OBJANIM_MOVE_CONTROL_SKIP_EVENT_COUNTDOWN);
             objectState->ground.baddie.moveDone = 0;
             obj->anim.alpha = 0xff;
@@ -678,7 +684,7 @@ void kaldachom_update(GameObject* obj) {
                 texture = (int)objectState->control;
                 ((KaldachomControl*)texture)->pullupSfxTimer -= timeDelta;
                 if (((KaldachomControl*)texture)->pullupSfxTimer <= 0.0f) {
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_mn_lummy111);
+                    Sfx_PlayFromObject(obj, SFXTRIG_mn_lummy111);
                     ((KaldachomControl*)texture)->pullupSfxTimer = (f32)randomGetRange(300, 600);
                 }
                 player = Obj_GetPlayerObject();
@@ -700,7 +706,7 @@ void kaldachom_update(GameObject* obj) {
                 texture = (int)objFindTexture(obj, 0, 0);
                 ((KaldachomControl*)ref)->textureScrollAngle += 0x1000;
                 scrollPhase =
-                    mathSinf((gKaldachomPiConst[0] * (f32)(s32)((KaldachomControl*)ref)->textureScrollAngle) / gKaldachomHalfTurn[0]);
+                    mathSinf((gKaldachomPi[0] * (f32)(s32)((KaldachomControl*)ref)->textureScrollAngle) / gKaldachomHalfTurn[0]);
                 scrollPhase = 1.0f + scrollPhase;
                 ((ObjTextureRuntimeSlot*)texture)->textureId = (int)(gKaldachomScrollSteps[0] * scrollPhase);
                 player = Obj_GetPlayerObject();

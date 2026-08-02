@@ -535,7 +535,7 @@ int dbstealerworm_stateHandlerA0E(GameObject* obj, BaddieState* baddie)
         sub->msgSlotIndex = 0x24;
         sub->msgMode = 0;
         ObjMsg_SendToObject((void*)sub->linkedObj, 0x11, obj, 0x12);
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_mn_dimspit6);
+        Sfx_PlayFromObject(obj, SFXTRIG_mn_dimspit6);
     }
     if ((obj)->anim.currentMoveProgress > 0.3f)
     {
@@ -836,7 +836,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, BaddieState* baddie, f32 t)
     }
     if (found == 0)
     {
-        if ((u32)obj ==
+        if (obj ==
             objGetNearestTypeTo(DBSTEALERWORM_OBJGROUP, (GameObject*)*(int*)&baddie->targetObj, 0))
         {
             sub->savedTargetObj = *(int*)&baddie->targetObj;
@@ -1150,7 +1150,7 @@ int dbstealerworm_stateHandlerA09(GameObject* obj, BaddieState* baddie)
         sub_40c->msgSlotIndex = slotIndex;
         sub_40c->msgMode = 0;
         ObjMsg_SendToObject((void*)sub_40c->linkedObj, 17, obj, 18);
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_mn_dimspit6);
+        Sfx_PlayFromObject(obj, SFXTRIG_mn_dimspit6);
     }
     bs->stateTag = 18;
     if (bs->moveJustStartedA != '\0')
@@ -1421,14 +1421,14 @@ int dbstealerworm_stateHandlerA07(GameObject* obj, int baddie, f32 t)
         frac = blob->aggression / 40.0f;
         if (RandomTimer_UpdateRangeTrigger(&sub->randomTimer4C, 1.0f, 3.0f) != 0)
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_baddie_weev);
+            Sfx_PlayFromObject(obj, SFXTRIG_baddie_weev);
         }
     }
     else
     {
         if (RandomTimer_UpdateRangeTrigger(&sub->randomTimer48, 1.0f, 3.0f) != 0)
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_baddie);
+            Sfx_PlayFromObject(obj, SFXTRIG_baddie);
         }
         if (((BaddieState*)baddie)->moveJustStartedA != 0)
         {
@@ -1635,11 +1635,11 @@ int dbstealerworm_stateHandlerA05(GameObject* obj, BaddieState* baddie)
         result = (**(int (**)(int))(*(int*)(*(int*)(player_c8 + 0x68)) + 0x44))(player_c8);
         if (result != 0)
         {
-            Sfx_PlayFromObject((int)obj, gDbStealerwormSfxIds[randomGetRange(3, 4)]);
+            Sfx_PlayFromObject(obj, gDbStealerwormSfxIds[randomGetRange(3, 4)]);
         }
         else
         {
-            Sfx_PlayFromObject((int)obj, gDbStealerwormSfxIds[randomGetRange(0, 2)]);
+            Sfx_PlayFromObject(obj, gDbStealerwormSfxIds[randomGetRange(0, 2)]);
         }
         {
             int frame1;
@@ -1793,7 +1793,7 @@ int dbstealerworm_stateHandlerA01(GameObject* obj, BaddieState* baddie)
     }
     if (bs->moveDone != 0)
     {
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_mn_eggylaugh116);
+        Sfx_PlayFromObject(obj, SFXTRIG_mn_eggylaugh116);
         sub_40c->unk04 = 1.0f;
         ObjAnim_SetCurrentMove((int)obj, 8, 0.0f, 0);
         bs->targetObj = 0;
@@ -2101,12 +2101,12 @@ void dbstealerworm_acquireTarget(GameObject* obj, int groundState, int baddie)
                ->findAggroTarget(obj, (void*)baddie, st->aggroRange, 0x8000);
     if (near == 0 && (st->configFlags & 0x10) != 0)
     {
-        near = (GameObject*)objGetNearestTypeTo(DBEGG_OBJGROUP, obj, &stk.range);
+        near = objGetNearestTypeTo(DBEGG_OBJGROUP, obj, &stk.range);
     }
     if (near == 0 && (st->configFlags & 0x10) != 0 && (st->configFlags & 2) == 0 &&
         (((GroundBaddiePlacement*)data)->flags & 2) != 0)
     {
-        near = (GameObject*)objGetNearestTypeTo(DBEGG_OBJGROUP, obj, 0);
+        near = objGetNearestTypeTo(DBEGG_OBJGROUP, obj, 0);
     }
     if (near != 0 && (st->configFlags & 2) == 0)
     {
@@ -2133,7 +2133,7 @@ void dbstealerworm_acquireTarget(GameObject* obj, int groundState, int baddie)
         }
         if (sub->countdown > sub->nextSfxTime && dist < 400.0f)
         {
-            Sfx_PlayFromObject((int)obj, gDbStealerwormBurrowFootstepSfx[1]);
+            Sfx_PlayFromObject(obj, gDbStealerwormBurrowFootstepSfx[1]);
             sub->nextSfxTime = sub->nextSfxTime + (f32)randomGetRange(0x32, 0xfa);
         }
         sub->countdown += timeDelta;
@@ -2262,8 +2262,8 @@ void dbstealerworm_hitDetect(GameObject* obj)
 
 void dbstealerworm_update(GameObject* obj)
 {
-    DbWormEffectSpawnWork* st = &gDbWormEffectSpawnWork;
-    char* tbl = (char*)gDbStealerwormScriptStealEggThrowToWorm;
+    DbWormEffectSpawnWork* st[1];
+    char* tbl;
     int blob;
     int data;
     int sub;
@@ -2280,6 +2280,8 @@ void dbstealerworm_update(GameObject* obj)
         f32 v[3];
     } stk;
 
+    st[0] = &gDbWormEffectSpawnWork;
+    tbl = (char*)gDbStealerwormScriptStealEggThrowToWorm;
     blob = *(int*)&obj->extra;
     data = (int)obj->anim.placementData;
     sub = *(int*)&((GroundBaddieState*)blob)->control;
@@ -2355,12 +2357,12 @@ void dbstealerworm_update(GameObject* obj)
                 if ((*gBaddieControlInterface)
                         ->updateHitReaction(obj, (void*)blob, (char*)blob + 0x35c,
                                             ((GroundBaddieState*)blob)->gameBitB, (int*)(tbl + 0x2ac),
-                                            (u8*)(tbl + 0x324), 1, st) != 0)
+                                            (u8*)(tbl + 0x324), 1, st[0]) != 0)
                 {
-                    st->posX = obj->anim.localPosX;
-                    st->posY = obj->anim.localPosY;
-                    st->posZ = obj->anim.localPosZ;
-                    objDoHitParticleFx((void*)obj, 0.014f, st, 1, 0);
+                    st[0]->posX = obj->anim.localPosX;
+                    st[0]->posY = obj->anim.localPosY;
+                    st[0]->posZ = obj->anim.localPosZ;
+                    objDoHitParticleFx((void*)obj, 0.014f, st[0], 1, 0);
                 }
                 if (((GroundBaddieState*)blob)->targetState == 0)
                 {
@@ -2379,7 +2381,7 @@ void dbstealerworm_update(GameObject* obj)
                     ((GroundBaddieState*)blob)->savedPendingParentObj = obj->pendingParentObj;
                     obj->pendingParentObj = 0;
                     /* Retail derives both pointers past the 0x18-byte scratch record. */
-                    (*gPlayerInterface)->update((void*)obj, (void*)blob, timeDelta, timeDelta, (char*)st + 0x34, (char*)st + 0x18);
+                    (*gPlayerInterface)->update((void*)obj, (void*)blob, timeDelta, timeDelta, (char*)st[0] + 0x34, (char*)st[0] + 0x18);
                     obj->pendingParentObj = ((GroundBaddieState*)blob)->savedPendingParentObj;
                 }
             }

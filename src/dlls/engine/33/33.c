@@ -5,16 +5,17 @@
 #include "main/frame_timing.h"
 #include "main/maketex_random_api.h"
 #include "main/dll/dll_0021_effect8.h"
+#include "main/vecmath.h"
 
 f32 gModgfxSineWaveA;
 f32 gModgfxSineWaveB;
 int gModgfxSinePhaseB;
 int gModgfxSinePhaseA;
 
-f32 lbl_803DB810 = 0.1f;
-f32 lbl_803DB814 = 0.3f;
-f32 lbl_803DB818 = 0.1f;
-f32 lbl_803DB81C = 0.3f;
+f32 gEffect8SpawnPhaseA = 0.1f;
+f32 gEffect8SpawnPhaseB = 0.3f;
+f32 gEffect8FramePhaseA = 0.1f;
+f32 gEffect8FramePhaseB = 0.3f;
 
 PartFxSpawnParams gEffect8DefaultSpawnParams;
 
@@ -51,12 +52,12 @@ int Effect8_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawnP
     int spawnResult;
     PartFxSpawn cfg;
 
-    lbl_803DB810 += 0.001f;
-    if (lbl_803DB810 > 1.0f)
-        lbl_803DB810 = 0.1f;
-    lbl_803DB814 += 0.0003f;
-    if (lbl_803DB814 > 1.0f)
-        lbl_803DB814 = 0.3f;
+    gEffect8SpawnPhaseA += 0.001f;
+    if (gEffect8SpawnPhaseA > 1.0f)
+        gEffect8SpawnPhaseA = 0.1f;
+    gEffect8SpawnPhaseB += 0.0003f;
+    if (gEffect8SpawnPhaseB > 1.0f)
+        gEffect8SpawnPhaseB = 0.3f;
     if (sourceObj == 0)
         return -1;
     if ((spawnFlags & 0x200000) != 0)
@@ -436,17 +437,17 @@ void Effect8_updateFrameState(void)
 {
     f32 sum;
     f32 step;
-    sum = lbl_803DB818 + (step = 0.001f * timeDelta);
-    lbl_803DB818 = sum;
+    sum = gEffect8FramePhaseA + (step = 0.001f * timeDelta);
+    gEffect8FramePhaseA = sum;
     if (sum > 1.0f)
     {
-        lbl_803DB818 = 0.1f;
+        gEffect8FramePhaseA = 0.1f;
     }
-    sum = lbl_803DB81C + step;
-    lbl_803DB81C = sum;
+    sum = gEffect8FramePhaseB + step;
+    gEffect8FramePhaseB = sum;
     if (sum > 1.0f)
     {
-        lbl_803DB81C = 0.3f;
+        gEffect8FramePhaseB = 0.3f;
     }
     gModgfxSinePhaseA = gModgfxSinePhaseA + framesThisStep * 0x64;
     if (gModgfxSinePhaseA > 0x7fff)

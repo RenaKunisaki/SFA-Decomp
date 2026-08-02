@@ -8,6 +8,9 @@
 #include "main/game_ui_interface.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
+#include "main/objtype.h"
+#include "main/gamebits_api.h"
+#include "main/objprint_render_api.h"
 
 #define DLL_FD_RENDER_SCALE         1.0f
 #define DLL_FD_TARGET_SEARCH_RADIUS 1e+02f
@@ -56,7 +59,7 @@ void dll_FD_update(GameObject* obj) {
     placement = (DllFDPlacement*)obj->anim.placementData;
     state = obj->extra;
     if (state->target == NULL) {
-        target = (GameObject*)objGetNearestTypeTo((u32)placement->targetGroup, obj, &maxDistance);
+        target = objGetNearestTypeTo((u32)placement->targetGroup, obj, &maxDistance);
         state->target = target;
         if (state->target == NULL) {
             return;

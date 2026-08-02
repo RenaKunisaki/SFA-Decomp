@@ -19,6 +19,12 @@
 #include "main/object_render.h"
 #include "main/objfx.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/dll_0000_gameui_api.h"
+#include "main/object_update_list.h"
+#include "main/objhits.h"
+#include "main/objtype.h"
 
 #define FLAMMABLEVINE_SEQID_CC_EYE_VINES 0x102
 

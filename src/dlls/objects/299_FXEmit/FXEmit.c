@@ -13,6 +13,8 @@
 #include "main/gamebits.h"
 #include "main/resource.h"
 #include "sys/objects.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/vecmath.h"
 
 #define FXEMIT_DEBUG_EFFECT_ID              0x11
 #define FXEMIT_EVENT_EMIT                   1
@@ -282,7 +284,7 @@ void FXEmit_update(GameObject* obj) {
                 state->intervalTimer = placement->interval * FXEMIT_INTERVAL_FRAME_SCALE;
                 sfxId = placement->intervalSfxId;
                 if (sfxId != 0) {
-                    Sfx_PlayFromObject((int)obj, (u16)sfxId);
+                    Sfx_PlayFromObject(obj, (u16)sfxId);
                 }
             } else {
                 state->disabled = 1;

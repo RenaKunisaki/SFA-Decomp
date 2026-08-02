@@ -1,6 +1,8 @@
 #include "dolphin/ar.h"
 
 #include "dolphin/os.h"
+#include "dolphin/PPCArch.h"
+#include "string.h"
 
 static ARCallback __AR_Callback;
 static u32 __AR_Size;

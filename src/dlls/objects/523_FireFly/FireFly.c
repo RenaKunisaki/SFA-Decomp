@@ -26,6 +26,10 @@
 #include "main/objfx.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/gameloop_gamebit_api.h"
+#include "main/maketex_timer_api.h"
+#include "sys/objects/lifecycle.h"
 
 /* Per-frame angular step bounds (1/65536-turn units). */
 #define FIREFLY_ANGLE_STEP_MIN 0x1f4
@@ -289,7 +293,7 @@ void firefly_activeTick(GameObject* obj)
                         st->despawnTimer = gFireflyDespawnFrames[0];
                         gameBitIncrement(FIREFLY_COLLECT_COUNT_BIT_A);
                         gameBitIncrement(FIREFLY_COLLECT_COUNT_BIT_B);
-                        Sfx_PlayFromObject((int)obj, SFXTRIG_lockoff22);
+                        Sfx_PlayFromObject(obj, SFXTRIG_lockoff22);
                     }
                 }
             }
@@ -343,7 +347,7 @@ void firefly_update(GameObject* obj)
             st->despawnTimer = gFireflyDespawnFrames[0];
             gameBitIncrement(FIREFLY_COLLECT_COUNT_BIT_A);
             gameBitIncrement(FIREFLY_COLLECT_COUNT_BIT_B);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_lockoff22);
+            Sfx_PlayFromObject(obj, SFXTRIG_lockoff22);
             break;
         }
         }

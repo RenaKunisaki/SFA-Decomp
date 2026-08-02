@@ -12,6 +12,8 @@
 #include "main/frame_timing.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
+#include "main/dll/player_api.h"
+#include "main/objhits.h"
 
 typedef enum CurveFishMode {
     CURVEFISH_MODE_WAIT = 0,

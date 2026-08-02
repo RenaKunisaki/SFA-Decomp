@@ -11,6 +11,7 @@
 #include "main/gametext_internal.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
+#include "main/textrender_api.h"
 
 #define LEVELNAME_OBJECT_TYPE_ID 0
 

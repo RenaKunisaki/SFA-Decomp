@@ -12,6 +12,10 @@
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/obj_list.h"
+#include "sys/objects.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/objhits.h"
+#include "sys/objects/lifecycle.h"
 
 #define ICEBALL_HIT_VOLUME_SLOT 10
 #define ICEBALL_PARTICLE_COUNT  25
@@ -56,7 +60,7 @@ void iceBall_handleSurfaceImpact(GameObject* obj) {
         }
     }
 
-    Sfx_PlayFromObject((u32)obj, SFXTRIG_mn_lummy311_26a);
+    Sfx_PlayFromObject(obj, SFXTRIG_mn_lummy311_26a);
     CameraShake_Enable();
     CameraShake_SetOffset(1.0f);
 }
@@ -67,7 +71,7 @@ void iceBall_handleCharacterImpact(GameObject* obj) {
 
     CameraShake_Enable();
     CameraShake_SetOffset(1.0f);
-    Sfx_PlayFromObject((u32)obj, SFXTRIG_mn_lummy311_26a);
+    Sfx_PlayFromObject(obj, SFXTRIG_mn_lummy311_26a);
     sequenceId = obj->anim.romDefNo;
     if (sequenceId == 0x2cb) {
         if (obj->ownerObj != NULL) {

@@ -4,6 +4,7 @@
 #include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/pi_dolphin_api.h"
+#include "main/gamebits_api.h"
 
 #define FOG_CONTROL_BLEND_STEP_FAST   0.02f
 #define FOG_CONTROL_BLEND_STEP_SLOW   0.005f

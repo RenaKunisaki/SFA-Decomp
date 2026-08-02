@@ -6,6 +6,7 @@
 #include "main/lightmap_api.h"
 #include "main/object_render.h"
 #include "main/track_dolphin_map_api.h"
+#include "sys/objects.h"
 
 #define BLASTED_GAMEBIT_DAMAGE_BASE         0x2DE
 #define BLASTED_DAMAGE_HIT_PRIORITY         5

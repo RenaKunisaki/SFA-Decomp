@@ -895,7 +895,7 @@ int DR_CloudRunner_stateHandler01(GameObject* obj, CloudRunnerState* baddie)
     }
     inner = (obj)->extra;
     Vec_distance(&(obj)->anim.worldPosX, &((GameObject*)Obj_GetPlayerObject())->anim.worldPosX);
-    if (RandomTimer_UpdateRangeTrigger((char*)inner + 0xb54, 12.0f, 18.0f))
+    if (RandomTimer_UpdateRangeTrigger(&inner->randomTimerB54, 12.0f, 18.0f))
     {
         Sfx_PlayFromObject((int)obj, SFXTRIG_lfoot_taunt);
     }
@@ -1302,11 +1302,11 @@ void DR_CloudRunner_init(GameObject* obj, int def)
     }
     (*gPlayerInterface)->init(obj, (void*)inner, 8, 1);
     ((CloudRunnerState*)inner)->baddie.gravity = 0.17f;
-    DR_CloudRunner_setupPath(obj, (CloudRunnerState*)inner, ((ByteFlags*)((char*)inner + 0xbc0))->b20);
-    dll_2E_initState(obj, (MoveLibState*)((char*)inner + 0x4c4), -0x11c7, 0x1555, 1);
+    DR_CloudRunner_setupPath(obj, (CloudRunnerState*)inner, ((ByteFlags*)&((CloudRunnerState*)inner)->flagsBC0)->b20);
+    dll_2E_initState(obj, &((CloudRunnerState*)inner)->moveLib, -0x11c7, 0x1555, 1);
     dll_2E_setReattackDelay((MoveLibState*)(inner + 0x4c4), 0x12c, 0x78);
     objAddObjectType((int)obj, ARWARWING_OBJGROUP);
-    ((ByteFlags*)((char*)inner + 0xbc0))->b01 = 0;
+    ((ByteFlags*)&((CloudRunnerState*)inner)->flagsBC0)->b01 = 0;
 }
 
 void DR_CloudRunner_release(void)

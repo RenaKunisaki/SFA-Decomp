@@ -23,6 +23,8 @@
 #include "main/track_dolphin_api.h"
 #include "main/vecmath.h"
 #include "string.h"
+#include "main/objseq_api.h"
+#include "main/pad.h"
 
 typedef struct CameraModeNormalSlideTransform {
     s16 angles[3];
@@ -38,6 +40,7 @@ STATIC_ASSERT(offsetof(CameraModeNormalSlideTransform, translation) == 0x0C);
 STATIC_ASSERT(sizeof(CameraModeNormalSlideTransform) == 0x18);
 
 CameraModeNormalState* gCameraModeNormalState;
+int lbl_803DD534;
 f32 gCameraModeNormalScaledTimeDelta;
 u8 gCamcontrolTraceBboxBlocked;
 

@@ -81,7 +81,7 @@ void lightsource_update(GameObject* obj) {
                 if (state->gameBit != -1 && mainGetBit(state->gameBit) == 0) {
                     mainSetBits(state->gameBit, 1);
                 }
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_cvdrip1c);
+                Sfx_PlayFromObject(obj, SFXTRIG_cvdrip1c);
             } else {
                 (*gExpgfxInterface)->freeSource((u32)obj);
                 if (state->gameBit != -1 && mainGetBit(state->gameBit) != 0) {

@@ -1965,7 +1965,7 @@ int expgfx_acquireResourceEntry(int resourceId)
 }
 
 int gExpgfxSlotType1Average;
-int lbl_803DD274;
+int gExpgfxSlotType1Sum;
 int gExpgfxSlotType1Count;
 int gExpgfxLastAddedSlot;
 u16 gExpgfxPhaseAngleB;
@@ -2157,8 +2157,9 @@ int expgfxGetSlot(short* poolIndexOut, short* slotIndexOut, short slotType, int 
     activeCountWalk = poolActiveCounts;
     slotTypeVal = slotType;
     for (batchGroup = 0; batchGroup < EXPGFX_POOL_SEARCH_BATCH_COUNT;
-         sourceIdWalk += EXPGFX_POOL_SEARCH_BATCH_SIZE, poolSlotTypeIds++,
-             activeCountWalk += EXPGFX_POOL_SEARCH_BATCH_SIZE, searchIndex++, batchGroup++)
+         sourceIdWalk += EXPGFX_POOL_SEARCH_BATCH_SIZE,
+             activeCountWalk += EXPGFX_POOL_SEARCH_BATCH_SIZE, poolSlotTypeIds++,
+             searchIndex++, batchGroup++)
     {
         if ((sourceId == sourceIdWalk[0]) && (slotTypeVal == *poolSlotTypeIds) &&
             (activeCountWalk[0] < EXPGFX_SLOTS_PER_POOL))
@@ -2873,7 +2874,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                             (*gWaterfxInterface)->spawnSplashBurst(NULL, rotParams.x, rotParams.y, rotParams.z, EXPGFX_SLOT_MOTION_STEP);
                             if (srcObj != NULL && coordsToMapCell(srcObj->localPosX, srcObj->localPosZ) == 0x10)
                             {
-                                Sfx_PlayFromObject((u32)srcObj, SFXTRIG_blkscrp6);
+                                Sfx_PlayFromObject((GameObject*)srcObj, SFXTRIG_blkscrp6);
                             }
                             slot->impactEffectId = -1;
                             slot->behaviorFlags |= EXPGFX_BEHAVIOR_WATER_RIPPLE_ON_IMPACT | 0LL;
@@ -4293,7 +4294,7 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
     s16 texS1 = 0;
     s16 texS0 = 0;
     f32 scaleVal;
-    u8 sourceModeValue;
+    u32 sourceModeValue;
 
     ExpgfxQuadVertex* quadVertices;
 
@@ -4533,7 +4534,7 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
         if (slotType == 1)
         {
             gExpgfxSlotType1Count = gExpgfxSlotType1Count + 1;
-            gExpgfxSlotType1Average = lbl_803DD274 / gExpgfxSlotType1Count;
+            gExpgfxSlotType1Average = gExpgfxSlotType1Sum / gExpgfxSlotType1Count;
         }
 
         slot->colorByte0 = (u8)((int)*(u16*)&config->colorByte0 >> 8);
@@ -4573,6 +4574,7 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
             } else {
                 sourceModeValue = 0;
             }
+            sourceModeValue = (u8)sourceModeValue;
             modePoolIndex = poolIndex;
             runtime->poolSourceModes[modePoolIndex] = sourceModeValue;
             if (runtime->poolSourceModes[modePoolIndex] != 0 &&

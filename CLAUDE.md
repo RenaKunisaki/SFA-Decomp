@@ -130,6 +130,17 @@ literals), that is a TU-boundary artifact — leave the unit `NonMatching`, do n
   regime) was also completely flat, so use the width screen to find *shape* defects, not to plan register moves.
   `python3 tools/bandscreen.py --struct-only` ranks the frontier by band width and by whether the mnemonic stream
   (not just the operands) differs; see `docs/band_width_worklist.md`.
+  **Why the cliff exists** (~1400 synthetic probes): the saved band is a **rotation of one fixed cyclic order**
+  `(param, L_n..L_1, pool)`, and the rotation offset is a **whole-function pressure counter that saturates at 2** —
+  it counts *every* value the allocator sees, including statements needing no saved register at all, which is why a
+  one-instruction change anywhere can re-colour the whole band far away. Declaration order permutes values *within*
+  the shape but **can never change the rotation**, so at width >=5 with an identical stream every ordering knob is
+  provably flat — route to the TU-split/`mw_version` lane instead of sweeping. Inert for the same reason: dead or
+  unused locals, the number of source locals backing a split web, and use counts. GPR and FP bands have independent
+  counters. **One move the usual sweeps miss:** a block-scoped local is exactly equivalent to ranking it LAST in the
+  enclosing declaration list, so *hoisting* a block-scoped local to function scope (or pushing a function-scope one
+  into its innermost block) reaches orderings no permutation of the top-level list can express — worth trying at
+  width <=4.
 - **A same-length register permutation in the SCRATCH band (`r3..r12`) is a per-TU FLAG signature, not an allocator wall.** Copy/constant propagation reorders the values the allocator sees, permuting scratch homes with the instruction stream held identical — a 10-line probe flips `r4`/`r5` on nothing but `-opt nopropagation`. Probe it **per function** with `tools/fn_flag_probe.py <unit>`; conflicting profiles may show that the current unit merges multiple real TUs, but only DOL evidence may justify correcting that boundary. Never split a DOL-confirmed TU to isolate a flag profile.
 - `f32 fn(f32)`, not `double fn(double)`, for single-precision helpers — avoids an `fmul`+`frsp`.
 - A single-bit flag written as a C bitfield (`u8 x:1`) compiles to `li; rlwimi`, not a manual `|= mask`.

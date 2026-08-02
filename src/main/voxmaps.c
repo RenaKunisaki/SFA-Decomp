@@ -11,6 +11,9 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 #include "dolphin/os/OSReport.h"
+#include "main/asset_load.h"
+#include "main/table_file.h"
+#include "string.h"
 
 #define VOXMAP_SLOT_COUNT           6
 #define VOXMAPS_ROUTE_NODE_CAPACITY 200
@@ -32,6 +35,7 @@ STATIC_ASSERT(offsetof(VoxRouteWork, pathPoints) == 0xe10);
 STATIC_ASSERT(sizeof(VoxRouteWork) == 0xe88);
 
 int* gVoxMapsMapList;
+int lbl_803DC8E4;
 u8* gVoxMapsScratchBuffer;
 u8* gVoxMapsScratchBufferPtr;
 u8 gVoxMapsSlotInUse[8];
@@ -1224,6 +1228,7 @@ u8* voxmaps_getRouteNode(u8* rowCounts, int* nodeBase, u8* bitmap, int tileX, in
 int* voxmaps_updateActiveMap(VoxPos* obj)
 {
     VoxMaps* vm = &gVoxMaps;
+    int* worldOrigins;
     int gridX;
     int gridZ;
     int cellIndex;
@@ -1238,13 +1243,14 @@ int* voxmaps_updateActiveMap(VoxPos* obj)
     MapCellEntry* cell;
     VoxMapSlotOrigin* origin;
 
+    worldOrigins = vm->blockOriginWorld;
     zWorldOffset = obj->z * 10 + 5 - gMapBlockOriginWorldZ;
 
     gridX = fastFloorf((f32)(obj->x * 10 + 5 - gMapBlockOriginWorldX) / 6.4e+02f);
     gridZ = fastFloorf((f32)zWorldOffset / 6.4e+02f);
 
-    vm->blockOriginWorld[0] = gMapBlockOriginWorldX + gridX * 640;
-    vm->blockOriginWorld[1] = gMapBlockOriginWorldZ + gridZ * 640;
+    worldOrigins[0] = gMapBlockOriginWorldX + gridX * 640;
+    worldOrigins[1] = gMapBlockOriginWorldZ + gridZ * 640;
     for (slot = 0; slot < 2; slot++)
     {
         vm->blockOriginGrid[slot] = vm->blockOriginWorld[slot] / 10;

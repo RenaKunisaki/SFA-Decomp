@@ -13,6 +13,7 @@
 #include "main/object_render.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/objtype.h"
 
 #define EFFECTBOX_TARGET_OBJECT_GROUP 5
 #define EFFECTBOX_OBJECT_TYPE_ID      0

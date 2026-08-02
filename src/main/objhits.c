@@ -60,6 +60,7 @@
 #include "dolphin/gx/GXTransform.h"
 #include "track/intersect_api.h"
 #include "main/objprint_internal.h"
+#include "main/objprint_render_api.h"
 
 GameObject* gObjHitsActiveHitVolumeObjects[OBJHITS_ACTIVE_HIT_VOLUME_OBJECT_COUNT] = {NULL};
 ObjHitsSweepEntry* gObjHitsSweepEntryPtrs[OBJHITS_SWEEP_ENTRY_CAPACITY];
@@ -2250,12 +2251,14 @@ u32 ObjHitReact_Update(int obj, ObjHitReactEntry* reactionEntryTable, u32 reacti
         reactionEntry = &reactionEntryTable[hitSphereIndex];
         if (hitType != OBJHITREACT_COLLISION_SKIP_REACTION) {
             if ((reactionEntry->primaryHitSfxId > OBJHITREACT_NO_SFX_ID) &&
-                (sfxActive = Sfx_IsPlayingFromObject(obj, (u16)reactionEntry->primaryHitSfxId), !sfxActive)) {
-                Sfx_PlayFromObject(obj, reactionEntry->primaryHitSfxId);
+                (sfxActive = Sfx_IsPlayingFromObject((GameObject*)obj, (u16)reactionEntry->primaryHitSfxId),
+                 !sfxActive)) {
+                Sfx_PlayFromObject((GameObject*)(u32)obj, reactionEntry->primaryHitSfxId);
             }
             if ((reactionEntry->secondaryHitSfxId > OBJHITREACT_NO_SFX_ID) &&
-                (sfxActive = Sfx_IsPlayingFromObject(obj, (u16)reactionEntry->secondaryHitSfxId), !sfxActive)) {
-                Sfx_PlayFromObject(obj, reactionEntry->secondaryHitSfxId);
+                (sfxActive = Sfx_IsPlayingFromObject((GameObject*)obj, (u16)reactionEntry->secondaryHitSfxId),
+                 !sfxActive)) {
+                Sfx_PlayFromObject((GameObject*)(u32)obj, reactionEntry->secondaryHitSfxId);
             }
             if (reactionEntry->hitEffectMode == OBJHITREACT_HIT_FX_MODE_EFFECT) {
                 effectResource = Resource_Acquire(OBJHITREACT_HIT_EFFECT_ID, OBJHITREACT_HIT_EFFECT_RESOURCE_COUNT);
@@ -3248,9 +3251,9 @@ GameObject* objGetNearestTypeToExcludingSelf(int group, GameObject* obj, float* 
     return nearest;
 }
 
-int objGetNearestTypeTo(int group, GameObject* obj, float* maxDistance) {
+GameObject* objGetNearestTypeTo(int group, GameObject* obj, float* maxDistance) {
     u32* entry;
-    u32 nearest;
+    GameObject* nearest;
     GameObject* o;
     int index;
     int limit;
@@ -3275,7 +3278,7 @@ int objGetNearestTypeTo(int group, GameObject* obj, float* maxDistance) {
             distanceSq = vec3f_distanceSquared(&o->anim.worldPosX, &((GameObject*)*entry)->anim.worldPosX);
             if (distanceSq < bestDistanceSq) {
                 bestDistanceSq = distanceSq;
-                nearest = *entry;
+                nearest = (GameObject*)*entry;
             }
         }
         entry++;
@@ -3670,7 +3673,7 @@ int ObjHits_PollPriorityHitEffectWithCooldown(GameObject* obj, u32 hitFxMode, u3
                         OBJHITREACT_HIT_EFFECT_SPAWN_FLAGS, OBJHITREACT_HIT_EFFECT_NO_SOURCE, &effectArgs);
             if (((sfxId != 0) && (hitObject != 0)) &&
                 (((GameObject*)hitObject)->anim.romDefNo == OBJLIB_HITOBJ_SEQID_STAFF)) {
-                Sfx_PlayFromObject((u32)obj, sfxId);
+                Sfx_PlayFromObject(obj, sfxId);
             }
         }
     }
@@ -4291,11 +4294,11 @@ void objSoundUpdateMouth(GameObject* obj, ObjSoundState* state) {
 
     if (state->active != 0) {
         state->active = 0;
-    } else if (Sfx_IsPlayingFromObjectChannel((u32)obj, 0x10) != 0) {
+    } else if (Sfx_IsPlayingFromObjectChannel(obj, 0x10) != 0) {
         if (timer != -1) {
             timer -= framesThisStep;
             if (timer < 0) {
-                Sfx_StopObjectChannel((u32)obj, 0x10);
+                Sfx_StopObjectChannel(obj, 0x10);
                 state->blendWeight = 0.0f;
                 state->pitch = 0;
             }
@@ -4344,7 +4347,7 @@ void objKfAnimUpdate(GameObject* obj, ObjKfAnimState* state) {
             }
         } else {
             if (frame == 1) {
-                Sfx_PlayFromObjectChannel((u32)obj, 0x10, state->sfxId);
+                Sfx_PlayFromObjectChannel(obj, 0x10, state->sfxId);
             }
             kf = state->keyframes;
             frame = state->frame;
@@ -4365,8 +4368,8 @@ void objKfAnimStop(ObjKfAnimState* state) {
 }
 
 void objSoundStart(u32 obj, void* p, u16 sfxId) {
-    if (Sfx_IsPlayingFromObjectChannel(obj, 0x10) == 0) {
-        Sfx_PlayFromObjectChannel(obj, 0x10, sfxId);
+    if (Sfx_IsPlayingFromObjectChannel((GameObject*)obj, 0x10) == 0) {
+        Sfx_PlayFromObjectChannel((GameObject*)obj, 0x10, sfxId);
         ((ObjSoundState*)p)->timer = -1.0f;
         ((ObjSoundState*)p)->pitch = -0x500;
         ((ObjSoundState*)p)->active = 1;
@@ -4383,8 +4386,8 @@ void objSoundStartFromDef(GameObject* obj, ObjSoundState* state, ObjSoundDef* so
 
     pitch = soundDef->pitch;
     sfx = (u16)soundDef->sfxId;
-    if (force != 0 || Sfx_IsPlayingFromObjectChannel((u32)obj, 0x10) == 0) {
-        Sfx_PlayFromObjectChannel((u32)obj, 0x10, sfx);
+    if (force != 0 || Sfx_IsPlayingFromObjectChannel(obj, 0x10) == 0) {
+        Sfx_PlayFromObjectChannel(obj, 0x10, sfx);
         state->timer = -1.0f;
         state->pitch = (s16)(-pitch);
         state->active = 1;
@@ -4407,10 +4410,10 @@ void objSoundStartFromDef(GameObject* obj, ObjSoundState* state, ObjSoundDef* so
 }
 
 void objSoundStartTimed(GameObject* obj, ObjSoundState* state, u16 sfx, int pitch, int duration, u8 force) {
-    if (force == 0 && Sfx_IsPlayingFromObjectChannel((u32)obj, 0x10) != 0) {
+    if (force == 0 && Sfx_IsPlayingFromObjectChannel(obj, 0x10) != 0) {
         return;
     }
-    Sfx_PlayFromObjectChannel((u32)obj, 0x10, sfx);
+    Sfx_PlayFromObjectChannel(obj, 0x10, sfx);
     state->timer = duration;
     state->pitch = (s16)(-pitch);
     state->active = 1;

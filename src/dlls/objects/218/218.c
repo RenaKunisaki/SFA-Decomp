@@ -20,6 +20,14 @@
 #include "dlls/object_descriptor.h"
 #include "main/model_light.h"
 #include "main/objhits.h"
+#include "main/objtype.h"
+#include "sys/objects.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_limited_object_api.h"
+#include "main/maketex_timer_api.h"
+#include "main/objseq_api.h"
+#include "main/vecmath.h"
+#include "sys/objects/lifecycle.h"
 
 f32 gPollenFragmentSpinRateX = 1024.0f;
 f32 gPollenFragmentSpinRateY = 512.0f;
@@ -131,7 +139,7 @@ void pollenfragment_hitDetect(GameObject* obj)
             {
                 spawnExplosion((GameObject*)(int)obj, 30.0f, 0, 1, 0, 1, 0, 1, 0);
                 Sfx_PlayFromObjectLimited(
-                    (u32)obj, (u16)(((PollenFragmentExtra*)extra)->def)->explodeSfx, 3);
+                    obj, (u16)(((PollenFragmentExtra*)extra)->def)->explodeSfx, 3);
             }
             ObjHits_DisableObject(obj);
             s16toFloat((f32*)(extra + 0x20), 0x78);
@@ -144,7 +152,7 @@ void pollenfragment_hitDetect(GameObject* obj)
             {
                 spawnExplosion((GameObject*)(int)obj, 30.0f, 0, 1, 0, 1, 0, 1, 0);
                 Sfx_PlayFromObjectLimited(
-                    (u32)obj, (u16)(((PollenFragmentExtra*)extra)->def)->explodeSfx, 3);
+                    obj, (u16)(((PollenFragmentExtra*)extra)->def)->explodeSfx, 3);
             }
             s16toFloat((f32*)(extra + 0x20), 0x78);
         }
@@ -299,7 +307,7 @@ void pollenfragment_update(GameObject* obj)
         {
             spawnExplosion(obj, 30.0f, 0, 1, 0, 1, 0, 1, 0);
             Sfx_PlayFromObjectLimited(
-                (u32)obj, (u16)(((PollenFragmentExtra*)extra)->def)->explodeSfx, 3);
+                obj, (u16)(((PollenFragmentExtra*)extra)->def)->explodeSfx, 3);
         }
         s16toFloat((f32*)(extra + 0x20), 0x78);
     }
@@ -328,7 +336,7 @@ void pollenfragment_init(GameObject* obj, int config)
     state[7] = (u32)gPollenFragmentConfigs[*(char*)(config + 0x19)];
     if ((int)*(short*)state[7] != 0)
     {
-        Sfx_PlayFromObjectLimited((u32)obj, (int)*(short*)state[7] & 0xffff, 3);
+        Sfx_PlayFromObjectLimited(obj, (int)*(short*)state[7] & 0xffff, 3);
     }
     spawnCount = 4;
     do

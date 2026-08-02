@@ -3,6 +3,8 @@
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
+#include "main/objtype.h"
+#include "main/rcp_dolphin_api.h"
 
 #define SEQ_OBJECT_GROUP                           0xF
 #define SEQ_OBJECT_SEQUENCE_INDEX_NONE             -1

@@ -8,6 +8,10 @@
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "sys/objects.h"
+#include "main/dll/firepipe_effect_api.h"
+#include "main/maketex_timer_api.h"
+#include "main/objhits.h"
+#include "main/vecmath.h"
 
 #define FLAMETHROWERSPE_SCALE_DIVISOR 10.0f
 

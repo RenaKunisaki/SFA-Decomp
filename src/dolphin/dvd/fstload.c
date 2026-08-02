@@ -1,4 +1,5 @@
 #include <dolphin.h>
+#include "string.h"
 
 
 static u8 bb2Buf[63];

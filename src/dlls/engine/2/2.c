@@ -76,6 +76,7 @@ extern char sMemoryCardFileNameString[];
 volatile u32 gSaveCardState = 0xD;
 char* sMemoryCardFileName = sMemoryCardFileNameString;
 int gSaveCardBackdropColor = 0x404040FF;
+int lbl_803DB70C[1] = {0};
 
 typedef struct SeqRunFlags
 {
@@ -1371,6 +1372,7 @@ char sSeqAAnimDataTag[] = "SEQA";
 char sSeqBAnimDataTag[] = "SEQB";
 int lbl_803DB744[1] = {0};
 GXColor gObjSeqDefaultColor = {0x20, 0x20, 0x20, 0xFF};
+int lbl_803DB74C[1] = {0};
 
 typedef struct ObjSeqBgCmd
 {
@@ -3402,7 +3404,7 @@ int objSeqExecCmd06(GameObject* obj, GameObject* sourceObj, u8* seq, int cmd, s8
         gameTimerStop();
         break;
     case 13:
-        Sfx_StopObjectChannel((u32)sourceObj, 0x7f);
+        Sfx_StopObjectChannel(sourceObj, 0x7f);
         break;
     case 16:
         *(s8*)&((ObjSeqState*)seq)->unk7D = cmdArg;
@@ -4735,11 +4737,11 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         }
         if (((*(s16*)(cmd + 2) >> 12) & 0xf) != 0xf)
         {
-            Sfx_PlayFromObject((u32)obj, (u16)(*(s16*)(cmd + 2) & 0xfff));
+            Sfx_PlayFromObject(obj, (u16)(*(s16*)(cmd + 2) & 0xfff));
         }
         else
         {
-            Sfx_PlayFromObject((u32)obj, (u16)(*(s16*)(cmd + 2) & 0xfff));
+            Sfx_PlayFromObject(obj, (u16)(*(s16*)(cmd + 2) & 0xfff));
             ((ObjSeqState*)seq)->sfxTimer[3] = -1;
             ((ObjSeqState*)seq)->sfxId[3] = (s16)(*(s16*)(cmd + 2) & 0xfff);
         }
@@ -5348,15 +5350,15 @@ void ObjSeq_ApplyFrameCurves(GameObject* obj, GameObject* seqObj, u8* seq, int f
         {
             if (*(s16*)(seq + i * 2 + 0x30) != 0)
             {
-                Sfx_IsPlayingFromObject((u32)seqObj, (u16) * (s16*)(seq + i * 2 + 0x38));
+                Sfx_IsPlayingFromObject(seqObj, (u16) * (s16*)(seq + i * 2 + 0x38));
             }
         }
 
         if (vol > 0 && ((ObjSeqState*)seq)->sfxTimer[3] != 0)
         {
-            if (Sfx_IsPlayingFromObject((u32)seqObj, (u16)((ObjSeqState*)seq)->sfxId[3]) != 0)
+            if (Sfx_IsPlayingFromObject(seqObj, (u16)((ObjSeqState*)seq)->sfxId[3]) != 0)
             {
-                Sfx_SetObjectSfxVolume((u32)seqObj, (u16)((ObjSeqState*)seq)->sfxId[3], vol, 0.5f);
+                Sfx_SetObjectSfxVolume(seqObj, (u16)((ObjSeqState*)seq)->sfxId[3], vol, 0.5f);
             }
         }
 

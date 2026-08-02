@@ -3,6 +3,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 #include "main/fcos16_approx_api.h"
 #include "main/trig.h"
+#include "main/fsin16_approx_api.h"
 
 static const float sTrigApproxCosBias[1] = {0.99999f};
 static const float sTrigApproxCosLinear[1] = {-2.8707542e-10f};

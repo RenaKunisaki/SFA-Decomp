@@ -79,12 +79,12 @@ int DIMSnowHorn1_stateHandler02(GameObject* obj, DIMSnowHorn1State* state, f32 f
 int DIMSnowHorn1_stateHandler03(GameObject* obj, DIMSnowHorn1State* state);
 int DIMSnowHorn1_stateHandler01(GameObject* obj, DIMSnowHorn1State* state, f32 fv);
 int DIMSnowHorn1_stateHandler0B(GameObject* obj, DIMSnowHorn1State* state);
-int DIMSnowHorn1_stateHandler09(GameObject* obj, int state, f32 fv);
-int DIMSnowHorn1_stateHandler08(GameObject* obj, int state);
-int DIMSnowHorn1_stateHandler07(GameObject* obj, int state);
+int DIMSnowHorn1_stateHandler09(GameObject* obj, DIMSnowHorn1State* state, f32 fv);
+int DIMSnowHorn1_stateHandler08(GameObject* obj, DIMSnowHorn1State* state);
+int DIMSnowHorn1_stateHandler07(GameObject* obj, DIMSnowHorn1State* state);
 int DIMSnowHorn1_stateHandler06(GameObject* obj, DIMSnowHorn1State* state);
-int DIMSnowHorn1_stateHandler05(GameObject* obj, int state);
-int DIMSnowHorn1_stateHandler0A(GameObject* obj, int state, f32 t);
+int DIMSnowHorn1_stateHandler05(GameObject* obj, DIMSnowHorn1State* state);
+int DIMSnowHorn1_stateHandler0A(GameObject* obj, DIMSnowHorn1State* state, f32 t);
 void DIMSnowHorn1_func21(void);
 int DIMSnowHorn1_getRacePosition(void);
 f32 DIMSnowHorn1_func19(GameObject* obj, f32* out);

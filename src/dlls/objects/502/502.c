@@ -7,6 +7,7 @@
 
 #include "main/frame_timing.h"
 #include "main/object_render.h"
+#include "sys/objects.h"
 
 enum {
     DLL1F6_SEQUENCE_FLUTTER = 0x187,

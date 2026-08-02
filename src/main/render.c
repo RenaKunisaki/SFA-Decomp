@@ -436,9 +436,9 @@ void modelRenderInterpolateRootTransform(ObjAnimState* anim, s16* outPosition, s
 
     do
     {
-        u64 sample = 0;
         s64 h = render_readPackedU16(tp);
         u64 nib = h & 0xf;
+        u64 sample = 0;
         u32 hw = h;
         h = (u64)hw & maskConst;
 

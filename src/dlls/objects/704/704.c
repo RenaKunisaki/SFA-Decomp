@@ -56,6 +56,11 @@
 #include "dolphin/mtx.h"
 #include "main/gametext_color_api.h"
 #include "track/intersect_hud_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_object_api.h"
+#include "main/gamebits_api.h"
+#include "main/gametext_command_api.h"
+#include "main/gametext_show_api.h"
 
 s8 gTitleScreenPrevMenuSelection = -1;
 s8 gTitleScreenPrevMenuActive = -1;
@@ -140,40 +145,40 @@ void titleScreenPlayActorSfx(GameObject* obj, u8* arr)
             t = sarr[i + 0x13];
             if (t == 0)
             {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_fox_keytap);
+                Sfx_PlayFromObject(obj, SFXTRIG_fend_fox_keytap);
             }
             break;
         case FRONT_SEQID_PEPPY:
             t = sarr[i + 0x13];
             if (t == 0)
             {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_pep_snoreout);
+                Sfx_PlayFromObject(obj, SFXTRIG_fend_pep_snoreout);
             }
             else if (t == 7)
             {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_pep_snorein);
+                Sfx_PlayFromObject(obj, SFXTRIG_fend_pep_snorein);
             }
             break;
         case FRONT_SEQID_SLIPPY:
             t = sarr[i + 0x13];
             if (t == 0)
             {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_slip_kickbox);
+                Sfx_PlayFromObject(obj, SFXTRIG_fend_slip_kickbox);
             }
             else if (t == 7)
             {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_slip_fingersnap);
+                Sfx_PlayFromObject(obj, SFXTRIG_fend_slip_fingersnap);
             }
             break;
         case FRONT_SEQID_ROB:
             t = sarr[i + 0x13];
             if (t == 0)
             {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_rob_servo2);
+                Sfx_PlayFromObject(obj, SFXTRIG_fend_rob_servo2);
             }
             else if (t == 7)
             {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_rob_servo1);
+                Sfx_PlayFromObject(obj, SFXTRIG_fend_rob_servo1);
             }
             break;
         }
@@ -646,9 +651,9 @@ void TitleScreen_update(GameObject* obj)
                 gTitleScreenAnimMoves[obj->anim.romDefNo - FRONT_SEQID_FOX].moves[1];
             if (obj->anim.romDefNo == FRONT_SEQID_PEPPY)
             {
-                Sfx_StopFromObject((u32)obj, SFXTRIG_fend_pep_snoreout);
-                Sfx_StopFromObject((u32)obj, SFXTRIG_fend_pep_snorein);
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_pep_wakeup);
+                Sfx_StopFromObject(obj, SFXTRIG_fend_pep_snoreout);
+                Sfx_StopFromObject(obj, SFXTRIG_fend_pep_snorein);
+                Sfx_PlayFromObject(obj, SFXTRIG_fend_pep_wakeup);
             }
         }
         t = obj->anim.romDefNo;
@@ -771,7 +776,7 @@ void TitleScreen_update(GameObject* obj)
                 }
                 else if (obj->anim.currentMoveProgress > 0.4f)
                 {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_fened_pep_yawn);
+                    Sfx_PlayFromObject(obj, SFXTRIG_fened_pep_yawn);
                     row[phaseSel * 3] = 1;
                 }
                 break;
@@ -792,7 +797,7 @@ void TitleScreen_update(GameObject* obj)
                     }
                     else if (obj->anim.currentMoveProgress > 0.3f)
                     {
-                        Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_slip_fingersnap);
+                        Sfx_PlayFromObject(obj, SFXTRIG_fend_slip_fingersnap);
                         row[phaseSel * 3] = 1;
                     }
                     p = gTitleScreenSfxFlagGrid + (obj->anim.romDefNo - FRONT_SEQID_FOX) * 0x12 + phaseSel * 3 + 1;
@@ -803,7 +808,7 @@ void TitleScreen_update(GameObject* obj)
                     }
                     else if (obj->anim.currentMoveProgress > 0.65f)
                     {
-                        Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_slip_fingersnap);
+                        Sfx_PlayFromObject(obj, SFXTRIG_fend_slip_fingersnap);
                         *p = 1;
                     }
                 }
@@ -822,7 +827,7 @@ void TitleScreen_update(GameObject* obj)
                 }
                 else if (obj->anim.currentMoveProgress > 0.5f)
                 {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_rob_wave);
+                    Sfx_PlayFromObject(obj, SFXTRIG_fend_rob_wave);
                     row[phaseSel * 3] = 1;
                 }
                 break;
@@ -835,7 +840,7 @@ void TitleScreen_update(GameObject* obj)
                 }
                 else if (obj->anim.currentMoveProgress > 0.25f)
                 {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_rob_armout);
+                    Sfx_PlayFromObject(obj, SFXTRIG_fend_rob_armout);
                     row[phaseSel * 3] = 1;
                 }
                 p = gTitleScreenSfxFlagGrid + (obj->anim.romDefNo - FRONT_SEQID_FOX) * 0x12 + phaseSel * 3 + 1;
@@ -846,7 +851,7 @@ void TitleScreen_update(GameObject* obj)
                 }
                 else if (obj->anim.currentMoveProgress > 0.7f)
                 {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_rob_beep);
+                    Sfx_PlayFromObject(obj, SFXTRIG_fend_rob_beep);
                     *p = 1;
                 }
                 p = gTitleScreenSfxFlagGrid + (obj->anim.romDefNo - FRONT_SEQID_FOX) * 0x12 + phaseSel * 3 + 2;
@@ -857,7 +862,7 @@ void TitleScreen_update(GameObject* obj)
                 }
                 else if (obj->anim.currentMoveProgress > 0.8f)
                 {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_rob_armin);
+                    Sfx_PlayFromObject(obj, SFXTRIG_fend_rob_armin);
                     *p = 1;
                 }
                 break;
@@ -870,7 +875,7 @@ void TitleScreen_update(GameObject* obj)
                 }
                 else if (obj->anim.currentMoveProgress > 0.3f)
                 {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_rob_beep);
+                    Sfx_PlayFromObject(obj, SFXTRIG_fend_rob_beep);
                     row[phaseSel * 3] = 1;
                 }
                 p = gTitleScreenSfxFlagGrid + (obj->anim.romDefNo - FRONT_SEQID_FOX) * 0x12 + phaseSel * 3 + 1;
@@ -881,7 +886,7 @@ void TitleScreen_update(GameObject* obj)
                 }
                 else if (obj->anim.currentMoveProgress > 0.6f)
                 {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_rob_beep);
+                    Sfx_PlayFromObject(obj, SFXTRIG_fend_rob_beep);
                     *p = 1;
                 }
                 p = gTitleScreenSfxFlagGrid + (obj->anim.romDefNo - FRONT_SEQID_FOX) * 0x12 + phaseSel * 3 + 2;
@@ -892,7 +897,7 @@ void TitleScreen_update(GameObject* obj)
                 }
                 else if (obj->anim.currentMoveProgress > 0.9f)
                 {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_fend_rob_beep);
+                    Sfx_PlayFromObject(obj, SFXTRIG_fend_rob_beep);
                     *p = 1;
                 }
                 break;

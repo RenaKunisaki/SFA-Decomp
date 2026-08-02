@@ -30,6 +30,8 @@
 #include "main/resource.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/critical_regions.gamecube.h"
 #include "sys/objects/lifecycle.h"
+#include "main/gx_scissor_api.h"
+#include "main/pi_dolphin_api.h"
 
 CloudActionRuntime gCloudActionRuntime;
 
@@ -174,10 +176,10 @@ void renderClouds(int a, int b, int c, int d)
 
     if (gCloudOverrideObject != NULL)
     {
-        sky2ApplyModelTint((GameObject*)gCloudOverrideObject);
-        model = Obj_GetActiveModel((GameObject*)gCloudOverrideObject);
+        sky2ApplyModelTint(gCloudOverrideObject);
+        model = Obj_GetActiveModel(gCloudOverrideObject);
         model->bufferFlags &= ~8;
-        ((u8*)gCloudOverrideObject)[0x37] = 0xff;
+        gCloudOverrideObject->anim.renderAlpha = 0xff;
         v = view->x;
         gCloudOverrideObject->anim.worldPosX = v;
         gCloudOverrideObject->anim.localPosX = v;

@@ -539,6 +539,7 @@ void objDrawShadowCasterMesh(Vec3f* vertices, ObjModelState* modelState, GameObj
     s16 savedRotY;
     u32 diskTexture;
     MtxPtr viewMtx;
+    u32 i;
 
     GXClearVtxDesc();
     GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
@@ -607,7 +608,6 @@ void objDrawShadowCasterMesh(Vec3f* vertices, ObjModelState* modelState, GameObj
     obj->anim.rotZ = savedRotZ;
     if (modelState->shadowRenderResource == NULL)
     {
-        u32 i;
         modelState->shadowRenderResource = mmAlloc(triangleCount * 0x12 + sizeof(ObjectShadowMesh), 0x18, 0);
         if (modelState->shadowRenderResource == NULL)
             return;
@@ -624,14 +624,10 @@ void objDrawShadowCasterMesh(Vec3f* vertices, ObjModelState* modelState, GameObj
         }
     }
     if (modelState->shadowRenderResource != OBJECT_SHADOW_MESH_UNCACHED) {
-        u32 vertexOffset;
         Vec3s* vertex;
-        u32 i;
         GXBegin(GX_TRIANGLES, GX_VTXFMT0, modelState->shadowRenderResource->vertexCount & 0xffff);
-        i = 0;
-        vertexOffset = i;
-        for (; i < modelState->shadowRenderResource->vertexCount; i++, vertexOffset += sizeof(Vec3s)) {
-            vertex = (Vec3s*)((u8*)modelState->shadowRenderResource->vertices + vertexOffset);
+        for (i = 0; i < modelState->shadowRenderResource->vertexCount; i++) {
+            vertex = &modelState->shadowRenderResource->vertices[i];
             GXPosition3s16(vertex->x, vertex->y, vertex->z);
         }
     } else {

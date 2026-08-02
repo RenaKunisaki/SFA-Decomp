@@ -7,6 +7,9 @@
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/obj_path.h"
+#include "main/objtype.h"
+#include "main/shader_api.h"
 
 #define IM_SNOW_CLAW_SEQ_ID             0x16D
 #define IM_SNOW_CLAW_MOUNT_SEQ_ID       0x16C

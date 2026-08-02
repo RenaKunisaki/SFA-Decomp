@@ -76,6 +76,7 @@ f32 lbl_803DC190 = 1.0f;
 f32 lbl_803DC194 = 150.0f;
 s16 gBossDrakorMaxJawStepAngle = 0xE38;
 s16 gBossDrakorJawAnglePerTick = 0x2D8;
+int lbl_803DC19C[1] = {0};
 
 #define BOSSDRAKOR_MAP_ARENA          0x1d /* map-event id set to act 3 on boss defeat */
 #define BOSSDRAKOR_OBJGROUP           0x45
@@ -107,7 +108,7 @@ int bossdrakor_seqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     int inner = *(int*)&(obj)->extra;
     int i;
-    int target;
+    GameObject* target;
     int eventId;
     BossDrakorState* s = (BossDrakorState*)inner;
     ((BossDrakorState*)inner)->flags198.b10 = 1;
@@ -127,20 +128,20 @@ int bossdrakor_seqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
         {
         case 6:
             target = objGetNearestTypeTo(DBHOLE_CONTROL1_OBJECT_GROUP, obj, 0);
-            if ((void*)target != NULL && (obj)->childCount != 0)
+            if (target != NULL && (obj)->childCount != 0)
             {
-                (*(BossDrakorSpellStoneInterface**)((GameObject*)target)->anim.dll)
-                    ->setState((GameObject*)target, BOSSDRAKOR_SPELLSTONE_STATE_HELD);
-                ObjLink_DetachChild(obj, (GameObject*)target);
+                (*(BossDrakorSpellStoneInterface**)target->anim.dll)
+                    ->setState(target, BOSSDRAKOR_SPELLSTONE_STATE_HELD);
+                ObjLink_DetachChild(obj, target);
             }
             break;
         case 7:
             target = objGetNearestTypeTo(DBHOLE_CONTROL1_OBJECT_GROUP, obj, 0);
-            if ((void*)target != NULL)
+            if (target != NULL)
             {
-                (*(BossDrakorSpellStoneInterface**)((GameObject*)target)->anim.dll)
-                    ->setState((GameObject*)target, BOSSDRAKOR_SPELLSTONE_STATE_IDLE);
-                ObjLink_AttachChild(obj, (GameObject*)target, 1);
+                (*(BossDrakorSpellStoneInterface**)target->anim.dll)
+                    ->setState(target, BOSSDRAKOR_SPELLSTONE_STATE_IDLE);
+                ObjLink_AttachChild(obj, target, 1);
                 s->textTimer = 400.0f;
             }
             break;
@@ -170,6 +171,7 @@ void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* drakorState
     s16* lowerJaw;
     int neckDelta;
     int neckStep;
+    int limitedNeckStep[1];
     int jawStep;
     s16 jawDelta;
     PartFxSpawnParams partfxParams;
@@ -178,9 +180,12 @@ void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* drakorState
     if (neck != NULL)
     {
         neckDelta = (s16)-neck[0];
-        neckStep = (neckDelta < -(framesThisStep << 8))
-                   ? -(framesThisStep << 8)
-                   : (s16)((neckDelta > (framesThisStep << 8)) ? (framesThisStep << 8) : neckDelta);
+        if (neckDelta < -(framesThisStep << 8)) {
+            neckStep = -(framesThisStep << 8);
+        } else {
+            limitedNeckStep[0] = (neckDelta > (framesThisStep << 8)) ? (framesThisStep << 8) : neckDelta;
+            neckStep = limitedNeckStep[0];
+        }
         neck[0] += (s16)neckStep;
         PSVECSubtract(&drakorState->homePos, &obj->anim.localPos, &partfxParams.pos);
         partfxParams.scale = 1.0f;
@@ -353,8 +358,8 @@ void bossdrakor_spawnAttackObjects(GameObject* obj, BossDrakorState* state, int 
                             drakormissile_startActiveLaunch((GameObject*)(missile));
                             storeZeroToFloatParam(&s->jawAnimTimer);
                             s16toFloat(&s->jawAnimTimer, 0x1e);
-                            Sfx_PlayFromObject((int)obj, SFXTRIG__UNK);
-                            Sfx_PlayFromObject((int)obj, SFXTRIG_cahit2_c);
+                            Sfx_PlayFromObject(obj, SFXTRIG__UNK);
+                            Sfx_PlayFromObject(obj, SFXTRIG_cahit2_c);
                         }
                     }
                 }
@@ -377,7 +382,7 @@ void bossdrakor_spawnAttackObjects(GameObject* obj, BossDrakorState* state, int 
                     ((DrakordThornbushPlacement*)setup)->baseRadius = lbl_803DC194;
                     ((DrakordThornbushPlacement*)setup)->spawnHealth = lbl_803DC190;
                     loadObjectAtObject(obj, setup);
-                    Sfx_PlayFromObject((int)obj, SFXTRIG__UNK);
+                    Sfx_PlayFromObject(obj, SFXTRIG__UNK);
                 }
             }
             break;
@@ -420,7 +425,7 @@ void bossdrakor_handleActionEvent(GameObject* obj, BossDrakorState* state, int a
     int* tbl = gBossDrakorMoveStateTable;
     BossDrakorState* s = state;
     f32 t;
-    int found;
+    GameObject* found;
     if (action >= 26 || action <= -1)
     {
         return;
@@ -527,9 +532,9 @@ void bossdrakor_handleActionEvent(GameObject* obj, BossDrakorState* state, int a
         }
     case 24:
         found = objGetNearestTypeTo(DRAKORHOVERPAD_OBJGROUP, obj, 0);
-        if ((void*)found != NULL)
+        if (found != NULL)
         {
-            drakorhoverpad_resetPendingMotion((GameObject*)(found));
+            drakorhoverpad_resetPendingMotion(found);
         }
         break;
     }
@@ -633,12 +638,12 @@ void bossdrakor_hitDetect(GameObject* obj)
             if (s->hitSfxCooldown <= 0.0f)
             {
                 s->hitSfxCooldown = 300.0f;
-                Sfx_PlayFromObject((int)obj, SFXTRIG__UNK_var);
+                Sfx_PlayFromObject(obj, SFXTRIG__UNK_var);
             }
             if (s->hurtSfxCooldown <= 0.0f)
             {
                 s->hurtSfxCooldown = 10.0f;
-                Sfx_PlayFromObject((int)obj, SFXTRIG_mpwru1);
+                Sfx_PlayFromObject(obj, SFXTRIG_mpwru1);
             }
             shakeInit = 2.0f;
             s->shakeVel = shakeInit;
@@ -650,7 +655,7 @@ void bossdrakor_hitDetect(GameObject* obj)
             if (s->hurtSfxCooldown < 0.0f)
             {
                 s->hurtSfxCooldown = 10.0f;
-                Sfx_PlayFromObject((int)obj, SFXTRIG_sc_npu_216);
+                Sfx_PlayFromObject(obj, SFXTRIG_sc_npu_216);
             }
         }
     }
@@ -844,10 +849,10 @@ void bossdrakor_update(GameObject* obj)
         switch (p[0x13])
         {
         case 0:
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_sliftloop11);
+            Sfx_PlayFromObject(obj, SFXTRIG_mv_sliftloop11);
             break;
         case 7:
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_sliftloop11);
+            Sfx_PlayFromObject(obj, SFXTRIG_mv_sliftloop11);
             break;
         }
         p++;

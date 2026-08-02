@@ -9,6 +9,9 @@
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
+#include "main/objtype.h"
+#include "main/objprint_render_api.h"
+#include "main/vecmath.h"
 
 #define DLL_FC_TARGET_INTERACT_FLAG 0x20
 #define DLL_FC_NO_GAME_BIT          -1
@@ -56,7 +59,7 @@ void dll_FC_update(GameObject* obj) {
     state = obj->extra;
 
     if (state->target == NULL) {
-        state->target = (GameObject*)objGetNearestTypeTo(placement->targetGroup, obj, &maxDistance);
+        state->target = objGetNearestTypeTo(placement->targetGroup, obj, &maxDistance);
         if (state->target == NULL) {
             return;
         }

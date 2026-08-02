@@ -53,6 +53,9 @@
 #include "dlls/object_descriptor.h"
 #include "dolphin/mtx/vec.h"
 #include "dolphin/pad.h"
+#include "main/lightmap_api.h"
+#include "main/track_bbox_api.h"
+#include "main/object_update_list.h"
 
 #define DBEGG_OBJGROUP         0x24
 #define DBEGG_SIBLING_OBJGROUP 0x14
@@ -580,7 +583,7 @@ void dbegg_update(GameObject* obj)
                     v = v >= 0.0f ? v : -v;
                     if (v > 0.2f)
                     {
-                        Sfx_PlayFromObject((int)obj, SFXTRIG_id_2df);
+                        Sfx_PlayFromObject(obj, SFXTRIG_id_2df);
                     }
                 }
                 objMove((GameObject*)obj, (obj)->anim.velocityX * timeDelta, (obj)->anim.velocityY * timeDelta,

@@ -4,7 +4,9 @@
 #include "dolphin/pad.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/camera_interface.h"
+#include "main/curve.h"
 #include "main/dll/dll_0015_curves.h"
+#include "main/dll/player_api.h"
 #include "main/dll/player_status.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/frame_timing.h"
@@ -27,6 +29,7 @@
 #include "main/vecmath.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 #include "track/intersect_api.h"
 
 #define CFGUARDIAN_TARGET_OBJECT_GROUP        3
@@ -209,12 +212,12 @@ int cfguardian_playEventSfx(u32 obj, ObjAnimEventList* eventList, s16* sfxIds) {
         switch (eventList->triggeredIds[eventIndex]) {
         case CFGUARDIAN_ANIM_EVENT_MOVE_SFX:
             if (sfxIds != NULL) {
-                Sfx_PlayFromObject(obj, sfxIds[0]);
+                Sfx_PlayFromObject((GameObject*)obj, sfxIds[0]);
             }
             break;
         case CFGUARDIAN_ANIM_EVENT_ALT_SFX:
             if (sfxIds != NULL) {
-                Sfx_PlayFromObject(obj, sfxIds[1]);
+                Sfx_PlayFromObject((GameObject*)obj, sfxIds[1]);
             }
             break;
         case CFGUARDIAN_ANIM_EVENT_MARKER_1:
@@ -230,12 +233,12 @@ int cfguardian_playEventSfx(u32 obj, ObjAnimEventList* eventList, s16* sfxIds) {
             marker = 4;
             break;
         case CFGUARDIAN_ANIM_EVENT_FLAP_SFX:
-            Sfx_PlayFromObject(obj, CFGUARDIAN_SFX_FLAP);
+            Sfx_PlayFromObject((GameObject*)obj, CFGUARDIAN_SFX_FLAP);
             break;
         }
     }
     if (marker != 0 && sfxIds != NULL) {
-        Sfx_PlayFromObject(obj, sfxIds[2]);
+        Sfx_PlayFromObject((GameObject*)obj, sfxIds[2]);
     }
     return marker;
 }
@@ -588,7 +591,7 @@ int cfguardian_updateMain(GameObject* obj) {
         break;
     case CFGUARDIAN_STATE_TALK_1: /* talk spot: greet and head-track the player; 0x43 advances */
     {
-        void* nearestObject = (void*)objGetNearestTypeTo(CFGUARDIAN_TARGET_OBJECT_GROUP, obj, &nearestDistance);
+        GameObject* nearestObject = objGetNearestTypeTo(CFGUARDIAN_TARGET_OBJECT_GROUP, obj, &nearestDistance);
         if (nearestObject != NULL && nearestDistance < 300.0f) {
             dll_2E_setLockTarget(&state->moveLib, nearestObject);
             obj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
@@ -627,7 +630,7 @@ int cfguardian_updateMain(GameObject* obj) {
         break;
     case CFGUARDIAN_STATE_TALK_2: /* second talk loop; 0x4be sends her onward */
     {
-        void* nearestObject = (void*)objGetNearestTypeTo(CFGUARDIAN_TARGET_OBJECT_GROUP, obj, &nearestDistance);
+        GameObject* nearestObject = objGetNearestTypeTo(CFGUARDIAN_TARGET_OBJECT_GROUP, obj, &nearestDistance);
         if (nearestObject != NULL && nearestDistance < 300.0f) {
             dll_2E_setLockTarget(&state->moveLib, nearestObject);
         }

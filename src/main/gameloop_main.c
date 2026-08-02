@@ -71,6 +71,12 @@
 #include "dolphin/os/OSRtc.h"
 #include "dolphin/vi/vifuncs.h"
 #include "main/dll/player_api.h"
+#include "main/audio/audio_control_api.h"
+#include "main/audio/music_api.h"
+#include "main/map_load.h"
+#include "main/objprint_render_api.h"
+#include "main/pi_data_file_api.h"
+#include "main/pi_flush_api.h"
 
 
 

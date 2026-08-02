@@ -11,6 +11,9 @@
 #include "main/object_render.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
+#include "main/audio/music_api.h"
+#include "main/maketex_sequence_api.h"
+#include "main/obj_message.h"
 
 #define CFWINDLIFT_OBJECT_GROUP 0x49
 

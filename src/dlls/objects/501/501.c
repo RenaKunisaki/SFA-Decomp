@@ -10,6 +10,7 @@
 #include "main/model_light.h"
 #include "main/obj_list.h"
 #include "main/object_render.h"
+#include "sys/objects/lifecycle.h"
 
 #define DLL1F5_OBJECT_TYPE_ID           0xB
 #define DLL1F5_FIRE_SEQ_ID              0x171

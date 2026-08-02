@@ -18,6 +18,12 @@
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/curve.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/gameloop_gamebit_api.h"
+#include "main/obj_message.h"
+#include "main/objtype.h"
 
 /* EdibleMushroomState::flags bits */
 #define EDIBLE_MUSHROOM_FLAG_ANIM_DONE 0x1  /* current move finished this frame */
@@ -120,7 +126,7 @@ void EdibleMushroom_updateBehavior(GameObject* obj, EdibleMushroomState* state, 
                     state->moveAngle = EdibleMushroom_findClearApproachAngle(obj, player, state, state->lungeRange);
                 }
                 state->animState = 1;
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_mushrele16);
+                Sfx_PlayFromObject(obj, SFXTRIG_mushrele16);
                 obj->anim.rotX = (s16)(state->moveAngle - 0x4000);
             } else if (state->currentTargetDistance < placement->retreatTriggerDistance) {
                 state->animState = 3;
@@ -171,7 +177,7 @@ void EdibleMushroom_updateBehavior(GameObject* obj, EdibleMushroomState* state, 
             if (state->currentTargetDistance > 10.0f + placement->retreatTriggerDistance) {
                 state->animState = 7;
             } else if (state->currentTargetDistance < placement->lungeTriggerDistance) {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_mushrele16);
+                Sfx_PlayFromObject(obj, SFXTRIG_mushrele16);
                 if (speed >= 0.54f) {
                     if (state->flags & EDIBLE_MUSHROOM_FLAG_ON_CURVE) {
                         rangeSq = state->lungeRange * state->lungeRange;
@@ -250,7 +256,7 @@ void EdibleMushroom_updateBehavior(GameObject* obj, EdibleMushroomState* state, 
                 state->moveAngle = EdibleMushroom_findClearApproachAngle(obj, player, state, state->lungeRange);
             }
             state->animState = 1;
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_mushrele16);
+            Sfx_PlayFromObject(obj, SFXTRIG_mushrele16);
             obj->anim.rotX = (s16)(state->moveAngle - 0x4000);
         }
         break;
@@ -485,7 +491,7 @@ void EdibleMushroom_update(GameObject* obj) {
             } else {
                 itemPickupDoParticleFx(obj, 1.0f, 6, 0x28);
             }
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_cam90_c);
+            Sfx_PlayFromObject(obj, SFXTRIG_cam90_c);
         }
         return;
     }
@@ -522,7 +528,7 @@ void EdibleMushroom_update(GameObject* obj) {
             Obj_SetModelColorFadeRecursive(obj, 0xF, 0xC8, 0, 0, 1);
             if (((GameObject*)hitObj)->anim.romDefNo != EDIBLE_MUSHROOM_EARTH_WARRIOR_ALIAS_ID) {
                 if ((state->flags & EDIBLE_MUSHROOM_FLAG_STRUCK) == 0) {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_ladderslide16);
+                    Sfx_PlayFromObject(obj, SFXTRIG_mv_ladderslide16);
                 }
                 state->flags = (u8)(state->flags | EDIBLE_MUSHROOM_FLAG_STRUCK);
             }

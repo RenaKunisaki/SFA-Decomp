@@ -173,7 +173,7 @@ void blendTextures(Texture* src1, Texture* src2, f32 blend, Texture* dst)
         }
         else
         {
-            int j, i;
+            int i, j;
             for (i = 0; i < src1->height; i++)
             {
                 u32 wd;
@@ -293,7 +293,7 @@ Texture* gNewShadowReflectionTexture;
 u8 gNewShadowCasterCount;
 
 u8 lbl_803DB668[8] = {0xFF, 7, 6, 5, 4, 3, 2, 1};
-f32 lbl_803DB670 = 1.3333334f;
+f32 gStandardAspectRatio = 1.3333334f;
 
 #include "main/newshadows_internal.h"
 
@@ -302,8 +302,7 @@ f32 lbl_803DB670 = 1.3333334f;
 
 extern u32 gNewShadowFrameTextures[NEW_SHADOW_FRAME_COUNT];
 extern Texture* gNewShadowNoiseTexFrames[0x10];
-extern const f64 lbl_803DED58;
-extern const f64 lbl_803DED60;
+extern f32 gNewShadowPlacements[0x112];
 u8 gSurfaceSfxTable[0xD8] = {
     0x03, 0x46, 0x03, 0x46, 0x03, 0x46, 0x03, 0x47, 0x03, 0x48, 0x03, 0x49, 0x03, 0x4A, 0x03, 0x4B,
     0x03, 0x46, 0x03, 0x4C, 0x00, 0x01, 0x00, 0x01, 0x00, 0x01, 0x00, 0x02, 0x00, 0x03, 0x00, 0x04,
@@ -329,9 +328,9 @@ extern inline float sqrtf(float x)
     if (x > 0.0f)
     {
         double guess = __frsqrte((double)x);
-        guess = lbl_803DED58 * guess * (lbl_803DED60 - guess * guess * x);
-        guess = lbl_803DED58 * guess * (lbl_803DED60 - guess * guess * x);
-        guess = lbl_803DED58 * guess * (lbl_803DED60 - guess * guess * x);
+        guess = 0.5 * guess * (3.0 - guess * guess * x);
+        guess = 0.5 * guess * (3.0 - guess * guess * x);
+        guess = 0.5 * guess * (3.0 - guess * guess * x);
         y = (float)(x * guess);
         return y;
     }
@@ -350,11 +349,8 @@ extern const f32 lbl_803DEDFC;
 extern const f32 lbl_803DEE14;
 extern const f32 lbl_803DEE18;
 extern const f32 lbl_803DEE1C;
-extern const f32 lbl_803DED48;
-extern const f32 lbl_803DEDBC;
 extern const f32 gNewShadowFovY;
 extern f32 gNewShadowAspectWide, gNewShadowAspectNarrow;
-extern const f32 lbl_803DED4C;
 extern f32 gMapSavedPlayerOffsetX, gMapSavedPlayerOffsetZ;
 
 static inline void boxBlurRow(u8* row, u8* blurred, int size, int window)
@@ -718,17 +714,17 @@ void renderShadows(int unused0, int unused1, int unused2)
             if ((u8)texIdx < 3)
             {
                 w = 0x100;
-                orthoHalf = lbl_803DED38;
+                orthoHalf = 0.5f;
             }
             else if ((u8)texIdx < 5)
             {
                 w = 0x80;
-                orthoHalf = lbl_803DED3C;
+                orthoHalf = 0.25f;
             }
             else
             {
                 w = 0x40;
-                orthoHalf = lbl_803DED40;
+                orthoHalf = 0.125f;
             }
             if ((u8)texIdx == 0)
                 screenW = w << 1;
@@ -748,9 +744,9 @@ void renderShadows(int unused0, int unused1, int unused2)
                 if (dot < 1.0f && dot > -1.0f)
                 {
                     f32 mag;
-                    proj.x = lbl_803DED48 * dot24.x + lbl_803DED4C * vA.x;
-                    proj.y = lbl_803DED48 * dot24.y + lbl_803DED4C * vA.y;
-                    proj.z = lbl_803DED48 * dot24.z + lbl_803DED4C * vA.z;
+                    proj.x = 0.9f * dot24.x + 0.1f * vA.x;
+                    proj.y = 0.9f * dot24.y + 0.1f * vA.y;
+                    proj.z = 0.9f * dot24.z + 0.1f * vA.z;
                     mag = PSVECMag(&proj);
                     if (mag > 0.0f)
                     {
@@ -875,15 +871,15 @@ void renderShadows(int unused0, int unused1, int unused2)
             }
             PSMTXTrans(mTrans, -fx, -obj->anim.localPosY, -fz);
             {
-                f32 s = lbl_803DED38 / modelState->shadowScale;
+                f32 s = 0.5f / modelState->shadowScale;
                 mScale[0][0] = s;
                 mScale[0][1] = 0.0f;
                 mScale[0][2] = 0.0f;
-                mScale[0][3] = lbl_803DED38;
+                mScale[0][3] = 0.5f;
                 mScale[1][0] = 0.0f;
                 mScale[1][1] = 0.0f;
                 mScale[1][2] = s;
-                mScale[1][3] = lbl_803DED38;
+                mScale[1][3] = 0.5f;
                 mScale[2][0] = 0.0f;
                 mScale[2][1] = 0.0f;
                 mScale[2][2] = 0.0f;
@@ -942,7 +938,7 @@ void renderShadows(int unused0, int unused1, int unused2)
     {
         Camera_SetCurrentViewIndex(0);
         Camera_SetFovY(savedFovY);
-        Camera_SetAspectRatio(lbl_803DB670);
+        Camera_SetAspectRatio(gStandardAspectRatio);
         Camera_UpdateProjection(NULL, 0);
     }
     Camera_UpdateViewMatrices();
@@ -967,9 +963,9 @@ void queueObjectShadow(GameObject* obj)
         {
             double guess = __frsqrte((double)dist2);
             volatile f32 root;
-            guess = lbl_803DED58 * guess * (lbl_803DED60 - guess * guess * dist2);
-            guess = lbl_803DED58 * guess * (lbl_803DED60 - guess * guess * dist2);
-            guess = lbl_803DED58 * guess * (lbl_803DED60 - guess * guess * dist2);
+            guess = 0.5 * guess * (3.0 - guess * guess * dist2);
+            guess = 0.5 * guess * (3.0 - guess * guess * dist2);
+            guess = 0.5 * guess * (3.0 - guess * guess * dist2);
             root = (f32)(dist2 * guess);
             dist2 = root;
         }
@@ -1063,7 +1059,6 @@ void getNewShadowCausticTexture(u32* p)
     *p = (u32)gNewShadowCausticTexture;
 }
 
-Texture* gNewShadowTextureTable[8][4];
 
 void getObjectShadowDrawParams(GameObject* obj, u32* outTexture, f32* outScale, int* outX, int* outY)
 {
@@ -1074,7 +1069,6 @@ void getObjectShadowDrawParams(GameObject* obj, u32* outTexture, f32* outScale, 
     *outY = (int)obj->anim.modelState->shadowOffsetY;
 }
 
-Texture* gNewShadowNoiseTexFrames[0x10];
 
 f32 getNewShadowDistortionWaveOffset(void)
 {
@@ -1126,7 +1120,6 @@ u32 getNewShadowReflectionGradientTexture(void)
     return gNewShadowReflectionGradientTexture;
 }
 
-u32 gNewShadowFrameTextures[NEW_SHADOW_FRAME_COUNT];
 u32 getNewShadowInverseRampTexture(void)
 {
     return gNewShadowInverseRampTexture;
@@ -1224,9 +1217,6 @@ void newShadowsBeginFrame(void)
     }
 }
 
-NewShadowCaster gNewShadowCasterTable[NEW_SHADOW_MAX_QUEUED_CASTERS];
-NewShadowCastSlot gNewShadowCastSlots[NEW_SHADOW_MAX_CASTERS];
-u32 gNewShadowCastTextures[NEW_SHADOW_MAX_CAST_TEXTURES];
 
 void newshadows_getReflectionScrollOffsets(f32* outScrollX, f32* outScrollY)
 {
@@ -1234,7 +1224,6 @@ void newshadows_getReflectionScrollOffsets(f32* outScrollX, f32* outScrollY)
     *outScrollY = gNewShadowReflectionScrollY;
 }
 
-f32 gNewShadowPlacements[0x112];
 
 /* Builds the animated water-noise assets: scatters up to 50 non-overlapping random
    placements ([0]=lifetime 8..16 frames, [1..2]=pos, [3]=outer size, [4]=inner size),
@@ -1292,7 +1281,7 @@ void createNewShadowDistortionTexture(void)
             dirX /= dist;
             if (dist <= 112.0f)
             {
-                t = 2.0f * (100.799995f - lbl_803DED48 * dist);
+                t = 2.0f * (100.799995f - 0.9f * dist);
                 s = t * 0.00390625f;
             }
             else
@@ -1301,8 +1290,8 @@ void createNewShadowDistortionTexture(void)
             }
             normY *= s;
             dirX *= s;
-            normY = lbl_803DEDC0 * normY + lbl_803DEDBC;
-            dirX = lbl_803DEDC0 * dirX + lbl_803DEDBC;
+            normY = lbl_803DEDC0 * normY + 128.0f;
+            dirX = lbl_803DEDC0 * dirX + 128.0f;
             ((NewShadowVectorTexel*)(texel + 0x60))->packedXY =
                 (u16)((int)dirX | (((int)normY & 0xffff) << 8));
         }
@@ -1465,12 +1454,15 @@ void newShadowsInitProceduralTextures(void)
                 rowPixelOffset = (row & 3) * 2;
                 for (; column < 0x40; column++)
                 {
-                    f32 shift, intensity;
                     int highByte, lowByte;
                     int texelAddress = (int)gNewShadowNoiseTexFrames[frame] + h + rowPixelOffset;
+                    f32 shift, intensity;
+                    f32 rowCoord, columnCoord;
                     texelAddress += (column & 3) * 8;
                     texelAddress += (column >> 2) * 0x200;
-                    evalNoisePlacements(row * lbl_803DEDE0, column * lbl_803DEDE0, frame,
+                    rowCoord = row * lbl_803DEDE0;
+                    columnCoord = column * lbl_803DEDE0;
+                    evalNoisePlacements(rowCoord, columnCoord, frame,
                                 gNewShadowPlacements, noisePlacementCount, &shift, &intensity);
                     highByte = 255.0f * intensity;
                     highByte = (highByte & 0xffff) << 8;
@@ -1501,7 +1493,7 @@ void newShadowsInitProceduralTextures(void)
             texel += (column & 3) * 8;
             texel += (column >> 2) * 0x200;
             columnPhase = 0.39275f * column;
-            wave = mathCosfHighPrecision(lbl_803DED38 * mathSinfHighPrecision(columnPhase) + rowPhase);
+            wave = mathCosfHighPrecision(0.5f * mathSinfHighPrecision(columnPhase) + rowPhase);
             carrier = mathCosfHighPrecision(columnPhase);
             productValue = wave * carrier;
             productValue = 127.0f * productValue + 127.0f;
@@ -1518,6 +1510,15 @@ void newShadowsInitProceduralTextures(void)
     gNewShadowReflectionScrollY = 0.0f;
     testAndSet_onlyUseHeap3(savedHeap);
 }
+
+
+f32 gNewShadowPlacements[0x112];
+u32 gNewShadowCastTextures[NEW_SHADOW_MAX_CAST_TEXTURES];
+NewShadowCastSlot gNewShadowCastSlots[NEW_SHADOW_MAX_CASTERS];
+NewShadowCaster gNewShadowCasterTable[NEW_SHADOW_MAX_QUEUED_CASTERS];
+Texture* gNewShadowNoiseTexFrames[0x10];
+Texture* gNewShadowTextureTable[8][4];
+u32 gNewShadowFrameTextures[NEW_SHADOW_FRAME_COUNT];
 
 
 static inline void fillDiskTexture(void)
@@ -1673,8 +1674,6 @@ static inline void fillLightningTexture(void)
         lowoff = i & 7;
         c0 = i - 16.0f;
         lowoff += rowoff;
-        c0 = c0 * lbl_803DEDD0;
-        c0 = __fabsf(c0);
         for (; j < 4; j++)
         {
             int off;
@@ -1682,7 +1681,7 @@ static inline void fillLightningTexture(void)
             base = (u8*)gNewShadowLightningTexture;
             off = lowoff + (j & 3) * 8;
             off = off + (j >> 2) * 0x80 + 0x60;
-            v = sqrtf(c0);
+            v = sqrtf(__fabsf(c0 * lbl_803DEDD0));
             v = sqrtf(v);
             base[off] = 255.0f * (1.0f - v);
         }
@@ -1811,13 +1810,13 @@ void allocLotsOfTextures(void)
             fi2 = (f32)(i + 1) - 32.0f;
             for (; j < 0x40; j++)
             {
-                f32 cc = (f32)j - 32.0f;
+                f32 cc;
                 f32 d1, d2, cc2, d3, n1, b;
                 f64 n2, n3;
                 f32 a;
                 rc = fi * lbl_803DEDFC;
                 rc2 = fi2 * lbl_803DEDFC;
-                cc = cc * lbl_803DEDFC;
+                cc = ((f32)j - 32.0f) * lbl_803DEDFC;
                 cc = cc * cc;
                 d1 = sqrtf(rc * rc + cc);
                 d2 = sqrtf(rc2 * rc2 + cc);
@@ -1923,15 +1922,15 @@ void allocLotsOfTextures(void)
         lowoff = i & 7;
         cy = i - 64.0f;
         lowoff += rowoff;
-        cy = cy * lbl_803DEDE0;
         for (; j < 0x80; j++)
         {
             u8* base = (u8*)gNewShadowRadialTexture;
+            f32 cyScaled = cy * lbl_803DEDE0;
             off = lowoff + (j & 3) * 8;
             off = off + (j >> 2) * 0x200 + 0x60;
             cx = __fabsf(((f32)j - 64.0f) * lbl_803DEDE0);
             cx = cx * cx;
-            d2 = sqrtf(__fabsf(cy) * __fabsf(cy) + cx);
+            d2 = sqrtf(__fabsf(cyScaled) * __fabsf(cyScaled) + cx);
             v = 1.0f - d2;
             if (v < 0.0f)
                 v = 0.0f;
@@ -1962,7 +1961,7 @@ void allocLotsOfTextures(void)
         x -= lbl_803DED38;
         t = gNewShadowReflectionGradientTexture + (i & 3) * 2;
         t += (i >> 2) * 0x20;
-        hi = ((int)(255.0f * x + lbl_803DEDBC) & 0xff) << 8;
+        hi = ((int)(255.0f * x + 128.0f) & 0xff) << 8;
         *(u16*)(t + 0x60) = (u16)(hi | ((int)lbl_803DED38 & 0xff));
         t = gNewShadowReflectionGradientTexture + (i & 3) * 2;
         t += (i >> 2) * 0x20;

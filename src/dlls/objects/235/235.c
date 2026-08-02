@@ -7,6 +7,7 @@
  */
 #include "dlls/objects/235.h"
 #include "main/objhits.h"
+#include "main/objtype.h"
 
 #define SIDEREPEL_OBJECT_GROUP 0x40
 #define SIDEREPEL_RADIUS_SHIFT 3

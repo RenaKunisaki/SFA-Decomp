@@ -12,6 +12,7 @@ void VIInit(void);
 void VIConfigure(const GXRenderModeObj* rm);
 void VIFlush(void);
 u32 VIGetTvFormat(void);
+u32 VIGetCurrentLine(void);
 void VISetNextFrameBuffer(void* fb);
 void VIWaitForRetrace(void);
 void VISetBlack(BOOL black);

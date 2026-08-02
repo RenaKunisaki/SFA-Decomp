@@ -1300,15 +1300,15 @@ void dll_0B_updateActiveEffects(void)
                 {
                     ((ExpFn4)modgfx_scrollTexCoords)(eff, PENDING_SPAWNS + emOff, active, 0);
                 }
-                if ((((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->modelOrResource & 0x10000) && active != 0)
+                if (((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->modelOrResource & 0x10000 && active != 0)
                 {
                     if (((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->param14 == -1)
                     {
-                        Sfx_StopObjectChannel((int)*(int**)&((PartfxEffectState*)eff)->sourceObject, 0x40);
+                        Sfx_StopObjectChannel((GameObject*)((PartfxEffectState*)eff)->sourceObject, 0x40);
                     }
                     else
                     {
-                        Sfx_PlayFromObject((u32)((PartfxEffectState*)eff)->sourceObject,
+                        Sfx_PlayFromObject((GameObject*)((PartfxEffectState*)eff)->sourceObject,
                                            (u16) * (s16*)(PENDING_SPAWNS + emOff + 0x14));
                     }
                 }
@@ -1588,8 +1588,8 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* context, int unused, int vertexCount,
                 dstc[1] = sd[0] - bias;
                 dstc[2] = sd[1] - bias;
                 dstc[3] = sd[2] - bias;
-                sd += 3;
                 dstc += 0x10;
+                sd += 3;
             }
         }
     }
@@ -1611,9 +1611,11 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* context, int unused, int vertexCount,
     {
         for (i = 0, off = i; i < 3; off += 4, i++)
         {
-            u8* dstv = *(u8**)((u8*)arr[slot] + 0x78 + off);
             int j;
-            s16* sb = vertexData;
+            s16* sb;
+            u8* dstv;
+            dstv = *(u8**)((u8*)arr[slot] + 0x78 + off);
+            sb = vertexData;
             for (j = 0; j < vertexCount; j++)
             {
                 *(s16*)(dstv + 0) = sb[0];
@@ -1632,8 +1634,8 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* context, int unused, int vertexCount,
                 dstv[0xd] = 0xff;
                 dstv[0xe] = 0xff;
                 dstv[0xf] = 0xff;
-                dstv += 0x10;
                 sb += 5;
+                dstv += 0x10;
             }
         }
     }

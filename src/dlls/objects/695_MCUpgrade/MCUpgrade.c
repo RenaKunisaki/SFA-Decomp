@@ -18,6 +18,9 @@
 #include "main/game_ui_interface.h"
 #include "sys/objects.h"
 #include "main/objseq.h"
+#include "main/dll/tricky_api.h"
+#include "main/obj_trigger.h"
+#include "main/objprint_render_api.h"
 
 void mcupgrade_update(GameObject* obj)
 {

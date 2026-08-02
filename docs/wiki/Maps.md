@@ -53,7 +53,7 @@ Each map directory contains (case is inconsistent in the originals):
 | `OBJSEQ2C.tab` | Assigns animation curves to object sequences |
 | `TEX0.bin`/`TEX0.tab` | Textures (primarily map geometry) |
 | `TEX1.bin`/`TEX1.tab` | Textures (primarily character models) |
-| `VOXMAP.bin`/`VOXMAP.tab` | Voxel data — wiki says "relates to camera, possibly unused" (see below; this codebase's own code disagrees) |
+| `VOXMAP.bin`/`VOXMAP.tab` | Voxel occupancy grid for AI route-finding — fully decoded (2944/2944 records), loaded by retail but never read: the consumer link is severed (see below) |
 
 Each map bundles a copy of every model/texture/animation it uses to reduce disc-seek load times.
 Each map directory also has at least one `modXX.zlb.bin` (+ matching `modXX.tab`) holding the
@@ -333,8 +333,10 @@ world map — only 0/1/4 used, plus one unused map using 3), `u8` always 6 at 0x
 ### VOXMAP
 
 `VOXMAP.bin`/`.tab` per map directory; wiki says purpose unknown, "relates to camera, possibly
-unused" (swapping or deleting them had no visible effect in RE testing). See below — this
-codebase's own code points at a different, concrete purpose.
+unused" (swapping or deleting them had no visible effect in RE testing). See below — the format
+is now fully decoded (an AI-routing occupancy grid) and the no-visible-effect result is
+explained: retail loads the data but severs the pointer that would let the route walkers read
+it.
 
 ---
 
@@ -472,17 +474,28 @@ this codebase's runtime code repurposes that exact byte range for its own bookke
   (`pi_dolphin.c:6178`, `0x80048BA4`) is the function that reads the size fields the wiki describes
   MAPS.bin's `listSize` field pointing at.
 
-### VOXMAP — this codebase suggests a different purpose than the wiki's guess
+### VOXMAP — decoded, and its consumer link is severed in retail
 
 The wiki calls `VOXMAP.bin`/`.tab`'s purpose "unknown", tentatively "relates to camera, possibly
 unused". `src/main/voxmaps.c` (`include/main/voxmaps.h`) tells a different story: it implements an
 occupancy-bitmap route-finding grid — `voxmaps_getRouteNode` walks a per-row popcount over a
 bitmap to find graph nodes for pathing (`VOXMAPS_ROUTE_NODE_CAPACITY 200` route nodes,
-`CurveHeap_SiftDown`-based open-list search shared with the RomCurve system's heap). Worth flagging
-upstream to the wiki: this looks like a voxel-grid pathfinding aid (likely for AI navigation), not
-a camera-only or dead system, though it's still possible the *feature* was cut and only the
-loader/parser code survives unused, which lines up with the wiki's empirical test (swapping the
-data around had no visible effect in-game).
+`CurveHeap_SiftDown`-based open-list search shared with the RomCurve system's heap).
+
+The record format is fully decoded and corpus-certified (`VoxMapFile`, all 2944 records across
+the rev1 disc's 53 map directories): `.tab` entry = `flags<<24 | offset` into ZLB-compressed
+blocks; each record carries `minY`/`maxY` (+0x04/+0x0C), a popcount-rank-indexed `nodeBase`
+node array (+0x14), packed 12-bit per-row rank bases `rowCounts` (3 bytes/row, +0x1C), and a
+16x16 occupancy `bitmap` (32 bytes/row, +0x24, always at file offset 0x2C). Node region size
+equals `4 * popcount(bitmap)` and `rowCounts` equals `3 * (maxY - minY)` exactly, corpus-wide.
+
+Why the wiki's empirical test saw no effect: **retail severs the link between the loaded maps
+and the route walkers.** The only stores to the route state's `activeMap` pointer in the whole
+retail binary write NULL — the `activeMap = mapBuffer[slot]` hookup was removed before ship, so
+the per-map voxel data is streamed in and freed without ever being dereferenced, and the route
+walkers degrade to "occupancy 0" everywhere (routes still compute, ignoring voxels). Same
+severed-consumer class as the entries in [UnusedThings](UnusedThings). The decompiled source
+faithfully stores NULL and must not "fix" the link.
 
 ### Not found in this codebase (checked, absent)
 

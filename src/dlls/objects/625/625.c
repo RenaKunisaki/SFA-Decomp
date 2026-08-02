@@ -27,6 +27,7 @@
 #include "sys/objects.h"
 #include "main/object_render.h"
 #include "main/objprint_api.h"
+#include "main/objtype.h"
 #include "main/vecmath.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/dll/dll_0282_barrelgener.h"
@@ -35,6 +36,11 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll/dll_0271_drakorhoverpad_internal.h"
+#include "main/camera_shake_api.h"
+#include "main/obj_path.h"
+#include "main/obj_query.h"
+#include "main/objhits.h"
+#include "string.h"
 
 const f32 gDrakorHoverpadSpeedStep = 2.0f;
 f32 gDrakorHoverpadMtx[16];
@@ -436,7 +442,7 @@ int drakorhoverpad_init(GameObject* obj)
                 ((DrakorHoverpadState*)p)->commandSpeed = (f->b01 != 0) ? -2.0f : (*(f32*)&gDrakorHoverpadSpeedStep);
             }
         }
-        Sfx_PlayFromObject((int)obj, SFXTRIG_id_309);
+        Sfx_PlayFromObject(obj, SFXTRIG_id_309);
     }
     return 0;
 }
@@ -564,7 +570,7 @@ int drakorhoverpad_handlePathPointEvent(GameObject* obj, u8 eventCode, u8 subCod
         {
             f->state = 3;
             ((DrakorHoverpadState*)p)->commandSpeed = 0.0f;
-            Sfx_PlayFromObject((int)obj, SFXTRIG_id_30b);
+            Sfx_PlayFromObject(obj, SFXTRIG_id_30b);
         }
         break;
     case 17:
@@ -572,7 +578,7 @@ int drakorhoverpad_handlePathPointEvent(GameObject* obj, u8 eventCode, u8 subCod
         {
             f->state = 4;
             ((DrakorHoverpadState*)p)->commandSpeed = 0.0f;
-            Sfx_PlayFromObject((int)obj, SFXTRIG_id_30b);
+            Sfx_PlayFromObject(obj, SFXTRIG_id_30b);
         }
         break;
     case 10:
@@ -685,7 +691,7 @@ int drakorhoverpad_handlePathPointEvent(GameObject* obj, u8 eventCode, u8 subCod
         {
             ((DrakorHoverpadState*)p)->commandSpeed = (*(f32*)&gDrakorHoverpadSpeedStep) * cur;
         }
-        Sfx_PlayFromObject((int)obj, SFXTRIG_id_309);
+        Sfx_PlayFromObject(obj, SFXTRIG_id_309);
         break;
     case 20:
         g->f10 = !g->f10;
@@ -808,8 +814,8 @@ void drakorhoverpad_updateMain(GameObject* obj)
             (obj)->anim.localPosY = ((DrakorHoverpadState*)p)->curve.posY;
             (obj)->anim.localPosZ = ((DrakorHoverpadState*)p)->curve.posZ;
             ((DrakorHoverpadState*)p)->commandSpeed = (*(f32*)&gDrakorHoverpadSpeedStep);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_id_308);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_id_30a);
+            Sfx_PlayFromObject(obj, SFXTRIG_id_308);
+            Sfx_PlayFromObject(obj, SFXTRIG_id_30a);
         }
         return;
     }
@@ -888,7 +894,7 @@ void drakorhoverpad_updateMain(GameObject* obj)
         (s16)(((DrakorHoverpadState*)p)->anglePhase + framesThisStep * 0x320);
     if (g->f10 != 0)
     {
-        nearest = (GameObject*)objGetNearestTypeTo(BOSSDRAKOR_OBJGROUP, obj, 0);
+        nearest = objGetNearestTypeTo(BOSSDRAKOR_OBJGROUP, obj, 0);
         if (nearest != NULL)
         {
             yawDelta = Obj_GetYawDeltaToObject(obj, nearest, 0);
@@ -1001,4 +1007,3 @@ void drakorhoverpad_release(void)
 void drakorhoverpad_initialise(void)
 {
 }
-

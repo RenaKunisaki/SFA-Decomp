@@ -14,6 +14,7 @@
 #include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
 #include "main/objseq.h"
+#include "main/vecmath.h"
 
 #define DRCREATOR_CHILD_OBJ_DRHOMINGMIS 1725
 #define DRCREATOR_INIT_CLEAR_GAMEBIT 0x5DD

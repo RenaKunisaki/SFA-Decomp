@@ -13,6 +13,12 @@
 #include "main/objfx.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
+#include "main/curve.h"
+#include "main/pad_api.h"
+#include "main/audio/sfx_limited_object_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/objhits.h"
+#include "sys/objects/lifecycle.h"
 
 typedef struct RollingBarrelCurveInitPair {
     s32 unknown00;
@@ -36,7 +42,7 @@ void rollingBarrel_explode(GameObject* obj, int unusedExplosionVariant) {
     f32 distance;
     f32 falloff;
     gRollingBarrelExplodingCount += 1;
-    Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_dsmk2_c_106);
+    Sfx_PlayFromObject(obj, SFXTRIG_wp_dsmk2_c_106);
     if (gRollingBarrelExplodingCount > 1) {
         debrisType = randomGetRange(0, 1) & 0xff;
         spawnExplosion(obj, (f32)(int)randomGetRange(0x32, 0x3c), 1, 1, 0, debrisType, 0, 0, 0);
@@ -157,7 +163,7 @@ void rollingBarrel_update(GameObject* obj) {
                 blocked = 1;
             }
             if (blocked == 0 && state->verticalSpeed * state->verticalSpeed > 3.0f) {
-                Sfx_PlayFromObjectLimited((u32)obj, SFXTRIG_mfin2_c, 6);
+                Sfx_PlayFromObjectLimited(obj, SFXTRIG_mfin2_c, 6);
             }
             state->verticalSpeed *= -0.6f;
             obj->anim.localPosY = 2.0f * floorY - obj->anim.localPosY;

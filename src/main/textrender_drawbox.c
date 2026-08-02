@@ -1,4 +1,6 @@
+#define INTERSECT_HUD_RECT_COLOR_POINTER
 #include "track/intersect_hud_api.h"
+#undef INTERSECT_HUD_RECT_COLOR_POINTER
 #define GAMETEXT_COLOR_U8
 #include "main/gametext_shared_internal.h"
 #include "main/gametext_api.h"
@@ -216,6 +218,16 @@ void subtitleLoadBoxTextures(int mode) {
 }
 
 void gameTextDrawBox(struct GameTextDef* strPtr, int boxId, GameTextBox* box) {
+    GXColor fillColor7;
+    GXColor fillColor1;
+    int cornerMaxY;
+    int cornerMinY;
+    int cornerMaxX;
+    int cornerMinX;
+    int subtitleMaxY;
+    int subtitleMinY;
+    int subtitleMaxX;
+    int subtitleMinX;
     s16 savedY;
     s16 savedX;
     u16 boxFlags;
@@ -251,7 +263,8 @@ void gameTextDrawBox(struct GameTextDef* strPtr, int boxId, GameTextBox* box) {
             u16 bw = box->width;
             s16 by = box->y;
             s16 bx = box->x;
-            hudDrawRect(bx, by, bx + bw, by + bh, gGameTextBoxFillColor);
+            fillColor7 = gGameTextBoxFillColor;
+            hudDrawRect(bx, by, bx + bw, by + bh, &fillColor7);
         } else {
             hudHeight = box->height;
             hudWidth = box->width;
@@ -266,14 +279,10 @@ void gameTextDrawBox(struct GameTextDef* strPtr, int boxId, GameTextBox* box) {
         u16 bw = box->width;
         s16 by = box->y;
         s16 bx = box->x;
-        hudDrawRect(bx, by, bx + bw, by + bh, gGameTextBoxFillColor);
+        fillColor1 = gGameTextBoxFillColor;
+        hudDrawRect(bx, by, bx + bw, by + bh, &fillColor1);
     } break;
     case 6: {
-        int cornerMaxX;
-        int cornerMinX;
-        int cornerMaxY;
-        int cornerMinY;
-
         if (strPtr == NULL) {
             return;
         }
@@ -306,11 +315,6 @@ void gameTextDrawBox(struct GameTextDef* strPtr, int boxId, GameTextBox* box) {
         drawScaledTexture(gGameTextBoxBgTexture, (f32)box->x, (f32)box->y, 0xff, 0x100, box->width, box->height, 0);
         break;
     case 3: {
-        int subtitleMaxX;
-        int subtitleMinX;
-        int subtitleMaxY;
-        int subtitleMinY;
-
         window = gameTextGetCurBox();
         if (strPtr != NULL) {
             gameTextMeasureById(*(u16*)strPtr, 0, 0, &subtitleMinX, &subtitleMaxX, &subtitleMinY, &subtitleMaxY);

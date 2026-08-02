@@ -19,6 +19,8 @@
 #include "main/vecmath.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "main/audio/sfx_looped_object_api.h"
+#include "main/audio/sfx_play_api.h"
 
 typedef struct
 {
@@ -126,7 +128,7 @@ void SPScarab_update(GameObject* obj)
                       &obj->anim.worldPosX) <
         100.0f)
     {
-        Sfx_PlayFromObject((u32)obj, (u16)state->sfxId);
+        Sfx_PlayFromObject(obj, (u16)state->sfxId);
         itemPickupDoParticleFx(obj, 1.0f, state->mode, 0x28);
         obj->objectFlags = obj->objectFlags | OBJECT_OBJFLAG_UPDATE_DISABLED;
         obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;

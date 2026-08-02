@@ -8,6 +8,13 @@
 #include "main/dll/rom_curve_interface.h"
 #include "main/frame_timing.h"
 #include "sys/objects.h"
+#include "main/audio/sfx_position_api.h"
+#include "main/audio/sfx_looped_object_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_object_api.h"
+#include "main/gamebits_api.h"
+#include "main/objseq_api.h"
+#include "main/vecmath.h"
 
 #define SFXPLAYER_GAME_BIT_NONE -1
 
@@ -41,12 +48,12 @@ void SfxPlayer_free(GameObject* obj) {
     } else {
         u16 primarySfxId = placement->primarySfxId;
         if (primarySfxId != 0) {
-            Sfx_StopFromObject((u32)obj, primarySfxId);
+            Sfx_StopFromObject(obj, primarySfxId);
         }
         {
             u16 secondarySfxId = placement->secondarySfxId;
             if (secondarySfxId != 0) {
-                Sfx_StopFromObject((u32)obj, secondarySfxId);
+                Sfx_StopFromObject(obj, secondarySfxId);
             }
         }
     }
@@ -66,10 +73,10 @@ static inline void SfxPlayer_startSound(GameObject* obj, SfxPlayerPlacement* pla
             if (placement->mode == SFXPLAYER_MODE_LOOPED) {
                 Sfx_AddLoopedObjectSound((u32)soundObj, soundId);
             } else {
-                Sfx_PlayFromObject((u32)soundObj, soundId);
+                Sfx_PlayFromObject(soundObj, soundId);
             }
         } else {
-            Sfx_PlayAtPositionFromObject((int)soundObj, soundObj->anim.localPosX, soundObj->anim.localPosY,
+            Sfx_PlayAtPositionFromObject(soundObj, soundObj->anim.localPosX, soundObj->anim.localPosY,
                                          soundObj->anim.localPosZ, soundId);
         }
     }
@@ -89,11 +96,11 @@ static inline void SfxPlayer_startSound(GameObject* obj, SfxPlayerPlacement* pla
         } else {                                                                                                       \
             soundId = placement->primarySfxId;                                                                         \
             if (soundId != 0) {                                                                                        \
-                Sfx_StopFromObject((u32)obj, soundId);                                                                 \
+                Sfx_StopFromObject(obj, soundId);                                                                 \
             }                                                                                                          \
             soundId = placement->secondarySfxId;                                                                       \
             if (soundId != 0) {                                                                                        \
-                Sfx_StopFromObject((u32)obj, soundId);                                                                 \
+                Sfx_StopFromObject(obj, soundId);                                                                 \
             }                                                                                                          \
         }                                                                                                              \
     } while (0)

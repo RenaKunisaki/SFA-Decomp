@@ -63,8 +63,6 @@ typedef f32 Mtx[3][4];
 
 extern const f32 lbl_803DE70C;
 extern const f32 lbl_803DE710;
-extern const f32 lbl_803DE714;
-extern const f32 lbl_803DE718;
 extern u32 sSubtitleCtrlCmdScratch[];
 
 static void translateToDinoLanguage(u8* str);
@@ -684,12 +682,12 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
         fy1 = e710 * ((f32)(u32)g->height * gGameTextScale) + fy0;
         if (fx0 < 0.0f && fx1 > 0.0f)
         {
-            u0 = lbl_803DE714 * -fx0 + u0;
+            u0 = 8.0f * -fx0 + u0;
             fx0 = 0.0f;
         }
         if (fy0 < 0.0f && fy1 > 0.0f)
         {
-            v0 = lbl_803DE714 * -fy0 + v0;
+            v0 = 8.0f * -fy0 + v0;
             fy0 = 0.0f;
         }
 
@@ -788,15 +786,15 @@ void textRenderStr(char* str, GameTextBox* win, f32 x, f32 y, f32 lineH, int mod
 
             if (gameTextDrawFunc != NULL)
             {
-                f32 sH = lbl_803DE718 * tex->height;
-                f32 sW = lbl_803DE718 * tex->width;
+                f32 sH = 32.0f * tex->height;
+                f32 sW = 32.0f * tex->width;
                 gameTextDrawFunc(fx0, fy0, fx1, fy1, u0 / sW, v0 / sH, (u0 + (f32)(g->width << 5)) / sW,
                                  (v0 + (f32)(g->height << 5)) / sH);
             }
             else
             {
-                f32 sH = lbl_803DE718 * tex->height;
-                f32 sW = lbl_803DE718 * tex->width;
+                f32 sH = 32.0f * tex->height;
+                f32 sW = 32.0f * tex->width;
                 textRenderChar((int)fx0, fy0, fx1, fy1, u0 / sW, v0 / sH, (u0 + (f32)(g->width << 5)) / sW,
                                (v0 + (f32)(g->height << 5)) / sH);
             }
@@ -1061,12 +1059,12 @@ SubtitleCmd* subtitleParseControlCmds(char* str, int* count)
     }
 }
 
-TextFont gGameTextCharsets[0xA0 / sizeof(TextFont)];
-
-
-
-
 GameTextLoadSlot curGameTexts[GAMETEXT_LOAD_SLOT_COUNT];
+
+
+
+
+TextFont gGameTextCharsets[0xA0 / sizeof(TextFont)];
 
 
 void* jumptable_802C9E84[16] = {
@@ -1133,8 +1131,8 @@ int getControlCharLen(u32 c)
 }
 
 
-u8 gGameTextBase[0x20];
-u8 sGameTextFallbackBufSlots[0x20];
-u8 sGameTextFallbackDefs[0x280];
-u32 sSubtitleCtrlCmdScratch[0x240];
 GameTextSlot gGameTextCommandSlots[0xA00 / sizeof(GameTextSlot)];
+u32 sSubtitleCtrlCmdScratch[0x240];
+u8 sGameTextFallbackDefs[0x280];
+u8 sGameTextFallbackBufSlots[0x20];
+u8 gGameTextBase[0x20];

@@ -4,6 +4,7 @@
 #include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/dll/dll_0022_effect9.h"
+#include "main/vecmath.h"
 
 f32 gEffect9SineFast;
 f32 gEffect9SineSlow;

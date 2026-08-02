@@ -24,12 +24,18 @@
 #include "main/dll/rom_curve_interface.h"
 #include "main/dll/player_status.h"
 #include "main/dll/dll19_state.h"
+#include "main/dll/partfx_interface.h"
 #include "main/dll/baddie_state.h"
 #include "string.h"
 #include "main/object_transform.h"
 #include "main/player_control_interface.h"
 #include "main/dll/dll_0019_dll19func0.h"
 #include "main/dll/dll_0004_dummy04.h"
+#include "main/objtype.h"
+#include "main/lightmap_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/obj_message.h"
+#include "main/objhits.h"
 
 GameObject* gDll19NearestObj;
 f32 gDll19SegmentRadius;
@@ -125,7 +131,7 @@ f32 dll_19_getHealthFraction(GameObject* obj)
     return 0.0f;
 }
 
-void dll_19_changeWeapon(u8* cam, u8* ctx)
+void dll_19_changeWeapon(GameObject* cam, u8* ctx)
 {
     Dll19ChildObjectIdTable childObjectIds = gDll19ChildObjectIds;
 
@@ -133,23 +139,23 @@ void dll_19_changeWeapon(u8* cam, u8* ctx)
     {
         return;
     }
-    if (((GameObject*)cam)->anim.alpha == 0)
+    if (cam->anim.alpha == 0)
     {
         return;
     }
-    if (((GameObject*)cam)->childObjs[0] != NULL)
+    if (cam->childObjs[0] != NULL)
     {
-        Obj_FreeObject(((GameObject*)cam)->childObjs[0]);
-        ((GameObject*)cam)->childObjs[0] = NULL;
+        Obj_FreeObject(cam->childObjs[0]);
+        cam->childObjs[0] = NULL;
     }
     if (Obj_IsLoadingLocked() != 0)
     {
         if ((s8)ctx[1031] > 0)
         {
             ObjPlacement* setup = Obj_AllocObjectSetup(24, childObjectIds.ids[(s8)ctx[1031] - 1]);
-            ((GameObject*)cam)->childObjs[0] =
-                objSetupObject(setup, 4, -1, -1, ((GameObject*)cam)->anim.parent);
-            ((GameObject*)((GameObject*)cam)->childObjs[0])->objectFlags = ((GameObject*)cam)->objectFlags & 7;
+            cam->childObjs[0] =
+                objSetupObject(setup, 4, -1, -1, cam->anim.parent);
+            ((GameObject*)cam->childObjs[0])->objectFlags = cam->objectFlags & 7;
         }
         ctx[1033] = ctx[1031];
     }
@@ -159,28 +165,28 @@ void dll_19_changeWeapon(u8* cam, u8* ctx)
     }
 }
 
-void dll_19_releaseState(GameObject* obj, void* state, u8 flag)
+void dll_19_releaseState(GameObject* obj, GroundBaddieState* state, u8 flag)
 {
-    Sfx_StopObjectChannel((int)obj, 127);
-    if ((((GroundBaddieState*)state)->configFlags & flag) == 0)
+    Sfx_StopObjectChannel(obj, 127);
+    if ((state->configFlags & flag) == 0)
     {
         s16 soundId;
-        soundId = ((GroundBaddieState*)state)->soundIdB;
+        soundId = state->soundIdB;
         if (soundId != 0)
         {
             gTitleMenuControlInterfaceCopy->vtable->func05(obj, soundId, 0, 0, 0);
         }
-        soundId = ((GroundBaddieState*)state)->soundIdA;
+        soundId = state->soundIdA;
         if (soundId != 0)
         {
             gTitleMenuControlInterfaceCopy->vtable->func05(obj, soundId, 0, 0, 0);
         }
     }
-    voxmaps_freeRouteWork(&((GroundBaddieState*)state)->routeState);
-    if (*(u32*)&((GroundBaddieState*)state)->path != 0)
+    voxmaps_freeRouteWork(&state->routeState);
+    if (*(u32*)&state->path != 0)
     {
-        mm_free((void*)*(u32*)&((GroundBaddieState*)state)->path);
-        *(int*)&((GroundBaddieState*)state)->path = 0;
+        mm_free((void*)*(u32*)&state->path);
+        *(int*)&state->path = 0;
     }
 }
 
@@ -206,13 +212,13 @@ void dll_19_initGroundBaddie(GameObject* obj, GroundBaddiePlacement* config, u8*
         ObjMsg_AllocQueue(obj, 4);
     }
     (*gPlayerInterface)->init(obj, state, moveArg0, moveArg1);
-    *(int*)(state + 0) = 0;
+    ((BaddieState*)state)->flags0 = 0;
     ((BaddieState*)state)->hasTarget = 0;
     ((BaddieState*)state)->animSpeedA = 0.0f;
     ((BaddieState*)state)->animSpeedB = 0.0f;
     if (config->hitPoints != 0)
     {
-        *(s8*)&((BaddieState*)state)->hitPoints = (s8)config->hitPoints;
+        ((BaddieState*)state)->hitPoints = config->hitPoints;
     }
     else
     {
@@ -259,7 +265,7 @@ void dll_19_initGroundBaddie(GameObject* obj, GroundBaddiePlacement* config, u8*
     ((GroundBaddieState*)state)->flags400 = 0;
     ((GroundBaddieState*)state)->aggroRange = (u16)(config->aggroRange << 3);
     ((GroundBaddieState*)state)->subMode = 0;
-    *(f32*)(state + 996) = pathRadius;
+    ((GroundBaddieState*)state)->pathRadius = pathRadius;
     obj->anim.rotX = (s16)((s8)config->rotX << 8);
     obj->anim.alpha = 255;
     obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED;
@@ -302,14 +308,14 @@ void dll_19_initGroundBaddie(GameObject* obj, GroundBaddiePlacement* config, u8*
     if (b1 == 0 && (flags & 0x20) == 0)
     {
         voxmaps_allocRouteWork(&((GroundBaddieState*)state)->routeState);
-        state[898] = 4;
-        state[899] = 20;
+        ((GroundBaddieState*)state)->routeNav.maxIters = 4;
+        ((GroundBaddieState*)state)->routeNav.budget = 20;
     }
     if ((flags & 0x10) != 0)
     {
         if (((GroundBaddieState*)state)->path == NULL && (flags & 0x20) == 0)
         {
-            *(int*)&((GroundBaddieState*)state)->path = (int)mmAlloc(264, 26, 0);
+            ((GroundBaddieState*)state)->path = mmAlloc(264, 26, 0);
         }
         if (((GroundBaddieState*)state)->path != NULL)
         {
@@ -324,7 +330,7 @@ void dll_19_initGroundBaddie(GameObject* obj, GroundBaddiePlacement* config, u8*
     }
     else
     {
-        *(int*)&((GroundBaddieState*)state)->path = 0;
+        ((GroundBaddieState*)state)->path = NULL;
     }
 }
 
@@ -357,7 +363,7 @@ int dll_19_processMessages(GameObject* obj, void* state, void* hitbox, s16 gameB
             }
             break;
         case 11:
-            *(s8*)((u8*)state + 846) = extra;
+            ((BaddieState*)state)->unk34E = extra;
             break;
         case 1:
         case 0xA0001:
@@ -415,14 +421,14 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
         {
             if (((Dll19State*)state)->oscValue > 2.0f)
             {
-                int other = obj->anim.placementDataAddress;
+                GroundBaddiePlacement* other = (GroundBaddiePlacement*)obj->anim.placementDataAddress;
                 ((Dll19State*)state)->oscValue = 0.0f;
                 ((Dll19State*)state)->flags = ((Dll19State*)state)->flags & ~DLL19_FLAG_OSC_ACTIVE;
                 ((BaddieState*)baddieState)->hitPoints = 0;
                 obj->anim.alpha = 0;
                 obj->userData1 = 1;
                 obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
-                (*gMapEventInterface)->addTime(*(int*)(other + 20), (f32)(s32)(*(s16*)(other + 44) * 60));
+                (*gMapEventInterface)->addTime(other->base.ident, (f32)(s32)(other->unk2C * 60));
             }
         }
         else
@@ -439,19 +445,19 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
         }
     }
 
-    if (*(s8*)&((BaddieState*)baddieState)->hitPoints == 0)
+    if (((BaddieState*)baddieState)->hitPoints == 0)
     {
         return 0;
     }
     hit = ObjHits_GetPriorityHitWithPosition(obj, &hitId, &v28, (u32*)&v24, &posX, &posY, &posZ);
-    *(s8*)(state + 1034) = v28;
+    ((GroundBaddieState*)state)->lastHitSphereIndex = v28;
     if (hit != 0)
     {
         if (hitPosOut != NULL)
         {
-            *(f32*)((u8*)hitPosOut + 12) = posX + playerMapOffsetX;
-            *(f32*)((u8*)hitPosOut + 16) = posY;
-            *(f32*)((u8*)hitPosOut + 20) = posZ + playerMapOffsetZ;
+            ((PartFxSpawnParams*)hitPosOut)->posX = posX + playerMapOffsetX;
+            ((PartFxSpawnParams*)hitPosOut)->posY = posY;
+            ((PartFxSpawnParams*)hitPosOut)->posZ = posZ + playerMapOffsetZ;
         }
         if (tableB != NULL)
         {
@@ -465,8 +471,8 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
         {
             v24 = 0;
         }
-        *(s8*)&((BaddieState*)baddieState)->hitPoints = (s8)(((BaddieState*)baddieState)->hitPoints - v24);
-        if (*(s8*)&((BaddieState*)baddieState)->hitPoints < 1)
+        ((BaddieState*)baddieState)->hitPoints = ((BaddieState*)baddieState)->hitPoints - v24;
+        if (((BaddieState*)baddieState)->hitPoints < 1)
         {
             ((Dll19State*)state)->flags = ((Dll19State*)state)->flags | DLL19_FLAG_OSC_RISING;
             ((Dll19State*)state)->oscValue = 1.0f;
@@ -496,10 +502,10 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
                         ((BaddieState*)baddieState)->substate = substate;
                     }
                 }
-                *(s8*)((u8*)baddieState + 847) = hit;
+                ((BaddieState*)baddieState)->lastHitPriority = hit;
             }
         }
-        Sfx_StopObjectChannel((int)obj, 16);
+        Sfx_StopObjectChannel(obj, 16);
         ObjMsg_SendToObject((void*)hitId, DLL19_ADVANCE_MSG, obj, 0);
     }
     return hit;
@@ -583,7 +589,7 @@ GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, i
                 }
             }
             nearDist = 750.0f;
-            gDll19NearestObj = (GameObject*)objGetNearestTypeTo(DLL19_TARGET_OBJGROUP, (GameObject*)obj, &nearDist);
+            gDll19NearestObj = objGetNearestTypeTo(DLL19_TARGET_OBJGROUP, (GameObject*)obj, &nearDist);
             source->anim.worldPosX = savedX;
             source->anim.worldPosY = savedY;
             source->anim.worldPosZ = savedZ;

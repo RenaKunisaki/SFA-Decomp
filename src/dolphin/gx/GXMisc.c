@@ -1,6 +1,7 @@
 
 #include "dolphin/gx/__gx.h"
 #include "dolphin/gx/GXMisc.h"
+#include "dolphin/PPCArch.h"
 
 #define __GXData gx
 

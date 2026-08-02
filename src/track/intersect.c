@@ -1,5 +1,7 @@
 #include "global.h"
 #include "dolphin/mtx.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_position_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/baddie_state.h"
 #include "main/dll/partfx_interface.h"
@@ -174,7 +176,7 @@ void objAudioDispatchAnimEvents(GameObject* obj, ObjAnimEventList* events, u8 ty
         }
         else
         {
-            Sfx_PlayAtPositionFromObject((int)obj, vec[0], vec[1], vec[2], sfxTab[sfx]);
+            Sfx_PlayAtPositionFromObject(obj, vec[0], vec[1], vec[2], sfxTab[sfx]);
         }
     }
     if (i == 5)
@@ -290,21 +292,21 @@ u8 gWaterFxBank;
 
 u8 gReflectionTintAlpha = 0x60;
 u8 gHudTintAlpha = 0xFF;
-u32 lbl_803DB67C = 0xFFFFFF60;
+u32 gWaterCausticKColor = 0xFFFFFF60;
 GXColor gReflectionBumpTintColor = {0xFF, 0xFF, 0xFF, 0x60};
 GXColor gReflectionBumpKColor = {0xA0, 0xA0, 0xA0, 0x80};
 GXColor gReflectionTintColor = {0xFF, 0xFF, 0xFF, 0x60};
 GXColor gReflectionKColor = {0xA0, 0xA0, 0xA0, 0x80};
-u32 lbl_803DB690 = 0xC0000000;
-u32 lbl_803DB694 = 0x00C00000;
-u32 lbl_803DB698 = 0x0000C000;
-u32 lbl_803DB69C = 0x666666FF;
+u32 gWaterReflectionKColorR = 0xC0000000;
+u32 gWaterReflectionKColorG = 0x00C00000;
+u32 gWaterReflectionKColorB = 0x0000C000;
+u32 gBlurFilterKColor = 0x666666FF;
 GXColor gMotionBlurKColor = {0, 0, 0, 0x7F};
 GXColor gHeatEffectKColor = {0xFF, 0xFF, 0xFF, 0xFC};
-u32 lbl_803DB6A8 = 0xFFFFFFFF;
+u32 gObjectShadowTevColor = 0xFFFFFFFF;
 f32 gCausticReflectionDiskScale = 0.55f;
-f32 lbl_803DB6B0 = 2.0f;
-f32 lbl_803DB6B4 = 0.25f;
+f32 gTrackProjectedTexScale = 2.0f;
+f32 gTrackNormalTexScale = 0.25f;
 f32 gFrozenReflectionNormalScale = 0.4f;
 GXColor gFrozenTintColor = {0x80, 0x80, 0x80, 0xFF};
 f32 gFrozenWhirlpoolTexScale = 2.0f;
@@ -324,14 +326,14 @@ u32 gWhirlpoolReflectionTintColor = 0xFFFFFF60;
 u32 gWhirlpoolReflectionKColor = 0xA0A0A080;
 
 
-f32 lbl_8030EA10[3][2][3] = {
+f32 gWaterReflectionIndTexMtx[3][2][3] = {
     {{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, -0.5f}},
     {{0.0f, 0.8f, 0.0f}, {0.0f, 0.0f, 0.8f}},
     {{0.0f, -0.2f, 0.0f}, {0.0f, 0.0f, 0.2f}}};
-f32 lbl_8030EA58[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
-f32 lbl_8030EA70[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
-f32 lbl_8030EA88[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
-f32 lbl_8030EAA0[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
+f32 gFrozenObjectIndTexMtx[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
+f32 gScreenImageIndTexMtx1[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
+f32 gScreenImageIndTexMtx2[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
+f32 gWhirlpoolIndTexMtx[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
 
 #include "track/intersect_internal.h"
 
@@ -762,17 +764,16 @@ void OSReport(const char* msg, ...);
 
 
 /* .bss block 0x80391DC0-0x803967C0 */
-f32 gWaterFxState[4];
-Texture* gWaterFxTextures[4];
-RippleEntry gWaterRipples[0x100];
-SplashQuad gWaterSplashQuads[0x100];
-DepthReadRequest gDepthReadResults[0x14];
-DepthReadRequest gDepthReadPendingQueue[0x14];
-
-f32 gCameraModelViewMatrix[3][4];
-f32 gCameraLightPerspectiveMatrix[3][4];
-f32 gCameraLightPerspectiveFlipYMatrix[3][4];
-f32 gCameraLightPerspectiveScaledMatrix[3][4];
-f32 hudMatrix[4][4];
-int lbl_803968C0[0x10];
 SaveCardFileInfo gSaveCardFileInfo;
+int gPerspectiveMtx[0x10];
+f32 hudMatrix[4][4];
+f32 gCameraLightPerspectiveScaledMatrix[3][4];
+f32 gCameraLightPerspectiveFlipYMatrix[3][4];
+f32 gCameraLightPerspectiveMatrix[3][4];
+f32 gCameraModelViewMatrix[3][4];
+DepthReadRequest gDepthReadPendingQueue[0x14];
+DepthReadRequest gDepthReadResults[0x14];
+SplashQuad gWaterSplashQuads[0x100];
+RippleEntry gWaterRipples[0x100];
+Texture* gWaterFxTextures[4];
+f32 gWaterFxState[4];

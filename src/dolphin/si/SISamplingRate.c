@@ -1,4 +1,6 @@
 #include "dolphin/os/__os.h"
+#include "dolphin/sipriv.h"
+#include "dolphin/vi.h"
 
 #define LATENCY 8
 

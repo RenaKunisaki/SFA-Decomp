@@ -1,6 +1,9 @@
 
 
 #include <dolphin/gx/GXPriv.h>
+#include <dolphin/PPCArch.h>
+#include <dolphin/vi.h>
+#include <dolphin/gx/GXCpu2Efb.h>
 
 
 static struct __GXData_struct gxData;

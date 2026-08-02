@@ -11,6 +11,9 @@
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
 #include "main/track_dolphin_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/objhits.h"
+#include "main/vecmath.h"
 
 #define DIM2ICICLE_RELEASE_HIT_TYPE   0xE
 #define DIM2ICICLE_WATER_SURFACE_TYPE 0xE
@@ -61,7 +64,7 @@ void dim2icicle_update(GameObject* obj) {
         state->mode = DIM2ICICLE_MODE_WOBBLING;
         hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
         hitState->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_en_sbalhis6);
+        Sfx_PlayFromObject(obj, SFXTRIG_en_sbalhis6);
         break;
     case DIM2ICICLE_MODE_WOBBLING: {
         obj->anim.rotY = state->wobbleRotationY;
@@ -98,7 +101,7 @@ void dim2icicle_update(GameObject* obj) {
         if (state->timer > 0) {
             state->timer -= framesThisStep;
             if (state->timer <= 0) {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_swdwood16);
+                Sfx_PlayFromObject(obj, SFXTRIG_wp_swdwood16);
             }
         }
         obj->anim.velocityY = -(0.1f * timeDelta - obj->anim.velocityY);
@@ -112,7 +115,7 @@ void dim2icicle_update(GameObject* obj) {
             (*gWaterfxInterface)
                 ->spawnSplashBurst((void*)obj, obj->anim.localPosX, state->dropTargetY, obj->anim.localPosZ, 10.0f);
             (*gWaterfxInterface)->spawnRipple(obj->anim.localPosX, state->dropTargetY, obj->anim.localPosZ, 0, 0.0f, 2);
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_curtainopen16);
+            Sfx_PlayFromObject(obj, SFXTRIG_mv_curtainopen16);
             state->timer = 0x96;
         }
         break;
@@ -121,7 +124,7 @@ void dim2icicle_update(GameObject* obj) {
         if (state->timer > 0) {
             state->timer -= framesThisStep;
             if (state->timer <= 0) {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_155);
+                Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_155);
             }
         }
         {

@@ -23,6 +23,7 @@
 #include "main/dll/player_api.h"
 #include "main/curve_eval.h"
 #include "main/objseq.h"
+#include "main/objtype.h"
 #include "main/dll/dll_0284_shopitem.h"
 #include "main/dll/LGT/LGTcontrollight.h"
 #include "main/dll/boulder.h"
@@ -36,6 +37,10 @@
 #include "dolphin/gx/GXPixel.h"
 #include "dolphin/gx/GXTev.h"
 #include "dolphin/pad.h"
+#include "main/vecmath.h"
+#include "main/obj_message.h"
+#include "main/objprint_render_api.h"
+#include "track/intersect_depth_state_api.h"
 
 #define SHOPITEM_TARGET_OBJGROUP 9
 
@@ -313,7 +318,7 @@ void shopitem_update(GameObject* obj)
         if (*(u32*)&s->vendorObj == 0)
         {
             int item;
-            s->vendorObj = objGetNearestTypeTo(SHOPITEM_TARGET_OBJGROUP, obj, &range);
+            s->vendorObj = (int)objGetNearestTypeTo(SHOPITEM_TARGET_OBJGROUP, obj, &range);
             item = s->vendorObj;
             if ((u32)item != 0)
             {

@@ -34,6 +34,9 @@ DSError TRKDoContinue(TRKBuffer*);
 DSError TRKDoStep(TRKBuffer*);
 DSError TRKDoStop(TRKBuffer*);
 
+DSError TRKStandardACK(TRKBuffer* buffer, MessageCommandID commandID,
+                       DSReplyError replyError);
+
 void SetBufferPosition(TRKBuffer*, u32);
 void SetTRKConnected(BOOL);
 BOOL GetTRKConnected(void);
@@ -97,7 +100,7 @@ void TRKNubMainLoop(void);
 DSError TRKInitializeMutex(void*);
 DSError TRKAcquireMutex(void*);
 DSError TRKReleaseMutex(void*);
-void* TRK_memcpy(void* dst, const void* src, unsigned int n);
+void* TRK_memcpy(void* dst, const void* src, unsigned long n);
 
 DSError TRKInitializeEventQueue(void);
 DSError TRKInitializeMessageBuffers(void);

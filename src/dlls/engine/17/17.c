@@ -3,6 +3,9 @@
 #include "main/dll/dll_0015_curves.h"
 #include "main/textrender_api.h"
 #include "main/gametext_api.h"
+#include "main/asset_load.h"
+#include "main/gamebits_api.h"
+#include "main/mm.h"
 
 u32 gScreenDataId;
 u32 lbl_803DD4A8;

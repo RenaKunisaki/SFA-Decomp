@@ -235,14 +235,14 @@ void LaserBeam_update(GameObject* obj) {
                         } else {
                             pushDistance = 20.0f;
                         }
-                        Sfx_PlayAtPositionFromObject((int)obj, player->anim.localPosX, obj->anim.localPosY,
+                        Sfx_PlayAtPositionFromObject(obj, player->anim.localPosX, obj->anim.localPosY,
                                                      player->anim.localPosZ, SFXTRIG_wp_fball2_c_1c9);
                         if (((PlayerState*)player->extra)->characterId == 0) {
                             hitSfxId = 31;
                         } else {
                             hitSfxId = 35;
                         }
-                        Sfx_PlayFromObject((u32)player, hitSfxId);
+                        Sfx_PlayFromObject(player, hitSfxId);
                         for (particleIndex = 0; particleIndex < LASERBEAM_HIT_PARTICLE_COUNT; particleIndex++) {
                             (*gPartfxInterface)
                                 ->spawnObject(Obj_GetPlayerObject(), LASERBEAM_PARTFX_HIT, NULL,

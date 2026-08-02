@@ -10,6 +10,9 @@
 #include "main/track_dolphin_api.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/objhits.h"
 
 /* anim.romDefNo variants shared by CRrockfall and IMIcicle. */
 #define CR_ROCKFALL_SEQ_BIG        0x600
@@ -160,9 +163,9 @@ void crrockfall_update(GameObject* obj) {
                 state->fallStarted = 1;
                 obj->anim.velocityY = 0.0f;
                 if (obj->anim.romDefNo == CR_ROCKFALL_SEQ_QUARRY) {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_155);
+                    Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_155);
                 }
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_swdwood16);
+                Sfx_PlayFromObject(obj, SFXTRIG_wp_swdwood16);
                 hitState->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
             }
             hitState->objectHitMask = CR_ROCKFALL_HIT_MASK;
@@ -175,7 +178,7 @@ void crrockfall_update(GameObject* obj) {
                 obj->anim.localPosY = state->config->restOffsetY * obj->anim.rootMotionScale + state->floorY;
                 state->mode = CR_ROCKFALL_MODE_RESTING;
                 if (state->config->landSfx != 0) {
-                    Sfx_PlayFromObject((u32)obj, (u16)state->config->landSfx);
+                    Sfx_PlayFromObject(obj, (u16)state->config->landSfx);
                 }
             }
             break;
@@ -192,11 +195,11 @@ void crrockfall_update(GameObject* obj) {
         if (hitState->lastHitObject != 0) {
             hitState->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;
             state->mode = CR_ROCKFALL_MODE_SHATTERED;
-            Sfx_StopObjectChannel((int)obj, CR_ROCKFALL_SCRAPE_CHANNEL);
+            Sfx_StopObjectChannel(obj, CR_ROCKFALL_SCRAPE_CHANNEL);
             if (obj->anim.romDefNo == CR_ROCKFALL_SEQ_QUARRY) {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_dinostomp1);
+                Sfx_PlayFromObject(obj, SFXTRIG_mv_dinostomp1);
             } else {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_jbike_bombbeep);
+                Sfx_PlayFromObject(obj, SFXTRIG_jbike_bombbeep);
                 spawnExplosion(obj, (f32)(u32)placement->scaleByte, 1, 1, 0, 1, 1, 1, 1);
             }
         }

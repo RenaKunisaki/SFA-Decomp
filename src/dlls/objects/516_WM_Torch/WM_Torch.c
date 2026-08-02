@@ -64,9 +64,9 @@ void wmtorch_update(GameObject* obj) {
         obj->anim.rotX += WM_TORCH_ROTATION_STEP;
     }
     if (Vec_distance(&Obj_GetPlayerObject()->anim.worldPosX, &obj->anim.worldPosX) < WM_TORCH_SOUND_RADIUS) {
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_mushdizzylp12);
+        Sfx_PlayFromObject(obj, SFXTRIG_mushdizzylp12);
     } else {
-        Sfx_StopObjectChannel((int)obj, WM_TORCH_SOUND_CHANNEL);
+        Sfx_StopObjectChannel(obj, WM_TORCH_SOUND_CHANNEL);
     }
 }
 

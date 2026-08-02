@@ -48,6 +48,11 @@
 #include "main/player_control_interface.h"
 #include "dlls/object_descriptor.h"
 #include "dolphin/pad.h"
+#include "main/vecmath.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/objprint_api.h"
+#include "main/pad_api.h"
+#include "sys/objects.h"
 
 static const f32 gWcEarthWalkerCurveAdvanceStep = 0.5f;
 static const f32 gWcEarthWalkerApproachPlayerDistance = 200.0f;
@@ -170,7 +175,7 @@ void earthwalker_update(int obj)
     dll_2E_updateLookAt((GameObject*)obj, (MoveLibState*)ewState);
     if (ewState->encounterType >= 4 && ewState->encounterType <= 7 && prevAnim != 1 && ewState->animPhase == 1)
     {
-        Sfx_PlayFromObject(obj, SFXTRIG_mammoth);
+        Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_mammoth);
     }
 
     characterDoEyeAnims((GameObject*)obj, &ewState->eyeAnimState);

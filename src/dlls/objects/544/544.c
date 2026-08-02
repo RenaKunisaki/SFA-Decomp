@@ -10,6 +10,8 @@
 #include "main/object_render_legacy.h"
 #include "main/objfx.h"
 #include "game/objects/object_setup.h"
+#include "main/audio/sfx_play_api.h"
+#include "sys/objects.h"
 
 #define VFP_DOORSWITCH_LIFTIND_OBJ 0x3e7
 
@@ -42,8 +44,8 @@ void vfpdoorswitch_updateExplodingVariant(GameObject* obj)
         if (mainGetBit(state->gameBitId) != 0)
         {
             Sfx_PlayFromObject(0, SFXTRIG_menuups16k);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_10d);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_gate_stops);
+            Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_10d);
+            Sfx_PlayFromObject(obj, SFXTRIG_gate_stops);
             state->activated = 1;
         }
     }
@@ -108,8 +110,8 @@ void VFP_DoorSwitch_update(GameObject* obj)
     if (mainGetBit(state->gameBitId) == 0)
         return;
     Sfx_PlayFromObject(0, SFXTRIG_menuups16k);
-    Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_10d);
-    Sfx_PlayFromObject((int)obj, SFXTRIG_gate_stops);
+    Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_10d);
+    Sfx_PlayFromObject(obj, SFXTRIG_gate_stops);
     Obj_SetActiveModelIndex(obj, 1);
     state->activated = 1;
 }

@@ -77,7 +77,7 @@ typedef struct MapBlockData {
     void* vertexColors; /* 0x5C: RGBA4444 (stride 2) */
     void* vertexTexCoords; /* 0x60: vec2s (stride 4) */
     Shader* shaders; /* 0x64: count = shaderCount @0xA2 */
-    MapBlockBoundsRec* displayLists; /* 0x68: count = edgeCount @0xA1 */
+    MapBlockBoundsRec* displayLists; /* 0x68: count = displayListCount @0xA1 */
     u8 pad6C[0x70 - 0x6C];
     MapHitLine* hits; /* 0x70: from HITS.bin; 0 in file, populated by MapBlock_initHits */
     void* auxData; /* 0x74: optional auxiliary allocation */
@@ -97,7 +97,7 @@ typedef struct MapBlockData {
     u16 hitCount; /* 0x9C: entries in the HITS.bin segment table */
     u16 unk9E;
     u8 textureCount; /* 0xA0: entries in textures */
-    u8 edgeCount; /* 0xA1: edges (mapBlockGetEdge index bound) */
+    u8 displayListCount; /* 0xA1: entries in displayLists */
     u8 shaderCount; /* 0xA2: entries in shaders */
     u8 padA3;
 } MapBlockData;
@@ -107,11 +107,13 @@ STATIC_ASSERT(offsetof(MapBlockData, transform) == 0x0C);
 STATIC_ASSERT(offsetof(MapBlockData, minY) == 0x8A);
 STATIC_ASSERT(offsetof(MapBlockData, maxY) == 0x8C);
 STATIC_ASSERT(offsetof(MapBlockData, textureCount) == 0xA0);
+STATIC_ASSERT(offsetof(MapBlockData, displayListCount) == 0xA1);
 STATIC_ASSERT(offsetof(MapBlockData, shaderCount) == 0xA2);
 
 extern MapBlockData** gMapBlocks;
 extern s8* gMapBlockLayerTables[];
 
 Shader* mapBlockGetShader(MapBlockData* block, int index);
+MapBlockBoundsRec* mapBlockGetDisplayListBounds(MapBlockData* block, int index);
 
 #endif

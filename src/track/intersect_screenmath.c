@@ -9,7 +9,7 @@ static const f32 gGxPi = 3.1415927f;
 #include "track/intersect_internal.h"
 
 extern int lbl_803DD03C;
-extern int lbl_803968C0[];
+extern int gPerspectiveMtx[];
 
 
 /* Queues a GXPeekZ read at (x,y) tagged by an opaque requestKey (callers pass
@@ -108,7 +108,7 @@ void mtx44Perspective(f32* matrix, u16* perspectiveNorm, f32 fovY, f32 aspect, f
     }
     gFogNearZ = __fabs(nearPlane);
     gFogFarZ = __fabs(farPlane);
-    C_MTXPerspective((void*)lbl_803968C0, fovY, aspect, gFogNearZ, gFogFarZ);
+    C_MTXPerspective((void*)gPerspectiveMtx, fovY, aspect, gFogNearZ, gFogFarZ);
     lbl_803DD03C = 0;
 }
 

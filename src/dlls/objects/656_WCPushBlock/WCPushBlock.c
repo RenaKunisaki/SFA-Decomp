@@ -350,7 +350,7 @@ void wcpushblock_update(GameObject* obj)
                 sfxVolume = gWcPushBlockSlideSfxMaxVolume;
             }
             Sfx_KeepAliveLoopedObjectSound((u32)obj, SFXTRIG_en_treedrum16_c8);
-            Sfx_SetObjectSfxVolume((u32)obj, SFXTRIG_en_treedrum16_c8, sfxVolume, lbl_803E6D78);
+            Sfx_SetObjectSfxVolume(obj, SFXTRIG_en_treedrum16_c8, sfxVolume, lbl_803E6D78);
             WCPUSHBLOCK_FLAGS(state).sfxActive = 1;
         }
     }
@@ -474,7 +474,7 @@ void wcpushblock_update(GameObject* obj)
                 if (WCPUSHBLOCK_FLAGS(state).sfxActive != 0)
                 {
                     WCPUSHBLOCK_FLAGS(state).sfxActive = 0;
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_bflconc1);
+                    Sfx_PlayFromObject(obj, SFXTRIG_mv_bflconc1);
                 }
             }
             else
@@ -515,7 +515,7 @@ void wcpushblock_update(GameObject* obj)
         ObjHits_DisableObject(obj);
         if (objAnim->alpha == WCPUSHBLOCK_ALPHA_OPAQUE)
         {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_iceywindlp16_cb);
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_iceywindlp16_cb);
         }
         {
             int a = objAnim->alpha - (framesThisStep << WCPUSHBLOCK_ALPHA_STEP_SHIFT);
@@ -616,4 +616,3 @@ void wcpushblock_initialise(void)
 
 
 #undef WCPUSHBLOCK_IFACE
-

@@ -14,10 +14,15 @@
 #include "main/mapEventTypes.h"
 #include "main/objprint_api.h"
 #include "main/object_render.h"
+#include "main/objtype.h"
 #include "main/resource.h"
 #include "main/shader_api.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_position_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/gamebits_api.h"
+#include "main/objhits.h"
 
 #define DLLF7_OBJECT_TYPE_ID 2
 
@@ -137,7 +142,7 @@ void dll_F7_update(GameObject* obj) {
     if (ObjHits_GetPriorityHitWithPosition(obj, 0, 0, &hitVolume, &hitEffect.spawn.posX, &hitEffect.spawn.posY,
                                            &hitEffect.spawn.posZ) != 0) {
         if ((state->hitsRemaining -= hitVolume) > 0) {
-            Sfx_PlayAtPositionFromObject((int)obj, hitEffect.spawn.posX, hitEffect.spawn.posY, hitEffect.spawn.posZ,
+            Sfx_PlayAtPositionFromObject(obj, hitEffect.spawn.posX, hitEffect.spawn.posY, hitEffect.spawn.posZ,
                                          SFXTRIG_crtsmsh6);
             Obj_SetActiveModelIndex(obj, DLLF7_HIT_COUNT - state->hitsRemaining);
             state->bounceOffset = DLLF7_BOUNCE_START_OFFSET;
@@ -161,7 +166,7 @@ void dll_F7_update(GameObject* obj) {
         }
         state->broken = 1;
         state->unk08 = 0;
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_dsmk2_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_dsmk2_c);
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;
         if ((int)placement->completeGameBit != -1) {
             mainSetBits((int)placement->completeGameBit, 1);
@@ -181,7 +186,7 @@ void dll_F7_update(GameObject* obj) {
             GameObject* collectible;
 
             radius = DLLF7_COLLECTIBLE_SEARCH_RADIUS;
-            collectible = (GameObject*)objGetNearestTypeTo(COLLECTIBLE_OBJECT_GROUP, obj, &radius);
+            collectible = objGetNearestTypeTo(COLLECTIBLE_OBJECT_GROUP, obj, &radius);
             if (collectible != NULL) {
                 collectible->anim.localPosX = collectible->anim.worldPosX = obj->anim.localPosX;
                 collectible->anim.localPosY = collectible->anim.worldPosY =

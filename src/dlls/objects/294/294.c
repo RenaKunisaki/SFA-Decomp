@@ -39,6 +39,7 @@
 #include "main/obj_list.h"
 #include "main/mapEventTypes.h"
 #include "main/objseq.h"
+#include "main/objtype.h"
 #include "main/sky_state.h"
 #include "main/lightmap_render_control_api.h"
 #include "main/rcp_dolphin.h"
@@ -61,6 +62,9 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/gameloop_api.h"
 #include "track/intersect_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_object_api.h"
+#include "main/map_load.h"
 
 ObjectDescriptor gTriggerObjDescriptor = {
     0,
@@ -509,9 +513,9 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
             break;
         case 4:
             if (legCode >= 0) {
-                Sfx_PlayFromObject((u32)obj, (u16)((p[2] << 8) | p[3]));
+                Sfx_PlayFromObject(obj, (u16)((p[2] << 8) | p[3]));
             } else {
-                Sfx_StopFromObject((u32)obj, (u16)((p[2] << 8) | p[3]));
+                Sfx_StopFromObject(obj, (u16)((p[2] << 8) | p[3]));
             }
             break;
         case 6:
@@ -600,7 +604,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
             switch (p[2]) {
             case 0:
             case 3:
-                t = objGetNearestTypeTo(TARGET_OBJGROUP, obj, 0);
+                t = (int)objGetNearestTypeTo(TARGET_OBJGROUP, obj, 0);
                 if ((void*)t != NULL) {
                     (*gObjectTriggerInterface)->runSequence(p[3], (void*)t, -1);
                 }
@@ -692,7 +696,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
             OSReport(desc + 0x114, p[2], p[3]);
             break;
         case 0x2f:
-            t = objGetNearestTypeTo(TIMER_OBJECT_GROUP, obj, 0);
+            t = (int)objGetNearestTypeTo(TIMER_OBJECT_GROUP, obj, 0);
             if ((void*)t != NULL) {
                 timer_addDuration((GameObject*)(t), p[3] * 0x3c);
             }
@@ -796,9 +800,9 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
                     Obj_FreeObject(getTrickyObject());
                     break;
                 case 2:
-                    t2 = objGetNearestTypeTo(TRICKY_TARGET_OBJGROUP, (GameObject*)t, 0);
+                    t2 = (int)objGetNearestTypeTo(TRICKY_TARGET_OBJGROUP, (GameObject*)t, 0);
                     if ((void*)t2 == NULL) {
-                        t2 = objGetNearestTypeTo(TRICKY_TARGET_OBJGROUP_FALLBACK, (GameObject*)t, 0);
+                        t2 = (int)objGetNearestTypeTo(TRICKY_TARGET_OBJGROUP_FALLBACK, (GameObject*)t, 0);
                     }
                     if ((void*)t2 != NULL) {
                         (*(VtableFn*)(**(int**)(t + 0x68) + 0x38))(t, t2);
@@ -895,7 +899,7 @@ void Trigger_free(GameObject* obj) {
 
     while (i < 8) {
         if ((entry[0] & (TRIGGER_CMD_ON_ENTER | TRIGGER_CMD_ON_EXIT)) != 0 && entry[1] != 3 && entry[1] == 4) {
-            Sfx_StopFromObject((u32)obj, (u16)((entry[2] << 8) | entry[3]));
+            Sfx_StopFromObject(obj, (u16)((entry[2] << 8) | entry[3]));
         }
         i++;
         entry += 4;
@@ -954,7 +958,7 @@ void Trigger_hitDetect(GameObject* obj) {
                 ok = 1;
                 targetKind = ((TriggerPlacement*)def)->target;
                 if (targetKind > 2) {
-                    target = (GameObject*)objGetNearestTypeTo(targetKind - 1, obj, dist);
+                    target = objGetNearestTypeTo(targetKind - 1, obj, dist);
                     if (target == NULL) {
                         ok = 0;
                     }

@@ -24,6 +24,8 @@
 #include "main/objseq.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
+#include "main/rcp_dolphin_api.h"
+#include "main/shader_api.h"
 
 /* placement idents that arm the one-shot save-point recording at init */
 #define WARPPOINT_MAP_SAVE_A 0x4B675

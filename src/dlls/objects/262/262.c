@@ -19,6 +19,12 @@
 #include "main/vecmath.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
+#include "main/frustum.h"
+#include "main/audio/sfx_limited_object_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/player_api.h"
+#include "main/obj_message.h"
+#include "sys/objects/lifecycle.h"
 
 #define SCARAB_ORIENTATION_DIRECTION     0
 #define SCARAB_ORIENTATION_GROUND_NORMAL 1
@@ -66,7 +72,7 @@ typedef union ScarabMoneyValues {
     u8 values[4];
 } ScarabMoneyValues;
 
-static const ScarabMoneyValues gScarabMoneyValues = {0x01050A32};
+const ScarabMoneyValues gScarabMoneyValues = {0x01050A32};
 
 typedef struct ScarabSweepSphere {
     f32 radii[4];   /* 0x00 */
@@ -423,7 +429,7 @@ void Scarab_update(GameObject* obj) {
             }
             if (ObjHits_GetPriorityHit(obj, 0, 0, 0) == SCARAB_TRIGGER_HIT_KIND) {
                 state->stunTimer = SCARAB_STUN_TIMER;
-                Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c);
+                Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c);
                 obj->anim.velocityX = player->anim.localPosX - obj->anim.localPosX;
                 obj->anim.velocityZ = player->anim.localPosZ - obj->anim.localPosZ;
                 obj->anim.rotX = 0;
@@ -611,7 +617,7 @@ void Scarab_update(GameObject* obj) {
                     if (obj->anim.hitReactState != NULL) {
                         ObjHits_DisableObject(obj);
                     }
-                    Sfx_PlayFromObject((int)obj, (u16)state->collectSfxId);
+                    Sfx_PlayFromObject(obj, (u16)state->collectSfxId);
                     itemPickupDoParticleFx(obj, 1.0f, state->particleId, SCARAB_PICKUP_PARTICLE_COUNT);
                 }
             }
@@ -628,16 +634,16 @@ void Scarab_update(GameObject* obj) {
                             obj->anim.localPosX = knockbackDistance * -obj->anim.velocityX + obj->anim.localPosX;
                             obj->anim.localPosZ = knockbackDistance * -obj->anim.velocityZ + obj->anim.localPosZ;
                         }
-                        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_45);
+                        Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_45);
                     }
                 }
                 if (ObjHits_GetPriorityHit(obj, 0, 0, 0) == SCARAB_TRIGGER_HIT_KIND) {
                     state->stunTimer = SCARAB_STUN_TIMER;
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c);
+                    Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c);
                 }
             } else if (state->stunTimer != 0 && obj->anim.romDefNo == SCARAB_OBJECT_RAIN &&
                        ObjHits_GetPriorityHit(obj, 0, 0, 0) == SCARAB_TRIGGER_HIT_KIND) {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_46);
+                Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_46);
                 rainMoneyValues = gScarabMoneyValues;
                 playerAddMoney(player, rainMoneyValues.values[state->moneyKind]);
                 state->destructDelayTimer = SCARAB_DESTRUCT_DELAY;

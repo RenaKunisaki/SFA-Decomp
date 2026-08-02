@@ -17,9 +17,16 @@
 #include "main/objprint_character_api.h"
 #include "main/objprint_sound_api.h"
 #include "main/objseq.h"
+#include "main/objtype.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/dll_00C9_enemy.h"
+#include "main/gameloop_gamebit_api.h"
+#include "main/maketex_random_api.h"
+#include "main/maketex_timer_api.h"
+#include "main/obj_message.h"
 
 #define BABYCLOUDRUNNER_MUTTER_SFX_COUNT 4
 #define BABYCLOUDRUNNER_AIR_METER_COUNT  4
@@ -94,7 +101,7 @@ int babyCloudRunner_updateBurrowAnimation(GameObject* obj) {
     if (obj->anim.currentMove == BABYCLOUDRUNNER_MOVE_SURFACE) {
         if (obj->anim.currentMoveProgress > 0.5f) {
             if (!state->stateFlags.burrowSfxLatched) {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_mn_heart1_c_334);
+                Sfx_PlayFromObject(obj, SFXTRIG_mn_heart1_c_334);
                 state->stateFlags.burrowSfxLatched = 1;
             }
         } else {
@@ -172,7 +179,7 @@ int babyCloudRunner_tryCapture(void* object) {
     }
     objSoundStartTimed(obj, &state->soundState, BABYCLOUDRUNNER_CAPTURE_SFX_ID, BABYCLOUDRUNNER_CAPTURE_SFX_PITCH, -1,
                        1);
-    Sfx_PlayFromObject((int)obj, SFXTRIG_wp_ice_freeze);
+    Sfx_PlayFromObject(obj, SFXTRIG_wp_ice_freeze);
     return 0;
 }
 
@@ -247,7 +254,7 @@ int babyCloudRunner_sequenceCallback(GameObject* obj, int unused, ObjSeqState* a
     }
     if (inRange == 0 && state->runnerState == BABYCLOUDRUNNER_STATE_CHASED) {
         f32 radius = (f32)placement->outerRadius;
-        if ((void*)objGetNearestTypeTo(BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP, obj, &radius) != NULL) {
+        if (objGetNearestTypeTo(BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP, obj, &radius) != NULL) {
             inRange = 1;
         }
     }
@@ -396,7 +403,7 @@ void babyCloudRunner_update(GameObject* obj) {
                     return;
                 }
                 if (state->runnerState == BABYCLOUDRUNNER_STATE_CHASED) {
-                    nearbyObject = (GameObject*)objGetNearestTypeTo(BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP, obj, 0);
+                    nearbyObject = objGetNearestTypeTo(BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP, obj, 0);
                     if (nearbyObject != NULL && Vec_distance(&nearbyObject->anim.worldPosX, &state->handoffPosition.x) <
                                                     gBabyCloudRunnerTargetNearDist) {
                         babyCloudRunner_turnTowardTarget(obj, nearbyObject, state, 0);
@@ -432,13 +439,13 @@ void babyCloudRunner_update(GameObject* obj) {
                     (*gGameUIInterface)->runAirMeter((int)state->countdownTimer);
                 }
                 if (inRange == 0 &&
-                    (void*)objGetNearestTypeTo(BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP, obj, &radius) != NULL) {
+                    objGetNearestTypeTo(BABYCLOUDRUNNER_PRIMARY_OBJECT_GROUP, obj, &radius) != NULL) {
                     inRange = 1;
                 }
                 if (mainGetBit(state->runnerIndex + GAMEBIT_CFRelated0B2E) != 0) {
                     state->runnerState = BABYCLOUDRUNNER_STATE_FREED;
                     (*gGameUIInterface)->airMeterShutdown();
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_menuups16k);
+                    Sfx_PlayFromObject(obj, SFXTRIG_menuups16k);
                     storeZeroToFloatParam(&state->countdownTimer);
                 }
             } else {

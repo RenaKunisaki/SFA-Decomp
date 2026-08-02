@@ -1,5 +1,6 @@
 #include <dolphin/si.h>
 #include "dolphin/os/__os.h"
+#include <dolphin/vi.h>
 
 #define ROUND(n, a) (((u32)(n) + (a)-1) & ~((a)-1))
 

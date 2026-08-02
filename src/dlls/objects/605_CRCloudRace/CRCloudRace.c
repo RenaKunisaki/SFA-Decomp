@@ -10,6 +10,7 @@
 #include "main/render_envfx_api.h"
 #include "sys/objects.h"
 #include "main/object_render.h"
+#include "main/objtype.h"
 #include "dlls/objects/440_SC_totempol.h"
 
 ObjectDescriptor gCrCloudRaceObjDescriptor = {
@@ -54,7 +55,7 @@ void crcloudrace_updateCompletionState(GameObject* obj, CrCloudRaceState* state)
         if (mainGetBit(CRCLOUDRACE_GAMEBIT_RACE_CAN_FINISH) != 0 &&
             playerGetFocusObject(player) == NULL)
         {
-            near = (GameObject*)objGetNearestTypeTo(CRCLOUDRACE_NEARBY_TOTEM_GROUP, (GameObject*)obj, &dist);
+            near = objGetNearestTypeTo(CRCLOUDRACE_NEARBY_TOTEM_GROUP, (GameObject*)obj, &dist);
             if (near != NULL)
             {
                 ((ScTotemPoleInterfaceVTable*)*near->anim.dll)->handleEvent(near, 1);

@@ -15,6 +15,11 @@
 #include "main/objseq.h"
 #include "main/render_envfx_api.h"
 #include "sys/objects.h"
+#include "main/audio/sfx_object_query_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_object_api.h"
+#include "main/obj_list.h"
+#include "main/objtype.h"
 #define DOORF4_OBJECT_TYPE_ID 1
 #define DOORF4_OBJECT_GROUP   14
 
@@ -333,17 +338,17 @@ int DoorF4_SeqFn(int obj, int unused, ObjSeqState* animUpdate) {
                 /* Fall through to play the opening sound. */
             case DOORF4_SEQUENCE_EVENT_PLAY_OPEN_SFX:
                 if (state->openSfxId != 0) {
-                    Sfx_PlayFromObject(obj, state->openSfxId);
+                    Sfx_PlayFromObject((GameObject*)obj, state->openSfxId);
                 }
                 break;
             case DOORF4_SEQUENCE_EVENT_STOP_OPEN_SFX:
-                if (state->openSfxId != 0 && Sfx_IsPlayingFromObject(obj, state->openSfxId) != 0) {
-                    Sfx_StopFromObject(obj, state->openSfxId);
+                if (state->openSfxId != 0 && Sfx_IsPlayingFromObject((GameObject*)obj, state->openSfxId) != 0) {
+                    Sfx_StopFromObject((GameObject*)obj, state->openSfxId);
                 }
                 break;
             case DOORF4_SEQUENCE_EVENT_PLAY_CLOSE_SFX:
                 if (state->closeSfxId != 0 && mainGetBit(GAMEBIT_SHRINE_MUSIC_LOCK) == 0) {
-                    Sfx_PlayFromObject(obj, state->closeSfxId);
+                    Sfx_PlayFromObject((GameObject*)obj, state->closeSfxId);
                 }
                 break;
             case DOORF4_SEQUENCE_EVENT_CLOSE:
@@ -416,8 +421,8 @@ int DoorF4_getObjectTypeId(void) {
 void DoorF4_free(int obj) {
     DoorF4State* state = ((GameObject*)obj)->extra;
     if (state->openSfxId != 0) {
-        if (Sfx_IsPlayingFromObject(obj, state->openSfxId) != 0) {
-            Sfx_StopFromObject(obj, state->openSfxId);
+        if (Sfx_IsPlayingFromObject((GameObject*)obj, state->openSfxId) != 0) {
+            Sfx_StopFromObject((GameObject*)obj, state->openSfxId);
         }
     }
     objFreeObjectType(obj, DOORF4_OBJECT_GROUP);

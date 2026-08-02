@@ -21,6 +21,12 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_channel_query_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/mm.h"
+#include "main/objhits.h"
+#include "main/objtype.h"
 
 extern f32 lbl_803E385C;
 extern f32 lbl_803E3880;
@@ -90,7 +96,7 @@ void magicPlantDropGem(GameObject* obj, MagicPlantPlacement* unusedPlacement, Ma
     int angle;
 
     player = Obj_GetPlayerObject();
-    Sfx_StopObjectChannel((int)obj, MAGICPLANT_SFX_CHANNEL);
+    Sfx_StopObjectChannel(obj, MAGICPLANT_SFX_CHANNEL);
 
     childObj = *(GameObject**)&state->childObject;
     if ((childObj != NULL) && (childObj->ownerObj != NULL) &&
@@ -108,7 +114,7 @@ void magicPlantDropGem(GameObject* obj, MagicPlantPlacement* unusedPlacement, Ma
         childObj->anim.velocityZ =
             launchSpeed * mathCosf((MAGICPLANT_ROTATION_RADIANS_NUMERATOR * (f32)obj->anim.rotX) /
                                    MAGICPLANT_ROTATION_RADIANS_DENOMINATOR);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_id_5e);
+        Sfx_PlayFromObject(obj, SFXTRIG_id_5e);
     }
 
     if (obj->anim.currentMoveProgress >= MAGICPLANT_ONE) {
@@ -144,7 +150,7 @@ void MagicPlant_updateActive(GameObject* obj, MagicPlantPlacement* unusedPlaceme
         case 0:
             break;
         default:
-            Sfx_PlayFromObject((int)obj, SFXTRIG_ladderslide16);
+            Sfx_PlayFromObject(obj, SFXTRIG_ladderslide16);
             state->mode = MAGICPLANT_MODE_HIT_REACT;
             state->animStepScale = gMagicPlantHitReactAnimStep;
             ObjAnim_SetCurrentMove((int)obj, MAGICPLANT_MOVE_HIT, MAGICPLANT_ZERO, 0);
@@ -186,12 +192,12 @@ void MagicPlant_updateActive(GameObject* obj, MagicPlantPlacement* unusedPlaceme
     }
 
     distance = Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX);
-    if (Sfx_IsPlayingFromObjectChannel((int)obj, MAGICPLANT_SFX_CHANNEL) == 0) {
+    if (Sfx_IsPlayingFromObjectChannel(obj, MAGICPLANT_SFX_CHANNEL) == 0) {
         if (distance < gMagicPlantBuzzStartDist) {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_neonbuzzlp16);
+            Sfx_PlayFromObject(obj, SFXTRIG_neonbuzzlp16);
         }
     } else if (distance > gMagicPlantBuzzStopDist) {
-        Sfx_StopObjectChannel((int)obj, MAGICPLANT_SFX_CHANNEL);
+        Sfx_StopObjectChannel(obj, MAGICPLANT_SFX_CHANNEL);
     }
 }
 
@@ -305,7 +311,7 @@ void MagicPlant_update(GameObject* obj) {
             hitPos[0] += playerMapOffsetX;
             hitPos[2] += playerMapOffsetZ;
             objDoHitParticleFx((void*)obj, gMagicPlantHitLightScale, lightPos, 1, 0);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_barrel_bounce1);
+            Sfx_PlayFromObject(obj, SFXTRIG_barrel_bounce1);
             Obj_Shatter(obj);
         }
         return;

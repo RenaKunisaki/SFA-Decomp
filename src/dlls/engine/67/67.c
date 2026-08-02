@@ -19,6 +19,7 @@
 #include "main/object_transform.h"
 #include "main/vecmath.h"
 #include "string.h"
+#include "main/pad.h"
 
 CameraModeStaffAnimState* gCameraModeStaffAnimState;
 

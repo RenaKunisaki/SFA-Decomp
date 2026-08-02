@@ -1,5 +1,6 @@
 
 #include "dolphin/card/__card.h"
+#include "string.h"
 
 static void UpdateIconOffsets(CARDDir* ent, CARDStat* stat) {
     u32 offset;

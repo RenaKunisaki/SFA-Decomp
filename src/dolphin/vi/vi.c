@@ -1,6 +1,8 @@
 
 #include "dolphin/gx/__gx.h"
 #include "dolphin/os/__os.h"
+#include <dolphin/si.h>
+#include "dolphin/vi/__vi.h"
 
 #define VI_TVMODE_3 VI_TVMODE_NTSC_3D
 

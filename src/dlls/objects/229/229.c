@@ -26,6 +26,10 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_object_api.h"
+#include "main/dll/dll_00E2_staff_api.h"
+#include "main/hud_visibility_api.h"
 
 #define SHIELD_NORMAL_WAVE_SCALE 0.5f
 #define SHIELD_SFX_VOLUME_SCALE  0.5f
@@ -159,8 +163,8 @@ void Shield_setMode(GameObject* obj, u8 mode) {
         }
         state->fadeTarget = 0.0f;
         state->fadeRate = -1.0f;
-        Sfx_StopFromObject((int)obj, SFXTRIG_lrope_powerup);
-        Sfx_StopFromObject((int)obj, SFXTRIG_lockon3_on);
+        Sfx_StopFromObject(obj, SFXTRIG_lrope_powerup);
+        Sfx_StopFromObject(obj, SFXTRIG_lockon3_on);
         break;
     case SHIELD_MODE_STANDARD_FADE_IN_SHORT:
         if (state->fadeTarget == 0.0f) {
@@ -223,8 +227,8 @@ void Shield_setMode(GameObject* obj, u8 mode) {
                     segmentAlphaCursor += 1;
                 }
             }
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_lrope_powerup);
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_lockon3_on);
+            Sfx_PlayFromObject(obj, SFXTRIG_lrope_powerup);
+            Sfx_PlayFromObject(obj, SFXTRIG_lockon3_on);
         }
         break;
     case SHIELD_MODE_STANDARD_FADE_OUT_LONG:
@@ -239,8 +243,8 @@ void Shield_setMode(GameObject* obj, u8 mode) {
         if (state->light != NULL) {
             modelLightStruct_setEnabled(state->light, 0, 0.5f);
         }
-        Sfx_StopFromObject((int)obj, SFXTRIG_lrope_powerup);
-        Sfx_StopFromObject((int)obj, SFXTRIG_lockon3_on);
+        Sfx_StopFromObject(obj, SFXTRIG_lrope_powerup);
+        Sfx_StopFromObject(obj, SFXTRIG_lockon3_on);
         break;
     case SHIELD_MODE_STANDARD_FADE_IN_LONG:
         if (staff != NULL) {
@@ -294,15 +298,15 @@ void Shield_setMode(GameObject* obj, u8 mode) {
                 segmentAlphaCursor += 1;
             }
         }
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_lockon3_on);
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_lrope_powerup);
+        Sfx_PlayFromObject(obj, SFXTRIG_lockon3_on);
+        Sfx_PlayFromObject(obj, SFXTRIG_lrope_powerup);
         break;
     case SHIELD_MODE_INIT_OMNI:
         state->fadeTarget = 0.0f;
         state->fadeRate = -1.0f;
         state->fadeMax = 60.0f;
-        Sfx_StopFromObject((int)obj, SFXTRIG_lrope_powerup);
-        Sfx_StopFromObject((int)obj, SFXTRIG_lockon3_on);
+        Sfx_StopFromObject(obj, SFXTRIG_lrope_powerup);
+        Sfx_StopFromObject(obj, SFXTRIG_lockon3_on);
         break;
     case SHIELD_MODE_OMNI_ACTIVE: {
         f32 fade = 60.0f;
@@ -343,8 +347,8 @@ void Shield_setMode(GameObject* obj, u8 mode) {
                 segmentAlphaCursor += 1;
             }
         }
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_lockon3_on);
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_lrope_powerup);
+        Sfx_PlayFromObject(obj, SFXTRIG_lockon3_on);
+        Sfx_PlayFromObject(obj, SFXTRIG_lrope_powerup);
         break;
     }
     case SHIELD_MODE_OMNI_HIT: {
@@ -395,8 +399,8 @@ void Shield_free(GameObject* obj) {
         ModelLightStruct_free(state->light);
         state->light = NULL;
     }
-    Sfx_StopFromObject((int)obj, SFXTRIG_lrope_powerup);
-    Sfx_StopFromObject((int)obj, SFXTRIG_lockon3_on);
+    Sfx_StopFromObject(obj, SFXTRIG_lrope_powerup);
+    Sfx_StopFromObject(obj, SFXTRIG_lockon3_on);
 }
 
 typedef struct ShieldParticleParams {
@@ -541,7 +545,7 @@ void Shield_update(GameObject* obj) {
     } else {
         obj->anim.alpha = (u8)(state->fadeValue / state->fadeMax * (f32)(s32)randomGetRange(192, 255));
     }
-    Sfx_SetObjectSfxVolume((int)obj, SFXTRIG_lockon3_on, (SHIELD_SFX_VOLUME_MAX * (state->fadeValue / state->fadeMax)),
+    Sfx_SetObjectSfxVolume(obj, SFXTRIG_lockon3_on, (SHIELD_SFX_VOLUME_MAX * (state->fadeValue / state->fadeMax)),
                            SHIELD_SFX_VOLUME_SCALE);
     if (obj->anim.alpha != 0) {
         obj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;

@@ -27,6 +27,9 @@
 #include "main/object_render.h"
 #include "main/audio/sfx_play_legacy_api.h"
 #include "main/dll/headdisplay.h"
+#include "main/gamebits_api.h"
+#include "main/gameloop_gamebit_api.h"
+#include "main/objhits.h"
 
 #define RING_SEQID_ARW_ARWING 0x601 /* "ARWArwing" (DLL 0x29A) */
 #define RING_OBJ_ARW_GOLD   0x060b
@@ -141,7 +144,7 @@ void Ring_onCollect(GameObject* obj, RingState* state, GameObject* arwing)
     u8 mode = state->mode;
     if (mode == 0)
     {
-        Sfx_PlayFromObject((int)arwing, SFXTRIG_ar_lsrhitobj16);
+        Sfx_PlayFromObject(arwing, SFXTRIG_ar_lsrhitobj16);
         if (arwingObj->anim.romDefNo == RING_SEQID_ARW_ARWING)
         {
             arwarwing_addHealth(arwingObj, 1);
@@ -150,7 +153,7 @@ void Ring_onCollect(GameObject* obj, RingState* state, GameObject* arwing)
     }
     else if (mode == 1)
     {
-        Sfx_PlayFromObject((int)arwing, SFXTRIG_ar_lsrhitobj16);
+        Sfx_PlayFromObject(arwing, SFXTRIG_ar_lsrhitobj16);
         if (arwingObj->anim.romDefNo == RING_SEQID_ARW_ARWING)
         {
             arwarwing_addMaxHealth(arwingObj, 1);
@@ -159,12 +162,12 @@ void Ring_onCollect(GameObject* obj, RingState* state, GameObject* arwing)
     }
     else if (mode == 3 || mode == 4)
     {
-        Sfx_PlayFromObject((int)arwing, SFXTRIG_ar_lsrhitobj16);
+        Sfx_PlayFromObject(arwing, SFXTRIG_ar_lsrhitobj16);
         gameBitIncrement(setup->counterGameBit);
     }
     else
     {
-        Sfx_PlayFromObject((int)arwing, SFXTRIG_ar_laser216);
+        Sfx_PlayFromObject(arwing, SFXTRIG_ar_laser216);
         if (arwingObj->anim.romDefNo == RING_SEQID_ARW_ARWING)
         {
             int seg;

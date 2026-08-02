@@ -4,6 +4,7 @@
 #include "main/frame_timing.h"
 #include "main/dll/FRONT/dll_39.h"
 #include "dlls/object_descriptor.h"
+#include "main/model_engine.h"
 u8 gNrarewareTimeoutFlag;
 s8 gNrarewareExitDelay;
 u8 gNrarewareTransitionStarted;

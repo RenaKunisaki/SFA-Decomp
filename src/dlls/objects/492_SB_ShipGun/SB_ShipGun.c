@@ -186,7 +186,7 @@ void SB_ShipGun_update(GameObject* obj) {
             galleonPhase = SB_GALLEON_VTBL(galleon)->getPhase(galleon);
             if ((galleonPhase == 0) && (hasPriorityHit = ObjHits_GetPriorityHit(obj, 0, 0, 0), hasPriorityHit != 0)) {
                 Obj_SetModelColorFadeRecursive(obj, SB_SHIPGUN_HIT_REACT_TYPE, SB_SHIPGUN_HIT_REACT_POWER, 0, 0, 1);
-                Sfx_PlayFromObject((int)obj, SB_SHIPGUN_HIT_SFX);
+                Sfx_PlayFromObject(obj, SB_SHIPGUN_HIT_SFX);
                 state->hitCount += 1;
                 if (state->hitCount == SB_SHIPGUN_FIRST_DAMAGE_HIT_COUNT) {
                     state->health -= 1;
@@ -195,7 +195,7 @@ void SB_ShipGun_update(GameObject* obj) {
                         SB_GALLEON_VTBL(galleon)->onPartDestroyed(galleon);
                     }
                 } else if (state->hitCount == SB_SHIPGUN_SECOND_DAMAGE_HIT_COUNT) {
-                    Sfx_PlayFromObject((int)obj, SB_SHIPGUN_SECOND_DAMAGE_SFX);
+                    Sfx_PlayFromObject(obj, SB_SHIPGUN_SECOND_DAMAGE_SFX);
                     state->health -= 1;
                     state->phase = SB_SHIPGUN_PHASE_DEATH_TRIGGER;
                     if ((void*)galleon != NULL) {
@@ -259,7 +259,7 @@ void SB_ShipGun_update(GameObject* obj) {
                 cannonball->userData2 = (int)state->cloudRunner;
                 CameraShake_Enable();
                 CameraShake_SetOffset(0.1f);
-                Sfx_PlayFromObject((int)obj, SB_SHIPGUN_FIRE_SFX);
+                Sfx_PlayFromObject(obj, SB_SHIPGUN_FIRE_SFX);
                 state->volleyCount += 1;
                 if (state->volleyCount == SB_SHIPGUN_VOLLEY_SIZE) {
                     if (galleonStage >= SB_SHIPGUN_FAST_FIRE_GALLEON_STAGE) {
@@ -330,9 +330,9 @@ void SB_ShipGun_update(GameObject* obj) {
         if (state->health == 0) {
             distance = Vec_distance(&player->anim.worldPosX, &obj->anim.worldPosX);
             if (distance < 200.0f) {
-                Sfx_PlayFromObject((int)obj, SB_SHIPGUN_NEAR_RANGE_SFX);
+                Sfx_PlayFromObject(obj, SB_SHIPGUN_NEAR_RANGE_SFX);
             } else {
-                Sfx_StopObjectChannel((int)obj, SB_SHIPGUN_LOOP_SFX_CHANNEL);
+                Sfx_StopObjectChannel(obj, SB_SHIPGUN_LOOP_SFX_CHANNEL);
             }
         }
     }

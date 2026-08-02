@@ -34,6 +34,9 @@
 #include "main/objseq.h"
 #include "main/objtexture.h"
 #include "main/object_render.h"
+#include "main/objprint_render_api.h"
+#include "main/pad_api.h"
+#include "main/shader_api.h"
 
 const Vec3f gSunTempleRestartPos = {-6318.10009765625f, -1232.0f, -5884.0f};
 

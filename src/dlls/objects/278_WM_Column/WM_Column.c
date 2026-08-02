@@ -5,8 +5,10 @@
 #include "main/dll/tricky_api.h"
 #include "main/object_render.h"
 #include "main/obj_list.h"
+#include "main/objtype.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
+#include "main/gamebits_api.h"
 
 #define WM_COLUMN_GROUP                        4
 #define WM_COLUMN_TARGET_GROUP                 0x10

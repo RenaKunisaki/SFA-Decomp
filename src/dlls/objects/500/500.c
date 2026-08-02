@@ -12,6 +12,10 @@
 #include "main/object_render.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
+#include "main/audio/sfx_channel_query_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/obj_path.h"
 
 #define DLL1F4_OBJECT_SFX_CHANNEL 0x40
 #define DLL1F4_OBJECT_SFX_RANGE   100.0f
@@ -42,7 +46,7 @@ int dll500_getExtraSize(void) {
 }
 
 void dll500_free(GameObject* obj) {
-    Sfx_StopObjectChannel((int)obj, DLL1F4_OBJECT_SFX_CHANNEL);
+    Sfx_StopObjectChannel(obj, DLL1F4_OBJECT_SFX_CHANNEL);
     (*gExpgfxInterface)->freeSource2((u32)obj);
 }
 
@@ -90,12 +94,12 @@ void dll500_update(int obj) {
 
     playerDistance = Vec_distance((void*)((int)Obj_GetPlayerObject() + offsetof(GameObject, anim.worldPosX)),
                                   (void*)(obj + offsetof(GameObject, anim.worldPosX)));
-    if (Sfx_IsPlayingFromObjectChannel(obj, DLL1F4_OBJECT_SFX_CHANNEL) == 0) {
+    if (Sfx_IsPlayingFromObjectChannel((GameObject*)obj, DLL1F4_OBJECT_SFX_CHANNEL) == 0) {
         if (playerDistance < DLL1F4_OBJECT_SFX_RANGE) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_mushdizzylp12);
+            Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_mushdizzylp12);
         }
     } else if (playerDistance >= DLL1F4_OBJECT_SFX_RANGE) {
-        Sfx_StopObjectChannel(obj, DLL1F4_OBJECT_SFX_CHANNEL);
+        Sfx_StopObjectChannel((GameObject*)obj, DLL1F4_OBJECT_SFX_CHANNEL);
     }
 
     if (((GameObject*)obj)->anim.romDefNo != DLL1F4_STATIC_SEQUENCE_ID) {

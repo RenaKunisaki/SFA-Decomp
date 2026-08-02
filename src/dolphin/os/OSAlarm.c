@@ -1,5 +1,6 @@
 
 #include "dolphin/os/__os.h"
+#include <dolphin/PPCArch.h>
 
 typedef struct {
     OSAlarm* head;

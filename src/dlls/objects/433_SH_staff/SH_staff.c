@@ -33,6 +33,10 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/player_staff_api.h"
+#include "main/dll/tricky_api.h"
+#include "main/map_load.h"
 
 /* ShStaffState.phase pickup / carry state machine (see file header) */
 #define SHSTAFF_PHASE_IDLE           0     /* wait for the staff object / acquired game bit */
@@ -426,7 +430,7 @@ void sh_staff_update(GameObject* obj) {
         }
     } else if (currentPhase == SHSTAFF_PHASE_ARMED) {
         if (ObjTrigger_IsSet((int)obj) != 0) {
-            int target = objGetNearestTypeTo(SHSTAFF_TARGET_OBJGROUP, obj, 0);
+            GameObject* target = objGetNearestTypeTo(SHSTAFF_TARGET_OBJGROUP, obj, 0);
             (*gObjectTriggerInterface)->runSequence(0, (void*)target, -1);
             state->phase = SHSTAFF_PHASE_PICKUP;
             state->hazeFadeTimer = 60.0f;
@@ -458,7 +462,7 @@ void sh_staff_update(GameObject* obj) {
     if (state->fizzSfxTimer > 1.0f) {
         state->fizzSfxTimer = 0.0f;
         if (state->phase == SHSTAFF_PHASE_ARMED) {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_pk_staff_fizz);
+            Sfx_PlayFromObject(obj, SFXTRIG_pk_staff_fizz);
         }
     }
 }

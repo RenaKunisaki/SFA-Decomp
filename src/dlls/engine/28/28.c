@@ -226,7 +226,7 @@ int Effect3_spawnObject(GameObject* sourceObject, int effectId, PartFxSpawnParam
         cfg.quadVertex3Pad06 = 0x200;
         break;
     case 0x200:
-        Sfx_PlayFromObject((u32)sourceObject, SFXTRIG_blkscrp6);
+        Sfx_PlayFromObject(sourceObject, SFXTRIG_blkscrp6);
         cfg.lifetimeFrames = 0x64;
         cfg.scale = 0.0003f * cfg.lifetimeFrames;
         cfg.behaviorFlags = 0xa100201;

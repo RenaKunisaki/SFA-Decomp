@@ -13,6 +13,7 @@
 #include "main/dll/dll_0299.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/resource.h"
+#include "main/vecmath.h"
 
 void* gDll299Resource;
 

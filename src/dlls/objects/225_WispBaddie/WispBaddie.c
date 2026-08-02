@@ -12,6 +12,13 @@
 #include "main/frame_timing.h"
 #include "main/mm.h"
 #include "sys/objects.h"
+#include "main/curve.h"
+#include "main/audio/sfx_position_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/objhits.h"
+#include "main/objtype.h"
+#include "main/vecmath.h"
+#include "string.h"
 
 #define WISPBADDIE_HIT_VOLUME_SLOT 10
 
@@ -149,7 +156,7 @@ void WispBaddie_update(GameObject* obj) {
             state->flags = (u8)(flags & ~WISPBADDIE_FLAG_CHASE_PLAYER);
             state->flags = (u8)(state->flags | WISPBADDIE_FLAG_CHASE_LOCKOUT);
         }
-        Sfx_PlayAtPositionFromObject((int)obj, hitPosX, hitPosY, hitPosZ, SFXTRIG_robolaser16);
+        Sfx_PlayAtPositionFromObject(obj, hitPosX, hitPosY, hitPosZ, SFXTRIG_robolaser16);
     }
 
     particleMode = 4;
@@ -194,7 +201,7 @@ void WispBaddie_update(GameObject* obj) {
         }
         state->cryTimer -= timeDelta;
         if (state->cryTimer < 0.0f) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_fball2_c);
+            Sfx_PlayFromObject(obj, SFXTRIG_fball2_c);
             state->cryTimer = (f32)randomGetRange(60, 120);
         }
         state->particleId = 0x338;
@@ -237,7 +244,7 @@ void WispBaddie_init(GameObject* obj, WispBaddiePlacement* placement, int skipAl
             0) {
             state->flags = (u8)(state->flags | WISPBADDIE_FLAG_PATH_NEEDS_LINK);
         }
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_id_23b);
+        Sfx_PlayFromObject(obj, SFXTRIG_id_23b);
     }
     obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HITDETECT_DISABLED);
 }

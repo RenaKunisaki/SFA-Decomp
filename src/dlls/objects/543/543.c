@@ -7,6 +7,7 @@
 #include "main/gamebits.h"
 #include "main/object_render_legacy.h"
 #include "main/objseq.h"
+#include "main/audio/sfx_play_api.h"
 
 #define VFP_PLATFORM_LAVABLOCK_OBJ 960
 
@@ -223,12 +224,12 @@ void VFP_Platform_update(GameObject* obj)
                         if (yi == tyi - 60)
                         {
                             state->state = 2;
-                            Sfx_PlayFromObject((int)obj, SFXTRIG_en_ripefruit11);
+                            Sfx_PlayFromObject(obj, SFXTRIG_en_ripefruit11);
                         }
                         if (yi == tyi)
                         {
                             state->state = 3;
-                            Sfx_PlayFromObject((int)obj, SFXTRIG_en_ripefruit11);
+                            Sfx_PlayFromObject(obj, SFXTRIG_en_ripefruit11);
                         }
                     }
                     else if (s3 == 3)
@@ -236,12 +237,12 @@ void VFP_Platform_update(GameObject* obj)
                         if (xi == txi - 60)
                         {
                             state->state = 2;
-                            Sfx_PlayFromObject((int)obj, SFXTRIG_en_ripefruit11);
+                            Sfx_PlayFromObject(obj, SFXTRIG_en_ripefruit11);
                         }
                         if (xi == txi)
                         {
                             state->state = 3;
-                            Sfx_PlayFromObject((int)obj, SFXTRIG_en_ripefruit11);
+                            Sfx_PlayFromObject(obj, SFXTRIG_en_ripefruit11);
                         }
                     }
                     else
@@ -249,12 +250,12 @@ void VFP_Platform_update(GameObject* obj)
                         if (yi == tyi + 60)
                         {
                             state->state = 4;
-                            Sfx_PlayFromObject((int)obj, SFXTRIG_en_ripefruit11);
+                            Sfx_PlayFromObject(obj, SFXTRIG_en_ripefruit11);
                         }
                         if (yi == tyi)
                         {
                             state->state = 5;
-                            Sfx_PlayFromObject((int)obj, SFXTRIG_en_ripefruit11);
+                            Sfx_PlayFromObject(obj, SFXTRIG_en_ripefruit11);
                         }
                     }
                     break;

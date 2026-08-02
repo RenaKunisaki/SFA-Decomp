@@ -63,6 +63,17 @@
 #include "main/object_render.h"
 #include "dolphin/mtx/vec.h"
 #include "main/debug.h"
+#include "main/maketex_sequence_api.h"
+#include "main/audio/sfx_channel_volume_api.h"
+#include "main/audio/music_api.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_limited_object_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/loaded_file_flags.h"
+#include "main/map_load.h"
+#include "main/rcp_dolphin_api.h"
+#include "main/pi_dolphin_api.h"
 
 GameObject* gArwing;
 
@@ -201,7 +212,7 @@ void arwarwing_readControls(GameObject* obj, ArwingState* state)
         btn = aw->inputFlags;
         if ((btn & PAD_TRIGGER_R) != 0)
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_wmap_arwingflyby);
+            Sfx_PlayFromObject(obj, SFXTRIG_wmap_arwingflyby);
             aw->mode = 1;
             aw->barrelRollAngle = (obj)->anim.rotZ;
             aw->barrelRollDirection = aw->barrelRollSpeed;
@@ -212,7 +223,7 @@ void arwarwing_readControls(GameObject* obj, ArwingState* state)
         }
         else if ((btn & PAD_TRIGGER_L) != 0)
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_wmap_arwingflyby);
+            Sfx_PlayFromObject(obj, SFXTRIG_wmap_arwingflyby);
             aw->mode = 1;
             aw->barrelRollAngle = (obj)->anim.rotZ;
             aw->barrelRollDirection = -aw->barrelRollSpeed;
@@ -546,7 +557,7 @@ void arwarwing_spawnBomb(GameObject* obj, ArwingState* state, int side)
     arwing->activeBombObj = loadObjectAtObject(obj, &setup->base);
     arwprojectile_setParamScalar(arwing->activeBombObj, *(u16*)&arwing->bombProjectileParam);
     arwprojectile_launchForward(arwing->activeBombObj, arwing->bombProjectileLifetime);
-    Sfx_PlayFromObject((int)obj, SFXTRIG_ar_badhit16);
+    Sfx_PlayFromObject(obj, SFXTRIG_ar_badhit16);
 }
 
 void arwarwing_updateBombFire(GameObject* obj, ArwingState* state)
@@ -620,15 +631,15 @@ void arwarwing_spawnLaserShot(GameObject* obj, ArwingState* state, int side, int
         return;
     if (level == 0)
     {
-        Sfx_PlayFromObject(proj, SFXTRIG_ar_brakes16);
+        Sfx_PlayFromObject((GameObject*)proj, SFXTRIG_ar_brakes16);
     }
     else if (level == 1)
     {
-        Sfx_PlayFromObject(proj, SFXTRIG_ar_englp16);
+        Sfx_PlayFromObject((GameObject*)proj, SFXTRIG_ar_englp16);
     }
     else
     {
-        Sfx_PlayFromObject(proj, SFXTRIG_ar_deflect16);
+        Sfx_PlayFromObject((GameObject*)proj, SFXTRIG_ar_deflect16);
         Obj_SetActiveModelIndex((GameObject*)proj, 1);
     }
     if ((u8)linkEffect != 0)
@@ -757,14 +768,14 @@ void arwarwing_handlePathDamage(GameObject* obj, ArwingState* state)
             else
                 state->mode = ARWING_MODE_DEAD;
             state->modeTimer = 80.0f;
-            Sfx_PlayFromObject((int)obj, SFXTRIG_barrelblow11);
+            Sfx_PlayFromObject(obj, SFXTRIG_barrelblow11);
             Music_Trigger(MUSICTRIG_dark_ice_boss_1, 1);
         }
         else if ((s8)((ArwingState*)(obj)->extra)->health <= 3)
         {
             Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_bomb_pickup);
         }
-        Sfx_PlayFromObject((int)obj, SFXTRIG_wmap_select);
+        Sfx_PlayFromObject(obj, SFXTRIG_wmap_select);
         ((Arw339Flags*)&state->flags339)->scoreFlag = 1;
         Obj_SetModelColorFadeRecursive(obj, 0x4b, 0xc8, 0, 0, 1);
         state->damageFlashTimer = 25.0f;
@@ -803,12 +814,12 @@ void arwarwing_handleObjectDamage(GameObject* obj, ArwingState* state)
         {
             if (((GameObject*)hitObj)->anim.romDefNo == 0x6ae && state->mode == ARWING_MODE_BARRELROLL)
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_ar_blaunch16);
+                Sfx_PlayFromObject(obj, SFXTRIG_ar_blaunch16);
                 return;
             }
             doRumble(10.0f);
             *(s8*)&state->health = *(s8*)&state->health - hitVol;
-            Sfx_PlayFromObject((int)obj, SFXTRIG_wmap_select_2ac);
+            Sfx_PlayFromObject(obj, SFXTRIG_wmap_select_2ac);
             ((Arw339Flags*)&state->flags339)->scoreFlag = 1;
             Obj_SetModelColorFadeRecursive(obj, 0x4b, 0xc8, 0, 0, 1);
             state->damageFlashTimer = 25.0f;
@@ -832,7 +843,7 @@ void arwarwing_handleObjectDamage(GameObject* obj, ArwingState* state)
             mainSetBits(GAMEBIT_ArwingRelated0E74, 1);
         state->mode = ARWING_MODE_DEAD;
         state->modeTimer = 80.0f;
-        Sfx_PlayFromObject((int)obj, SFXTRIG_barrelblow11);
+        Sfx_PlayFromObject(obj, SFXTRIG_barrelblow11);
         Music_Trigger(MUSICTRIG_dark_ice_boss_1, 1);
         unlockLevel(0, 0, 1);
         loadMapAndParent(0x29);
@@ -858,7 +869,7 @@ void arwarwing_updateRollAndEngine(int obj, ArwingState* state)
         sum = 1.0 + log2fBitEstimate(state->velZ / state->maxSpeedZ);
         vol = (f32)(sum / 2.0);
         Sfx_KeepAliveLoopedObjectSound(obj, SFXTRIG_ar_boost16);
-        Sfx_SetObjectChannelVolume(obj, 0x40, 0xfe, vol);
+        Sfx_SetObjectChannelVolume((GameObject*)obj, 0x40, 0xfe, vol);
     }
 
     arwarwinggu_setTextureFrame(state->escortObj, state->enginePitch);
@@ -872,7 +883,7 @@ void arwarwing_updateRollAndEngine(int obj, ArwingState* state)
                 state->flags477 &= ~ARWING_FLAG_ROLL_RIGHT;
                 state->flags477 |= ARWING_FLAG_ROLL_LEFT;
                 state->wingFlexTarget = 2048.0f;
-                Sfx_PlayFromObjectLimited(obj, SFXTRIG_ar_barrel16_2b6, 3);
+                Sfx_PlayFromObjectLimited((GameObject*)obj, SFXTRIG_ar_barrel16_2b6, 3);
             }
         }
         else
@@ -892,7 +903,7 @@ void arwarwing_updateRollAndEngine(int obj, ArwingState* state)
                 state->flags477 &= ~ARWING_FLAG_ROLL_LEFT;
                 state->flags477 |= ARWING_FLAG_ROLL_RIGHT;
                 state->wingFlexTarget = 512.0f;
-                Sfx_PlayFromObjectLimited(obj, SFXTRIG_ar_bblast16, 3);
+                Sfx_PlayFromObjectLimited((GameObject*)obj, SFXTRIG_ar_bblast16, 3);
             }
         }
         else
@@ -910,7 +921,7 @@ void arwarwing_updateRollAndEngine(int obj, ArwingState* state)
     {
         if ((state->inputFlags & 0xc00) != 0)
         {
-            Sfx_PlayFromObject(obj, SFXTRIG_generic_pickup);
+            Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_generic_pickup);
         }
         state->rollCooldown -= timeDelta;
         if (state->rollCooldown <= 0.0f)
@@ -1543,7 +1554,7 @@ void arwarwing_addHealth(GameObject* arwing, int amount)
     *(s8*)&state->health = clamped;
     if (*(s8*)&state->health > 3)
     {
-        Sfx_StopObjectChannel((u32)arwing, 4);
+        Sfx_StopObjectChannel(arwing, 4);
     }
 }
 

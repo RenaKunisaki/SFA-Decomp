@@ -39,7 +39,7 @@
 #include "dolphin/os/OSFastCast.h"
 
 extern f32 widescreenAspect_803DEC1C;
-extern f32 lbl_803DB670;
+extern f32 gStandardAspectRatio;
 
 void sceneDraw(void);
 void sceneDrawTransparentPolys(void);
@@ -48,6 +48,8 @@ void sceneDrawTransparentPolys(void);
 
 
 #include "main/render_flags.h"
+#include "main/dll/player_api.h"
+#include "main/dll_000A_expgfx.h"
 
 extern f32 lbl_803DEBFC;
 
@@ -158,7 +160,7 @@ int setWidescreen(u8 v)
     else
     {
         renderFlags &= ~(u64)RENDERFLAG_WIDESCREEN;
-        Camera_SetAspectRatio(lbl_803DB670);
+        Camera_SetAspectRatio(gStandardAspectRatio);
     }
     return 0;
 }
@@ -354,7 +356,7 @@ void lightmap_sortTransparentDrawQueue(void)
 
 
 
-extern f32 lbl_803DEC20;
+extern f32 gTrackPackedCoordScale;
 
 void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 selector)
 {
@@ -380,17 +382,17 @@ void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 
     OSs16tof32(&bounds->maxX, &maxXs);
     OSs16tof32(&bounds->minX, &minXs);
     OSs16tof32(&bounds->maxY, &maxYs);
-    maxW = maxYs * lbl_803DEC20 + block->transform[1][3];
+    maxW = maxYs * gTrackPackedCoordScale + block->transform[1][3];
     OSs16tof32(&bounds->minY, &minYs);
     OSs16tof32(&bounds->maxZ, &maxZs);
-    maxD = maxZs * lbl_803DEC20 + block->transform[2][3];
+    maxD = maxZs * gTrackPackedCoordScale + block->transform[2][3];
     OSs16tof32(&bounds->minZ, &minZs);
     half = lbl_803DEBFC;
-    stk.x = half * ((minXs * lbl_803DEC20 + block->transform[0][3]) +
-                    (maxXs * lbl_803DEC20 + block->transform[0][3]));
-    minW = minYs * lbl_803DEC20 + block->transform[1][3];
+    stk.x = half * ((minXs * gTrackPackedCoordScale + block->transform[0][3]) +
+                    (maxXs * gTrackPackedCoordScale + block->transform[0][3]));
+    minW = minYs * gTrackPackedCoordScale + block->transform[1][3];
     stk.y = half * (minW + maxW);
-    minD = minZs * lbl_803DEC20 + block->transform[2][3];
+    minD = minZs * gTrackPackedCoordScale + block->transform[2][3];
     stk.z = half * (minD + maxD);
     PSMTXMultVec((MtxPtr)Camera_GetViewMatrix(), &stk, &stk);
     t = (s32) - stk.z;

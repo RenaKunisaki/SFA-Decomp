@@ -102,9 +102,9 @@ void WM_colrise_update(GameObject* obj) {
         }
     }
     if (isMoving != 0) {
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_en_treedrum16_7d);
+        Sfx_PlayFromObject(obj, SFXTRIG_en_treedrum16_7d);
     } else {
-        Sfx_StopObjectChannel((int)obj, WM_COLRISE_MOVE_SFX_CHANNEL);
+        Sfx_StopObjectChannel(obj, WM_COLRISE_MOVE_SFX_CHANNEL);
     }
 }
 

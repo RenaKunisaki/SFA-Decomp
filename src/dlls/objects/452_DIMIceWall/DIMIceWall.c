@@ -11,6 +11,10 @@
 #include "main/dll/dll_00C4_tricky.h"
 #include "main/dll/partfx_interface.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/gamebits_api.h"
+#include "main/objprint_render_api.h"
+#include "main/vecmath.h"
 
 #define DIM_ICE_WALL_SILENT_MAP_ID 7433
 
@@ -74,7 +78,7 @@ void dimicewall_update(GameObject* obj) {
                                   DIM_ICE_WALL_PARTICLE_SPAWN_MODE, -1, NULL);
             }
             if ((u32)placement->base.ident != DIM_ICE_WALL_SILENT_MAP_ID) {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_barrel_bounce1);
+                Sfx_PlayFromObject(obj, SFXTRIG_barrel_bounce1);
             }
             state->shattered = 1;
             if (placement->shatterGameBit != -1) {

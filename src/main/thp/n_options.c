@@ -29,6 +29,12 @@
 #include "dolphin/os/OSInterrupt.h"
 #include "dolphin/os/OSMessage.h"
 #include "dolphin/vi/vifuncs.h"
+#include "dolphin/gx/GXBump.h"
+#include "dolphin/gx/GXCull.h"
+#include "dolphin/gx/GXPixel.h"
+#include "dolphin/gx/GXTev.h"
+#include "string.h"
+#include "track/intersect_depth_state_api.h"
 
 static const GXColorS10 sMovieTevColor0 = {-90, 0, -114, 135};
 static const GXColor sMovieKColor0 = {0x00, 0x00, 0xE2, 0x58};

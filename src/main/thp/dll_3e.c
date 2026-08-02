@@ -23,6 +23,10 @@
 #include "dolphin/os.h"
 #include "dolphin/vi/vifuncs.h"
 #include "main/dll/FRONT/dll_3B.h"
+#include "main/dll/FRONT/n_options.h"
+#include "main/fileio.h"
+#include "main/audio_decode_thread.h"
+#include "main/dll/FRONT/picmenu.h"
 
 typedef struct AttractMovieControl {
     u8 pad000[0x560];

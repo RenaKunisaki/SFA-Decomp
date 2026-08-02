@@ -10,6 +10,9 @@
 #include "main/gamebits.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/dll/dll_0014_api.h"
+#include "main/dll/objfsa_query_api.h"
+#include "main/objtype.h"
 
 typedef struct TrickyWarpCurveEntry {
     u8 pad00[3];           /* 0x00 */

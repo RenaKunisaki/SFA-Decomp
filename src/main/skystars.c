@@ -17,6 +17,9 @@
 #include "main/vecmath.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/mtx/vec.h"
+#include "dolphin/gx/GXDispList.h"
+#include "track/intersect_api.h"
+#include "track/intersect_render_setup_api.h"
 
 u8 gNewCloudStarsInitialized;
 Texture* gNewCloudStarTextureB;

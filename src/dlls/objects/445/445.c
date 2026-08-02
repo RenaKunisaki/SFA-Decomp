@@ -17,6 +17,11 @@
 #include "main/gamebits_api.h"
 #include "main/objseq.h"
 #include "sys/objects.h"
+#include "main/dll/player_api.h"
+#include "main/gametext_color_api.h"
+#include "main/gametext_show_api.h"
+#include "main/objprint_render_api.h"
+#include "main/pad.h"
 
 typedef struct PaymentKioskTextPair {
     int approachTextId;

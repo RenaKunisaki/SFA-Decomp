@@ -6,5 +6,6 @@
 
 void TRK_fill_mem(void* dest, int value, unsigned long length);
 void* TRK_memset(void* dest, int value, size_t length);
+void* TRK_memcpy(void* dest, const void* src, size_t length);
 
 #endif /* METROTRK_PORTABLE_MEM_TRK_H */

@@ -15,17 +15,41 @@ the two spellings into one expression tree).
 
 Run these in order. Each one can end the round without a build.
 
-1. **Rank by `structB`, never by missing bytes or by how close the percentage looks.**
+1. **Run `python3 tools/fn_flag_probe.py <unit>` FIRST. A MATCH under any other profile means
+   the source axis is CLOSED for that function — stop spelling.** This is the cheapest check
+   and it is decisive in a way no amount of reading asm is: if the function comes out
+   **byte-identical** under a different `-opt` profile, then no source spelling is missing, and
+   every hour spent on the C is spent on the wrong axis.
+   `subtitleUpdateAndDraw` is the worked example, and it cost **seven refuted spellings** before
+   anyone ran the probe: it reports MATCH under four profiles (`prop`, `noprop`,
+   `noprop+noauto`, `prop+noauto`), all of which are plain `-opt nopeephole,noschedule` against
+   the unit's configured `level=1`.
+   **A MATCH does not mean you may take it.** Switching the TU is a legitimate change
+   (TU-level cflags in `configure.py`, not a pragma, not a split) but it is priced against the
+   *whole unit*: here `subtitleUpdateAndDraw` 97.799 -> **100.000** while
+   `subtitleBuildLineTable` 100.000 -> **19.887**, unit 99.34590 -> **57.36807**. Take the
+   profile only if the unit total improves.
+   **Then check whether the levels reconcile — usually they don't, and `level` dominates.**
+   Both `level=1,nopropagation` and `level=1,nocse` returned *exactly* the baseline, to the
+   digit: the extra tokens are inert on top of `level=1`. When two functions want different
+   `-opt level` settings there is no combined profile, and step 6 decides whether a split is
+   even permitted.
+2. **Rank by `structB`, never by missing bytes or by how close the percentage looks.**
    Missing bytes measure how much is wrong; `structB` measures how much is *reachable*.
    The near-flip band (>=99%, <100%) is **structurally empty** — six candidates triaged, all
    six with **zero instruction-count delta**, four pure register permutation plus pool
    relocations. Functions reach 99% precisely because everything source-addressable is
    already gone.
-2. **Check whether the function is already worked.** The `structB` sweep has no memory. Two
-   `grep`s — the memory files and `git log` on the file — distinguish "largest unworked entry"
-   from "documented cap". `worldplanet_update` was briefed as the former and was the latter: a
-   120-permutation declaration sweep had already run on it, flat, recorded as "organic residue".
-3. **Read the unit's `mw_version` and cflags — and note whether the informative flag is
+3. **Check whether the function is already worked — including prior *probe* results, not just
+   prior commits.** The `structB` sweep has no memory. Two `grep`s — the memory files and
+   `git log` on the file — distinguish "largest unworked entry" from "documented cap".
+   `worldplanet_update` was briefed as the former and was the latter: a 120-permutation
+   declaration sweep had already run on it, flat, recorded as "organic residue".
+   This check covers **probe output too**: `subtitleUpdateAndDraw`'s `fn_flag_probe` result had
+   already been measured and recorded earlier in the same session, and was re-derived from
+   scratch because the briefing didn't restate it. Both sides own this one — read the record
+   before re-running a sweep, and restate known results when handing a target over.
+4. **Read the unit's `mw_version` and cflags — and note whether the informative flag is
    *present* or *absent*.** This is asymmetric and the asymmetry matters:
    - flag **present** (e.g. `engine/86` builds `noschedule`) → a load-*position* difference
      **cannot** be the scheduler, so it is promoted to source-reachable. This is what cracked
@@ -41,11 +65,26 @@ Run these in order. Each one can end the round without a build.
      census came back **zero surplus in every function** on `WORLDplanet.c`, and Lane B measured
      `SB_Galleon.c` — also GC/1.3 — at `extsb` **29/29**. Read the version to know *which*
      levers are worth censusing, then census before writing anything.
-4. **Look for a sibling-site control inside the same function.** If the same construct gets
+5. **Look for a sibling-site control inside the same function.** If the same construct gets
    two different treatments in one basic block, the difference is operand-dependent and the
    operand is the knob. In `modelRenderInterpolateRootTransform` a *full* 64-bit AND and a
    *low-half-only* AND sit in the same block — which is what identified operand **type** as
    the lever there.
+6. **If step 1 found two functions wanting different profiles, run the pool-ownership test
+   before even thinking about a split.** CLAUDE.md's "never split a DOL-confirmed TU to isolate
+   a flag profile" is policy; the pool test can turn it into a *fact* for your specific unit,
+   which is much stronger and ends the question permanently.
+   **The test:** list the unit's `.sdata2` symbols, then map every `.text` relocation targeting
+   one of them back to the function it lands in. **A compiler-minted pool word referenced by two
+   functions is unreachable cross-TU** — the compiler mints a pool per translation unit, so
+   those two functions are provably in the same TU. (Same method that settled the worldplanet
+   merge in `1ce3e5d8a`.)
+   Worked example — `main/subtitle.c`, one contiguous `.text [0x8001B46C, 0x8001BB78)`, one
+   `.bss`, one 32-byte pool. Of five pool words, exactly one is shared, and it is shared by
+   exactly the two functions that want different profiles:
+   `lbl_803DE728 <- {subtitleUpdateAndDraw, subtitleBuildLineTable}`. One real TU, proven. The
+   split that would let each take its own `-opt level` is therefore **forbidden by evidence**,
+   not merely discouraged — and `subtitleUpdateAndDraw`'s residual is closed on principle.
 
 ## Levers that fired
 
@@ -233,6 +272,35 @@ both lineage evidence and a measured gain at the exact call site.
 
 ## Refutations worth knowing before you spend a build
 
+**The reference corpus can refute a shape at scale — use it to prove a cap, not just to find a
+donor.** `tools/refcorpus/search_corpus.py --asm` takes a regex over newline-separated
+`mnemonic operands` text, so a target shape can be transcribed register-for-register with
+backreferences and searched across ~42.9k GC/2.0-compiled functions. Worked case,
+`subtitleUpdateAndDraw` (retail: `addi r0,rX,lo` / in-place `slwi rN,rN,2` / `add rY,r0,rN` …
+later `lwzx rZ,rZ,rN`):
+
+| shape | corpus (42,932 fns, all profiles) | our tree (991 objects, our flags) |
+|---|---|---|
+| in-place `slwi` surviving a new base into `lwzx` | 394 | 54 objects |
+| `base -> r0` + in-place `slwi` + `add` from `r0` | **6** | **0** |
+| both together (retail's actual shape) | **0** | **0** |
+
+Search the halves separately — that split is what makes the null *explanatory*. The 6 hits are
+three functions across two profiles, all one C idiom (MP4 `fn_1_230`): **one base object with two
+parallel member arrays at the same index**, so the base becomes a single-use temp and sinks to
+`r0` while the scaled index stays live. That idiom is structurally unavailable at the subtitle
+site, because retail emits **two independent symbol relocations** there (`gSubtitleLineStrs` and
+`gSubtitleLineTimes`, adjacent 0x400 parallel arrays, separate `lis`/`addi` pairs) — there is no
+single base to hang both off. A null plus the mechanism for the null beats a null alone.
+Also note the profile split: those donors appear under `both_off` and `peep_on` but never
+`sched_on`/`both_on` — scheduling destroys the shape.
+
+**A failed probe can still recover a positive fact about the original source.** Replacing
+`subtitle.c`'s `char** lineStrs[1]; lineStrs[0] = gSubtitleLineStrs;` walker with the corpus
+donor's own plain `gSubtitleLineStrs[lineIndex]` measured **97.799 -> 96.604**. The spelling is
+refuted *and* the walker is now known to be load-bearing rather than incidental — worth recording
+so nobody "simplifies" it later.
+
 **Transcribing the target's instruction order into C is not recovering its source.** Retail's
 blend in `modelApplyBoneTransform` is operation-major (three `mullw`, three more, three `add`,
 three `srwi`...). Written literally in C it forces all six components live simultaneously and
@@ -355,6 +423,53 @@ transposed, the knob is the cast lever above, not the source text.
 
 ## Gate reminders that cost real score today
 
+- **ALWAYS read `fn_flag_probe`'s positive controls before treating a `-` column as a closed flag axis.**
+  The tool now prints a `CONTROLS kept` row by default and labels a profile UNSOUND when it breaks every
+  already-matching function — because it once returned a *vacuous all-`-` table* on musyx that looked
+  exactly like a clean closure. **Root cause, worth generalising: the alternative profiles hardcoded
+  `nopeephole,noschedule` and REPLACED the unit's `-opt`.** That is a small perturbation for `main/` under
+  GC/2.0 (already configured that way) but a demolition for musyx, which configures plain `-O4,p` with
+  **no `-opt` at all** — so the "probe" silently switched two major passes off and changed several axes at
+  once. Measured per-column MATCH retention before the fix: `objhits` (GC/2.0) **78–118 of 118**, both
+  1.2.5n units **exactly 0 of all eight**. Fixed by RELATIVE profiles (tokens *added* to the configured
+  `-opt`, auto-selected by `wants_relative()`); the 1.2.5n units now keep 2–6 controls on every profile.
+  **A tool whose failure mode is shaped like its success mode needs a control printed in its own output.**
+- **`--census` measures a compiler's real `-opt` vocabulary, and token acceptance MUST be positively
+  controlled** — 1.2.5n accepts and *silently ignores* unknown tokens exactly as w81 proved for GC/2.0, so
+  the census leads with a `__BOGUS__` token that must read inert. Measured live on 1.2.5n: `nopeephole`,
+  `noschedule`, `nocse`, `nopropagation`, `nolifetimes`, `noloopinvariants`, `nostrength`, `nodead`.
+  Inert there: `noautoinline`, `nofp_contract`, `nointrinsics`, `noaliasing`, `novectorize`, and every
+  positive form (already on at `-O4,p`). Note `nopeephole`/`noschedule` keep **0** controls on 1.2.5n —
+  live but useless as probes, which is why liveness and soundness are two separate columns.
+- **Positional diff counts ARE sound when every variant is the same length** — the shift artifact that
+  makes them lie needs a length difference. For a pure-`regB` function (identical mnemonic stream,
+  operands only differing) a permutation sweep can be screened on diff counts and only the winner
+  confirmed on `report.json`. Check `target N insn / current N insn` first; if N ever moves, stop using
+  the count.
+
+- **`fnbytes` positional diff counts actively mislead when the lengths differ.** One missing
+  instruction shifts every later index, so the count measures *misalignment*, not badness.
+  On `streamsLoadedCallback` the baseline scored 39 "positional diffs" at 69 insn against a
+  cast variant's 9 at the target's 70 — and `report.json` showed the 39-diff baseline was the
+  **better** of the two by 0.586. Length parity is not match quality. Screen with `fnbytes` if
+  you like; adjudicate only on `report.json`. Joins the SequenceMatcher/autojunk trap in the
+  same family: proxy metrics manufacture confident, wrong orderings.
+- **Plain `ninja` does not rebuild a deleted `NonMatching` source object, and `report.json`
+  scores the unit anyway — silently and much lower.** Deleting `202.o` and running a full
+  `ninja` (EXIT=0, DOL retail-identical) left the object absent and the unit reading
+  60.358 / 113 matched functions instead of 97.570 / 135. Nothing errors; it looks exactly
+  like a catastrophic regression you just caused. Always rebuild the object by **explicit
+  target** (or `ninja all_source`) before reading a unit's score, and confirm the `.o` exists.
+  Same masking family as the stale-object race in `docs/rename_safety.md`.
+
+- **Read the prior probe record before re-running a sweep — and restate known results when
+  handing a target over.** `subtitleUpdateAndDraw`'s `fn_flag_probe` result (MATCH under four
+  profiles, and the unaffordable 100.000 / 19.887 / 57.37 trade) had already been measured and
+  recorded earlier in the same session; the target was then handed on without that result being
+  restated, and it was re-derived from scratch. This is a two-sided failure and both sides are
+  cheap to fix: **the worker greps the record (screen step 3), the briefer restates what is
+  already known.** Prior *probe output* counts as prior work even when it produced no commit —
+  a measured null leaves no trace in `git log`, which is exactly why it must be written down.
 - **A fuzzy drop can be the signature of a now-correct allocation.** `player_SeqFn` held a
   spurious 12th saved register; removing it gave retail's exact 11-wide band and took the
   function's **structural regions to 0** — but the unit read **0.029 lower**, because the *wrong*
@@ -373,6 +488,11 @@ transposed, the knob is the cast lever above, not the source text.
   fuzzy_match_percent for this unit`) with a green build, and a touch-plus-rebuild restored it
   to 99.21875. Note that an unscorable unit is **excluded from the aggregate, not counted as
   zero**, so this repair *lowers* reported fuzzy — it is still correct.
+- **Assert the object exists after a by-name rebuild — the path is easy to get wrong.** A batch
+  helper that builds `build/GSAE01/src/main/textrender.c.o` instead of `…/textrender.o` asks ninja
+  for a target that does not exist. Without an `[ -f $O ]` assertion the loop scores three **stale**
+  objects and reports three false "free" verdicts; with it, the run fails loudly. Strip the `.c`
+  (`${f%.c}.o`), and assert. This is the third distinct save from that one check.
 - **Word-boundary every identifier check.** A bare substring guard (`"mode" in body`) fires
   falsely on `modelState`/`modelInstance`. One did, aborting a rename *after* `symbols.txt` and
   the header were already written — the partial-rename state that scores zero with a green
@@ -380,39 +500,147 @@ transposed, the knob is the cast lever above, not the source text.
 
 ## The data axis: `matched_data` measures symbol PAIRING, not pool contents
 
-**Before chasing a data shortfall, check whether `missing bytes == the unit's `.sdata2` size`.**
-If it does, the loss is that our pool symbols are anonymous (`@262`, `@263`…) while retail's are
-named (`lbl_803DF058`, `gSkySecondsPerDay`…). objdiff pairs data symbols **by name**, so an
-unpaired pool scores **zero regardless of what is in it**.
+**The axis is CLOSED and fully documented in `docs/data_axis.md` — read that before spending a
+build on a data score.** The short form:
 
-**Proven the only way that counts.** `engine/5` had three genuinely missing `.sdata2` constants
-(`0.55f`, `10800.0f`, `86400.0f`). Replacing the stand-ins with literals made the pool contents
-**exactly match** — 44 slots / 41 distinct on both sides, nothing absent in either direction, 41
-of 44 slots agreeing in place. **`matched_data` did not move: 600/776 before, 600/776 after.**
-Its `.sdata2` is 176 B in both builds and its missing data is exactly 176 B.
-
-**It generalises.** Of 25 non-`auto_` data-losing units, **13 have `missing == .sdata2` size
-exactly**, every one with an overwhelmingly anonymous pool — `intersect_render` 236/236 (13
-named / 40 anon), `engine/5` 176/176 (0/41), `DIMSnowHorn` 144/144 (2/33), `BossDrakor` 120/120
-(0/27), `DR_LaserCan` 100/100, `engine/19` 96/96, `CFGuardian` 88/88, `SH_thorntai` 80/80,
-`DFropenode` 76/76, `engine/69` and `DIM_BossTon` 64/64, `engine/24` and `sincosf` 32/32.
-
-**So this gap is closed on principle, not exhaustion.** Making those pairs would require our
-source to *define named `.sdata2` constants*, which is the **banned pool-reconstruction
-construct** — the one CLAUDE.md names as the mistake that keeps getting re-introduced. Do not.
-
-**The distinct-values screen is still worth running — it just answers a different question.**
-Compare distinct constant values in `.sdata2` on both sides: equal distinct counts with retail
-merely holding more copies is a **merged-TU artifact** (leave it; `objects/202` is 421→127 slots
-at 119 distinct both sides); ours genuinely missing distinct values is a **content** defect,
-which is real source recovery even when it is not costed. Run the checks in the order
-**missing distinct values → duplicate inflation → size → order**: a merged-TU is *always*
-smaller on our side, so size alone cannot distinguish the two, and checking size first
-misclassifies it. Trust `.sdata2` verdicts above `.data`/`.sdata` ones — those carry relocation
-targets, so a "missing value" there may be an address word rather than a constant.
+- **First screen: is `missing bytes == a whole section's size`?** If yes it is the pairing
+  artifact and nothing else will change the verdict. objdiff pairs data symbols by name; our
+  pool constants are anonymous (`@262`, `@263`…) while retail's are named (`lbl_803DF058`…).
+- **The blindness is SECTION-granular** — a section holding *any* unpairable anonymous symbol
+  scores zero as a unit, however many of its named symbols are byte-perfect. Proof:
+  `intersect_render` `.rodata` (0 anonymous) 216/216 vs `.sdata2` (40 anonymous) 0/236, with
+  51 of those bytes byte-identical *and* name-identical on both sides.
+- **Two refuted gates, do not re-try:** naming (measured null — renaming to matching names moved
+  nothing) and binding (the splitter emits every retail data symbol global, statics included, so
+  retail-side linkage carries zero information; de-`static`-ing chases a tool artifact).
+- **Closing the gap would require defining named `.sdata2` constants** — the banned
+  pool-reconstruction construct CLAUDE.md names as the mistake that keeps recurring. Do not.
+- **The distinct-values screen still answers a different, useful question.** Run its checks in the
+  order **missing distinct values → duplicate inflation → size → order**: a merged TU is always
+  smaller on our side, so checking size first misclassifies it.
 
 ## See also
 
+## Two rename-gate steps added after they each caught a live error
+
+Both fired within one naming batch and neither reached a commit. They belong in the
+rename gate alongside the `--refs` radius, the by-name rebuild, the per-version check and
+the `unitfuzzy` equality check (see `docs/rename_safety.md`).
+
+**1. Name-availability grep, tree-wide, BEFORE renaming.** A name being accurate is not
+enough; it must also be unused. Naming `lbl_803DB670` (`.sdata`, 1.3333334) as
+`gCameraAspectRatio` collided with `camera.c`'s own live aspect ratio -- the same value at
+a different address, 0x803DB268 -- and the link failed with `multiply-defined`. Run
+`grep -rn '\bNEWNAME\b' src/ include/ config/` first; the correct name here was
+`gStandardAspectRatio`, the standard-aspect counterpart to `widescreenAspect_803DEC1C` in
+the widescreen branch that consumes it.
+
+**2. Edit `symbols.txt` by ADDRESS, never by name or value search-and-replace.** After the
+collision above, a plain `s/gCameraAspectRatio/gStandardAspectRatio/` over
+`config/GSAE01/symbols.txt` renamed BOTH entries -- including `camera.c`'s symbol at
+0x803DB268, which the source still called `gCameraAspectRatio`. That is a partial rename
+that desyncs source from symbols **in a unit you are not editing**, so the defining unit
+still builds and the damage surfaces elsewhere. Key the replacement on the full
+`NAME = .section:0xADDRESS;` string and assert it matches exactly once.
+
+## The high-water-mark regression audit (axis DRAINED — sized, then worked to empty)
+
+This repo records scores in commit messages (`fn 98.840->99.476`, `99.444->100`), which
+makes history an audit corpus: any function now scoring below a score once claimed for it
+is a candidate silent regression. Two peer recoveries proved the idea (`4e4e3ff587`
++0.586 on `streamsLoadedCallback`, `ca7470b8b1` +0.636 on `renderSunAndMoon`). The full
+sweep was run once; the axis is closed. Do not re-run it without new evidence.
+
+### Method
+Parse `git log --all --pretty='%H%x01%s%x02%b%x03'` for `<symbol> <A>-><B>` pairs
+(also `->`, `→`, `=>`); high-water for a symbol is `max(A,B)` over all claims, since a
+commit documenting a regression still records the higher score. Exclude tree-wide words
+(`matched_code`, `tree`, `fuzzy`, ...). Join against current per-function fuzzy by
+sweeping `tools/unitfuzzy.py` over every unit (~0.06 s each, ~1 min for 927). Functions
+absent from `unitfuzzy` output are at 100% and cannot be below a high-water.
+Rank by `(high - current) x size` to get bytes, not percentages.
+
+### Two preconditions, both learned by getting them wrong
+1. **Run only on a freshly built tree.** `unitfuzzy` reads objects, so stale objects
+   manufacture phantom regressions. The first sweep reported 51 hits including three
+   `newshadows.c` functions that were already fixed in HEAD; `ninja all_source` rebuilt
+   988 objects and all three returned to their high-water values. Always
+   `locked_ninja` + `all_source` immediately before sweeping.
+2. **Filter claim precision.** Commit messages write 2 dp, `unitfuzzy` reports 3+, so a
+   claim of `99.65` against a current 99.647 looks like a 0.003 regression and is nothing.
+   **19 of 48 hits were this.** Discard `delta < 0.01`.
+
+### Verdict taxonomy
+A hit is a lead, not a verdict. Classify from the claiming commit's message before
+measuring anything:
+- **stale-claim** — measured in a context that no longer exists (different compiler or
+  file). `zlbDecompress` 53.5 vs a 76.26 claim measured when zlb was inside
+  `pi_dolphin.c` under MWCC with a `#pragma optimization_level` island; zlb is now its
+  own ProDG unit. That single entry was 79% of the axis's apparent bytes and is a mirage.
+- **accepted-trade** — the high score was bought with a construct since purged on
+  principle. Not a lost score, a paid principle. Cleanest examples: `sceneDraw`'s claim
+  names its own "load-bearing volatile CSE-defeat pun"; `expgfx_updateSourceFrameFlags`
+  98.87->92.98 is annotated "PRAGMA WALL PROVEN"; `expgfxGetSlot` 97.70->93.68 is
+  "(goto-capped fn)". Also covers artificial TU splits merged back per CLAUDE.md
+  ("accept match regressions"): `renderOpMatrix`/`modelLoadMtxsToGx` both reached 100.000
+  only as a separate `.c` compiled with `-opt nopropagation` (`88607918a`), merged back by
+  `13eaecb9e4`.
+- **tu-context** — claimed before a TU merge/split, so the unit profile differed.
+  `expgfx_updateActivePools`' 99.67 predates the 7-fragment merge; its `(u16)` cast lever
+  still exists in today's source, so nothing was lost but the fragment's flag profile.
+- **bystander-reading** — the claiming commit never touched the function's unit at all;
+  the number was quoted in passing while the commit worked on something else, so the
+  "high-water" is just what the function happened to read that day. **Check the claim's
+  diff paths before believing a join.** `textureLoad`'s 99.07 comes from `4298a3ea0`,
+  a commit whose only source change was `shader`'s `mapInitSetRects`; `pauseMenuDrawStatus`
+  likewise, and that commit's actual change (`pauseMenuDrawElement`'s 5th param as `u8`)
+  is still in today's source. One `git show --stat` dissolves these.
+- **candidate** — none of the above; verify by measuring at the claiming commit before
+  proposing a recovery.
+
+A claim can also be **half** accepted-trade: `tricky_SeqFn`'s 99.70 bundled a principled
+counter decouple (`int k`, still present today) with `*(f32*)&lbl_803E23E8`, a banned
+pool-reconstruction const since purged. The surviving half is not evidence the gap is
+recoverable — the residual *is* the purge cost. Split bundled claims before pricing them.
+Same shape as `Shield_update`, whose 100.0 is the value *before* a principled `int`-param
+retype; the `(u16) fcos16` narrowing that recovered most of it is still in the source, and
+current equals the post-retype claim exactly.
+
+### Sizing result (2026-08, 42,030 commits, 2,006 claimed symbols)
+48 functions below high-water -> 19 rounding noise -> 29 real -> 7 lane-owned -> 22 mine.
+Of those, `zlbDecompress` (stale-claim) is 534 of ~674 bytes, and the next three largest
+(`expgfx` x3, 65 B) are accepted-trade or tu-context. The table lives in the audit commit
+body if anyone wants the tail.
+
+### The tail was then worked, not deferred (axis DRAINED)
+"Below the effort line" was a judgment call, so the ~18-function tail was measured out
+entry by entry rather than left standing. **Nothing landed, and that is the result:** the
+recoverable mass was two peer recoveries already cashed; every other entry is principle,
+context, or fragment mirage. Worth knowing before anyone re-derives it:
+- **Every queue-2 "tu-context" entry dissolved on the merge commit's own numbers.** The
+  commits record the *drop*: `mtxRotateByVec3s` "99.45->98.35 (its exact pre-carve score)",
+  `ObjSeq_onMapSetup` 99.79->80.26, `trickyFindReachableRouteIndex` 99.786->97.821. The
+  high-water is a pre-merge/pre-split fragment score in all three; current is at or above
+  the post-merge value. Read the claiming commit before building anything.
+- **A high-water can be below current.** `DBprotection_updateFlight` was already 99.707
+  against a 99.680 claim — a peer had fixed it. Re-read current before opening an entry.
+- **Restructured-context is stale-claim's common form.** `SaveGame_gplaySetObjGroupStatus`'s
+  claim was a comma-order swap in a walking-pointer loop; the DLL rehome rewrote that loop
+  as an indexed loop inside a `static inline` helper. The construct the claim steered no
+  longer exists.
+- **The one genuinely recoverable entry was declined on principle.** `streamsLoadedCallback`
+  reaches its 98.571 high-water exactly, but *only* via `*(int*)&gAudioPendingLoadFlags &=
+  ~(s64)AUDIO_LOAD_STREAMS` — a codegen-steering pun two commits removed deliberately. All
+  three principled alternatives (bare `~(s64)`, bare `~(u64)`, macro typed `0x4LL`) measure
+  97.057. That the pun is the *only* route is what makes it a hack, not recovered source.
+  The honest lever would be evidence for a different original type on the flags global.
+- **Both band knobs can be simultaneously exhausted.** `modelCalcVtxGroupMtxs`: 120
+  declaration permutations (4 distinct outcomes, current ties the minimum) plus 6
+  definition-order permutations of its copy-class call returns (current is the unique
+  minimum). Residual is copy-class param homing plus a float magic constant with no named
+  local behind it, at band width 6 — the >=5 regime where the model is ~0.1% predictive.
+
+- `docs/data_axis.md` — the data axis, closed: the section-granular pairing law, two refuted gates, the vein taxonomy and the screen order.
 - `docs/band_width_worklist.md` — where a structural fix can stick (`structB` vs `regB`).
 - `docs/rename_safety.md` — the rename gate and the stale-object race.
 - `docs/per_tu_flag_evidence.md` — per-TU flag measurements, for whoever adjudicates them.

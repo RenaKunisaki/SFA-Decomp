@@ -16,8 +16,11 @@
 #include "sys/objects.h"
 #include "main/object_render.h"
 #include "main/objprint_api.h"
+#include "main/objtype.h"
 #include "main/dll/objfx_api.h"
 #include "dlls/object_descriptor.h"
+#include "main/obj_path.h"
+#include "main/objhits.h"
 
 #define DRCAGEWITH_CHILD_OBJ 1143
 #define DRCAGEWITH_CAGE_NOROPE_OBJ 2154
@@ -157,7 +160,7 @@ void DR_CageWith_hitDetect(GameObject* obj)
             ObjHits_DisableObject(obj);
             (obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
             bf31->b0 = 1;
-            nearest = (GameObject*)objGetNearestTypeTo(DRCAGEWITH_TARGET_OBJGROUP, obj, &maxDist);
+            nearest = objGetNearestTypeTo(DRCAGEWITH_TARGET_OBJGROUP, obj, &maxDist);
             if (nearest != NULL && nearest->anim.romDefNo == DR_CLOUDRUNNER_OBJECT_ID)
             {
                 nearest->userData1 = 0;
@@ -184,7 +187,7 @@ void DR_CageWith_hitDetect(GameObject* obj)
         if (state->spawnedObject != NULL)
         {
             state->spawnedObject->anim.rotZ = (s16)state->angularVel;
-            nearest = (GameObject*)objGetNearestTypeTo(DRCAGEWITH_TARGET_OBJGROUP, obj, &maxDist);
+            nearest = objGetNearestTypeTo(DRCAGEWITH_TARGET_OBJGROUP, obj, &maxDist);
             if (nearest != NULL && nearest->anim.romDefNo == DR_CLOUDRUNNER_OBJECT_ID)
             {
                 nearest->userData1 = 1;

@@ -9,6 +9,12 @@
 #include "main/dll/dll_0035_saveselectscreen.h"
 #include "main/gametext_color_api.h"
 #include "dolphin/pad.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/front_game_text_box_api.h"
+#include "main/dll/savegame.h"
+#include "main/gametext_show_api.h"
+#include "main/gametext_show_str_api.h"
+#include "main/model_engine.h"
 
 extern u16 gEnterSaveNameCharTextIds[];
 

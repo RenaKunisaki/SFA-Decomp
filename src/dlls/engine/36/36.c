@@ -2,6 +2,7 @@
 #include "main/dll/partfxspawn_struct.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/dll_0024_effect11.h"
+#include "main/vecmath.h"
 
 PartFxSpawnParams gEffect11DefaultSrcParams;
 

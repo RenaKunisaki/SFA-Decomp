@@ -49,6 +49,8 @@
 #include "string.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/audio/music_api.h"
+#include "main/dll/dll_0000_gameui_api.h"
 
 #define DIMBOSS_OBJECT_TYPE_ID 0x49
 
@@ -484,7 +486,7 @@ int DIMbossHitDetect_liftImpact(int obj, int p2) {
 
     if ((((BaddieState*)p2)->eventFlags & BADDIE_EVENT_FOOTSTEP) != 0) {
         gDIMbossSequenceFlags |= 0x4004;
-        Sfx_PlayFromObject(obj, SFXTRIG_mn_dimbos46);
+        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_mn_dimbos46);
         CameraShake_Enable();
         CameraShake_StartDampened(5.0f, 10.0f, 4.0f);
         doRumble(20.0f);
@@ -951,25 +953,25 @@ void DIM2icicle_updateDarkIceMinesWarpAndEffects(GameObject* obj, DIMbossRuntime
     }
     if (runtime->eventFlags & DIMBOSS_SEQUENCE_FLAG_0004) {
         runtime->eventFlags &= ~DIMBOSS_SEQUENCE_FLAG_0004;
-        Sfx_PlayFromObject((u32)obj, gDim2IcicleSequenceSfx[0]);
+        Sfx_PlayFromObject(obj, gDim2IcicleSequenceSfx[0]);
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_0004 | DIMBOSS_SEQUENCE_FLAG_ICICLE_DUST_POINT_7;
         doRumble(4.0f);
     }
     if (runtime->eventFlags & DIMBOSS_SEQUENCE_FLAG_0002) {
         runtime->eventFlags &= ~DIMBOSS_SEQUENCE_FLAG_0002;
-        Sfx_PlayFromObject((u32)obj, gDim2IcicleSequenceSfx[1]);
+        Sfx_PlayFromObject(obj, gDim2IcicleSequenceSfx[1]);
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_0004 | DIMBOSS_SEQUENCE_FLAG_ICICLE_DUST_POINT_8;
         doRumble(4.0f);
     }
     if (runtime->eventFlags & DIMBOSS_SEQUENCE_FLAG_BREATH_BURST) {
         runtime->eventFlags &= ~DIMBOSS_SEQUENCE_FLAG_BREATH_BURST;
-        Sfx_PlayFromObject((u32)obj, gDim2IcicleSequenceSfx[2]);
+        Sfx_PlayFromObject(obj, gDim2IcicleSequenceSfx[2]);
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_0004 | DIMBOSS_SEQUENCE_FLAG_ICICLE_DUST_POINT_9;
         doRumble(4.0f);
     }
     if (runtime->eventFlags & DIMBOSS_SEQUENCE_FLAG_TONSIL_GUARD_ACTIVE) {
         runtime->eventFlags &= ~DIMBOSS_SEQUENCE_FLAG_TONSIL_GUARD_ACTIVE;
-        Sfx_PlayFromObject((u32)obj, gDim2IcicleSequenceSfx[3]);
+        Sfx_PlayFromObject(obj, gDim2IcicleSequenceSfx[3]);
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_0004 | DIMBOSS_SEQUENCE_FLAG_ICICLE_DUST_POINT_10;
         doRumble(4.0f);
     }
@@ -1116,7 +1118,7 @@ void DIM2icicle_updateHitResponse(GameObject* obj, BaddieState* playerState) {
         }
         if (hit) {
             if (gDim2IcicleHitCooldown == 0) {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_sc_npu_216_4b2);
+                Sfx_PlayFromObject(obj, SFXTRIG_sc_npu_216_4b2);
                 hitEntries = (Dim2IcicleHitEntry*)DIM2Icicle_GetActiveModel(obj)[0x14];
                 ((DIMbossEffectMarker*)gDim2IcicleHitFxBuffer)->x = playerMapOffsetX + hitEntries[hitType].positionX;
                 ((DIMbossEffectMarker*)gDim2IcicleHitFxBuffer)->y = hitEntries[hitType].positionY;
@@ -1166,7 +1168,7 @@ void DIM2icicle_updateHitResponse(GameObject* obj, BaddieState* playerState) {
             playerState->moveDone = 0;
             playerState->lastHitPriority = hitResult;
             playerState->hitPoints -= 1;
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_mpwru1);
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_mpwru1);
             if (playerState->hitPoints <= 0) {
                 playerState->hitPoints = 0;
                 playerState->hasTarget = 0;

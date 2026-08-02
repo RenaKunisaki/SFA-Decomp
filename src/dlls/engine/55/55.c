@@ -22,6 +22,12 @@
 #include "main/dll/dll_0015_curves.h"
 #include "main/gametext_color_api.h"
 #include "dlls/object_descriptor.h"
+#include "main/audio/audio_control_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_object_api.h"
+#include "main/dll/dll_02C0_front.h"
+#include "main/lightmap_api.h"
+#include "main/rcp_dolphin_render_api.h"
 
 typedef struct OptionsScreenPanelConfig {
     u16* items;

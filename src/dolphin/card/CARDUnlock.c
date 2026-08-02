@@ -1,5 +1,6 @@
 
 #include "dolphin/card/__card.h"
+#include "string.h"
 
 static u32 next = 1;
 

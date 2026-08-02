@@ -25,6 +25,8 @@
 #include "main/objseq.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/game_timer_control_api.h"
 
 #define WCBEACON_RENDER_TYPE_BASE  0x400
 #define WCBEACON_RENDER_TYPE_SHIFT 0xb
@@ -114,8 +116,8 @@ void wcbeacon_update(GameObject* obj)
         }
         if (state->acceptedInteraction != 0)
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_en_trpopn_c_9f);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_forcecryslp11);
+            Sfx_PlayFromObject(obj, SFXTRIG_en_trpopn_c_9f);
+            Sfx_PlayFromObject(obj, SFXTRIG_forcecryslp11);
             state->phase = WCBEACON_PHASE_ACTIVATING;
             state->timer = WCBEACON_TIMER_INITIAL;
         }

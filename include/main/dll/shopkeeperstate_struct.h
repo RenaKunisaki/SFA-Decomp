@@ -14,7 +14,7 @@ typedef struct ShopkeeperState
     CharacterEyeAnimState eyeAnimState; /* 0x980: head-aim / eye-blink record (characterDoEyeAnims) */
     u8 pad9A8[0x9B0 - 0x9A8];
     RingBufferQueue* msgStack; /* 0x9b0: queued state messages */
-    int vendorObj; /* 0x9b4: nearest group-9 shop manager */
+    struct GameObject* vendorObj; /* 0x9b4: nearest group-9 shop manager */
     f32 unk9B8; /* 0x9b8 */
     u8 pad9BC[8];
     f32 textTimer; /* 0x9c4: gameTextShow 0x433 countdown */

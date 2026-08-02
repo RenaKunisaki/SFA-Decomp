@@ -1,6 +1,7 @@
 #include "TRK_MINNOW_DOLPHIN/Os/dolphin/dolphin_trk.h"
 #include "TRK_MINNOW_DOLPHIN/Os/dolphin/dolphin_trk_glue.h"
 #include "TRK_MINNOW_DOLPHIN/ppc/Generic/flush_cache.h"
+#include "TRK_MINNOW_DOLPHIN/ppc/Generic/targimpl.h"
 
 static u32 lc_base[2];
 extern u32 _db_stack_addr;

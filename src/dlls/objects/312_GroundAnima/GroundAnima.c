@@ -11,6 +11,7 @@
 #include "main/gamebits.h"
 #include "main/lightmap_api.h"
 #include "main/object_render.h"
+#include "main/objtype.h"
 #include "main/shader_api.h"
 #include "main/track_dolphin_api.h"
 #include "sys/objects.h"
@@ -277,7 +278,7 @@ void GroundAnimator_update(GameObject* obj) {
         if (state->linkedObject == NULL) {
             searchDistance = (100.0f);
             state->linkedObject =
-                (GameObject*)objGetNearestTypeTo(GROUND_ANIMATOR_TARGET_OBJECT_GROUP, obj, &searchDistance);
+                objGetNearestTypeTo(GROUND_ANIMATOR_TARGET_OBJECT_GROUP, obj, &searchDistance);
             linkedObject = state->linkedObject;
             if (linkedObject != NULL) {
                 switch (state->linkedObject->anim.romDefNo) {

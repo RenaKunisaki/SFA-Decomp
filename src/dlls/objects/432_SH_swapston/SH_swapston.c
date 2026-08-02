@@ -529,7 +529,7 @@ void warpstone_update(int obj) {
     int state;
     int child;
     int advanceResult;
-    int target;
+    GameObject* target;
     s16* modelVec;
     int yawDelta;
     int moveId;
@@ -565,7 +565,7 @@ void warpstone_update(int obj) {
     }
 
     if (((WarpStoneFlags*)(state + offsetof(WarpStoneState, behaviorFlags)))->lookAtPlayer != 0) {
-        target = (int)Obj_GetPlayerObject();
+        target = Obj_GetPlayerObject();
     } else {
         target = objGetNearestTypeTo(WARPSTONE_TARGET_OBJECT_GROUP, (GameObject*)obj, 0);
     }
@@ -584,7 +584,7 @@ void warpstone_update(int obj) {
 
     if (advanceResult != 0) {
         ((WarpStoneFlags*)(state + offsetof(WarpStoneState, behaviorFlags)))->sfxFired = 0;
-        yawDelta = Obj_GetYawDeltaToObject((GameObject*)obj, (GameObject*)target, NULL);
+        yawDelta = Obj_GetYawDeltaToObject((GameObject*)obj, target, NULL);
         yawDelta = (s16)(yawDelta - gWarpStoneYawBias);
         {
             int mag = yawDelta - 0x8000;

@@ -6,6 +6,10 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/textrender_api.h"
 #include "dolphin/pad.h"
+#include "main/audio/music_api.h"
+#include "main/gametext_api.h"
+#include "main/gametext_color_api.h"
+#include "main/mm.h"
 
 #define TITLE_MENU_FLAG_ENABLED          0x01
 #define TITLE_MENU_FLAG_WRAP             0x02
@@ -94,7 +98,7 @@ void TitleMenuItem_render(TitleMenuItem* item, int unused, int alpha)
         texture = gTitleMenuItemTextures[0];
         markerX = (f32)(int)((f32)item->extra.textId *
                                  ((f32)(item->value - item->minValue) / (f32)(item->maxValue - item->minValue)) +
-                             item->x - (f32)(*(u16*)((u8*)texture + 0xa) >> 1));
+                             item->x - (f32)(((Texture*)texture)->width >> 1));
         drawTexture(texture, markerX, (f32)(item->y - 4), (u8)(((u8)alpha * 0xff) >> 8), 0x100);
         break;
     case TITLE_MENU_KIND_TOGGLE:

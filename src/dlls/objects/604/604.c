@@ -22,6 +22,10 @@
 #include "main/maketex_timer_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/shader_api.h"
+#include "main/vecmath.h"
+#include "main/obj_link.h"
+#include "main/obj_path.h"
+#include "main/dll/dll_0255_snowbike.h"
 
 f32 gSnowClawPulseScale = 1.0f;
 f32 gSnowClawPulseOffsetY = -15.0f;
@@ -200,7 +204,7 @@ void snowclaw_spawnDropBomb(GameObject* obj, GameObject* owner, int launchMode, 
                        8) +
                       0x8000) >>
                      8);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_id_2e4);
+        Sfx_PlayFromObject(obj, SFXTRIG_id_2e4);
         switch ((u8)launchMode)
         {
         case 0:
@@ -281,12 +285,12 @@ void snowclaw_updateMountAttack(GameObject* obj, GameObject* mount)
             if (turnSign == 0)
             {
                 inner->unk30 = 0.004f;
-                Sfx_PlayFromObject((int)obj, SFXTRIG_id_2e3);
+                Sfx_PlayFromObject(obj, SFXTRIG_id_2e3);
             }
             else
             {
                 inner->unk30 = 0.003f;
-                Sfx_PlayFromObject((int)obj, SFXTRIG_id_2e2);
+                Sfx_PlayFromObject(obj, SFXTRIG_id_2e2);
             }
             if (turnSign != 0)
             {
@@ -498,7 +502,7 @@ void snowclaw_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis)
     int found;
     int oldFlag;
     f32 dist;
-    int near;
+    GameObject* near;
     f32 zero = 0.0f;
 
     dist = 5000.0f;
@@ -538,10 +542,10 @@ void snowclaw_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis)
             s->b0 != 0)
         {
             near = objGetNearestTypeTo(SNOWCLAW_TARGET_OBJGROUP, obj, &dist);
-            if ((u32)near != 0 && SNOWCLAW_TARGET_INTERFACE(near)->getState((GameObject*)near) != 0 &&
-                SNOWCLAW_TARGET_INTERFACE(near)->setState((GameObject*)near, 0) != 0)
+            if (near != NULL && SNOWCLAW_TARGET_INTERFACE(near)->getState(near) != 0 &&
+                SNOWCLAW_TARGET_INTERFACE(near)->setState(near, 0) != 0)
             {
-                ObjLink_AttachChild(obj, (GameObject*)near, 0);
+                ObjLink_AttachChild(obj, near, 0);
             }
         }
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
@@ -569,7 +573,7 @@ void snowclaw_hitDetect(GameObject* obj)
     int* inner;
     SnowclawState* s;
     int sub;
-    int* near;
+    GameObject* near;
     GameObject* player;
     f32 dist;
     int hit;
@@ -589,9 +593,9 @@ void snowclaw_hitDetect(GameObject* obj)
         if (s->hitCooldown < 0)
         {
             s->health -= 1;
-            Sfx_PlayFromObject((int)obj, SFXTRIG_en_sbalhis6_f2);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_attack);
-            Sfx_PlayFromObject((int)obj, gSnowClawHurtSfxTable[s->health]);
+            Sfx_PlayFromObject(obj, SFXTRIG_en_sbalhis6_f2);
+            Sfx_PlayFromObject(obj, SFXTRIG_attack);
+            Sfx_PlayFromObject(obj, gSnowClawHurtSfxTable[s->health]);
             s->hitCooldown = 0x14;
             s->attackDelay -= 0x28;
             if (s->health < 0)
@@ -606,11 +610,11 @@ void snowclaw_hitDetect(GameObject* obj)
                 }
                 if (obj->anim.romDefNo == SNOWCLAW_SEQID_CR_SNOWCLAW)
                 {
-                    near = (int*)objGetNearestTypeTo(SNOWCLAW_TARGET_OBJGROUP, obj, &dist);
+                    near = objGetNearestTypeTo(SNOWCLAW_TARGET_OBJGROUP, obj, &dist);
                     if (near != 0)
                     {
-                        ObjLink_DetachChild(obj, (GameObject*)near);
-                        SNOWCLAW_TARGET_INTERFACE(near)->setState((GameObject*)near, 2);
+                        ObjLink_DetachChild(obj, near);
+                        SNOWCLAW_TARGET_INTERFACE(near)->setState(near, 2);
                     }
                 }
                 if (obj->anim.romDefNo == SNOWCLAW_SEQID_IM_SNOWCLAW || obj->anim.romDefNo == SNOWCLAW_SEQID_IM_SNOWCLAW2)
@@ -782,7 +786,7 @@ void snowclaw_update(GameObject* obj)
 
     if (randomChanceOneIn(0x12c) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_id_2e5);
+        Sfx_PlayFromObject(obj, SFXTRIG_id_2e5);
     }
 
     if (s->health < 4)

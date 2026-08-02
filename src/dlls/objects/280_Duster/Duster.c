@@ -13,6 +13,9 @@
 #include "main/vecmath.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
+#include "main/dll/player_api.h"
+#include "main/obj_message.h"
+#include "main/objhits.h"
 
 #define DUSTER_MOVE_STEP_SCALE             0.02f
 #define DUSTER_MESSAGE_IN_RANGE            0x7000A
@@ -221,7 +224,7 @@ void duster_update(GameObject* obj) {
         } else {
             characterState = (DusterCharacterState*)(*gMapEventInterface)->getCurCharacterState();
             if (characterState->collectedCount < characterState->maxCollectedCount) {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_sc_cam90_c);
+                Sfx_PlayFromObject(obj, SFXTRIG_sc_cam90_c);
                 (*gPartfxInterface)->spawnObject((void*)obj, DUSTER_PARTICLE_DEPOSIT, NULL, 1, -1, NULL);
                 (*gPartfxInterface)->spawnObject((void*)obj, DUSTER_PARTICLE_DEPOSIT, NULL, 1, -1, NULL);
                 (*gPartfxInterface)->spawnObject((void*)obj, DUSTER_PARTICLE_DEPOSIT, NULL, 1, -1, NULL);

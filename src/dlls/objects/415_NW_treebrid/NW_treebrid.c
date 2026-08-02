@@ -10,6 +10,7 @@
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
+#include "main/objtype.h"
 
 #define NW_TREE_BRIDGE_TARGET_OBJECT_GROUP           4
 #define NW_TREE_BRIDGE_PATH_INDEX                    0
@@ -143,7 +144,7 @@ void nwTreeBridge_update(GameObject* obj) {
     searchDistance = NW_TREE_BRIDGE_TARGET_SEARCH_DISTANCE;
     if (state->targetSearchAttempts != 0) {
         state->pathTarget =
-            (GameObject*)objGetNearestTypeTo(NW_TREE_BRIDGE_TARGET_OBJECT_GROUP, obj, &searchDistance);
+            objGetNearestTypeTo(NW_TREE_BRIDGE_TARGET_OBJECT_GROUP, obj, &searchDistance);
         if (state->pathTarget != NULL) {
             state->targetSearchAttempts = 0;
         } else {

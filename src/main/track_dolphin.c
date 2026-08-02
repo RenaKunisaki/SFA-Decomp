@@ -345,16 +345,15 @@ void Obj_SetParent(GameObject* obj, GameObject* newParent, int updateLocalTransf
     }
 }
 
-int trackSweepCircleAgainstPoint(f32* x, f32* z, f32 centerX, f32 centerZ, f32 radius,
-                                 s8 resolveCollision)
-{
-    f32 quadraticC, startDeltaX, timeA, startDistanceSq, startX, startZ, moveX, moveZ, quadraticB, negB;
+int trackSweepCircleAgainstPoint(f32* x, f32* z, f32 centerX, f32 centerZ, f32 radius, s8 resolveCollision) {
+    f32 startDeltaZ, startDeltaX, timeA, startDistanceSq, startX, startZ, moveX, moveZ, quadraticB, negB;
     f32 separation, sqrtDiscriminant, denominator, separationX, timeB, hitTime, hitX, hitZ;
-    f32 separationZ, planeOffset, normalX, penetration, discriminant, startDeltaZ, normalZ;
+    f32 separationZ, planeOffset, normalX, penetration, discriminant, quadraticC, normalZ;
     f32 motionLengthSq, fourMotionLengthSq;
 
-    if (0.0f == radius)
+    if (0.0f == radius) {
         return 0;
+    }
 
     startX = x[0];
     startDeltaX = startX - centerX;
@@ -366,10 +365,8 @@ int trackSweepCircleAgainstPoint(f32* x, f32* z, f32 centerX, f32 centerZ, f32 r
         startDistanceSq = startDistanceSq + deltaZSq;
     }
     quadraticC = startDistanceSq - radius * radius;
-    if (quadraticC < 0.0f)
-    {
-        if (resolveCollision != 0)
-        {
+    if (quadraticC < 0.0f) {
+        if (resolveCollision != 0) {
             x[1] = startX + gTrackResolvePushX;
             z[1] = z[0] + gTrackResolvePushZ;
         }
@@ -379,31 +376,30 @@ int trackSweepCircleAgainstPoint(f32* x, f32* z, f32 centerX, f32 centerZ, f32 r
     moveX = x[1] - startX;
     moveZ = z[1] - startZ;
     motionLengthSq = moveX * moveX + moveZ * moveZ;
-    if (motionLengthSq > 0.0f)
-    {
+    if (motionLengthSq > 0.0f) {
         quadraticB = 2.0f * (moveX * startDeltaX + moveZ * startDeltaZ);
         fourMotionLengthSq = 4.0f * motionLengthSq;
         discriminant = quadraticB * quadraticB - fourMotionLengthSq * quadraticC;
-        if (discriminant >= 0.0f)
-        {
+        if (discriminant >= 0.0f) {
             sqrtDiscriminant = sqrtf(discriminant);
             negB = -quadraticB;
             timeA = negB + sqrtDiscriminant;
             denominator = 2.0f * motionLengthSq;
             timeA = timeA / denominator;
             timeB = (negB - sqrtDiscriminant) / denominator;
-            if (timeA < 0.0f)
+            if (timeA < 0.0f) {
                 timeA = 10.0f;
-            if (timeB < 0.0f)
+            }
+            if (timeB < 0.0f) {
                 timeB = 10.0f;
-            if (timeB < timeA)
+            }
+            if (timeB < timeA) {
                 timeA = timeB;
+            }
             hitTime = timeA;
-            if (hitTime >= 0.0f && hitTime <= 1.0f)
-            {
+            if (hitTime >= 0.0f && hitTime <= 1.0f) {
                 gIntersectSweepHitTime = hitTime;
-                if (resolveCollision != 0)
-                {
+                if (resolveCollision != 0) {
                     hitX = hitTime * moveX + x[0];
                     hitZ = hitTime * moveZ + z[0];
                     normalX = (hitX - centerX) / radius;
@@ -415,8 +411,7 @@ int trackSweepCircleAgainstPoint(f32* x, f32* z, f32 centerX, f32 centerZ, f32 r
                     separation = 0.1f;
                     separationX = separation * normalX;
                     separationZ = separation * normalZ;
-                    while (planeOffset + (x[1] * normalX + z[1] * normalZ) < separation)
-                    {
+                    while (planeOffset + (x[1] * normalX + z[1] * normalZ) < separation) {
                         x[1] += separationX;
                         z[1] += separationZ;
                     }
@@ -1680,13 +1675,12 @@ int trackGetNearestGroundOffsetAndNormal(GameObject* obj, f32 x, f32 y, f32 z, f
         firstDistance = y - firstDistance;
         if (firstDistance >= 0.0f)
         {
-            bestDistance = firstDistance;
         }
         else
         {
             firstDistance = -firstDistance;
-            bestDistance = firstDistance;
         }
+        bestDistance = firstDistance;
         nearestIndex = 0;
         for (hitIndex = 1; hitIndex < hitCount; hitIndex++)
         {
@@ -1725,13 +1719,12 @@ int trackGetNearestGroundOffset(GameObject* obj, f32 x, f32 y, f32 z, f32* outGr
         firstDistance = y - firstDistance;
         if (firstDistance >= 0.0f)
         {
-            bestDistance = firstDistance;
         }
         else
         {
             firstDistance = -firstDistance;
-            bestDistance = firstDistance;
         }
+        bestDistance = firstDistance;
         nearestIndex = 0;
         for (hitIndex = 1; hitIndex < hitCount; hitIndex++)
         {

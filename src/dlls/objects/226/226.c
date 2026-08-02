@@ -51,6 +51,12 @@
 #include "dolphin/gx/GXPixel.h"
 #include "dolphin/gx/GXTev.h"
 #include "dolphin/gx/GXTransform.h"
+#include "main/audio/sfx_position_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/hud_visibility_api.h"
+#include "track/intersect_depth_state_api.h"
+#include "track/intersect_geom_api.h"
+#include "track/intersect_render_setup_api.h"
 
 extern u8 gStaffQuakeSpellState[0x28];
 extern void* gStaffSwipeTextures[2];
@@ -691,7 +697,7 @@ void staffDoGrowShrinkAnim(GameObject* obj, u8 grow, u8 flag2, int unused) {
     StaffState* state = obj->extra;
     if (grow != 0) {
         if (state->moveSpeed < 0.0f) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_stpos4_b);
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_stpos4_b);
         }
         if (flag2 == 0) {
             state->moveSpeed = 0.15f;
@@ -700,7 +706,7 @@ void staffDoGrowShrinkAnim(GameObject* obj, u8 grow, u8 flag2, int unused) {
         }
     } else {
         if (state->moveSpeed > 0.0f) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_stapo1_b);
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_stapo1_b);
         }
         if (flag2 == 0) {
             state->moveSpeed = -0.15f;
@@ -837,7 +843,7 @@ void staff_hitDetectGeometry(GameObject* obj) {
             idx = contactHitVolume;
         }
         if (idx == 14) {
-            Sfx_PlayAtPositionFromObject((int)obj, hitState->contactPosX, hitState->contactPosY, hitState->contactPosZ,
+            Sfx_PlayAtPositionFromObject(obj, hitState->contactPosX, hitState->contactPosY, hitState->contactPosZ,
                                          SFXTRIG_foot_water_walk_1);
             (*gWaterfxInterface)
                 ->spawnSplashBurst(obj, hitState->contactPosX, hitState->contactPosY, hitState->contactPosZ, 0.0f);
@@ -856,7 +862,7 @@ void staff_hitDetectGeometry(GameObject* obj) {
                 ->spawn(OBJHITREACT_HIT_EFFECT_PARENT_NONE, OBJHITREACT_HIT_EFFECT_MODE, &v,
                         OBJHITREACT_HIT_EFFECT_SPAWN_FLAGS, OBJHITREACT_HIT_EFFECT_NO_SOURCE,
                         &tbl.colors[sStaffContactColorIndices[idx]]);
-            Sfx_PlayAtPositionFromObject((int)obj, hitState->contactPosX, hitState->contactPosY, hitState->contactPosZ,
+            Sfx_PlayAtPositionFromObject(obj, hitState->contactPosX, hitState->contactPosY, hitState->contactPosZ,
                                          (u16)sStaffContactSfxIds[idx]);
         }
     }
