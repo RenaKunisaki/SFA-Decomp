@@ -43,9 +43,6 @@ f32 gBoneParticleDriftVelocity[2] = {10.0f, 0.0f};
 
 #define GX_CULL_NONE 0
 
-const f32 gBoneParticleDriftMax[1] = {500.0f};
-const f32 gBoneParticleDriftRebound[1] = {-1.0f};
-const f32 gBoneParticleDriftMin[1] = {-500.0f};
 
 void boneParticleEffect_func08_nop(void) {
 }
@@ -106,13 +103,13 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj) {
         gBoneParticleScrollOffset = gBoneParticleScrollOffset - 0x1f;
     }
     gBoneParticleDrift = gBoneParticleDriftVelocity[0] * timeDelta + gBoneParticleDrift;
-    if (gBoneParticleDrift > gBoneParticleDriftMax[0]) {
-        gBoneParticleDriftVelocity[0] *= gBoneParticleDriftRebound[0];
-        gBoneParticleDrift = gBoneParticleDriftMax[0];
+    if (gBoneParticleDrift > 500.0f) {
+        gBoneParticleDriftVelocity[0] *= -1.0f;
+        gBoneParticleDrift = 500.0f;
         Sfx_PlayFromObject(gobj, SFXTRIG_id_282);
-    } else if (gBoneParticleDrift < gBoneParticleDriftMin[0]) {
-        gBoneParticleDriftVelocity[0] *= gBoneParticleDriftRebound[0];
-        gBoneParticleDrift = gBoneParticleDriftMin[0];
+    } else if (gBoneParticleDrift < -500.0f) {
+        gBoneParticleDriftVelocity[0] *= -1.0f;
+        gBoneParticleDrift = -500.0f;
         Sfx_PlayFromObject(gobj, SFXTRIG_id_282);
     }
     bufferIndex = 0;
