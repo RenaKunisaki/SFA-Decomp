@@ -212,13 +212,13 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         healthPercent = health;
         maxHealth = (f32)Player_GetMaxHealth((int)player);
         healthPercent = healthPercent / maxHealth;
-        healthPercent = healthPercent * 100.0f;
+        healthPercent *= 100.0f;
         if (healthPercent <= 50.0f) {
             subtypeChoice = SMALLBASKET_SUBTYPE_APPLE;
         } else if (healthPercent <= 75.0f) {
             if (randomGetRange(0, (s16)(int)(healthPercent - 50.0f)) < 7) {
                 subtypeChoice = SMALLBASKET_SUBTYPE_APPLE;
-                maxCount = (s16)(maxHealth * 0.25f);
+                maxCount = (s16)(maxHealth / 4.0f);
                 if (maxCount < 1) {
                     maxCount = 1;
                 }
@@ -255,7 +255,7 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         }
         horizontalMagnitude = ((GameObject*)child)->anim.velocityX * ((GameObject*)child)->anim.velocityX;
         horizontalMagnitude += ((GameObject*)child)->anim.velocityZ * ((GameObject*)child)->anim.velocityZ;
-        if (horizontalMagnitude != 0.0f) {
+        if (horizontalMagnitude) {
             horizontalMagnitude = sqrtf(horizontalMagnitude);
             ((GameObject*)child)->anim.velocityX = ((GameObject*)child)->anim.velocityX / horizontalMagnitude;
             ((GameObject*)child)->anim.velocityZ = ((GameObject*)child)->anim.velocityZ / horizontalMagnitude;
@@ -304,7 +304,7 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         }
         horizontalMagnitude = ((GameObject*)child)->anim.velocityX * ((GameObject*)child)->anim.velocityX;
         horizontalMagnitude += ((GameObject*)child)->anim.velocityZ * ((GameObject*)child)->anim.velocityZ;
-        if (horizontalMagnitude != 0.0f) {
+        if (horizontalMagnitude) {
             horizontalMagnitude = sqrtf(horizontalMagnitude);
             ((GameObject*)child)->anim.velocityX = ((GameObject*)child)->anim.velocityX / horizontalMagnitude;
             ((GameObject*)child)->anim.velocityZ = ((GameObject*)child)->anim.velocityZ / horizontalMagnitude;
@@ -353,7 +353,7 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         }
         horizontalMagnitude = ((GameObject*)child)->anim.velocityX * ((GameObject*)child)->anim.velocityX;
         horizontalMagnitude += ((GameObject*)child)->anim.velocityZ * ((GameObject*)child)->anim.velocityZ;
-        if (horizontalMagnitude != 0.0f) {
+        if (horizontalMagnitude) {
             horizontalMagnitude = sqrtf(horizontalMagnitude);
             ((GameObject*)child)->anim.velocityX = ((GameObject*)child)->anim.velocityX / horizontalMagnitude;
             ((GameObject*)child)->anim.velocityZ = ((GameObject*)child)->anim.velocityZ / horizontalMagnitude;
@@ -412,7 +412,7 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         }
         horizontalMagnitude = ((GameObject*)child)->anim.velocityX * ((GameObject*)child)->anim.velocityX;
         horizontalMagnitude += ((GameObject*)child)->anim.velocityZ * ((GameObject*)child)->anim.velocityZ;
-        if (horizontalMagnitude != 0.0f) {
+        if (horizontalMagnitude) {
             horizontalMagnitude = sqrtf(horizontalMagnitude);
             ((GameObject*)child)->anim.velocityX =
                 ((GameObject*)child)->anim.velocityX / (horizontalMagnitude = (2.0f) * horizontalMagnitude);
