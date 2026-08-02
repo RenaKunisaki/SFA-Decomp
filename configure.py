@@ -20,13 +20,17 @@ from pathlib import Path
 from typing import Any, Dict, List
 
 from tools.project import (
-    Object,
+    Object as ProjectObject,
     ProgressCategory,
     ProjectConfig,
     calculate_progress,
     generate_build,
     is_windows,
 )
+
+# Retain the public type name for annotations until the matching-aware factory
+# below replaces it for object construction.
+Object = ProjectObject
 
 # Game versions
 DEFAULT_VERSION = 0
@@ -238,6 +242,15 @@ symbol_mappings_path = Path("config") / config.version / "symbol_mappings.json"
 if symbol_mappings_path.is_file():
     config.symbol_mappings = json.loads(symbol_mappings_path.read_text(encoding="utf-8"))
     config.reconfig_deps.append(symbol_mappings_path)
+matching_units_path = Path("config") / config.version / "matching_units.txt"
+matching_units = set()
+if matching_units_path.is_file():
+    matching_units = {
+        line.strip()
+        for line in matching_units_path.read_text(encoding="utf-8").splitlines()
+        if line.strip() and not line.startswith("#")
+    }
+    config.reconfig_deps.append(matching_units_path)
 
 # Optional numeric ID for decomp.me preset
 # Can be overridden in libraries or objects
@@ -684,6 +697,12 @@ Equivalent = config.non_matching  # Object should be linked when configured with
 # Object is only matching for specific versions
 def MatchingFor(*versions):
     return config.version in versions
+
+
+def Object(completed, name, **options):
+    """Apply generated cross-version exactness without duplicating every call."""
+
+    return ProjectObject(completed or name in matching_units, name, **options)
 
 
 config.warn_missing_config = True

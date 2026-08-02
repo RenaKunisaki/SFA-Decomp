@@ -70,7 +70,7 @@ write_asm: true
 # this can be set to true to skip most analysis steps, and ensure new
 # symbols are not created by the analyzer.
 # If you're not sure, leave this false.
-symbols_known: false
+symbols_known: true
 
 # (optional) Whether to create `gap_` symbols to prevent the linker from
 # adjusting the alignment / address of symbols.
@@ -93,3 +93,8 @@ export_all: true
 # Alternatively, you can set extab_padding on any affected objects in
 # configure.py, in order to exactly match the original DOL.
 clean_extab: false
+
+extract:
+- symbol: gLoadingScreenTextures
+  binary: gLoadingScreenTextures.bin
+  header: gLoadingScreenTextures.inc
