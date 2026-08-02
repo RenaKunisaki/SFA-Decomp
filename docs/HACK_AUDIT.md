@@ -25,6 +25,52 @@ Units that cannot match without them stay NonMatching or await a TU re-split.
 Residual classes whose only known cure is one of these banned constructs are catalogued,
 with measured per-row prices and recognition tells, in `docs/priced_classes.md`.
 
+**The ban is now machine-enforced: `python3 tools/banned_shapes_check.py`.** It scans game code
+only (`src/main/`, `src/track/`, `src/dlls/` — the SDK under `src/dolphin/` is exempt by policy and
+legitimately carries all seven shapes), reports `file:line`, pattern class and the citation, and
+exits nonzero on anything outside `tools/banned_shapes_baseline.txt`. The baseline records the 48
+instances standing at the 2026-08-01 audit; **shrink it, never grow it** — a new hit is regrowth and
+fails the gate. Two distinctions it draws deliberately, because both were re-litigated per wave
+before it existed: a `volatile` write through a hardware address (GX FIFO `0xCC008000`) or a
+write-gather pipe is *genuine* and is not flagged, whereas `*(volatile T*)&object` is the banned
+pun; and an `lbl_`-named **scalar** const is the pool-reconstruction hack, while an `lbl_`-named
+**array** is real data with an unrecovered name (reported only under `--strict-lbl`, never gating).
+Run `--self-test` before trusting any census from it: it validates in both directions, firing on the
+historical corpus at the `pre-hack-purge` tag and staying silent on the exempt and hardware cases.
+
+### Compliance state at 2026-08-02 (the audit that motivated the checker)
+
+**All 50 instances are post-purge RE-ENTRIES** — none survived the original purge. They arrived over
+roughly 20 commits across 12 days, from multiple authors. The root cause was not carelessness at the
+keyboard: a **stale w56 memory entry** advertised the pool-anchor shape as an accepted technique long
+after the ban, so lanes were reintroducing it *by the book*. That entry is being retracted. The
+lesson generalizes past this case: **a ban enforced only by prose in a memory file decays at the rate
+its stalest copy is read.** This checker exists so the ban is enforced by the build instead.
+
+Re-purging is **not** free and is **not** the lane's call: measured over 11 instances the removal
+cost **−2156 B and −3 matched functions**, and the gate failed even restricted to the NonMatching
+set. So the 50 stand as an explicit, recorded baseline pending **maintainer adjudication** of that
+trade; the checker's baseline mode holds the line at the current count meanwhile — nothing new may
+enter, and each cure shrinks the file. Two `lbl_`-named instances are **mandatory-fix-pending**
+regardless of the score trade, since a `lbl_`-named definition is the shape the ban names outright.
+
+**Two independent scans of the same tree disagreed by one, in both directions.** The audit found 49,
+this checker found 48, and the union is **50** — each had exactly one instance the other lacked. The
+audit's extra was `Transporter.c:228 const f32 gWarpPadRestZero[1] = {0.0f};`, never read anywhere in
+the tree, which a reads-keyed check cannot see; the checker's extra was
+`engine/9/9.c:45 volatile f32 gCloudActionGlareQuadSize[2]`, the declaration form of the
+match-volatile. Both are now covered and both are pinned by self-tests. The methodological point is
+worth more than the count: **two scans agreeing on a total is not agreement on a set** — reconcile
+membership, not cardinality.
+
+### Provenance, when auditing a rehoming tree
+
+`git log -S` dates when a line **moved**, not when it was **written**. In a tree that rehomes sources
+between directories, that difference is the whole answer, and `-S` will confidently misattribute an
+old hack to the recent commit that relocated its file. **`git grep <pattern> <sha>` at a reference
+sha is the only reliable provenance test here** — ask whether the shape existed at that sha, rather
+than asking git to narrate its history.
+
 ## Waves 1-2 (complete purge of src/main + src/track)
 
 Overall fuzzy 99.841156 -> 90.559875.
