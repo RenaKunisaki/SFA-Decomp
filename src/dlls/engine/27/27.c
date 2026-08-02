@@ -715,7 +715,7 @@ int Effect2_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawnP
             cfg.textureId = 0xdd;
         break;
     case 0x27f:
-        cfg.scale = 0.0645f * *(f32*)((char*)sourceObj + 8);
+        cfg.scale = 0.0645f * ((GameObject*)sourceObj)->anim.rootMotionScale;
         cfg.lifetimeFrames = 0x28;
         cfg.initialAlpha = 0x9b;
         cfg.behaviorFlags = 0x80080208;

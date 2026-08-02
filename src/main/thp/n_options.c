@@ -471,7 +471,7 @@ BOOL AttractMovie_DrawTextureCallback(int unused, u32* modelPtr, u32 renderOpIdx
         renderOp = NULL;
     }
 
-    if (((renderOp == NULL) || (renderOp[0x29] == 1)) && (gAttractMovieState == 2))
+    if (((renderOp == NULL) || (((Shader*)renderOp)->layers[0].materialId == 1)) && (gAttractMovieState == 2))
     {
         textureSet = gAttractMoviePlayer.curTextureSet;
         THPPlayerDrawCurrentFrame(textureSet->yTexture, textureSet->uTexture, textureSet->vTexture,
