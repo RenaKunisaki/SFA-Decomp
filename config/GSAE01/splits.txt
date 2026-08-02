@@ -2230,7 +2230,7 @@ dlls/objects/331_CFMainCryst/CFMainCryst.c:
 	.text       start:0x8019D9F0 end:0x8019E3F4
 	.data       start:0x80322AF0 end:0x80322B28
 	.sbss       start:0x803DDB10 end:0x803DDB18
-	.sdata2     start:0x803E41D8 end:0x803E4210
+	.sdata2     start:0x803E41D8 end:0x803E4214
 
 dlls/objects/332/332.c:
 	.text       start:0x8019E3F4 end:0x8019F540
@@ -2729,7 +2729,7 @@ dlls/objects/374_DFSH_Door1S/DFSH_Door1S.c:
 dlls/objects/375/375.c:
 	.text       start:0x801C26E0 end:0x801C2914
 	.data       start:0x80325F50 end:0x80325F88
-	.sdata2     start:0x803E4E48 end:0x803E4E50
+	.sdata2     start:0x803E4E30 end:0x803E4E50
 
 dlls/objects/376_DFSH_Shrine/DFSH_Shrine.c:
 	.text       start:0x801C2914 end:0x801C3618
@@ -3546,7 +3546,7 @@ dlls/objects/570_DFP_Platfor/DFP_Platfor.c:
 dlls/objects/571_DFP_Lightni/DFP_Lightni.c:
 	.text       start:0x80209958 end:0x80209F34
 	.data       start:0x80329DD0 end:0x80329E08
-	.sdata2     start:0x803E64E0 end:0x803E64F8
+	.sdata2     start:0x803E64E0 end:0x803E6510
 
 dlls/objects/572_DFP_PowerSl/DFP_PowerSl.c:
 	.text       start:0x80209F34 end:0x8020A1C8
@@ -4758,7 +4758,7 @@ musyx/runtime/hw_aram.c:
 	extab       start:0x80005BC0 end:0x80005BD8
 	extabindex  start:0x80006530 end:0x80006554
 	.text       start:0x80283D5C end:0x80283DFC
-	.sdata2     start:0x803E78F0 end:0x803E78F8
+	.sdata2     start:0x803E78E8 end:0x803E78F8
 
 musyx/runtime/hw_samplemem.c:
 	extab       start:0x80005BD8 end:0x80005BF0

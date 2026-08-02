@@ -6,12 +6,12 @@
 #define DFPLIGHTNI_TIMER_MAX 1000.0f
 #define DFPLIGHTNI_TIMER_INACTIVE_MAX 1010.0f
 
-extern f32 gDfpLightningTimerActiveReset;
-extern f32 gDfpLightningOffsetScale;
-extern f32 gDfpLightningRadiusMin;
-extern const f32 gDfpLightningRadiusMax;
-extern f32 gDfpLightningTriggerTimeBase;
-extern const f32 gDfpLightningRadiusNormDivisor;
+#define DFPLIGHTNI_TIMER_ACTIVE_RESET 999.0f
+#define DFPLIGHTNI_OFFSET_SCALE 0.1f
+#define DFPLIGHTNI_RADIUS_MIN 0.001f
+#define DFPLIGHTNI_RADIUS_MAX 5.0f
+#define DFPLIGHTNI_TRIGGER_TIME_BASE 400.0f
+#define DFPLIGHTNI_RADIUS_NORM_DIVISOR 32767.0f
 
 static inline DfpLightniState* dfplightni_getState(GameObject* obj)
 {
@@ -99,7 +99,7 @@ void DFP_Lightni_update(GameObject* obj)
             eventActive = mainGetBit(state->eventId);
             if ((eventActive != 0) && (state->timer < DFPLIGHTNI_TIMER_MAX))
             {
-                state->timer = gDfpLightningTimerActiveReset;
+                state->timer = DFPLIGHTNI_TIMER_ACTIVE_RESET;
             }
             if ((state->timer > state->triggerTime) && (state->timer < DFPLIGHTNI_TIMER_MAX))
             {
@@ -109,25 +109,25 @@ void DFP_Lightni_update(GameObject* obj)
                 if (eventActive != 0)
                 {
                     end[0] =
-                        gDfpLightningOffsetScale * randomGetRange(DFPLIGHTNI_RANDOM_XZ_MIN, DFPLIGHTNI_RANDOM_XZ_MAX) +
+                        DFPLIGHTNI_OFFSET_SCALE * randomGetRange(DFPLIGHTNI_RANDOM_XZ_MIN, DFPLIGHTNI_RANDOM_XZ_MAX) +
                         playerObj->anim.localPosX;
                     end[1] =
-                        gDfpLightningOffsetScale * randomGetRange(DFPLIGHTNI_RANDOM_Y_MIN, DFPLIGHTNI_RANDOM_Y_MAX) +
+                        DFPLIGHTNI_OFFSET_SCALE * randomGetRange(DFPLIGHTNI_RANDOM_Y_MIN, DFPLIGHTNI_RANDOM_Y_MAX) +
                         playerObj->anim.localPosY;
                     end[2] =
-                        gDfpLightningOffsetScale * randomGetRange(DFPLIGHTNI_RANDOM_XZ_MIN, DFPLIGHTNI_RANDOM_XZ_MAX) +
+                        DFPLIGHTNI_OFFSET_SCALE * randomGetRange(DFPLIGHTNI_RANDOM_XZ_MIN, DFPLIGHTNI_RANDOM_XZ_MAX) +
                         playerObj->anim.localPosZ;
                 }
                 else
                 {
                     end[0] =
-                        gDfpLightningOffsetScale * randomGetRange(DFPLIGHTNI_RANDOM_XZ_MIN, DFPLIGHTNI_RANDOM_XZ_MAX) +
+                        DFPLIGHTNI_OFFSET_SCALE * randomGetRange(DFPLIGHTNI_RANDOM_XZ_MIN, DFPLIGHTNI_RANDOM_XZ_MAX) +
                         start[0];
                     end[1] =
-                        gDfpLightningOffsetScale * randomGetRange(DFPLIGHTNI_RANDOM_Y_MIN, DFPLIGHTNI_RANDOM_Y_MAX) +
+                        DFPLIGHTNI_OFFSET_SCALE * randomGetRange(DFPLIGHTNI_RANDOM_Y_MIN, DFPLIGHTNI_RANDOM_Y_MAX) +
                         obj->anim.localPosY;
                     end[2] =
-                        gDfpLightningOffsetScale * randomGetRange(DFPLIGHTNI_RANDOM_XZ_MIN, DFPLIGHTNI_RANDOM_XZ_MAX) +
+                        DFPLIGHTNI_OFFSET_SCALE * randomGetRange(DFPLIGHTNI_RANDOM_XZ_MIN, DFPLIGHTNI_RANDOM_XZ_MAX) +
                         start[2];
                 }
                 if (state->effectHandle != 0)
@@ -145,14 +145,14 @@ void DFP_Lightni_update(GameObject* obj)
                     Sfx_PlayFromObjectLimited((u32)obj, DFPLIGHTNI_SFX_ID, DFPLIGHTNI_SFX_MAX_COUNT);
                     if (eventActive != 0)
                     {
-                        clampY = (radiusY < gDfpLightningRadiusMin)   ? gDfpLightningRadiusMin
-                                 : (radiusY > gDfpLightningRadiusMax) ? gDfpLightningRadiusMax
-                                                                      : radiusY;
+                        clampY = (radiusY < DFPLIGHTNI_RADIUS_MIN)   ? DFPLIGHTNI_RADIUS_MIN
+                                 : (radiusY > DFPLIGHTNI_RADIUS_MAX) ? DFPLIGHTNI_RADIUS_MAX
+                                                                     : radiusY;
                         effectStart = start;
                         effectEnd = end;
-                        clampX = (radiusX < *(f32*)&gDfpLightningRadiusMin)   ? *(f32*)&gDfpLightningRadiusMin
-                                 : (radiusX > gDfpLightningRadiusMax) ? gDfpLightningRadiusMax
-                                                                              : radiusX;
+                        clampX = (radiusX < DFPLIGHTNI_RADIUS_MIN)   ? DFPLIGHTNI_RADIUS_MIN
+                                 : (radiusX > DFPLIGHTNI_RADIUS_MAX) ? DFPLIGHTNI_RADIUS_MAX
+                                                                     : radiusX;
                         state->effectHandle = lightningCreate(
                             (const Vec3f*)effectStart, (const Vec3f*)effectEnd, clampX, clampY,
                             DFPLIGHTNI_EVENT_ACTIVE_EFFECT_FRAMES,
@@ -160,14 +160,14 @@ void DFP_Lightni_update(GameObject* obj)
                     }
                     else
                     {
-                        clampY = (radiusY < gDfpLightningRadiusMin)   ? gDfpLightningRadiusMin
-                                 : (radiusY > gDfpLightningRadiusMax) ? gDfpLightningRadiusMax
-                                                                      : radiusY;
+                        clampY = (radiusY < DFPLIGHTNI_RADIUS_MIN)   ? DFPLIGHTNI_RADIUS_MIN
+                                 : (radiusY > DFPLIGHTNI_RADIUS_MAX) ? DFPLIGHTNI_RADIUS_MAX
+                                                                     : radiusY;
                         effectStart = start;
                         effectEnd = end;
-                        clampX = (radiusX < *(f32*)&gDfpLightningRadiusMin)   ? *(f32*)&gDfpLightningRadiusMin
-                                 : (radiusX > gDfpLightningRadiusMax) ? gDfpLightningRadiusMax
-                                                                              : radiusX;
+                        clampX = (radiusX < DFPLIGHTNI_RADIUS_MIN)   ? DFPLIGHTNI_RADIUS_MIN
+                                 : (radiusX > DFPLIGHTNI_RADIUS_MAX) ? DFPLIGHTNI_RADIUS_MAX
+                                                                     : radiusX;
                         state->effectHandle = lightningCreate(
                             (const Vec3f*)effectStart, (const Vec3f*)effectEnd, clampX, clampY,
                             state->delayFrames,
@@ -203,11 +203,11 @@ void DFP_Lightni_init(GameObject* obj, DfpLightniMapData* mapData)
         randomValue = randomGetRange(DFPLIGHTNI_RANDOM_TIMER_MIN, DFPLIGHTNI_RANDOM_TIMER_MAX);
         {
             f32 triggerTime = randomValue;
-            triggerTime = gDfpLightningTriggerTimeBase + triggerTime;
+            triggerTime = DFPLIGHTNI_TRIGGER_TIME_BASE + triggerTime;
             state->triggerTime = triggerTime;
         }
-        state->radiusX = ((f32)(s32)mapData->radiusX / gDfpLightningRadiusNormDivisor) * gDfpLightningRadiusMax;
-        state->radiusY = ((f32)(s32)mapData->radiusY / gDfpLightningRadiusNormDivisor) * gDfpLightningRadiusMax;
+        state->radiusX = ((f32)(s32)mapData->radiusX / DFPLIGHTNI_RADIUS_NORM_DIVISOR) * DFPLIGHTNI_RADIUS_MAX;
+        state->radiusY = ((f32)(s32)mapData->radiusY / DFPLIGHTNI_RADIUS_NORM_DIVISOR) * DFPLIGHTNI_RADIUS_MAX;
         state->angleIndex = mapData->angleIndex;
         state->delayFrames = mapData->delayTicks * DFPLIGHTNI_EVENT_ACTIVE_EFFECT_FRAMES;
         state->eventId = mapData->eventId;
