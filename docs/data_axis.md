@@ -47,6 +47,29 @@ constants (`0.55f`, `10800.0f`, `86400.0f`). Replacing the stand-ins with litera
 contents *exactly* match — 44 slots / 41 distinct on both sides, nothing absent either way.
 **`matched_data` did not move: 600/776 before, 600/776 after.**
 
+### Corollary — objdiff is ORDER-BLIND: the pend-cluster theorem
+
+> objdiff pairs data symbols **by name** and is blind to address order. Therefore a section whose
+> **only** defect is symbol order **already scores 100**. "Order is the last defect" and
+> "section < 100" are **mutually exclusive by construction**.
+
+So a screen of the form *"fix the order wherever the section is fully pairable and order is the sole
+remaining difference"* enumerates an **empty set** — not in a given unit, but anywhere. Do not build
+that screen again.
+
+Confirmed empirically on `dlls/engine/7`: its `.bss` holds a genuine permutation — retail
+`gNewCloudLayerTextures@0x00 / gNewClouds@0x10`, ours exactly reversed, same names and sizes — and
+the section reads **fuzzy 100.0**. A tree-wide run over all 49 unmatched data sections returned
+**zero** order-is-last-defect candidates (47 sections / 11,156 of 11,268 bytes blocked by anonymous
+`@N`; one set-differs; one sizes-differ — the last two were the only genuine defects, and both are
+now fixed).
+
+This does **not** make `.bss` emission order worthless: it is what makes a unit *link*
+byte-identical, which is the criterion for a `NonMatching → MatchingFor` flip. The point is only
+that its payoff is **linked byte-identity, never `matched_data`** — so never gate a pend fix on a
+report.json delta, and treat any data gain that appears after a pure reorder as an attribution
+error.
+
 ---
 
 ## 2. Two gates that were tried and refuted — do not re-try either
@@ -87,6 +110,8 @@ plausible. Don't.
 | class | signature | verdict |
 |---|---|---|
 | **Anonymous-pool pairing** (section-granular) | `missing == section size` exactly; section holds `@N` symbols | Artifact. Fixing it requires our source to *define named `.sdata2` constants* — the **banned pool-reconstruction construct**. Closed on principle. |
+| **Jump-table naming** (the `.data` analogue) | a `.data` section where the unpaired symbols are all `switch` jump tables — retail `jumptable_8XXXXXXX`, ours `@N` — with **identical sizes and identical order** | Artifact, and *less* fixable than the pool class: C has no syntax for naming a compiler-generated jump table, so there is not even a banned hack available. Benign; never rank it. Proof below. |
+| **Over-claimed extent absorbing inter-TU padding** | `symbols.txt` claims more bytes than the source object emits, and the surplus reaches exactly to where the **next TU's** section begins | Real, correctable — trim the claim to the atom's true extent. The surplus becomes a `gap_*` filler, which objdiff skips. ⚠️ The retail carve's size is generated **from** the claim, so "the retail object says N bytes" is **circular** — decide from access width, neighbouring atom sizes, and the section range instead. Landed: `engine/60`, `6e7b713c49`. |
 | **Merged-TU duplication** | equal distinct constant counts, retail merely holding more copies; our side always *smaller* | TU-boundary artifact. `objects/202` is 421→127 slots at 119 distinct on both sides. Leave it. |
 | **Pool-order TU artifacts** | same value multiset, different offsets; size 4v8 / 8v4 shifts | TU-boundary artifact per CLAUDE.md. Leave the unit `NonMatching`; do not reconstruct the pool. |
 | **Unowned `gap_*` bytes** | splitter-emitted `gap_NN_8XXXXXXX_section` symbols marking bytes no symbol owns | Not ours to define. Exclude from every screen — counting them manufactures a phantom gap. |
@@ -99,6 +124,24 @@ overwhelmingly anonymous pool: `intersect_render` 236/236 (13 named / 40 anon), 
 (0/41), `DIMSnowHorn` 144/144 (2/33), `BossDrakor` 120/120 (0/27), `DR_LaserCan` 100/100,
 `engine/19` 96/96, `CFGuardian` 88/88, `SH_thorntai` 80/80, `DFropenode` 76/76, `engine/69` and
 `DIM_BossTon` 64/64, `engine/24` and `sincosf` 32/32.
+
+#### Worked proof — jump-table naming, `dlls/engine/2` `.data`
+
+1904 B at fuzzy **53.5865 %**. 21 of its 32 symbols pair perfectly. The 11 that do not are all
+switch jump tables — retail `jumptable_8030EF58…`, ours `@1433…` — with **identical sizes on every
+one** (80/208/204/28/44/72/28/44/64/60/48) in identical order. The arithmetic settles it:
+
+```
+named symbols  1016 bytes (21 syms)
+jump tables     880 bytes (11 syms, anonymous on our side)
+named fraction  1016/1896 = 53.5865 %
+reported .data            = 53.5865 %
+```
+
+Every named byte matches; the section loses 880 B purely because they cannot pair by name. The
+unit's whole deficit resolves to two sections — `.data` 1904 + `.sdata2` 184 = 2088, and
+16296/18384 = 88.642 % — of which only the 184 B `.sdata2` (retail 43 symbols vs our 38, with real
+size disagreements) is genuinely attackable.
 
 ### The under-claimed-size discriminator: are the bytes past the claim UNOWNED?
 
