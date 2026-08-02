@@ -599,23 +599,38 @@ transposed, the knob is the cast lever above, not the source text.
   the header were already written — the partial-rename state that scores zero with a green
   build. Use `\bname\b`.
 
-## The data axis: `matched_data` measures symbol PAIRING, not pool contents
+## The data axis: a section scores ALL-OR-NOTHING, and the trigger is DIFFERING BYTES
 
-**The axis is CLOSED and fully documented in `docs/data_axis.md` — read that before spending a
-build on a data score.** The short form:
+> ⚠️ **RETRACTION (a0374d8623, carried here 2026-08-02).** This section previously read
+> "`matched_data` measures symbol PAIRING, not pool contents" and told you to screen out any section
+> whose missing bytes equalled its size as an anonymous-`@N` pairing artifact. **That premise is
+> false and it closed a live class.** It is corrected in place below rather than deleted, because the
+> retracted version was cited from this file for weeks and anyone returning to it needs to see that
+> it moved. Canonical detail: `docs/data_axis.md`.
 
-- **First screen: is `missing bytes == a whole section's size`?** If yes it is the pairing
-  artifact and nothing else will change the verdict. objdiff pairs data symbols by name; our
-  pool constants are anonymous (`@262`, `@263`…) while retail's are named (`lbl_803DF058`…).
-- **The blindness is SECTION-granular** — a section holding *any* unpairable anonymous symbol
-  scores zero as a unit, however many of its named symbols are byte-perfect. Proof:
-  `intersect_render` `.rodata` (0 anonymous) 216/216 vs `.sdata2` (40 anonymous) 0/236, with
-  51 of those bytes byte-identical *and* name-identical on both sides.
+**The axis is OPEN for `.sdata2` emission order.** The short form, each point measured:
+
+- **Anonymity does NO work.** `audio_sfx` `.sdata2` is entirely anonymous `@N` and locals on our
+  side, retail's all named and global — retail even carries two symbols at `0x0c`/`0x0e` we never
+  emit — and it scores **matched_data 3328/3328, 100%**. Roughly 600 units have an all-`@N`
+  `.sdata2` and score 100. Never screen a section out because its symbols are anonymous.
+- **Scoring is section ALL-OR-NOTHING, and what trips it is a byte difference.** So
+  `missing == section size` is NOT evidence of an artifact — it is the *normal shape of a real
+  defect*, and the old first screen inverted the verdict. Worked measurement:
+  `195_Player/player` misses **784 bytes, exactly its `.sdata2` size**, while only **28 of those
+  784 bytes actually differ** (7 words, an emission-order permutation). The whole section zeroes on
+  those 7 words. `intersect_render` is the same shape — 236 missing, same constants in a different
+  sequence — and is the REFUTATION of the old bullet, not its proof.
+- **Therefore a sub-100 `.sdata2` is a live, source-addressable class (emission order), not a
+  closed artifact.** Diff the bytes before concluding anything; both instruments that produced the
+  old census keyed on size and anonymity and neither ever compared bytes.
 - **Two refuted gates, do not re-try:** naming (measured null — renaming to matching names moved
   nothing) and binding (the splitter emits every retail data symbol global, statics included, so
-  retail-side linkage carries zero information; de-`static`-ing chases a tool artifact).
-- **Closing the gap would require defining named `.sdata2` constants** — the banned
-  pool-reconstruction construct CLAUDE.md names as the mistake that keeps recurring. Do not.
+  retail-side linkage carries zero information; de-`static`-ing chases a tool artifact). These
+  survive the retraction: they are why anonymity is a non-issue, not why a section scores zero.
+- **The remedy is source shape, never a named constant.** Recovering emission order is a
+  source-shape question; defining named `.sdata2` constants remains the banned
+  pool-reconstruction construct, and `tools/banned_shapes_check.py` now fails the build on it.
 - **POOL-ORDER RESIDUE — one check settles it: is RETAIL's pool in RETAIL's OWN first-use order?**
   MWCC emits `.sdata2` in first-use order, so a pool-order difference is only source-reachable if
   *retail* obeys that law and we don't. Compute each divergent slot's first-use instruction index on
@@ -631,8 +646,14 @@ build on a data score.** The short form:
   2232); retail is not (2152, 602, 2232, 1429, 1439, 1447, 2098) — it mints `10.0f` and `1.0f` early.
   A second, independent proof of the cap: the mint windows close before insn 1429, while player.c's
   **earliest sub-100 function starts at insn 4804** — every function in both windows is at 100.000,
-  so any movement that could re-mint the slots must edit byte-identical `.text`. The residue is
-  **nominal, not reachable**; do not spend a build on it.
+  so any movement that could re-mint the slots must edit byte-identical `.text`.
+  ⚠️ **Corrected 2026-08-02:** this entry previously concluded "the residue is nominal, not
+  reachable — the 784B was a pairing score, not the size of anything wrong." That rested on the
+  retracted premise above. The **784 bytes are REAL**: 28 of them genuinely differ and zero the
+  whole section. The cap stands, because it never depended on the pairing claim — it rests on the
+  first-use discriminator plus the 100%-function windows — but this is an unreachable **784-byte**
+  entry, not a scoring artifact worth nothing. Price it accordingly if a future technique reaches
+  emission order.
 - **The distinct-values screen still answers a different, useful question.** Run its checks in the
   order **missing distinct values → duplicate inflation → size → order**: a merged TU is always
   smaller on our side, so checking size first misclassifies it.
