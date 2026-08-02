@@ -1,7 +1,14 @@
 #include "main/audio/music_api.h"
 #include "musyx/hw_samplemem.h"
-#include "musyx/snd_synth_api.h"
 #include "main/audio_internal.h"
+
+/* Local prototypes: this TU declares sndMasterVolume with int volume/time,
+   which disagrees with the musyx definition -- retail calls it directly with
+   both unnarrowed, which only that declaration produces. */
+void sndMasterVolume(int volume, int time, u8 musicFlag, u8 fxFlag);
+void sndSeqVolume(u8 volume, u16 time, u32 seqId, u8 mode);
+void sndVolume(u8 volume, u16 time, u8 group);
+void sndOutputMode(int mode);
 #include "musyx/snd_groups.h"
 #include "main/attract_movie_api.h"
 #include "main/fileio.h"
@@ -600,7 +607,7 @@ void audioSetVolumes(int volume, int time, int musicFlag, int fxFlag, int stream
 {
     if (musicFlag != 0 || fxFlag != 0)
     {
-        ((void (*)(int, int, u8, u8))sndMasterVolume)(volume, time, musicFlag, fxFlag);
+        sndMasterVolume(volume, time, musicFlag, fxFlag);
     }
     if (streamFlag != 0)
     {
