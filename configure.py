@@ -1402,7 +1402,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/236_InfoPoint/InfoPoint.c"),
             Object(NonMatching, "dlls/objects/237/237.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/238_EffectBox/EffectBox.c"),
-            Object(NonMatching, "dlls/objects/239/239.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(MatchingFor("GSAE01"), "dlls/objects/239/239.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/240_WarpPoint/WarpPoint.c"),
             Object(NonMatching, "dlls/objects/241_InvHit/InvHit.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/242_iceblast/iceblast.c", cflags=cflags_dll_noopt_nocse),
