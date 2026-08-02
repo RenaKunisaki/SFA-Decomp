@@ -273,11 +273,15 @@ sift-up block with the recovered helper regressed it to **99.194**. Splitting th
 where it was otherwise inert also changed the raw object identity, so it was reverted. Require
 both lineage evidence and a measured gain at the exact call site.
 
-## The sign-extension width axis — CLOSED by census, and three protected shapes
+## The signedness axis — CLOSED BOTH-SIDED by census, and three protected shapes
 
-**Do not re-run this as a per-function hunt.** A tree-wide `extsh`/`extsb` census (ours vs retail,
-both directions, per sub-100 function) found **212 of 217 functions clean**. Only five carry any
-delta, and all five are dispositioned:
+**Do not re-run either side as a per-function hunt.** Two independent censuses, store-side and
+load-side, both came back essentially clean, and every non-clean entry already carried a verdict.
+
+### Store side — `extsh`/`extsb` surplus and deficit
+
+A tree-wide census (ours vs retail, both directions, per sub-100 function) found **212 of 217
+functions clean**. Only five carry any delta, and all five are dispositioned:
 
 | Δextsh | Δextsb | function | verdict |
 |---|---|---|---|
@@ -293,6 +297,34 @@ move at all. The surplus was real and was *not* what the diff was made of. `mode
 paid 3.172 → 10.784 from the same lever only because there the surplus **was** the residual. Read a
 width delta as "a discrepancy exists", never as "a width-shaped residual exists", and never land a
 cast pun that buys nothing — a zero-score justification fails the plausible-source rule.
+
+### Load side — `lha` vs `lhz`, `lbz`+`extsb` vs bare `lbz`
+
+A different instruction population and a different error class (a field declared with the wrong
+*signedness*, versus a store that truncates anyway). **213 of 216 clean**, three deltas, and
+**zero signedness type errors tree-wide**:
+
+| function | delta | verdict |
+|---|---|---|
+| `main/zlb::zlbDecompress` | +2 `lhz`, +1 plain `lbz` | ProDG toolchain wall (`configure.py --zlb-toolchain`) |
+| `shader::doPendingMapLoads` | −1 signed `lbz` | **same site** as its store-side Δ−1; already closed |
+| `modgfx/152::dll_98_spawnEffect` | −1 `lha` | **same site** as its store-side +1 `extsh`; already closed |
+
+The two non-toolchain deltas are **not signedness at all** — they are the rematerialize-vs-hold
+class surfacing in the load population (retail re-loads memory; we hold and re-extend), consistent
+with the w81 store-to-load forwarding law. See `docs/allocation_model.md` for why that does not
+decompose into per-site source verdicts.
+
+**★ Two orthogonal censuses triangulate onto the same two functions.** Store-side and load-side
+independently identify `doPendingMapLoads` and `dll_98_spawnEffect` as their only non-toolchain
+entries. Those two carry the tree's last width-adjacent residuals and both are priced to closure.
+When independent instruments converge on already-closed ground, the closures and the censuses
+corroborate each other.
+
+**Clean means DRAINED, not absent.** The fleet's load-side signedness wins were real and recent —
+`playerCheckIfClimbingOntoWall` sits at 99.988 *after* its fix. A census run earlier would have
+found that population; running it now confirms consumption. Read a clean census as "this vein is
+worked out", never as "this vein never existed".
 
 ### Three protected shapes — they look like cleanup targets and are load-bearing
 
