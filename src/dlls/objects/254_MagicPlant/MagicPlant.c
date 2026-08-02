@@ -125,9 +125,9 @@ void magicPlantDropGem(GameObject* obj, MagicPlantPlacement* unusedPlacement, Ma
 }
 
 void MagicPlant_updateActive(GameObject* obj, MagicPlantPlacement* unusedPlacement, MagicPlantState* state) {
-    int hitObject;
-    int hitParamB;
-    int hitParamA;
+    int hitVolume;
+    int hitSphereIndex;
+    GameObject* hitObject;
     f32 hitPos[3];
     u8 lightPos[0x0c];
     int hitKind;
@@ -140,9 +140,9 @@ void MagicPlant_updateActive(GameObject* obj, MagicPlantPlacement* unusedPlaceme
     player = (GameObject*)playerAddress;
     obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
 
-    hitKind = ObjHits_GetPriorityHitWithPosition(obj, (GameObject**)&hitParamA, &hitParamB, (u32*)&hitObject,
-                                                 &hitPos[0], &hitPos[1], &hitPos[2]);
-    if ((hitKind != 0) && (hitObject != 0)) {
+    hitKind = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitSphereIndex, (u32*)&hitVolume, &hitPos[0],
+                                                 &hitPos[1], &hitPos[2]);
+    if ((hitKind != 0) && (hitVolume != 0)) {
         switch (hitKind) {
         case MAGICPLANT_HIT_KIND_FADE_IN:
             Obj_StartModelFadeIn(obj, MAGICPLANT_MODEL_FADE_FRAMES);
@@ -284,9 +284,9 @@ void MagicPlant_update(GameObject* obj) {
     s32 alpha;
     MagicPlantPlacement* placement;
     MagicPlantState* state;
-    int hitObject;
-    int hitParamB;
-    int hitParamA;
+    GameObject* hitObject;
+    u32 hitVolume;
+    int hitSphereIndex;
     f32 hitPos[3];
     u8 lightPos[0x0c];
     int hitKind;
@@ -305,8 +305,8 @@ void MagicPlant_update(GameObject* obj) {
 
     obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     if (objIsFrozen((u8*)obj) != 0) {
-        hitKind = ObjHits_GetPriorityHitWithPosition(obj, (GameObject**)&hitObject, &hitParamA, (u32*)&hitParamB,
-                                                     &hitPos[0], &hitPos[1], &hitPos[2]);
+        hitKind = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitSphereIndex, &hitVolume, &hitPos[0],
+                                                     &hitPos[1], &hitPos[2]);
         if ((hitKind != 0) && (hitKind != MAGICPLANT_HIT_KIND_FADE_IN)) {
             hitPos[0] += playerMapOffsetX;
             hitPos[2] += playerMapOffsetZ;

@@ -109,7 +109,12 @@ SmallBasketResource** gSmallBasketResource;
 
 /* Handles SmallBasket hit effects, nearby-object damage, and content drops. */
 void SmallBasket_handleHit(GameObject* obj, GameObject* player, SmallBasketState* state) {
-    int hitScratch[4];
+    struct {
+        int objectCount;
+        u32 hitVolume;
+        int hitSphereIndex;
+        GameObject* hitObject;
+    } hitInfo;
     PartFxSpawnParams effectParams;
     int hitType;
     int* objectCursor;
@@ -119,8 +124,7 @@ void SmallBasket_handleHit(GameObject* obj, GameObject* player, SmallBasketState
     f32 candidateY;
     f32 zero;
 
-    hitType = ObjHits_GetPriorityHitWithPosition(obj, (GameObject**)&hitScratch[3], &hitScratch[2],
-                                                 (u32*)&hitScratch[1],
+    hitType = ObjHits_GetPriorityHitWithPosition(obj, &hitInfo.hitObject, &hitInfo.hitSphereIndex, &hitInfo.hitVolume,
                                                  &effectParams.posX, &effectParams.posY, &effectParams.posZ);
     if (hitType != 0) {
         if (hitType == 0x10) {
@@ -136,17 +140,17 @@ void SmallBasket_handleHit(GameObject* obj, GameObject* player, SmallBasketState
                     }
                     return;
                 }
-                objectGroup = (int*)objGetAllOfType(SMALLBASKET_OBJECT_GROUP, &hitScratch[0]);
+                objectGroup = (int*)objGetAllOfType(SMALLBASKET_OBJECT_GROUP, &hitInfo.objectCount);
                 objectIndex = 0;
                 objectCursor = objectGroup;
-                for (; objectIndex < hitScratch[0]; objectIndex++) {
+                for (; objectIndex < hitInfo.objectCount; objectIndex++) {
                     if (ObjHits_IsObjectEnabled((ObjAnimComponent*)*objectCursor) != 0) {
                         candidateY = ((GameObject*)*objectCursor)->anim.localPosY;
                         sourceY = obj->anim.localPosY;
                         if (candidateY > sourceY && candidateY < sourceY + gSmallBasketChainHitHeight) {
                             if (Vec_xzDistance((f32*)(*objectCursor + 0x18), &obj->anim.worldPosX) <
                                 gSmallBasketChainHitRadius) {
-                                ObjHits_RecordObjectHit((GameObject*)*objectCursor, (GameObject*)hitScratch[3], 5, 1,
+                                ObjHits_RecordObjectHit((GameObject*)*objectCursor, hitInfo.hitObject, 5, 1,
                                                         0);
                             }
                         }

@@ -708,7 +708,7 @@ void trickyUpdateCollisionAndPathState(u8* obj)
 {
     TrickyState* state;
     f32 hitOffsetY;
-    void* lastContactObj;
+    GameObject* lastContactObj;
     f32 nearestDistance;
     f32 hitPos[3];
     f32 lightArgs[3];
@@ -786,9 +786,9 @@ void trickyUpdateCollisionAndPathState(u8* obj)
         ((GameObject*)obj)->anim.velocityY = 0.0f;
     }
 
-    lastContactObj = (void*)((GameObject*)obj)->anim.hitReactState->activeHit;
+    lastContactObj = (GameObject*)((GameObject*)obj)->anim.hitReactState->activeHit;
     if ((((GameObject*)obj)->anim.hitReactState->flags & OBJHITS_PRIORITY_STATE_PAIR_RESPONSE_APPLIED) == 0 ||
-        (((GameObject*)lastContactObj)->anim.romDefNo == 0x1f))
+        (lastContactObj->anim.romDefNo == 0x1f))
     {
         lastContactObj = NULL;
     }
@@ -822,7 +822,7 @@ void trickyUpdateCollisionAndPathState(u8* obj)
     }
 
     state->lastContactObj = lastContactObj;
-    hitKind = ObjHits_PollPriorityHitWithCooldown((GameObject*)obj, &state->hitCooldown, (int*)&lastContactObj,
+    hitKind = ObjHits_PollPriorityHitWithCooldown((GameObject*)obj, &state->hitCooldown, &lastContactObj,
                                                   (hitPosPtr = hitPos));
     state->light = hitKind;
 
@@ -846,7 +846,7 @@ void trickyUpdateCollisionAndPathState(u8* obj)
     case 0xc:
         objfx_spawnHitEmitterAtPos(hitPosPtr, 8, 0xff, 0x20, 0x20);
         objDoHitParticleFx(obj, 0.014f, lightArgs, 4, 0);
-        if (((GameObject*)lastContactObj)->anim.romDefNo == SKEETLA_ATTACKER_SEQID_STAFF)
+        if (lastContactObj->anim.romDefNo == SKEETLA_ATTACKER_SEQID_STAFF)
         {
         Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_stftest_var);
         }

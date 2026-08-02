@@ -334,7 +334,8 @@ u8 gBaddieEventDelayRanges[6][2] = {{15, 60}, {10, 50}, {7, 20}, {5, 20}, {3, 15
 f32 gBaddieFamilySpeedScales[6] = {0.5f, 0.5f, 0.7f, 0.6f, 1.5f, 1.5f};
 u32 gGroundBaddieModelChainIds[4] = {6, 7, 8, 9};
 
-void battleDroidUpdateWhileFrozen(int obj, u8* state, int arg, int code, int wpad0, int wpad1, Vec* wpad2, int wpad3)
+void battleDroidUpdateWhileFrozen(int obj, u8* state, GameObject* attacker, int code, int wpad0, int wpad1,
+                                  Vec* wpad2, int wpad3)
 {
     if (code == 0x10)
     {
@@ -1510,8 +1511,8 @@ void groundBaddiePushPlayerOut(GameObject* obj, u8* state)
     }
 }
 
-void guardClawUpdateWhileFrozen(GameObject* obj, u8* state, int wpad0, int wpad1, int wpad2, int wpad3, Vec* wpad4,
-                                int wpad5)
+void guardClawUpdateWhileFrozen(GameObject* obj, u8* state, GameObject* attacker, int wpad1, int wpad2, int wpad3,
+                                Vec* wpad4, int wpad5)
 {
     Sfx_PlayFromObject(obj, SFXTRIG_wp_pole1_c_23);
     ((EnemyState*)state)->flags2E8 |= 0x10;
@@ -1681,7 +1682,7 @@ Seq11ERow gSeq11EStateTable[6] = {
     {2.0f, 0x0, 7, 0, 4, 1}, {2.0f, 0x0, 3, 5, 5, 0}, {3.5f, 0x1, 4, 5, 5, 0},
 };
 
-void gcRobotPatrol_updateWhileFrozen(int obj, u8* state, int unused, int msg, int wpad0, int wpad1, Vec* wpad2,
+void gcRobotPatrol_updateWhileFrozen(int obj, u8* state, GameObject* attacker, int msg, int wpad0, int wpad1, Vec* wpad2,
                                      int wpad3) {
     GroundBaddiePlacement* sub[1];
     f32 fz;
@@ -1935,7 +1936,8 @@ const f32 gGcRobotPatrolZero = 0.0f;
 const f32 gMikaladonZero = 0.0f;
 const f32 gMikaladonDefaultPeriod = 60.0f;
 
-void mikaladon_updateWhileFrozen(int obj, u8* state, int unused, int msg, int wpad0, int wpad1, Vec* wpad2, int wpad3)
+void mikaladon_updateWhileFrozen(int obj, u8* state, GameObject* attacker, int msg, int wpad0, int wpad1, Vec* wpad2,
+                                 int wpad3)
 {
     if (msg == 16 || msg == 17)
     {
@@ -2113,7 +2115,8 @@ int gWeevilCurveInitData[2] = {2, 3};
    OBJECTS.bin name "Firebat", DLL 0xC9); it alone runs with userData2 set. */
 #define MAGICPLANT_FIREBAT_SEQID 0x7c6
 
-void vambat_updateWhileFrozen(int obj, u8* state, int unused, int msgFlag, int wpad0, int wpad1, Vec* wpad2, int wpad3)
+void vambat_updateWhileFrozen(int obj, u8* state, GameObject* attacker, int msgFlag, int wpad0, int wpad1, Vec* wpad2,
+                              int wpad3)
 {
     EnemyState* bs = (EnemyState*)state;
 
@@ -2377,8 +2380,8 @@ void kooshy_spawnProjectile(GameObject* obj, int state)
     }
 }
 
-void kooshy_updateWhileFrozen(GameObject* obj, u8* state, int attacker, int msgFlag, int hitId, int damage, Vec* wpad0,
-                              int wpad1)
+void kooshy_updateWhileFrozen(GameObject* obj, u8* state, GameObject* attacker, int msgFlag, int hitId, int damage,
+                              Vec* wpad0, int wpad1)
 {
     if ((obj)->anim.currentMove == 1)
     {
@@ -2561,8 +2564,8 @@ void kooshy_init(int unused, int state)
 
 #define FALL_LADDERS_HIT_VOLUME_SLOT 0x18
 
-void weevil_updateWhileFrozen(GameObject* obj, u8* state, int attacker, int msgFlag, int wpad0, int wpad1, Vec* wpad2,
-                              int wpad3)
+void weevil_updateWhileFrozen(GameObject* obj, u8* state, GameObject* attacker, int msgFlag, int wpad0, int wpad1,
+                              Vec* wpad2, int wpad3)
 {
     u8 cond = 0;
     int kind = (obj)->anim.currentMove;
@@ -2822,7 +2825,7 @@ void baddieSpawnWaterRipple(GameObject* obj, EnemyState* state)
     }
 }
 
-void pinPon_updateWhileFrozen(int obj, EnemyState* state, int unused, int cmd, int wpad0, int wpad1,
+void pinPon_updateWhileFrozen(int obj, EnemyState* state, GameObject* attacker, int cmd, int wpad0, int wpad1,
                               Vec* wpad2, int wpad3)
 {
     GameObject* self = (GameObject*)obj;
@@ -3581,7 +3584,8 @@ u8 gShadowHunterHitReactionSeq[0x40] = {
 };
 
 
-void rachnopUpdateWhileFrozen(GameObject* obj, u8* state, int unused, int eventKind, int wpad0, int wpad1, Vec* wpad2, int wpad3)
+void rachnopUpdateWhileFrozen(GameObject* obj, u8* state, GameObject* attacker, int eventKind, int wpad0, int wpad1,
+                              Vec* wpad2, int wpad3)
 {
     if (eventKind == 0x10)
     {
@@ -3811,7 +3815,8 @@ void spittingEbaUpdateTimeOfDay(int obj, int state)
     return;
 }
 
-void spittingEbaUpdateWhileFrozen(int obj, u8* state, int unused1, int eventKind, int unused2, int damage, Vec* wpad0, int wpad1)
+void spittingEbaUpdateWhileFrozen(int obj, u8* state, GameObject* attacker, int eventKind, int unused2, int damage,
+                                  Vec* wpad0, int wpad1)
 {
     if (eventKind == 0x10)
     {
@@ -3941,7 +3946,8 @@ void spittingEbaInit(u32 unused, int state)
 }
 
 
-void wbUpdateWhileFrozen(int obj, u8* state, int unused, int eventKind, int wpad0, int wpad1, Vec* wpad2, int wpad3)
+void wbUpdateWhileFrozen(int obj, u8* state, GameObject* attacker, int eventKind, int wpad0, int wpad1, Vec* wpad2,
+                         int wpad3)
 {
     if (eventKind != 0x11)
     {
@@ -4239,8 +4245,8 @@ void mutatedEbaPlayMoveSfx(u32 obj, EnemyState* state)
     return;
 }
 
-void mutatedEbaUpdateWhileFrozen(int obj, u8* state, int unused, int eventKind, int wpad0, int wpad1, Vec* wpad2,
-                                 int wpad3)
+void mutatedEbaUpdateWhileFrozen(int obj, u8* state, GameObject* attacker, int eventKind, int wpad0, int wpad1,
+                                 Vec* wpad2, int wpad3)
 {
     int move;
 
@@ -4359,8 +4365,8 @@ extern f32 gHoodedZyckLungeMoveSpeed;
 extern f32 gHoodedZyckLargeTargetSpeedScale;
 extern f32 gHoodedZyckEmergeMoveSpeed;
 
-void hoodedZyckUpdateWhileFrozen(int obj, u8* state, int unused, int eventKind, int wpad0, int wpad1, Vec* wpad2,
-                                 int wpad3)
+void hoodedZyckUpdateWhileFrozen(int obj, u8* state, GameObject* attacker, int eventKind, int wpad0, int wpad1,
+                                 Vec* wpad2, int wpad3)
 {
     if (eventKind == 0x10)
     {
@@ -5983,7 +5989,8 @@ void hagabonMK2_stopLoopSfx(int obj, u8* state)
     Sfx_StopFromObject((GameObject*)obj, SFXTRIG_baddie_rach_death);
 }
 
-void hagabonMK2_updateWhileFrozen(int obj, u8* st, int unused, int cmd, int wpad0, int wpad1, Vec* wpad2, int wpad3)
+void hagabonMK2_updateWhileFrozen(int obj, u8* st, GameObject* attacker, int cmd, int wpad0, int wpad1, Vec* wpad2,
+                                  int wpad3)
 {
     int objI = (int)obj;
     if (cmd == 0x11)
@@ -6330,7 +6337,7 @@ void snowworm_spawnProjectile(GameObject* obj)
     }
 }
 
-void snowworm_updateWhileFrozen(int obj, u8* st, int p3, int cmd, int p5, int sub, Vec* wpad0, int wpad1)
+void snowworm_updateWhileFrozen(int obj, u8* st, GameObject* attacker, int cmd, int p5, int sub, Vec* wpad0, int wpad1)
 {
     u8* base;
     u32 r;
@@ -6574,8 +6581,8 @@ void snowworm_init(GameObject* obj, int* st)
     ((EnemyState*)st)->phaseAngle = (u16)(obj->anim.romDefNo == SNOWWORM_SEQID_BABY);
 }
 
-void whirlpool_updateWhileFrozen(int wpad0, u8* wpad1, int wpad2, int wpad3, int wpad4, int wpad5, Vec* wpad6,
-                                 int wpad7)
+void whirlpool_updateWhileFrozen(int wpad0, u8* wpad1, GameObject* attacker, int wpad3, int wpad4, int wpad5,
+                                 Vec* wpad6, int wpad7)
 {
 }
 

@@ -384,7 +384,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
     Vec hitPos;
     f32 delta[3];
     StaffCollisionColorArgs colors;
-    int attacker;
+    GameObject* attacker;
     f32 fxA;
     f32 fxB;
     f32 fxC;
@@ -406,7 +406,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
         {
             ObjHits_DisableObject(obj);
         }
-        hit = ObjHits_GetPriorityHitWithPosition(obj, (GameObject**)&attacker, &hitArg, &hitCount, &hitPos.x, &hitPos.y,
+        hit = ObjHits_GetPriorityHitWithPosition(obj, &attacker, &hitArg, &hitCount, &hitPos.x, &hitPos.y,
                                                  &hitPos.z);
         hitPos.x += playerMapOffsetX;
         hitPos.z += playerMapOffsetZ;
@@ -454,7 +454,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
             {
                 if (hitEffects != 0)
                 {
-                    if (((GameObject*)attacker)->anim.classId == 1 || ((GameObject*)attacker)->anim.classId == 0x2d)
+                    if (attacker->anim.classId == 1 || attacker->anim.classId == 0x2d)
                     {
                         if ((((EnemyState*)state)->flags2E4 & 0x200) != 0)
                         {
@@ -512,12 +512,13 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
                 case 0x5b9:
                 case 0x5e1:
                 case 0x7a6:
-                    result = sharpClawHandleHitMessage(obj, state, (GameObject*)attacker, hit, hitArg, hitCount,
+                    result = sharpClawHandleHitMessage(obj, state, attacker, hit, hitArg, hitCount,
                                                           &hitPos, sector, hDist, vDist);
                     break;
                 case 0xd8:
                 case 0x281:
-                    guardClawUpdateWhileFrozen((GameObject*)(obj), state, attacker, hit, hitArg, hitCount, &hitPos, sector);
+                    guardClawUpdateWhileFrozen((GameObject*)(obj), state, attacker, hit, hitArg, hitCount, &hitPos,
+                                               sector);
                     break;
                 case 0x613:
                     gcRobotPatrol_updateWhileFrozen((int)obj, state, attacker, hit, hitArg, hitCount, &hitPos, sector);
@@ -536,7 +537,8 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
                     weevil_updateWhileFrozen(obj, state, attacker, hit, hitArg, hitCount, &hitPos, sector);
                     break;
                 case 0x251:
-                    pinPon_updateWhileFrozen((int)obj, (EnemyState*)state, attacker, hit, hitArg, hitCount, &hitPos, sector);
+                    pinPon_updateWhileFrozen((int)obj, (EnemyState*)state, attacker, hit, hitArg, hitCount, &hitPos,
+                                             sector);
                     break;
                 case 0x25d:
                     rachnopUpdateWhileFrozen(obj, state, attacker, hit, hitArg, hitCount, &hitPos, sector);
@@ -567,7 +569,7 @@ void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit)
                 case 0x6a3:
                 case 0x6a4:
                 case 0x6a5:
-                    crawler_onHit(obj, state, (GameObject*)attacker, hit, hitArg, hitCount, &hitPos, sector);
+                    crawler_onHit(obj, state, attacker, hit, hitArg, hitCount, &hitPos, sector);
                     break;
                 case 0x7c8:
                     hagabonMK2_updateWhileFrozen((int)obj, state, attacker, hit, hitArg, hitCount, &hitPos, sector);

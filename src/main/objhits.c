@@ -3625,20 +3625,20 @@ bool ObjTrigger_UpdateIdBlockFlag(int obj) {
     return true;
 }
 
-int ObjHits_PollPriorityHitWithCooldown(GameObject* obj, float* cooldown, int* outHitObject, float* outHitPos) {
+int ObjHits_PollPriorityHitWithCooldown(GameObject* obj, float* cooldown, GameObject** outHitObject, float* outHitPos) {
     int collisionType;
 
     collisionType = 0;
     *cooldown = *cooldown - timeDelta;
     if (*cooldown <= 0.0f) {
         if (outHitPos != (float*)0x0) {
-            collisionType = ObjHits_GetPriorityHitWithPosition(obj, (GameObject**)outHitObject, 0x0, 0x0, outHitPos,
-                                                               outHitPos + 1, outHitPos + 2);
+            collisionType = ObjHits_GetPriorityHitWithPosition(obj, outHitObject, 0x0, 0x0, outHitPos, outHitPos + 1,
+                                                               outHitPos + 2);
             if (collisionType != 0) {
                 ObjHits_ConvertHitPositionToWorld(obj, outHitPos);
             }
         } else {
-            collisionType = ObjHits_GetPriorityHit(obj, outHitObject, 0x0, 0x0);
+            collisionType = ObjHits_GetPriorityHit(obj, (int*)outHitObject, 0x0, 0x0);
         }
         if (collisionType != 0) {
             *cooldown = 30.0f;

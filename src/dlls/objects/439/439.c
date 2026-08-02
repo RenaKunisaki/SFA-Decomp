@@ -187,7 +187,9 @@ void sc_musictree_update(GameObject* obj) {
     f32 hitPosition[3];
     f32 effectPosition[3];
     int hitType;
-    int hitObject, hitSphereIndex, hitVolume;
+    GameObject* hitObject;
+    int hitSphereIndex;
+    u32 hitVolume;
     int i;
     int* ambientEffectCursor;
     int* pathPointCursor;
@@ -225,7 +227,7 @@ void sc_musictree_update(GameObject* obj) {
     }
     if ((state->flags & SC_MUSIC_TREE_FLAG_HIT_ACTIVE) != 0) {
         if ((state->flags & (SC_MUSIC_TREE_FLAG_PRIORITY_HIT | SC_MUSIC_TREE_FLAG_SATELLITES)) != 0) {
-            hitType = ObjHits_GetPriorityHitWithPosition(obj, (GameObject**)&hitObject, &hitSphereIndex, (u32*)&hitVolume,
+            hitType = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitSphereIndex, &hitVolume,
                                                          &hitPosition[0], &hitPosition[1], &hitPosition[2]);
         } else {
             hitType = ObjHits_PollPriorityHitEffectWithCooldown(

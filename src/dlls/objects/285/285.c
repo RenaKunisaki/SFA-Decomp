@@ -123,7 +123,7 @@ void TreasureChest_update(GameObject* obj) {
     f32 nearestDist;
     u32 hitVolume;
     int hitSphereIndex;
-    int hitObject;
+    GameObject* hitObject;
 
     state = obj->extra;
     placement = (TreasureChestPlacement*)obj->anim.placementData;
@@ -154,7 +154,7 @@ void TreasureChest_update(GameObject* obj) {
         state->restoreOpenState = 0;
         hitEffectColors = gTreasureChestHitEffectColors;
         hitSphereIndex = TREASURE_CHEST_HIT_SPHERE_INDEX_NONE;
-        hitType = ObjHits_GetPriorityHitWithPosition(obj, (GameObject**)&hitObject, &hitSphereIndex, &hitVolume,
+        hitType = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitSphereIndex, &hitVolume,
                                                      &spawnParams.posX, &spawnParams.posY, &spawnParams.posZ);
         if ((hitType != 0) && (hitType != TREASURE_CHEST_IGNORED_HIT_TYPE)) {
             spawnParams.posX += playerMapOffsetX;

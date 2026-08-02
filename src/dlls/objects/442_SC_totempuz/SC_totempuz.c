@@ -171,12 +171,14 @@ void sc_totempuzzle_update(GameObject* obj) {
     int other;
     ObjTextureRuntimeSlot* texture;
     f32 lightArgs[6];
-    f32 hitNx, hitNy, hitNz;
+    GameObject* hitObject;
+    int hitSphereIndex;
+    u32 hitVolume;
     int countA, startA;
     int countB, startB;
 
     state = obj->extra;
-    hitKind = ObjHits_GetPriorityHitWithPosition(obj, (int*)&hitNx, (int*)&hitNy, (u32*)&hitNz, &lightArgs[3],
+    hitKind = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitSphereIndex, &hitVolume, &lightArgs[3],
                                                  &lightArgs[4], &lightArgs[5]);
     if ((obj->anim.bankIndex == SC_TOTEM_PUZZLE_CAP_INDEX) || (mainGetBit(GAMEBIT_SC_totempuzzle_running) != 0) ||
         (mainGetBit(SC_TOTEM_PUZZLE_GAMEBIT_ACTIVATED) == 0)) {
