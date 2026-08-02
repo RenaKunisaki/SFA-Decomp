@@ -71,8 +71,8 @@ void androssligh_updateBeam(GameObject* obj, AndrossLighState* state)
     else
     {
         state->boltAge += timeDelta;
-        *(u16*)((int)state->bolt + 0x20) = (int)(0.5f + state->boltAge);
-        if (*(u16*)((int)state->bolt + 0x20) >= *(u16*)((int)state->bolt + 0x22))
+        state->bolt->timer = (int)(0.5f + state->boltAge);
+        if (state->bolt->timer >= state->bolt->lifetime)
         {
             mm_free(state->bolt);
             state->bolt = NULL;

@@ -117,8 +117,8 @@ void mclightning_render(GameObject* obj, int p2, int p3, int p4, int p5, f32 sca
             lightningRender(state->boltHandle);
             state->boltFrameTimer += timeDelta;
             frame = (u16)(0.5f + state->boltFrameTimer);
-            *(u16*)((int)state->boltHandle + 0x20) = frame;
-            if (*(u16*)((int)state->boltHandle + 0x20) >= *(u16*)((int)state->boltHandle + 0x22))
+            state->boltHandle->timer = frame;
+            if (state->boltHandle->timer >= state->boltHandle->lifetime)
             {
                 mm_free(state->boltHandle);
                 state->boltHandle = NULL;

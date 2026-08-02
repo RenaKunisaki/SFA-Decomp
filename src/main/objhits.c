@@ -5192,8 +5192,8 @@ void characterAimHeadAtTarget(GameObject* obj, void* tgt, void* p3, int a, u8 in
                 channel++;
                 ap++;
             }
-            found[0][1] = *(s16*)((u8*)p3 + 0x14);
-            found[0][0] = *(s16*)((u8*)p3 + 0x44);
+            found[0][1] = ((ObjJointTrackPair*)p3)->yaw.angle;
+            found[0][0] = ((ObjJointTrackPair*)p3)->pitch.angle;
         }
     }
 }

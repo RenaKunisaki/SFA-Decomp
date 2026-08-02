@@ -858,9 +858,9 @@ void curves_updateLocalPointTransforms(int obj, CurvesCollisionState* collision)
         iv[0] = 0;
         for (; iv[0] < (collision->pointCounts & CURVES_POINT_COUNT_LOCAL_MASK); iv[0]++)
         {
-            *(f32*)((u8*)collision + iv[0] * 12 + 276) = *(f32*)((u8*)collision + iv[0] * 12 + 228);
-            *(f32*)((u8*)collision + iv[0] * 12 + 280) = CURVES_ONE + *(f32*)((u8*)collision + iv[0] * 12 + 232);
-            *(f32*)((u8*)collision + iv[0] * 12 + 284) = *(f32*)((u8*)collision + iv[0] * 12 + 236);
+            collision->localPointTarget[iv[0]][0] = collision->localPointWorld[iv[0]][0];
+            collision->localPointTarget[iv[0]][1] = CURVES_ONE + collision->localPointWorld[iv[0]][1];
+            collision->localPointTarget[iv[0]][2] = collision->localPointWorld[iv[0]][2];
         }
         trackInvalidateDynamicSlotsForObject((GameObject*)obj);
     }

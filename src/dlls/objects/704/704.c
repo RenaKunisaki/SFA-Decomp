@@ -294,7 +294,7 @@ int isFrontEndUiActive(void)
 void titleScreenShowCopyright(u8 arg)
 {
     void* tb;
-    void* box;
+    TextSlot* box;
 
     if (arg != 0)
     {
@@ -319,9 +319,9 @@ void titleScreenShowCopyright(u8 arg)
         box = gameTextGetBox(*(u8*)((char*)tb + 4));
         if (gTitleScreenCopyrightBaseY == 0)
         {
-            gTitleScreenCopyrightBaseY = *(s16*)((char*)box + 0x16);
+            gTitleScreenCopyrightBaseY = box->y;
         }
-        *(s16*)((char*)box + 0x16) =
+        box->y =
             (s16)(80.0f * (1.0f - gTitleScreenCopyrightFade) + gTitleScreenCopyrightBaseY);
         gameTextSetColor(0xff, 0xff, 0xff, (s32)(255.0f * gTitleScreenCursorX));
         gameTextShow(FRONT_TEXT_COPYRIGHT);
@@ -418,7 +418,7 @@ void titleScreenDrawMenuFrame(int alpha, int hideHighlight, u32 showArrows)
     }
     if (gTitleScreenCursorY > 0.0f && (boxIndex = linkGetSelectedItemId()) != 0xFFFF)
     {
-        int t = *(s16*)((int)gameTextGetBox(boxIndex) + 0x16);
+        int t = ((TextSlot*)gameTextGetBox(boxIndex))->y;
         xb = (int)mtx[3];
         yb = t + (int)mtx[7];
         if ((hideHighlight & 0xff) == 0u)

@@ -2139,7 +2139,7 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
             {
                 *(u8*)((u8*)&st->cmdFlags[0] + obj->seqIndex) = walk2->flags;
                 *(int*)((u8*)&st->handles[0] + obj->seqIndex * 4) =
-                    *(int*)((u8*)newObj->anim.placementData + 0x14);
+                    ((ObjPlacement*)newObj->anim.placementData)->ident;
                 mapFlags = obj->anim.modelInstance->flags;
                 if ((mapFlags & OBJMODEL_FLAG_SKIP_RESET_UPDATE) && !(mapFlags & 0x8000))
                 {

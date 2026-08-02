@@ -510,9 +510,9 @@ void player_modelMtxFn(f32* mtx, int* state, f32 f1, f32 f2)
         f32 delta = new_ - cur;
         if (delta > PLAYER_MOVE_ZERO)
         {
-            *(f32*)((char*)mtx + 12) = ((BaddieState*)state)->nudgePosX * delta + *(f32*)((char*)mtx + 12);
-            *(f32*)((char*)mtx + 16) = ((BaddieState*)state)->nudgePosY * delta + *(f32*)((char*)mtx + 16);
-            *(f32*)((char*)mtx + 20) = ((BaddieState*)state)->nudgePosZ * delta + *(f32*)((char*)mtx + 20);
+            mtx[3] = ((BaddieState*)state)->nudgePosX * delta + mtx[3];
+            mtx[4] = ((BaddieState*)state)->nudgePosY * delta + mtx[4];
+            mtx[5] = ((BaddieState*)state)->nudgePosZ * delta + mtx[5];
             ((BaddieState*)state)->nudgePosProgress = new_;
         }
     }
@@ -792,7 +792,7 @@ void playerRunStateMachine(GameObject* obj, BaddieState* state, f32 dt, PlayerSt
 
 void player_setState(void* ctx, void* p, int new_state)
 {
-    void* q;
+    ObjHitsPriorityState* q;
     if (((BaddieState*)p)->controlMode != new_state)
     {
         ((BaddieState*)p)->prevControlMode = ((BaddieState*)p)->controlMode;
@@ -813,9 +813,9 @@ void player_setState(void* ctx, void* p, int new_state)
     ((BaddieState*)p)->movementFlags = 0;
     ((BaddieState*)p)->moveEventFlags = 0;
     ((BaddieState*)p)->stateId = 0;
-    q = ((GameObject*)ctx)->anim.hitReactState;
+    q = (ObjHitsPriorityState*)((GameObject*)ctx)->anim.hitReactState;
     if (q != 0)
-        *(u8*)((char*)q + 0x70) = 0;
+        q->suppressOutgoingHits = 0;
 }
 
 void player_setOverride(u32 x)

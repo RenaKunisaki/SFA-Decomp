@@ -460,7 +460,7 @@ void Link_render(void)
                 {
                     alpha = (((int)((u32)opacity >> 31)) + opacity) >> 1;
                 }
-                *(u8*)((char*)gameTextGetBox(drawItem->boxId) + 0x1e) = alpha;
+                ((TextSlot*)gameTextGetBox(drawItem->boxId))->alpha = alpha;
 
                 if ((drawItem->flags & LINK_FLAG_DRAW_BLACK_SHADOW) != 0)
                 {

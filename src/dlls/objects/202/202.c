@@ -1546,10 +1546,10 @@ extern Seq11ERow gSeq11EStateTable[];
 void guardClaw_update(GameObject* obj, u8* state);
 void guardClaw_update(GameObject* obj, u8* state)
 {
-    int* def = *(int**)&(obj)->anim.placementData;
+    GroundBaddiePlacement* def = *(GroundBaddiePlacement**)&(obj)->anim.placementData;
     u32 flags;
 
-    if (((EnemyState*)state)->userData1 == 2 && mainGetBit(*(s16*)((char*)def + 0x1c)) == 0)
+    if (((EnemyState*)state)->userData1 == 2 && mainGetBit(def->gameBitD) == 0)
     {
         (obj)->anim.resetHitboxFlags =
             (u8)((obj)->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
@@ -1581,7 +1581,7 @@ void guardClaw_update(GameObject* obj, u8* state)
         {
             if (flags & 0x20000000)
             {
-                if (mainGetBit(*(s16*)((char*)def + 0x1c)) != 0)
+                if (mainGetBit(def->gameBitD) != 0)
                 {
                     ((EnemyState*)state)->userData1 = gSeq11EStateTable[((EnemyState*)state)->userData1].alt;
                 }
@@ -1593,14 +1593,14 @@ void guardClaw_update(GameObject* obj, u8* state)
         }
         else if (((EnemyState*)state)->userData1 == 2)
         {
-            if (mainGetBit(*(s16*)((char*)def + 0x1c)) != 0 || !(((EnemyState*)state)->controlFlags & 0x20000000))
+            if (mainGetBit(def->gameBitD) != 0 || !(((EnemyState*)state)->controlFlags & 0x20000000))
             {
                 ((EnemyState*)state)->userData1 = gSeq11EStateTable[((EnemyState*)state)->userData1].next;
             }
         }
         else if (((EnemyState*)state)->userData1 == 3)
         {
-            if (mainGetBit(*(s16*)((char*)def + 0x1c)) != 0)
+            if (mainGetBit(def->gameBitD) != 0)
             {
                 ((EnemyState*)state)->userData1 = gSeq11EStateTable[((EnemyState*)state)->userData1].alt;
             }
@@ -5740,7 +5740,7 @@ void crawler_updateB(GameObject* obj, u8* state)
         int j = 1;
         u8* p = (u8*)t18 + 0xc;
         int c;
-        for (c = *(u8*)((char*)t18 + 8); c >= 1; c--)
+        for (c = t18->moveId; c >= 1; c--)
         {
             if (obj->anim.currentMove == *(u8*)(p + 8))
             {
@@ -5874,15 +5874,15 @@ void crawler_update(GameObject* obj, u8* state)
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId = 0;
     j = 1;
     p = (u8*)t8 + 0xc;
-    n = *(u8*)((char*)t8 + 8);
+    n = t8->moveId;
     for (; j <= n; j++)
     {
         if (obj->anim.currentMove == *(u8*)(p + 8))
         {
             ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority =
-                (s8) * (int*)((char*)t8 + j * 0xc + 4);
+                (s8)t8[j].mask;
             ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId =
-                (s8) * (u8*)((char*)t8 + j * 0xc + 9);
+                (s8)t8[j].next;
             if (((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority == 0x1f)
             {
                 ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x40;

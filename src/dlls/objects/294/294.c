@@ -259,7 +259,7 @@ static void triggerEvalPlaneCrossing(GameObject* obj, GameObject* seqObj) {
 
         if ((localPos.x >= -state->clipHalfExtent) && (localPos.x <= state->clipHalfExtent) &&
             (localPos.y >= -state->clipHalfExtent) && (localPos.y <= state->clipHalfExtent)) {
-            OSReport(sMoonrockTriggerIdentFormat, triggerState, *(u32*)(data + 0x14));
+            OSReport(sMoonrockTriggerIdentFormat, triggerState, ((ObjPlacement*)data)->ident);
             objInterpretSeq(obj, seqObj, triggerState, (int)farDist);
         }
     }

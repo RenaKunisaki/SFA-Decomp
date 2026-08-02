@@ -18,6 +18,7 @@
 #include "main/maketex_sequence_api.h"
 #include "main/mapEvent.h"
 #include "main/map_load.h"
+#include "main/model.h"
 #include "main/model_engine.h"
 #include "main/model_engine_ui_api.h"
 #include "main/object_render.h"
@@ -468,7 +469,7 @@ void warpstone_free(GameObject* obj, int mode) {
 void warpstone_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     GameObject* player;
     int* state = obj->extra;
-    int* model;
+    ObjModel* model;
     f32 z;
     f32 y;
     f32 x;
@@ -477,8 +478,8 @@ void warpstone_render(GameObject* obj, int renderArg2, int renderArg3, int rende
         objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
         player = Obj_GetPlayerObject();
         if (player != NULL && playerIsSequenceRenderSuppressed(player) != 0) {
-            model = (int*)Obj_GetActiveModel(player);
-            *(u16*)((char*)model + 24) = (u16)(*(u16*)((char*)model + 24) & ~0x8);
+            model = Obj_GetActiveModel(player);
+            model->bufferFlags = (u16)(model->bufferFlags & ~0x8);
             ObjPath_GetPointWorldPosition(obj, ((WarpStoneState*)state)->pathPointIndex, &x, &y, &z, 0);
             objSetPos(player, x, y, z);
             playerRender((int)player, renderArg2, renderArg3, renderArg4, renderArg5, -1);

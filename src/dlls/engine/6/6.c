@@ -380,7 +380,7 @@ void sky2SetDrawMode2(void)
 
 void sky2ApplyModelTint(GameObject* obj)
 {
-    u8* s;
+    SkySlotAnim* s;
     f32 v;
     int alpha;
 
@@ -388,9 +388,9 @@ void sky2ApplyModelTint(GameObject* obj)
     {
         Obj_SetModelColorOverrideRecursive(obj, 0, 0, 0, 0, 0);
     }
-    if (gSky2TintDisabled == 0 && (*(u16*)((s = gSky2State) + 4) & 1) == 0)
+    if (gSky2TintDisabled == 0 && ((s = (SkySlotAnim*)gSky2State)->flags4 & 1) == 0)
     {
-        v = ((SkySlotAnim*)s)->fogNear;
+        v = s->fogNear;
         if (v < 0.0f)
         {
             alpha = 255;
@@ -403,8 +403,7 @@ void sky2ApplyModelTint(GameObject* obj)
         {
             alpha = (int)(255.0f - 255.0f * (v / 15.0f));
         }
-        Obj_SetModelColorOverrideRecursive(obj, (u8)((SkySlotAnim*)s)->colorR, (u8)((SkySlotAnim*)s)->colorG,
-                                           (u8)((SkySlotAnim*)s)->colorB, (u8)alpha, 1);
+        Obj_SetModelColorOverrideRecursive(obj, (u8)s->colorR, (u8)s->colorG, (u8)s->colorB, (u8)alpha, 1);
     }
     else
     {
@@ -414,15 +413,15 @@ void sky2ApplyModelTint(GameObject* obj)
 
 void sky2ApplyTextColor(int obj)
 {
-    u8* s = gSky2State;
+    SkySlotAnim* s = (SkySlotAnim*)gSky2State;
     f32 v;
     int alpha;
 
     if (s != NULL)
     {
-        if (gSky2TintDisabled == 0 && (*(u16*)(s + 4) & 1) == 0)
+        if (gSky2TintDisabled == 0 && (s->flags4 & 1) == 0)
         {
-            v = ((SkySlotAnim*)s)->fogNear;
+            v = s->fogNear;
             if (v < 0.0f)
             {
                 alpha = 255;
@@ -435,8 +434,7 @@ void sky2ApplyTextColor(int obj)
             {
                 alpha = (int)(255.0f - 255.0f * (v / 15.0f));
             }
-            setTextColor((void*)obj, (u8)((SkySlotAnim*)s)->colorR, (u8)((SkySlotAnim*)s)->colorG,
-                         (u8)((SkySlotAnim*)s)->colorB, (u8)alpha);
+            setTextColor((void*)obj, (u8)s->colorR, (u8)s->colorG, (u8)s->colorB, (u8)alpha);
         }
         else
         {
@@ -452,24 +450,24 @@ int dll_06_func07_ret_0(void)
 
 void sky2ApplyFog(int obj)
 {
-    u8* s = gSky2State;
+    SkySlotAnim* s = (SkySlotAnim*)gSky2State;
 
     if (s != NULL)
     {
         gSky2DrawMode = 2;
-        setFogColorCallback(obj, (u8)((SkySlotAnim*)s)->colorR, (u8)((SkySlotAnim*)s)->colorG, (u8)((SkySlotAnim*)s)->colorB, 55);
-        s = gSky2State;
-        if (*(f32*)(s + 0x14) == *(f32*)(s + 0x18))
+        setFogColorCallback(obj, (u8)s->colorR, (u8)s->colorG, (u8)s->colorB, 55);
+        s = (SkySlotAnim*)gSky2State;
+        if (s->fogNear == s->fogFar)
         {
-            *(f32*)(s + 0x14) = *(f32*)(s + 0x14) - 20.0f;
+            s->fogNear = s->fogNear - 20.0f;
         }
-        s = gSky2State;
-        if (*(f32*)(s + 0x14) > *(f32*)(s + 0x18))
+        s = (SkySlotAnim*)gSky2State;
+        if (s->fogNear > s->fogFar)
         {
-            *(f32*)(s + 0x14) = *(f32*)(s + 0x18) - 20.0f;
+            s->fogNear = s->fogFar - 20.0f;
         }
-        s = gSky2State;
-        fogSetRange(*(f32*)(s + 0x14), *(f32*)(s + 0x18));
+        s = (SkySlotAnim*)gSky2State;
+        fogSetRange(s->fogNear, s->fogFar);
     }
 }
 
@@ -834,33 +832,33 @@ void sky2_run(void)
             if ((flags & 1) != 0)
             {
                 ((SkySlotAnim*)p)->colorR = r;
-                *(int*)(*pp + 0x28) = g;
-                *(int*)(*pp + 0x2c) = b;
-                *(f32*)(*pp + 0x14) = sa;
-                *(f32*)(*pp + 0x18) = sb;
+                ((SkySlotAnim*)*pp)->colorG = g;
+                ((SkySlotAnim*)*pp)->colorB = b;
+                ((SkySlotAnim*)*pp)->fogNear = sa;
+                ((SkySlotAnim*)*pp)->fogFar = sb;
                 if ((((SkySlotAnim*)*pp)->flags4 & 0x80) == 0)
                 {
-                    *(int*)(*pp + 0x30) = 0xff;
-                    *(int*)(*pp + 0x34) = 0xff;
-                    *(int*)(*pp + 0x38) = 0xff;
-                    *(f32*)(*pp + 0x1c) = 1950.0f;
-                    *(f32*)(*pp + 0x20) = 2005.0f;
+                    ((SkySlotAnim*)*pp)->colorR2 = 0xff;
+                    ((SkySlotAnim*)*pp)->colorG2 = 0xff;
+                    ((SkySlotAnim*)*pp)->colorB2 = 0xff;
+                    ((SkySlotAnim*)*pp)->fogNear2 = 1950.0f;
+                    ((SkySlotAnim*)*pp)->fogFar2 = 2005.0f;
                 }
             }
             else if ((flags & 4) != 0)
             {
                 ((SkySlotAnim*)p)->colorR2 = r;
-                *(int*)(*pp + 0x34) = g;
-                *(int*)(*pp + 0x38) = b;
-                *(f32*)(*pp + 0x1c) = sa;
-                *(f32*)(*pp + 0x20) = sb;
+                ((SkySlotAnim*)*pp)->colorG2 = g;
+                ((SkySlotAnim*)*pp)->colorB2 = b;
+                ((SkySlotAnim*)*pp)->fogNear2 = sa;
+                ((SkySlotAnim*)*pp)->fogFar2 = sb;
                 if ((((SkySlotAnim*)*pp)->flags4 & 0x80) == 0)
                 {
-                    *(int*)(*pp + 0x24) = 0xff;
-                    *(int*)(*pp + 0x28) = 0xff;
-                    *(int*)(*pp + 0x2c) = 0xff;
-                    *(f32*)(*pp + 0x14) = 1950.0f;
-                    *(f32*)(*pp + 0x18) = 2005.0f;
+                    ((SkySlotAnim*)*pp)->colorR = 0xff;
+                    ((SkySlotAnim*)*pp)->colorG = 0xff;
+                    ((SkySlotAnim*)*pp)->colorB = 0xff;
+                    ((SkySlotAnim*)*pp)->fogNear = 1950.0f;
+                    ((SkySlotAnim*)*pp)->fogFar = 2005.0f;
                 }
             }
             else
@@ -868,16 +866,16 @@ void sky2_run(void)
                 redInt = r;
                 ((SkySlotAnim*)p)->colorR = redInt;
                 greenInt = g;
-                *(int*)(*pp + 0x28) = greenInt;
+                ((SkySlotAnim*)*pp)->colorG = greenInt;
                 blueInt = b;
-                *(int*)(*pp + 0x2c) = blueInt;
-                *(f32*)(*pp + 0x14) = sa;
-                *(f32*)(*pp + 0x18) = sb;
-                *(int*)(*pp + 0x30) = redInt;
-                *(int*)(*pp + 0x34) = greenInt;
-                *(int*)(*pp + 0x38) = blueInt;
-                *(f32*)(*pp + 0x1c) = sa;
-                *(f32*)(*pp + 0x20) = sb;
+                ((SkySlotAnim*)*pp)->colorB = blueInt;
+                ((SkySlotAnim*)*pp)->fogNear = sa;
+                ((SkySlotAnim*)*pp)->fogFar = sb;
+                ((SkySlotAnim*)*pp)->colorR2 = redInt;
+                ((SkySlotAnim*)*pp)->colorG2 = greenInt;
+                ((SkySlotAnim*)*pp)->colorB2 = blueInt;
+                ((SkySlotAnim*)*pp)->fogNear2 = sa;
+                ((SkySlotAnim*)*pp)->fogFar2 = sb;
             }
         }
         pp++;
@@ -928,7 +926,7 @@ void sky2_update(int a, int b, u8* cfg)
 {
     SaveGameEnvState* env;
     u16 bits;
-    u8* st;
+    SkySlotAnim* st;
     int m40;
     u8 flags;
     u8 flags58;
@@ -969,12 +967,12 @@ void sky2_update(int a, int b, u8* cfg)
             ((SkySlotAnim*)(&gSky2State)[b1])->t = 0.0f;
             for (i = 0; i < SKY_CONFIG_FIELD_COUNT; i++)
             {
-                *(f32*)((&gSky2State)[b1] + i * 4 + 0xf4) = (f32)(u32)((Sky2Config*)cfg)->redKeys[gSkyConfigFieldIndices[i]];
-                *(f32*)((&gSky2State)[b1] + i * 4 + 0x120) = (f32)(u32)((Sky2Config*)cfg)->greenKeys[gSkyConfigFieldIndices[i]];
-                *(f32*)((&gSky2State)[b1] + i * 4 + 0x14c) = (f32)(u32)((Sky2Config*)cfg)->blueKeys[gSkyConfigFieldIndices[i]];
-                *(f32*)((&gSky2State)[b1] + i * 4 + 0x254) =
+                ((SkySlotAnim*)(&gSky2State)[b1])->target[i] = (f32)(u32)((Sky2Config*)cfg)->redKeys[gSkyConfigFieldIndices[i]];
+                ((SkySlotAnim*)(&gSky2State)[b1])->target[i + 0xb] = (f32)(u32)((Sky2Config*)cfg)->greenKeys[gSkyConfigFieldIndices[i]];
+                ((SkySlotAnim*)(&gSky2State)[b1])->target[i + 0x16] = (f32)(u32)((Sky2Config*)cfg)->blueKeys[gSkyConfigFieldIndices[i]];
+                ((SkySlotAnim*)(&gSky2State)[b1])->target2[i] =
                     (f32)(u32)((Sky2Config*)cfg)->fogNearKeys[gSkyConfigFieldIndices[i]];
-                *(f32*)((&gSky2State)[b1] + i * 4 + 0x280) =
+                ((SkySlotAnim*)(&gSky2State)[b1])->target2[i + 0xb] =
                     (f32)(u32)((Sky2Config*)cfg)->fogFarKeys[gSkyConfigFieldIndices[i]];
             }
             ((SkySlotAnim*)(&gSky2State)[b1])->fadeDurationA = ((Sky2Config*)cfg)->fadeDurationA;
@@ -982,20 +980,20 @@ void sky2_update(int a, int b, u8* cfg)
             ((SkySlotAnim*)(&gSky2State)[b1])->b314 = -1;
             if ((((Sky2Config*)cfg)->flags2 & 0x20) != 0)
             {
-                st = (&gSky2State)[b1];
-                bits = *(u16*)(st + 6);
+                st = (SkySlotAnim*)(&gSky2State)[b1];
+                bits = st->flags6;
                 if ((bits & 0x20) == 0)
                 {
-                    *(u16*)(st + 6) = bits | 0x20;
+                    st->flags6 = bits | 0x20;
                 }
             }
             if ((((Sky2Config*)cfg)->flags2 & 0x20) == 0)
             {
-                st = (&gSky2State)[b1];
-                bits = *(u16*)(st + 6);
+                st = (SkySlotAnim*)(&gSky2State)[b1];
+                bits = st->flags6;
                 if ((bits & 0x20) != 0)
                 {
-                    *(u16*)(st + 6) = bits ^ 0x20;
+                    st->flags6 = bits ^ 0x20;
                 }
             }
             if ((((Sky2Config*)cfg)->flags & 0x40) != 0)
@@ -1005,31 +1003,31 @@ void sky2_update(int a, int b, u8* cfg)
             }
             else
             {
-                st = (&gSky2State)[b1];
-                bits = *(u16*)(st + 6);
+                st = (SkySlotAnim*)(&gSky2State)[b1];
+                bits = st->flags6;
                 if ((bits & 0x40) != 0)
                 {
-                    *(u16*)(st + 6) = bits ^ 0x40;
+                    st->flags6 = bits ^ 0x40;
                 }
             }
             m40 = ((Sky2Config*)cfg)->flags2 & 0x40;
             if (m40 != 0)
             {
-                st = (&gSky2State)[b1];
-                bits = *(u16*)(st + 6);
+                st = (SkySlotAnim*)(&gSky2State)[b1];
+                bits = st->flags6;
                 if ((bits & 0x40) == 0)
                 {
-                    *(u16*)(st + 6) = bits | 0x40;
+                    st->flags6 = bits | 0x40;
                     return;
                 }
             }
             if (m40 == 0)
             {
-                st = (&gSky2State)[b1];
-                bits = *(u16*)(st + 6);
+                st = (SkySlotAnim*)(&gSky2State)[b1];
+                bits = st->flags6;
                 if ((bits & 0x40) != 0)
                 {
-                    *(u16*)(st + 6) = bits ^ 0x40;
+                    st->flags6 = bits ^ 0x40;
                 }
             }
         }
