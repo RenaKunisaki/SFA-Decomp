@@ -35,6 +35,7 @@
 #include "main/camera_interface.h"
 #include "main/camera.h"
 #include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/objprint_character_api.h"
 #include "sys/objects.h"
 #include "dlls/object_descriptor.h"
@@ -98,6 +99,14 @@ typedef struct TitlescreenState
     u8 pad32[0x34 - 0x32];
     f32 moveProgress;
 } TitlescreenState;
+
+typedef struct TitlescreenPlacement
+{
+    ObjPlacement base;
+    s8 spawnRot;
+} TitlescreenPlacement;
+
+STATIC_ASSERT(offsetof(TitlescreenPlacement, spawnRot) == 0x18);
 
 void* gTitleScreenMainTex;
 f32 lbl_803DD9D0;
@@ -931,7 +940,7 @@ void TitleScreen_init(GameObject* obj, u8* def)
     TitlescreenState* state = (TitlescreenState*)obj->extra;
     s16 romDefNo;
     state->animPhase = 0;
-    obj->anim.rotX = (s16)((s8)def[0x18] << 8);
+    obj->anim.rotX = (s16)(((TitlescreenPlacement*)def)->spawnRot << 8);
     romDefNo = obj->anim.romDefNo;
     if (romDefNo >= FRONT_SEQID_FOX && romDefNo < FRONT_SEQID_PILOTS)
     {
