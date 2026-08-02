@@ -16,6 +16,7 @@
 #include "main/voxmaps.h"
 #include "main/shader_api.h"
 #include "main/dll/rom_curve_interface.h"
+#include "main/dll/rom_curve_def.h"
 #include "main/maketex_timer_api.h"
 #include "main/dll/dll_0282_barrelgener.h"
 #include "main/dll/barrelgener_state.h"
@@ -276,7 +277,7 @@ int Obj_UpdateRomCurveFollowVelocityIndexed(GameObject* obj, RomCurveWalker* rou
             if ((*gRomCurveInterface)->goNextPointIndexed(route, *pickIdx) != 0)
                 result = -1;
             else
-                result = *(s8*)((int)route->node9C + 0x18);
+                result = ((RomCurveDef*)route->node9C)->action;
             *pickIdx = 0;
         }
         speed = 2.0f * advanceStep;
@@ -325,7 +326,7 @@ int Obj_UpdateRomCurveFollowVelocity(GameObject* obj, RomCurveWalker* route, f32
             if ((*gRomCurveInterface)->goNextPoint(route) != 0)
                 result = -1;
             else
-                result = *(s8*)((int)route->node9C + 0x18);
+                result = ((RomCurveDef*)route->node9C)->action;
         }
         speed = 2.0f * advanceStep;
     }
