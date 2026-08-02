@@ -181,6 +181,8 @@ unexamined gap. Do not re-propose any of these:
 | H2 | pressure forces an order | refuted in the synthetic rig |
 | P10 | **recycling density** is the collapsing variable | gap persists at fixed density (mean 7.0 vs pooled 8.7) |
 | P11 | **kind-mix population shift** (H3's actual claim) | gap persists at fixed kind-mix, signed +3.0/+8.0/+6.0/+16.1 |
+| H5 | **constant register shift** displaces correct assignments | **refuted a priori**: the metric scores `(a if ra<rb else b)==max(a,b)`, a comparison between register *numbers*. A constant shift preserves every pairwise comparison, so shifted functions score **perfect**, not zero. No re-binning can rescue it. |
+| P12 | **occupant contamination** (H5's testable steelman): one unmodeled member carries a rank and generates wrong pairs | headline 50.3% single-occupant-explained looked CONFIRMED — **killed by its own control**: the rate is confounded with pair count (92.0% at 0–4 co-live pairs, 51.3% at 5–9, **2.7% at 15–19**). Removing one member from a 3-pair function trivially clears it. In the pair-rich regime the rate is below the registered 15% DEAD line. |
 
 **Two structural facts any future attack must explain.**
 
@@ -195,6 +197,10 @@ stratum, where zero-spill orderliness is the corpus **worst (16.6%)**. That is t
 direction from the kind gradient, which ranks memory loads the *most* orderly kind (74.9%
 pairwise). The gradient is a per-**pair** property and this is a per-**function** one; the tension
 between the two levels is unexplained and is the sharpest lead on record.
+
+**A third methodological trap, from P12:** any "does removing one X fix it" statistic is
+confounded with how many things there were to fix. Control against the denominator before reading
+such a rate — the headline was 50.3% and the pair-rich truth was 2.7%.
 
 **Methodological note carried with it:** report **signed** gaps per cell, never a
 mean-of-absolutes. P10's summary statistic was generous precisely because a sign flip was present;
