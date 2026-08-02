@@ -80,23 +80,26 @@ what nobody looked at.
 
 ## The unrecorded residue, and where it still stands
 
-Three commits carry a loss that is still standing at tip and is attributable — the unit's
-`matched_data` at tip still equals the value the commit left it at.
+Three commits carried a loss still standing at the time of the audit. One of them no longer does.
 
-| Commit | Standing loss | Where |
-|---|---:|---|
-| `72eec6655f` | **1288 B**, 2 demotions | player -784, tricky -404, 237 -100 (modellight -88 **recovered**, `558c86a421`) |
-| `21b90aff9f` | 920 B, 13 demotions, 3 fns | `priced_classes` 6 — banked |
-| `4461d0aa45` | 272 B, 1 demotion, 8 fns | `priced_classes` 6b — banked |
+| Commit | Loss standing at audit | Standing now | Where |
+|---|---:|---:|---|
+| `72eec6655f` | 1288 B, 2 demotions | **0** | player, tricky, 237 all recovered — see below (modellight -88 recovered earlier, `558c86a421`) |
+| `21b90aff9f` | 920 B, 13 demotions, 3 fns | 920 B | `priced_classes` 6 — banked |
+| `4461d0aa45` | 272 B, 1 demotion, 8 fns | 272 B | `priced_classes` 6b — banked |
 
-The three columns close against the gross: 5016 B given back by the owner's retunes and reverts,
-2480 B still standing, 672 B absorbed by later pool work — 5016 + 2480 + 672 = 8168. The 672
-decomposes exactly into nine recovered rows: SB_Galleon 80, engine/86 40, DFropenode 24,
-objprint 40, 285 20, KT_Rex 164, DIMSnowHorn 144, modellight 88, 203 72. (tricky's shortfall at
-tip is 408, of which 404 is `72eec6655f`'s; the other 4 B arrived with a later change in the
-unit's `total_data` and is not attributed here.)
+The columns close against the gross both before and after. At audit time: 5016 B given back by the
+owner's retunes and reverts, 2480 B still standing, 672 B absorbed by later pool work —
+5016 + 2480 + 672 = 8168. The 672 decomposed into nine recovered rows: SB_Galleon 80, engine/86 40,
+DFropenode 24, objprint 40, 285 20, KT_Rex 164, DIMSnowHorn 144, modellight 88, 203 72. With
+`e500fdb6cb` and `997e72e3e1` the recovered column grows by the whole 1288 to **1960** and the
+standing column falls to **1192**, which is exactly the two banked rows: 5016 + 1192 + 1960 = 8168.
+**Everything the campaign lost that is recoverable inside policy has now been recovered**; what
+remains is priced. (tricky's shortfall at tip was 408, of which 404 is `72eec6655f`'s; the other
+4 B arrived with a later change in the unit's `total_data` and was not attributed. Restoring the
+bodies closed all 408.)
 
-`21b90aff9f` and `4461d0aa45` are already priced. **`72eec6655f` is not, anywhere.** It is the
+`21b90aff9f` and `4461d0aa45` were already priced. **`72eec6655f` was not, anywhere.** It is the
 largest single unrecorded loss in the campaign — larger than `21b90aff9f` — and it shipped with
 an **empty commit body**: no measurement was stated, so no measurement was wrong, so nothing
 downstream had anything to check. It deleted seven uncalled static helpers across six units and
@@ -182,17 +185,47 @@ adjudication is stronger here than section 7 requires — the restored bodies ta
 87.209 to a byte-exact 100.0 against retail, which is direct evidence that retail's TU minted
 those literals at exactly those points.
 
-**Open rows, handed to the pool lane.** Each is `git show 72eec6655f^:<file>` for the deleted
-statics, then a scan of the same TU for a redundant one-element anchor:
+**These rows are now CLOSED. The `72eec6655f` residue is zero.**
 
-| Unit | Standing | Deleted statics |
-|---|---:|---|
-| `src/dlls/objects/195_Player/player.c` | -784 B | `playerIsInDeepWater` (10.0f), `playerIsAtFullSpeed` (1.0f) |
-| `src/dlls/objects/196_Tricky/tricky.c` | -404 B | `trickyEventTimeExpired`, `trickyApproachSpeedStep`, `trickyRouteTurnRate`, `trickyRouteStep` |
-| `src/dlls/objects/237/237.c` | -100 B, demoted | `collectible_getRotX`, `collectible_updateSeqEffects` |
+| Unit | Was | Deleted statics | Closed by |
+|---|---:|---|---|
+| `src/dlls/objects/237/237.c` | -100 B, demoted | `collectible_getRotX`, `collectible_updateSeqEffects` | `e500fdb6cb` |
+| `src/dlls/objects/195_Player/player.c` | -784 B | `playerIsInDeepWater` (10.0f), `playerIsAtFullSpeed` (1.0f) | `997e72e3e1` |
+| `src/dlls/objects/196_Tricky/tricky.c` | -404 B | `trickyEventTimeExpired`, `trickyApproachSpeedStep`, `trickyRouteTurnRate`, `trickyRouteStep`, `trickyBinAngleToRadians` | `997e72e3e1` |
 
 `src/dlls/objects/202/202.c` was also cut by `72eec6655f` but measures no data delta; its two
 deletions were `static inline`, which mint nothing.
+
+`997e72e3e1` took `matched_data` +1192 (784 + 408) with both `.sdata2` sections **byte-identical
+to the carve**, `.text` untouched in both, tree fuzzy and `complete_units` unchanged, 0 regressed
+/ 0 lost / 0 demoted, `main.dol` md5 still retail's.
+
+**The order law it turns on.** Neither pool was missing a single word: `tricky` differed from the
+carve in **zero** words and 101 of 102 *positions*, `player` in zero words and 8 of 196 positions.
+When the multiset already matches, nothing needs declaring — the only thing wrong is the **mint
+point**, and the mint point is a function's position in text order. That is why the section-8 rule
+(MWCC does not intern a file-scope const against a pool literal) does not bite here: restoring a
+body mints nothing new, because MWCC *does* intern plain literals across a TU. **Restore is not
+declare.** Check the multiset before assuming a loss; if it is flat, you are looking at a deleted
+function, not a missing constant.
+
+Reading the minters off the carve is then mechanical. `player`'s `0x6c..0x78` run is
+`2.0, 10.0, 300.0, 1.0`; live code owns the `2.0` (`playerIsInWater`) and the `300.0`
+(`playerFindNearestFirefly`) and they sit three slots apart, so exactly two minters lived between
+them, in that order — which is the order the purge deleted them in. `tricky`'s `0x50..0x98` is
+five consecutive groups, `(-100000, 8.0) (-0.15, 0.05) (0.02, 600.0, 0.005) (-2.0) (pi, 32768)`,
+one per deleted body, in file order. A contiguous constant group with no live loader is a deleted
+function's signature, and the group's order says where the body goes. Restoring all five in
+`tricky` also moved the section's double-alignment pad from mid-section to the end, taking the
+size 404 -> 408: an off-by-one-word size can be a pad in the wrong place, not a missing constant.
+
+Neither TU carried a competing one-element anchor, so this is the **plain-restore half** of
+`558c86a421`'s law; the anchor-delete half applies only where the TU has both spellings. The seven
+bodies are baselined as `UNCALLED_STATIC_FN` under section 7 with the byte-exact pools as the
+evidence — the strongest form available, since a byte-exact pool proves retail's TU minted at
+exactly those points. `banned_shapes_check` regrowth was unchanged at 14. Where a helper has a
+real inline call site, prefer `e500fdb6cb`'s idiom instead and wire the caller: it costs no
+baseline entry at all.
 
 ## Standing recommendation
 
