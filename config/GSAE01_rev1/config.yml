@@ -94,6 +94,30 @@ export_all: true
 # configure.py, in order to exactly match the original DOL.
 clean_extab: false
 
+# Effect opcode and flag literals are shared across the retail builds. Their
+# values overlap the DOL address space but are plain immediates, not pointers.
+block_relocations:
+- target: 0x80380209
+  end: 0x8038020A
+- target: 0x80100100
+  end: 0x80100104
+- target: 0x80180100
+  end: 0x80180218
+- target: 0x80080108
+  end: 0x80080120
+- target: 0x80080200
+  end: 0x80080204
+- target: 0x80080208
+  end: 0x80080214
+- target: 0x80080610
+  end: 0x80080614
+- target: 0x80080404
+  end: 0x80080408
+- target: 0x800C0100
+  end: 0x800C0104
+- target: 0x80008000
+  end: 0x80008004
+
 extract:
 - symbol: gLoadingScreenTextures
   binary: gLoadingScreenTextures.bin
