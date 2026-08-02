@@ -1340,7 +1340,7 @@ void dll_D3_update(GameObject* obj)
         hitCount = trackGetLineIntersect(&obj->anim.previousLocalPosX, &obj->anim.localPosX,
                                       6.0f, 0, (TrackBBoxHit*)hitResult, obj, -0x7c, -1, 0xff,
                                       0);
-        if (hitCount != 0 && *(s8*)((char*)hitResult + 0x50) == 13)
+        if (hitCount != 0 && ((TrackBBoxHit*)hitResult)->surfaceType == 13)
         {
             ((LandedArwingMovementFlags*)&extra->flags92)->hitSurfaceType13 = 1;
             extra->scriptTimer = (u16)(randomGetRange(10, 0xf) * 0x3c);
