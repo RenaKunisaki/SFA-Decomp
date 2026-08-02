@@ -52,7 +52,6 @@ void sceneDrawTransparentPolys(void);
 #include "main/dll_000A_expgfx.h"
 #include "main/lightmap.h"
 
-extern f32 lbl_803DEBFC;
 
 extern u8 gMapBlockCount; /* count of allocated blocks */
 
@@ -388,7 +387,7 @@ void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 
     OSs16tof32(&bounds->maxZ, &maxZs);
     maxD = maxZs * gTrackPackedCoordScale + block->transform[2][3];
     OSs16tof32(&bounds->minZ, &minZs);
-    half = lbl_803DEBFC;
+    half = 0.5f;
     stk.x = half * ((minXs * gTrackPackedCoordScale + block->transform[0][3]) +
                     (maxXs * gTrackPackedCoordScale + block->transform[0][3]));
     minW = minYs * gTrackPackedCoordScale + block->transform[1][3];

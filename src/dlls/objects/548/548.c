@@ -8,7 +8,6 @@
 #include "main/gamebits_api.h"
 #include "main/objprint_render_api.h"
 
-static const f32 lbl_803E6150 = 100.0f;
 
 u32 gSpellStoneEventId;
 
@@ -55,7 +54,7 @@ void SpellStoneUse_updateInteraction(GameObject* obj) {
     }
     obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
     if ((*gGameUIInterface)->isItemBeingUsed(gSpellStoneEventId) != 0) {
-        if (Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) < lbl_803E6150) {
+        if (Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) < 100.0f) {
             mainSetBits(state->completeGameBit, 1);
             state->used = 1;
             obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;

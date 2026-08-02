@@ -392,7 +392,6 @@ extern f32 gTrickyHudIconPosX, gTrickyHudIconPosY, gTrickyHudIconPosZ, gTrickyHu
 extern f32 gTrickyHudIconRotZ, gTrickyHudIconRotX, gTrickyHudIconRotY, gPauseMenuSavedFovY;
 extern f32 gViewFinderBamToDeg;
 extern f32 gHudElemOpacityFloor;
-extern const double lbl_803E2088;
 extern const double gPauseMenuGridCursorScale;
 extern const double lbl_803E2128;
 extern const f32 lbl_803E204C;
@@ -400,14 +399,11 @@ extern const f32 lbl_803E2010;
 extern const f32 gPauseMenuPodiumRollAmplitude;
 extern const f32 gPauseMenuPodiumBaseY;
 extern const double gPauseMenuPodiumBobAmplitude;
-extern f32 lbl_803E2188;
 extern const f32 gPauseMenuCommunicatorMaxScale;
 extern const f32 gPauseMenuRingScale;
 extern const f32 gPauseMenuRingUnselectedScale;
 extern const f32 lbl_803E209C;
 extern const f32 lbl_803E20B8;
-extern const f32 lbl_803E1E3C;
-extern const f32 lbl_803E1E68;
 extern const f32 gGameUiAngleDivisor;
 extern f32 gTrickyHudTexScaleX, gTrickyHudTexScaleY, gTrickyHudTexScaleZ;
 extern f32 gTrickyHudIconFovY, gTrickyHudIconAspect, gTrickyHudIconNearPlane, gTrickyHudIconFarPlane;
@@ -431,24 +427,11 @@ extern f32 gPauseMenuMapSwivelCos;
 extern s16 cMenuFadeCounter;
 extern f32 gHudStatusFadeOpacity;
 extern f32 gHudStatusAlpha;
-extern const f64 lbl_803E1EA0;
-extern const f64 lbl_803E1EA8;
-extern const f64 lbl_803E1EB8;
-extern const f64 lbl_803E1EF0;
-extern const f64 lbl_803E1EF8;
-extern const f64 lbl_803E1F00;
-extern const f64 lbl_803E1F20;
-extern const f64 lbl_803E1F28;
 extern const f32 lbl_803E1EC4;
 extern const f32 gGameUiPi;
 extern f32 gViewFinderBaseY;
-extern const f32 lbl_803E1F0C;
 extern const f32 lbl_803E1F30;
 extern const f32 lbl_803E1F34;
-extern const f32 lbl_803E1F4C;
-extern const double lbl_803E1F38;
-extern const double lbl_803E1F40;
-extern const double lbl_803E1F80;
 extern u16 gViewFinderCamAngle;
 extern char sTrickyDebugXCoordFormat[];
 
@@ -1769,10 +1752,10 @@ void drawViewFinderHud(void)
         f32 reticleTopY = -(310.0f * gViewFinderFadeLevel) + 410.0f;
         f32 viewScale;
         drawViewFinderSegment(580.0f, reticleTopY, 580.0f, 410.0f,
-                              lbl_803E1E3C, 410.0f - reticleTopY, lbl_803E1E68,
+                              0.0f, 410.0f - reticleTopY, 1.0f,
                               hudElementOpacity * gViewFinderFadeLevel);
         drawViewFinderSegment(580.0f, reticleY, 580.0f,
-                              8.0f + reticleY, lbl_803E1E3C,
+                              8.0f + reticleY, 0.0f,
                               (8.0f + reticleY) - reticleY, 6.0f,
                               hudElementOpacity * gViewFinderFadeLevel);
         viewScale = 0.57735 / mathTanf((f32)(gGameUiPi * fovY / 360.0));
@@ -1781,14 +1764,14 @@ void drawViewFinderHud(void)
         gameTextShowStr(buf, 0x93, 0x21c, 0x46);
 
         {
-            gridX = lbl_803E1E3C;
+            gridX = 0.0f;
             gridAlpha = lbl_803E1F30;
             angleScale = gGameUiPi;
             waveCenterX = lbl_803E1F34;
             gridSpacing = lbl_803E1EC4;
             angleDivisor = gGameUiAngleDivisor;
-            waveBaseOffset = lbl_803E1F38;
-            for (; gridX < (f64)lbl_803E1F4C; gridX += gridSpacing)
+            waveBaseOffset = 479.5;
+            for (; gridX < (f64)640.0f; gridX += gridSpacing)
             {
                 {
                     f32 cosine;
@@ -1803,19 +1786,19 @@ void drawViewFinderHud(void)
                     currentY = (f32)(gViewFinderBaseY + (waveBaseOffset + cosine));
                     drawViewFinderSegment(gridX, currentY, nextGridX, nextY, nextGridX - gridX,
                                           nextY - currentY,
-                                          lbl_803E1E68, alpha);
+                                          1.0f, alpha);
                 }
                 {
                     f32 cosine;
                     u8 alpha = gridAlpha * gViewFinderFadeLevel;
                     f32 currentY, nextY;
                     cosine = lbl_803DBAE4 * mathCosf(angleScale * (nextWavePhase * lbl_803DBAE0) / angleDivisor);
-                    nextY = (f32)(gViewFinderBaseY + (lbl_803E1F40 + cosine));
+                    nextY = (f32)(gViewFinderBaseY + (480.5 + cosine));
                     cosine = lbl_803DBAE4 * mathCosf(angleScale * (wavePhase * lbl_803DBAE0) / angleDivisor);
-                    currentY = (f32)(gViewFinderBaseY + (lbl_803E1F40 + cosine));
+                    currentY = (f32)(gViewFinderBaseY + (480.5 + cosine));
                     drawViewFinderSegment(gridX, currentY, nextGridX, nextY, nextGridX - gridX,
                                           nextY - currentY,
-                                          lbl_803E1E68, alpha);
+                                          1.0f, alpha);
                 }
                 {
                     f32 cosine;
@@ -1827,7 +1810,7 @@ void drawViewFinderHud(void)
                     currentY = gViewFinderBaseY + (480.0f + cosine);
                     drawViewFinderSegment(gridX, currentY, nextGridX, nextY, nextGridX - gridX,
                                           nextY - currentY,
-                                          lbl_803E1E68, alpha);
+                                          1.0f, alpha);
                 }
             }
         }
@@ -1855,7 +1838,7 @@ void drawViewFinderHud(void)
             headingOffset = headingOffset / lbl_803DBAE8;
             tickX = (f32)(320.0 + headingOffset * viewScale);
             heading = -headingIndex;
-            while (tickX > lbl_803E1E3C)
+            while (tickX > 0.0f)
             {
                 tickX -= tickSpacing;
                 heading--;
@@ -1864,18 +1847,18 @@ void drawViewFinderHud(void)
             heading++;
             if (heading < 0)
                 heading += 0x168;
-            for (; tickX < lbl_803E1F4C; tickX += tickSpacing)
+            for (; tickX < 640.0f; tickX += tickSpacing)
             {
                 u8 textAlpha = 0xff;
                 int tickAlpha = 0xff;
                 int tickHeight = 0xf;
                 if (heading >= 0x168)
                     heading -= 0x168;
-                headingDivision = heading / lbl_803E1F80;
+                headingDivision = heading / 10.0;
                 if (headingDivision != (int)headingDivision)
                 {
                     tickAlpha = 0xc8;
-                    headingDivision = heading / lbl_803E1EF8;
+                    headingDivision = heading / 5.0;
                     if (headingDivision != (int)headingDivision)
                     {
                         textAlpha = minorLabelAlpha;
@@ -1939,7 +1922,7 @@ void drawViewFinderHud(void)
                     currentY = gViewFinderBaseY + (480.0f + cosine);
                     drawViewFinderSegment(tickX, currentY, (f32)(0.98 * (tickX - 320.0) + 320.0), nextY,
                                           (f32)(0.98 * (tickX - 320.0) + 320.0) - tickX,
-                                          nextY - currentY, lbl_803E1E68, alpha);
+                                          nextY - currentY, 1.0f, alpha);
                 }
             }
         }
@@ -1948,8 +1931,8 @@ void drawViewFinderHud(void)
             f32 nearP = Camera_GetNearPlane();
             int depth = depthReadRequestPoll(0x140, 0xf0, drawViewFinderHud);
             f32 dist =
-                (-farP * nearP) / (((f32)(u32)depth / 16777215.0f - lbl_803E1E68) * (farP - nearP) - nearP);
-            if (dist > lbl_803E1E3C && dist < 10000.0f)
+                (-farP * nearP) / (((f32)(u32)depth / 16777215.0f - 1.0f) * (farP - nearP) - nearP);
+            if (dist > 0.0f && dist < 10000.0f)
             {
                 sprintf(buf, lbl_803DBB40, dist / lbl_803E1EC4);
                 gameTextSetColor(0, 0xff, 0, (int)(hudElementOpacity * gViewFinderFadeLevel));
@@ -3406,7 +3389,7 @@ void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
             }
             if (gHudYButtonIconScale > scaleT)
             {
-                dv = gHudYButtonIconScale - lbl_803E1EA8;
+                dv = gHudYButtonIconScale - 0.1;
                 if (scaleT > dv)
                 {
                     dv = scaleT;
@@ -3415,7 +3398,7 @@ void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
             }
             else
             {
-                dv = lbl_803E1EA8 + gHudYButtonIconScale;
+                dv = 0.1 + gHudYButtonIconScale;
                 if (scaleT < dv)
                 {
                     dv = scaleT;
@@ -5421,10 +5404,10 @@ void pauseMenuDrawGridCell(u8 i, int alpha, int flag)
             spd += 20.0f * mathSinf(gGameUiPi * (500.0f * gPauseMenuHoloTime) / gGameUiAngleDivisor) + 40.0f;
             dx = lbl_803E1F34 - x;
             pr = dx * gPauseMenuSlideOut;
-            x = (f32)(pr * lbl_803E2088 + x);
+            x = (f32)(pr * 0.001953125 + x);
             dy = 220.0f - y;
             pr = dy * gPauseMenuSlideOut;
-            y = (f32)(pr * lbl_803E2088 + y);
+            y = (f32)(pr * 0.001953125 + y);
         }
         {
             f32 prod = spd * gPauseMenuActiveGrid[i].trailX;
@@ -7073,7 +7056,7 @@ void pauseMenuAnimateCarousel(void)
     {
         int d = 0x400 - gPauseMenuPodiumRamp;
         GameObject* podium = gGameUiCommunicatorObjects[0];
-        podium->anim.localPosY = podium->anim.localPosY - (f32)(d * d) / lbl_803E2188;
+        podium->anim.localPosY = podium->anim.localPosY - (f32)(d * d) / 1048576.0f;
     }
     gGameUiCommunicatorObjects[1]->anim.localPosY = gGameUiCommunicatorObjects[0]->anim.localPosY;
     {
