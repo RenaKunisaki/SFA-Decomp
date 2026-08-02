@@ -93,7 +93,7 @@ void mclightning_render(GameObject* obj, int p2, int p3, int p4, int p5, f32 sca
             {
                 objfx_spawnHitEffectBurst(obj, state->hitEffectScale, 1, 7, 0x1e, NULL);
             }
-            foundState = (McLightningState*)*(int*)(objs[i] + 0xb8);
+            foundState = (McLightningState*)((GameObject*)objs[i])->extra;
             if (foundState->flags.spawnFlags & 1)
             {
                 objfx_spawnHitEffectBurst((void*)objs[i], foundState->hitEffectScale, 1, 7, 0x1e, NULL);

@@ -355,7 +355,7 @@ void wmwallcrawler_update(GameObject* obj)
                     if ((state->flags & WMWALLCRAWLER_FLAG_TRICKY_FLEE) != 0 &&
                         state->mode != WMWALLCRAWLER_MODE_FLEE &&
                         (tricky = (u32)getTrickyObject()) != 0 &&
-                        Vec_distance((void*)(ob + 0x18), (void*)(tricky + 0x18)) < 30.0f &&
+                        Vec_distance(&((GameObject*)ob)->anim.worldPosX, &((GameObject*)tricky)->anim.worldPosX) < 30.0f &&
                         TRICKY_INTERFACE(tricky)->isGuarding((GameObject*)tricky) != 0)
                     {
                         state->mode = WMWALLCRAWLER_MODE_FLEE;
