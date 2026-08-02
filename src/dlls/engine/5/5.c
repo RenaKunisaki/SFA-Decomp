@@ -69,10 +69,10 @@ GameObject* gSkyMoonObject;
 GameObject* gSkySunObject;
 ModelLightStruct* gSkySunLight;
 u8 gSkyEnvFxFlags;
-void* gSkyEnvFxGroupBTable;
-void* gSkyEnvFxGroupCTable;
-void* gSkyEnvFxGroupDTable;
-void* gSkyEnvFxGroupATable;
+s16* gSkyEnvFxGroupBTable;
+s16* gSkyEnvFxGroupCTable;
+s16* gSkyEnvFxGroupDTable;
+s16* gSkyEnvFxGroupATable;
 u8* gSkyState;
 u16 gSkyMoonAlpha;
 u16 gSkySunAlpha;
@@ -196,22 +196,22 @@ void skyUpdateEnvFx(void)
     {
         if ((gSkyEnvFxFlags & SKY_ENVFX_IMMEDIATE) != 0)
         {
-            getEnvfxActImmediately(0, 0, ((s16*)gSkyEnvFxGroupATable)[b], 0);
+            getEnvfxActImmediately(0, 0, gSkyEnvFxGroupATable[b], 0);
         }
         else
         {
-            getEnvfxAct(0, 0, ((s16*)gSkyEnvFxGroupATable)[b], 0);
+            getEnvfxAct(0, 0, gSkyEnvFxGroupATable[b], 0);
         }
     }
     if ((u32)gSkyEnvFxGroupBTable != 0 && (gSkyEnvFxFlags & SKY_ENVFX_GROUP_B) != 0)
     {
         if ((gSkyEnvFxFlags & SKY_ENVFX_IMMEDIATE) != 0)
         {
-            getEnvfxActImmediately(0, 0, ((s16*)gSkyEnvFxGroupBTable)[b], 0);
+            getEnvfxActImmediately(0, 0, gSkyEnvFxGroupBTable[b], 0);
         }
         else
         {
-            getEnvfxAct(0, 0, ((s16*)gSkyEnvFxGroupBTable)[b], 0);
+            getEnvfxAct(0, 0, gSkyEnvFxGroupBTable[b], 0);
         }
     }
     if ((u32)gSkyEnvFxGroupCTable != 0 && (gSkyEnvFxFlags & SKY_ENVFX_GROUP_C) != 0 &&
@@ -219,11 +219,11 @@ void skyUpdateEnvFx(void)
     {
         if ((gSkyEnvFxFlags & SKY_ENVFX_IMMEDIATE) != 0)
         {
-            getEnvfxActImmediately(0, 0, ((s16*)gSkyEnvFxGroupCTable)[b], 0);
+            getEnvfxActImmediately(0, 0, gSkyEnvFxGroupCTable[b], 0);
         }
         else
         {
-            getEnvfxAct(0, 0, ((s16*)gSkyEnvFxGroupCTable)[b], 0);
+            getEnvfxAct(0, 0, gSkyEnvFxGroupCTable[b], 0);
         }
     }
     skyApplyPlayerEnvFx(b);
@@ -254,13 +254,13 @@ void skyApplyPlayerEnvFx(u8 idx)
     {
         alt = 27;
     }
-    if (((s16*)gSkyEnvFxGroupDTable)[idx] <= 0 || ((s16*)gSkyEnvFxGroupDTable)[alt] != ((s16*)gSkyEnvFxGroupDTable)[idx])
+    if (gSkyEnvFxGroupDTable[idx] <= 0 || gSkyEnvFxGroupDTable[alt] != gSkyEnvFxGroupDTable[idx])
     {
         getEnvfxAct(player, player, 310, 0);
         getEnvfxAct(player, player, 311, 0);
         getEnvfxAct(player, player, 323, 0);
     }
-    val = ((s16*)gSkyEnvFxGroupDTable)[idx];
+    val = gSkyEnvFxGroupDTable[idx];
     if (val > 0)
     {
         if (gSkyEnvFxFlags & SKY_ENVFX_IMMEDIATE)
@@ -384,7 +384,7 @@ void skySetSlotFlag80(int flags, u8 mode)
         {
             if (mode != 0)
             {
-                ((SkyBlendStateFlags*)(gSkyState + i * 0xa4 + 0xc1))->unused80 = 1;
+                ((SkyState*)gSkyState)->lights[i].flags.unused80 = 1;
             }
             else
             {
@@ -395,14 +395,14 @@ void skySetSlotFlag80(int flags, u8 mode)
         }
     }
     sky = gSkyState;
-    ((SkyBlendStateFlags*)(sky + 0x209))->unused80 =
-        ((SkyBlendStateFlags*)(sky + ((SkyState*)sky)->currentLightIndex * 0xa4 + 0xc1))->unused80;
+    ((SkyState*)sky)->lights[2].flags.unused80 =
+        ((SkyState*)sky)->lights[((SkyState*)sky)->currentLightIndex].flags.unused80;
     env = saveGameGetEnvState();
     if (getSaveGameLoadStatus() == 0)
     {
         for (i = 0; i < 2; i++)
         {
-            if (((SkyBlendStateFlags*)(gSkyState + i * 0xa4 + 0xc1))->unused80 != 0)
+            if (((SkyState*)gSkyState)->lights[i].flags.unused80 != 0)
             {
                 env[0x40] |= (2 << i);
             }
@@ -421,7 +421,7 @@ int skyGetSlotFlag80(int slot)
     sky = gSkyState;
     if (sky != NULL)
     {
-        return ((SkyBlendStateFlags*)(sky + slot * 0xa4 + 0xc1))->unused80;
+        return ((SkyState*)sky)->lights[slot].flags.unused80;
     }
     return 0;
 }
@@ -592,7 +592,7 @@ u8 skyGetSunRenderAlpha(int slot)
         return 0;
     }
 
-    if (((SkyBlendStateFlags*)(sky + slot * 0xa4 + 0xc1))->unused80 != 0)
+    if (((SkyState*)sky)->lights[slot].flags.unused80 != 0)
     {
         return 0;
     }
@@ -656,7 +656,7 @@ void skyGetObjectLightDirection(GameObject* obj, f32* x, f32* y, f32* z)
         slot = obj->lightColorSlot;
         if (gSkyState != NULL)
         {
-            flag = ((SkyBlendStateFlags*)(gSkyState + slot * 0xa4 + 0xc1))->unused80;
+            flag = ((SkyState*)gSkyState)->lights[slot].flags.unused80;
         }
         else
         {
@@ -852,7 +852,7 @@ void skySetLightsEnabled(int flags, u8 enabled, int startComplete)
         if ((flags & (1 << flagBit)) != 0)
         {
             sky = gSkyState;
-            stateActive = ((SkyBlendStateFlags*)(sky + flagBit * 0xa4 + 0xc1))->active;
+            stateActive = ((SkyState*)sky)->lights[flagBit].flags.active;
             if (stateActive != enabled)
             {
                 if (startComplete != 0)
@@ -865,7 +865,7 @@ void skySetLightsEnabled(int flags, u8 enabled, int startComplete)
                 }
             }
             sky = gSkyState;
-            ((SkyBlendStateFlags*)(sky + flagBit * 0xa4 + 0xc1))->active = enabled;
+            ((SkyState*)sky)->lights[flagBit].flags.active = enabled;
         }
     }
 }
@@ -1016,8 +1016,8 @@ void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue
     dir.z = -z;
     if (slot == 2)
     {
-        previous = (SkyLight*)(gSkyState + ((SkyState*)gSkyState)->previousLightIndex * 0xa4 + 0x20);
-        current = (SkyLight*)(gSkyState + ((SkyState*)gSkyState)->currentLightIndex * 0xa4 + 0x20);
+        previous = &((SkyState*)gSkyState)->lights[((SkyState*)gSkyState)->previousLightIndex];
+        current = &((SkyState*)gSkyState)->lights[((SkyState*)gSkyState)->currentLightIndex];
         dir.x = previous->directionX +
                  ((SkyState*)gSkyState)->lightBlendFactor * (current->directionX - previous->directionX);
         dir.y = previous->directionY +
@@ -1048,7 +1048,7 @@ void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue
     }
     else
     {
-        if (((SkyBlendStateFlags*)(gSkyState + slot * 0xa4 + 0xc1))->unused80 != 0)
+        if (((SkyState*)gSkyState)->lights[slot].flags.unused80 != 0)
         {
             dir.x = (-1.0f);
             dir.y = (-1.0f);
@@ -1057,7 +1057,7 @@ void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue
             PSMTXMultVecSR((MtxPtr)Camera_GetInverseViewMatrix(), &dir, &dir);
         }
         entryOffset = slot * 0xa4;
-        if (((SkyBlendStateFlags*)(gSkyState + slot * 0xa4 + 0xc1))->active != 0)
+        if (((SkyState*)gSkyState)->lights[slot].flags.active != 0)
         {
             skyEntry = (SkyState*)(gSkyState + entryOffset);
             dir.x = skyEntry->lights[0].overrideDirectionX;
@@ -1521,7 +1521,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         {
             if (gSkyState != NULL)
             {
-                vis = ((SkyBlendStateFlags*)(gSkyState + 0x209))->unused80;
+                vis = ((SkyState*)gSkyState)->lights[2].flags.unused80;
             }
             if (vis == 0 && (u8)visible != 0)
             {
@@ -1534,7 +1534,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         {
             if (gSkyState != NULL)
             {
-                vis = ((SkyBlendStateFlags*)(gSkyState + 0x209))->unused80;
+                vis = ((SkyState*)gSkyState)->lights[2].flags.unused80;
             }
             else
             {
@@ -1739,7 +1739,7 @@ int skyGetVisibility(int slot)
     sky = gSkyState;
     if (sky != NULL)
     {
-        return ((SkyBlendStateFlags*)(sky + slot * 0xa4 + 0xc1))->visibility;
+        return ((SkyState*)sky)->lights[slot].flags.visibility;
     }
     return 0;
 }
@@ -2214,11 +2214,11 @@ void skyUpdateEnvfxAct(int a, int b, u8* cfg)
         {
             if ((mask & (1 << i)) != 0)
             {
-                ((SkyBlendStateFlags*)(gSkyState + i * 0xa4 + 0xc1))->visibility = vis;
+                ((SkyState*)gSkyState)->lights[i].flags.visibility = vis;
             }
         }
-        ((SkyBlendStateFlags*)(gSkyState + 0x209))->visibility =
-            ((SkyBlendStateFlags*)(gSkyState + ((SkyState*)gSkyState)->currentLightIndex * 0xa4 + 0xc1))->visibility;
+        ((SkyState*)gSkyState)->lights[2].flags.visibility =
+            ((SkyState*)gSkyState)->lights[((SkyState*)gSkyState)->currentLightIndex].flags.visibility;
         if ((((Sky2Config*)cfg)->flags & 1) == 0)
         {
             ((SkyState*)gSkyState)->skyTextureIds[0] = ((Sky2Config*)cfg)->skyTexId0 + 0xc38;
@@ -2252,21 +2252,21 @@ void skyUpdateEnvfxAct(int a, int b, u8* cfg)
                 ((SkyState*)gSkyState)->fadeFactor = 0.0f;
             }
         }
-        cloudMode = ((SkyBlendStateFlags*)(gSkyState + ((SkyState*)gSkyState)->currentLightIndex * 0xa4 + 0xc1))->cloud;
+        cloudMode = ((SkyState*)gSkyState)->lights[((SkyState*)gSkyState)->currentLightIndex].flags.cloud;
         if (cloudMode != 0)
         {
             setDrawCloudsAndLights(cloudMode - 1);
         }
-        ((SkyBlendStateFlags*)(gSkyState + 0x209))->unused80 =
-            ((SkyBlendStateFlags*)(gSkyState + ((SkyState*)gSkyState)->currentLightIndex * 0xa4 + 0xc1))->unused80;
-        ((SkyBlendStateFlags*)(gSkyState + 0x209))->visibility =
-            ((SkyBlendStateFlags*)(gSkyState + ((SkyState*)gSkyState)->currentLightIndex * 0xa4 + 0xc1))->visibility;
+        ((SkyState*)gSkyState)->lights[2].flags.unused80 =
+            ((SkyState*)gSkyState)->lights[((SkyState*)gSkyState)->currentLightIndex].flags.unused80;
+        ((SkyState*)gSkyState)->lights[2].flags.visibility =
+            ((SkyState*)gSkyState)->lights[((SkyState*)gSkyState)->currentLightIndex].flags.visibility;
         env2 = saveGameGetEnvState();
         if (getSaveGameLoadStatus() == 0)
         {
             for (i = 0; i < 2; i++)
             {
-                if (((SkyBlendStateFlags*)(gSkyState + i * 0xa4 + 0xc1))->unused80 != 0)
+                if (((SkyState*)gSkyState)->lights[i].flags.unused80 != 0)
                 {
                     env2[0x40] |= (2 << i);
                 }
