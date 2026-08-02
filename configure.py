@@ -13,6 +13,7 @@
 ###
 
 import argparse
+import json
 import shutil
 import sys
 from pathlib import Path
@@ -33,7 +34,16 @@ VERSIONS = [
     "GSAE01",  # 0
     "GSAJ01",  # 1
     "GSAP01",  # 2
+    "GSAE01_rev1",  # 3
 ]
+
+
+def parse_version(value: str) -> str:
+    for version in VERSIONS:
+        if value.upper() == version.upper():
+            return version
+    raise argparse.ArgumentTypeError(f"unknown version: {value}")
+
 
 parser = argparse.ArgumentParser()
 parser.add_argument(
@@ -47,7 +57,7 @@ parser.add_argument(
     "-v",
     "--version",
     choices=VERSIONS,
-    type=str.upper,
+    type=parse_version,
     default=VERSIONS[DEFAULT_VERSION],
     help="version to build",
 )
@@ -163,6 +173,11 @@ args = parser.parse_args()
 config = ProjectConfig()
 config.version = str(args.version)
 version_num = VERSIONS.index(config.version)
+if not args.non_matching and config.version != "GSAE01":
+    sys.exit(
+        f"{config.version} currently supports progress reports only; "
+        "omit --matching (EN v1.0 remains the strict matching target)"
+    )
 
 # Apply arguments
 config.build_dir = args.build_dir
@@ -219,6 +234,10 @@ config.split_deps = [
     Path("config") / config.version / "splits.txt",
     Path("config") / config.version / "symbols.txt",
 ]
+symbol_mappings_path = Path("config") / config.version / "symbol_mappings.json"
+if symbol_mappings_path.is_file():
+    config.symbol_mappings = json.loads(symbol_mappings_path.read_text(encoding="utf-8"))
+    config.reconfig_deps.append(symbol_mappings_path)
 
 # Optional numeric ID for decomp.me preset
 # Can be overridden in libraries or objects
@@ -652,7 +671,7 @@ def Rel(lib_name: str, objects: List[Object]) -> Dict[str, Any]:
     }
 
 
-Matching = True                   # Object matches and should be linked
+Matching = config.version == "GSAE01"  # Object matches and should be linked
 NonMatching = False               # Object does not match and should not be linked
 Equivalent = config.non_matching  # Object should be linked when configured with --non-matching
 

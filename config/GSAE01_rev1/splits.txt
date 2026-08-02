@@ -1,0 +1,872 @@
+Sections:
+	.init       type:code align:4
+	extab       type:rodata align:16
+	extabindex  type:rodata align:16
+	.text       type:code align:32
+	.ctors      type:rodata align:32
+	.dtors      type:rodata align:32
+	.rodata     type:rodata align:32
+	.data       type:data align:32
+	.bss        type:bss align:4
+	.sdata      type:data align:4
+	.sbss       type:bss align:32
+	.sdata2     type:rodata align:32
+	.sbss2      type:bss align:4
+
+main/render.c:
+	.text       start:0x800066E0 end:0x80008DF4
+
+main/audio.c:
+	.text       start:0x80008DF4 end:0x8000B4F0
+
+main/audio_sfx.c:
+	.text       start:0x8000B4F0 end:0x8000CE74
+
+main/audio_stream.c:
+	.text       start:0x8000CE74 end:0x8000DD94
+
+main/camera.c:
+	.text       start:0x8000DD94 end:0x8000FEAC
+
+main/curves.c:
+	.text       start:0x8000FEAC end:0x80011014
+
+main/modelEngine.c:
+	.text       start:0x80013A08 end:0x80014A54
+
+main/gametext.c:
+	.text       start:0x80015C00 end:0x800162C4
+
+main/gametext_measurebyid.c:
+	.text       start:0x800162C4 end:0x800163FC
+
+dolphin/TRK_MINNOW_DOLPHIN/MWTrace.c:
+	.text       start:0x8001741C end:0x8001746C
+
+main/textrender.c:
+	.text       start:0x8001746C end:0x800191FC
+
+main/textrender_gettext.c:
+	.text       start:0x800191FC end:0x800199A8
+
+main/textrender_run.c:
+	.text       start:0x800199A8 end:0x8001B520
+
+main/subtitle.c:
+	.text       start:0x8001B520 end:0x8001BC2C
+
+main/textrender_drawbox.c:
+	.text       start:0x8001BC2C end:0x8001C858
+
+main/textrender_boxtex.c:
+	.text       start:0x8001C858 end:0x8001CC00
+
+main/modellight.c:
+	.text       start:0x8001CC00 end:0x8001F610
+
+main/gameloop.c:
+	.text       start:0x8001F610 end:0x8001FE4C
+
+main/gameloop_buttonobj.c:
+	.text       start:0x8001FE4C end:0x8001FF38
+
+main/gameloop_main.c:
+	.text       start:0x8001FF38 end:0x80021434
+
+main/vecmath.c:
+	.text       start:0x80021434 end:0x80022A0C
+
+main/mm.c:
+	.text       start:0x80022A0C end:0x800243D0
+
+main/model.c:
+	.text       start:0x800243D0 end:0x8002A6AC
+
+main/objanim.c:
+	.text       start:0x8002EC4C end:0x80030780
+
+main/objhits.c:
+	.text       start:0x80030780 end:0x80036D04
+
+main/objlib.c:
+	.text       start:0x80036D04 end:0x80038A80
+
+main/objprint_dolphin.c:
+	.text       start:0x8003BC7C end:0x80044548
+
+main/pi_dolphin.c:
+	.text       start:0x80044548 end:0x80049CA8
+
+main/pi_videoinit.c:
+	.text       start:0x80049CA8 end:0x8004ABA0
+
+main/pi_pathsearch.c:
+	.text       start:0x8004ABA0 end:0x8004B7D4
+
+main/zlb.c:
+	.text       start:0x8004B7D4 end:0x8004C104
+
+main/shader_dolphin.c:
+	.text       start:0x8004C104 end:0x80052AF0
+
+main/rcp_dolphin.c:
+	.text       start:0x80052AF0 end:0x8005383C
+
+main/texture.c:
+	.text       start:0x8005383C end:0x800550E0
+
+main/lightmap.c:
+	.text       start:0x8005ACEC end:0x8005CBC8
+
+main/lightmap_initmapblocks.c:
+	.text       start:0x8005CBC8 end:0x8005CEA0
+
+main/lightmap_draw.c:
+	.text       start:0x8005CEA0 end:0x8005E0D8
+
+main/tex_dolphin.c:
+	.text       start:0x8005E0D8 end:0x80061210
+
+main/shadow_dolphin.c:
+	.text       start:0x80061210 end:0x80062EDC
+
+main/track_dolphin.c:
+	.text       start:0x80062EDC end:0x80069C98
+
+main/newshadows.c:
+	.text       start:0x80069C98 end:0x8006F0B4
+
+track/intersect.c:
+	.text       start:0x8006F0B4 end:0x8006FF74
+
+track/intersect_screenmath.c:
+	.text       start:0x8006FF74 end:0x800703B0
+
+track/intersect_mtx44.c:
+	.text       start:0x800703B0 end:0x80070434
+
+track/intersect_render.c:
+	.text       start:0x80070434 end:0x8007D7EC
+
+track/intersect_memcard.c:
+	.text       start:0x8007D7EC end:0x8007E9D0
+
+dlls/engine/6/6.c:
+	.text       start:0x8008CC00 end:0x8008F014
+
+main/skystars.c:
+	.text       start:0x80093D6C end:0x800945F8
+
+dlls/engine/19/19.c:
+	.text       start:0x80095208 end:0x80096C20
+
+dlls/engine/10_expgfx/expgfx.c:
+	.text       start:0x80096C20 end:0x800A027C
+
+dlls/engine/14/14.c:
+	.text       start:0x800A5080 end:0x800AF914
+
+dlls/engine/3/3.c:
+	.text       start:0x800D57BC end:0x800D77F4
+
+dlls/engine/22/22.c:
+	.text       start:0x800D77F4 end:0x800D81E8
+
+dlls/engine/21/21.c:
+	.text       start:0x800E56B8 end:0x800E8384
+
+dlls/engine/23/23.c:
+	.text       start:0x800E8384 end:0x800EA3F8
+
+dlls/engine/17/17.c:
+	.text       start:0x800EA3F8 end:0x800EA9F8
+
+dlls/modgfx/90/90.c:
+	.text       start:0x800EB334 end:0x800EB8B4
+
+dlls/modgfx/91/91.c:
+	.text       start:0x800EB8B4 end:0x800ECA58
+
+dlls/engine/1_camcontrol/camcontrol.c:
+	.text       start:0x80100D2C end:0x801037C0
+
+dlls/engine/66/66.c:
+	.text       start:0x801037C0 end:0x801068F0
+
+dlls/engine/50/50.c:
+	.text       start:0x80115C80 end:0x801161BC
+
+dlls/engine/51/51.c:
+	.text       start:0x801161BC end:0x801163B8
+
+n_attractmode.c:
+	.text       start:0x801163B8 end:0x80116858
+
+dlls/engine/52/52.c:
+	.text       start:0x80116858 end:0x801175B4
+
+main/thp/n_options.c:
+	.text       start:0x80117910 end:0x80118714
+
+main/thp/dll_3e.c:
+	.text       start:0x80118714 end:0x80118F30
+
+main/thp/attractmovie.c:
+	.text       start:0x80118F30 end:0x801192A8
+
+main/thp/picmenu.c:
+	.text       start:0x801192A8 end:0x80119700
+
+dlls/engine/53/53.c:
+	.text       start:0x80119EC8 end:0x8011B8B8
+
+dlls/engine/54/54.c:
+	.text       start:0x8011B8B8 end:0x8011C2AC
+
+dlls/engine/55/55.c:
+	.text       start:0x8011C2AC end:0x8011D800
+
+dlls/engine/60/60.c:
+	.text       start:0x8013047C end:0x801318C8
+
+dlls/engine/61/61.c:
+	.text       start:0x801318C8 end:0x80132390
+
+dlls/engine/49/49.c:
+	.text       start:0x801323AC end:0x801342F8
+
+dlls/engine/63/63.c:
+	.text       start:0x801342F8 end:0x80134420
+
+dlls/engine/65/65.c:
+	.text       start:0x80134754 end:0x80134BF8
+
+dlls/objects/704/704.c:
+	.text       start:0x80134BF8 end:0x80136DC8
+
+main/dll_80136a40.c:
+	.text       start:0x80136DC8 end:0x80138C90
+
+dlls/objects/202/battledroid.c:
+	.text       start:0x8015038C end:0x80150448
+
+dlls/objects/202/sharpclaw.c:
+	.text       start:0x80150448 end:0x8015224C
+
+dlls/objects/202/guardclaw.c:
+	.text       start:0x8015224C end:0x8015281C
+
+dlls/objects/202/gcrobotpatrol.c:
+	.text       start:0x8015281C end:0x80152FD8
+
+dlls/objects/202/mikaladon.c:
+	.text       start:0x80152FD8 end:0x80153454
+
+dlls/objects/202/vambat.c:
+	.text       start:0x80153454 end:0x80153AEC
+
+dlls/objects/202/kooshy.c:
+	.text       start:0x80153AEC end:0x801541A4
+
+dlls/objects/202/weevil.c:
+	.text       start:0x801541A4 end:0x801547D4
+
+dlls/objects/202/pinpon.c:
+	.text       start:0x801547D4 end:0x801551B8
+
+dlls/objects/202/rachnop.c:
+	.text       start:0x801551B8 end:0x80155FBC
+
+dlls/objects/202/spittingeba.c:
+	.text       start:0x80155FBC end:0x80156698
+
+dlls/objects/202/wb.c:
+	.text       start:0x80156698 end:0x80156DFC
+
+dlls/objects/202/mutatedeba.c:
+	.text       start:0x80156DFC end:0x801571F0
+
+dlls/objects/202/hoodedzyck.c:
+	.text       start:0x801571F0 end:0x80157E34
+
+dlls/objects/202/firecrawler.c:
+	.text       start:0x80157E34 end:0x80159CE8
+
+dlls/objects/202/hagabon_mk2.c:
+	.text       start:0x80159CE8 end:0x8015A9D8
+
+dlls/objects/202/snowworm.c:
+	.text       start:0x8015A9D8 end:0x8015B208
+
+dlls/objects/206/206.c:
+	.text       start:0x8015DF94 end:0x8015FA5C
+
+dlls/objects/203/203.c:
+	.text       start:0x80160670 end:0x801615DC
+
+dlls/objects/208_Grimble/Grimble.c:
+	.text       start:0x801615DC end:0x80163540
+
+dlls/objects/209_TumbleWeedB/TumbleWeedB.c:
+	.text       start:0x80163674 end:0x8016557C
+
+dlls/objects/213_Kaldachom/Kaldachom.c:
+	.text       start:0x80167C10 end:0x8016980C
+
+dlls/objects/199_DIM2RoofRub/DIM2RoofRub.c:
+	.text       start:0x8016C958 end:0x8016D1F4
+
+dlls/objects/200_DepthOfFieldPoint/DepthOfFieldPoint.c:
+	.text       start:0x8016D1F4 end:0x8016D394
+
+dlls/objects/226/226.c:
+	.text       start:0x8016D394 end:0x8016F618
+
+dlls/objects/234_Sideload/Sideload.c:
+	.text       start:0x80172058 end:0x80172124
+
+dlls/objects/239/239.c:
+	.text       start:0x801748E4 end:0x80177470
+
+dlls/objects/240_WarpPoint/WarpPoint.c:
+	.text       start:0x80177470 end:0x80177C48
+
+dlls/objects/272/272.c:
+	.text       start:0x8017BB20 end:0x8017C0D8
+
+dlls/objects/273/273.c:
+	.text       start:0x8017C250 end:0x8017C7EC
+
+dlls/objects/274/274.c:
+	.text       start:0x8017C7EC end:0x8017CCFC
+
+dlls/objects/279_AppleOnTree/AppleOnTree.c:
+	.text       start:0x8017DD70 end:0x8017F168
+
+dlls/objects/254_MagicPlant/MagicPlant.c:
+	.text       start:0x8017F88C end:0x80180464
+
+dlls/objects/280_Duster/Duster.c:
+	.text       start:0x80180A20 end:0x80181320
+
+dlls/objects/260_SmallBasket/SmallBasket.c:
+	.text       start:0x80181A28 end:0x8018375C
+
+dlls/objects/262/262.c:
+	.text       start:0x80184918 end:0x80185DC0
+
+dlls/objects/267_FireFlyLant/FireFlyLant.c:
+	.text       start:0x80187720 end:0x80187B98
+
+dlls/objects/283_Landed_Arwi/Landed_Arwi.c:
+	.text       start:0x80188F20 end:0x80189F0C
+
+dlls/objects/284/284.c:
+	.text       start:0x80189F0C end:0x8018AE14
+
+dlls/objects/291_fuelCell/fuelCell.c:
+	.text       start:0x8018C57C end:0x8018CD54
+
+dlls/objects/301_LFXEmitter/LFXEmitter.c:
+	.text       start:0x801904A4 end:0x801909A8
+
+dlls/objects/300_Transporter/Transporter.c:
+	.text       start:0x801909A8 end:0x80191FEC
+
+dlls/objects/313_HitAnimator/HitAnimator.c:
+	.text       start:0x80194338 end:0x801947B8
+
+dlls/objects/315_WallAnimato/WallAnimato.c:
+	.text       start:0x80194984 end:0x80194E3C
+
+dlls/objects/316_XYZAnimator/XYZAnimator.c:
+	.text       start:0x80194E3C end:0x80196844
+
+dlls/objects/346/346.c:
+	.text       start:0x801A3190 end:0x801A3F68
+
+dlls/objects/390_CCgasventCo/CCgasventCo.c:
+	.text       start:0x801AA55C end:0x801AAB0C
+
+dlls/objects/392_CClightfoot/CClightfoot.c:
+	.text       start:0x801AACE8 end:0x801ABA1C
+
+dlls/objects/395_CClevcontro/CClevcontro.c:
+	.text       start:0x801AC038 end:0x801AC5D0
+
+dlls/objects/361_IMIceMounta/IMIceMounta.c:
+	.text       start:0x801AC5D0 end:0x801AD2B0
+
+dlls/objects/371_LINK_levcon/LINK_levcon.c:
+	.text       start:0x801AFB1C end:0x801AFF98
+
+dlls/objects/448_DIMLogFire/DIMLogFire.c:
+	.text       start:0x801B0C24 end:0x801B1388
+
+dlls/objects/458_DIMExplosio/DIMExplosio.c:
+	.text       start:0x801B4398 end:0x801B5D70
+
+dlls/objects/478_DIM2LavaCon/DIM2LavaCon.c:
+	.text       start:0x801B9DC4 end:0x801BA268
+
+dlls/objects/480_DIM_Boss/DIM_Boss.c:
+	.text       start:0x801BA480 end:0x801BE194
+
+dlls/objects/373_DFropenode/DFropenode.c:
+	.text       start:0x801C11AC end:0x801C2C94
+
+dlls/objects/406_DBSH_Symbol/DBSH_Symbol.c:
+	.text       start:0x801C9C14 end:0x801CA408
+
+dlls/objects/415_NW_treebrid/NW_treebrid.c:
+	.text       start:0x801CDD90 end:0x801CE22C
+
+dlls/objects/416_NW_geyser/NW_geyser.c:
+	.text       start:0x801CE22C end:0x801CE424
+
+dlls/objects/421_NW_levcontr/NW_levcontr.c:
+	.text       start:0x801D0338 end:0x801D0C6C
+
+dlls/objects/425_BombPlant/BombPlant.c:
+	.text       start:0x801D2E5C end:0x801D3968
+
+dlls/objects/427_BombPlantin/BombPlantin.c:
+	.text       start:0x801D45E4 end:0x801D4788
+
+dlls/objects/428_SH_queenear/SH_queenear.c:
+	.text       start:0x801D4788 end:0x801D52C0
+
+dlls/objects/429_SH_thorntai/SH_thorntai.c:
+	.text       start:0x801D52C0 end:0x801D6F04
+
+dlls/objects/434_SH_staffHaz/SH_staffHaz.c:
+	.text       start:0x801DAEB4 end:0x801DAF44
+
+dlls/objects/435_SH_Beacon/SH_Beacon.c:
+	.text       start:0x801DAF44 end:0x801DB594
+
+dlls/objects/436_SH_EmptyTum/SH_EmptyTum.c:
+	.text       start:0x801DB594 end:0x801DB688
+
+dlls/objects/597/597.c:
+	.text       start:0x801E9F54 end:0x801EE6C0
+
+dlls/objects/549_VFP_flamepo/VFP_flamepo.c:
+	.text       start:0x801FDAE0 end:0x801FDCEC
+
+dlls/objects/578_DBstealerwo/DBstealerwo.c:
+	.text       start:0x80200450 end:0x802043D8
+
+dlls/objects/553_DFP_LevelCo/DFP_LevelCo.c:
+	.text       start:0x802046D0 end:0x80204FA8
+
+dlls/objects/572_DFP_PowerSl/DFP_PowerSl.c:
+	.text       start:0x8020A56C end:0x8020A800
+
+dlls/objects/592_KT_Rex/KT_Rex.c:
+	.text       start:0x802125B0 end:0x802160B4
+
+dlls/objects/611_GM_MazeWell/GM_MazeWell.c:
+	.text       start:0x8021919C end:0x80219560
+
+dlls/objects/626/626.c:
+	.text       start:0x8021D608 end:0x8021F99C
+
+dlls/objects/627_FirePipe/FirePipe.c:
+	.text       start:0x8021FF1C end:0x80220C58
+
+main/obj_movelib.c:
+	.text       start:0x80221FC8 end:0x80222E3C
+
+dlls/objects/654_WCBeacon/WCBeacon.c:
+	.text       start:0x80227970 end:0x80227D54
+
+dlls/objects/668_ARWArwingBo/ARWArwingBo.c:
+	.text       start:0x8022F3A4 end:0x8022F89C
+
+dlls/objects/678_ARWSquadron/ARWSquadron.c:
+	.text       start:0x80232154 end:0x80233874
+
+dlls/objects/687/687.c:
+	.text       start:0x80235D90 end:0x80236818
+
+dlls/objects/693_Timer/Timer.c:
+	.text       start:0x80238BF0 end:0x802391A8
+
+dlls/objects/694_CNThitObjec/CNThitObjec.c:
+	.text       start:0x802391A8 end:0x8023969C
+
+dlls/objects/697_MCStaffEffe/MCStaffEffe.c:
+	.text       start:0x802399B0 end:0x80239A84
+
+dlls/objects/698_MCLightning/MCLightning.c:
+	.text       start:0x80239A84 end:0x80239F50
+
+dlls/objects/700_Andross/Andross.c:
+	.text       start:0x8023A4D0 end:0x8023F754
+
+dlls/objects/701/701.c:
+	.text       start:0x8023F754 end:0x80240384
+
+dlls/objects/702_AndrossBrai/AndrossBrai.c:
+	.text       start:0x80240384 end:0x80240708
+
+dolphin/os/OS.c:
+	.text       start:0x80240AD0 end:0x8024142C
+
+dolphin/os/OSAlloc.c:
+	.text       start:0x80241AD8 end:0x80241DE8
+
+dolphin/os/OSAudioSystem.c:
+	.text       start:0x80241E08 end:0x8024209C
+
+dolphin/os/OSCache.c:
+	.text       start:0x8024209C end:0x80242758
+
+dolphin/os/OSContext.c:
+	.text       start:0x80242758 end:0x80242FC0
+
+dolphin/os/OSError.c:
+	.text       start:0x80242FC0 end:0x80243308
+
+dolphin/os/OSFont.c:
+	.text       start:0x80243308 end:0x80243E74
+
+dolphin/os/OSLink.c:
+	.text       start:0x802446E0 end:0x802446F8
+
+dolphin/os/OSMessage.c:
+	.text       start:0x802446F8 end:0x802448FC
+
+dolphin/os/OSMemory.c:
+	.text       start:0x802448FC end:0x80244BDC
+
+dolphin/os/OSMutex.c:
+	.text       start:0x80244BDC end:0x80244C4C
+
+dolphin/os/OSReset.c:
+	.text       start:0x80244E64 end:0x80245248
+
+dolphin/os/OSResetSW.c:
+	.text       start:0x80245248 end:0x802455D4
+
+dolphin/os/OSStopwatch.c:
+	.text       start:0x80246190 end:0x80246308
+
+dolphin/os/OSSync.c:
+	.text       start:0x80246308 end:0x802463B4
+
+dolphin/os/OSThread.c:
+	.text       start:0x802463B4 end:0x802473B4
+
+dolphin/os/OSTime.c:
+	.text       start:0x802473B4 end:0x80247438
+
+dolphin/mtx/mtx.c:
+	.text       start:0x802475B8 end:0x80247BF8
+
+dolphin/mtx/mtxvec.c:
+	.text       start:0x80247BF8 end:0x80247D2C
+
+dolphin/mtx/mtx44.c:
+	.text       start:0x80247D2C end:0x80247E94
+
+dolphin/mtx/vec.c:
+	.text       start:0x80247E94 end:0x80248134
+
+dolphin/mtx/psmtx.c:
+	.text       start:0x80248134 end:0x80248180
+
+dolphin/dvd/dvdlow.c:
+	.text       start:0x80248180 end:0x80248FD4
+
+dolphin/dvd/dvdfs.c:
+	.text       start:0x80248FD4 end:0x80249928
+
+dolphin/dvd/dvd.c:
+	.text       start:0x80249958 end:0x8024C0D4
+
+dolphin/dvd/dvdqueue.c:
+	.text       start:0x8024C0D4 end:0x8024C2CC
+
+dolphin/dvd/dvderror.c:
+	.text       start:0x8024C2CC end:0x8024C464
+
+dolphin/dvd/fstload.c:
+	.text       start:0x8024C464 end:0x8024C6A4
+
+dolphin/vi/vi.c:
+	.text       start:0x8024C6A4 end:0x8024E11C
+
+dolphin/pad/Padclamp.c:
+	.text       start:0x8024E11C end:0x8024E354
+
+dolphin/pad/Pad.c:
+	.text       start:0x8024E354 end:0x8024FE1C
+
+dolphin/ar/arq.c:
+	.text       start:0x80251290 end:0x80251624
+
+dolphin/dsp/dsp_task.c:
+	.text       start:0x80251880 end:0x80252104
+
+dolphin/si/SIBios.c:
+	.text       start:0x80252104 end:0x802537E4
+
+dolphin/exi/EXIBios.c:
+	.text       start:0x802538EC end:0x802551C0
+
+dolphin/exi/EXIUart.c:
+	.text       start:0x802551C0 end:0x80255430
+
+dolphin/gx/GXInit.c:
+	.text       start:0x80255430 end:0x80256520
+
+dolphin/gx/GXAttr.c:
+	.text       start:0x80256F84 end:0x8025898C
+
+dolphin/gx/GXMisc.c:
+	.text       start:0x8025898C end:0x80258F60
+
+dolphin/gx/GXLight.c:
+	.text       start:0x80259DD4 end:0x8025A7EC
+
+dolphin/gx/GXTexture.c:
+	.text       start:0x8025A7EC end:0x8025B94C
+
+dolphin/gx/GXTev.c:
+	.text       start:0x8025C000 end:0x8025CA38
+
+dolphin/gx/GXPixel.c:
+	.text       start:0x8025CA38 end:0x8025D180
+
+dolphin/gx/GXDraw.c:
+	.text       start:0x8025D180 end:0x8025D49C
+
+dolphin/gx/GXDisplayList.c:
+	.text       start:0x8025D4A0 end:0x8025D6AC
+
+dolphin/gx/GXTransform.c:
+	.text       start:0x8025D6AC end:0x8025DC78
+
+dolphin/gx/GXPerf.c:
+	.text       start:0x8025DC78 end:0x8025E5E4
+
+dolphin/card/CARDUnlock.c:
+	.text       start:0x8025F730 end:0x80260990
+
+dolphin/card/CARDCheck.c:
+	.text       start:0x80261278 end:0x802621E0
+
+dolphin/card/CARDMount.c:
+	.text       start:0x802621E0 end:0x80262CA0
+
+dolphin/card/CARDFormat.c:
+	.text       start:0x80262CA0 end:0x80263490
+
+dolphin/card/CARDCreate.c:
+	.text       start:0x802638E4 end:0x80263C7C
+
+dolphin/card/CARDDelete.c:
+	.text       start:0x80264470 end:0x8026466C
+
+dolphin/card/CARDNet.c:
+	.text       start:0x80264B4C end:0x80264C10
+
+dolphin/thp/THPDec.c:
+	.text       start:0x80264C10 end:0x8026C150
+
+dolphin/thp/THPAudio.c:
+	.text       start:0x8026C150 end:0x8026C680
+
+musyx/runtime/synth_channel.c:
+	.text       start:0x8026DD94 end:0x8026DE48
+
+musyx/runtime/synth_seq_events.c:
+	.text       start:0x8026E5BC end:0x8026E848
+
+musyx/runtime/vid_init.c:
+	.text       start:0x80279670 end:0x80279768
+
+musyx/runtime/vid_get.c:
+	.text       start:0x80279768 end:0x8027979C
+
+musyx/runtime/voice_conv.c:
+	.text       start:0x8027AA94 end:0x8027AC44
+
+musyx/runtime/hw_break.c:
+	.text       start:0x80283BA0 end:0x80283BF0
+
+musyx/runtime/hw_sample.c:
+	.text       start:0x80283DA0 end:0x80283E10
+
+musyx/runtime/hw_keyoff.c:
+	.text       start:0x80283E4C end:0x80283E74
+
+musyx/runtime/hw_voice_params.c:
+	.text       start:0x80283E74 end:0x80283FA0
+
+Runtime.PPCEABI.H/__va_arg.c:
+	.text       start:0x80286608 end:0x802866D0
+
+Runtime.PPCEABI.H/runtime.c:
+	.text       start:0x80286718 end:0x80286E3C
+
+Runtime.PPCEABI.H/fragment.c:
+	.text       start:0x80286EB8 end:0x80286F20
+
+Runtime.PPCEABI.H/GCN_mem_alloc.c:
+	.text       start:0x80286F20 end:0x80286FC0
+
+dolphin/TRK_MINNOW_DOLPHIN/mainloop.c:
+	.text       start:0x80286FC0 end:0x802870B8
+
+dolphin/TRK_MINNOW_DOLPHIN/nubevent.c:
+	.text       start:0x802870B8 end:0x802872E0
+
+dolphin/TRK_MINNOW_DOLPHIN/nubinit.c:
+	.text       start:0x802872E0 end:0x80287460
+
+dolphin/TRK_MINNOW_DOLPHIN/msg.c:
+	.text       start:0x80287460 end:0x8028763C
+
+dolphin/TRK_MINNOW_DOLPHIN/msgbuf.c:
+	.text       start:0x8028763C end:0x80288068
+
+dolphin/TRK_MINNOW_DOLPHIN/support.c:
+	.text       start:0x8028ADBC end:0x8028B658
+
+dolphin/TRK_MINNOW_DOLPHIN/notify.c:
+	.text       start:0x8028B670 end:0x8028B748
+
+dolphin/TRK_MINNOW_DOLPHIN/flush_cache.c:
+	.text       start:0x8028B748 end:0x8028B780
+
+dolphin/TRK_MINNOW_DOLPHIN/mem_TRK.c:
+	.text       start:0x8028B780 end:0x8028B83C
+
+dolphin/TRK_MINNOW_DOLPHIN/main_TRK.c:
+	.text       start:0x8028D5A8 end:0x8028D5EC
+
+dolphin/TRK_MINNOW_DOLPHIN/dolphin_trk_glue.c:
+	.text       start:0x8028D5EC end:0x8028DA78
+
+dolphin/TRK_MINNOW_DOLPHIN/targcont.c:
+	.text       start:0x8028DA78 end:0x8028DAAC
+
+dolphin/TRK_MINNOW_DOLPHIN/mslsupp.c:
+	.text       start:0x8028DAC8 end:0x8028DC08
+
+dolphin/MSL_C/PPCEABI/bare/H/abort_exit.c:
+	.text       start:0x8028DC08 end:0x8028DCD4
+
+dolphin/MSL_C/PPCEABI/bare/H/alloc.c:
+	.text       start:0x8028DCD4 end:0x8028E23C
+
+dolphin/MSL_C/PPCEABI/bare/H/ansi_files.c:
+	.text       start:0x8028E23C end:0x8028E344
+
+dolphin/MSL_C/PPCEABI/bare/H/ansi_fp.c:
+	.text       start:0x8028E344 end:0x8028EF5C
+
+dolphin/MSL_C/PPCEABI/bare/H/buffer_io.c:
+	.text       start:0x8028EF5C end:0x8028F054
+
+dolphin/MSL_C/PPCEABI/bare/H/file_io.c:
+	.text       start:0x8028F380 end:0x8028F578
+
+dolphin/MSL_C/PPCEABI/bare/H/mbstring.c:
+	.text       start:0x8028F844 end:0x8028F988
+
+dolphin/MSL_C/PPCEABI/bare/H/mem.c:
+	.text       start:0x8028F988 end:0x8028FAF8
+
+dolphin/MSL_C/PPCEABI/bare/H/mem_funcs.c:
+	.text       start:0x8028FAF8 end:0x8028FDD8
+
+dolphin/MSL_C/PPCEABI/bare/H/misc_io.c:
+	.text       start:0x8028FDD8 end:0x8028FDE8
+
+dolphin/MSL_C/PPCEABI/bare/H/printf.c:
+	.text       start:0x8028FDE8 end:0x80291D44
+
+dolphin/MSL_C/PPCEABI/bare/H/string.c:
+	.text       start:0x80291D44 end:0x80292020
+
+dolphin/MSL_C/PPCEABI/bare/H/wchar_io.c:
+	.text       start:0x80292020 end:0x802920A8
+
+dolphin/MSL_C/PPCEABI/bare/H/s_copysign.c:
+	.text       start:0x802920A8 end:0x802920D0
+
+dolphin/MSL_C/PPCEABI/bare/H/s_frexp.c:
+	.text       start:0x802920D0 end:0x8029215C
+
+dolphin/MSL_C/PPCEABI/bare/H/s_ldexp.c:
+	.text       start:0x8029215C end:0x80292320
+
+dolphin/MSL_C/PPCEABI/bare/H/s_modf.c:
+	.text       start:0x80292320 end:0x8029241C
+
+dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.c:
+	.text       start:0x8029241C end:0x802926A4
+
+main/acosf.c:
+	.text       start:0x802926A4 end:0x80292F04
+
+dolphin/MSL_C/PPCEABI/bare/H/e_sqrt.c:
+	.text       start:0x80292F04 end:0x8029349C
+
+dolphin/MSL_C/PPCEABI/bare/H/s_tan.c:
+	.text       start:0x8029349C end:0x80293520
+
+dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.c:
+	.text       start:0x8029354C end:0x8029388C
+
+dolphin/MSL_C/PPCEABI/bare/H/k_tan.c:
+	.text       start:0x8029388C end:0x80293994
+
+main/trig.c:
+	.text       start:0x80293994 end:0x802943C4
+
+main/sincosf.c:
+	.text       start:0x802943C4 end:0x80294504
+
+dolphin/MSL_C/PPCEABI/bare/H/math_80293da4.c:
+	.text       start:0x80294504 end:0x80294CAC
+
+dolphin/MSL_C/PPCEABI/bare/H/math_8029454c.c:
+	.text       start:0x80294CAC end:0x80294DA0
+
+dolphin/base/PPCArch_weak.c:
+	.text       start:0x80294DA0 end:0x80294DBC
+
+dolphin/MSL_C/PPCEABI/bare/H/ctype_funcs.c:
+	.text       start:0x80294DBC end:0x80294DE4
+
+dolphin/MSL_C/PPCEABI/bare/H/uart_console_io_gcn.c:
+	.text       start:0x80294DE4 end:0x80294E7C
+
+dolphin/MSL_C/PPCEABI/bare/H/hyperbolicsf.c:
+	.text       start:0x80294E7C end:0x80294E84
+
+dolphin/MSL_C/PPCEABI/bare/H/floorf.c:
+	.text       start:0x80294E84 end:0x80294F2C
+
+dolphin/MSL_C/PPCEABI/bare/H/exponentialsf.c:
+	.text       start:0x80295318 end:0x80295A94
+
+dlls/objects/195_Player/player.c:
+	.text       start:0x80295A94 end:0x802B79F8
+
+dlls/objects/437/437.c:
+	.text       start:0x802B79F8 end:0x802B9EE0
+
+dlls/objects/599_DR_EarthWar/DR_EarthWar.c:
+	.text       start:0x802BCF30 end:0x802BF838
+
+dolphin/TRK_MINNOW_DOLPHIN/targimpl.c:
+	.init       start:0x80003100 end:0x800033A8
+
+dolphin/TRK_MINNOW_DOLPHIN/dolphin_trk.c:
+	.init       start:0x8000546C end:0x80005570

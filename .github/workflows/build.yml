@@ -16,7 +16,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        version: [GSAE01] #, GSAJ01, GSAP01] # Enable these eventually
+        version: [GSAE01, GSAE01_rev1, GSAJ01, GSAP01]
 
     steps:
     # Checkout the repository
