@@ -965,17 +965,17 @@ int DIMSnowHorn1_getMountState(void)
     return 0;
 }
 
-void DIMSnowHorn1_getCameraPosition(s16* packed, f32* outX, f32* outY, f32* outZ)
+void DIMSnowHorn1_getCameraPosition(GameObject* obj, f32* outX, f32* outY, f32* outZ)
 {
     MatrixTransform transform;
     f32 matrix[16];
 
-    transform.x = *(f32*)(packed + 6);
-    transform.y = *(f32*)(packed + 8);
-    transform.z = *(f32*)(packed + 10);
-    transform.rotX = packed[0];
-    transform.rotY = packed[1];
-    transform.rotZ = packed[2];
+    transform.x = obj->anim.localPosX;
+    transform.y = obj->anim.localPosY;
+    transform.z = obj->anim.localPosZ;
+    transform.rotX = obj->anim.rotX;
+    transform.rotY = obj->anim.rotY;
+    transform.rotZ = obj->anim.rotZ;
     transform.scale = 1.0f;
     setMatrixFromObjectPos(matrix, &transform);
     Matrix_TransformPoint(matrix, 0.0f, 80.0f, -25.0f, outX, outY, outZ);

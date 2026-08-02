@@ -104,7 +104,7 @@ f32 DIMSnowHorn1_func19(GameObject* obj, f32* out);
 void DIMSnowHorn1_getPlayerAnim(void* unused, f32* out_f, int* out_i);
 void DIMSnowHorn1_setMountState(GameObject* obj, int value);
 int DIMSnowHorn1_getMountState(void);
-void DIMSnowHorn1_getCameraPosition(s16* packed, f32* outX, f32* outY, f32* outZ);
+void DIMSnowHorn1_getCameraPosition(GameObject* obj, f32* outX, f32* outY, f32* outZ);
 int DIMSnowHorn1_getDismountSide(GameObject* obj);
 int DIMSnowHorn1_canDismount(GameObject* obj);
 void DIMSnowHorn1_getRiderPosition(GameObject* obj, f32* out_x, f32* out_y, f32* out_z);
