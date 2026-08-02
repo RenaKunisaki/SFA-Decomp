@@ -2111,7 +2111,7 @@ void dbstealerworm_acquireTarget(GameObject* obj, int groundState, int baddie)
     if (near != 0 && (st->configFlags & 2) == 0)
     {
         (*gBaddieControlInterface)
-            ->startHitReaction(obj, (void*)baddie, (char*)groundState + 0x35c, st->gameBitB, NULL, 0, 0, 8, -1);
+            ->startHitReaction(obj, (void*)baddie, &((GroundBaddieState*)groundState)->routeNav, st->gameBitB, NULL, 0, 0, 8, -1);
         *(int*)&((BaddieState*)baddie)->targetObj = (int)near;
         ((BaddieState*)baddie)->hasTarget = 0;
         objAddObjectType((int)obj, DBSTEALERWORM_OBJGROUP);
@@ -2355,7 +2355,7 @@ void dbstealerworm_update(GameObject* obj)
                     }
                 }
                 if ((*gBaddieControlInterface)
-                        ->updateHitReaction(obj, (void*)blob, (char*)blob + 0x35c,
+                        ->updateHitReaction(obj, (void*)blob, &((GroundBaddieState*)blob)->routeNav,
                                             ((GroundBaddieState*)blob)->gameBitB, (int*)(tbl + 0x2ac),
                                             (u8*)(tbl + 0x324), 1, st[0]) != 0)
                 {

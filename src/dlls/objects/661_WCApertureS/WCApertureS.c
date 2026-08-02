@@ -122,18 +122,18 @@ void wcapertures_hitDetect(GameObject* obj)
 
     if (state->mode == WCAPERTURES_MODE_OPEN)
     {
-        s16 ev[18];
+        PartFxSpawnParams ev;
         f32 col[3];
 
         if (objAnim->bankIndex == 0)
-            ev[1] = 1;
+            ev.arg1 = 1;
         else
-            ev[1] = 0;
+            ev.arg1 = 0;
         col[0] = 5.0f;
         col[1] = -0.788130045f;
         col[2] = 0.0f;
         (*gPartfxInterface)
-            ->spawnObject((void*)obj, WCAPERTURES_PARTFX_OPEN, ev, WCAPERTURES_PARTFX_KIND,
+            ->spawnObject((void*)obj, WCAPERTURES_PARTFX_OPEN, &ev, WCAPERTURES_PARTFX_KIND,
                           WCAPERTURES_PARTFX_INVALID_HANDLE, col);
     }
     if (state->light != NULL)

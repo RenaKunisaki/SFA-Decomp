@@ -565,7 +565,7 @@ void chukChuk_acquireTarget(GameObject* obj, GroundBaddieState* objectState, Gro
         int disabledSoundId = -1;
 
         (*gBaddieControlInterface)
-            ->startHitReaction(obj, state, (char*)objectState + 0x35c, objectState->gameBitB, NULL, 0, 0, 8,
+            ->startHitReaction(obj, state, &((GroundBaddieState*)objectState)->routeNav, objectState->gameBitB, NULL, 0, 0, 8,
                                disabledSoundId);
         *(int*)&state->baddie.targetObj = (int)target;
         state->baddie.hasTarget = 0;
@@ -630,7 +630,7 @@ void chukChuk_updateTargeting(GameObject* obj, int objectStateAddress, int state
 
     hitReactionUpdated =
         (*gBaddieControlInterface)
-            ->updateHitReaction(obj, (void*)stateAddress, (char*)objectStateAddress + 0x35c,
+            ->updateHitReaction(obj, (void*)stateAddress, &((GroundBaddieState*)objectStateAddress)->routeNav,
                                 ((GroundBaddieState*)objectStateAddress)->gameBitB, gDllCEHitReactionMoves,
                                 gDllCEHitReactionDamage, 1, &gDllCEHitReactionScratch);
 

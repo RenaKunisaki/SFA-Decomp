@@ -532,7 +532,7 @@ void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAd
     (*gBaddieControlInterface)->getTargetGeometry(obj, playerObj, 4, &hitType, &hitAux1, &hitAux2);
     if ((hitType == 1) || (hitType == 2)) {
         hitResult = (*gBaddieControlInterface)
-                        ->updateHitReaction(obj, (void*)stateAddress, (char*)objectStateAddress + 0x35c,
+                        ->updateHitReaction(obj, (void*)stateAddress, &((GroundBaddieState*)objectStateAddress)->routeNav,
                                             ((GroundBaddieState*)objectStateAddress)->gameBitB, NULL, NULL, 1,
                                             &gKaldachomHitLightWork);
         if (hitResult != 0) {
@@ -549,7 +549,7 @@ void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAd
         }
     } else {
         hitResult = (*gBaddieControlInterface)
-                        ->updateHitReaction(obj, (void*)stateAddress, (char*)objectStateAddress + 0x35c,
+                        ->updateHitReaction(obj, (void*)stateAddress, &((GroundBaddieState*)objectStateAddress)->routeNav,
                                             ((GroundBaddieState*)objectStateAddress)->gameBitB, NULL, NULL, 1,
                                             &gKaldachomHitLightWork);
         if (hitResult != 0) {
