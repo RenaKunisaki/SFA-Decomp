@@ -182,23 +182,7 @@ enum
 #define OBJLOAD_FLAG_INDEXED_MODEL 0x0400 /* load one model at index encoded in bits 11-14 */
 #define OBJLOAD_FLAG_SHADOW_TYPE3  0x8000 /* modelDef->shadowType == 3 */
 
-extern f32 lbl_803DE888;
-extern f32 lbl_803DE88C;
-extern f32 lbl_803DE894;
-extern f32 lbl_803DE898;
-extern f32 lbl_803DE8D4;
-extern f32 lbl_803DE8D8;
-extern f32 gObjColorFadeRate;
-extern f32 gObjColorFadeAlphaMax;
 GameObject* gEffectBoxObjects[20];
-extern const f32 lbl_803DE890;
-extern const f32 lbl_803DE8B8;
-extern f32 lbl_803DE8CC;
-extern f32 lbl_803DE8D0;
-extern f32 lbl_803DE8BC;
-extern f32 gObjPi;
-extern f32 lbl_803DE8C4;
-extern f32 lbl_803DE8C8;
 extern f32 gMapSavedPlayerOffsetX;
 extern f32 gMapSavedPlayerOffsetZ;
 
@@ -253,7 +237,7 @@ void Obj_UpdateRollingRotation(GameObject* obj)
     f32 denom;
     f32 sum;
 
-    len = lbl_803DE888 * obj->anim.hitboxScale;
+    len = 6.284f * obj->anim.hitboxScale;
     denom = len * obj->anim.rootMotionScale;
     dx = ((obj->anim.previousLocalPosZ - gMapSavedPlayerOffsetZ) -
           (obj->anim.localPosZ - playerMapOffsetZ)) /
@@ -262,21 +246,21 @@ void Obj_UpdateRollingRotation(GameObject* obj)
           (obj->anim.previousLocalPosX - playerMapOffsetX)) /
          denom;
     sum = dz * dz + dx * dx;
-    if (sum > lbl_803DE88C)
+    if (sum > 0.0f)
     {
         len = sqrtf(sum);
         vecA[0] = dz / len;
-        vecA[1] = lbl_803DE88C;
+        vecA[1] = 0.0f;
         vecA[2] = -dx / len;
-        vecB[0] = lbl_803DE88C;
-        vecB[1] = lbl_803DE890;
-        vecB[2] = lbl_803DE88C;
+        vecB[0] = 0.0f;
+        vecB[1] = 1.0f;
+        vecB[2] = 0.0f;
         PSVECCrossProduct((Vec*)vecA, (Vec*)vecB, (Vec*)cross);
-        PSMTXRotAxisRad((MtxPtr)rot, (Vec*)cross, lbl_803DE894 * (lbl_803DE898 * -len));
+        PSMTXRotAxisRad((MtxPtr)rot, (Vec*)cross, 3.142f * (2.0f * -len));
         setMatrixFromObjectTransposed(obj, m2);
-        m2[3] = lbl_803DE88C;
-        m2[7] = lbl_803DE88C;
-        m2[11] = lbl_803DE88C;
+        m2[3] = 0.0f;
+        m2[7] = 0.0f;
+        m2[11] = 0.0f;
         PSMTXConcat((MtxPtr)rot, (MtxPtr)m2, (MtxPtr)rot);
         vecA[0] = rot[8];
         vecA[1] = rot[9];
@@ -343,21 +327,21 @@ void Obj_TickModelColorFadeRecursive(GameObject* obj)
 
     if ((obj->colorFadeFlags & OBJ_COLOR_FADE_FLAG_INCREASING) != 0)
     {
-        alpha = obj->colorFadeAlpha + gObjColorFadeRate * timeDelta;
+        alpha = obj->colorFadeAlpha + 12.0f * timeDelta;
     }
     else
     {
-        alpha = obj->colorFadeAlpha - gObjColorFadeRate * timeDelta;
+        alpha = obj->colorFadeAlpha - 12.0f * timeDelta;
     }
 
-    if (alpha < lbl_803DE88C)
+    if (alpha < 0.0f)
     {
         alpha = -alpha;
         obj->colorFadeFlags ^= OBJ_COLOR_FADE_FLAG_INCREASING;
     }
-    else if (alpha > gObjColorFadeAlphaMax)
+    else if (alpha > 127.0f)
     {
-        alpha = gObjColorFadeAlphaMax - (alpha - gObjColorFadeAlphaMax);
+        alpha = 127.0f - (alpha - 127.0f);
         obj->colorFadeFlags ^= OBJ_COLOR_FADE_FLAG_INCREASING;
     }
 
@@ -528,7 +512,7 @@ void Obj_TransformLocalPointByWorldMatrix(u8* obj, f32* src, f32* dst, u8 flag)
     if (flag)
     {
         savedZ = ((GameObject*)obj)->anim.rootMotionScale;
-        ((GameObject*)obj)->anim.rootMotionScale = lbl_803DE890;
+        ((GameObject*)obj)->anim.rootMotionScale = 1.0f;
     }
     Obj_BuildWorldTransformMatrix((GameObject*)obj, mtx, 0);
     PSMTXMultVec((MtxPtr)mtx, (Vec*)src, (Vec*)dst);
@@ -558,7 +542,7 @@ void objWorldToLocalPos(f32* out, MatrixTransform* transform, f32* in)
     inverse.rotX = -transform->rotX;
     inverse.rotY = -transform->rotY;
     inverse.rotZ = -transform->rotZ;
-    inverse.scale = lbl_803DE890;
+    inverse.scale = 1.0f;
     mtxRotateByVec3s(rotMtx, &inverse);
     mtx44Transpose(rotMtx, transposed);
     PSMTXMultVec((MtxPtr)transposed, (Vec*)in, (Vec*)rotated);
@@ -588,7 +572,7 @@ void Obj_BuildInverseWorldTransformMatrix(GameObject* obj, f32* out)
     transform.rotX = -obj->anim.rotX;
     transform.rotY = -obj->anim.rotY;
     transform.rotZ = -obj->anim.rotZ;
-    transform.scale = lbl_803DE890;
+    transform.scale = 1.0f;
     mtxRotateByVec3s(rotMtx, &transform);
     mtx44Transpose(rotMtx, out);
     if (obj->anim.parent == NULL)
@@ -625,7 +609,7 @@ void Obj_BuildWorldTransformMatrix(GameObject* obj, f32* mtx, int flags)
         objFlags &= 0x8;
         if (objFlags == 0)
         {
-            scale = lbl_803DE890;
+            scale = 1.0f;
             obj->anim.rootMotionScale = scale;
         }
     }
@@ -810,9 +794,9 @@ void objSetSlot(GameObject* obj, s8 slot)
 
 int objApplyVelocity(GameObject* obj)
 {
-    obj->anim.localPosX += timeDelta * (lbl_803DE8B8 * (obj->externalVelX + obj->anim.velocityX));
-    obj->anim.localPosY += timeDelta * (lbl_803DE8B8 * (obj->externalVelY + obj->anim.velocityY));
-    obj->anim.localPosZ += timeDelta * (lbl_803DE8B8 * (obj->externalVelZ + obj->anim.velocityZ));
+    obj->anim.localPosX += timeDelta * (0.5f * (obj->externalVelX + obj->anim.velocityX));
+    obj->anim.localPosY += timeDelta * (0.5f * (obj->externalVelY + obj->anim.velocityY));
+    obj->anim.localPosZ += timeDelta * (0.5f * (obj->externalVelZ + obj->anim.velocityZ));
     return 1;
 }
 
@@ -906,10 +890,10 @@ void mapSetupPlayer(void)
                 }
             }
         }
-        *(f32*)(base + 8) = lbl_803DE8BC * mathSinf((gObjPi * (f32)(pos->angle << 8)) / lbl_803DE8C4) + x;
-        *(f32*)(base + 0xc) = lbl_803DE8C8 + y;
+        *(f32*)(base + 8) = 60.0f * mathSinf((3.1415927f * (f32)(pos->angle << 8)) / 32768.0f) + x;
+        *(f32*)(base + 0xc) = 40.0f + y;
         *(f32*)(base + 0x10) =
-            lbl_803DE8BC * mathCosf((gObjPi * (f32)(pos->angle << 8)) / lbl_803DE8C4) + z;
+            60.0f * mathCosf((3.1415927f * (f32)(pos->angle << 8)) / 32768.0f) + z;
         uiDll = getCurUiDll();
         if ((u32)(uiDll - 2) <= 4 || uiDll == 7)
         {
@@ -1514,7 +1498,7 @@ void Obj_RunInitCallback(GameObject* obj, int cb, int unused)
         obj->anim.previousWorldPosX = obj->anim.localPosX;
         obj->anim.previousWorldPosY = obj->anim.localPosY;
         obj->anim.previousWorldPosZ = obj->anim.localPosZ;
-        zero = lbl_803DE88C;
+        zero = 0.0f;
         obj->externalVelX = zero;
         obj->externalVelY = zero;
         obj->externalVelZ = zero;
@@ -1681,15 +1665,15 @@ void modelInitBones(f32 scale, void* model)
     {
         if ((src = (f32*)((ModelFileHeader*)hdr)->unk18) != NULL && (tbl = ((ObjModel*)m)->jointWorkspace) != NULL)
         {
+            zero = 0.0f;
             tbl->radii[0] = src[0] * sc;
-            if (tbl->radii[0] == lbl_803DE88C)
+            if (tbl->radii[0] == zero)
             {
                 tbl->radii[0] = src[1] * sc;
             }
             tbl->radiiSq[0] = tbl->radii[0] * tbl->radii[0];
-            tbl->boneLengths[0] = lbl_803DE8D4;
+            tbl->boneLengths[0] = 0.01f;
             tbl->maxReach[0] = tbl->radii[0];
-            zero = lbl_803DE88C;
             sums[0] = zero;
             i = 1;
             srcP = src + 1;
@@ -1710,10 +1694,10 @@ void modelInitBones(f32 scale, void* model)
                 v = *(f32*)((u8*)tbl->boneLengths + off);
                 if (v == zero)
                 {
-                    *(f32*)((u8*)tbl->boneLengths + off) = lbl_803DE8D8;
+                    *(f32*)((u8*)tbl->boneLengths + off) = 0.1f;
                 }
                 w = *(f32*)(((ModelFileHeader*)hdr)->unk1C + off);
-                if (w >= lbl_803DE890)
+                if (w >= 1.0f)
                 {
                     *(f32*)((u8*)tbl->boneLengths + off) *= w;
                 }
@@ -2182,7 +2166,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
     {
         cursor = shadowInit((GameObject*)obj, cursor, 0);
     }
-    max = lbl_803DE8CC;
+    max = 10.0f;
     i = 0;
     for (; i < ((ObjModelInstance*)obj->def)->modelCount; i++)
     {
@@ -2198,7 +2182,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
     cullScale = ((ObjModelInstance*)obj->def)->cullDistScale;
     if (cullScale != 0)
     {
-        max = max * ((lbl_803DE8CC * cullScale) / lbl_803DE8D0);
+        max = max * ((10.0f * cullScale) / 255.0f);
     }
     obj->cullDist = max;
     if (modelDef->hitboxStateCount != 0)
