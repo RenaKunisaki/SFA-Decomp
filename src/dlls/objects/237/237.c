@@ -138,6 +138,10 @@ int collectible_getIsHidden(GameObject* obj) {
     return obj->userData1;
 }
 
+static f32 collectible_getRotX(GameObject* obj) {
+    return (f32)obj->anim.rotX;
+}
+
 PPCWGPipe GXWGFifo : (0xCC008000);
 
 void collectible_applyPickup(GameObject* obj) {
@@ -227,6 +231,14 @@ void collectible_applyPickup(GameObject* obj) {
     obj->userData1 = 1;
 }
 
+static void collectible_updateSeqEffects(GameObject* obj) {
+    switch (obj->anim.romDefNo) {
+    case COLLECTIBLE_SEQ_ID_MOON_SEED:
+        objfx_spawnDirectionalBurst(obj, 5, 1.0f, 6, 1, 0x14, 3.0f, NULL, 0);
+        break;
+    }
+}
+
 void collectible_updateLooseMotion(GameObject* obj) {
     u8* state = obj->extra;
     if (obj->anim.romDefNo == COLLECTIBLE_SEQ_ID_MOON_SEED) {
@@ -305,10 +317,10 @@ void collectible_updateIdleMotion(GameObject* obj) {
     case 0x137:
     case COLLECTIBLE_SEQ_ID_TRUTH_HORN:
     case 0x246:
-        obj->anim.rotX = 200.0f * timeDelta + (f32)obj->anim.rotX;
+        obj->anim.rotX = 200.0f * timeDelta + collectible_getRotX(obj);
         break;
     case 0x22:
-        obj->anim.rotX = 200.0f * timeDelta + (f32)obj->anim.rotX;
+        obj->anim.rotX = 200.0f * timeDelta + collectible_getRotX(obj);
         itemPickupDoParticleFx(obj, 1.0f, 10, 1);
         break;
     case 0x27f:
@@ -320,7 +332,7 @@ void collectible_updateIdleMotion(GameObject* obj) {
         }
         break;
     case 0x5e8:
-        obj->anim.rotX = 200.0f * timeDelta + (f32)obj->anim.rotX;
+        obj->anim.rotX = 200.0f * timeDelta + collectible_getRotX(obj);
         itemPickupDoParticleFx(obj, 1.0f, 9, 1);
         break;
     }
@@ -342,11 +354,7 @@ int collectible_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
             (u8)(mainGetBit((s32)((CollectibleState*)state)->visibilityGameBit) == 0);
     }
     if (((CollectibleState*)state)->visibilityBitClear == 0) {
-        switch (obj->anim.romDefNo) {
-        case COLLECTIBLE_SEQ_ID_MOON_SEED:
-            objfx_spawnDirectionalBurst(obj, 5, 1.0f, 6, 1, 0x14, 3.0f, NULL, 0);
-            break;
-        }
+        collectible_updateSeqEffects(obj);
     }
 
     animUpdate->movementState = 0;
@@ -526,11 +534,7 @@ void collectible_update(GameObject* obj) {
     if (((CollectibleState*)state)->visibilityBitClear != 0 || state[offsetof(CollectibleState, disabled)] != 0) {
         return;
     }
-    switch (obj->anim.romDefNo) {
-    case COLLECTIBLE_SEQ_ID_MOON_SEED:
-        objfx_spawnDirectionalBurst(obj, 5, 1.0f, 6, 1, 0x14, 3.0f, NULL, 0);
-        break;
-    }
+    collectible_updateSeqEffects(obj);
     timer = ((CollectibleState*)state)->lifetimeTimer;
     zero = 0.0f;
     if (timer != zero) {
@@ -580,7 +584,7 @@ void collectible_update(GameObject* obj) {
         }
     } else {
         obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
-        collectible_updateIdleMotion(obj);
+        ((void (*)(GameObject*))collectible_updateIdleMotion)(obj);
         if (((CollectibleState*)state)->bounceTimer != 0) {
             collectible_updateLooseMotion(obj);
         }
