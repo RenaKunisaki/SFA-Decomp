@@ -10,9 +10,10 @@ per-commit self-report that disagrees with it.
 For each commit, a full `ninja all_source` + `ninja build/GSAE01/report.json` at the commit AND
 at its parent — 79 endpoints in all — then `score_delta_gate.py --reports` over each parent/child
 pair. The gate's schema guard and differ-layer control run on every comparison and passed on
-every one; its `--self-test` is 20/20 at this tip. Endpoint reports were produced by a content-
-synced incremental walker rather than 79 from-scratch worktrees; the walker was validated by
-building the same sha both ways and asserting the two `report.json` files are byte-identical.
+every one; its `--self-test` was 20/20 when the ledger was built and is 33/33 now. Endpoint
+reports were produced by a content-synced incremental walker rather than 79 from-scratch
+worktrees; the walker was validated by building the same sha both ways and asserting the two
+`report.json` files are byte-identical.
 
 Two independent cross-checks say the ledger is measuring the right thing:
 
@@ -36,7 +37,7 @@ regressions. `DEM` = units demoted (complete true -> false).
 | `5d467157cb` | **-144** | +0.000000 | 0 | 0 | **RED** |
 | `f5fe00213f` | **-60** | +0.000000 | 0 | 0 | **RED** |
 | `6983af1b5a` | +0 | +0.000110 | 0 | 0 | clean |
-| `953103973c` | +0 | +0.000000 | 0 | 0 | clean |
+| `953103973c` | +0 | +0.000000 | 0 | 0 | clean on the score axes, **RED on the pool word-diff** [^pool] |
 | `c5f7503917` | +0 | +0.000000 | 0 | 0 | clean |
 | `8f575d63b5` | +0 | +0.000000 | 0 | 0 | clean |
 | `fddaac2ca5` | +0 | +0.000000 | 0 | 0 | clean |
@@ -72,6 +73,11 @@ regressions. `DEM` = units demoted (complete true -> false).
 | `a76a6b85ac` | +0 | +0.000000 | 0 | 0 | clean |
 | `0f24c49e82` | +0 | +0.000000 | 0 | 0 | clean |
 | `08c31701b2` | +0 | +0.000000 | 0 | 0 | clean |
+
+[^pool]: The verdict column records the four score axes, which is all the gate could read when
+the ledger was built. `953103973c` is the one row where the later pool word-diff disagrees with
+them; the counts below are the score-axis counts and are unchanged by it. See "the blind spot the
+score axes cannot see" for the measurement.
 
 **27 clean, 15 RED.** Gross loss over the campaign: **-8168 B** `matched_data` and
 **-0.032980** tree fuzzy. The owner's own retunes and reverts gave back +5016 B and +0.026450,
@@ -159,7 +165,13 @@ still 0.100 below its pre-commit score. The removal was policy-correct — the s
    blind. This is **not** a standing loss: a later re-split carved those words into the unit's own
    claim, and at tip `engine/68 .sdata2` scores 96.875 with a single word missing (the `120.0f` at
    `0x44` that commit deliberately held back). The table's verdict for `953103973c` should be read
-   as clean-on-the-score-axes, RED on the word-diff.
+   as clean-on-the-score-axes, RED on the word-diff, and the row now says so.
+
+   Re-verified independently by building only `engine/68` at both endpoints and counting the
+   words: at `6e8a7e1af8` our `.sdata2` is 8 words against a carve of 0, at `953103973c` it is
+   28 against 0 — surplus 8 -> 28, the twenty literals to the word. The carve claimed no
+   `.sdata2` for the unit at that time, which is why every minted word was surplus and why the
+   later re-split is what absorbed them.
 
 A fourth is not a sensor problem: `09bb75cc96` stated "Zero cost, and no residue" and quoted
 per-unit `matched_code` figures, but actually moved `matched_code` **-2584** and
