@@ -379,3 +379,33 @@ the constant MWCC sinks it and ~14 instructions move. The extern is a crutch, no
 Also measured there: file-scope `const f32` 94.512; function-local `static const f32` folds to a
 literal (data 192/192, code 94.512); `const f32 X[1]` restores 100.0 but the object lands at the
 declaration point (0x00) or at the start of the function's static run (0x20), never at 0x44.
+
+### 8b. The intra-function half of the class: statement order, and why it is still priced
+
+Some gapped pools are not a cross-function order problem at all — every literal belongs to the
+same function in the same sequence, and only the order *within* one function differs. Those look
+like a free win (reorder statements, keep the code) and they are not. `engine/69`
+(`CameraModeTalk_update`, gap 64, the whole `.sdata2`) is the clean specimen. Retail mints
+`6.0, 0.2, 50.0, 25.0, 0.0625` but *loads* them `6.0, 0.2, 25.0, 50.0, 0.0625`: the `25.0f` is a
+local assigned before the clamp (hoisted load), the `50.0f` is a literal inside the expression
+(load at use). To mint `50.0f` first, the source needs a **live** `50.0f` ahead of the
+`followTermB = 25.0f;` statement — and every live form moves its load:
+
+| probe | `.sdata2` 0x2c/0x30 | `CameraModeTalk_update` |
+| --- | --- | --- |
+| tip | wrong order | **100.0** |
+| `followDist = 50.0f;` temp, used in the expression | fixed | 98.773 |
+| drop the `followTermB` temp, write `(50.0f + 25.0f * heightT)` | fixed | 99.033 |
+| `followDist = 50.0f;` as a **dead** store, expression unchanged | unchanged | 99.907 |
+
+The last row is the general fact worth keeping: **a dead store is eliminated before literal
+minting and mints nothing**, so it is useless as well as a phantom minter. Every intra-function
+row therefore has the same shape — the mint order is only reachable through a live use, and a
+live use is exactly what moves the load. `engine/69` is PRICED 64 B; `578_DBstealerwo`,
+`main/trig`, `609_DR_LaserCan`, `engine/19`, `429_SH_thorntai`, `202/mikaladon` are the same
+sub-class.
+
+Classifier for a new row (`.sdata2` all-or-nothing, so a partial pool fix scores zero): map each
+pool slot to the function of its first reference on both sides. Same function sequence with
+different first-reference offsets = intra-function (8b). Different function sequence = the
+cross-function mint order of §8.
