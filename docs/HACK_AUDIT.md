@@ -38,22 +38,6 @@ pun; and an `lbl_`-named **scalar** const is the pool-reconstruction hack, while
 Run `--self-test` before trusting any census from it: it validates in both directions, firing on the
 historical corpus at the `pre-hack-purge` tag and staying silent on the exempt and hardware cases.
 
-**A purge is not free until it has been measured, and the measurement needs a control of its own:
-`python3 tools/score_delta_gate.py --commits <before> <after>`.** Two purge commits (`21b90aff9f`
-and `5b120c0545`) each reported `ddata +0.000000 / 0 per-function regressions` and were wrong on
-both counts; the real price is banked in `docs/priced_classes.md` §6. Nothing downstream caught it,
-because the purge **demoted** the units it touched — a NonMatching unit is allowed to differ, so the
-forced-link/DOL gate stays green, and `matched_code` does not move when a unit's literal pool
-shrinks. The gate rebuilds both endpoints from scratch in throwaway worktrees and diffs per-function
-`fuzzy_match_percent` (pairing renames by address and size), per-unit `matched_data`, per-unit
-`complete`, and per-section scores. Before it will print any verdict it injects a synthetic
-regression into real source, rebuilds through the real pipeline, and requires the differ to catch
-it; then it restores the file byte-for-byte and requires the diff to go clean again. It also refuses
-a report whose schema it cannot score, since a loader reading the wrong JSON path reports zero
-regressions against every input. `--self-test` validates the differ against ground truth with no
-build; `--integrity-only <report.json>` scans one endpoint for units marked complete while scoring
-below 100.
-
 ### Compliance state at 2026-08-02 (the audit that motivated the checker)
 
 **All 50 instances are post-purge RE-ENTRIES** — none survived the original purge. They arrived over
@@ -86,35 +70,75 @@ MatchingFor, full `ninja`, tree-wide metrics vs baseline, `cmp` against `orig/GS
 per-function regression scan, revert. Baseline: code 87.212080 / data 99.015740 / 9285 fns /
 fuzzy 99.815330, DOL identical.
 
-**Control first:** demotion ALONE (flip, no purge) measures **+0.000000 on every metric with DOL
-SAME**, so each row prices the purge and not the flip. Without that control the rows are
-uninterpretable.
+⚠️ **"Control first" — THIS CONTROL WAS ITSELF DEAD.** I ran demotion ALONE (flip, no purge), read
+**+0.000000 on every metric with DOL SAME**, and concluded each row priced the purge and not the
+flip. But that control was measured through the same never-rebuilt `report.json` as the rows it was
+validating. **A control routed through the broken path returns "no change" for ANY input**, so it is
+indistinguishable from a control that passes — it certified the dead instrument instead of catching
+it. A control only has power when it is independent of the mechanism under test. The flip's true
+contribution is therefore still unmeasured.
 
-| file | n | class | dcode% | ddata% | dfns | DOL | verdict |
-|---|---|---|---|---|---|---|---|
-| 260_SmallBasket | 4 | 1-elem array | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
-| 209_TumbleWeedB | 3 | 1-elem array | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
-| 679_ARWProximit | 3 | 1-elem array | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
-| 213_Kaldachom | 2 | 1-elem array | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
-| 300_Transporter | 1 | 1-elem, never read | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
-| 373_DFropenode | 1 | 1-elem array | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
-| 467 | 1 | 1-elem array | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
-| 523_FireFly | 1 | 1-elem array | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
-| 678_ARWSquadron | 1 | 1-elem array | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
-| 683_LGTProjecte | 1 | 1-elem array | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
-| 701 | 1 | 1-elem array | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
-| 203 | 2 | volatile pun | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
-| engine/9 | 1 | volatile decl | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** (+ header extern) |
-| 245_SidekickBal | 1 | goto | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
-| 386_MMP_moonroc | 1 | goto | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
-| main/track_dolphin | 5 | goto | -- | -- | -- | n/a | **NOT MECHANICALLY PRICEABLE** (below) |
+⚠️ **THE `+0.000000` COLUMNS BELOW WERE A DEAD SENSOR — corrected 2026-08-02.** My harness ran a
+bare `ninja`, which builds `default build/GSAE01/main.dol` and **not** `report.json` (a separate
+target — CLAUDE.md's two-command rebuild recipe is load-bearing, not ceremony). So every score delta
+was computed against a frozen baseline and returned `+0.000000` by construction, and the
+demotion-only "control" was measured through the same frozen file, so it certified the dead
+instrument instead of catching it. The DOL column was a real `cmp` against the reference and is the
+one figure below that was never affected. The adjudicated standing price is
+**`docs/priced_classes.md` §6**; the trades were reviewed and KEPT.
 
-Landed as `21b90aff9f` (22 instances / 13 units) and `5b120c0545` (2 gotos). **All 24 measured
-instances were free**; the whole set cost nothing on any gate.
+| file | n | class | dcode%/ddata% as-measured | DOL | REAL price (banked) |
+|---|---|---|---|---|---|
+| 260_SmallBasket | 4 | 1-elem array | +0.000000 (dead sensor) | SAME | **`SmallBasket_spawnContents` 100 -> 99.908** (§6) |
+| 209_TumbleWeedB | 3 | 1-elem array | +0.000000 (dead sensor) | SAME | **bounded**: no fn-level regression; data/pool attribution pending |
+| 679_ARWProximit | 3 | 1-elem array | +0.000000 (dead sensor) | SAME | **bounded**: no fn-level regression; data/pool attribution pending |
+| 213_Kaldachom | 2 | 1-elem array | +0.000000 (dead sensor) | SAME | **bounded**: no fn-level regression; data/pool attribution pending |
+| 300_Transporter | 1 | 1-elem, never read | +0.000000 (dead sensor) | SAME | **bounded**: no fn-level regression; data/pool attribution pending |
+| 373_DFropenode | 1 | 1-elem array | +0.000000 (dead sensor) | SAME | **bounded**: no fn-level regression; data/pool attribution pending |
+| 467 | 1 | 1-elem array | +0.000000 (dead sensor) | SAME | **`worldobj_spawnGreatFoxEffects` 100 -> 98.333** (§6) |
+| 523_FireFly | 1 | 1-elem array | +0.000000 (dead sensor) | SAME | **bounded**: no fn-level regression; data/pool attribution pending |
+| 678_ARWSquadron | 1 | 1-elem array | +0.000000 (dead sensor) | SAME | **bounded**: no fn-level regression; data/pool attribution pending |
+| 683_LGTProjecte | 1 | 1-elem array | +0.000000 (dead sensor) | SAME | **bounded**: no fn-level regression; data/pool attribution pending |
+| 701 | 1 | 1-elem array | +0.000000 (dead sensor) | SAME | **bounded**: no fn-level regression; data/pool attribution pending |
+| 203 | 2 | volatile pun | +0.000000 (dead sensor) | SAME | **bounded**: no fn-level regression; data/pool attribution pending |
+| engine/9 (+ header extern) | 1 | volatile decl | +0.000000 (dead sensor) | SAME | **`renderClouds` 100 -> 99.429** (§6, unforceable-reload) |
+| 245_SidekickBal | 1 | goto | +0.000000 (dead sensor) | SAME | **`trickyBallMove` 100 -> 99.637** (§6) |
+| 386_MMP_moonroc | 1 | goto | +0.000000 (dead sensor) | SAME | **`mmpMoonRock_update` 100 -> 99.516** (§6; seed-and-break confirmed the best structured spelling) |
+| main/track_dolphin | 5 | goto | -- | n/a | **NOT MECHANICALLY PRICEABLE** (below) — and since proven FAITHFUL, see the policy note |
 
-**Demotion is load-bearing, and that is the round's real finding.** Purging *without* demoting builds
-clean and leaves every score delta at zero, yet **breaks DOL byte-identity** -- the objects change in
-a region the score cannot see. This is the purge gate's final form earning its keep: `matched_data`
+Tree-wide banked total: **fuzzy −0.0011, data −992 B, five functions off 100.**
+
+**How to read the ten "bounded" rows — they are stronger than "pending".** §6's measurement was
+**window-level**: a full rebuild at both endpoints of `cd782d6179 -> 5b120c0545`. That window
+contains **exactly the two purge commits and nothing else**, and touches **exactly these 15 units and
+no others** (verified with `git log`/`git diff --name-only` over the range). So its five-row list is
+**complete for functions**: any function in any of these units that fell off 100 would necessarily
+have appeared in it. The ten rows therefore carry a real bound — **no function-level regression is
+attributable to them** — and what remains unmeasured is only the exact per-row **data/pool**
+attribution of the −992 B, which the window total does not decompose.
+That is a genuine bound, not a confirmation of "free": the −992 B is real and some of it belongs to
+these rows. Do not promote "bounded" to "free" without a per-row data measurement.
+
+Landed as `21b90aff9f` (22 instances / 13 units) and `5b120c0545` (2 gotos). ~~All 24 measured
+instances were free.~~ **RETRACTED** — that claim rests entirely on the dead sensor described above.
+The purges stand (reviewed and KEPT), but they were **not** free: the banked price is five functions
+off 100, tree fuzzy −0.0011 and data −992 B. Both commit messages also assert
+`dfuzzy +0.000000 / 0 per-function regressions`; those sentences are wrong for the same reason and
+`docs/priced_classes.md` §6 supersedes them.
+
+**CONFIRMED CROSS-LANE.** A second lane, working its own six files independently, purged
+`src/main/rcp_dolphin.c`'s one-element anchors (`gRcpDistortScaleA`, `gRcpDistortPowExp`,
+`gRcpDistortColorScale` -> plain literals) and had to flip the unit `Matching -> NonMatching` in the
+same change. Same mechanism, different lane, different files, no shared instrument: purging a pool
+anchor from a matched unit changes its object and therefore forces demotion. That is the strongest
+form of confirmation available here, because the two measurements share no tooling — and it is
+notably NOT the sensor that failed, since demotion was forced by the object, not by a score.
+
+**Demotion is load-bearing, and that finding SURVIVES the sensor failure — because it never rested on
+the score.** Purging *without* demoting builds clean yet **breaks DOL byte-identity**, measured by
+`cmp` against `orig/GSAE01/sys/main.dol` — the one gate not routed through `report.json`. (The
+original wording added "and leaves every score delta at zero"; that half was the dead sensor and is
+withdrawn. The DOL half is real, and it is what forced the demotions.) This is the purge gate's final form earning its keep: `matched_data`
 cannot separate "pairing artifact" from "bytes differ", and only the DOL distinguishes them. Since a
 purged object is no longer byte-identical to retail, `NonMatching` is its honest state per CLAUDE.md,
 and demoting lets the retail object link so the DOL holds. Corollary for reading the table: on a
@@ -134,6 +158,52 @@ dedicated derivation round, not a purge pass.
 ordinary resource-descriptor table); 203's `gDllCBDefaultAnimSpeed` is a same-TU `const f32 = 0.1f`
 whose pun reads a compile-time constant; MMP_moonroc's `spacingClear` is written on every path
 reaching its read (0 via the goto, 1 via fallthrough), which is what makes seed-and-break exact.
+
+### Policy question the evidence creates: track_dolphin's 5 gotos are PROVEN FAITHFUL
+
+The checker's baseline still carries `src/main/track_dolphin.c` lines 2298 / 2359 / 2426 / 2478 / 2516
+as GOTO instances. Evidence now says four of the five reproduce retail's own control flow exactly, so
+**this is a policy question, not a cleanup backlog**. The evidence is ours; the decision is the
+maintainer's. Both options are legitimate:
+
+**Option A - admit a proven-faithful exception class.** CLAUDE.md's goto ban gains a narrow carve-out
+for instances demonstrated to reproduce retail's structure, annotated in the baseline with their
+proof. Argument for: the ban exists to stop match-hacks, and a construct that *is* the original source
+is the opposite of a hack; keeping it is what "recover the plausible 2002 C" means. Argument against:
+every exception class costs enforcement clarity, and "proven faithful" is a judgement a future lane
+must re-derive to trust.
+
+**Option B - keep them as permanent baseline entries.** The ban stays absolute; these five stay listed,
+never fixed, in a unit that is already NonMatching. Argument for: the rule stays mechanical and the
+checker stays a bright line. Argument against: a permanent never-to-be-fixed baseline entry trains
+readers to ignore the baseline, which is the failure mode the checker was built to end.
+
+**The evidence, stated at its real strength.** `trackGetIntersect2` (retail `.text:0x3a8c`, 1115 insns)
+emits four sites of the identical shape `cmpwi rX,0 ; beq- <skip> ; li r19,1 ; b 0x482c`, converging on
+a join that opens `extsh r0,r19 ; cmpwi r0,0 ; beq-`. That maps statement-for-statement onto the four
+`goto hitCheck` and the `hitCheck: if (hit != 0)` label. Corroboration: `r19` is touched by **only**
+`li` and `extsh` in the whole function (a pure flag, never arithmetic), and the `extsh` proves a
+halfword — the source's `s16 hit;` already agrees.
+
+⚠️ **Two honest limits.** (1) The 5th goto, `goto slotComplete` (2516), is a **single** far jump;
+single-source branches are equally consistent with a `break`, so it is carried by the same-function
+shape, **not independently proven**. (2) The convergence census that located this is a **heuristic,
+not a test** — goto-free functions show convergence too, and the `return N;`-to-epilogue family is a
+standing false positive. The verdict rests on the statement-level mapping, not on the census.
+
+**Not affected:** the two gotos purged in `5b120c0545` were retro-checked under the same method and
+show **no** flag-pattern convergence, so those rewrites did not move their units away from retail.
+
+**The lawful counterpart, for contrast — `5fe6d7d9f9` ("202: recover the file-scope constants three
+units declare").** The dual-emission rule (named consts emit at their DEFINITION position, literals
+at FIRST USE) is what makes a differing pool order reachable *only* through the banned named-constant
+shape. That is a prohibition on **fabricating** an anchor, not on **recovering** one: where a unit
+genuinely declares a file-scope constant, writing it out is the rule's lawful application and the
+pool follows for the right reason. `5fe6d7d9f9` is the mechanism's first upstream use in that
+direction (`hagabon_mk2.c`, `mikaladon.c`, `vambat.c`, +`mikaladon.h`).
+**The distinction the maintainer is actually being asked to rule on is the same one:** a construct
+that reproduces what the original source did is recovery; a construct introduced because it moves a
+score is a hack. track_dolphin's gotos are argued to be the former — on evidence, not on preference.
 
 ### ⚠️ Baseline keying is line-number based, and that is brittle
 `tools/banned_shapes_baseline.txt` keys `file:line:class`, so **any edit above an instance reports it
