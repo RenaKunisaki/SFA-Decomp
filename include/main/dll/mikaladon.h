@@ -38,8 +38,8 @@ STATIC_ASSERT(offsetof(MikaladonFields, verticalPhase) == 0x33A);
 STATIC_ASSERT(offsetof(MikaladonFields, dropTimer) == 0x33B);
 STATIC_ASSERT(sizeof(MikaladonDropSetup) == 0x24);
 
-extern const f32 gMikaladonZero;
-extern const f32 gMikaladonDefaultPeriod;
+extern const f32 gMikaladonZero[];
+extern const f32 gMikaladonDefaultPeriod[];
 
 void mikaladon_update(GameObject* obj, MikaladonState* state);
 void mikaladon_init(GameObject* obj, MikaladonState* state);

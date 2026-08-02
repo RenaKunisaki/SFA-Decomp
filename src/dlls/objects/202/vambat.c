@@ -96,6 +96,10 @@
 #define MAGICPLANT_FIREBAT_SEQID 0x7c6
 
 
+static const f32 gVambatZero[1] = {0.0f};
+
+static const f32 gVambatHeartbeatPeriod[1] = {60.0f};
+
 int gVambatCurveInitData[2] = {2, 3};
 
 void vambat_updateWhileFrozen(int obj, u8* state, GameObject* attacker, int msgFlag, int wpad0, int wpad1, Vec* wpad2,
@@ -170,19 +174,19 @@ void vambat_updateIdle(GameObject* obj, int state)
         if (((EnemyState*)state)->vambat.idleTimer > 3.6e+02f)
         {
             bs->flags2E4 = bs->flags2E4 & ~(u64)0x10000;
-            ((EnemyState*)state)->vambat.idleTimer = 0.0f;
+            ((EnemyState*)state)->vambat.idleTimer = gVambatZero[0];
         }
     }
 
     baddieTurnTowardLookDir(obj, (void*)state, 0xf, 1e+01f, 1.0f, 0);
 
     ((EnemyState*)state)->vambat.heartbeatSfxTimer = ((EnemyState*)state)->vambat.heartbeatSfxTimer - timeDelta;
-    if (((EnemyState*)state)->vambat.heartbeatSfxTimer <= 0.0f)
+    if (((EnemyState*)state)->vambat.heartbeatSfxTimer <= gVambatZero[0])
     {
-        ((EnemyState*)state)->vambat.heartbeatSfxTimer = 60.0f;
+        ((EnemyState*)state)->vambat.heartbeatSfxTimer = gVambatHeartbeatPeriod[0];
         Sfx_PlayFromObject(obj, SFXTRIG_mn_heart1_c);
     }
-    ((EnemyState*)state)->vambat.engagedTimer = 0.0f;
+    ((EnemyState*)state)->vambat.engagedTimer = gVambatZero[0];
 }
 
 void vambat_updateEngaged(GameObject* obj, int state)
@@ -230,8 +234,8 @@ void vambat_updateEngaged(GameObject* obj, int state)
     if (*(u32*)(state + 0x340) != 0 || ((EnemyState*)state)->vambat.engagedTimer > 3.6e+02f)
     {
         bs->flags2E4 = bs->flags2E4 | 0x10000LL;
-        ((EnemyState*)state)->vambat.idleTimer = 0.0f;
-        ((EnemyState*)state)->vambat.engagedTimer = 0.0f;
+        ((EnemyState*)state)->vambat.idleTimer = gVambatZero[0];
+        ((EnemyState*)state)->vambat.engagedTimer = gVambatZero[0];
     }
     else
     {
@@ -251,8 +255,8 @@ void vambat_updateEngaged(GameObject* obj, int state)
             if (voxmaps_traceLine((VoxPos*)gridB, (VoxPos*)gridA, NULL, &hitOut, 0) == 0)
             {
                 bs->flags2E4 = bs->flags2E4 | 0x10000LL;
-                ((EnemyState*)state)->vambat.idleTimer = 0.0f;
-                ((EnemyState*)state)->vambat.engagedTimer = 0.0f;
+                ((EnemyState*)state)->vambat.idleTimer = gVambatZero[0];
+                ((EnemyState*)state)->vambat.engagedTimer = gVambatZero[0];
             }
         }
     }
@@ -279,9 +283,9 @@ void vambat_init(GameObject* obj, int state)
     bs->moveSpeedScale1 = pathStepInit;
     bs->moveId2 = 0;
     bs->moveSpeedScale2 = initSpeed;
-    ((EnemyState*)state)->vambat.idleTimer = 0.0f;
-    ((EnemyState*)state)->vambat.heartbeatSfxTimer = 0.0f;
-    ((EnemyState*)state)->vambat.engagedTimer = 0.0f;
+    ((EnemyState*)state)->vambat.idleTimer = gVambatZero[0];
+    ((EnemyState*)state)->vambat.heartbeatSfxTimer = gVambatZero[0];
+    ((EnemyState*)state)->vambat.engagedTimer = gVambatZero[0];
     bs->pathStep = pathStepInit;
     switch (obj->anim.romDefNo)
     {
