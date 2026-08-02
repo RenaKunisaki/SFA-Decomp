@@ -1432,7 +1432,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/309_texscroll/texscroll.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/310_WaveAnimato/WaveAnimato.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/311_AlphaAnimat/AlphaAnimat.c"),
-            Object(NonMatching, "dlls/objects/312_GroundAnima/GroundAnima.c"),
+            Object(MatchingFor("GSAE01"), "dlls/objects/312_GroundAnima/GroundAnima.c"),
             Object(Matching, "dlls/objects/313_HitAnimator/HitAnimator.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/314_VisAnimator/VisAnimator.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/315_WallAnimato/WallAnimato.c"),

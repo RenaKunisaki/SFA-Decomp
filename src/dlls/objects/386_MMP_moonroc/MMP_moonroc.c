@@ -34,7 +34,6 @@
 #include "sys/objects.h"
 
 #define MMP_MOON_ROCK_OBJECT_GROUP            4
-#define MMP_MOON_ROCK_SEQUENCE_ID             0x519
 #define MMP_GEYSER_VENT_SEQUENCE_ID           0x518
 #define MMP_MOON_ROCK_HIT_VOLUME_SLOT         14
 #define CARRYABLE_OBJECT_GROUP                0x10

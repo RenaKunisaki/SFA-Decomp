@@ -1,45 +1,36 @@
-/*
- * Deforms matching map-block geometry as a linked object presses and
- * releases the ground surface.
- */
+/* Lets Tricky dig a tagged patch of map geometry to uncover a buried collectible. */
 #include "dlls/objects/312_GroundAnima.h"
-
+#include "dlls/objects/237.h"
+#include "dlls/objects/386_MMP_moonroc.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 #include "dolphin/os/OSCache.h"
+#include "main/audio/sfx_play_legacy_api.h"
+#include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/dll/dll_00C4_tricky.h"
 #include "main/gamebits.h"
 #include "main/lightmap_api.h"
+#include "main/mm.h"
 #include "main/object_render.h"
+#include "main/objprint_render_api.h"
 #include "main/objtype.h"
 #include "main/shader_api.h"
 #include "main/track_dolphin_api.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 
-#define GROUND_ANIMATOR_OBJECT_GROUP        0x31
-#define GROUND_ANIMATOR_TARGET_OBJECT_GROUP 0x04
-
-#define GROUND_ANIMATOR_MOON_ROCK_SEQUENCE_ID 0x519
-
+#define GROUND_ANIMATOR_OBJECT_GROUP     0x31
 #define GROUND_ANIMATOR_SINK_DEPTH_SCALE 100.0f
-#define GROUND_ANIMATOR_RENDER_SCALE     1.0f
 
-u16 gGroundAnimatorSfxIds[4] = {0x109, 0x7E, 0, 0};
+static inline s16* GroundAnimator_getPackedVertex(MapBlockData* block, u16 vertexId) {
+    return (s16*)block->vertices + vertexId * 3;
+}
 
-typedef void (*GroundAnimatorTargetSetFrozenCallback)(GameObject* obj, int frozen);
-typedef void (*GroundAnimatorTargetSetPositionCallback)(GameObject* obj, f32 x, f32 y, f32 z);
+static inline MapTriIndex* GroundAnimator_getPolygon(MapBlockData* block, int polygonIndex) {
+    return mapBlockGetPolygon((int*)block, polygonIndex);
+}
 
-typedef struct GroundAnimatorTargetInterface {
-    void* callbacks[9];
-    GroundAnimatorTargetSetFrozenCallback setFrozen;
-    void* callbacks28[4];
-    GroundAnimatorTargetSetPositionCallback setPosition;
-} GroundAnimatorTargetInterface;
-
-STATIC_ASSERT(offsetof(GroundAnimatorTargetInterface, setFrozen) == 0x24);
-STATIC_ASSERT(offsetof(GroundAnimatorTargetInterface, setPosition) == 0x38);
-
+u16 gGroundAnimatorSfxIds[4] = {SFXTRIG_menuups16k, SFXTRIG_mpick1_b, 0, 0};
 
 u8 GroundAnimator_getMagicCaveIndex(GameObject* obj) {
     GroundAnimatorState* state = obj->extra;
@@ -48,122 +39,105 @@ u8 GroundAnimator_getMagicCaveIndex(GameObject* obj) {
 
 u8 GroundAnimator_isFullySunk(GameObject* obj) {
     GroundAnimatorState* state = obj->extra;
-    f32 depth = state->sinkDepth;
     GroundAnimatorPlacement* placement = (GroundAnimatorPlacement*)obj->anim.placementData;
-    u8 maxDepth = placement->maxSinkDepth;
-    return depth > GROUND_ANIMATOR_SINK_DEPTH_SCALE * maxDepth;
+    return state->sinkDepth > GROUND_ANIMATOR_SINK_DEPTH_SCALE * placement->maxSinkDepth;
 }
 
-f32 GroundAnimator_applyPress(GameObject* obj, GameObject* target) {
+/* Advances the dig and returns the radius Tricky should move to. */
+f32 GroundAnimator_applyPress(GameObject* obj, GameObject* sidekick) {
     GroundAnimatorPlacement* placement;
     GroundAnimatorState* state;
     f32 dy;
     f32 dx;
     f32 dz;
-    f32 rangeSq;
+    f32 rangeSquared;
 
     state = obj->extra;
     placement = (GroundAnimatorPlacement*)obj->anim.placementData;
-    dy = target->anim.localPosY - obj->anim.localPosY;
-    if (dy < (-20.0f) || dy > (20.0f)) {
-        return (0.0f);
+    dy = sidekick->anim.localPosY - obj->anim.localPosY;
+    if (dy < -20.0f || dy > 20.0f) {
+        return 0.0f;
     }
-    dx = target->anim.localPosX - obj->anim.localPosX;
-    dz = target->anim.localPosZ - obj->anim.localPosZ;
-    rangeSq = (10.0f) + state->radius;
-    rangeSq = rangeSq * rangeSq;
-    if (dx * dx + dz * dz > rangeSq) {
-        return (-1.0f);
+    dx = sidekick->anim.localPosX - obj->anim.localPosX;
+    dz = sidekick->anim.localPosZ - obj->anim.localPosZ;
+    rangeSquared = 10.0f + state->falloffRadius;
+    rangeSquared *= rangeSquared;
+    if (dx * dx + dz * dz > rangeSquared) {
+        return -1.0f;
     }
-    if (state->sinkDepth >= GROUND_ANIMATOR_SINK_DEPTH_SCALE * (f32)(u32)placement->maxSinkDepth) {
-        if (state->linkedObject != NULL) {
-            GameObject* linkedObject;
-            state->sinkDepth = GROUND_ANIMATOR_SINK_DEPTH_SCALE * (f32)(u32)placement->maxSinkDepth;
-            linkedObject = state->linkedObject;
-            switch (linkedObject->anim.romDefNo) {
-            case GROUND_ANIMATOR_MOON_ROCK_SEQUENCE_ID:
-                mmpMoonRock_setFrozen(linkedObject, 0);
+    if (state->sinkDepth >= GROUND_ANIMATOR_SINK_DEPTH_SCALE * placement->maxSinkDepth) {
+        if (state->collectible != NULL) {
+            GameObject* collectible;
+            state->sinkDepth = GROUND_ANIMATOR_SINK_DEPTH_SCALE * placement->maxSinkDepth;
+            collectible = state->collectible;
+            switch (collectible->anim.romDefNo) {
+            case MMP_MOON_ROCK_SEQUENCE_ID:
+                mmpMoonRock_setFrozen(collectible, 0);
                 break;
             default:
-                ((GroundAnimatorTargetInterface*)*linkedObject->anim.dll)->setFrozen(linkedObject, 0);
+                COLLECTIBLE_INTERFACE(collectible)->setDisabled(collectible, 0);
                 break;
             }
         }
     }
-    state->sinkDepth = (5.0f) * timeDelta + state->sinkDepth;
-    state->flags = state->flags | GROUND_ANIMATOR_STATE_PRESSED;
-    return state->radius * (state->sinkDepth / (GROUND_ANIMATOR_SINK_DEPTH_SCALE * (f32)(u32)placement->maxSinkDepth));
+    state->sinkDepth += 5.0f * timeDelta;
+    state->flags |= GROUND_ANIMATOR_STATE_PRESSED;
+    return state->falloffRadius * (state->sinkDepth / (GROUND_ANIMATOR_SINK_DEPTH_SCALE * placement->maxSinkDepth));
 }
 
-void GroundAnimator_gatherVertices(GameObject* obj, GroundAnimatorState* state, GroundAnimatorPlacement* placement) {
-    MapTriGroup* polygonGroup;
-    void* polygonIndexCursor;
-    void* polygon;
-    int vertexFalloffOffset;
-    int vertexHeightOffset;
-    int polygonFalloffOffset;
-    int polygonHeightOffset;
-    int offsets[2];
-    int vertexIndex;
-    MapBlockData* block;
+/* Caches the influence and original height of each vertex in matching polygon groups. */
+static void GroundAnimator_gatherVertices(GameObject* obj, GroundAnimatorState* state,
+                                          GroundAnimatorPlacement* placement) {
+    MapTriIndex* polygon;
+    int animatedVertexIndex;
     int mapCellX;
     int mapCellZ;
     int polygonGroupIndex;
     int polygonIndex;
-    f32 vertexPosition[3];
-    f32 maxFalloff;
+    int vertexIndex;
+    MapBlockData* block =
+        mapGetBlock(objPosToMapBlockIdx(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ));
     f32 blockLocalZ;
     f32 radiusSquared;
     f32 blockLocalX;
-    block = mapGetBlock(
-        objPosToMapBlockIdx((double)obj->anim.localPosX, (double)obj->anim.localPosY, (double)obj->anim.localPosZ));
-    if (block == NULL || (((MapBlockData*)block)->flags4 & MAP_BLOCK_FLAG_LOADED) == 0) {
+
+    if (block == NULL || (block->flags4 & MAP_BLOCK_FLAG_LOADED) == 0) {
         return;
     }
-    mapCellX = fastFloorf((obj->anim.localPosX - playerMapOffsetX) / (640.0f));
-    mapCellZ = fastFloorf((obj->anim.localPosZ - playerMapOffsetZ) / (640.0f));
-    blockLocalX = obj->anim.localPosX - ((640.0f) * mapCellX + playerMapOffsetX);
-    blockLocalZ = obj->anim.localPosZ - ((640.0f) * mapCellZ + playerMapOffsetZ);
-    offsets[0] = 0;
-    state->entryCount = offsets[0];
-    radiusSquared = state->radius * state->radius;
-    for (polygonGroupIndex = 0, offsets[1] = offsets[0]; polygonGroupIndex < ((MapBlockData*)block)->polyGroupCount;
-         polygonGroupIndex++) {
-        polygonGroup = mapBlockGetPolygonGroup(block, polygonGroupIndex);
-        if (placement->blockId == mapBlockGetPolygonGroupType(polygonGroup)) {
-            polygonIndex = polygonGroup->firstTri;
-            polygonFalloffOffset = offsets[0];
-            polygonHeightOffset = offsets[1];
-            maxFalloff = (1.0f);
-            for (; polygonIndex < polygonGroup[1].firstTri; polygonIndex++) {
-                polygon = mapBlockGetPolygon((int*)block, polygonIndex);
-                for (vertexIndex = 0, polygonIndexCursor = polygon, vertexFalloffOffset = polygonFalloffOffset,
-                    vertexHeightOffset = polygonHeightOffset;
-                     vertexIndex < 3; vertexIndex++) {
-                    void* packedVertex = (char*)((MapBlockData*)block)->vertices + *(u16*)polygonIndexCursor * 6;
+    mapCellX = fastFloorf((obj->anim.localPosX - playerMapOffsetX) / 640.0f);
+    mapCellZ = fastFloorf((obj->anim.localPosZ - playerMapOffsetZ) / 640.0f);
+    blockLocalX = obj->anim.localPosX - (640.0f * mapCellX + playerMapOffsetX);
+    blockLocalZ = obj->anim.localPosZ - (640.0f * mapCellZ + playerMapOffsetZ);
+    animatedVertexIndex = 0;
+    state->animatedGroupCount = 0;
+    radiusSquared = state->falloffRadius * state->falloffRadius;
+    for (polygonGroupIndex = 0; polygonGroupIndex < block->polyGroupCount; polygonGroupIndex++) {
+        MapTriGroup* polygonGroup = mapBlockGetPolygonGroup(block, polygonGroupIndex);
+
+        if (placement->animatorId == mapBlockGetPolygonGroupType(polygonGroup)) {
+            for (polygonIndex = polygonGroup->firstTri; polygonIndex < polygonGroup[1].firstTri; polygonIndex++) {
+                polygon = GroundAnimator_getPolygon(block, polygonIndex);
+                for (vertexIndex = 0; vertexIndex < ARRAY_COUNT(polygon->vert); vertexIndex++) {
+                    f32 vertexPosition[3];
                     f32 dx;
                     f32 dz;
                     f32 normalizedDistance;
+                    s16* packedVertex = GroundAnimator_getPackedVertex(block, polygon->vert[vertexIndex]);
+
                     trackUnpackVector(packedVertex, vertexPosition);
                     dx = vertexPosition[0] - blockLocalX;
                     dz = vertexPosition[2] - blockLocalZ;
                     normalizedDistance = (dx * dx + dz * dz) / radiusSquared;
-                    if (normalizedDistance > maxFalloff) {
-                        normalizedDistance = maxFalloff;
+                    if (normalizedDistance > 1.0f) {
+                        normalizedDistance = 1.0f;
                     }
-                    normalizedDistance = normalizedDistance * normalizedDistance;
-                    *(f32*)((char*)state->falloffBuffer + vertexFalloffOffset) = maxFalloff - normalizedDistance;
-                    *(s16*)((char*)state->baseHeightBuffer + vertexHeightOffset) = vertexPosition[1];
-                    vertexFalloffOffset += 4;
-                    vertexHeightOffset += 2;
-                    polygonFalloffOffset += 4;
-                    polygonHeightOffset += 2;
-                    offsets[0] += 4;
-                    offsets[1] += 2;
-                    polygonIndexCursor = (char*)polygonIndexCursor + 2;
+                    normalizedDistance *= normalizedDistance;
+                    state->vertexWeights[animatedVertexIndex] = 1.0f - normalizedDistance;
+                    state->baseVertexHeights[animatedVertexIndex] = vertexPosition[1];
+                    animatedVertexIndex++;
                 }
             }
-            state->blockEntries[(state->entryCount)++] = polygonGroupIndex;
+            state->animatedGroupIndices[state->animatedGroupCount++] = polygonGroupIndex;
         }
     }
 }
@@ -172,264 +146,243 @@ int GroundAnimator_getExtraSize(void) {
     return sizeof(GroundAnimatorState);
 }
 
-void GroundAnimator_free(GameObject* obj, int flags) {
-    MapTriGroup* polygonGroup;
-    void* polygonIndexCursor;
-    int vertexHeightOffset;
-    int polygonHeightOffset;
-    int heightOffset;
+void GroundAnimator_free(GameObject* obj, int onlySelf) {
+    int animatedVertexIndex;
     int polygonGroupIndex;
     int polygonIndex;
     int vertexIndex;
     MapBlockData* block;
-    GroundAnimatorState* state;
-    GroundAnimatorPlacement* placement;
-    void* polygon;
-    s16* packedVertex;
-    f32 vertexPosition[4];
-    state = obj->extra;
-    placement = (GroundAnimatorPlacement*)obj->anim.placementData;
-    if (flags == 0) {
-        block = mapGetBlock(
-            objPosToMapBlockIdx((double)obj->anim.localPosX, (double)obj->anim.localPosY, (double)obj->anim.localPosZ));
+    GroundAnimatorState* state = obj->extra;
+    GroundAnimatorPlacement* placement = (GroundAnimatorPlacement*)obj->anim.placementData;
+
+    if (onlySelf == 0) {
+        block = mapGetBlock(objPosToMapBlockIdx(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ));
         if (block != NULL) {
-            for (polygonGroupIndex = 0, heightOffset = 0; polygonGroupIndex < ((MapBlockData*)block)->polyGroupCount;
-                 polygonGroupIndex++) {
-                polygonGroup = mapBlockGetPolygonGroup(block, polygonGroupIndex);
-                if (placement->blockId == mapBlockGetPolygonGroupType(polygonGroup)) {
-                    for (polygonIndex = polygonGroup->firstTri, polygonHeightOffset = heightOffset;
-                         polygonIndex < polygonGroup[1].firstTri; polygonIndex++) {
-                        polygon = mapBlockGetPolygon((int*)block, polygonIndex);
-                        for (vertexIndex = 0, polygonIndexCursor = polygon, vertexHeightOffset = polygonHeightOffset;
-                             vertexIndex < 3; vertexIndex++) {
-                            packedVertex =
-                                (s16*)((char*)((MapBlockData*)block)->vertices + *(u16*)polygonIndexCursor * 6);
+            animatedVertexIndex = 0;
+            for (polygonGroupIndex = 0; polygonGroupIndex < block->polyGroupCount; polygonGroupIndex++) {
+                MapTriGroup* polygonGroup = mapBlockGetPolygonGroup(block, polygonGroupIndex);
+
+                if (placement->animatorId == mapBlockGetPolygonGroupType(polygonGroup)) {
+                    for (polygonIndex = polygonGroup->firstTri; polygonIndex < polygonGroup[1].firstTri;
+                         polygonIndex++) {
+                        MapTriIndex* polygon = GroundAnimator_getPolygon(block, polygonIndex);
+
+                        for (vertexIndex = 0; vertexIndex < ARRAY_COUNT(polygon->vert); vertexIndex++) {
+                            f32 vertexPosition[3];
+                            s16* packedVertex = GroundAnimator_getPackedVertex(block, polygon->vert[vertexIndex]);
+
                             trackUnpackVector(packedVertex, vertexPosition);
-                            if (state->baseHeightBuffer != NULL) {
-                                vertexPosition[1] = (f32) * (s16*)((char*)state->baseHeightBuffer + vertexHeightOffset);
+                            if (state->baseVertexHeights != NULL) {
+                                vertexPosition[1] = state->baseVertexHeights[animatedVertexIndex];
                                 trackPackVector(packedVertex, vertexPosition);
                             }
-                            vertexHeightOffset += 2;
-                            polygonHeightOffset += 2;
-                            heightOffset += 2;
-                            polygonIndexCursor = (char*)polygonIndexCursor + 2;
+                            animatedVertexIndex++;
                         }
                     }
                 }
             }
         }
     }
-    if (state->falloffBuffer != NULL) {
-        mm_free(state->falloffBuffer);
+    if (state->vertexWeights != NULL) {
+        mm_free(state->vertexWeights);
     }
     objFreeObjectType((int)obj, GROUND_ANIMATOR_OBJECT_GROUP);
 }
 
-void GroundAnimator_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
-                           s8 visible) {
-    s32 visibility = visible;
-    if (visibility != 0)
-        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, GROUND_ANIMATOR_RENDER_SCALE);
+void GroundAnimator_render(GameObject* obj, int gdl, int mtxs, int vtxs, int pols, s8 visibility) {
+    if (visibility == 0) {
+        return;
+    }
+    objRenderModelAndHitVolumes(obj, gdl, mtxs, vtxs, pols, 1.0f);
 }
 
 void GroundAnimator_update(GameObject* obj) {
-    int offsets[2];
-    int polygonFalloffOffset;
+    GameObject* player = Obj_GetPlayerObject();
+    int animatedVertexIndex;
     MapBlockData* block;
-    u8 previousOnMapFlag;
-    int entryIndex;
-    void* tricky;
-    u8 interactionEnabled;
+    u8 wasOnMap;
+    int animatedGroupIndex;
+    u8 findCommandEnabled;
     int polygonIndex;
     int vertexIndex;
-    GroundAnimatorState* state;
-    GroundAnimatorPlacement* placement;
-    MapTriGroup* polygonGroup;
-    GameObject* linkedObject;
-    int polygonHeightOffset;
-    void* packedVertex;
-    int vertexFalloffOffset;
-    f32 searchDistance;
-    void* polygon;
-    void* polygonIndexCursor;
-    int vertexHeightOffset;
+    GroundAnimatorState* state = obj->extra;
+    GroundAnimatorPlacement* placement = (GroundAnimatorPlacement*)obj->anim.placementData;
     s8 blockIndex;
-    f32 vertexPosition[3];
-    Obj_GetPlayerObject();
-    state = obj->extra;
-    placement = (GroundAnimatorPlacement*)obj->anim.placementData;
-    if (placement->blockId == 0) {
+
+    if (placement->animatorId == 0) {
         return;
     }
-    blockIndex =
-        objPosToMapBlockIdx((double)obj->anim.localPosX, (double)obj->anim.localPosY, (double)obj->anim.localPosZ);
-    previousOnMapFlag = state->flags & GROUND_ANIMATOR_STATE_ON_MAP;
+
+    /* Track when the containing map block becomes available. */
+    blockIndex = objPosToMapBlockIdx(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ);
+    wasOnMap = state->flags & GROUND_ANIMATOR_STATE_ON_MAP;
     if (blockIndex > -1) {
-        state->flags = state->flags | GROUND_ANIMATOR_STATE_ON_MAP;
+        state->flags |= GROUND_ANIMATOR_STATE_ON_MAP;
     } else {
-        state->flags = state->flags & ~GROUND_ANIMATOR_STATE_ON_MAP;
+        state->flags &= ~GROUND_ANIMATOR_STATE_ON_MAP;
     }
-    if ((state->flags & GROUND_ANIMATOR_STATE_ON_MAP) != previousOnMapFlag) {
-        state->dirtyFrames = 2;
+    if ((state->flags & GROUND_ANIMATOR_STATE_ON_MAP) != wasOnMap) {
+        state->vertexUpdateFrames = 2;
     }
     if ((state->flags & GROUND_ANIMATOR_STATE_ON_MAP) == 0) {
         return;
     }
-    if ((state->flags & GROUND_ANIMATOR_STATE_ON_MAP) != 0 && state->falloffBuffer == NULL) {
-        int bufferAddress;
-        state->vertexCount = (s16)(mapBlockCountTrianglesByType(mapGetBlock(blockIndex), placement->blockId) * 3);
-        if (state->vertexCount > 0) {
-            bufferAddress = (int)mmAlloc(state->vertexCount * 6, 5, 0);
-            state->falloffBuffer = (f32*)bufferAddress;
-            state->baseHeightBuffer = (s16*)(bufferAddress + state->vertexCount * 4);
+
+    /* Capture the affected vertices the first time the block is available. */
+    if ((state->flags & GROUND_ANIMATOR_STATE_ON_MAP) != 0 && state->vertexWeights == NULL) {
+        state->animatedVertexCount = mapBlockCountTrianglesByType(mapGetBlock(blockIndex), placement->animatorId) * 3;
+        if (state->animatedVertexCount > 0) {
+            f32* buffer = mmAlloc(
+                state->animatedVertexCount * (sizeof(*state->vertexWeights) + sizeof(*state->baseVertexHeights)), 5, 0);
+
+            state->vertexWeights = buffer;
+            state->baseVertexHeights = (s16*)(buffer + state->animatedVertexCount);
             GroundAnimator_gatherVertices(obj, state, placement);
         }
     }
-    if (state->vertexCount == 0) {
+    if (state->animatedVertexCount == 0) {
         return;
     }
+
+    /* Find and position the collectible buried beneath the dig spot. */
     if (placement->disableAutoLink == 0) {
-        if (state->linkedObject == NULL) {
-            searchDistance = (100.0f);
-            state->linkedObject =
-                objGetNearestTypeTo(GROUND_ANIMATOR_TARGET_OBJECT_GROUP, obj, &searchDistance);
-            linkedObject = state->linkedObject;
-            if (linkedObject != NULL) {
-                switch (state->linkedObject->anim.romDefNo) {
-                case GROUND_ANIMATOR_MOON_ROCK_SEQUENCE_ID:
+        if (state->collectible == NULL) {
+            GameObject* collectible;
+            f32 searchDistance = 100.0f;
+
+            state->collectible = objGetNearestTypeTo(COLLECTIBLE_OBJECT_GROUP, obj, &searchDistance);
+            collectible = state->collectible;
+            if (collectible != NULL) {
+                switch (state->collectible->anim.romDefNo) {
+                case MMP_MOON_ROCK_SEQUENCE_ID:
                     if ((state->flags & GROUND_ANIMATOR_STATE_COMPLETE) == 0) {
-                        mmpMoonRock_setFrozen(linkedObject, 1);
+                        mmpMoonRock_setFrozen(collectible, 1);
                     }
-                    mmpMoonRock_setPosition(linkedObject, obj->anim.localPosX,
-                                             obj->anim.localPosY - state->yOffset, obj->anim.localPosZ);
+                    mmpMoonRock_setPosition(collectible, obj->anim.localPosX,
+                                            obj->anim.localPosY - state->collectibleDepth, obj->anim.localPosZ);
                     break;
                 default:
                     if ((state->flags & GROUND_ANIMATOR_STATE_COMPLETE) == 0) {
-                        ((GroundAnimatorTargetInterface*)*(linkedObject)->anim.dll)
-                            ->setFrozen(linkedObject, 1);
+                        COLLECTIBLE_INTERFACE(collectible)->setDisabled(collectible, 1);
                     }
-                    ((GroundAnimatorTargetInterface*)*(linkedObject)->anim.dll)
-                        ->setPosition(linkedObject, obj->anim.localPosX,
-                                      obj->anim.localPosY - state->yOffset, obj->anim.localPosZ);
+                    COLLECTIBLE_INTERFACE(collectible)
+                        ->setPosition(collectible, obj->anim.localPosX, obj->anim.localPosY - state->collectibleDepth,
+                                      obj->anim.localPosZ);
                     break;
                 }
             }
-        } else if ((state->linkedObject->objectFlags & OBJECT_OBJFLAG_FREED) != 0) {
-            state->linkedObject = 0;
+        } else if ((state->collectible->objectFlags & OBJECT_OBJFLAG_FREED) != 0) {
+            state->collectible = NULL;
         }
     }
     block = mapGetBlock(blockIndex);
-    if (block == NULL || (((MapBlockData*)block)->flags4 & MAP_BLOCK_FLAG_LOADED) == 0) {
+    if (block == NULL || (block->flags4 & MAP_BLOCK_FLAG_LOADED) == 0) {
         return;
     }
-    if (state->sinkDepth > (0.0f)) {
+
+    /* Update the ground deformation whenever the dig depth changes. */
+    if (state->sinkDepth > 0.0f) {
         if ((state->flags & GROUND_ANIMATOR_STATE_PRESSED) != 0) {
-            state->flags = state->flags & ~GROUND_ANIMATOR_STATE_PRESSED;
-        } else if (state->sinkDepth < GROUND_ANIMATOR_SINK_DEPTH_SCALE * (f32)(u32)placement->maxSinkDepth) {
-            state->sinkDepth = state->sinkDepth - timeDelta;
-            if (state->sinkDepth < (0.0f)) {
-                state->sinkDepth = (0.0f);
+            state->flags &= ~GROUND_ANIMATOR_STATE_PRESSED;
+        } else if (state->sinkDepth < GROUND_ANIMATOR_SINK_DEPTH_SCALE * placement->maxSinkDepth) {
+            state->sinkDepth -= timeDelta;
+            if (state->sinkDepth < 0.0f) {
+                state->sinkDepth = 0.0f;
             }
         }
         if (state->sinkDepth != state->previousSinkDepth) {
-            state->dirtyFrames = 2;
+            state->vertexUpdateFrames = 2;
             state->previousSinkDepth = state->sinkDepth;
         }
-        if (state->dirtyFrames != 0) {
+        if (state->vertexUpdateFrames != 0) {
             f32 maxSinkDepth;
-            state->dirtyFrames -= 1;
+            state->vertexUpdateFrames--;
             if (state->previousSinkDepth >
-                (maxSinkDepth = GROUND_ANIMATOR_SINK_DEPTH_SCALE * (f32)(u32)placement->maxSinkDepth)) {
+                (maxSinkDepth = GROUND_ANIMATOR_SINK_DEPTH_SCALE * placement->maxSinkDepth)) {
                 state->previousSinkDepth = maxSinkDepth;
                 state->sinkDepth = maxSinkDepth;
-                if (state->linkedObject != NULL && state->linkedObject->extra != NULL) {
-                    switch (state->linkedObject->anim.romDefNo) {
-                    case GROUND_ANIMATOR_MOON_ROCK_SEQUENCE_ID:
-                        mmpMoonRock_setFrozen(state->linkedObject, 0);
+                if (state->collectible != NULL && state->collectible->extra != NULL) {
+                    switch (state->collectible->anim.romDefNo) {
+                    case MMP_MOON_ROCK_SEQUENCE_ID:
+                        mmpMoonRock_setFrozen(state->collectible, 0);
                         break;
                     default:
-                        ((GroundAnimatorTargetInterface*)*state->linkedObject->anim.dll)
-                            ->setFrozen(state->linkedObject, 0);
+                        COLLECTIBLE_INTERFACE(state->collectible)->setDisabled(state->collectible, 0);
                         break;
                     }
                 }
                 mainSetBits(placement->sunkGameBit, 1);
-                state->flags = state->flags | GROUND_ANIMATOR_STATE_COMPLETE;
-                Sfx_PlayFromObject((u32)obj, gGroundAnimatorSfxIds[placement->sfxIndex]);
+                state->flags |= GROUND_ANIMATOR_STATE_COMPLETE;
+                Sfx_PlayFromObject(obj, gGroundAnimatorSfxIds[placement->sfxIndex]);
             }
-            offsets[0] = 0;
-            offsets[1] = offsets[0];
-            entryIndex = 0;
-            for (; entryIndex < state->entryCount; entryIndex++) {
-                polygonGroup = mapBlockGetPolygonGroup(block, state->blockEntries[entryIndex]);
-                polygonIndex = polygonGroup->firstTri;
-                polygonFalloffOffset = offsets[0];
-                polygonHeightOffset = offsets[1];
-                for (; polygonIndex < polygonGroup[1].firstTri; polygonIndex++) {
-                    polygon = mapBlockGetPolygon((int*)block, polygonIndex);
-                    for (vertexIndex = 0, vertexFalloffOffset = polygonFalloffOffset, polygonIndexCursor = polygon,
-                        vertexHeightOffset = polygonHeightOffset;
-                         vertexIndex < 3; vertexIndex++) {
-                        if (*(f32*)((char*)state->falloffBuffer + vertexFalloffOffset) > (0.0f)) {
+            for (animatedGroupIndex = 0, animatedVertexIndex = 0; animatedGroupIndex < state->animatedGroupCount;
+                 animatedGroupIndex++) {
+                MapTriGroup* polygonGroup =
+                    mapBlockGetPolygonGroup(block, state->animatedGroupIndices[animatedGroupIndex]);
+
+                for (polygonIndex = polygonGroup->firstTri; polygonIndex < polygonGroup[1].firstTri; polygonIndex++) {
+                    MapTriIndex* polygon = GroundAnimator_getPolygon(block, polygonIndex);
+
+                    for (vertexIndex = 0; vertexIndex < ARRAY_COUNT(polygon->vert); vertexIndex++) {
+                        if (state->vertexWeights[animatedVertexIndex] > 0.0f) {
+                            f32 vertexPosition[3];
                             f32 sinkOffset;
-                            packedVertex = (char*)((MapBlockData*)block)->vertices + *(u16*)polygonIndexCursor * 6;
+                            s16* packedVertex = GroundAnimator_getPackedVertex(block, polygon->vert[vertexIndex]);
+
                             trackUnpackVector(packedVertex, vertexPosition);
-                            sinkOffset = (state->previousSinkDepth / GROUND_ANIMATOR_SINK_DEPTH_SCALE) *
-                                         *(f32*)((char*)state->falloffBuffer + vertexFalloffOffset);
-                            vertexPosition[1] =
-                                (f32) * (s16*)((char*)state->baseHeightBuffer + vertexHeightOffset) - sinkOffset;
+                            sinkOffset = state->previousSinkDepth / GROUND_ANIMATOR_SINK_DEPTH_SCALE *
+                                         state->vertexWeights[animatedVertexIndex];
+                            vertexPosition[1] = state->baseVertexHeights[animatedVertexIndex] - sinkOffset;
                             trackPackVector(packedVertex, vertexPosition);
                         }
-                        vertexFalloffOffset += 4;
-                        vertexHeightOffset += 2;
-                        polygonFalloffOffset += 4;
-                        polygonHeightOffset += 2;
-                        offsets[0] += 4;
-                        offsets[1] += 2;
-                        polygonIndexCursor = (char*)polygonIndexCursor + 2;
+                        animatedVertexIndex++;
                     }
                 }
             }
-            DCStoreRangeNoSync((void*)((MapBlockData*)block)->vertices, ((MapBlockData*)block)->vertexCount * 6);
+            DCStoreRangeNoSync(block->vertices, block->vertexCount * sizeof(s16[3]));
         }
     }
+
+    /* Offer Tricky's Find command while the dig spot is active. */
     if (placement->enableGameBit == -1 || mainGetBit(placement->enableGameBit) != 0) {
-        interactionEnabled = 1;
+        findCommandEnabled = 1;
     } else {
-        interactionEnabled = 0;
+        findCommandEnabled = 0;
     }
-    if ((state->flags & GROUND_ANIMATOR_STATE_COMPLETE) == 0 && interactionEnabled != 0) {
-        tricky = getTrickyObject();
+    if ((state->flags & GROUND_ANIMATOR_STATE_COMPLETE) == 0 && findCommandEnabled != 0) {
+        GameObject* tricky = getTrickyObject();
+
         if (tricky != NULL && mainGetBit(GAMEBIT_Tricky_Usable) != 0) {
-            obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_PROMPT_SUPPRESSED;
+            obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
         } else {
-            obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_PROMPT_SUPPRESSED;
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
         }
-        obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
         if (tricky != NULL && (obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
-            TRICKY_INTERFACE(tricky)->sideCommandEnable((GameObject*)tricky, obj, 1, 1);
+            TRICKY_INTERFACE(tricky)->sideCommandEnable(tricky, obj, 1, 1);
         }
     } else {
-        obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     }
     objUpdateHitVolumeTransforms(obj);
 }
 
 void GroundAnimator_init(GameObject* obj, GroundAnimatorPlacement* placement) {
     GroundAnimatorState* state = obj->extra;
-    state->magicCaveId = (u8)placement->magicCaveId;
-    state->yOffset = placement->yOffset;
-    state->previousSinkDepth = (-1.0f);
-    state->radius = placement->radius;
-    if (placement->blockId != 0) {
-        if (mainGetBit(placement->sunkGameBit) != 0) {
-            state->sinkDepth = GROUND_ANIMATOR_SINK_DEPTH_SCALE * placement->maxSinkDepth;
-            state->flags |= GROUND_ANIMATOR_STATE_COMPLETE;
-        }
-        objAddObjectType((int)obj, GROUND_ANIMATOR_OBJECT_GROUP);
-        if (placement->sfxIndex > 1) {
-            placement->sfxIndex = 0;
-        }
+    state->magicCaveId = placement->magicCaveId;
+    state->collectibleDepth = placement->collectibleDepth;
+    state->previousSinkDepth = -1.0f;
+    state->falloffRadius = placement->falloffRadius;
+    if (placement->animatorId == 0) {
+        return;
+    }
+    if (mainGetBit(placement->sunkGameBit) != 0) {
+        state->sinkDepth = GROUND_ANIMATOR_SINK_DEPTH_SCALE * placement->maxSinkDepth;
+        state->flags |= GROUND_ANIMATOR_STATE_COMPLETE;
+    }
+    objAddObjectType((int)obj, GROUND_ANIMATOR_OBJECT_GROUP);
+    if (placement->sfxIndex > 1) {
+        placement->sfxIndex = 0;
     }
 }
 
