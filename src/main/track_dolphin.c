@@ -1638,6 +1638,15 @@ int trackGetHeightAboveGround(GameObject* obj, f32 x, f32 y, f32 z, f32* outDept
     return 0;
 }
 
+static inline f32 trackAbsF32(f32 value)
+{
+    if (value >= 0.0f)
+    {
+        return value;
+    }
+    return -value;
+}
+
 int trackGetNearestGroundOffsetAndNormal(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundOffset,
                                          f32* outNormal, int queryMask)
 {
@@ -1652,21 +1661,14 @@ int trackGetNearestGroundOffsetAndNormal(GameObject* obj, f32 x, f32 y, f32 z, f
     if (hitCount != 0)
     {
         firstDistance = hits[0]->height;
-        firstDistance = y - firstDistance;
-        if (firstDistance >= 0.0f)
-        {
-        }
-        else
-        {
-            firstDistance = -firstDistance;
-        }
+        firstDistance = trackAbsF32(y - firstDistance);
         bestDistance = firstDistance;
         nearestIndex = 0;
         for (hitIndex = 1; hitIndex < hitCount; hitIndex++)
         {
             f32 distance = hits[hitIndex]->height;
             distance = y - distance;
-            distance = distance >= 0.0f ? distance : -distance;
+            distance = trackAbsF32(distance);
             if (distance < bestDistance)
             {
                 bestDistance = distance;
@@ -1696,21 +1698,14 @@ int trackGetNearestGroundOffset(GameObject* obj, f32 x, f32 y, f32 z, f32* outGr
     if (hitCount != 0)
     {
         firstDistance = hits[0]->height;
-        firstDistance = y - firstDistance;
-        if (firstDistance >= 0.0f)
-        {
-        }
-        else
-        {
-            firstDistance = -firstDistance;
-        }
+        firstDistance = trackAbsF32(y - firstDistance);
         bestDistance = firstDistance;
         nearestIndex = 0;
         for (hitIndex = 1; hitIndex < hitCount; hitIndex++)
         {
             f32 distance = hits[hitIndex]->height;
             distance = y - distance;
-            distance = distance >= 0.0f ? distance : -distance;
+            distance = trackAbsF32(distance);
             if (distance < bestDistance)
             {
                 bestDistance = distance;
