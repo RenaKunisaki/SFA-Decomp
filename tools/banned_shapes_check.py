@@ -227,7 +227,6 @@ def scan_one_elem(files, base=REPO):
                 defs.append((rel, n, m.group(1), raw.strip()))
     if not defs:
         return []
-    symbols = load_symbols(base)
     hits = []
     for rel, n, name, snippet in defs:
         zero_reads = other_reads = foreign = 0
@@ -250,7 +249,12 @@ def scan_one_elem(files, base=REPO):
         # census only CLASSIFIES it. Keying on reads instead silently missed the
         # purest case -- a definition that is never read at all (its only purpose
         # is to occupy a pool slot).
-        if (name in symbols) or foreign:
+        # symbols.txt presence is NOT cross-TU evidence: the splitter emits EVERY retail
+        # data symbol there, statics included, so the file carries zero linkage
+        # information (precedent: sIntersectUnused0 is in symbols.txt, defined in
+        # src/track/intersect.c, and has zero external references). Only an actual
+        # reference from a DIFFERENT source file proves a cross-TU object.
+        if foreign:
             continue                                   # allowed cross-TU exception
         if other_reads:
             continue                                   # used as a real array
@@ -514,6 +518,33 @@ def self_test():
         chk("historical corpus reachable", False, str(exc))
 
     # SANITY: scanning nothing must yield nothing (guards the walker).
+    # --- symbols.txt is not linkage evidence (regression guard) -----------------
+    # The exemption used to read `if (name in symbols) or foreign`, which hid 14
+    # real violations whose names merely appear in symbols.txt -- including
+    # lbl_803E23C0, which the ban names BY NAME. The splitter lists every retail
+    # data symbol, statics included, so presence there proves nothing.
+    synth_neverread = {"a.c": "const f32 gSynthNeverRead[1] = {0.0f};\n"}
+    synth_zeroread = {"a.c": "const f32 gSynthZeroRead[1] = {1.0f};\n"
+                             "void f(void) { use(gSynthZeroRead[0]); }\n"}
+    synth_realarray = {"a.c": "const f32 gSynthReal[1] = {1.0f};\n"
+                              "void f(void) { g(gSynthReal); }\n"}
+    synth_crosstu = {"a.c": "const f32 gSynthShared[1] = {1.0f};\n",
+                     "b.c": "void f(void) { use(gSynthShared[0]); }\n"}
+    r_never = scan_one_elem(synth_neverread)
+    chk("synthetic never-read one-element array is caught", len(r_never) == 1)
+    chk("never-read variant is labelled as dead",
+        bool(r_never) and "never read" in r_never[0][3])
+    chk("synthetic [0]-only read is caught", len(scan_one_elem(synth_zeroread)) == 1)
+    chk("a genuine array use is NOT flagged", len(scan_one_elem(synth_realarray)) == 0)
+    chk("a cross-TU referenced object is NOT flagged", len(scan_one_elem(synth_crosstu)) == 0)
+    _syms = load_symbols()
+    _oe = [h for h in hits if h[2] == "SINGLE_ELEM_CONST_ARRAY"]
+    _listed = [h for h in _oe
+               if (lambda m: m and m.group(1) in _syms)(
+                   re.search(r"\b([A-Za-z_]\w*)\s*\[\s*1\s*\]", h[3]))]
+    chk("symbols.txt-listed but unreferenced instances ARE caught",
+        bool(_listed) or not _syms, "(%d visible)" % len(_listed))
+
     chk("empty scope yields empty result", collect(roots=["src/does_not_exist"]) == [])
     return ok
 
