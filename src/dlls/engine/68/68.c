@@ -34,7 +34,6 @@ CameraModeViewfinderState* gCameraModeViewfinderState;
 char sCameraModeViewfinderYDebugFormat[] = "y=%f\n";
 
 extern const f32 gCameraModeViewfinderTargetHeight;
-extern const f32 gCameraModeViewfinderFullCircle;
 extern const f32 gCameraModeViewfinderStickScale;
 
 void firstPersonPlaceCamera(GameObject* focus, int resetClamp) {
@@ -122,10 +121,10 @@ void firstPersonExit(CameraObject* camera) {
     if (((gCameraModeViewfinderState->yawCurve.start - gCameraModeViewfinderState->yawCurve.end) > 32768.0f) ||
         ((gCameraModeViewfinderState->yawCurve.start - gCameraModeViewfinderState->yawCurve.end) < -32768.0f)) {
         if (gCameraModeViewfinderState->yawCurve.start < 0.0f) {
-            gCameraModeViewfinderState->yawCurve.start += gCameraModeViewfinderFullCircle;
+            gCameraModeViewfinderState->yawCurve.start += 65535.0f;
         } else {
             if (gCameraModeViewfinderState->yawCurve.end < 0.0f) {
-                gCameraModeViewfinderState->yawCurve.end += gCameraModeViewfinderFullCircle;
+                gCameraModeViewfinderState->yawCurve.end += 65535.0f;
             }
         }
     }
@@ -137,10 +136,10 @@ void firstPersonExit(CameraObject* camera) {
     if (((gCameraModeViewfinderState->pitchCurve.start - gCameraModeViewfinderState->pitchCurve.end) > 32768.0f) ||
         ((gCameraModeViewfinderState->pitchCurve.start - gCameraModeViewfinderState->pitchCurve.end) < -32768.0f)) {
         if (gCameraModeViewfinderState->pitchCurve.start < 0.0f) {
-            gCameraModeViewfinderState->pitchCurve.start += gCameraModeViewfinderFullCircle;
+            gCameraModeViewfinderState->pitchCurve.start += 65535.0f;
         } else {
             if (gCameraModeViewfinderState->pitchCurve.end < 0.0f) {
-                gCameraModeViewfinderState->pitchCurve.end += gCameraModeViewfinderFullCircle;
+                gCameraModeViewfinderState->pitchCurve.end += 65535.0f;
             }
         }
     }
@@ -163,7 +162,7 @@ void firstPersonDoControls(CameraObject* camera) {
     stickY = padGetStickY(0);
     t = (60.0f - camera->fov) / 50.0f;
     zoom = (t < 0.0f) ? 0.0f : ((t > 1.0f) ? 1.0f : t);
-    spin = stickX * -(4.0f * zoom - 6.0f);
+    spin = stickX * (6.0f - 4.0f * zoom);
     spin = interpolate(spin - gCameraModeViewfinderState->yawSpeed, 0.12f, timeDelta);
     gCameraModeViewfinderState->yawSpeed = gCameraModeViewfinderState->yawSpeed + spin;
     if ((gCameraModeViewfinderState->yawSpeed > -5.0f) && (gCameraModeViewfinderState->yawSpeed < 5.0f)) {
