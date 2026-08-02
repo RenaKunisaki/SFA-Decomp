@@ -150,6 +150,62 @@ Closed classes with no reachable spelling — bank on sight, details in the memo
   unscored functions), zlbDecompress, pi_videoinit, render.o gap_03; fn_80007F78 (register
   pressure).
 
+## 6. Banned-shape removal in a demoted DLL TU (purge-priced, measured 2026-08-02)
+
+The `tools/banned_shapes_check.py` sweep of `21b90aff9f` + `5b120c0545` removed 22 pool
+anchors / volatile puns and 2 gotos across 15 DLL units, demoting each. Both commit messages
+record `dfuzzy +0.000000 / ddata +0.000000 / 0 per-function regressions`; a full rebuild plus
+`report.json` at each of the two shas measures otherwise, so the rows below are the real
+standing price. (Cause of the false zero not established — the A26-A31 harness trap, where a
+failed probe leaves the `.o` deleted and a later read hits a frozen report, produces exactly
+this reading; any purge harness needs a positive control.)
+
+Window `cd782d6179` -> `5b120c0545`: tree 99.81533 -> 99.81422, matched_data 1198129 ->
+1197137 (-992), complete_units 877 -> 862. Every row below was 100.0 before the purge.
+
+| Function | Unit | Score | Gap | Shape removed |
+|---|---|---|---|---|
+| worldobj_spawnGreatFoxEffects | objects/467 | 98.333 | 1.667 | `static const f32 s...[1] = {0.64f}` |
+| renderClouds | engine/9 | 99.429 | 0.571 | `volatile f32 gCloudActionGlareQuadSize[2]` |
+| mmpMoonRock_update | objects/386_MMP_moonroc | 99.516 | 0.484 | inner-loop early-exit `goto` |
+| trickyBallMove | objects/245_SidekickBal | 99.637 | 0.363 | cross-arm `goto noFloorDepth` |
+| SmallBasket_spawnContents | objects/260_SmallBasket | 99.908 | 0.092 | `const f32 g...[1]` x4 |
+
+**Mechanisms, one per row.**
+
+- **467.** The anchor's `[0]` read is a load from a user object, so it stays a source-placed
+  statement and is emitted before the loop-invariant array-base hoist. A plain `0.64f` is
+  const-folded, its load becomes an optimizer-placed invariant remat, and it lands AFTER
+  `lis/addi gGreatFoxEffects` instead of before it. That 2-instruction move is the entire
+  divergence; the pool itself still mints in retail's order. Probed inert or worse: hoisted
+  assignment statement, initialiser-at-declaration, literal inlined with the local deleted,
+  `while` form, swapped comma-init order, function-scope `effect`, all 24 local-decl
+  permutations (all 98.333), explicit base-pointer local (96.667), block-scope `effect`
+  initialiser (96.575).
+- **engine/9.** Retail issues two back-to-back `lfs` of `gCloudActionGlareQuadSize` for the
+  third quad vertex; without `volatile` our build value-numbers them into one. No non-volatile
+  spelling forces a reload of a plain global that the compiler has already proven unchanged.
+- **MMP_moonroc.** Seeding `spacingClear = 1` before the loop makes it live ACROSS the loop,
+  costing one extra callee-saved GPR (`_savegpr_26` vs retail `_savegpr_27`); the `goto` wrote
+  the flag on both exit paths and needed none. Probed: assign-on-both-paths 98.606,
+  `spacingClear = i == count` after the loop 99.240, zero-seed + post-loop test 98.813 — the
+  landed seed-and-break form is already the best structured spelling.
+- **SidekickBal.** The `goto` tail-shared the else arm's `li r0,0`; the structured form
+  duplicates it. Probed: hoisted zero-init 98.924, merged-condition else 97.128, ternary
+  98.045 — again the landed form is the best.
+- **SmallBasket.** #82 scratch-FPR perm (`fdivs f2,f31,f30` vs ours `f1`) that the anchor had
+  pinned. Four spellings of the health-percent chain probed: two inert, two worse.
+
+**Data price.** The anchors were real `.sdata2` atoms, so deleting them shortens and rotates
+each unit's pool: 209_TumbleWeedB -148, 260_SmallBasket -120, 678_ARWSquadron -120,
+213_Kaldachom -112, 701 -92, 300_Transporter -80, 373_DFropenode -76, 523_FireFly -76,
+203 -72, 679_ARWProximit -64, 683_LGTProjecte -32. Not recoverable without the anchors; the
+class-2 note applies (the legal `const f32 name[1]` reconnect needs a satisfied naming law,
+and none of these symbols has one).
+
+**Standing verdict.** All five rows are at their best structured spelling; do not re-probe
+without a genuinely new lever. The DOL still holds because every affected unit was demoted.
+
 ## Related recurring REGRESSION class (fixable — not priced, listed so windows get scanned)
 
 Pool-const purge/retune commits historically gated on matched_code only and twice shipped
@@ -157,3 +213,6 @@ per-fn regressions (fcmpo operand-order flips: sky2_run via `zero < best.x` -> `
 fixed in `2c32711828`; DIMCannon_updateAim sibling) and once shipped matched_data -4936
 (engine/0 purge, retuned in `f596800ffa`). Delta-scan every merge window with per-fn fuzzy
 AND matched_data; an fcmpo flip is repaired by restoring the retail operand order in source.
+The `21b90aff9f`/`5b120c0545` pair (section 6) is the third instance and the first where the
+regression was NOT retunable — a purge whose price is real still has to be measured and
+banked, not reported as zero.
