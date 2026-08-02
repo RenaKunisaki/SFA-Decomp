@@ -1652,7 +1652,7 @@ void modelInitBones(f32 scale, void* model)
     int boneOff;
     f32* sumP;
     u8* hdr;
-    u8* tbl;
+    ModelJointWork* tbl;
     int i;
     int parent;
     f32* src;
@@ -1678,14 +1678,14 @@ void modelInitBones(f32 scale, void* model)
     {
         if ((src = (f32*)((ModelFileHeader*)hdr)->unk18) != NULL && (tbl = ((ObjModel*)m)->jointWorkspace) != NULL)
         {
-            **(f32**)(tbl + 4) = src[0] * sc;
-            if (**(f32**)(tbl + 4) == lbl_803DE88C)
+            tbl->radii[0] = src[0] * sc;
+            if (tbl->radii[0] == lbl_803DE88C)
             {
-                **(f32**)(tbl + 4) = src[1] * sc;
+                tbl->radii[0] = src[1] * sc;
             }
-            **(f32**)(tbl + 8) = **(f32**)(tbl + 4) * **(f32**)(tbl + 4);
-            **(f32**)(tbl + 0xc) = lbl_803DE8D4;
-            **(f32**)(tbl + 0x10) = **(f32**)(tbl + 4);
+            tbl->radiiSq[0] = tbl->radii[0] * tbl->radii[0];
+            tbl->boneLengths[0] = lbl_803DE8D4;
+            tbl->maxReach[0] = tbl->radii[0];
             zero = lbl_803DE88C;
             sums[0] = zero;
             i = 1;
@@ -1695,36 +1695,36 @@ void modelInitBones(f32 scale, void* model)
             sumP = &sums[1];
             for (; i < ((ObjModel*)m)->file->jointCount; srcP++, off += 4, boneOff += 0x1c, sumP++, i++)
             {
-                *(f32*)(*(u8**)(tbl + 4) + off) = sc * *srcP;
-                *(f32*)(*(u8**)(tbl + 8) + off) = *(f32*)(*(u8**)(tbl + 4) + off) * *(f32*)(*(u8**)(tbl + 4) + off);
+                *(f32*)((u8*)tbl->radii + off) = sc * *srcP;
+                *(f32*)((u8*)tbl->radiiSq + off) = *(f32*)((u8*)tbl->radii + off) * *(f32*)((u8*)tbl->radii + off);
                 bone = ((ModelFileHeader*)hdr)->jointData + boneOff;
                 parent = *(s8*)bone;
                 vx = *(f32*)(bone + 4);
                 vy = *(f32*)(bone + 8);
                 vz = *(f32*)(bone + 0xc);
                 len = sqrtf(vx * vx + vy * vy + vz * vz);
-                *(f32*)(*(u8**)(tbl + 0xc) + off) = sc * len;
-                v = *(f32*)(*(u8**)(tbl + 0xc) + off);
+                *(f32*)((u8*)tbl->boneLengths + off) = sc * len;
+                v = *(f32*)((u8*)tbl->boneLengths + off);
                 if (v == zero)
                 {
-                    *(f32*)(*(u8**)(tbl + 0xc) + off) = lbl_803DE8D8;
+                    *(f32*)((u8*)tbl->boneLengths + off) = lbl_803DE8D8;
                 }
                 w = *(f32*)(((ModelFileHeader*)hdr)->unk1C + off);
                 if (w >= lbl_803DE890)
                 {
-                    *(f32*)(*(u8**)(tbl + 0xc) + off) *= w;
+                    *(f32*)((u8*)tbl->boneLengths + off) *= w;
                 }
-                *sumP = sums[parent] + *(f32*)(*(u8**)(tbl + 0xc) + off);
+                *sumP = sums[parent] + *(f32*)((u8*)tbl->boneLengths + off);
                 if (*srcP == zero)
                 {
-                    *(f32*)(*(u8**)(tbl + 0x10) + off) = *(f32*)(*(u8**)(tbl + 0x10) + parent * 4);
+                    *(f32*)((u8*)tbl->maxReach + off) = *(f32*)((u8*)tbl->maxReach + parent * 4);
                 }
                 else
                 {
-                    *(f32*)(*(u8**)(tbl + 0x10) + off) = *sumP + *(f32*)(*(u8**)(tbl + 4) + off);
-                    v = *(f32*)(*(u8**)(tbl + 0x10) + off);
-                    pv = *(f32*)(*(u8**)(tbl + 0x10) + parent * 4);
-                    *(f32*)(*(u8**)(tbl + 0x10) + off) = (v > pv) ? v : pv;
+                    *(f32*)((u8*)tbl->maxReach + off) = *sumP + *(f32*)((u8*)tbl->radii + off);
+                    v = *(f32*)((u8*)tbl->maxReach + off);
+                    pv = *(f32*)((u8*)tbl->maxReach + parent * 4);
+                    *(f32*)((u8*)tbl->maxReach + off) = (v > pv) ? v : pv;
                 }
             }
         }

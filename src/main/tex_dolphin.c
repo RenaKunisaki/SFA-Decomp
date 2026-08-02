@@ -1459,12 +1459,12 @@ u32 trackGetPackedSurfaceType(int* obj)
 
 int mapBlockGetPolygonGroupType(void* obj)
 {
-    return (*(u32*)&((GameObject*)obj)->anim.localPosY & 0xff000000) >> 24;
+    return (((MapTriGroup*)obj)->flags & 0xff000000) >> 24;
 }
 
 int mapBlockCountTrianglesByType(MapBlockData* block, int type)
 {
-    int entry;
+    MapTriGroup* entry;
     int offset;
     int total;
     int i;
@@ -1474,10 +1474,10 @@ int mapBlockCountTrianglesByType(MapBlockData* block, int type)
     count = block->polyGroupCount;
     for (i = 0; i < count; i++)
     {
-        entry = (int)block->polygonGroups + offset;
-        if (type == (int)((*(u32*)(entry + 0x10) & 0xff000000) >> 24))
+        entry = (MapTriGroup*)((int)block->polygonGroups + offset);
+        if (type == (int)((entry->flags & 0xff000000) >> 24))
         {
-            total += *(u16*)(entry + 0x14) - *(u16*)entry;
+            total += entry[1].firstTri - entry->firstTri;
         }
         offset += 0x14;
     }

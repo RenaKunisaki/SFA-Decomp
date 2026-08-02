@@ -10,17 +10,6 @@
 #include "main/pi_dolphin_api.h"
 #include "main/track_dolphin_api.h"
 
-typedef struct XyzAnimatorPolygonGroup {
-    u16 firstTriangle;
-    u16 pad02[2];
-    s16 posA;
-    s16 posB;
-} XyzAnimatorPolygonGroup;
-
-STATIC_ASSERT(offsetof(XyzAnimatorPolygonGroup, firstTriangle) == 0x00);
-STATIC_ASSERT(offsetof(XyzAnimatorPolygonGroup, posA) == 0x06);
-STATIC_ASSERT(offsetof(XyzAnimatorPolygonGroup, posB) == 0x08);
-
 f32 XyzAnimator_getCoordinate(GameObject* obj, u8 coordinate) {
     XyzAnimatorState* state;
 
@@ -67,8 +56,8 @@ void XyzAnimator_captureGeometry(XyzAnimatorPlacement* placement, XyzAnimatorSta
         mapEntry = mapBlockGetPolygonGroup((void*)blockAddress, blockIndex);
         t = mapBlockGetPolygonGroupType(mapEntry);
         if ((int)placement->blockLayer == t) {
-            *(s16*)(state->posABuffer + groupDataOffset[0]) = ((XyzAnimatorPolygonGroup*)mapEntry)->posA;
-            *(s16*)(state->posBBuffer + groupDataOffset[0]) = ((XyzAnimatorPolygonGroup*)mapEntry)->posB;
+            *(s16*)(state->posABuffer + groupDataOffset[0]) = ((MapTriGroup*)mapEntry)->minY;
+            *(s16*)(state->posBBuffer + groupDataOffset[0]) = ((MapTriGroup*)mapEntry)->maxY;
             groupDataOffset[0] += 2;
             triangleEnd = mapEntry[10];
             triangle = *mapEntry;
@@ -170,9 +159,9 @@ void XyzAnimator_applyToMapBlock(XyzAnimatorPlacement* placement, XyzAnimatorSta
         mapEntry = mapBlockGetPolygonGroup((void*)blockAddress, polygonGroupIndex);
         polygonGroupType = mapBlockGetPolygonGroupType(mapEntry);
         if ((int)placement->blockLayer == polygonGroupType) {
-            ((XyzAnimatorPolygonGroup*)mapEntry)->posA =
+            ((MapTriGroup*)mapEntry)->minY =
                 (s16)(state->offsetY + (f32) * (s16*)(state->posABuffer + groupDataOffset[0]));
-            ((XyzAnimatorPolygonGroup*)mapEntry)->posB =
+            ((MapTriGroup*)mapEntry)->maxY =
                 (s16)(state->offsetY + (f32) * (s16*)(state->posBBuffer + groupDataOffset[0]));
             groupDataOffset[0] += 2;
             triangleEnd = mapEntry[10];
@@ -248,7 +237,7 @@ void XyzAnimator_update(GameObject* obj) {
             value = mapBlockGetPolygonGroupType(polygonGroup);
             if (placement->blockLayer == value) {
                 state->polygonGroupCount++;
-                state->vertexCount += (*(u16*)(polygonGroup + 0x14) - *(u16*)(polygonGroup + 0));
+                state->vertexCount += ((MapTriGroup*)polygonGroup)[1].firstTri - ((MapTriGroup*)polygonGroup)->firstTri;
             }
         }
         if (state->vertexCount == 0) {

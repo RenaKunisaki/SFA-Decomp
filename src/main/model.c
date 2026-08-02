@@ -958,17 +958,17 @@ void* modelLoad_layoutBuffers(u8* p, int b, int isType1, int c)
         pos = roundUpTo4(pos);
         *(int*)&((ObjModel*)out2)->jointWorkspace = pos;
         pos += 0x1c;
-        *(int*)(((ObjModel*)out2)->jointWorkspace + 0) = pos;
+        *(int*)&((ObjModel*)out2)->jointWorkspace->unk00 = pos;
         pos += ((ModelFileHeader*)p)->jointCount * 0xc;
-        *(int*)(((ObjModel*)out2)->jointWorkspace + 4) = pos;
+        *(int*)&((ObjModel*)out2)->jointWorkspace->radii = pos;
         pos += ((ModelFileHeader*)p)->jointCount * 4;
-        *(int*)(((ObjModel*)out2)->jointWorkspace + 8) = pos;
+        *(int*)&((ObjModel*)out2)->jointWorkspace->radiiSq = pos;
         pos += ((ModelFileHeader*)p)->jointCount * 4;
-        *(int*)(((ObjModel*)out2)->jointWorkspace + 0xc) = pos;
+        *(int*)&((ObjModel*)out2)->jointWorkspace->boneLengths = pos;
         pos += ((ModelFileHeader*)p)->jointCount * 4;
-        *(int*)(((ObjModel*)out2)->jointWorkspace + 0x10) = pos;
+        *(int*)&((ObjModel*)out2)->jointWorkspace->maxReach = pos;
         pos += ((ModelFileHeader*)p)->jointCount * 4;
-        *(int*)(((ObjModel*)out2)->jointWorkspace + 0x18) = pos;
+        *(int*)&((ObjModel*)out2)->jointWorkspace->unk18 = pos;
         pos += ((ModelFileHeader*)p)->jointCount;
     }
     else

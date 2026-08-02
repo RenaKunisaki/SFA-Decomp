@@ -11,12 +11,15 @@ typedef struct PollenFragmentConfig
     s16 spawnSfxId;
     s16 loopSfxId;
     s16 explodeSfxId;
-    s16 effectObjectId;
+    s16 initFxId;
     s16 burstFxId;
     s16 auraFxId;
-    f32 scale;
+    f32 steerSpeed;
     s16 targetGroup;
-    u16 flags;
+    u8 noVertical : 1;
+    u8 timed : 1;
+    u8 smoothTurn : 1;
+    u8 usePath : 1;
 } PollenFragmentConfig;
 
 extern PollenFragmentConfig gPollenFragmentConfig0;

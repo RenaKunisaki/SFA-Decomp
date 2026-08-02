@@ -44,14 +44,35 @@ typedef struct MapHitLine
 
 STATIC_ASSERT(sizeof(MapHitLine) == 0x14);
 
-typedef struct MapPolygonGroup
+/* MapTriGroup -- 0x14-byte per-block triangle group header streamed from the
+ * map block (blk+0x50 table).  Holds the first index into the block's 8-byte
+ * MapTriIndex list plus s16 bounds; the list is closed by the NEXT group's
+ * firstTri, so walkers read group[1].firstTri as their end bound. */
+typedef struct MapTriGroup
 {
-    u8 pad00[0x10];
-    u32 flags;
-} MapPolygonGroup;
+    u16 firstTri; /* 0x00 first MapTriIndex this group owns */
+    s16 minX;     /* 0x02 bounds in block-local units */
+    s16 maxX;     /* 0x04 */
+    s16 minY;     /* 0x06 */
+    s16 maxY;     /* 0x08 */
+    s16 minZ;     /* 0x0a */
+    s16 maxZ;     /* 0x0c */
+    u8 pad0E[2];  /* 0x0e */
+    u32 flags;    /* 0x10 surface kind/filter bits */
+} MapTriGroup;
 
-STATIC_ASSERT(offsetof(MapPolygonGroup, flags) == 0x10);
-STATIC_ASSERT(sizeof(MapPolygonGroup) == 0x14);
+STATIC_ASSERT(offsetof(MapTriGroup, flags) == 0x10);
+STATIC_ASSERT(sizeof(MapTriGroup) == 0x14);
+
+/* MapTriIndex -- 8-byte triangle: three vertex indices into the block's
+ * packed s16 vertex pool plus a 16-bit x/z grid-cell coverage mask. */
+typedef struct MapTriIndex
+{
+    u16 vert[3];  /* 0x00 vertex pool indices */
+    u16 cellMask; /* 0x06 low byte = x cells, high byte = z cells */
+} MapTriIndex;
+
+STATIC_ASSERT(sizeof(MapTriIndex) == 0x8);
 
 typedef enum MapBlockFlag {
     MAP_BLOCK_FLAG_LOADED = 0x0008,

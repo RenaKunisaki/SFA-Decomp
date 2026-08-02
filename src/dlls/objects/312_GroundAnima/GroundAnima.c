@@ -82,7 +82,7 @@ f32 GroundAnimator_applyPress(GameObject* obj, GameObject* target) {
 }
 
 void GroundAnimator_gatherVertices(GameObject* obj, GroundAnimatorState* state, GroundAnimatorPlacement* placement) {
-    void* polygonGroup;
+    MapTriGroup* polygonGroup;
     void* polygonIndexCursor;
     void* polygon;
     int vertexFalloffOffset;
@@ -117,11 +117,11 @@ void GroundAnimator_gatherVertices(GameObject* obj, GroundAnimatorState* state, 
          polygonGroupIndex++) {
         polygonGroup = mapBlockGetPolygonGroup(block, polygonGroupIndex);
         if (placement->blockId == mapBlockGetPolygonGroupType(polygonGroup)) {
-            polygonIndex = *(u16*)polygonGroup;
+            polygonIndex = polygonGroup->firstTri;
             polygonFalloffOffset = offsets[0];
             polygonHeightOffset = offsets[1];
             maxFalloff = (1.0f);
-            for (; polygonIndex < *(u16*)((char*)polygonGroup + 0x14); polygonIndex++) {
+            for (; polygonIndex < polygonGroup[1].firstTri; polygonIndex++) {
                 polygon = mapBlockGetPolygon((int*)block, polygonIndex);
                 for (vertexIndex = 0, polygonIndexCursor = polygon, vertexFalloffOffset = polygonFalloffOffset,
                     vertexHeightOffset = polygonHeightOffset;
@@ -159,7 +159,7 @@ int GroundAnimator_getExtraSize(void) {
 }
 
 void GroundAnimator_free(GameObject* obj, int flags) {
-    void* polygonGroup;
+    MapTriGroup* polygonGroup;
     void* polygonIndexCursor;
     int vertexHeightOffset;
     int polygonHeightOffset;
@@ -183,8 +183,8 @@ void GroundAnimator_free(GameObject* obj, int flags) {
                  polygonGroupIndex++) {
                 polygonGroup = mapBlockGetPolygonGroup(block, polygonGroupIndex);
                 if (placement->blockId == mapBlockGetPolygonGroupType(polygonGroup)) {
-                    for (polygonIndex = *(u16*)polygonGroup, polygonHeightOffset = heightOffset;
-                         polygonIndex < *(u16*)((char*)polygonGroup + 0x14); polygonIndex++) {
+                    for (polygonIndex = polygonGroup->firstTri, polygonHeightOffset = heightOffset;
+                         polygonIndex < polygonGroup[1].firstTri; polygonIndex++) {
                         polygon = mapBlockGetPolygon((int*)block, polygonIndex);
                         for (vertexIndex = 0, polygonIndexCursor = polygon, vertexHeightOffset = polygonHeightOffset;
                              vertexIndex < 3; vertexIndex++) {
@@ -230,7 +230,7 @@ void GroundAnimator_update(GameObject* obj) {
     int vertexIndex;
     GroundAnimatorState* state;
     GroundAnimatorPlacement* placement;
-    void* polygonGroup;
+    MapTriGroup* polygonGroup;
     void* linkedObject;
     int polygonHeightOffset;
     void* packedVertex;
@@ -347,10 +347,10 @@ void GroundAnimator_update(GameObject* obj) {
             entryIndex = 0;
             for (; entryIndex < state->entryCount; entryIndex++) {
                 polygonGroup = mapBlockGetPolygonGroup(block, state->blockEntries[entryIndex]);
-                polygonIndex = *(u16*)polygonGroup;
+                polygonIndex = polygonGroup->firstTri;
                 polygonFalloffOffset = offsets[0];
                 polygonHeightOffset = offsets[1];
-                for (; polygonIndex < *(u16*)((char*)polygonGroup + 0x14); polygonIndex++) {
+                for (; polygonIndex < polygonGroup[1].firstTri; polygonIndex++) {
                     polygon = mapBlockGetPolygon((int*)block, polygonIndex);
                     for (vertexIndex = 0, vertexFalloffOffset = polygonFalloffOffset, polygonIndexCursor = polygon,
                         vertexHeightOffset = polygonHeightOffset;
