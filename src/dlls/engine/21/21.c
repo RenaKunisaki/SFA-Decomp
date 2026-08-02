@@ -718,11 +718,11 @@ void curves_preparePointCollisionFrame(int obj, CurvesCollisionState* collision)
     {
         if (*(void**)&((GameObject*)obj)->anim.parent != NULL)
         {
-            if ((*(void**)(((GameObject*)obj)->anim.parentAddress + 0x58) != NULL) &&
+            if ((((GameObject*)obj)->anim.parentAnim->hitboxTransformState != NULL) &&
                 (ObjHits_IsObjectEnabled((ObjAnimComponent*)((GameObject*)obj)->anim.parent) != 0))
             {
-                matrixSource = *(int*)(((GameObject*)obj)->anim.parentAddress + 0x58);
-                matrixOffset = (*(u8*)(matrixSource + 0x10c) + 2) * 0x10;
+                matrixSource = (int)((GameObject*)obj)->anim.parentAnim->hitboxTransformState;
+                matrixOffset = (((ObjHitboxTransformState*)matrixSource)->activeMatrixIndex + 2) * 0x10;
                 Matrix_TransformPoint((f32*)matrixSource + matrixOffset, ((GameObject*)obj)->anim.localPosX,
                                       ((GameObject*)obj)->anim.localPosY, ((GameObject*)obj)->anim.localPosZ,
                                       &((GameObject*)obj)->anim.worldPosX, &((GameObject*)obj)->anim.worldPosY,
