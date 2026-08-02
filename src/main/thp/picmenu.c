@@ -27,7 +27,6 @@ enum
 };
 
 extern char gAttractMovieAudioDmaBuffer[0x50C];
-extern s32 gAttractMovieAudioActive;
 extern AIDCallback gAttractMovieAudioPrevDmaCallback;
 extern s32 gAttractMovieAudioMode;
 extern u32 gAttractMovieAudioMixSourceAddr;

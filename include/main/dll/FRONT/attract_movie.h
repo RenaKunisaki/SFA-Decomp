@@ -103,4 +103,6 @@ typedef struct AttractMoviePlayer {
 
 extern AttractMoviePlayer gAttractMoviePlayer;
 
+extern s32 gAttractMovieAudioActive;
+
 #endif /* MAIN_DLL_FRONT_ATTRACT_MOVIE_H_ */

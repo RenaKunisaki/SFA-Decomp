@@ -45,42 +45,6 @@
 typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, int ref1);
 
 #include "track/intersect_internal.h"
-extern u8 gMoonFxDayNo;
-extern f32 gSnowFlashOverlayAngle;
-
-extern u8 gReflectionTintAlpha;
-extern u8 gHudTintAlpha;
-extern GXColor gReflectionBumpTintColor;
-extern GXColor gReflectionBumpKColor;
-extern GXColor gReflectionTintColor;
-extern GXColor gReflectionKColor;
-extern u32 gWaterReflectionKColorR;
-extern u32 gWaterReflectionKColorG;
-extern u32 gWaterReflectionKColorB;
-extern u32 gBlurFilterKColor;
-extern GXColor gMotionBlurKColor;
-extern GXColor gHeatEffectKColor;
-extern u32 gObjectShadowTevColor;
-extern f32 gCausticReflectionDiskScale;
-extern f32 gTrackProjectedTexScale;
-extern f32 gTrackNormalTexScale;
-extern f32 gFrozenReflectionNormalScale;
-extern GXColor gFrozenTintColor;
-extern f32 gFrozenWhirlpoolTexScale;
-extern f32 gDistortionTexCoordScale;
-extern f32 gDistortionAlphaRadius;
-extern f32 gDistortionIndMtxRadius;
-extern GXColor gSpiritVisionKColor0;
-extern GXColor gSpiritVisionKColor1;
-extern GXColor gSpiritVisionKColor2;
-extern GXColor gSpiritVisionRegColor;
-extern GXColor gScreenImageRegColor;
-extern GXColor gScreenImageKColor0;
-extern GXColor gScreenImageKColor1;
-extern GXColor gScreenImageKColor2;
-extern GXColor gScreenImageKColor3;
-extern u32 gWhirlpoolReflectionTintColor;
-extern u32 gWhirlpoolReflectionKColor;
 
 typedef struct
 {

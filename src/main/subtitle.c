@@ -13,8 +13,6 @@
 
 #define SUBTITLE_TIME_NONE 0.0001f
 
-extern f32 gSubtitleCurTime;
-
 SubtitleCmd* subtitleParseControlCmds(char* str, int* count);
 static void subtitleBuildLineTable(void);
 

@@ -48,9 +48,6 @@
 #define WARPPOINT_SEQUENCE_HINT_ACTIVE 1
 #define WARPPOINT_SEQUENCE_HINT_DONE   0
 
-extern s16 gArrivedWarpIndex;
-extern u8 gWarpArrivalTimer;
-
 int WarpPoint_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     WarpPointPlacement* placement = (WarpPointPlacement*)obj->anim.placementData;
 

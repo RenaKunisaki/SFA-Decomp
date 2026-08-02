@@ -33,15 +33,10 @@
 
 
 extern u8 gMapBlockCount; /* count of allocated blocks */
-extern s16* gMapBlockIds;
-extern u8* gMapBlockRefCounts;
 extern void* gMapInfoBuffer;
 extern void* gMapsTab;
 extern void* gHitsTab;
 extern void* gTrkBlkTab;
-extern s16 gTrkBlkTabCount;
-extern s16 gPendingWarpIndex;
-extern s16 gArrivedWarpIndex;
 
 
 volatile PPCWGPipe GXWGFifo : (0xCC008000);

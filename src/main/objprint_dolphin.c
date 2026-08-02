@@ -3948,8 +3948,6 @@ void romListReadCb(s32 result, DVDFileInfo* fileInfo)
     }
 }
 
-extern u32 gResourceFileBuffers[];
-
 void blocksReadCb(s32 result, DVDFileInfo* fileInfo)
 {
     if (result < 0)

@@ -183,7 +183,6 @@ enum
 #define OBJLOAD_FLAG_SHADOW_TYPE3  0x8000 /* modelDef->shadowType == 3 */
 
 GameObject* gEffectBoxObjects[20];
-extern f32 gMapSavedPlayerOffsetX;
 extern f32 gMapSavedPlayerOffsetZ;
 
 void Obj_RegisterObject(GameObject* obj, int b);

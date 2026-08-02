@@ -34,8 +34,6 @@
 typedef f32 Mtx[3][4];
 
 
-extern f32 gSubtitleCurTime;
-
 TextFont* gameTextFonts;
 int gameTextCharset;
 int curLanguage;
@@ -79,11 +77,7 @@ u8 gGameTextFontIsSjis;
 
 void gameTextFinalizeLoad(GameTextLoadSlot* loadSlot);
 
-extern u16 gGameTextSjisGlyphTable[];
-extern char sGameTextMapPathFormat[];
 extern GXColor gGameTextClearColor;
-extern int gGameTextFontTexRowPitch;
-extern TextFont gGameTextCharsets[];
 SubtitleCmd* subtitleParseControlCmds(char* str, int* count);
 
 typedef struct GameTextTableHeader

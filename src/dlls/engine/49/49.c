@@ -206,9 +206,6 @@ void Minimap_drawCompassBlip(void);
 void Minimap_setupCompassBlip(void);
 void Minimap_drawCompassNeedle(void);
 
-extern u8 gMinimapHelpTextActive;
-extern s16 gMinimapAreaNameAlpha;
-extern s16 gMinimapAreaNameId;
 s8 gMinimapAxisSwap;
 f32 gMinimapArrowScale0;
 f32 gMinimapArrowScale1;
@@ -230,7 +227,6 @@ int gMinimapLoadedMapId;
 u8 gMinimapBlipPulse;
 u8 gMinimapRadarInited;
 u8 gMinimapAreaNameDelay;
-extern u8 gTimeListPromptSelection;
 
 const MinimapColor gMinimapCompassColor = {0x00FF0000};
 const MinimapColor gMinimapBaseColor = {0xFFFF0000};

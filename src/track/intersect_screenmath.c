@@ -8,9 +8,6 @@ static const f32 gGxPi = 3.1415927f;
 
 #include "track/intersect_internal.h"
 
-extern int lbl_803DD03C;
-extern int gPerspectiveMtx[];
-
 
 /* Queues a GXPeekZ read at (x,y) tagged by an opaque requestKey (callers pass
  * any unique value - object ptrs, loop indices, even a function address) and

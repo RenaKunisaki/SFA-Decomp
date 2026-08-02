@@ -152,10 +152,7 @@ int lbl_803DB5E4 = 0;
 #define PAD_BUTTON_A  0x100
 #define PAD_BUTTON_B  0x200
 extern u8 gResourceFileTable[]; /* resource file table -- see struct MldfTables */
-extern s16 gForceNextLoadSync;
 extern int gForceLoadImmediately;
-extern int gModelsArchiveLoadCount;
-extern volatile int gAssetLoadInFlightFlags;
 
 #include "main/objprint_load_api.h"
 #include "dolphin/os/OSAlloc.h"
@@ -741,8 +738,6 @@ char sMapAssetPathFormats[0x78] =
     "\0%s/mod%d.zlb.bin\0\0\0\0%s/mod%d.tab";
 void gxSetGPMetricsEnabled(int);
 extern u8 gLoadingScreenTextures[];
-extern u8 gLoadFilesInitDone;
-extern int gPendingDvdReadCount;
 extern volatile int gAssetLoadCompletedFlags;
 extern RingBufferQueue gVideoFlipQueue;
 
@@ -3323,7 +3318,6 @@ int mapGetDirIdx(int idx)
 
 
 extern int gResourcePendingMapIds[];
-extern s16 gDefragDelayFrames;
 
 void loadDataFiles()
 {

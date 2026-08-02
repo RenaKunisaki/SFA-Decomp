@@ -195,4 +195,11 @@ int GameText_CountPrintableChars(u8* str);
 int GameText_FindControlCodeArgs(u8* str, u32 target, int* out);
 void loadGameTextSequence(int sequenceSlotDir, int sequenceId);
 
+extern u8 sGameTextFallbackBufSlots[];
+extern f32 gSubtitleCurTime;
+extern u16 gGameTextSjisGlyphTable[];
+extern char sGameTextMapPathFormat[];
+extern int gGameTextFontTexRowPitch;
+extern TextFont gGameTextCharsets[];
+
 #endif /* MAIN_TEXTRENDER_INTERNAL_H_ */
