@@ -10,6 +10,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
+#include "main/dll/partfx_interface.h"
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
 #include "main/objHitReact_types.h"
@@ -184,8 +185,7 @@ void sc_musictree_hitDetect(void) {
 void sc_musictree_update(GameObject* obj) {
     ScMusicTreeState* state = obj->extra;
     ObjAnimEventList animEvents;
-    f32 hitPosition[3];
-    f32 effectPosition[3];
+    PartFxSpawnParams effectParams;
     int hitType;
     GameObject* hitObject;
     int hitSphereIndex;
@@ -228,7 +228,7 @@ void sc_musictree_update(GameObject* obj) {
     if ((state->flags & SC_MUSIC_TREE_FLAG_HIT_ACTIVE) != 0) {
         if ((state->flags & (SC_MUSIC_TREE_FLAG_PRIORITY_HIT | SC_MUSIC_TREE_FLAG_SATELLITES)) != 0) {
             hitType = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitSphereIndex, &hitVolume,
-                                                         &hitPosition[0], &hitPosition[1], &hitPosition[2]);
+                                                         &effectParams.posX, &effectParams.posY, &effectParams.posZ);
         } else {
             hitType = ObjHits_PollPriorityHitEffectWithCooldown(
                 obj, SC_MUSIC_TREE_HIT_EFFECT_MODE, SC_MUSIC_TREE_HIT_EFFECT_RED, SC_MUSIC_TREE_HIT_EFFECT_GREEN,
@@ -239,9 +239,9 @@ void sc_musictree_update(GameObject* obj) {
         }
         if ((hitType != 0) && (hitType != OBJHITREACT_COLLISION_SKIP_REACTION) && (state->hitCooldown <= 0.0f)) {
             if ((state->flags & (SC_MUSIC_TREE_FLAG_PRIORITY_HIT | SC_MUSIC_TREE_FLAG_SATELLITES)) != 0) {
-                hitPosition[0] = hitPosition[0] + playerMapOffsetX;
-                hitPosition[2] = hitPosition[2] + playerMapOffsetZ;
-                objDoHitParticleFx((void*)obj, 0.014f, effectPosition, 1, 0);
+                effectParams.posX = effectParams.posX + playerMapOffsetX;
+                effectParams.posZ = effectParams.posZ + playerMapOffsetZ;
+                objDoHitParticleFx((void*)obj, 0.014f, &effectParams, 1, 0);
                 Obj_SetModelColorFadeRecursive(obj, 0xF, 0xC8, 0, 0, 1);
                 sc_musictree_handleHitObject(obj, state, state->flags & SC_MUSIC_TREE_FLAG_BURST_TYPE_MASK);
             } else {
@@ -250,10 +250,10 @@ void sc_musictree_update(GameObject* obj) {
             }
             {
                 f32 zero = 0.0f;
-                hitPosition[0] = zero;
-                hitPosition[1] = 200.0f * state->effectScale;
-                hitPosition[2] = zero;
-                objfx_spawnRandomBurst(obj, state->flags & SC_MUSIC_TREE_FLAG_BURST_TYPE_MASK, 0x14, effectPosition,
+                effectParams.posX = zero;
+                effectParams.posY = 200.0f * state->effectScale;
+                effectParams.posZ = zero;
+                objfx_spawnRandomBurst(obj, state->flags & SC_MUSIC_TREE_FLAG_BURST_TYPE_MASK, 0x14, &effectParams,
                                        80.0f * state->effectScale, 0);
             }
             state->animationStep = 0.0225f;
@@ -284,21 +284,21 @@ void sc_musictree_update(GameObject* obj) {
         if (distanceU16 < state->hearRadius) {
             if (((state->flags & SC_MUSIC_TREE_FLAG_APPROACH_BURST) != 0) &&
                 (state->previousDistance >= state->hearRadius) && (state->proximityCooldown <= 0.0f)) {
-                hitPosition[0] = 0.0f;
-                hitPosition[1] = 0.75f * (200.0f * state->effectScale);
-                hitPosition[2] = 0.0f;
-                objfx_spawnRandomBurst(obj, state->flags & SC_MUSIC_TREE_FLAG_BURST_TYPE_MASK, 0xA, effectPosition,
+                effectParams.posX = 0.0f;
+                effectParams.posY = 0.75f * (200.0f * state->effectScale);
+                effectParams.posZ = 0.0f;
+                objfx_spawnRandomBurst(obj, state->flags & SC_MUSIC_TREE_FLAG_BURST_TYPE_MASK, 0xA, &effectParams,
                                        80.0f * state->effectScale, 1);
                 state->proximityCooldown = 340.0f;
             }
             state->proximityBurstTimer = state->proximityBurstTimer - timeDelta;
             if (state->proximityBurstTimer <= 0.0f) {
                 f32* rotatedBurstVector;
-                *(rotatedBurstVector = &hitPosition[0]) = 0.0f;
-                hitPosition[1] = 200.0f * state->effectScale;
-                hitPosition[2] = 0.0f;
+                *(rotatedBurstVector = &effectParams.posX) = 0.0f;
+                effectParams.posY = 200.0f * state->effectScale;
+                effectParams.posZ = 0.0f;
                 vecRotateZXY(&obj->anim.rotX, rotatedBurstVector);
-                objfx_spawnRandomBurst(obj, state->flags & SC_MUSIC_TREE_FLAG_BURST_TYPE_MASK, 1, effectPosition,
+                objfx_spawnRandomBurst(obj, state->flags & SC_MUSIC_TREE_FLAG_BURST_TYPE_MASK, 1, &effectParams,
                                        80.0f * state->effectScale, 0);
                 state->proximityBurstTimer += 30.0f;
             }

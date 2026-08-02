@@ -170,7 +170,7 @@ void sc_totempuzzle_update(GameObject* obj) {
     int* objects;
     int other;
     ObjTextureRuntimeSlot* texture;
-    f32 lightArgs[6];
+    PartFxSpawnParams lightArgs;
     GameObject* hitObject;
     int hitSphereIndex;
     u32 hitVolume;
@@ -178,24 +178,24 @@ void sc_totempuzzle_update(GameObject* obj) {
     int countB, startB;
 
     state = obj->extra;
-    hitKind = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitSphereIndex, &hitVolume, &lightArgs[3],
-                                                 &lightArgs[4], &lightArgs[5]);
+    hitKind = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitSphereIndex, &hitVolume, &lightArgs.posX,
+                                                 &lightArgs.posY, &lightArgs.posZ);
     if ((obj->anim.bankIndex == SC_TOTEM_PUZZLE_CAP_INDEX) || (mainGetBit(GAMEBIT_SC_totempuzzle_running) != 0) ||
         (mainGetBit(SC_TOTEM_PUZZLE_GAMEBIT_ACTIVATED) == 0)) {
         if ((hitKind != 0) && (hitKind != OBJHITREACT_COLLISION_SKIP_REACTION)) {
             Sfx_PlayFromObject((int)obj, SFXTRIG_wp_swdtest222);
-            lightArgs[3] += playerMapOffsetX;
-            lightArgs[5] += playerMapOffsetZ;
-            objDoHitParticleFx((void*)obj, 0.014f, lightArgs, 1, 0);
+            lightArgs.posX += playerMapOffsetX;
+            lightArgs.posZ += playerMapOffsetZ;
+            objDoHitParticleFx((void*)obj, 0.014f, &lightArgs, 1, 0);
         }
         return;
     }
 
     if ((hitKind != 0) && (hitKind != OBJHITREACT_COLLISION_SKIP_REACTION)) {
         Sfx_PlayFromObject((int)obj, SFXTRIG_wp_swdtest222);
-        lightArgs[3] += playerMapOffsetX;
-        lightArgs[5] += playerMapOffsetZ;
-        objDoHitParticleFx((void*)obj, 0.014f, lightArgs, 1, 0);
+        lightArgs.posX += playerMapOffsetX;
+        lightArgs.posZ += playerMapOffsetZ;
+        objDoHitParticleFx((void*)obj, 0.014f, &lightArgs, 1, 0);
         state->flags ^= SC_TOTEM_PUZZLE_FLAG_READY;
         if ((state->flags & SC_TOTEM_PUZZLE_FLAG_READY) != 0) {
             f32 zero = 0.0f;
