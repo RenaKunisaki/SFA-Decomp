@@ -270,6 +270,47 @@ sift-up block with the recovered helper regressed it to **99.194**. Splitting th
 where it was otherwise inert also changed the raw object identity, so it was reverted. Require
 both lineage evidence and a measured gain at the exact call site.
 
+## The sign-extension width axis — CLOSED by census, and three protected shapes
+
+**Do not re-run this as a per-function hunt.** A tree-wide `extsh`/`extsb` census (ours vs retail,
+both directions, per sub-100 function) found **212 of 217 functions clean**. Only five carry any
+delta, and all five are dispositioned:
+
+| Δextsh | Δextsb | function | verdict |
+|---|---|---|---|
+| −4 | 0 | `DR_LaserCan::drlasercannon_aimAtTarget` | probed-to-priors (three type attacks already refuted) |
+| 0 | −1 | `shader::doPendingMapLoads` | flag-closed; local-removal refuted **−3.8** |
+| +1 | 0 | `modgfx/152::dll_98_spawnEffect` | store-forwarding residual, closed at compiler level |
+| +1 | 0 | `objects/332::babyCloudRunner_turnTowardTarget` | lever fires structurally, **score-neutral**, declined |
+| +1 | 0 | `player::playerSetMoveBlendFromPlane` | caller-protected |
+
+**★ Surplus `extsh` ≠ score.** In `babyCloudRunner_turnTowardTarget` the `u16*` store lever worked
+exactly as advertised — surplus `extsh` count 4 → 3, matching retail — and the fuzzy score did not
+move at all. The surplus was real and was *not* what the diff was made of. `modelApplyBoneTransform`
+paid 3.172 → 10.784 from the same lever only because there the surplus **was** the residual. Read a
+width delta as "a discrepancy exists", never as "a width-shaped residual exists", and never land a
+cast pun that buys nothing — a zero-score justification fails the plausible-source rule.
+
+### Three protected shapes — they look like cleanup targets and are load-bearing
+
+Each carries its measurement so the next person finds the number instead of repeating the probe.
+
+1. **Embedded compound assignment as an expression.** `obj->anim.rotX += (yawStep >>= SHIFT);` —
+   splitting it into two statements costs **98.864 → 88.068**. Retail's own shape.
+2. **Block-scoped cache of a global.** `{ int cn = gShaderRomListSlotCount; for (; i < cn; i++) … }`
+   — removing the local so the global is read inline costs **98.439 → 94.618**.
+3. **The `(s16)` loop-condition cast** and the `playerSetMoveBlendFromPlane` narrowing return —
+   both caller-protected; matched callers depend on the narrowing.
+
+### And a correction to naïve hold-vs-rematerialize reading
+
+Shape 2 above is the phantom/hold site the allocation campaign predicted but never located — retail
+rematerializes the `s8` global (`lbz`+`extsb`) at the use site where we hold it in a saved register.
+The naïve reading says "our source wrongly keeps a value alive; remove the local." **Measured, that
+is wrong**: the cache is what retail's source had, and the extra `lbz`+`extsb` is *downstream* of a
+scratch-band register permutation, not its cause. Hold-vs-rematerialize is real in the object but
+**does not decompose into per-site source verdicts.** See `docs/allocation_model.md`.
+
 ## Refutations worth knowing before you spend a build
 
 **The reference corpus can refute a shape at scale — use it to prove a cap, not just to find a
