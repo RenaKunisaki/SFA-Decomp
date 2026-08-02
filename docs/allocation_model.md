@@ -87,9 +87,30 @@ rematerialize, the more readily it demotes. The gradient is that cost ordering.
 > functions built on the old classifier is counting mostly arithmetic: the true address
 > population is **122 members image-wide**, with only 48 co-live address/param pairs.
 >
-> **Provisional, not adopted:** the corrected numbers suggest the stack may extend to
-> `R > L_mem > {L_const, L_comp} > P > L_ADDR`. At n=48 pairs that is a lead, not a law, and it
-> has not been pre-registered or scored on a holdout. Do not steer on it.
+> **Follow-up: the "fourth tier at the bottom" lead is REFUTED — do not reopen it.** The
+> corrected numbers suggested the stack might extend to `R > L_mem > {L_const,L_comp} > P >
+> L_ADDR`. Grown on TRAIN with the reloc-aware classifier it does not survive, and the
+> positional test contradicts it outright (95% Wilson intervals, chance = 50%):
+>
+> | test | k/n | point | 95% CI | verdict |
+> |---|---|---|---|---|
+> | ADDR **above** param | 8/16 | 50.0% | [28, 72] | no effect |
+> | ADDR above return copy | 39/87 | 44.8% | [35, 55] | no effect |
+> | ADDR above memory load | 4/9 | 44.4% | [19, 73] | no effect |
+> | ADDR above **constant** | 14/19 | 73.7% | [51, 88] | **above** |
+> | ADDR above **computed** | 11/13 | 84.6% | [58, 96] | **above** |
+> | **ADDR is the band's LOWEST member** | 6/38 | **15.8%** | **[7, 30]** | **against a bottom tier** |
+>
+> The core claim (addresses below params) sits at exactly chance with an interval spanning it.
+> The two comparisons that *do* reach significance point the **opposite** way — addresses sit
+> **above** the cheap-to-rematerialize classes — and addresses are the band's lowest member only
+> 15.8% of the time, significantly *below* what a bottom tier requires. The retail-image 33.3%
+> (16/48, CI [22, 47]) that produced the lead does not replicate on TRAIN and came from a
+> different population (it included unmatched functions).
+>
+> **The true-ADDR population is simply too small to carry a tier claim: 38 members in TRAIN,
+> 122 image-wide.** The model declines to place this class, and that is now a measured
+> refusal rather than an untested gap.
 
 ### The arrival principle
 
