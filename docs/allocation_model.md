@@ -198,6 +198,26 @@ direction from the kind gradient, which ranks memory loads the *most* orderly ki
 pairwise). The gradient is a per-**pair** property and this is a per-**function** one; the tension
 between the two levels is unexplained and is the sharpest lead on record.
 
+### P13 — the interaction design is INFEASIBLE at this corpus size (the terminal)
+
+Every prior test was *marginal*, and marginal designs cannot resolve an interaction. P13 ran the
+two-way designs — kind-mix × spill within recycling bands, and recycling × spill within kind bands
+— with cell inclusion registered at n ≥ 20 (both arms) and testability at ≥ 4 qualifying cells in
+one holding band.
+
+**Neither design reaches 4 qualifying cells in any band** (best: 3). The corpus of 994 width-≥5
+functions cannot support the design. That is the mystery's true data boundary, and it is where the
+investigation stops — not for want of ideas, but for want of n.
+
+**The one observation the qualifying cells carry** (reported, *not* a finding — the design that
+would confirm it is the infeasible one): both designs converge on the same single cell.
+**`mf=0 × rd=0` — no memory loads, no recycling — is the only negative gap in the entire table
+(−6.6)**, surrounded by +9.3, +12.4, +13.2, +15.5. The P10 sign reversal localizes there.
+
+**What a future attempt needs:** the binding constraint is zero-spill counts in the memory-heavy
+strata (n = 4, 14, 17 against the required 20). Roughly 3–5× the current width-≥5 population, or a
+lower band-width threshold to admit more functions. State the n before designing the test.
+
 **A third methodological trap, from P12:** any "does removing one X fix it" statistic is
 confounded with how many things there were to fix. Control against the denominator before reading
 such a rate — the headline was 50.3% and the pair-rich truth was 2.7%.
