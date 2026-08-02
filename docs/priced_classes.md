@@ -203,9 +203,19 @@ Window `cd782d6179` -> `5b120c0545`: tree 99.81533 -> 99.81422, matched_data 119
 **Data price.** The anchors were real `.sdata2` atoms, so deleting them shortens and rotates
 each unit's pool: 209_TumbleWeedB -148, 260_SmallBasket -120, 678_ARWSquadron -120,
 213_Kaldachom -112, 701 -92, 300_Transporter -80, 373_DFropenode -76, 523_FireFly -76,
-203 -72, 679_ARWProximit -64, 683_LGTProjecte -32. Not recoverable without the anchors; the
+679_ARWProximit -64, 683_LGTProjecte -32. Not recoverable without the anchors; the
 class-2 note applies (the legal `const f32 name[1]` reconnect needs a satisfied naming law,
 and none of these symbols has one).
+
+The `203 -72` row that stood here is RECOVERED and struck (`a21f332847`, 2026-08-02): that
+unit's anchor was not deleted, it was demoted to a `const f32` SCALAR, and MWCC folds a read
+of a const scalar into a fresh pool literal. The named object was emitted at its declaration
+point and then never referenced, while the two reads minted a second copy of `0.1f` at the
+end of the pool. Restoring the one-element array form — legal here because
+`gDllCBDefaultAnimSpeed` is in `config/GSAE01/symbols.txt` — reconnects the reads, drops the
+duplicate, and returns 203 to 328/328 data. **Scalar-vs-array is the tell to check before
+pricing any row in this section: a folded scalar shows up as a named `.sdata2` object with
+zero relocations against it and a duplicate of its value elsewhere in the pool.**
 
 **Standing verdict.** All five rows are at their best structured spelling; do not re-probe
 without a genuinely new lever. The DOL still holds because every affected unit was demoted.
@@ -220,3 +230,58 @@ AND matched_data; an fcmpo flip is repaired by restoring the retail operand orde
 The `21b90aff9f`/`5b120c0545` pair (section 6) is the third instance and the first where the
 regression was NOT retunable — a purge whose price is real still has to be measured and
 banked, not reported as zero.
+
+## 7. Uncalled statics are NOT automatically fabricated (class REFUTED, 2026-08-02)
+
+A census of our-only `.text` symbols (present in `build/GSAE01/src/**.o`, absent from the
+retail carve) reports ~2.4 KB across 18 game units, and the shape is genuinely dangerous:
+objdiff pairs our functions against RETAIL functions by name, so a body that is not in the
+DOL has no pair and is never scored. It is therefore a free place to park fabricated code
+that exists only to mint `.sdata2` literals in the order the carve wants. Two separate
+classes hide under that one census number, and only one of them is a hack.
+
+**Not the class — a plain static WITH call sites (820 B, 14 units).** MWCC inlines a plain
+`static` at every call site and *still* emits the out-of-line body; mwld strips it at link.
+`WM_LevelCon`, `LargeCrate`, `Landed_Arwi`, `502`, `DIMCannon`, `ARWSpeedStr`, `obj_movelib`,
+`329`, `engine/73`, `446`, `501` and `WCTempleBri` are all this. It is the deliberate idiom
+of `caf9ee4472` (WCTempleBri), where compiling the deform helper at its definition site is
+what puts retail's bias doubles in the right order. Leave them.
+
+**The real question — a static with NO call site (1616 B, 8 units).** Decided by one
+experiment: *MWCC does not intern a file-scope const against a pool literal.* Declaring
+`const f32 k[1] = {4.0f};` in `main/curves.c` alongside functions that already load `4.0f`
+grew `.sdata2` from 0x44 to 0x64 — nine duplicated words. So a slot that live retail code
+loads can never have been a declared const; it is a pool literal, minted on FIRST USE in text
+order. Whenever such a slot sits AHEAD of the first live function that loads it, the only
+possible minter is code that ran earlier and is not in the DOL — dead code that mwld stripped.
+
+Every phantom-minted slot in all eight units is loaded by a live retail function:
+
+| unit | uncalled statics | phantom-minted slots | shared with live code | delete cost |
+|---|---|---|---|---|
+| `main/curves.c` | 4 | 9 | 9 | -68 |
+| `599_DR_EarthWar` | 2 | 14 | 14 | -192 |
+| `625` | 2 | 6 | 6 | -104 |
+| `700_Andross` | 1 | 9 | 9 | -268 |
+| `main/shadow_dolphin.c` | 1 | 2 | 2 | -88 |
+| `engine/20_Hcurves` | 1 | 1 | 1 | -72 |
+| `Hcurves_romcurve` | 1 | 1 | 1 | -88 |
+| `203` | 1 | 0 | 0 | 0 |
+
+The sharpest single proofs: `curves.c` slot 0x18 holds `0.16666667f`, which no surviving
+function computes with, yet it sits eighth in a pool whose ninth slot is the first live
+function's first literal; and `599_DR_EarthWar` puts the compiler's own int-to-float bias
+double at 0x08, ahead of `DR_EarthWarrior_feed`'s `4.32f` at 0x10 — a bias double cannot be
+declared, so something converted an int before the first surviving function ran. Its second
+uncalled helper accounts for slots 0x38-0x48 as `0.02, 2.0, 0.5, 0.75, 32768.0`, the exact
+literal order of a five-statement body. **Deleting these seven reconstructions would cost 880
+matched_data and buy nothing; they stay, and they are in the checker baseline.**
+
+`203`'s `dll_CB_getStateHandler` was the one true positive: no call site, no minted slot, not
+one data byte moved. Deleted in `a21f332847`.
+
+**Gate.** `tools/banned_shapes_check.py` now carries `UNCALLED_STATIC_FN` — a source-only,
+transitive census (a cluster reachable only from other uncalled statics is itself uncalled,
+which is how `curveSpeedAt` is caught). `static inline` is out of class: an inline nothing
+calls is never expanded and never emitted. A new hit is not automatically a hack — adjudicate
+it against the unit's pool with the sharing test above before accepting or deleting it.
