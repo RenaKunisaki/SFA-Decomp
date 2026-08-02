@@ -52,7 +52,7 @@ force_active:
   - surfaceSfxGetRecord
   # intersect.c: the retail link retained this unreferenced .sbss word;
   # dropping it would shorten the section and shift every later .sbss address.
-  - lbl_803DCFFC
+  - sIntersectUnused0
 
 # Path to the main.dol file.
 object: sys/main.dol
