@@ -4,6 +4,7 @@
 #include "ghidra_import.h"
 #include "global.h"
 #include "game/objects/object.h"
+#include "main/dll/baddie_state.h"
 
 /*
  * Per-object extra block for the landed-arwing baddie (dll_D3) -- the 0x94-byte
@@ -61,8 +62,8 @@ STATIC_ASSERT(offsetof(LandedArwingState, scriptTimer) == 0x8E);
 STATIC_ASSERT(offsetof(LandedArwingState, surfaceMode) == 0x90);
 STATIC_ASSERT(offsetof(LandedArwingState, flags92) == 0x92);
 
-u32 LandedArwing_UpdateFlightChase(GameObject* obj, int state);
-u32 landedarwing_updateMovementState(GameObject* obj, u32* params);
+u32 LandedArwing_UpdateFlightChase(GameObject* obj, BaddieState* state);
+u32 landedarwing_updateMovementState(GameObject* obj, BaddieState* baddie);
 void landedarwing_updateAirborneMotion(GameObject* obj, LandedArwingState* state);
 void landedarwing_moveSurfaceCrawler(GameObject* obj, LandedArwingState* state);
 void landedarwing_moveAlongSurface(GameObject* obj, LandedArwingState* state);

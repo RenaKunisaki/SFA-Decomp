@@ -27,6 +27,20 @@
 
 u16 gGroundAnimatorSfxIds[4] = {0x109, 0x7E, 0, 0};
 
+typedef void (*GroundAnimatorTargetSetFrozenCallback)(GameObject* obj, int frozen);
+typedef void (*GroundAnimatorTargetSetPositionCallback)(GameObject* obj, f32 x, f32 y, f32 z);
+
+typedef struct GroundAnimatorTargetInterface {
+    void* callbacks[9];
+    GroundAnimatorTargetSetFrozenCallback setFrozen;
+    void* callbacks28[4];
+    GroundAnimatorTargetSetPositionCallback setPosition;
+} GroundAnimatorTargetInterface;
+
+STATIC_ASSERT(offsetof(GroundAnimatorTargetInterface, setFrozen) == 0x24);
+STATIC_ASSERT(offsetof(GroundAnimatorTargetInterface, setPosition) == 0x38);
+
+
 u8 GroundAnimator_getMagicCaveIndex(GameObject* obj) {
     GroundAnimatorState* state = obj->extra;
     return state->magicCaveId;
@@ -71,7 +85,7 @@ f32 GroundAnimator_applyPress(GameObject* obj, GameObject* target) {
                 mmpMoonRock_setFrozen(linkedObject, 0);
                 break;
             default:
-                (*(void (**)(void*, int))(*(int*)(*(int*)((char*)linkedObject + 0x68)) + 0x24))(linkedObject, 0);
+                ((GroundAnimatorTargetInterface*)*linkedObject->anim.dll)->setFrozen(linkedObject, 0);
                 break;
             }
         }
@@ -231,7 +245,7 @@ void GroundAnimator_update(GameObject* obj) {
     GroundAnimatorState* state;
     GroundAnimatorPlacement* placement;
     MapTriGroup* polygonGroup;
-    void* linkedObject;
+    GameObject* linkedObject;
     int polygonHeightOffset;
     void* packedVertex;
     int vertexFalloffOffset;
@@ -284,18 +298,19 @@ void GroundAnimator_update(GameObject* obj) {
                 switch (state->linkedObject->anim.romDefNo) {
                 case GROUND_ANIMATOR_MOON_ROCK_SEQUENCE_ID:
                     if ((state->flags & GROUND_ANIMATOR_STATE_COMPLETE) == 0) {
-                        mmpMoonRock_setFrozen((GameObject*)(linkedObject), 1);
+                        mmpMoonRock_setFrozen(linkedObject, 1);
                     }
-                    mmpMoonRock_setPosition((GameObject*)(linkedObject), obj->anim.localPosX,
+                    mmpMoonRock_setPosition(linkedObject, obj->anim.localPosX,
                                              obj->anim.localPosY - state->yOffset, obj->anim.localPosZ);
                     break;
                 default:
                     if ((state->flags & GROUND_ANIMATOR_STATE_COMPLETE) == 0) {
-                        (*(void (**)(void*, int))(*(int*)(*(int*)((char*)linkedObject + 0x68)) + 0x24))(linkedObject,
-                                                                                                        1);
+                        ((GroundAnimatorTargetInterface*)*(linkedObject)->anim.dll)
+                            ->setFrozen(linkedObject, 1);
                     }
-                    (*(void (**)(void*, f32, f32, f32))(*(int*)(*(int*)((char*)linkedObject + 0x68)) + 0x38))(
-                        linkedObject, obj->anim.localPosX, obj->anim.localPosY - state->yOffset, obj->anim.localPosZ);
+                    ((GroundAnimatorTargetInterface*)*(linkedObject)->anim.dll)
+                        ->setPosition(linkedObject, obj->anim.localPosX,
+                                      obj->anim.localPosY - state->yOffset, obj->anim.localPosZ);
                     break;
                 }
             }
@@ -333,8 +348,8 @@ void GroundAnimator_update(GameObject* obj) {
                         mmpMoonRock_setFrozen(state->linkedObject, 0);
                         break;
                     default:
-                        (*(void (**)(void*, int))(*(int*)(*(int*)((char*)state->linkedObject + 0x68)) + 0x24))(
-                            state->linkedObject, 0);
+                        ((GroundAnimatorTargetInterface*)*state->linkedObject->anim.dll)
+                            ->setFrozen(state->linkedObject, 0);
                         break;
                     }
                 }

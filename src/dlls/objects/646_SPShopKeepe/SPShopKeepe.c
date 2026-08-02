@@ -5,6 +5,7 @@
  * lazerwall challenge handlers, the DR laser-turret callbacks, and the
  * shopkeeper object implementation.
  */
+#include "main/dll/baddie_state.h"
 #include "main/track_dolphin_api.h"
 #include "main/dll/DR/DRlaserturret.h"
 #include "main/dll/trex_lazerwall.h"
@@ -102,7 +103,7 @@ int ShopKeeper_state7Handler(void)
     return 0;
 }
 
-int ShopKeeper_popQueuedState(int objHandle, int animState)
+int ShopKeeper_popQueuedState(int objHandle, BaddieState* baddie)
 {
     GameObject* obj = (GameObject*)objHandle;
     int state;
@@ -113,7 +114,7 @@ int ShopKeeper_popQueuedState(int objHandle, int animState)
     state = (int)obj->extra;
     spawnParam = 1.0f;
 
-    if (((BaddieState*)animState)->moveJustStartedA != 0)
+    if (baddie->moveJustStartedA != 0)
     {
         if ((obj->objectFlags & DLL801E66DC_OBJFLAG_RENDERED) != 0)
         {
@@ -122,7 +123,7 @@ int ShopKeeper_popQueuedState(int objHandle, int animState)
     }
 
     ((ShopkeeperState*)state)->opacity = 0;
-    ((BaddieState*)animState)->animSpeedA = 0.0f;
+    baddie->animSpeedA = 0.0f;
     if (((ShopkeeperState*)state)->opacity == 0)
     {
         stk = ((ShopkeeperState*)state)->msgStack;
@@ -149,7 +150,7 @@ int ShopKeeper_popQueuedState(int objHandle, int animState)
 
 #define LAZERWALL_FLAG_ADVANCED 0x20
 
-int TREX_Lazerwall_popQueuedState(GameObject* obj, int animState)
+int TREX_Lazerwall_popQueuedState(GameObject* obj, BaddieState* baddie)
 {
     TREXLazerwallUpdateTimedChallengeState* state;
     GameObject* playerObj;
@@ -164,7 +165,7 @@ int TREX_Lazerwall_popQueuedState(GameObject* obj, int animState)
     playerObj = Obj_GetPlayerObject();
     state = (obj)->extra;
 
-    if (((BaddieState*)animState)->moveJustStartedA != 0)
+    if (baddie->moveJustStartedA != 0)
     {
         if (Stack_IsEmpty(state->stack) != 0)
         {
@@ -203,7 +204,7 @@ int TREX_Lazerwall_popQueuedState(GameObject* obj, int animState)
                 }
             }
 
-            ((BaddieState*)animState)->animSpeedA = 0.0f;
+            baddie->animSpeedA = 0.0f;
             state->flags = (u8)(state->flags | LAZERWALL_FLAG_ADVANCED);
         }
     }
