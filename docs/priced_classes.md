@@ -249,11 +249,22 @@ rotates the whole pool, so the section loses every byte rather than the five. `r
 `.text` at 100.0 and pays only `.sdata2` 100.0 -> 14.634 (-80), and its demotion is what keeps the
 DOL green.
 
-**Standing verdict.** Banked, not reverted — section 6's law applies: the shape is banned and the
-anchors are load-bearing, so there is no free subset to retune toward. The only known recovery is
-section 2's legal `const f32 name[1] = {v}` reconnect, which is gated on the naming law and on the
-checker's cross-TU exemption; that is a pool/naming-lane question, not a retune. Reproduce with
+**Standing verdict — REFUTED for `trig` by `e173a2c951`, still standing for `rcp_dolphin`.**
+The reading above assumed the anchors were load-bearing for the pool's ORDER. For `trig` they
+were load-bearing for its VALUES: retail's `.sdata2` carries every Horner coefficient with the
+sign already in the word (`bfc55555 5554c4d0`, `af9dd246`, `be927d83 c50b46da`), and the
+post-purge source spelled the same polynomial as `A - C` with a positive `C`, so MWCC interned
+eleven words retail never had and emitted `fnmsubs` where retail has `fmadds`. Writing `A + -C`
+at the 44 sites — plain C, no shape added, an operator deleted — returns all eight functions to
+the exact figures in the table above, `.text` 95.926 -> 99.975 and `.sdata2` 61.458 -> 93.750, and
+the tree to 99.815640: `4461d0aa45`'s stated -0.003674 recovered to the digit, at 0 REGRESSED.
+`rcp_dolphin` is a different problem — its value sequences already match retail's (section 10),
+so its 14.634 is pure source-text order. Reproduce the original loss with
 `python3 tools/score_delta_gate.py --commits fff7ee912c 86334e8343`.
+
+The last 192 bytes of `trig` `.sdata2` are section 10's problem, not this one: retail interned
+`fsin16Approx`'s cosine coefficients before its sine ones, and the case reorder that reproduces
+it (reaching 100.0, +192) moves the emitted blocks and costs that function 98.152 -> 94.667.
 
 ## Related recurring REGRESSION class (fixable — not priced, listed so windows get scanned)
 
@@ -714,3 +725,125 @@ tried at the right instrument yet. And `dlls/engine/0`'s nine reachable slots fa
 adjacent runs (0x1bc, 0x2b8, 0x328, 0x378-0x380, 0x38c-0x394), which matters because section 9's
 decisive negative there - twenty correct words inserted **lost 4936 bytes** - was measured on the
 all-or-nothing literal route across the whole section, not on those runs.
+
+## 10. The pool is a fossil of the source text, not of the code (measured 2026-08-03)
+
+Sections 8, 8b and 9b all try to predict a `.sdata2` slot order from something the compiler
+emits — the order functions appear in `.text`, the order a function's own run references its
+words, the position of a declaration. Section 8's author already retracted the strongest claim,
+and a later lane recorded that the model has "a hole" it could not name: `main/acosf` and
+`track/intersect_render` sit at 75.410 and 91.525 with retail's mint groups in an order that is
+a *permutation* of `.text` order, which no source edit appears able to produce.
+
+There is a one-command test that closes it, and the answer is that the premise is wrong.
+
+### The value-sequence oracle
+
+For each function, walk its `.text` in address order and write down the **value** of every
+`.sdata2` word it references, in that order. Do it for our object and for the retail carve, and
+compare the two sequences. If they are equal, the two objects' code asks for exactly the same
+constants in exactly the same order, and only the slot each constant lives in differs.
+
+`/private/tmp/a66_seq.py <src> <worktree> [section]` does this. Run over all 33 sub-100 data
+sections at `e173a2c951`:
+
+| result | sections |
+| --- | --- |
+| every function's value sequence **identical** to retail's | **22** |
+| some function's sequence differs | 11 |
+
+`main/acosf` (8 functions, sequences of 6 to 36 words), `track/intersect_render` (31 functions),
+`main/object`, `main/rcp_dolphin`, `main/shader_dolphin`, `engine/19`, `SmallBasket`,
+`AppleOnTree`, `objlib` and thirteen more are all in the first row. **Their `.text` is already
+saying, word for word, what retail's says.** The pool is nevertheless laid out differently.
+
+So the slot order is not a function of the emitted code at all. It is fixed by the front end,
+from the order the literals appear in the **source text**, before the code generator runs — and
+the code generator is free to schedule the loads into any order it likes afterwards. That is why
+a function can sit at 100.0 with a rotated pool, and why no amount of register, schedule or
+statement-level work moves the section: there is nothing in the generated code left to fix.
+
+The corollary is the useful part. **Run the oracle before spending any effort on a sub-100 data
+section.** All-identical means the only remaining lever is the source *text* — which expression
+was written where — and that is a decompilation question, not a codegen one. A differing
+sequence means there is still a real value or a real reference to recover first, and that is
+where the work belongs.
+
+### Two sub-rules, both measured
+
+Within one statement the intern order is neither left-to-right nor evaluation order; it is
+**increasing expression-tree depth**. `704`'s
+
+```c
+gTitleScreenPulseAlpha = 127.0f * mathCosf(3.142f * (2.0f * t) / 100.0f) + 128.0f;
+```
+
+mints `128.0f, 127.0f, 3.142f, 2.0f` — the depths 1, 2, 5, 6 of that tree, with `100.0f` skipped
+because an earlier statement already interned it. `trig`'s `fsin16Approx` mints
+`0.99999f, -2.8707542e-10f, 1.3332733e-20f` from `x2 * (C2 * x2 + C1) + C0`, again shallowest
+first. Both reproduce exactly.
+
+An 8-byte literal is **deferred to the next 8-aligned offset, and the 4-byte hole it leaves is
+back-filled by the next 4-byte literal interned.** `704`'s `titleScreenShowCopyright` references
+`1.0f, 0.9999f, 80.0f, D(bias), 255.0f` in that order and lands them at
+`0x00, 0x04, 0x08, 0x0c=255.0f, 0x10=D` — the double stepped over `0x0c` and `255.0f` took it.
+This is the mechanism behind the "the displaced item is always a double or the word beside one"
+observation, and behind an off-by-one-word section size: a pool whose doubles are interned one
+slot earlier or later needs a pad where retail needed none.
+
+### What this costs the terminal rows
+
+`main/acosf` 248 B and `track/intersect_render` 236 B are terminal for this reason and no other:
+their code is already correct, so the residual is purely which statement of which function was
+written where in retail's `.c`. Nothing in this repository's normal toolkit reaches it. They
+should be scored as **closed on the code axis and open only on the text axis**, and a lane that
+wants them must go after the source text — not the registers.
+
+## 10b. Pricing the opaque-extern crutch PER SYMBOL, not per unit
+
+Section 9's control table prices the plain-literal route one unit at a time: replace every
+crutch read in a unit, rebuild, measure. Nine of its ten rows recover nothing, and the section
+concludes that the plain literal is the wrong instrument everywhere. `ca33bc08` had already
+shown one unit escaping that verdict (`main/object`, 16 crutches, free once `modelInitBones`'s
+`zero` temp was hoisted above the radius compare).
+
+Priced **per symbol** the picture changes again: a unit's price is almost never spread across
+its crutches, it is concentrated in two or three of them. Sweeping all 51 crutches individually
+at `f64f18ca9f`, one symbol at a time, rebuilding only that object and regenerating the whole
+report:
+
+| unit | crutches | free | priced | the price |
+| --- | --- | --- | --- | --- |
+| `main/model` | 7 | **6** | 1 | `gModelVertexScale` -> `Model_GetVertexPosition` 100.0 -> 73.033 |
+| `main/newshadows` | 14 | **3** | 11 | every one of the 11 moves `allocLotsOfTextures` |
+| `dlls/engine/0/0` | 20 | **6** | 14 | `lbl_803E209C` alone costs **4936** bytes of matched_data |
+| `dlls/objects/195_Player/player` | 3 | 0 | 3 | `lbl_803E7EE0`/`lbl_803E7F14` cost 8232 B of `.data` |
+| `main/objhits` | 2 | 0 | 2 | ~100 read sites, `ObjHits_CheckSkeletonPair` |
+| `main/vecmath` | 1 | 0 | 1 | `mtx44_multSafe` 100.0 -> 98.639 |
+| `dlls/engine/5/5` | 2 | 0 | 2 | `renderSunAndMoon` |
+| `dlls/engine/68/68` | 1 | 0 | 1 | `firstPersonDoControls` 100.0 -> 94.512 (+128 data) |
+| `dlls/objects/704/704` | 1 | 0 | 1 | `titleScreenDrawMenuFrame` 99.776 -> 99.488 |
+
+`b93a5f226d` landed the 15 free ones: tree fuzzy 99.811850 -> 99.811966, matched_data held,
+0 REGRESSED, 2 IMPROVED, and the missing-word count in those three units halved (engine/0
+18 -> 8, newshadows 13 -> 9, model 9 -> 3). **Section 9's per-unit table is an upper bound on
+the price, not the price.** Any later census of this class should sweep one symbol at a time.
+
+### Two distinct prices, and only one of them is a colouring
+
+`ca33bc08`'s lesson - that the regression is the register colouring and an ordinary source move
+fixes it - does not generalise. The 36 priced rows split cleanly:
+
+- **Address-priced.** A self-owned `lbl_XXXXXXXX` extern resolves to retail's own address, so
+  every reference through it is a *guaranteed* hit. Replace it with a literal and the reference
+  moves to wherever our own pool happens to put that word. `704` is the pure case: with the
+  crutch gone the instruction streams are identical (T=836, C=836, every region a reloc name),
+  and the whole 0.288 is the address. **These rows are gated behind fixing the pool order
+  first**, after which they become free by construction.
+- **Schedule-priced.** A load of a named global is a memory reference the instruction scheduler
+  will not move across; an interned `@NNN` literal is not, and MWCC hoists it. `engine/68`'s
+  `firstPersonDoControls` is the clean instance: `spinI = (int)(15360.0f * ((f32)stickY /
+  120.0f))` and the `camera->anim.rotX` statement after it swap wholesale, T=306 C=306.
+  Swapping the two statements in the source, and splitting the division into its own temp, both
+  reproduce **the identical 94.512** - the scheduler is deciding, not the text. No source move
+  reaches these; they are as priced as section 9 says.
