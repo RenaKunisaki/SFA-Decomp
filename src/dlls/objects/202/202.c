@@ -1218,6 +1218,7 @@ void groundBaddiePickNextMove(GameObject* obj, u8* state)
     }
 }
 
+void sharpClawUpdateAttack(GameObject* obj, u8* state);
 void sharpClawUpdateAttack(GameObject* obj, u8* state)
 {
     GameObject* player;
@@ -1313,6 +1314,7 @@ void sharpClawUpdateAttack(GameObject* obj, u8* state)
     }
 }
 
+void sharpClawInit(int obj, u8* state);
 void sharpClawInit(int obj, u8* state)
 {
     GroundBaddiePlacement* setup = (GroundBaddiePlacement*)((GameObject*)obj)->anim.placementData;
@@ -1541,6 +1543,7 @@ typedef struct
 
 extern Seq11ERow gSeq11EStateTable[];
 
+void guardClaw_update(GameObject* obj, u8* state);
 void guardClaw_update(GameObject* obj, u8* state)
 {
     int* def = *(int**)&(obj)->anim.placementData;
@@ -1629,6 +1632,7 @@ void guardClaw_update(GameObject* obj, u8* state)
     }
 }
 
+void guardClaw_init(GameObject* obj, u8* state);
 void guardClaw_init(GameObject* obj, u8* state)
 {
     GroundBaddiePlacement* sub = *(GroundBaddiePlacement**)&(obj)->anim.placementData;
@@ -1715,6 +1719,7 @@ typedef struct
     f32 d;
 } SeqFxParams;
 
+void gcRobotPatrol_update(GameObject* obj, u8* state);
 void gcRobotPatrol_update(GameObject* obj, u8* state)
 {
     GroundBaddiePlacement* def;
@@ -1909,6 +1914,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
     }
 }
 
+void gcRobotPatrol_init(GameObject* obj, int state);
 void gcRobotPatrol_init(GameObject* obj, int state)
 {
     f32 fz;
@@ -2346,6 +2352,7 @@ void magicplantSpawnMovePuffs(GameObject* obj, int state)
     }
 }
 
+void kooshy_spawnProjectile(GameObject* obj, int state);
 void kooshy_spawnProjectile(GameObject* obj, int state)
 {
     ObjPlacement* fx;
@@ -3313,6 +3320,7 @@ void wallPlaneClampMoveTarget(float* outPos, WallPlaneState* plane, float latera
     outPos[2] = scale * plane->normal[2] + outPos[2];
 }
 
+void rachnopFindWallPlane(GameObject* obj, int state);
 void rachnopFindWallPlane(GameObject* obj, int state)
 {
     u8 didHit;
@@ -4928,6 +4936,7 @@ typedef struct
  * any entry's modelType is 0x6a3 with state[0x2dc] bit 0x20000000 set
  * AND bits 0x1800 clear, latches "found" and exits. If nothing matched,
  * loads the default triggered camera action. */
+void crawler_checkNearbyActive(GameObject* obj, u8* state);
 void crawler_checkNearbyActive(GameObject* obj, u8* state)
 {
     u8 count = enemy_findNearbyEnemies(obj, 640.0f, 0, 0x28, gCrawlerNearbyObjectBuffer);
@@ -4956,6 +4965,7 @@ void crawler_checkNearbyActive(GameObject* obj, u8* state)
     }
 }
 
+void firecrawler_spawnFireHole(GameObject* obj, u8* state);
 void firecrawler_spawnFireHole(GameObject* obj, u8* state)
 {
     FirePipeMapData* setup;
@@ -4987,6 +4997,7 @@ void firecrawler_spawnFireHole(GameObject* obj, u8* state)
     }
 }
 
+void firecrawler_spawnProjectile(GameObject* obj, u8* state);
 void firecrawler_spawnProjectile(GameObject* obj, u8* state)
 {
     u8 locked = Obj_IsLoadingLocked();
@@ -5020,6 +5031,7 @@ void firecrawler_spawnProjectile(GameObject* obj, u8* state)
     }
 }
 
+void crawlerPlayMoveEventFx(GameObject* obj, u8* state);
 void crawlerPlayMoveEventFx(GameObject* obj, u8* state)
 {
     typedef struct
@@ -5318,6 +5330,7 @@ void crawler_onHit(GameObject* obj, u8* state, GameObject* attacker, int cmd, in
     ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x10;
 }
 
+void crawler_updateC(GameObject* obj, u8* state);
 void crawler_updateC(GameObject* obj, u8* state)
 {
     CrawlerDescriptor* d = (CrawlerDescriptor*)gCrawlerDescriptorTable;
@@ -5543,6 +5556,7 @@ void crawler_updateC(GameObject* obj, u8* state)
     crawlerPlayMoveEventFx(obj, state);
 }
 
+void crawler_updateB(GameObject* obj, u8* state);
 void crawler_updateB(GameObject* obj, u8* state)
 {
     CrawlerDescriptor* d = (CrawlerDescriptor*)gCrawlerDescriptorTable;
@@ -5758,6 +5772,7 @@ void crawler_updateB(GameObject* obj, u8* state)
     crawlerPlayMoveEventFx(obj, state);
 }
 
+void crawler_update(GameObject* obj, u8* state);
 void crawler_update(GameObject* obj, u8* state)
 {
     typedef struct
@@ -5894,6 +5909,7 @@ void crawler_update(GameObject* obj, u8* state)
  * (offset 0x46): values 0x6a2/0x6a3/0x6a4 each pick a different float +
  * byte tuple to seed state[0x2a8..0x322]. The trailing block sets
  * shared state floats and computes obj->anim.rootMotionScale from params->unk28. */
+void crawler_initModelVariant(GameObject* obj, u8* state);
 void crawler_initModelVariant(GameObject* obj, u8* state)
 {
     GroundBaddiePlacement* params = (GroundBaddiePlacement*)obj->anim.placementData;
@@ -6313,6 +6329,7 @@ void hagabonMK2_init(GameObject* obj, EnemyState* st)
 
 #define SNOWWORM_SEQID_BABY            0x84b /* "snowworm_ba" - the baby variant of 0x842 "snowworm" */
 
+void snowworm_spawnProjectile(GameObject* obj);
 void snowworm_spawnProjectile(GameObject* obj)
 {
     u8 locked = Obj_IsLoadingLocked();

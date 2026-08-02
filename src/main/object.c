@@ -318,6 +318,7 @@ void Obj_ClearModelSlotIndex(GameObject* obj)
     obj->anim.mapEventSlot = -1;
 }
 
+void Obj_ClearModelColorFadeRecursive(GameObject* obj);
 void Obj_ClearModelColorFadeRecursive(GameObject* obj)
 {
     int i;
@@ -332,6 +333,7 @@ void Obj_ClearModelColorFadeRecursive(GameObject* obj)
     }
 }
 
+void Obj_TickModelColorFadeRecursive(GameObject* obj);
 void Obj_TickModelColorFadeRecursive(GameObject* obj)
 {
     f32 alpha;

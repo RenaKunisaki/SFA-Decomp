@@ -215,6 +215,7 @@ typedef struct
 } TrickyVec3;
 
 
+void Tricky_resumeAfterCommand(GameObject* obj, int state);
 void Tricky_resumeAfterCommand(GameObject* obj, int state)
 {
     ObjHitsPriorityState* hitState;
@@ -1031,6 +1032,7 @@ void baddie_updateSightQuadrants(GameObject* obj, EnemyState* state, f32 radius)
     }
 }
 
+void Tricky_applyFloorResponse(GameObject* obj, int state);
 void Tricky_applyFloorResponse(GameObject* obj, int state)
 {
     f32 nearestFloorY;
@@ -1919,6 +1921,7 @@ int enemy_SeqFn(GameObject* node, int unused, ObjSeqState* animUpdate)
  * locked on; on hit, leave controlFlags alone. Otherwise initialise the rom-curve walker with
  * (data, obj, 700.0f, &lbl_803DBC58, -1) and toggle
  * the 0x2000 bit based on the u8 result. */
+void sidekickToy_updateCurveTargetLatch(GameObject* obj);
 void sidekickToy_updateCurveTargetLatch(GameObject* obj)
 {
     u8* state = (obj)->extra;
