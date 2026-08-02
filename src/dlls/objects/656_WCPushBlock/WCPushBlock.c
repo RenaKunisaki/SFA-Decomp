@@ -344,7 +344,7 @@ void wcpushblock_update(GameObject* obj)
             {
                 speed = lbl_803E6D64;
             }
-            sfxVolume = lbl_803E6D54 + lbl_803E6D6C * speed / lbl_803E6D70;
+            sfxVolume = lbl_803E6D54 + gWcPushBlockSlideSfxVolumeRange * speed / gWcPushBlockSlideSfxMaxSpeed;
             if (sfxVolume > gWcPushBlockSlideSfxMaxVolume)
             {
                 sfxVolume = gWcPushBlockSlideSfxMaxVolume;
