@@ -504,6 +504,7 @@ void waterFxDraw(void)
 
 
 #include "track/intersect_internal.h"
+#include "main/newshadows_audio_api.h"
 
 void waterFxSpawnContactEffect(u8* obj, f32* pos, u8 flip, u8 type)
 {

@@ -81,6 +81,8 @@ static const GXColorS10 sObjFuzzWhiteColorS10 = {0xFF, 0xFF, 0xFF, 0xFF};
 static const GXColor sObjFuzzWhiteColor = {0xFF, 0xFF, 0xFF, 0xFF};
 static const GXColor sObjFuzzDirLightEnvColor = {0xD8, 0xE0, 0xFF, 0xFF};
 
+int objNormalizeRotationMatrix(f32* matrix, f32* out);
+
 int objNormalizeRotationMatrix(f32* matrix, f32* out)
 {
     Vec v3;

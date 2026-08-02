@@ -32,6 +32,7 @@
 #include "sys/objects/lifecycle.h"
 #include "main/gx_scissor_api.h"
 #include "main/pi_dolphin_api.h"
+#include "main/newclouds.h"
 
 CloudActionRuntime gCloudActionRuntime;
 

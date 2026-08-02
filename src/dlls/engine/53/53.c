@@ -30,6 +30,7 @@
 #include "main/gametext_color_api.h"
 #include "main/gametext_show_str_api.h"
 #include "main/pad.h"
+#include "main/dll/dll_43.h"
 
 /*
  * frontend_control - save-file-select screen behaviour for the front end.
@@ -562,6 +563,12 @@ static void saveSelectScreenFree(int runExitCallback)
         gSaveSelectMenuItem = NULL;
     }
 }
+
+void SaveSelectScreen_render(int param);
+void SaveSelectScreen_frameEnd_nop(void);
+int SaveSelectScreen_run(void);
+void SaveSelectScreen_release(void);
+void SaveSelectScreen_initialise(void);
 
 void SaveSelectScreen_render(int param)
 {

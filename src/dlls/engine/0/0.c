@@ -765,6 +765,10 @@ static const GXColor sPauseMenuHoloChanColor = { 0xC0, 0xC0, 0xFF, 0xA0 };
 static const GXColor sQuadTevBaseColor = { 0xC0, 0xC0, 0xFF, 0x80 };
 static const GXColor sQuadTevKColor = { 0xFF, 0xFF, 0xFF, 0xFF };
 
+void cMenuPlayTrickyCommandSfx(int obj);
+void hudUpdateMinimapReveal(void);
+void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2);
+
 void cMenuPlayTrickyCommandSfx(int obj)
 {
     int sfx = 0;

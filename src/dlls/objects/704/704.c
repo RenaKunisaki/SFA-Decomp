@@ -61,6 +61,9 @@
 #include "main/gamebits_api.h"
 #include "main/gametext_command_api.h"
 #include "main/gametext_show_api.h"
+#include "main/dll/dll_02C0_front.h"
+#include "main/dll/dll_02C0_front_api.h"
+#include "main/dll/front_game_text_box_api.h"
 
 s8 gTitleScreenPrevMenuSelection = -1;
 s8 gTitleScreenPrevMenuActive = -1;
@@ -132,6 +135,8 @@ extern TitleAnimMoves gTitleScreenAnimMoves[];
 extern f32 hudMatrix[4][4];
 extern u8 framesThisStepUnclamped;
 extern f32 lbl_803E2300;
+void titleScreenPlayActorSfx(GameObject* obj, u8* arr);
+
 void titleScreenPlayActorSfx(GameObject* obj, u8* arr)
 {
     s8* sarr = (s8*)arr;

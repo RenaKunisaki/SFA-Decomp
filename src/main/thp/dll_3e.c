@@ -27,6 +27,8 @@
 #include "main/fileio.h"
 #include "main/audio_decode_thread.h"
 #include "main/dll/FRONT/picmenu.h"
+#include "main/dll/dll_3e_api.h"
+#include "dolphin/thp/THPDraw.h"
 
 typedef struct AttractMovieControl {
     u8 pad000[0x560];

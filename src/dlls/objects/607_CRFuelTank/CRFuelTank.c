@@ -24,6 +24,8 @@ int crfueltank_getExtraSize(void)
     return sizeof(CrFuelTankState);
 }
 
+int crfueltank_getObjectTypeId(void);
+
 int crfueltank_getObjectTypeId(void)
 {
     return 0;

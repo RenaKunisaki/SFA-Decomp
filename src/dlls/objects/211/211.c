@@ -70,6 +70,11 @@ typedef struct LandedArwingTriggerLaunchTargetState
 /* part of LANDED_ARWING_FLAG_LAUNCHING (0x02004000): mark launch active */
 #define LANDED_ARWING_FLAG_BOUNCE 0x4000
 
+int LandedArwing_ReturnZero(void);
+int LandedArwing_TriggerLaunchTarget(GameObject* obj, int target);
+int LandedArwing_UpdateBounceFade(GameObject* obj, u32* stateWord);
+int LandedArwing_UpdateRetreatChase(GameObject* obj, int stateWord);
+
 int LandedArwing_ReturnZero(void)
 {
     return 0;

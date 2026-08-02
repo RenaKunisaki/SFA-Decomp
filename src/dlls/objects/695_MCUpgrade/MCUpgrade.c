@@ -21,6 +21,8 @@
 #include "main/dll/tricky_api.h"
 #include "main/obj_trigger.h"
 #include "main/objprint_render_api.h"
+#include "main/dll/dll_02B7_mcupgrade.h"
+#include "main/dll/dll_02B8_mcupgradema.h"
 
 void mcupgrade_update(GameObject* obj)
 {

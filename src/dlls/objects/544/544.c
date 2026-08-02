@@ -12,6 +12,7 @@
 #include "game/objects/object_setup.h"
 #include "main/audio/sfx_play_api.h"
 #include "sys/objects.h"
+#include "main/light_internal.h"
 
 #define VFP_DOORSWITCH_LIFTIND_OBJ 0x3e7
 
@@ -71,6 +72,16 @@ void vfpdoorswitch_updateExplodingVariant(GameObject* obj)
         }
     }
 }
+
+int VFP_DoorSwitch_getExtraSize(void);
+int VFP_DoorSwitch_getObjectTypeId(void);
+void VFP_DoorSwitch_free(int obj);
+void VFP_DoorSwitch_render(int p1, int p2, int p3, int p4, int p5, s8 visible);
+void VFP_DoorSwitch_hitDetect(void);
+void VFP_DoorSwitch_update(GameObject* obj);
+void VFP_DoorSwitch_init(GameObject* obj, int data);
+void VFP_DoorSwitch_release(void);
+void VFP_DoorSwitch_initialise(void);
 
 int VFP_DoorSwitch_getExtraSize(void)
 {

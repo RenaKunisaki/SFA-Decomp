@@ -59,6 +59,7 @@
 #include "track/intersect_depth_read_api.h"
 #include "dolphin/gx/GXFifo.h"
 #include "dolphin/os/OSThread.h"
+#include "main/asset_load.h"
 
 static u32 sPiUnused3;
 void* lbl_803DCD10;
@@ -3993,6 +3994,10 @@ void tvInit(void)
 extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
 
 extern u8 enableDebugText;
+
+void gpuErrorHandler(u32 retraceCount);
+void videoSwapFrameBuffers(u32 retraceCount);
+void videoBreakPointCallback(void);
 
 void gpuErrorHandler(u32 retraceCount)
 {

@@ -15,6 +15,7 @@
 #include "main/gametext_show_api.h"
 #include "main/gametext_show_str_api.h"
 #include "main/model_engine.h"
+#include "main/dll/dll_36.h"
 
 extern u16 gEnterSaveNameCharTextIds[];
 
@@ -83,6 +84,8 @@ void EnterSaveNameScreen_frameEnd(void)
 #define ENTER_SAVE_NAME_SFX_CONFIRM  0x418
 #define ENTER_SAVE_NAME_SFX_DELETE   0x419
 #define ENTER_SAVE_NAME_SFX_TYPE     0x41A
+
+u32 EnterSaveNameScreen_run(void);
 
 u32 EnterSaveNameScreen_run(void)
 {
@@ -273,11 +276,13 @@ u32 EnterSaveNameScreen_run(void)
     return 0;
 }
 
+void EnterSaveNameScreen_release(void);
 void EnterSaveNameScreen_release(void)
 {
     gTitleMenuLinkInterface->vtable->free();
 }
 
+void EnterSaveNameScreen_initialise(void);
 void EnterSaveNameScreen_initialise(void)
 {
     int i;

@@ -174,6 +174,10 @@ static inline void errDisplayFillBackdrop(void)
     } while (x < 0x280);
 }
 
+int debugPrintDrawGlyph(int unused, int c);
+int debugPrintDrawRecord(int color, u8* p);
+void debugTextDrawToFrameBuffer(int x, int y, u8* grid, int unused);
+
 int debugPrintDrawGlyph(int unused, int c)
 {
     u8* tbl;

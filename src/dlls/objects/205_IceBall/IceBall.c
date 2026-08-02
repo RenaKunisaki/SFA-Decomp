@@ -16,6 +16,7 @@
 #include "main/audio/sfx_play_api.h"
 #include "main/objhits.h"
 #include "sys/objects/lifecycle.h"
+#include "dlls/objects/205_IceBall.h"
 
 #define ICEBALL_HIT_VOLUME_SLOT 10
 #define ICEBALL_PARTICLE_COUNT  25

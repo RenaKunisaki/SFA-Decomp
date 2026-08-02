@@ -94,6 +94,13 @@ void drakorhoverpad_renderGroundMarker(GameObject* obj, f32 scale)
     objSetModelMatrixOverride(gDrakorHoverpadMtx);
 }
 
+void drakorhoverpad_func15(void);
+int drakorhoverpad_getRacePosition(void);
+void drakorhoverpad_setMountState(void);
+int drakorhoverpad_getMountState(void);
+int drakorhoverpad_getDismountSide(void);
+int drakorhoverpad_getMountSide(void);
+
 void drakorhoverpad_func15(void)
 {
 }

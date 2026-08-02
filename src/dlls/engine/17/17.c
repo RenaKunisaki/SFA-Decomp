@@ -6,6 +6,9 @@
 #include "main/asset_load.h"
 #include "main/gamebits_api.h"
 #include "main/mm.h"
+#include "main/dll/dll_0011_screens.h"
+#include "main/dll/hint_text_api.h"
+#include "main/dll/dll_0011_screens_api.h"
 
 u32 gScreenDataId;
 u32 lbl_803DD4A8;

@@ -38,6 +38,17 @@ typedef struct SeqPointState
 
 STATIC_ASSERT(sizeof(SeqPointState) == 0x10);
 
+int SeqPoint_SeqFn(GameObject* obj, int param2, ObjSeqState* ctx);
+int SeqPoint_getExtraSize(void);
+int SeqPoint_getObjectTypeId(void);
+void SeqPoint_free(void);
+void SeqPoint_render(int p1, int p2, int p3, int p4, int p5, s8 visible);
+void SeqPoint_hitDetect(void);
+void SeqPoint_update(GameObject* obj);
+void SeqPoint_init(GameObject* obj, int data);
+void SeqPoint_release(void);
+void SeqPoint_initialise(void);
+
 int SeqPoint_SeqFn(GameObject* obj, int param2, ObjSeqState* ctx)
 {
     SeqPointState* state = obj->extra;

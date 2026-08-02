@@ -5,6 +5,7 @@
 #include "main/model_engine.h"
 #include "main/objtype.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/printf.h"
+#include "main/dll/dll_003F_dll3f.h"
 
 char sDll3FTimerFormat[] = "%2d";
 

@@ -88,6 +88,19 @@ STATIC_ASSERT(sizeof(ShopItemState) == 0xEC);
 STATIC_ASSERT(sizeof(ShopkeeperState) == 0x9D8);
 STATIC_ASSERT(offsetof(ShopkeeperState, msgStack) == 0x9B0);
 
+void shopitem_sparkleBlendSetup(GameObject* obj);
+void shopitem_renderSparkle(GameObject* obj, int p2, int p3, int p4, int p5);
+int shopitem_SeqFn(GameObject* obj, int unused, ObjSeqState* seq);
+int shopitem_getExtraSize(void);
+int shopitem_getObjectTypeId(void);
+void shopitem_free(GameObject* obj);
+void shopitem_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
+void shopitem_hitDetect(void);
+void shopitem_update(GameObject* obj);
+void shopitem_init(GameObject* obj, ShopItemDef* data);
+void shopitem_release(void);
+void shopitem_initialise(void);
+
 void shopitem_sparkleBlendSetup(GameObject* obj)
 {
     if (obj->anim.renderAlpha == 0xFF)

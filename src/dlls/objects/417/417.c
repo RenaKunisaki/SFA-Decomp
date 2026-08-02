@@ -204,6 +204,12 @@ void NW_mammoth_updateEyeTracking(GameObject* obj, NwMammothState* state, int en
     }
 }
 
+int NW_mammoth_updateSleepCycle(GameObject* obj, NwMammothState* state);
+void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammothPlacement* placement);
+void NW_mammoth_updatePatrol(GameObject* obj, NwMammothState* state, NwMammothPlacement* placement);
+void NW_mammoth_updateArtifactQuest(GameObject* obj, NwMammothState* state, NwMammothPlacement* placement);
+void NW_mammoth_updateFeedQuest(GameObject* obj, NwMammothState* state, NwMammothPlacement* placement);
+
 int NW_mammoth_updateSleepCycle(GameObject* obj, NwMammothState* state) {
     u8 night;
     int animCue;

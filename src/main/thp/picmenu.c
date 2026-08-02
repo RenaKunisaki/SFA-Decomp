@@ -13,6 +13,7 @@
 #include "dolphin/thp/THPPlayer.h"
 #include "main/fileio.h"
 #include "string.h"
+#include "main/dll/FRONT/picmenu.h"
 
 char sPicMenuThpMagic[] = "THP";
 

@@ -1450,6 +1450,8 @@ void trackUnpackVector(s16* in, f32* out)
 /* trackBuildModelTriangles -- gather model triangles overlapping a swept bbox into the
  * hit-detect triangle buffer at cur (0x4c-byte records); returns advanced
  * cursor. */
+u32 trackGetPackedSurfaceType(int* obj);
+
 u32 trackGetPackedSurfaceType(int* obj)
 {
     u32 v = obj[4];

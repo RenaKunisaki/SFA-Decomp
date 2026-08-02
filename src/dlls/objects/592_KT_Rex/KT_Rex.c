@@ -105,6 +105,22 @@ static inline u8 ktrex_hasLaneLerpOvershot(void)
 
 int ktrex_isPlayerInLaneThreatRange(GameObject* obj);
 
+int ktrex_shouldAdvanceArenaPhase(void);
+int ktrex_stateHandlerA06(GameObject* obj, GroundBaddieState* runtime);
+int ktrex_stateHandlerA00(void);
+int ktrex_stateHandlerB00(GameObject* obj, GroundBaddieState* runtime);
+void ktrex_func0B(void);
+int ktrex_getControlMode(GameObject* obj);
+int ktrex_getExtraSize(void);
+int ktrex_getObjectTypeId(void);
+void ktrex_free(GameObject* obj);
+void ktrex_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visible);
+void ktrex_hitDetect(GameObject* obj);
+void ktrex_update(GameObject* obj);
+void ktrex_init(GameObject* obj, char* arg, int flag);
+void ktrex_release(void);
+void ktrex_initialise(void);
+
 int ktrex_shouldAdvanceArenaPhase(void)
 {
     u8 currentMask;

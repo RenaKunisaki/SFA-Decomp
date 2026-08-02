@@ -50,6 +50,7 @@ void sceneDrawTransparentPolys(void);
 #include "main/render_flags.h"
 #include "main/dll/player_api.h"
 #include "main/dll_000A_expgfx.h"
+#include "main/lightmap.h"
 
 extern f32 lbl_803DEBFC;
 

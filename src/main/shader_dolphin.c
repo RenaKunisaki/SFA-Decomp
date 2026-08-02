@@ -37,6 +37,7 @@
 #include "dolphin/gx/GXBump.h"
 #include "main/newshadows_texture_api.h"
 #include "main/rcp_dolphin_render_api.h"
+#include "main/pi_dolphin_api.h"
 
 
 static int sRcpUnused0;

@@ -28,6 +28,7 @@
 #include "main/dll/dll_02C0_front.h"
 #include "main/lightmap_api.h"
 #include "main/rcp_dolphin_render_api.h"
+#include "main/dll/dll_4E.h"
 
 typedef struct OptionsScreenPanelConfig {
     u16* items;

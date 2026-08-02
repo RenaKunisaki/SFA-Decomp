@@ -20,6 +20,7 @@
 #include "dolphin/gx/GXDispList.h"
 #include "track/intersect_api.h"
 #include "track/intersect_render_setup_api.h"
+#include "main/newclouds.h"
 
 u8 gNewCloudStarsInitialized;
 Texture* gNewCloudStarTextureB;

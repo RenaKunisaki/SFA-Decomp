@@ -21,6 +21,7 @@
 #include "main/lightmap_render_control_api.h"
 #include "main/map_load.h"
 #include "main/model_engine.h"
+#include "main/dll/FRONT/dll_3B.h"
 
 u8 gTitleMenuPanelOpen;
 s8 gTitleMenuLoadDelay;

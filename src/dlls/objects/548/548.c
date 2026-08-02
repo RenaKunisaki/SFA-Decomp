@@ -26,6 +26,17 @@ typedef struct SpellStonePlacement {
     s16 requiredGameBit; /* 0x20 */
 } SpellStonePlacement;
 
+void SpellStoneUse_updateInteraction(GameObject* obj);
+int dll_224_getExtraSize_ret_6(void);
+int dll_224_getObjectTypeId(void);
+void dll_224_free_nop(void);
+void dll_224_render(int p1, int p2, int p3, int p4, int p5, s8 visible);
+void dll_224_hitDetect(GameObject* obj);
+void dll_224_update(GameObject* obj);
+void dll_224_init(GameObject* obj, void* other);
+void dll_224_release_nop(void);
+void dll_224_initialise_nop(void);
+
 void SpellStoneUse_updateInteraction(GameObject* obj) {
     SpellStoneUseState* state = obj->extra;
     s16 cond = 1;

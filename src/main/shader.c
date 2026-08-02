@@ -86,6 +86,7 @@ extern const f32 gMapBlockWorldSize;
 #include "main/screen_transition.h"
 #include "dolphin/gx/GXCull.h"
 #include "string.h"
+#include "main/rcp_dolphin.h"
 
 int lbl_803DB620 = -1;
 s8 gMapLayerOffsets[8] = {0, -2, -1, 1, 2, 0, 0, 0};
@@ -820,6 +821,8 @@ static int objShouldLoad(ObjPlacement* placement, s8 viewSlot, int mapEventGroup
     }
     return 0;
 }
+void mapLoadUnloadObjects(int flag);
+
 void mapLoadUnloadObjects(int flag)
 {
     int grpBit;

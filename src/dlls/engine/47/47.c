@@ -11,6 +11,7 @@
 #include "main/obj_message.h"
 #include "main/objhits.h"
 #include "main/objtype.h"
+#include "main/dll/dll_002F_carryable.h"
 
 #define CARRYABLE_MSG_PLAYER_GRAB 0x100008
 

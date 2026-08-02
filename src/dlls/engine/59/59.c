@@ -4,6 +4,7 @@
 #include "main/hud_visibility_api.h"
 #include "main/pad.h"
 #include "track/intersect_screen_api.h"
+#include "main/dll/dll_003B_menu.h"
 
 #define PAD_ACCEPT_MASK  (PAD_BUTTON_A | PAD_BUTTON_START)
 

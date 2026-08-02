@@ -353,6 +353,10 @@ int* mapRomListFindItem(int needle, int* out_idx, int* out_outer, int* out_type,
     return NULL;
 }
 
+void sortVisibleObjectKeysDescending(u32* arr, int n);
+void getVisibleObjects(s8* opacity);
+void renderSceneGeometry(u8 renderType, s8* order);
+
 void sortVisibleObjectKeysDescending(u32* arr, int n)
 {
     int i, j;
