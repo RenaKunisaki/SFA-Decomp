@@ -90,9 +90,6 @@ static inline void gxLoadObjectLights(GameObject* model, ModelLightStruct** ligh
 }
 
 static int Rcp_SetupDistortionLights(int model, f32* params);
-const f32 gRcpDistortScaleA[1] = {2.146452f};
-const f32 gRcpDistortPowExp[1] = {2.520326f};
-static const f32 gRcpDistortColorScale[1] = {255.0f};
 
 static void Rcp_DrawWarpDistortionMesh(f32 a, f32 b) /* params unused; callers pass (i*32, 0.0f) */
 {
@@ -426,15 +423,15 @@ void Rcp_InitDistortionEffects(void)
     gRcpDistortSlotIndex = i = 0;
     cfg = &gRcpDistortConfigs[0].radius;
     slots = gRcpDistortSlots;
-    radiusScale = gRcpDistortScaleA[0];
-    strengthScale = gRcpDistortColorScale[0];
+    radiusScale = 2.146452f;
+    strengthScale = 255.0f;
     do
     {
         strength = cfg[i * 2 + 1];
         (slot = &slots[gRcpDistortSlotIndex])->colR = 0xff;
         slot->colG = 0xff;
         slot->colB = 0xff;
-        falloff = radiusScale / powfCoreHighPrecision(cfg[i * 2], gRcpDistortPowExp[0]);
+        falloff = radiusScale / powfCoreHighPrecision(cfg[i * 2], 2.520326f);
         slot = &slots[gRcpDistortSlotIndex];
         pairIdx = i & 1;
         slot->params[pairIdx] = falloff;
