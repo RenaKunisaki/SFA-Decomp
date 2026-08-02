@@ -272,7 +272,7 @@ void pollenfragment_update(GameObject* obj)
     }
     if ((extra->def)->smoothTurn)
     {
-        Obj_SmoothTurnAnglesTowardVelocity(obj, (const Vec3f*)((int)obj + 0x24), 10, 0.0f,
+        Obj_SmoothTurnAnglesTowardVelocity(obj, &obj->anim.velocity, 10, 0.0f,
                                            1.0f);
         obj->anim.rotZ = obj->anim.rotZ + framesThisStep * 0x500;
     }

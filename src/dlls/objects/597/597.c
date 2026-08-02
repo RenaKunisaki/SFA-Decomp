@@ -661,7 +661,7 @@ f32 drcloudcage_getRouteIntensity(GameObject* obj, int state)
         if (gSnowBikeLeaderRouteRank == -1)
         {
             rank = (int)Obj_GetPlayerObject();
-            d = Vec_distance(&obj->anim.worldPosX, (f32*)(rank + 0x18));
+            d = Vec_distance(&obj->anim.worldPosX, &((GameObject*)rank)->anim.worldPosX);
             d *= 0.5f;
         }
         else

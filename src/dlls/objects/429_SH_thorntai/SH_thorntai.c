@@ -708,7 +708,7 @@ void SHthorntail_updateLevelControlMode1(u32 objectId, SHthorntailState* runtime
     runtime->impactSfxTable = gSHthorntailLevelControlMode1ImpactSfxTable;
     playerObj = (int)Obj_GetPlayerObject();
     {
-        int cmp = getXZDistance((f32*)(objectId + 0x18), (f32*)(playerObj + 0x18)) <
+        int cmp = getXZDistance(&((GameObject*)objectId)->anim.worldPosX, &((GameObject*)playerObj)->anim.worldPosX) <
                   SHTHORNTAIL_CLOSE_ATTACK_DISTANCE;
         closeToPlayer = cmp;
     }

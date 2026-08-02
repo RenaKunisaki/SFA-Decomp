@@ -683,7 +683,7 @@ void dbegg_update(GameObject* obj)
             (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             break;
         case DBEGG_MODE_PICKUP_PROMPT:
-            if (Vec_xzDistance((f32*)((int)obj + 0x18), (f32*)(data + 8)) > 150.0f &&
+            if (Vec_xzDistance(&(obj)->anim.worldPosX, (f32*)(data + 8)) > 150.0f &&
                 (egg->flags119 & 2) == 0)
             {
                 playerObj = Obj_GetPlayerObject();
@@ -782,7 +782,7 @@ void dbegg_update(GameObject* obj)
                     ((obj)->anim.velocityX * (obj)->anim.velocityX + (obj)->anim.velocityY * (obj)->anim.velocityY));
                 if (fx > 4.6f * timeDelta)
                 {
-                    Vec3_Normalize((f32*)((int)obj + 0x24));
+                    Vec3_Normalize(&(obj)->anim.velocityX);
                     (obj)->anim.velocityX = (obj)->anim.velocityX * (4.6f * timeDelta);
                     (obj)->anim.velocityY = (obj)->anim.velocityY * (4.6f * timeDelta);
                     (obj)->anim.velocityZ = (obj)->anim.velocityZ * (4.6f * timeDelta);
@@ -851,7 +851,7 @@ void dbegg_update(GameObject* obj)
         {
             if (mainGetBit(0x3c4) == 0)
             {
-                if (Vec_xzDistance((f32*)((int)obj + 0x18), (f32*)((int)player + 0x18)) < 25.0f)
+                if (Vec_xzDistance(&(obj)->anim.worldPosX, &player->anim.worldPosX) < 25.0f)
                 {
                     if ((egg->flags119 & 1) == 0)
                     {

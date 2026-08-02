@@ -2710,7 +2710,7 @@ void enemy_update(GameObject* obj)
             }
             if (player != NULL)
             {
-                if (vec3f_distanceSquared((f32*)(player + 0x18), &((EnemyPlacement*)setup)->base.posX) >
+                if (vec3f_distanceSquared(&((GameObject*)player)->anim.worldPosX, &((EnemyPlacement*)setup)->base.posX) >
                     1600.0f)
                 {
                     enemy_init(obj, setup, 0);
@@ -2740,7 +2740,7 @@ void enemy_update(GameObject* obj)
             player = (u8*)Obj_GetPlayerObject();
             if (player != NULL)
             {
-                if (vec3f_distanceSquared((f32*)(player + 0x18), &((EnemyPlacement*)setup)->base.posX) >
+                if (vec3f_distanceSquared(&((GameObject*)player)->anim.worldPosX, &((EnemyPlacement*)setup)->base.posX) >
                     1600.0f)
                 {
                     enemy_init(obj, setup, 0);
@@ -2774,7 +2774,7 @@ void enemy_update(GameObject* obj)
                     player = (u8*)Obj_GetPlayerObject();
                     if (player != NULL)
                     {
-                        if (vec3f_distanceSquared((f32*)(player + 0x18), &((EnemyPlacement*)setup)->base.posX) >
+                        if (vec3f_distanceSquared(&((GameObject*)player)->anim.worldPosX, &((EnemyPlacement*)setup)->base.posX) >
                             1600.0f)
                         {
                             enemy_init(obj, setup, 0);

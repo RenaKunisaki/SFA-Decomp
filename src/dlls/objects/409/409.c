@@ -278,7 +278,7 @@ void dll409_update(GameObject* obj) {
                 mainSetBits(DLL199_GAMEBIT_05B5, 1);
             }
             mainSetBits(DLL199_GAMEBIT_05B9, 0);
-            if (Vec_distance((f32*)((int)obj + 0x18), (f32*)((u8*)player + 0x18)) < state->activationDistance) {
+            if (Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) < state->activationDistance) {
                 state->phase = 1;
                 mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 0);
                 (*gObjectTriggerInterface)->runSequence(0, obj, 0xffffffff);

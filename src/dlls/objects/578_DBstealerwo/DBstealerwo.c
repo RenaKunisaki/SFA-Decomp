@@ -714,7 +714,7 @@ int dbstealerworm_stateHandlerA0C(GameObject* obj, BaddieState* baddie, f32 t)
         o = *cursor;
         if ((u32)o != player)
         {
-            ds = vec3f_distanceSquared((f32*)(player + 0x18), (f32*)(o + 0x18));
+            ds = vec3f_distanceSquared(&((GameObject*)player)->anim.worldPosX, &((GameObject*)o)->anim.worldPosX);
             if (ds > bestD)
             {
                 bestD = ds;

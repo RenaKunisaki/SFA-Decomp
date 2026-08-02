@@ -198,7 +198,7 @@ void kytesmum_playAnimationEventSfx(u32 obj, u8* arg, s16* sfxData)
 int kytesmum_updateNearPlayerCallback(GameObject* obj, int unused, u8* arg)
 {
     GameObject* player = Obj_GetPlayerObject();
-    int* tricky = (int*)getTrickyObject();
+    GameObject* tricky = (GameObject*)getTrickyObject();
     KytesMumRuntime* runtime = obj->extra;
     if (objGetAnimState80A(player) == 0x40)
     {
@@ -214,7 +214,7 @@ int kytesmum_updateNearPlayerCallback(GameObject* obj, int unused, u8* arg)
             (*gObjectTriggerInterface)->runSequence(randomGetRange(0, 1), (void*)obj, -1);
         }
     }
-    if ((tricky != 0 && Vec_xzDistance(&(obj)->anim.worldPosX, (f32*)((char*)tricky + 0x18)) < 40.0f) ||
+    if ((tricky != 0 && Vec_xzDistance(&(obj)->anim.worldPosX, &tricky->anim.worldPosX) < 40.0f) ||
         (player != 0 &&
          Vec_xzDistance(&(obj)->anim.worldPosX, &player->anim.worldPosX) < 40.0f))
     {

@@ -776,7 +776,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
         case 0x23:
             switch (p[2]) {
             case 0:
-                (*gMapEventInterface)->restartPoint((void*)((int)obj + 0xc), (int)obj->anim.rotX, getCurMapLayer(), 0);
+                (*gMapEventInterface)->restartPoint((void*)&obj->anim.localPos, (int)obj->anim.rotX, getCurMapLayer(), 0);
                 break;
             case 1:
                 (*gMapEventInterface)->clearRestartPoint();
@@ -785,7 +785,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
                 (*gMapEventInterface)->gotoRestartPoint();
                 break;
             case 3:
-                (*gMapEventInterface)->restartPoint((void*)((int)obj + 0xc), (int)obj->anim.rotX, getCurMapLayer(), 1);
+                (*gMapEventInterface)->restartPoint((void*)&obj->anim.localPos, (int)obj->anim.rotX, getCurMapLayer(), 1);
                 break;
             }
             break;
