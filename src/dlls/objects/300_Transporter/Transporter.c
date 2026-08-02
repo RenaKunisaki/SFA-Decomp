@@ -225,7 +225,6 @@ void Transporter_updateInteraction(GameObject* obj) {
     }
 }
 
-const f32 gWarpPadRestZero[1] = {0.0f};
 
 
 /* Environment effects restored by animation event 8. */

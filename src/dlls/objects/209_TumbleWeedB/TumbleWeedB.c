@@ -201,11 +201,10 @@ void TumbleWeedBush_free(GameObject* obj) {
 }
 
 void TumbleWeedBush_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
-    static const f32 sTumbleweedBushRenderScale[1] = { TUMBLEWEED_BUSH_RENDER_SCALE };
     s32 visibleInt = visible;
 
     if (visibleInt != 0) {
-        objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, sTumbleweedBushRenderScale[0]);
+        objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, TUMBLEWEED_BUSH_RENDER_SCALE);
     }
 }
 
@@ -262,15 +261,13 @@ void TumbleWeedBush_update(GameObject* obj) {
 }
 
 void TumbleWeedBush_init(GameObject* obj, TumbleweedBushPlacement* placement, int flags) {
-    static const f32 sTumbleweedBushInitScale[1] = { TUMBLEWEED_BUSH_INIT_SCALE };
-    static const f32 sTumbleweedBushHitRadius[1] = { TUMBLEWEED_BUSH_HIT_RADIUS };
     TumbleweedBushState* state;
     f32 scale;
     int offsetTableIndex;
     int pieceIndex;
 
     state = obj->extra;
-    state->scale = sTumbleweedBushInitScale[0];
+    state->scale = TUMBLEWEED_BUSH_INIT_SCALE;
     state->triggerRadius = (u16)(placement->radiusByte * 2);
     state->variant = placement->variant;
     obj->anim.rotZ =
@@ -280,7 +277,7 @@ void TumbleWeedBush_init(GameObject* obj, TumbleweedBushPlacement* placement, in
     obj->anim.rotX = (s16)(placement->rotXByte << TUMBLEWEED_BUSH_ROTATION_X_SHIFT);
     obj->anim.rootMotionScale = placement->scale;
     scale = obj->anim.rootMotionScale;
-    ObjHitbox_SetCapsuleBounds((ObjAnimComponent*)obj, (s32)(sTumbleweedBushHitRadius[0] * scale),
+    ObjHitbox_SetCapsuleBounds((ObjAnimComponent*)obj, (s32)(TUMBLEWEED_BUSH_HIT_RADIUS * scale),
                                (s32)(TUMBLEWEED_BUSH_HIT_Y_MIN * scale), (s32)(TUMBLEWEED_BUSH_HIT_Y_MAX * scale));
     switch (obj->anim.romDefNo) {
     case TUMBLEWEED_BUSH_SEQUENCE_A:

@@ -315,7 +315,7 @@ int dll_CB_seqFn(GameObject* obj, int unused, ObjSeqState* sequenceState) {
                     (*gRomCurveInterface)->goNextPoint(path) != 0) {
                     state->flags400 &= ~BADDIE_FLAG400_PATH_ACTIVE;
                 }
-                state->baddie.animSpeedA = *(volatile const f32*)&gDllCBDefaultAnimSpeed;
+                state->baddie.animSpeedA = gDllCBDefaultAnimSpeed;
                 obj->anim.rotX = getAngle(path->tangentX, path->tangentZ) + 0x8000;
                 obj->anim.rotY = getAngle(path->tangentZ, path->tangentY) + 0x4000;
                 obj->anim.rotZ = getAngle(path->tangentY, path->tangentX) + 0x4000;
@@ -418,7 +418,7 @@ void dll_CB_update(GameObject* obj) {
             state->flags400 = state->flags400 & ~BADDIE_FLAG400_PATH_ACTIVE;
         }
     }
-    state->baddie.animSpeedA = *(volatile const f32*)&gDllCBDefaultAnimSpeed;
+    state->baddie.animSpeedA = gDllCBDefaultAnimSpeed;
     obj->anim.rotX = (s16)(getAngle(path->tangentX, path->tangentZ) + 0x8000);
     obj->anim.rotY = (s16)(getAngle(path->tangentZ, path->tangentY) + 0x4000);
     obj->anim.rotZ = (s16)(getAngle(path->tangentY, path->tangentX) + 0x4000);

@@ -18,7 +18,6 @@
 
 const f32 gProjectedLightInitialDirection[4] = {0.0f, 0.0f, 1.0f, 0.0f};
 
-const f32 gProjectedLightMinExtent[1] = {1.0f};
 
 #define PROJECTEDLIGHT_DEFAULT_TEXTURE_ASSET 0x5dc
 #define PROJECTEDLIGHT_PROJECTION_ORTHO      0
@@ -110,14 +109,14 @@ void ProjectedLight_init(GameObject* obj, ProjectedLightSetup* setup)
             f32 halfHeight = (f32)(u32)setupData->projectionHeight / 10.0f;
             f32 halfWidth;
             f32 nearDepth, farDepth;
-            if (halfHeight < gProjectedLightMinExtent[0])
+            if (halfHeight < 1.0f)
             {
-                halfHeight = gProjectedLightMinExtent[0];
+                halfHeight = 1.0f;
             }
             halfWidth = (f32)(u32)setupData->projectionWidth / 10.0f;
-            if (halfWidth < gProjectedLightMinExtent[0])
+            if (halfWidth < 1.0f)
             {
-                halfWidth = gProjectedLightMinExtent[0];
+                halfWidth = 1.0f;
             }
             if (setupData->orthoDepthNibbles != 0)
             {
@@ -127,7 +126,7 @@ void ProjectedLight_init(GameObject* obj, ProjectedLightSetup* setup)
             }
             else
             {
-                nearDepth = gProjectedLightMinExtent[0];
+                nearDepth = 1.0f;
                 farDepth = nearDepth;
             }
             modelLightStruct_setupOrthoProjection(state->light, halfWidth, -halfWidth, -halfHeight, halfHeight,
@@ -137,14 +136,14 @@ void ProjectedLight_init(GameObject* obj, ProjectedLightSetup* setup)
         {
             f32 height = (f32)(u32)setupData->projectionHeight / 10.0f;
             f32 width;
-            if (height < gProjectedLightMinExtent[0])
+            if (height < 1.0f)
             {
-                height = gProjectedLightMinExtent[0];
+                height = 1.0f;
             }
             width = (f32)(u32)setupData->projectionWidth / 10.0f;
-            if (width < gProjectedLightMinExtent[0])
+            if (width < 1.0f)
             {
-                width = gProjectedLightMinExtent[0];
+                width = 1.0f;
             }
             modelLightStruct_setupPerspectiveProjection(state->light, (f32)(u32)setupData->fovY, height / width);
         }

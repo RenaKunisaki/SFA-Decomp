@@ -42,7 +42,7 @@ f32 gCloudOverridePositionX;
 f32 gCloudOverridePositionY;
 f32 gCloudOverridePositionZ;
 
-volatile f32 gCloudActionGlareQuadSize[2] = {8000.0f, 0.0f};
+f32 gCloudActionGlareQuadSize[2] = {8000.0f, 0.0f};
 
 #define GXWGFifo (*(volatile PPCWGPipe*)0xCC008000)
 
