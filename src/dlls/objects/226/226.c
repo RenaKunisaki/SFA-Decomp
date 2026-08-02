@@ -370,6 +370,28 @@ void staffSetGlow(GameObject* obj, u8 attackType, u8 enable) {
     ((StaffState*)state)->glowEnable = enable;
 }
 
+static void staffUpdateQuakeSpell(void) {
+    StaffQuakeSpellState* q = (StaffQuakeSpellState*)gStaffQuakeSpellState;
+
+    if (q->active != 0) {
+        f32 fade;
+        q->scale += 5.5f;
+        ObjHitbox_SetSphereRadius((ObjAnimComponent*)q->object, q->scale);
+        ObjHits_SetHitVolumeSlot((ObjAnimComponent*)q->object, STAFF_QUAKE_HIT_VOLUME_SLOT, 5, 0);
+        ((StaffQuakeSpellState*)gStaffQuakeSpellState)->fade += -4.0f;
+        fade = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->fade;
+        ((StaffQuakeSpellState*)gStaffQuakeSpellState)->radius *= 0.97f;
+        ((StaffQuakeSpellState*)gStaffQuakeSpellState)->heightScale *= 1.01f;
+        ((GameObject*)q->object)->anim.alpha = fade;
+        ((GameObject*)q->object)->anim.rootMotionScale += 0.07f;
+        if (((StaffQuakeSpellState*)gStaffQuakeSpellState)->fade < 1.0f) {
+            q->active = 0;
+            Obj_FreeObject((GameObject*)q->object);
+            q->object = NULL;
+        }
+    }
+}
+
 void staffStartQuakeSpell(f32* pos) {
     GameObject* player;
 
@@ -419,9 +441,9 @@ void staffStartQuakeSpell(f32* pos) {
     }
 }
 
-const f32 gStaffHalfPi = 1.5707964f;
-const f32 gStaffPi = 3.1415927f;
-const f32 gStaffAngleUnitScale = 32768.0f;
+const f32 gStaffHalfPi[1] = {1.5707964f};
+const f32 gStaffPi[1] = {3.1415927f};
+const f32 gStaffAngleUnitScale[1] = {32768.0f};
 
 void staffDrawQuakeSpellRing(void) {
     Mtx mResult;
@@ -435,7 +457,7 @@ void staffDrawQuakeSpellRing(void) {
         f32 z;
         setupQuakeSpellRingGxState(((StaffQuakeSpellState*)gStaffQuakeSpellState)->fade);
         memcpy(mView, Camera_GetViewMatrix(), 0x30);
-        PSMTXRotRad(mRot, 'x', gStaffHalfPi);
+        PSMTXRotRad(mRot, 'x', gStaffHalfPi[0]);
         scale = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->scale;
         PSMTXScale(mScale, scale, scale * ((StaffQuakeSpellState*)gStaffQuakeSpellState)->heightScale, scale);
         PSMTXConcat(mScale, mRot, mScale);
@@ -538,7 +560,7 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg) {
         if (*(s16**)&obj->anim.parent != NULL) {
             ang += **(s16**)&obj->anim.parent;
         }
-        angle = (gStaffPi * (f32)(int)-ang) / gStaffAngleUnitScale;
+        angle = (gStaffPi[0] * (f32)(int)-ang) / gStaffAngleUnitScale[0];
         sinv = mathSinf(angle);
         cosv = mathCosf(angle);
         model2 = ((ObjAnimBank*)Obj_GetActiveModel(obj))->currentState;
@@ -1000,26 +1022,7 @@ void staff_update(GameObject* obj) {
     staffUpdateAttackEffects(obj, (GameObject*)obj->ownerObj);
     objGetAnimState80A((GameObject*)(*(int*)&obj->ownerObj));
     ((StaffState*)state)->swipeTextureIndex = 0;
-    {
-        StaffQuakeSpellState* q = (StaffQuakeSpellState*)gStaffQuakeSpellState;
-        if (q->active != 0) {
-            f32 fade;
-            q->scale += 5.5f;
-            ObjHitbox_SetSphereRadius((ObjAnimComponent*)q->object, q->scale);
-            ObjHits_SetHitVolumeSlot((ObjAnimComponent*)q->object, STAFF_QUAKE_HIT_VOLUME_SLOT, 5, 0);
-            ((StaffQuakeSpellState*)gStaffQuakeSpellState)->fade += -4.0f;
-            fade = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->fade;
-            ((StaffQuakeSpellState*)gStaffQuakeSpellState)->radius *= 0.97f;
-            ((StaffQuakeSpellState*)gStaffQuakeSpellState)->heightScale *= 1.01f;
-            ((GameObject*)q->object)->anim.alpha = fade;
-            ((GameObject*)q->object)->anim.rootMotionScale += 0.07f;
-            if (((StaffQuakeSpellState*)gStaffQuakeSpellState)->fade < 1.0f) {
-                q->active = 0;
-                Obj_FreeObject((GameObject*)q->object);
-                q->object = NULL;
-            }
-        }
-    }
+    staffUpdateQuakeSpell();
 }
 
 void staff_init(GameObject* obj) {
