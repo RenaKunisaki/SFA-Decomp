@@ -1,6 +1,7 @@
 #include "main/audio/music_api.h"
 #include "musyx/hw_samplemem.h"
 #include "main/audio_internal.h"
+#include "main/audio/audio_control_api.h"
 
 /* Local prototypes: this TU declares sndMasterVolume with int volume/time,
    which disagrees with the musyx definition -- retail calls it directly with
@@ -838,6 +839,8 @@ void* _audioAlloc(u32 size)
     return mmAlloc(size, 0xb, 0);
 }
 
+char* strcpy(char* dst, const char* src);
+char* strcat(char* dst, const char* src);
 int concatThreeStrings(char* dst, void* unused, const char* first, const char* second, const char* third)
 {
     strcpy(dst, first);
