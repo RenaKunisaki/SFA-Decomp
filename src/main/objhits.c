@@ -4634,44 +4634,44 @@ static int characterTrackJointYaw(s16* curve, s16* state) {
     return 0;
 }
 
-static void characterHeadLookAlert(int obj, s16* curve, s16* state, f32 val) {
+static void characterHeadLookAlert(int obj, CharacterEyeAnimState* curve, s16* state, f32 val) {
     int masked;
     int flag;
 
-    masked = (curve[13] >> 8) & 0xff;
+    masked = (curve->headTrackMode >> 8) & 0xff;
     if (val > 0.1f) {
         flag = 1;
     } else {
         flag = 0;
     }
     if (masked != flag) {
-        curve[13] = (s16)(flag << 8 | 4);
-        curve[11] = state[1];
-        curve[10] = 0;
-        curve[14] = 0;
+        curve->headTrackMode = (s16)(flag << 8 | 4);
+        curve->headYawStart = state[1];
+        curve->headYaw = 0;
+        curve->headTrackTimer = 0;
     }
 
-    switch ((u8)curve[13]) {
+    switch ((u8)curve->headTrackMode) {
     case 0:
-        curve[13] = (s16)(flag << 8);
-        curve[14] = randomGetRange(0x32, 0xc8);
+        curve->headTrackMode = (s16)(flag << 8);
+        curve->headTrackTimer = randomGetRange(0x32, 0xc8);
         break;
     case 1:
-        curve[14] -= framesThisStep;
-        if (curve[14] < 0) {
+        curve->headTrackTimer -= framesThisStep;
+        if (curve->headTrackTimer < 0) {
             if (randomGetRange(0, 100) > 90) {
-                curve[13] = (s16)(flag << 8 | 5);
-                if (*(s8*)curve != 0) {
+                curve->headTrackMode = (s16)(flag << 8 | 5);
+                if (curve->lookAtActive != 0) {
                     if (randomGetRange(0, 100) > 0) {
-                        curve[10] = 0x1fff;
+                        curve->headYaw = 0x1fff;
                         if (randomGetRange(0, 1) == 0) {
-                            curve[10] = -curve[10];
+                            curve->headYaw = -curve->headYaw;
                         }
                     }
                 } else {
-                    curve[10] = 0x1fff;
+                    curve->headYaw = 0x1fff;
                     if (randomGetRange(0, 1) == 0) {
-                        curve[10] = -curve[10];
+                        curve->headYaw = -curve->headYaw;
                     }
                 }
             }
@@ -4680,119 +4680,119 @@ static void characterHeadLookAlert(int obj, s16* curve, s16* state, f32 val) {
     case 2:
         break;
     case 5:
-        if (curve[14] > 0) {
-            curve[14] -= framesThisStep;
-        } else if (characterTrackJointYaw(curve, state)) {
-            curve[13] = (s16)(flag << 8 | 6);
-            curve[10] = -curve[10];
-            curve[14] = randomGetRange(0x14, 0x64);
+        if (curve->headTrackTimer > 0) {
+            curve->headTrackTimer -= framesThisStep;
+        } else if (characterTrackJointYaw((s16*)curve, state)) {
+            curve->headTrackMode = (s16)(flag << 8 | 6);
+            curve->headYaw = -curve->headYaw;
+            curve->headTrackTimer = randomGetRange(0x14, 0x64);
         }
         break;
     case 6:
-        if (curve[14] > 0) {
-            curve[14] -= framesThisStep;
-        } else if (characterTrackJointYaw(curve, state)) {
-            curve[13] = (s16)(flag << 8 | 4);
-            curve[10] = 0;
-            curve[14] = randomGetRange(0x14, 0x64);
+        if (curve->headTrackTimer > 0) {
+            curve->headTrackTimer -= framesThisStep;
+        } else if (characterTrackJointYaw((s16*)curve, state)) {
+            curve->headTrackMode = (s16)(flag << 8 | 4);
+            curve->headYaw = 0;
+            curve->headTrackTimer = randomGetRange(0x14, 0x64);
         }
         break;
     case 4:
-        if (curve[14] > 0) {
-            curve[14] -= framesThisStep;
-        } else if (characterTrackJointYaw(curve, state)) {
-            curve[13] = (s16)(flag << 8);
+        if (curve->headTrackTimer > 0) {
+            curve->headTrackTimer -= framesThisStep;
+        } else if (characterTrackJointYaw((s16*)curve, state)) {
+            curve->headTrackMode = (s16)(flag << 8);
             state[1] = 0;
         }
         break;
     }
 }
 
-static void characterHeadLookIdle(GameObject* obj, s16* curve, s16* state, f32 val) {
+static void characterHeadLookIdle(GameObject* obj, CharacterEyeAnimState* curve, s16* state, f32 val) {
     int masked;
     int flag;
 
-    masked = (curve[13] >> 8) & 0xff;
+    masked = (curve->headTrackMode >> 8) & 0xff;
     if (val > 0.1f) {
         flag = 1;
     } else {
         flag = 0;
     }
     if (masked != flag) {
-        curve[13] = (s16)(flag << 8);
+        curve->headTrackMode = (s16)(flag << 8);
     }
 
-    switch ((u8)curve[13]) {
+    switch ((u8)curve->headTrackMode) {
     case 0:
-        if (*(s8*)curve != 0) {
-            curve[13] = (s16)(flag << 8 | 3);
-            curve[11] = state[1];
-            *(f32*)((char*)curve + 0x10) = 1.0f;
+        if (curve->lookAtActive != 0) {
+            curve->headTrackMode = (s16)(flag << 8 | 3);
+            curve->headYawStart = state[1];
+            curve->headTrackBlend = 1.0f;
         } else {
-            curve[13] = (s16)(flag << 8 | 1);
-            curve[14] = randomGetRange(100, 400);
-            curve[10] = state[1];
+            curve->headTrackMode = (s16)(flag << 8 | 1);
+            curve->headTrackTimer = randomGetRange(100, 400);
+            curve->headYaw = state[1];
         }
         break;
     case 1:
-        curve[14] -= framesThisStep;
-        if (curve[14] < 0) {
-            int old = curve[10];
-            curve[10] = randomGetRange(0, 0x1fff);
+        curve->headTrackTimer -= framesThisStep;
+        if (curve->headTrackTimer < 0) {
+            int old = curve->headYaw;
+            curve->headYaw = randomGetRange(0, 0x1fff);
             if (old > 0) {
-                if (old - curve[10] < 0xe38) {
-                    curve[10] += 0xe38;
+                if (old - curve->headYaw < 0xe38) {
+                    curve->headYaw += 0xe38;
                 }
-                if (curve[10] > 0x1fff) {
-                    curve[10] = 0x1fff;
+                if (curve->headYaw > 0x1fff) {
+                    curve->headYaw = 0x1fff;
                 }
-                curve[10] = -curve[10];
+                curve->headYaw = -curve->headYaw;
             } else {
-                if (curve[10] - old < 0xe38) {
-                    curve[10] += 0xe38;
+                if (curve->headYaw - old < 0xe38) {
+                    curve->headYaw += 0xe38;
                 }
-                if (curve[10] > 0x1fff) {
-                    curve[10] = 0x1fff;
+                if (curve->headYaw > 0x1fff) {
+                    curve->headYaw = 0x1fff;
                 }
             }
-            curve[13] = (s16)(flag << 8 | 2);
-            curve[14] = 0;
-            curve[11] = state[1];
+            curve->headTrackMode = (s16)(flag << 8 | 2);
+            curve->headTrackTimer = 0;
+            curve->headYawStart = state[1];
         }
         break;
     case 2:
-        if (*(s8*)curve != 0 || characterTrackJointYaw(curve, state) != 0) {
-            curve[13] = (s16)(flag << 8);
+        if (curve->lookAtActive != 0 || characterTrackJointYaw((s16*)curve, state) != 0) {
+            curve->headTrackMode = (s16)(flag << 8);
         }
         break;
     case 3:
-        if (*(s8*)curve == 0) {
-            curve[13] = (s16)(flag << 8);
+        if (curve->lookAtActive == 0) {
+            curve->headTrackMode = (s16)(flag << 8);
         } else {
             int angle;
             int n;
-            angle = getAngle(obj->anim.localPosX - *(f32*)((char*)curve + 4),
-                             obj->anim.localPosZ - *(f32*)((char*)curve + 0xc));
-            curve[10] = (s16)(angle - (u16)obj->anim.rotX);
-            if (curve[10] > 0x8000) {
-                curve[10] = (s16)(curve[10] - 0xffff);
+            angle = getAngle(obj->anim.localPosX - curve->lookAtPosX,
+                             obj->anim.localPosZ - curve->lookAtPosZ);
+            curve->headYaw = (s16)(angle - (u16)obj->anim.rotX);
+            if (curve->headYaw > 0x8000) {
+                curve->headYaw = (s16)(curve->headYaw - 0xffff);
             }
-            if (curve[10] < -0x8000) {
-                curve[10] = (s16)(curve[10] + 0xffff);
+            if (curve->headYaw < -0x8000) {
+                curve->headYaw = (s16)(curve->headYaw + 0xffff);
             }
-            n = curve[10];
+            n = curve->headYaw;
             if (n > 0x1fff || n < -0x1fff) {
-                curve[13] = (s16)(flag << 8);
+                curve->headTrackMode = (s16)(flag << 8);
             } else {
-                f32 t = *(f32*)((char*)curve + 0x10);
+                f32 t = curve->headTrackBlend;
                 f32 lo = 0.0f;
                 if (t > lo) {
                     f32 nv;
-                    state[1] = t * (f32)(curve[11] - n) + n;
-                    nv = -(0.01f * timeDelta - *(f32*)((char*)curve + 0x10));
-                    *(f32*)((char*)curve + 0x10) = nv;
+                    state[1] = t * (f32)(curve->headYawStart - n) + n;
+                    nv = -(0.01f * timeDelta - curve->headTrackBlend);
+                    curve->headTrackBlend = nv;
                     if (nv < lo) {
-                        *(f32*)((char*)curve + 0x10) = lo;
+                        curve->headTrackBlend = lo;
                     }
                 } else {
                     state[1] = n;
@@ -4839,9 +4839,9 @@ void characterUpdateHeadLook(GameObject* obj, CharacterEyeAnimState* state, f32 
             val = -val;
         }
         if (val <= 0.1f) {
-            characterHeadLookIdle(obj, (s16*)state, found, val);
+            characterHeadLookIdle(obj, state, found, val);
         } else {
-            characterHeadLookAlert((int)obj, (s16*)state, found, val);
+            characterHeadLookAlert((int)obj, state, found, val);
         }
         state->headTrackMode = (s16)(u16)(u8)state->headTrackMode;
         if (val > 0.1f) {
@@ -5315,7 +5315,7 @@ void characterHeadLookCalm(GameObject* obj, s16* state, f32 value) {
         if (found[0] != 0) {
             found[0] = (s16)(found[0] * 3 / 4);
         }
-        characterHeadLookIdle(obj, state, found, 0.0f);
+        characterHeadLookIdle(obj, (CharacterEyeAnimState*)state, found, 0.0f);
         ((CharacterEyeAnimState*)state)->headTrackMode = (s16)(u16)(u8)((CharacterEyeAnimState*)state)->headTrackMode;
     }
 }
