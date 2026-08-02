@@ -84,6 +84,23 @@ STATIC_ASSERT(offsetof(LinkMenuItem, upLink) == 0x1A);
 
 extern LinkMenuItem gTumbleweedBushItems[40];
 
+void linkInitTextures(LinkMenuItem* item);
+void Link_resetTimers(void);
+void Link_copy(u8* srcArg);
+u8 Link_getPulse(void);
+void Link_updateItems(u8* srcArg);
+void Link_setItemState(int idx, int v);
+s32 Link_getItemState(int idx);
+void Link_setOpacity(u8 v);
+void Link_setSelected(int v);
+s32 Link_getSelected(void);
+void Link_render(void);
+void Link_free(void);
+void Link_setup(LinkMenuItem* items, int count, int selected, const char* defaultMessage, int unused1, int unused2,
+                int baseRed, int baseGreen, int baseBlue, int selectedRed, int selectedGreen, int selectedBlue);
+void Link_release(void);
+void Link_initialise(void);
+
 u16 linkGetSelectedItemId(void)
 {
     return gTumbleweedBushItems[linkSelected].boxId;

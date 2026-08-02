@@ -6,6 +6,14 @@
 #include "dolphin/os/OSThread.h"
 #include "dolphin/thp/THPPlayer.h"
 
+void PushReadedBuffer2(OSMessage msg);
+OSMessage PopReadedBuffer2(void);
+void PushFreeReadBuffer(OSMessage msg);
+OSMessage PopReadedBuffer(void);
+void ReadThreadCancel(void);
+void ReadThreadStart(void);
+BOOL CreateReadThread(OSPriority priority);
+
 char gPicMenuReadThreadArea[0x1000];
 OSThread gPicMenuReadThread;
 OSMessageQueue gPicMenuReadedBuffer2Queue;

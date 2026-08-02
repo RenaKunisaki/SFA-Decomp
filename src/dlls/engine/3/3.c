@@ -11,6 +11,20 @@ s16 gCheckpointRankItemPendingCount;
 s16 gCheckpointRankItemCount;
 s32 gCheckpointRouteCount;
 
+s32 Checkpoint_buildControlPoints(CheckpointRouteEntry* checkpoint, s32 linkIndex, f32* outX, f32* outY, f32* outZ, u8 mode,
+                 f32 lateralOffset, f32 verticalOffset);
+void Checkpoint_getRandomLinkedVector(s32 key, f32* out_vec, u8* flag_byte);
+int Checkpoint_func09_ret_1(void);
+void Checkpoint_onGameLoop(void);
+u32 Checkpoint_getRouteRankItems(s32* p);
+void Checkpoint_rewindRoute(CheckpointRouteState* o);
+void Checkpoint_queueRouteRankItem(u32 v);
+void Checkpoint_Remove(CheckpointRouteEntry* obj);
+void Checkpoint_Add(CheckpointRouteEntry* entry);
+void Checkpoint_reset(void);
+void Checkpoint_release(void);
+void Checkpoint_initialise(void);
+
 
 CheckpointRouteEntry* Checkpoint_find(s32 key, s32* idx_out)
 {
@@ -57,6 +71,8 @@ typedef struct CheckpointNavState
     u8 pad24[0x0C];
     u8 branchFlag; /* 0x30 */
 } CheckpointNavState;
+
+s32 Checkpoint_advanceRoute(CheckpointCursor* out, CheckpointNavState* o, f32 dist, s32 p3, u8 flag, int unused);
 
 s32 Checkpoint_buildControlPoints(CheckpointRouteEntry* checkpoint, s32 linkIndex, f32* outX, f32* outY, f32* outZ, u8 mode,
                  f32 lateralOffset, f32 verticalOffset)
@@ -255,6 +271,9 @@ typedef struct PartFxItem
     u8 pad10[0xc];
     s32 priority;
 } PartFxItem;
+
+s32 Checkpoint_getRouteRank(PartFxItem* p);
+PartFxItem* Checkpoint_getRouteRankItem(s32 target_rank);
 
 int Checkpoint_func09_ret_1(void)
 {
@@ -516,6 +535,9 @@ void Checkpoint_queueRouteRankItem(u32 v)
 }
 
 #include "game/objects/object.h"
+
+int Checkpoint_getRouteHeading(GameObject* obj, CheckpointRouteState* state);
+void Checkpoint_findRouteForObject(GameObject* obj, CheckpointRouteState* state, int filter);
 
 /* Project the object onto the current checkpoint segment, stepping the route
  * cursor forward or back and returning the segment heading. */

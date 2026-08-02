@@ -36,6 +36,15 @@ typedef union Dll0BDescriptorTable
     u64 align8;
 } Dll0BDescriptorTable;
 
+void modgfx_scrollTexCoords(ModgfxState* state, f32* in);
+void modgfx_captureFrameBaseVertices(ModgfxState* state);
+void modgfx_stepVertexColor(void* state, void* p, int reinit);
+void modgfx_stepPosition(int state, int cmd, int reinit);
+void modgfx_stepS16VectorLerp(ModgfxState* state, f32* params, int reinit);
+void modgfx_stepVertexAlpha(ModgfxState* state, ModgfxVertexGroupCmd* command, int reinit, u8 channelIndex);
+void modgfx_stepVertexScale(ModgfxState* state, ModgfxVertexGroupCmd* command, int reinit, u8 channelIndex);
+void modgfx_restoreBaseVertices(ModgfxState* state);
+
 ModgfxPendingSpawn* gModgfxPendingSpawnStartCursor;
 ModgfxPendingSpawn* gModgfxPendingSpawnWriteCursor;
 s16 gModgfxSequenceParamIndex;

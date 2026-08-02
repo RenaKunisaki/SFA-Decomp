@@ -224,5 +224,19 @@ void SnowBike_ResetDynamics(int obj, int state);
 s32 SnowBike_getRouteRank(GameObject* obj);
 s32 SnowBike_isAtRankGate(GameObject* obj);
 int SnowBike_SeqFn(GameObject* obj, int unused, ObjSeqState* seq);
+void SnowBike_onSeqFree(GameObject* obj);
+void SnowBike_buildOrientationMatrices(GameObject* obj, int state);
+void SnowBike_InitTuning(GameObject* obj, int state);
+f32 SnowBike_func13(GameObject* obj, f32* out);
+void SnowBike_getPlayerAnim(GameObject* obj, f32* outFloat, s32* outBool);
+void SnowBike_setMountState(GameObject* obj, int type);
+void SnowBike_getCameraPosition(GameObject* obj, f32* x, f32* y, f32* z);
+void SnowBike_getRiderPosition(GameObject* obj, f32* x, f32* y, f32* z);
+u32 SnowBike_canMount(GameObject* obj);
+void SnowBike_free(GameObject* obj);
+void SnowBike_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visible);
+void SnowBike_hitDetect(GameObject* obj);
+void SnowBike_release(void);
+void SnowBike_initialise(void);
 
 #endif /* MAIN_DLL_DLL_0255_SNOWBIKE_H_ */

@@ -22,6 +22,20 @@ extern int gObjfsaPatchCount;
 
 #include "main/dll/objfsa_internal.h"
 
+int RomCurve_initFromCurveId(RomCurveWalker* state, GameObject* unusedObj, int startCurveId,
+                    RomCurveInterface* unusedInterface);
+int RomCurve_goNextPointIndexed(RomCurveWalker* state, int pickIdx);
+void RomCurve_setNextNode(void* walker, void* curve);
+int RomCurve_initCurve(RomCurveWalker* state, GameObject* obj, int* curveTypes, int curveType, f32 maxDistance);
+int RomCurve_findShortestPathLink(RomCurveDef* startCurve, int unused1, int unused2, int* previousCurveId);
+int Objfsa_GetNearestAdjacentLink(ObjfsaRomCurveDef* curve, int preferredNeighborId, f32 x, f32 y, f32 z);
+int curves_findEnclosingLoopOfType17(f32 x, f32 y, f32 z);
+int curves_isNotPoint(RomCurveDef* curve);
+int curves_isPoint(RomCurveDef* curve);
+void RomCurve_getLastFindSegment(RomCurveDef** startOut, RomCurveDef** endOut);
+void* RomCurve_getCurves(int* outCount);
+void RomCurve_initialise(void);
+
 #define ROMCURVE_TANGENT_SCALE        2.0f
 #define ROMCURVE_ANGLE_PI             3.1415927f
 #define ROMCURVE_HALF_CIRCLE_ANGLE    32768.0f

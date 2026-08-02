@@ -1821,6 +1821,8 @@ typedef struct SnowBikePlacement
     u8 pad20[0x24 - 0x20];
 } SnowBikePlacement;
 
+void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag);
+
 typedef struct
 {
     s16 rot[3];
