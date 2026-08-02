@@ -417,19 +417,18 @@ void mmpMoonRock_update(GameObject* obj) {
             i = 0;
             list = (u32*)placementOrObjects;
             minimumSpacing = 40.0f;
+            spacingClear = 1;
             for (; i < count; i++) {
                 GameObject* otherRock = (GameObject*)*list;
                 if (otherRock != obj && otherRock->anim.romDefNo == MMP_MOON_ROCK_SEQUENCE_ID &&
                     Vec_xzDistance(&obj->anim.worldPosX, &otherRock->anim.worldPosX) < minimumSpacing) {
                     (*gCarryableInterface)->setDropDisabled((void*)stateAddress, 1);
                     spacingClear = 0;
-                    goto checked_moon_rock_spacing;
+                    break;
                 }
                 list++;
             }
-            spacingClear = 1;
         }
-    checked_moon_rock_spacing:
         if (spacingClear != 0) {
             state->flags |= MMP_MOON_ROCK_FLAG_ACTION_PENDING;
         }

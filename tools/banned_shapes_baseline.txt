@@ -7,8 +7,6 @@ src/dlls/engine/7/7.c:723:LBL_CONST_DEF
 src/dlls/engine/7/7.c:724:LBL_CONST_DEF
 src/dlls/objects/201_Baddie/Baddie.c:3099:LBL_CONST_DEF
 src/dlls/objects/237/237.c:71:SINGLE_ELEM_CONST_ARRAY
-src/dlls/objects/245_SidekickBal/SidekickBal.c:348:GOTO
-src/dlls/objects/386_MMP_moonroc/MMP_moonroc.c:426:GOTO
 src/dlls/objects/458_DIMExplosio/DIMExplosio.c:90:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/458_DIMExplosio/DIMExplosio.c:91:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/458_DIMExplosio/DIMExplosio.c:92:SINGLE_ELEM_CONST_ARRAY

@@ -345,13 +345,12 @@ u8 trickyBallMove(GameObject* obj) {
     } else if (sidekickBall_floatsNotEqual(state->floorY, 0.0f)) {
         if (obj->anim.localPosY > state->floorY) {
             state->floorY = 0.0f;
-            goto noFloorDepth;
+            hasFloorDepth = 0;
         } else {
             state->floorDepth = state->floorY - obj->anim.localPosY;
             hasFloorDepth = 1;
         }
     } else {
-    noFloorDepth:
         hasFloorDepth = 0;
     }
 
