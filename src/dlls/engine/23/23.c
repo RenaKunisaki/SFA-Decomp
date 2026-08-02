@@ -355,8 +355,8 @@ void gplaySaveGame(int param)
 void titleDoLoadSave(void)
 {
     OSSetSaveRegion(0, 0);
-    gSaveGameCurrentSlot = (s8)((gSaveGameWorkBuffer[0x21] & 0x60) >> 5);
-    gSaveGameWorkBuffer[0x21] = gSaveGameWorkBuffer[0x21] & ~0xE0;
+    gSaveGameCurrentSlot = (s8)((((SaveGameData*)gSaveGameWorkBuffer)->newFileFlag & 0x60) >> 5);
+    ((SaveGameData*)gSaveGameWorkBuffer)->newFileFlag = ((SaveGameData*)gSaveGameWorkBuffer)->newFileFlag & ~0xE0;
     (*gMapEventInterface)->gotoSavegame();
 }
 
@@ -411,7 +411,7 @@ int trySaveGame(int slot)
 
     gSaveGameCurrentSlot = slot;
     memset(gSaveGameData, 0, SAVEGAME_LIVE_BUFFER_SIZE);
-    if ((gSaveGameWorkBuffer[0x21] & 0x80) == 0)
+    if ((((SaveGameData*)gSaveGameWorkBuffer)->newFileFlag & 0x80) == 0)
     {
         memset(gSaveGameWorkBuffer, 0, SAVEGAME_ACTIVE_SIZE);
     }
@@ -419,7 +419,7 @@ int trySaveGame(int slot)
     loaded = loadSaveGame((u8)gSaveGameCurrentSlot, gSaveGameWorkBuffer);
     if (loaded != 0)
     {
-        if (gSaveGameWorkBuffer[0x21] == 0)
+        if (((SaveGameData*)gSaveGameWorkBuffer)->newFileFlag == 0)
         {
             loaded = gplayNewGame(sGameplayFoxName, (u8)gSaveGameCurrentSlot);
         }
@@ -1183,7 +1183,7 @@ void SaveGame_initialise(void)
 {
     s8* base = (s8*)gTransientMapBits;
     memset(base + 0x328, 0, SAVEGAME_LIVE_BUFFER_SIZE);
-    if (!(gSaveGameWorkBuffer[0x21] & 0x80))
+    if (!(((SaveGameData*)gSaveGameWorkBuffer)->newFileFlag & 0x80))
     {
         memset(gSaveGameWorkBuffer, 0, SAVEGAME_ACTIVE_SIZE);
     }
