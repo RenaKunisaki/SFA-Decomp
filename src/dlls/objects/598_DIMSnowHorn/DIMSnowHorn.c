@@ -1236,6 +1236,9 @@ static inline s16 DIMSnowHorn1_angleTo(GameObject* obj, GameObject* found)
     return angleDelta;
 }
 
+const f32 gDIMSnowHorn1OverrideOffsetY[1] = {-30.0f};
+const f32 gDIMSnowHorn1OverrideOffsetZ[1] = {-20.0f};
+
 void DIMSnowHorn1_update(GameObject* obj)
 {
     f32 nearDist;
@@ -1433,8 +1436,9 @@ void DIMSnowHorn1_update(GameObject* obj)
         v.rotZ = (obj)->anim.rotZ;
         v.scale = 1.0f;
         setMatrixFromObjectPos(matrix, &v);
-        Matrix_TransformPoint(matrix, 0.0f, -30.0f, -20.0f, &(obj)->anim.modelState->overrideWorldPosX,
-                              &(obj)->anim.modelState->overrideWorldPosY, &(obj)->anim.modelState->overrideWorldPosZ);
+        Matrix_TransformPoint(matrix, 0.0f, gDIMSnowHorn1OverrideOffsetY[0], gDIMSnowHorn1OverrideOffsetZ[0],
+                              &(obj)->anim.modelState->overrideWorldPosX, &(obj)->anim.modelState->overrideWorldPosY,
+                              &(obj)->anim.modelState->overrideWorldPosZ);
     }
 }
 

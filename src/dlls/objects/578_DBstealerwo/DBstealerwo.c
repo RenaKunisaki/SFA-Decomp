@@ -2261,6 +2261,8 @@ void dbstealerworm_hitDetect(GameObject* obj)
     (*gPlayerInterface)->updateVelocityState(obj, inner, gDBStealerWormStateHandlersA);
 }
 
+const f32 gDbStealerwormGravity[1] = {0.17f};
+
 void dbstealerworm_update(GameObject* obj)
 {
     DbWormEffectSpawnWork* st[1];
@@ -2374,7 +2376,7 @@ void dbstealerworm_update(GameObject* obj)
                     sub3 = *(int*)&((GroundBaddieState*)blob)->control;
                     dbstealerworm_processEffectFlags(obj, blob);
                     (*gBaddieControlInterface)
-                        ->updateGravity(obj, (void*)blob, 0.17f, -1);
+                        ->updateGravity(obj, (void*)blob, gDbStealerwormGravity[0], -1);
                     if ((((DbStealerwormControl*)sub3)->flags15 & 4) == 0)
                     {
                         (*gPlayerInterface)->rotateTowardTarget((void*)obj, (void*)blob, timeDelta, 4);
