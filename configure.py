@@ -1812,7 +1812,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/665/665.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/666_ARWArwing/ARWArwing.c", cflags=cflags_dll_noopt_noprop_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/667/667.c"),
-            Object(NonMatching, "dlls/objects/668_ARWArwingBo/ARWArwingBo.c"),
+            Object(MatchingFor("GSAE01"), "dlls/objects/668_ARWArwingBo/ARWArwingBo.c"),
             Object(NonMatching, "dlls/objects/669_ARWArwingGu/ARWArwingGu.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/670/670.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/671_ARWBombColl/ARWBombColl.c"),
