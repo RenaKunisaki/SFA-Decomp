@@ -195,10 +195,10 @@ void SB_ShipHead_update(GameObject* obj) {
         object->anim.localPosY = object->anim.localPosY - 50.0f;
         object->anim.localPosZ += 300.0f;
         placementBytes = (u8*)Obj_AllocObjectSetup(0x18, SB_FIREBALL_OBJECT_ID);
-        placementBytes[6] = 0xff;
-        placementBytes[7] = 0xff;
-        placementBytes[4] = 2;
-        placementBytes[5] = 1;
+        ((ObjPlacement*)placementBytes)->color[2] = 0xff;
+        ((ObjPlacement*)placementBytes)->color[3] = 0xff;
+        ((ObjPlacement*)placementBytes)->color[0] = 2;
+        ((ObjPlacement*)placementBytes)->color[1] = 1;
         ((ObjPlacement*)placementBytes)->posX = spawnX;
         ((ObjPlacement*)placementBytes)->posY = spawnY;
         ((ObjPlacement*)placementBytes)->posZ = spawnZ;
@@ -220,10 +220,10 @@ void SB_ShipHead_update(GameObject* obj) {
         ((ObjPlacement*)placementBytes)->posX = 100.0f + player->anim.worldPosX;
         ((ObjPlacement*)placementBytes)->posY = 50.0f + (player->anim.worldPosY + (f32)randomGetRange(-6, 6));
         ((ObjPlacement*)placementBytes)->posZ = 45.0f + (player->anim.worldPosZ + (f32)randomGetRange(-6, 6));
-        placementBytes[4] = 2;
-        placementBytes[5] = 1;
-        placementBytes[6] = 0xff;
-        placementBytes[7] = 0xff;
+        ((ObjPlacement*)placementBytes)->color[0] = 2;
+        ((ObjPlacement*)placementBytes)->color[1] = 1;
+        ((ObjPlacement*)placementBytes)->color[2] = 0xff;
+        ((ObjPlacement*)placementBytes)->color[3] = 0xff;
         objSetupObject((ObjPlacement*)placementBytes, 5, -1, -1, 0);
     }
     result = ObjAnim_AdvanceCurrentMove((int)obj, gSbShipHeadAnimAdvanceRate, timeDelta, NULL);
