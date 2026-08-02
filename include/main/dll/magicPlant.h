@@ -5,6 +5,7 @@
 
 extern u8 gMagicPlantSeqEntryTable[8];
 
+void sidekickToy_updateCurveTargetLatch(GameObject* obj);
 void vambat_init(GameObject* obj, int state);
 void vambat_updateIdle(GameObject* obj, int state);
 void vambat_updateEngaged(GameObject* obj, int state);

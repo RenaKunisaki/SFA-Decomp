@@ -17,6 +17,7 @@
 #include "main/gametext_command_api.h"
 #include "main/gametext_show_str_api.h"
 #include "main/gameloop_api.h"
+#include "main/gamebits_api.h"
 #include "main/frame_timing.h"
 #include "main/trig.h"
 #include "main/camera.h"
@@ -340,7 +341,7 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
     else
     {
         u8 zCompLoc = 1;
-        if (((u8*)obj_a)[0x37] < 0xFF || (((Shader*)renderOp)->flags & 0x40000000) != 0 ||
+        if (((GameObject*)obj_a)->anim.renderAlpha < 0xFF || (((Shader*)renderOp)->flags & 0x40000000) != 0 ||
             ((Shader*)renderOp)->alpha < 0xFF)
         {
             GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
@@ -1191,7 +1192,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
     GXSetNumTexGens(3);
     GXSetNumTevStages(2);
 
-    alpha_byte = (((Shader*)renderOp)->alpha * ((u8*)obj_a)[0x37]) >> 8;
+    alpha_byte = (((Shader*)renderOp)->alpha * ((GameObject*)obj_a)->anim.renderAlpha) >> 8;
     temp.a = alpha_byte;
     GXSetTevKColor(GX_KCOLOR0, temp);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
@@ -1207,7 +1208,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
     {
         u8 zCompLoc = 1;
         int ref1;
-        if (((u8*)obj_a)[0x37] < 0xff || (((Shader*)renderOp)->flags & 0x40000000) != 0 ||
+        if (((GameObject*)obj_a)->anim.renderAlpha < 0xff || (((Shader*)renderOp)->flags & 0x40000000) != 0 ||
             ((Shader*)renderOp)->alpha < 0xff)
         {
             GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
@@ -1960,7 +1961,7 @@ u32 objCausticReflectionRenderCb(int handle, void* model)
     GXSetTevColorOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
 
-    temp.a = ((u8*)(int)handle)[0x37];
+    temp.a = ((GameObject*)handle)->anim.renderAlpha;
     GXSetTevKColor(GX_KCOLOR0, temp);
     GXSetTevKAlphaSel(GX_TEVSTAGE2, GX_TEV_KASEL_K0_A);
     GXSetTevDirect(GX_TEVSTAGE2);
