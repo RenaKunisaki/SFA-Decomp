@@ -1572,13 +1572,106 @@ dlls/objects/225_WispBaddie/WispBaddie.c:
 	.sbss       start:0x803DDA68 end:0x803DDA70
 	.sdata2     start:0x803E26D0 end:0x803E2724
 
+dlls/objects/202/battledroid.c:
+	.text       start:0x8014FEF8 end:0x8014FFB4
+	.sdata2     start:0x803E2728 end:0x803E2740
+
+dlls/objects/202/sharpclaw.c:
+	.text       start:0x8014FFB4 end:0x80151DB8
+	.data       start:0x8031DD30 end:0x8031F290
+	.bss        start:0x803AC428 end:0x803AC4A8
+	.sdata      start:0x803DBC88 end:0x803DBCA8
+	.sdata2     start:0x803E2740 end:0x803E27D4
+
+dlls/objects/202/guardclaw.c:
+	.text       start:0x80151DB8 end:0x80152370
+	.data       start:0x8031F290 end:0x8031F2D8
+	.sdata2     start:0x803E27D8 end:0x803E2810
+
+dlls/objects/202/gcrobotpatrol.c:
+	.text       start:0x80152370 end:0x80152B2C
+	.sdata      start:0x803DBCA8 end:0x803DBCB8
+	.sdata2     start:0x803E2810 end:0x803E2868
+
+dlls/objects/202/mikaladon.c:
+	.text       start:0x80152B2C end:0x80152FA8
+	.sdata2     start:0x803E2868 end:0x803E28AC
+
+dlls/objects/202/vambat.c:
+	.text       start:0x80152FA8 end:0x80153640
+	.data       start:0x8031F2D8 end:0x8031F2F8
+	.sdata      start:0x803DBCB8 end:0x803DBCC0
+	.sdata2     start:0x803E28B0 end:0x803E28EC
+
+dlls/objects/202/kooshy.c:
+	.text       start:0x80153640 end:0x80153CF8
+	.sdata      start:0x803DBCC0 end:0x803DBCC8
+	.sdata2     start:0x803E28F0 end:0x803E2934
+
+dlls/objects/202/weevil.c:
+	.text       start:0x80153CF8 end:0x80154328
+	.sdata      start:0x803DBCC8 end:0x803DBCD0
+	.sdata2     start:0x803E2938 end:0x803E2990
+
+dlls/objects/202/pinpon.c:
+	.text       start:0x80154328 end:0x80154D0C
+	.sdata      start:0x803DBCD0 end:0x803DBCD8
+	.sdata2     start:0x803E2990 end:0x803E29FC
+
+dlls/objects/202/rachnop.c:
+	.text       start:0x80154D0C end:0x80155B10
+	.data       start:0x8031F2F8 end:0x8031F318
+	.sdata2     start:0x803E2A00 end:0x803E2A44
+
+dlls/objects/202/spittingeba.c:
+	.text       start:0x80155B10 end:0x801561EC
+	.sdata2     start:0x803E2A48 end:0x803E2A94
+
+dlls/objects/202/wb.c:
+	.text       start:0x801561EC end:0x80156950
+	.sdata      start:0x803DBCD8 end:0x803DBCE0
+	.sdata2     start:0x803E2A98 end:0x803E2AF8
+
+dlls/objects/202/mutatedeba.c:
+	.text       start:0x80156950 end:0x80156D44
+	.data       start:0x8031F318 end:0x8031F3A0
+	.sdata2     start:0x803E2AF8 end:0x803E2B18
+
+dlls/objects/202/hoodedzyck.c:
+	.text       start:0x80156D44 end:0x80157988
+	.sdata      start:0x803DBCE0 end:0x803DBCF0
+	.sdata2     start:0x803E2B18 end:0x803E2B7C
+
+dlls/objects/202/firecrawler.c:
+	.text       start:0x80157988 end:0x8015983C
+	.data       start:0x8031F3A0 end:0x8031FB70
+	.bss        start:0x803AC4A8 end:0x803AC528
+	.sdata      start:0x803DBCF0 end:0x803DBCF8
+	.sbss       start:0x803DDA70 end:0x803DDA74
+	.sdata2     start:0x803E2B80 end:0x803E2C10
+
+dlls/objects/202/hagabon_mk2.c:
+	.text       start:0x8015983C end:0x8015A52C
+	.data       start:0x8031FB70 end:0x8031FC40
+	.sdata      start:0x803DBCF8 end:0x803DBD28
+	.sdata2     start:0x803E2C10 end:0x803E2C98
+
+dlls/objects/202/snowworm.c:
+	.text       start:0x8015A52C end:0x8015AD5C
+	.data       start:0x8031FC40 end:0x8031FD80
+	.sdata      start:0x803DBD28 end:0x803DBD40
+	.sdata2     start:0x803E2C98 end:0x803E2CD8
+
+dlls/objects/202/baddiewhirlpool.c:
+	.text       start:0x8015AD5C end:0x8015AF10
+	.sdata2     start:0x803E2CD8 end:0x803E2D00
+
 dlls/objects/202/202.c:
-	.text       start:0x8014FEF8 end:0x8015DAE8
-	.data       start:0x8031DD30 end:0x8031FEA8
-	.bss        start:0x803AC428 end:0x803AC580
-	.sdata      start:0x803DBC88 end:0x803DBD40
-	.sbss       start:0x803DDA70 end:0x803DDA7A
-	.sdata2     start:0x803E2728 end:0x803E2DBC
+	.text       start:0x8015AF10 end:0x8015DAE8
+	.data       start:0x8031FD80 end:0x8031FEA8
+	.bss        start:0x803AC528 end:0x803AC580
+	.sbss       start:0x803DDA78 end:0x803DDA7A
+	.sdata2     start:0x803E2D00 end:0x803E2DBC
 
 dlls/objects/206/206.c:
 	.text       start:0x8015DAE8 end:0x8015F5B0
