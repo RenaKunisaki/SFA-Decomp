@@ -57,19 +57,39 @@ The "load class" is not one population. Pairwise (load, param), chance 50%, over
 
 | load kind | n | above the param |
 |---|---|---|
-| memory load (`lwz/lbz/lfs/…`) | 1470 | **74.9%** |
-| constant (`li/lis`) | 633 | 60.7% |
-| computed (`add/or/slwi/…`) | 604 | 57.0% |
-| **address** (`addi rX,rY,sym@lo`) | 274 | **52.6% — chance** |
+| memory load (`lwz/lbz/lfs/…`) | 3694 | **80.7%** |
+| constant (`li/lis`) | 471 | 58.8% |
+| computed (`add/or/slwi/…`) | 835 | 56.6% |
+| arithmetic `addi/addis`, **no relocation** | 311 | 50.8% — chance |
+| **address materialization**, `addi/addis` **carrying a relocation** | 48 | **33.3% — inverted** |
 
 Under pressure the allocator protects values that are *expensive to free*: a param copy must be
 spilled, a load can be rematerialized, so loads demote first — and the cheaper a value is to
 rematerialize, the more readily it demotes. The gradient is that cost ordering.
 
-The `addr` row lands exactly on CLAUDE.md's independently-derived class: *"a value with no named
-local behind it — a compiler temp, a spill reload, an **array base** — is unreachable from
-source."* Two derivations, one boundary, and now a number: **address materializations are not
-hard to predict, they are unmodeled.**
+> ### ⚠️ Correction — the original `addr` row was a mislabelled blend
+> This table was first published as a four-way split with a single **address** row at
+> **52.6% — chance**, and that number was read as "address materializations are unmodeled",
+> convergent with CLAUDE.md's *"no named local behind it … array base … unreachable from
+> source"*. **That reading was wrong.** The classifier treated **every** `addi`/`addis` as an
+> address materialization. Measured against the actual relocations, **87.4% of that bucket
+> (847 of 969 members) is plain arithmetic carrying no relocation** — only 12.6% are true
+> address materializations.
+>
+> Split correctly, the bucket separates into two different things: non-reloc arithmetic sits at
+> **50.8%, genuinely at chance**, while true reloc-bearing addresses sit at **33.3% — below
+> chance, i.e. systematically toward the BOTTOM of the band, under the params.** An inverted
+> signal is not an absent one.
+>
+> Consequences, stated plainly: the claimed two-independent-derivations convergence with
+> CLAUDE.md's array-base note **does not hold** — that note may still be true, but this
+> measurement is not evidence for it. And any census of "unmodeled, `L_addr`-dominated"
+> functions built on the old classifier is counting mostly arithmetic: the true address
+> population is **122 members image-wide**, with only 48 co-live address/param pairs.
+>
+> **Provisional, not adopted:** the corrected numbers suggest the stack may extend to
+> `R > L_mem > {L_const, L_comp} > P > L_ADDR`. At n=48 pairs that is a lead, not a law, and it
+> has not been pre-registered or scored on a holdout. Do not steer on it.
 
 ### The arrival principle
 
@@ -163,6 +183,13 @@ is the transferable part.
   — selected on the dependent variable, since source tuned until bytes match measures lane
   convergence, not law generality. The **retail objects** are the right holdout: large, disjoint,
   and immune to that bias.
+- **A taxonomy is an instrument too.** Three defects were caught in *value classification*, each
+  of which silently changed a headline: `addi rX,rY,0` misread as a load (inverts the
+  copy/load partition), substring register counting, and — found only when a probe target's
+  disassembly was read directly — **every `addi`/`addis` classified as an address
+  materialization**, which turned out to be 87.4% arithmetic and produced a published
+  "unmodeled at chance" result that was really two classes averaged together. Bucket names are
+  claims; check them against something external (here, the relocations) before trusting a row.
 - **Validate the instrument against ground truth before any number counts.** Retail-side
   extraction was required to reproduce source-side extraction function-for-function: **9276/9276,
   100.00%**. Three separate defects were caught by hand-checking a handful of cases —
