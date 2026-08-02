@@ -5760,7 +5760,7 @@ int gPlayerModelChain;
 int gPlayerStateHandlers[66];
 f32 gPlayerMoveRootHeights[16];
 LightmapVertex gPlayerHudVtxBuf[8];
-f32 gPlayerPartFxParams[6];
+PartFxSpawnParams gPlayerPartFxParams;
 
 int playerState1D(int obj, PlayerState* state, f32 fv)
 {
@@ -10448,7 +10448,7 @@ int playerStateIdle(int obj, int state, f32 fv)
         {
             move = 0x5d;
             fv = 0.005f;
-            if (RandomTimer_UpdateRangeTrigger((void*)(inner + 0x3ec), 2.0f, 5.0f) != 0)
+            if (RandomTimer_UpdateRangeTrigger(&((PlayerState*)inner)->randomTimer3EC, 2.0f, 5.0f) != 0)
             {
                 Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_fox_452);
             }
@@ -12762,14 +12762,14 @@ void playerRenderPostEffects(GameObject* obj, int inner, int a, int b, int c)
     v = ((PlayerState*)inner)->flags360;
     if ((v & 0x60000u) != 0)
     {
-        ((PartFxSpawnParams*)gPlayerPartFxParams)->posX = obj->anim.localPosX;
-        ((PartFxSpawnParams*)gPlayerPartFxParams)->posY = obj->anim.localPosY;
-        ((PartFxSpawnParams*)gPlayerPartFxParams)->posZ = obj->anim.localPosZ;
+        gPlayerPartFxParams.posX = obj->anim.localPosX;
+        gPlayerPartFxParams.posY = obj->anim.localPosY;
+        gPlayerPartFxParams.posZ = obj->anim.localPosZ;
         if ((v & 0x40000u) != 0)
         {
-            (*gPartfxInterface)->spawnObject((void*)obj, 0x427, gPlayerPartFxParams, 0x200001, -1, NULL);
-            (*gPartfxInterface)->spawnObject((void*)obj, 0x427, gPlayerPartFxParams, 0x200001, -1, NULL);
-            (*gPartfxInterface)->spawnObject((void*)obj, 0x427, gPlayerPartFxParams, 0x200001, -1, NULL);
+            (*gPartfxInterface)->spawnObject((void*)obj, 0x427, &gPlayerPartFxParams, 0x200001, -1, NULL);
+            (*gPartfxInterface)->spawnObject((void*)obj, 0x427, &gPlayerPartFxParams, 0x200001, -1, NULL);
+            (*gPartfxInterface)->spawnObject((void*)obj, 0x427, &gPlayerPartFxParams, 0x200001, -1, NULL);
         }
         if ((((PlayerState*)inner)->flags360 & 0x20000u) != 0)
         {
@@ -14975,8 +14975,7 @@ void playerProcessHitResponse(int obj, int inner, int state)
     int canCounter;
     int anim;
     HitFxDesc desc;
-    VecXYZ pos;
-    u8 buf[12];
+    PartFxSpawnParams buf;
     StaffCollisionColorArgs col;
     int surfIdx;
     int damage;
@@ -14996,8 +14995,8 @@ void playerProcessHitResponse(int obj, int inner, int state)
             gPlayerSfxTimerA = 0;
         }
     }
-    work = ObjHits_GetPriorityHitWithPosition((GameObject*)(obj), &hitObj, &surfIdx, (u32*)&damage, &pos.x,
-                                              &pos.y, &pos.z);
+    work = ObjHits_GetPriorityHitWithPosition((GameObject*)(obj), &hitObj, &surfIdx, (u32*)&damage, &buf.posX,
+                                              &buf.posY, &buf.posZ);
     orig = work;
     if (**(s8**)&((PlayerState*)inner)->playerStatus <= 0)
     {
@@ -15018,8 +15017,8 @@ void playerProcessHitResponse(int obj, int inner, int state)
     {
         if (surfIdx != -1)
         {
-            pos.x = pos.x + playerMapOffsetX;
-            pos.z = pos.z + playerMapOffsetZ;
+            buf.posX = buf.posX + playerMapOffsetX;
+            buf.posZ = buf.posZ + playerMapOffsetZ;
         }
         if (((PlayerState*)state)->baddie.stateId != 0)
         {
@@ -15303,14 +15302,14 @@ void playerProcessHitResponse(int obj, int inner, int state)
                 }
                 if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
                 {
-                    objDoHitParticleFx((void*)obj, 0.014f, buf, 6, 0);
+                    objDoHitParticleFx((void*)obj, 0.014f, &buf, 6, 0);
                 }
                 break;
             case 0x1c:
                 Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_fox_var);
                 if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
                 {
-                    objDoHitParticleFx((void*)obj, 0.014f, buf, 8, 0);
+                    objDoHitParticleFx((void*)obj, 0.014f, &buf, 8, 0);
                 }
                 break;
             default:
@@ -15324,19 +15323,19 @@ void playerProcessHitResponse(int obj, int inner, int state)
                         Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_snort);
                         if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
                         {
-                            objDoHitParticleFx((void*)obj, 0.014f, buf, 5, 0);
+                            objDoHitParticleFx((void*)obj, 0.014f, &buf, 5, 0);
                         }
                         break;
                     case 0x7c8:
                         if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
                         {
-                            objDoHitParticleFx((void*)obj, 0.014f, buf, 8, 0);
+                            objDoHitParticleFx((void*)obj, 0.014f, &buf, 8, 0);
                         }
                         break;
                     default:
                         if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
                         {
-                            objDoHitParticleFx((void*)obj, 0.014f, buf, 5, 0);
+                            objDoHitParticleFx((void*)obj, 0.014f, &buf, 5, 0);
                         }
                         break;
                     }
@@ -15345,7 +15344,7 @@ void playerProcessHitResponse(int obj, int inner, int state)
                 {
                     if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
                     {
-                        objDoHitParticleFx((void*)obj, 0.014f, buf, 5, 0);
+                        objDoHitParticleFx((void*)obj, 0.014f, &buf, 5, 0);
                     }
                 }
                 break;
