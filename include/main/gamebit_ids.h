@@ -286,16 +286,26 @@ enum GameBitId {
     GAMEBIT_STAFF_ABILITY_STAFF_BOOSTER      = 0x957,  /* boost pads reach high ledges */
 
     /* ======================================================================
-     * Imported from Rena Kunisaki's SFA research (data/U0/gamebits.xml in
-     * github.com/RenaKunisaki/StarFoxAdventures). Names are rena's and are NOT
-     * independently verified here; treat as leads, not ground truth. The value
-     * is the global mainGetBit id (xml id, confirmed to match this enum on known
-     * bits). Unordered - chronological activation position is unknown. Ids
-     * already named above are omitted (their verified names take precedence).
+     * Originally imported from Rena Kunisaki's SFA research
+     * (data/U0/gamebits.xml in github.com/RenaKunisaki/StarFoxAdventures), then
+     * extended with names and notes recovered from this project's code. Rena's
+     * names are NOT independently verified here; treat them as leads, not
+     * ground truth. The value is the global mainGetBit id (xml id, confirmed to
+     * match this enum on known bits). Unordered - chronological activation
+     * position is unknown. Ids already named above are omitted (their verified
+     * names take precedence).
      * ====================================================================== */
+    GAMEBIT_AndrossRelated0001 = 0x1,                    /* table 0; set when Andross's brain is defeated */
+    GAMEBIT_AndrossRelated0002 = 0x2,                    /* table 0; polled before Andross's post-fight warp */
+    GAMEBIT_AndrossRelated0003 = 0x3,                    /* table 0; polled before Andross's post-fight warp */
+    GAMEBIT_AndrossRelated0004 = 0x4,                    /* table 0; polled before Andross's post-fight warp */
     GAMEBIT_SH_KilledBloop1 = 0x5,                       /* table 1 */
     GAMEBIT_SH_KilledBloop2 = 0x8,                       /* table 1 */
     GAMEBIT_SH_TalkedToPepper = 0xB,                     /* table 2; when first landing there */
+    GAMEBIT_AndrossRelated000D = 0xD,                    /* table 0; toggled by Andross attack states */
+    GAMEBIT_AndrossRelated000E = 0xE,                    /* table 0; set during Andross's phase-five transition */
+    GAMEBIT_AndrossRelated000F = 0xF,                    /* table 0; set when Andross's missile attack timer expires */
+    GAMEBIT_AndrossRelated0010 = 0x10,                   /* table 0; polled and cleared by Andross attack states */
     GAMEBIT_AndrossRelated0012 = 0x12,                   /* table 0 */
     GAMEBIT_SH_KilledBloop3 = 0x13,                      /* table 1 */
     GAMEBIT_SH_KilledBloop4 = 0x14,                      /* table 1 */
@@ -387,6 +397,12 @@ enum GameBitId {
     GAMEBIT_NW_RescuedSnowHornGateKeeper = 0x102,        /* table 2; hint 279 */
     GAMEBIT_SH_KilledBloop17 = 0x104,                    /* table 1 */
     GAMEBIT_ITEM_GroundQuake_Got = 0x107,                /* table 2; hint 308; ref moonpass/MagicCaveTo Collected */
+    GAMEBIT_AndrossRelated0108 = 0x108,                  /* table 0; first of six random Andross hit-cue bits */
+    GAMEBIT_AndrossRelated0109 = 0x109,                  /* table 0; random Andross hit-cue bit */
+    GAMEBIT_AndrossRelated010A = 0x10A,                  /* table 0; random Andross hit-cue bit */
+    GAMEBIT_AndrossRelated010B = 0x10B,                  /* table 0; random Andross hit-cue bit */
+    GAMEBIT_AndrossRelated010C = 0x10C,                  /* table 0; random Andross hit-cue bit */
+    GAMEBIT_AndrossRelated010D = 0x10D,                  /* table 0; random Andross hit-cue bit */
     GAMEBIT_NW_MagicCaveVisible = 0x113,                 /* table 2; ref wastes/MagicCaveTo Visible */
     GAMEBIT_SH_KilledBloop18 = 0x115,                    /* table 1 */
     GAMEBIT_ITEM_FireSpellStone1_Got = 0x123,            /* table 2; hint 297; ref temple/VFP_PodiumP key */
@@ -593,6 +609,7 @@ enum GameBitId {
     GAMEBIT_WM_KrazSpirit1Returning = 0x4A7,             /* table 0; set when the spirit is visible */
     GAMEBIT_WaterSpellStone1_4AB = 0x4AB,                /* table 1; related to spellstone */
     GAMEBIT_NW_ObjGroups = 0x4AE,                        /* table 3; size 32; also LinkB */
+    GAMEBIT_AndrossRelated04B1 = 0x4B1,                  /* table 2; set when Andross's brain is defeated */
     GAMEBIT_TargetRelated04B7 = 0x4B7,                   /* table 1; related to object targeting */
     GAMEBIT_IM_PushBlock_Placed = 0x4D3,                 /* table 2 */
     GAMEBIT_CF_AllPowerBasesPowered = 0x4E0,             /* table 1; set after all three power-base bits are set */
@@ -654,12 +671,12 @@ enum GameBitId {
     GAMEBIT_DR_ActNo = 0x76E,                            /* table 1; size 4 */
     GAMEBIT_DRBOT_ActNo = 0x76F,                         /* table 1; size 4 */
     GAMEBIT_ITEM_DeletedSpell777_Got = 0x777,            /* table 2; in spell bits table but does nothing */
-    GAMEBIT_DR_EarthWarriorUnknown_2 = 0x7BC,            /* set by DR_EarthWar.c when mounted */
+    GAMEBIT_DR_EarthWarriorUnknown_2 = 0x7BC,            /* set by DR_EarthWar.c when mounted and cleared when dismounted */
     GAMEBIT_ITEM_SpellStone7BD_Got = 0x7BD,              /* table 2; unused? */
     GAMEBIT_ITEM_SpellStone7BF_Got = 0x7BF,              /* table 1 */
     GAMEBIT_OFP_Reopened = 0x7C2,                        /* table 2; hint 403; ref dfptop/HitAnimator target */
     GAMEBIT_HT_ObjStates = 0x7CE,                        /* table 3; size 32 */
-    GAMEBIT_DR_EarthWarriorUnknown_3 = 0x7D4,            /* cleared by DR_EarthWar.c when mounted */
+    GAMEBIT_DR_EarthWarriorUnknown_3 = 0x7D4,            /* cleared by DR_EarthWar.c when mounted and set when dismounted */
     GAMEBIT_ITEM_MapDR_Got = 0x7DD,                      /* table 2 */
     GAMEBIT_ITEM_MapWM_Got = 0x7E5,                      /* table 2 */
     GAMEBIT_ITEM_MapOFP_Got = 0x7E9,                     /* table 2 */

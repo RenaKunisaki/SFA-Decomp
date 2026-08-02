@@ -363,6 +363,11 @@ cflags_dll_noopt_noautoinline = [
     "-inline", "noauto",
 ]
 
+cflags_dll_noopt_noautoinline_alwaysinline = [
+    *cflags_dll_noopt_noautoinline,
+    '-pragma "always_inline on"',
+]
+
 cflags_dll_noopt_noautoinline_level3 = [
     *cflags_base,
     "-opt", "nopeephole,noschedule,level=3",
@@ -1839,7 +1844,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/697_MCStaffEffe/MCStaffEffe.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/698_MCLightning/MCLightning.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/699_GF_LevelCon/GF_LevelCon.c", cflags=cflags_dll_noopt_noloopinv_noautoinline),
-            Object(NonMatching, "dlls/objects/700_Andross/Andross.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(MatchingFor("GSAE01"), "dlls/objects/700_Andross/Andross.c", cflags=cflags_dll_noopt_noautoinline_alwaysinline),
             Object(NonMatching, "dlls/objects/701/701.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/702_AndrossBrai/AndrossBrai.c", cflags=cflags_dll_noopt_nocse),
             Object(MatchingFor("GSAE01"), "dlls/objects/703_AndrossLigh/AndrossLigh.c"),
