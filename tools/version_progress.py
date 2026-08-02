@@ -76,6 +76,18 @@ class PortedRange:
     target_functions: tuple[FunctionSymbol, ...]
 
 
+@dataclass(frozen=True)
+class SymbolSpan:
+    name: str
+    section: str
+    start: int
+    end: int
+
+    @property
+    def size(self) -> int:
+        return self.end - self.start
+
+
 def mask_instruction(word: int) -> int:
     opcode = word >> 26
     if opcode == 18:
@@ -164,13 +176,17 @@ def unique_function_matches(
     target_by_signature: dict[tuple[str, bytes], list[FunctionSymbol]] = defaultdict(
         list
     )
+    source_by_name: dict[str, list[FunctionSymbol]] = defaultdict(list)
+    target_by_name: dict[str, list[FunctionSymbol]] = defaultdict(list)
     for function in source_functions:
         if function.section in CODE_SECTIONS:
+            source_by_name[function.name].append(function)
             source_by_signature[
                 (function.section, function_signature(source_dol, function))
             ].append(function)
     for function in target_functions:
         if function.section in CODE_SECTIONS:
+            target_by_name[function.name].append(function)
             target_by_signature[
                 (function.section, function_signature(target_dol, function))
             ].append(function)
@@ -180,6 +196,23 @@ def unique_function_matches(
         targets = target_by_signature.get(signature, [])
         if len(candidates) == 1 and len(targets) == 1:
             matches[candidates[0].address] = targets[0]
+    used_targets = {function.address for function in matches.values()}
+    for name, candidates in source_by_name.items():
+        targets = target_by_name.get(name, [])
+        if len(candidates) != 1 or len(targets) != 1:
+            continue
+        source_function = candidates[0]
+        target_function = targets[0]
+        if (
+            source_function.address in matches
+            or target_function.address in used_targets
+            or source_function.section != target_function.section
+            or function_signature(source_dol, source_function)
+            != function_signature(target_dol, target_function)
+        ):
+            continue
+        matches[source_function.address] = target_function
+        used_targets.add(target_function.address)
     return matches
 
 
@@ -220,7 +253,8 @@ def build_boundary_map(
     target_range, target_words = normalized_section_words(target_dol, section)
     direct = {
         source_range.address: target_range.address,
-        source_range.address + source_range.size: target_range.address
+        source_range.address
+        + source_range.size: target_range.address
         + target_range.size,
     }
 
@@ -405,40 +439,58 @@ def build_all_boundary_maps(
     return result, anchor_counts
 
 
-def load_symbol_span_index(
-    path: Path,
-    *,
-    include_address_symbols: bool = False,
-) -> dict[str, tuple[list[int], list[int]]]:
-    spans: dict[str, list[tuple[int, int]]] = defaultdict(list)
+def load_symbol_spans(path: Path) -> dict[str, tuple[SymbolSpan, ...]]:
+    spans: dict[str, list[SymbolSpan]] = defaultdict(list)
     size_re = re.compile(r"\bsize:0x([0-9A-Fa-f]+)\b")
     for line in path.read_text(encoding="utf-8").splitlines():
         match = SYMBOL_LINE_RE.match(line)
         size_match = size_re.search(line)
         if match is None or size_match is None:
             continue
-        if (
-            not include_address_symbols
-            and ADDRESS_SYMBOL_RE.match(match.group(1)) is not None
-        ):
-            continue
         start = int(match.group(3), 16)
         size = int(size_match.group(1), 16)
         if size:
-            spans[match.group(2)].append((start, start + size))
+            spans[match.group(2)].append(
+                SymbolSpan(match.group(1), match.group(2), start, start + size)
+            )
+    return {
+        section: tuple(sorted(section_spans, key=lambda span: (span.start, span.end)))
+        for section, section_spans in spans.items()
+    }
 
+
+def symbol_span_index(
+    spans: dict[str, tuple[SymbolSpan, ...]],
+    *,
+    include_address_symbols: bool = False,
+) -> dict[str, tuple[list[int], list[int]]]:
     result: dict[str, tuple[list[int], list[int]]] = {}
     for section, section_spans in spans.items():
-        section_spans.sort()
         starts: list[int] = []
         prefix_max_end: list[int] = []
         maximum = 0
-        for start, end in section_spans:
-            starts.append(start)
-            maximum = max(maximum, end)
+        for span in section_spans:
+            if (
+                not include_address_symbols
+                and ADDRESS_SYMBOL_RE.match(span.name) is not None
+            ):
+                continue
+            starts.append(span.start)
+            maximum = max(maximum, span.end)
             prefix_max_end.append(maximum)
         result[section] = (starts, prefix_max_end)
     return result
+
+
+def load_symbol_span_index(
+    path: Path,
+    *,
+    include_address_symbols: bool = False,
+) -> dict[str, tuple[list[int], list[int]]]:
+    return symbol_span_index(
+        load_symbol_spans(path),
+        include_address_symbols=include_address_symbols,
+    )
 
 
 def boundary_crosses_symbol(
@@ -451,6 +503,192 @@ def boundary_crosses_symbol(
     return index >= 0 and prefix_max_end[index] > boundary
 
 
+def normalized_span_signature(dol: DolFile, span: SymbolSpan) -> bytes:
+    """Return span bytes with relocatable DOL pointers normalized."""
+
+    raw = bytearray(read_dol_range(dol, span.start, span.size))
+    for offset in range((-span.start) % 4, len(raw) - 3, 4):
+        (word,) = struct.unpack_from(">I", raw, offset)
+        if span.section in CODE_SECTIONS:
+            struct.pack_into(">I", raw, offset, mask_instruction(word))
+        elif 0x80000000 <= word < 0x81800000:
+            struct.pack_into(">I", raw, offset, 0xFFFFFFFF)
+    return bytes(raw)
+
+
+def weak_symbol_name(name: str) -> bool:
+    return (
+        ADDRESS_SYMBOL_RE.match(name) is not None
+        or re.match(r"^@\d+$", name) is not None
+    )
+
+
+def snap_symbol_boundaries(
+    source_splits: list[SplitRange],
+    boundary_maps: dict[str, dict[int, int]],
+    source_dol: DolFile,
+    target_dol: DolFile,
+    source_spans: dict[str, tuple[SymbolSpan, ...]],
+    target_spans: dict[str, tuple[SymbolSpan, ...]],
+    target_symbol_span_index: dict[str, tuple[list[int], list[int]]],
+    target_all_symbol_span_index: dict[str, tuple[list[int], list[int]]],
+) -> tuple[dict[str, dict[int, int]], int]:
+    """Snap rejected inferred boundaries to proven homologous symbol edges."""
+
+    splits_by_boundary: dict[tuple[str, int], list[SplitRange]] = defaultdict(list)
+    for split in source_splits:
+        splits_by_boundary[(split.section, split.start)].append(split)
+        splits_by_boundary[(split.section, split.end)].append(split)
+
+    proposals: dict[tuple[str, int], int] = {}
+    for section, section_map in boundary_maps.items():
+        if section in CODE_SECTIONS:
+            continue
+        section_source_spans = source_spans.get(section, ())
+        section_target_spans = target_spans.get(section, ())
+        for source_boundary, target_boundary in section_map.items():
+            touching = splits_by_boundary.get((section, source_boundary), [])
+            currently_rejected = False
+            for split in touching:
+                target_start = section_map.get(split.start)
+                target_end = section_map.get(split.end)
+                if target_start is None or target_end is None:
+                    continue
+                size_drift = split.end - split.start != target_end - target_start
+                index = (
+                    target_all_symbol_span_index
+                    if size_drift
+                    else target_symbol_span_index
+                )
+                if boundary_crosses_symbol(index, section, target_boundary):
+                    currently_rejected = True
+                    break
+            if not currently_rejected:
+                continue
+
+            crossing = [
+                span
+                for span in section_target_spans
+                if span.start < target_boundary < span.end
+            ]
+            if len(crossing) != 1:
+                continue
+            target_span = crossing[0]
+            if not weak_symbol_name(target_span.name) and not any(
+                source_span.name == target_span.name
+                and (
+                    source_span.start == source_boundary
+                    or source_span.end == source_boundary
+                )
+                for source_span in section_source_spans
+            ):
+                continue
+            target_signature = normalized_span_signature(target_dol, target_span)
+            candidates: list[int] = []
+            for source_span in section_source_spans:
+                source_signature = normalized_span_signature(source_dol, source_span)
+                if source_span.end == source_boundary:
+                    candidate = target_span.end
+                elif source_span.start == source_boundary:
+                    candidate = target_span.start
+                else:
+                    continue
+                exact = (
+                    source_span.size == target_span.size
+                    and source_signature == target_signature
+                )
+                zero_extended_tail = (
+                    candidate == target_span.end
+                    and 0 < target_span.size - source_span.size <= 8
+                    and target_signature[: source_span.size] == source_signature
+                    and not any(target_signature[source_span.size :])
+                )
+                if exact or zero_extended_tail:
+                    candidates.append(candidate)
+            if len(set(candidates)) == 1:
+                candidate = candidates[0]
+                proposals[(section, source_boundary)] = candidate
+                # The source may leave a short zero alignment tail after the
+                # symbol while the target folds that tail into an expanded
+                # object.  Move the following boundary with the proven edge.
+                if candidate == target_span.end:
+                    ordered_source = sorted(section_map)
+                    boundary_index = bisect.bisect_right(
+                        ordered_source, source_boundary
+                    )
+                    if boundary_index < len(ordered_source):
+                        following = ordered_source[boundary_index]
+                        following_target = section_map[following]
+                        if (
+                            0 < following - source_boundary <= 7
+                            and target_boundary < following_target < target_span.end
+                            and gap_is_zero(
+                                source_dol, section, source_boundary, following
+                            )
+                            and not symbol_overlaps_range(
+                                source_spans,
+                                section,
+                                source_boundary,
+                                following,
+                                semantic_only=True,
+                            )
+                        ):
+                            proposals[(section, following)] = candidate
+
+    snapped = {
+        section: dict(section_map) for section, section_map in boundary_maps.items()
+    }
+    applied = 0
+    proposal_groups: dict[tuple[str, int], dict[int, int]] = defaultdict(dict)
+    for (section, source_boundary), candidate in proposals.items():
+        proposal_groups[(section, candidate)][source_boundary] = candidate
+    for (section, _), section_proposals in sorted(proposal_groups.items()):
+        trial = dict(snapped[section])
+        trial.update(section_proposals)
+        ordered = [target for _, target in sorted(trial.items())]
+        if any(before > after for before, after in zip(ordered, ordered[1:])):
+            continue
+        valid = True
+        for split in source_splits:
+            if split.section != section or split.start == split.end:
+                continue
+            target_start = trial.get(split.start)
+            target_end = trial.get(split.end)
+            if (
+                target_start is not None
+                and target_end is not None
+                and target_start >= target_end
+            ):
+                valid = False
+                break
+        if valid:
+            snapped[section] = trial
+            applied += len(section_proposals)
+    return snapped, applied
+
+
+def gap_is_zero(dol: DolFile, section: str, start: int, end: int) -> bool:
+    if section in {"bss", "sbss"}:
+        return True
+    return not any(read_dol_range(dol, start, end - start))
+
+
+def symbol_overlaps_range(
+    spans: dict[str, tuple[SymbolSpan, ...]],
+    section: str,
+    start: int,
+    end: int,
+    *,
+    semantic_only: bool = False,
+) -> bool:
+    return any(
+        span.start < end
+        and start < span.end
+        and (not semantic_only or not weak_symbol_name(span.name))
+        for span in spans.get(section, ())
+    )
+
+
 def port_coherent_units(
     source_splits: list[SplitRange],
     source_functions: list[FunctionSymbol],
@@ -458,7 +696,11 @@ def port_coherent_units(
     boundary_maps: dict[str, dict[int, int]],
     target_symbol_spans: dict[str, tuple[list[int], list[int]]],
     target_all_symbol_spans: dict[str, tuple[list[int], list[int]]],
-) -> tuple[list[PortedRange], dict[str, int]]:
+    source_dol: DolFile,
+    target_dol: DolFile,
+    source_detailed_spans: dict[str, tuple[SymbolSpan, ...]],
+    target_detailed_spans: dict[str, tuple[SymbolSpan, ...]],
+) -> tuple[list[PortedRange], dict[str, int], int, dict[str, tuple[str, ...]]]:
     source_by_section: dict[str, list[FunctionSymbol]] = defaultdict(list)
     target_by_section: dict[str, list[FunctionSymbol]] = defaultdict(list)
     for function in source_functions:
@@ -471,11 +713,14 @@ def port_coherent_units(
         by_unit[split.unit].append(split)
 
     rejected: dict[str, int] = defaultdict(int)
+    rejected_units: dict[str, set[str]] = defaultdict(set)
     accepted: list[PortedRange] = []
     for unit, ranges in by_unit.items():
         candidates: list[PortedRange] = []
         reason: str | None = None
         for split in ranges:
+            if split.start == split.end:
+                continue
             section_map = boundary_maps.get(split.section, {})
             target_start = section_map.get(split.start)
             target_end = section_map.get(split.end)
@@ -508,8 +753,60 @@ def port_coherent_units(
             )
         if reason is not None:
             rejected[reason] += 1
+            rejected_units[reason].add(unit)
             continue
         accepted.extend(candidates)
+
+    # Fold only short, invariant, zero-filled alignment gaps into the preceding
+    # object before auditing auto-unit alignment.  This is linker padding, not
+    # a standalone translation unit.
+    extensions: dict[tuple[str, str, int], int] = {}
+    by_section: dict[str, list[PortedRange]] = defaultdict(list)
+    for item in accepted:
+        by_section[item.source.section].append(item)
+    for section, ranges in by_section.items():
+        ranges.sort(key=lambda item: item.target_start)
+        for before, after in zip(ranges, ranges[1:]):
+            source_gap = after.source.start - before.source.end
+            target_gap = after.target_start - before.target_end
+            if not (0 < source_gap == target_gap <= 7):
+                continue
+            if before.target_end % 4 == 0:
+                continue
+            if symbol_overlaps_range(
+                source_detailed_spans,
+                section,
+                before.source.end,
+                after.source.start,
+                semantic_only=True,
+            ) or symbol_overlaps_range(
+                target_detailed_spans,
+                section,
+                before.target_end,
+                after.target_start,
+                semantic_only=True,
+            ):
+                continue
+            if not gap_is_zero(
+                source_dol, section, before.source.end, after.source.start
+            ) or not gap_is_zero(
+                target_dol, section, before.target_end, after.target_start
+            ):
+                continue
+            extensions[
+                (before.source.unit, section, before.source.start)
+            ] = after.target_start
+    folded_padding_ranges = len(extensions)
+    accepted = [
+        replace(
+            item,
+            target_end=extensions.get(
+                (item.source.unit, item.source.section, item.source.start),
+                item.target_end,
+            ),
+        )
+        for item in accepted
+    ]
 
     # Leaving an unclaimed corridor makes decomp-toolkit synthesize an auto
     # unit.  Its endpoints must be word aligned even when the neighboring real
@@ -532,6 +829,7 @@ def port_coherent_units(
         if not reject_units:
             break
         rejected["unaligned auto-unit boundary"] += len(reject_units)
+        rejected_units["unaligned auto-unit boundary"].update(reject_units)
         accepted = [item for item in accepted if item.source.unit not in reject_units]
 
     # A single word between two claimed ranges is linker padding owned by the
@@ -574,7 +872,15 @@ def port_coherent_units(
                 f"{split.source.section} range at 0x{split.target_start:08X}"
             )
         previous_end[split.source.section] = split.target_end
-    return accepted, dict(sorted(rejected.items()))
+    return (
+        accepted,
+        dict(sorted(rejected.items())),
+        folded_padding_ranges,
+        {
+            reason: tuple(sorted(units))
+            for reason, units in sorted(rejected_units.items())
+        },
+    )
 
 
 def build_symbol_mappings(
@@ -845,6 +1151,9 @@ def main() -> int:
         action="store_true",
         help="write exact source units from the target's current report",
     )
+    parser.add_argument(
+        "--verbose", action="store_true", help="list rejected translation units"
+    )
     args = parser.parse_args()
 
     source_root = Path("config") / args.source
@@ -866,15 +1175,33 @@ def main() -> int:
         source_functions,
         matches,
     )
-    ported, rejected = port_coherent_units(
+    source_symbol_spans = load_symbol_spans(source_root / "symbols.txt")
+    target_symbol_spans = load_symbol_spans(target_root / "symbols.txt")
+    target_named_symbol_span_index = symbol_span_index(target_symbol_spans)
+    target_all_symbol_span_index = symbol_span_index(
+        target_symbol_spans, include_address_symbols=True
+    )
+    boundary_maps, snapped_boundaries = snap_symbol_boundaries(
+        source_splits,
+        boundary_maps,
+        source_dol,
+        target_dol,
+        source_symbol_spans,
+        target_symbol_spans,
+        target_named_symbol_span_index,
+        target_all_symbol_span_index,
+    )
+    ported, rejected, folded_padding_ranges, rejected_units = port_coherent_units(
         source_splits,
         source_functions,
         target_functions,
         boundary_maps,
-        load_symbol_span_index(target_root / "symbols.txt"),
-        load_symbol_span_index(
-            target_root / "symbols.txt", include_address_symbols=True
-        ),
+        target_named_symbol_span_index,
+        target_all_symbol_span_index,
+        source_dol,
+        target_dol,
+        source_symbol_spans,
+        target_symbol_spans,
     )
     mappings = build_symbol_mappings(ported, matches)
     split_text = render_splits(target_header, ported)
@@ -895,12 +1222,14 @@ def main() -> int:
     mapped_symbols = sum(len(unit) for unit in mappings.values())
     print(
         f"{args.source} -> {args.target}: "
-        f"{len(matches)} unique function anchors, "
+        f"{len(matches)} function anchors, "
         f"{accepted_units}/{source_units} coherent units, "
         f"{len(ported)}/{len(source_splits)} ranges, "
         f"0x{code_bytes:X} target code bytes, "
         f"0x{data_bytes:X} target data bytes, "
-        f"{mapped_symbols} symbol mappings"
+        f"{mapped_symbols} symbol mappings, "
+        f"{snapped_boundaries} proven symbol-edge snaps, "
+        f"{folded_padding_ranges} folded padding ranges"
     )
     for section, counts in anchor_counts.items():
         boundaries = {
@@ -914,6 +1243,9 @@ def main() -> int:
         )
     for reason, count in rejected.items():
         print(f"  skipped {count}: {reason}")
+        if args.verbose:
+            for unit in rejected_units.get(reason, ()):
+                print(f"    {unit}")
 
     if args.write:
         (target_root / "splits.txt").write_text(
