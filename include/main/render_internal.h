@@ -6,7 +6,7 @@
 struct ObjAnimState;
 
 extern int gRenderMode;
-extern f32 gModelRenderSubframeScale;
+extern const f32 gModelRenderSubframeScale[1];
 extern const int gModelRenderAdpcmStepTable[];
 extern const int gModelRenderAdpcmIndexDeltaTable[];
 

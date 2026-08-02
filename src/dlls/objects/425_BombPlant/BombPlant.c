@@ -31,7 +31,6 @@
 
 #define BOMB_PLANT_RANDOM_TIMER_MIN -0x32
 #define BOMB_PLANT_RANDOM_TIMER_MAX 0x32
-#define BOMB_PLANT_GROW_RANGE_SQ    6400.0f
 #define BOMB_PLANT_GROW_DURATION    135.0f
 #define BOMB_PLANT_MIN_GROW_SCALE   0.00001f
 
@@ -95,6 +94,8 @@ int BombPlant_animEventCallback(GameObject* obj) {
     return 0;
 }
 
+const f32 gBombPlantGrowRangeSq[1] = {6400.0f};
+
 static inline void BombPlant_tryBeginGrow(GameObject* obj, BombPlantState* state) {
     GameObject* player;
     f32 distanceSquared;
@@ -102,7 +103,7 @@ static inline void BombPlant_tryBeginGrow(GameObject* obj, BombPlantState* state
     player = Obj_GetPlayerObject();
     distanceSquared = vec3f_distanceSquared(&obj->anim.worldPosX, &player->anim.worldPosX);
 
-    if (distanceSquared > BOMB_PLANT_GROW_RANGE_SQ) {
+    if (distanceSquared > gBombPlantGrowRangeSq[0]) {
         state->stateIndex = BOMB_PLANT_STATE_GROWING;
         state->flags |= BOMB_PLANT_STATE_FLAG_JUST_ENTERED;
     }

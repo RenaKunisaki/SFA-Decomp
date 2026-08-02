@@ -13,8 +13,6 @@
 #include "string.h"
 #include "track/intersect_card_api.h"
 
-extern char sMemoryCardFileNameString[];
-
 volatile u32 gSaveCardState = 0xD;
 char* sMemoryCardFileName = sMemoryCardFileNameString;
 int gSaveCardBackdropColor = 0x404040FF;
@@ -60,11 +58,6 @@ static inline u64 saveGame_checksum(u64* p, int count)
     }
     return x[0] ^ (acc[0] + 13);
 }
-extern u32 gSaveCardChecksumHi;
-extern u32 gSaveCardChecksumLo;
-extern u8* gSaveCardImageBuffer;
-extern u32 gSaveCardSerialHi;
-extern u8 gSaveCardIdentityCheckEnabled;
 
 int saveGameReadSlotCb(u8 idx, int unused, void* dst)
 {

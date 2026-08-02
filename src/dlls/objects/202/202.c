@@ -169,10 +169,6 @@ u8 gIceBaddieA06MoveVariant;
 
 u8 gIceBaddieA05MoveVariant;
 
-IceBaddieStateHandler gIceBaddieStateHandlersB[8];
-
-IceBaddieStateHandler gIceBaddieStateHandlersA[14];
-
 s16 gIceBaddieAttackMoves[8] = {5, 6, 8, 6, 5, 8, 6, 0};
 
 s16 gIceBaddieAttackMovesAlt[8] = {8, 6, 9, 8, 6, 9, 9, 0};
@@ -1192,6 +1188,10 @@ void iceBaddie_release(void) {
 void iceBaddie_initialise(void) {
     iceBaddie_installStateHandlers();
 }
+
+IceBaddieStateHandler gIceBaddieStateHandlersA[14];
+
+IceBaddieStateHandler gIceBaddieStateHandlersB[8];
 
 ObjectDescriptor12 gIceBaddieObjDescriptor = {
     0,

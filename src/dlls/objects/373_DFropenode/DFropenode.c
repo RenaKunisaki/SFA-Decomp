@@ -104,7 +104,8 @@ void DFropenode_buildRopeSegmentMesh(const LightmapVertex* templateVertices, int
 }
 
 /* Keep addressable so every use shares one .sdata2 entry. */
-static const f32 sDFropenodeScaleFactor[1] = {0.01f};
+
+const f32 gDFropenodeOneHundredth[1] = {0.01f};
 
 static inline void DFropenode_applyRopeSway(DFropenodeRope* rope) {
     DFropenodeRopeNode* nodes = rope->nodes;
@@ -123,7 +124,7 @@ static inline void DFropenode_applyRopeSway(DFropenodeRope* rope) {
     }
 
     for (i = 1; i < rope->count - 1; i++) {
-        nodes[i].force.x += sDFropenodeScaleFactor[0] * rope->sway;
+        nodes[i].force.x += gDFropenodeOneHundredth[0] * rope->sway;
     }
 }
 
@@ -305,7 +306,7 @@ DFropenodeRope* DFropenode_createRope(f32 startX, f32 startY, f32 startZ, f32 en
     rope->direction = 1;
     rope->damping = 0.025f;
     rope->solverIterations = 1;
-    rope->timeStep = sDFropenodeScaleFactor[0];
+    rope->timeStep = gDFropenodeOneHundredth[0];
     if (rope->timeStep * length > 5.0f) {
         rope->timeStep = 5.0f / length;
     }
@@ -678,7 +679,7 @@ void DFropenode_render(GameObject* obj, int gdl, int mtxs) {
         LightmapVertex segmentVerts[DFROPENODE_SEGMENT_VERTEX_COUNT];
         int alpha;
         f32 tmp = obj->anim.rootMotionScale;
-        obj->anim.rootMotionScale = sDFropenodeScaleFactor[0];
+        obj->anim.rootMotionScale = gDFropenodeOneHundredth[0];
         Camera_LoadModelViewMatrix(0, mtxs, (MatrixTransform*)obj, 1.0f, 0.0f, NULL);
         obj->anim.rootMotionScale = tmp;
 

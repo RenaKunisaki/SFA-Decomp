@@ -76,7 +76,7 @@ void DFP_Floorbar_hitDetect(GameObject* obj)
     linkedObject = state[2];
     if (linkedObject == NULL)
         return;
-    hitFlag = *(s16*)((char*)linkedObject + 6) & 0x40;
+    hitFlag = ((GameObject*)linkedObject)->anim.flags & 0x40;
     if (hitFlag == 0)
         return;
     state[2] = NULL;

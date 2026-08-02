@@ -621,9 +621,18 @@ transposed, the knob is the cast lever above, not the source text.
   784 bytes actually differ** (7 words, an emission-order permutation). The whole section zeroes on
   those 7 words. `intersect_render` is the same shape — 236 missing, same constants in a different
   sequence — and is the REFUTATION of the old bullet, not its proof.
-- **Therefore a sub-100 `.sdata2` is a live, source-addressable class (emission order), not a
-  closed artifact.** Diff the bytes before concluding anything; both instruments that produced the
-  old census keyed on size and anonymity and neither ever compared bytes.
+- **Scoring is open; REACHABILITY is closed. Do not conflate the two.** Correcting the scoring model
+  says these are real bytes, not that they can be recovered. Reachability was settled separately and
+  exhaustively: **0/579 candidates meet the reopen condition, against a 206/206 positive control**,
+  and the mechanism is characterized — MWCC uses a **dual emission rule**, named consts at their
+  DEFINITION position and literals at FIRST USE — so a differing pool order is reachable *only* via
+  the banned named-constant shape. Canonical: `data-axis-order-blindness-theorem-2026-08` and the
+  pool-mechanism entries; keep this bullet in sync with them.
+  Diff the bytes before concluding anything about a section — both instruments behind the old census
+  keyed on size and anonymity and neither ever compared bytes — but expect the answer to be
+  "real, correctly scored, mechanically understood, deliberately unreachable." **The axis tallies
+  therefore stand at 0 B reachable**, and `player.c`'s 28 differing bytes (the 7 permuted words
+  below) are a member of exactly that closed class.
 - **Two refuted gates, do not re-try:** naming (measured null — renaming to matching names moved
   nothing) and binding (the splitter emits every retail data symbol global, statics included, so
   retail-side linkage carries zero information; de-`static`-ing chases a tool artifact). These

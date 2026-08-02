@@ -144,6 +144,12 @@ typedef struct
     f32 z;     /* 0x14 */
 } CrawlerSfxParams;
 
+static const f32 gHagabonMK2LightAttenNear[1] = {100.0f};
+
+static const f32 gHagabonMK2LightAttenFar[1] = {150.0f};
+
+static const f32 gHagabonMK2LightIntensity[1] = {0.5f};
+
 static inline void crawler_createEngineLight(GameObject* obj, u8* state)
 {
     if (((EnemyState*)state)->modelLight == NULL)
@@ -157,9 +163,10 @@ static inline void crawler_createEngineLight(GameObject* obj, u8* state)
                                      obj->anim.localPosY, obj->anim.localPosZ);
         modelLightStruct_setDiffuseColor(((EnemyState*)state)->modelLight, 0xc0, 0x40, 0xff, 0xff);
         modelLightStruct_setSpecularColor(((EnemyState*)state)->modelLight, 0xc0, 0x40, 0xff, 0xff);
-        modelLightStruct_setDistanceAttenuation(((EnemyState*)state)->modelLight, 100.0f, 150.0f);
+        modelLightStruct_setDistanceAttenuation(((EnemyState*)state)->modelLight, gHagabonMK2LightAttenNear[0],
+                                                gHagabonMK2LightAttenFar[0]);
         lightSetField4D(((EnemyState*)state)->modelLight, 1);
-        modelLightStruct_setEnabled(((EnemyState*)state)->modelLight, 1, 0.5f);
+        modelLightStruct_setEnabled(((EnemyState*)state)->modelLight, 1, gHagabonMK2LightIntensity[0]);
         modelLightStruct_startColorFade(((EnemyState*)state)->modelLight, 0, 0);
         modelLightStruct_setAffectsAabbLightSelection(((EnemyState*)state)->modelLight, 0);
     }
@@ -291,7 +298,8 @@ void hagabonMK2_updateB(GameObject* obj, u8* state)
         dp[1] = base->posY - obj->anim.worldPosY;
         dp[2] = base->posZ - obj->anim.worldPosZ;
         ((EnemyState*)state)->crawler.distToCurve = sqrtf(dp[2] * dp[2] + (dp[0] * dp[0] + dp[1] * dp[1]));
-        if (((EnemyState*)state)->crawler.distToCurve < 100.0f && !((EnemyState*)state)->crawler.warpTimer)
+        if (((EnemyState*)state)->crawler.distToCurve < gHagabonMK2LightAttenNear[0] &&
+            !((EnemyState*)state)->crawler.warpTimer)
         {
             ((EnemyState*)state)->flags2E4 = ((EnemyState*)state)->flags2E4 & ~0x10000LL;
         }

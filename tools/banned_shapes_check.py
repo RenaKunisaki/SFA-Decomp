@@ -5,7 +5,7 @@ Scope is GAME CODE ONLY -- src/main/, src/track/, src/dlls/. src/dolphin/ is the
 SDK and is exempt by policy; it legitimately carries pragmas, gotos, __declspec
 and lbl_ constants, so scanning it would produce nothing but false positives.
 
-Eight pattern classes, each carrying its citation:
+Nine pattern classes, each carrying its citation:
 
   PRAGMA          any #pragma in a game TU. Per-function pragma sandwiches of
                   every kind were purged repo-wide; pragmas may only be
@@ -47,6 +47,28 @@ Eight pattern classes, each carrying its citation:
                   shape. ALLOWED EXCEPTION: a genuine cross-TU object -- the
                   symbol appears in config/GSAE01/symbols.txt or is referenced
                   from a different source file.
+  UNCALLED_STATIC_FN
+                  a static function definition that nothing in the tree calls,
+                  not even transitively -- the phantom-function shape. MWCC emits
+                  an unreferenced static and mwld strips it at link, so such a
+                  function is invisible to every score gate: objdiff pairs our
+                  functions against RETAIL functions by name, and a body that is
+                  not in the DOL has no pair and is never scored. That makes the
+                  shape a free place to park fabricated code whose only effect is
+                  to mint .sdata2 literals in the order the carve wants.
+                  IT IS NOT AUTOMATICALLY A HACK. Retail TUs really did carry
+                  dead statics, and the pool proves it: MWCC does NOT intern a
+                  file-scope const against a pool literal (declaring one emits a
+                  SECOND word), so whenever a slot that live retail code also
+                  loads sits AHEAD of the first live minter, only code that ran
+                  before it can have minted it -- code mwld then stripped. Such a
+                  reconstruction is evidence-backed and belongs in the baseline.
+                  What this class exists to stop is the OTHER kind: a body that
+                  mints nothing and moves no data byte, which is pure dead
+                  weight. Detection is source-only and transitive (a cluster
+                  reachable only from other uncalled statics is uncalled), so it
+                  needs no build; adjudicate a new hit against the unit's pool
+                  before accepting it. See docs/priced_classes.md.
 
 Exit status: 0 when there are no hits beyond the baseline, 1 otherwise, so this
 can gate. --baseline rewrites the baseline file from the current tree; hits
@@ -89,6 +111,7 @@ CITE = {
     "LBL_CONST_DEF": "CLAUDE.md Banned constructs: pool-reconstruction consts",
     "SINGLE_ELEM_CONST_ARRAY": "CLAUDE.md Banned constructs: pool-reconstruction consts (1-element pin)",
     "LBL_ARRAY_NAMING_DEBT": "informational: unrecovered name, NOT a ban",
+    "UNCALLED_STATIC_FN": "CLAUDE.md Banned constructs: phantom literal-minter functions",
 }
 
 RE_PRAGMA = re.compile(r"^\s*#\s*pragma\b")
@@ -108,6 +131,16 @@ RE_LBL_ARRAY = re.compile(
     r"^\s*(?:static\s+)?const\s+[A-Za-z_]\w*\s*\*?\s*(lbl_[0-9A-Fa-f]{8})\s*\[")
 RE_ONE_ELEM = re.compile(
     r"^\s*(?:static\s+)?const\s+[A-Za-z_]\w*\s*\*?\s*([A-Za-z_]\w*)\s*\[\s*1\s*\]\s*=")
+# A function DEFINITION at column 0: a return type, then the name and '(', with
+# no trailing ';' (that would be a prototype). Both the static and the exported
+# form are collected -- the exported ones are needed as reference OWNERS so the
+# transitive pass can tell a live caller from a dead one.
+# `static inline` is deliberately NOT collected as a candidate: an inline that
+# nothing calls is never expanded and never emitted, so it cannot be a phantom
+# .text symbol. It is still collected as a reference OWNER.
+RE_FN_DEF = re.compile(
+    r"^(?P<static>static\s+)?(?P<inline>inline\s+)?(?!return\b|else\b|typedef\b)"
+    r"[A-Za-z_]\w*(?:\s+\w+)*[\s*]+(?P<name>[A-Za-z_]\w*)\s*\(")
 
 # A volatile cast is GENUINE hardware when it targets a hardware address or a
 # write-gather pipe, rather than the address of a C object.
@@ -194,7 +227,6 @@ def scan_one_elem(files, base=REPO):
                 defs.append((rel, n, m.group(1), raw.strip()))
     if not defs:
         return []
-    symbols = load_symbols(base)
     hits = []
     for rel, n, name, snippet in defs:
         zero_reads = other_reads = foreign = 0
@@ -217,12 +249,104 @@ def scan_one_elem(files, base=REPO):
         # census only CLASSIFIES it. Keying on reads instead silently missed the
         # purest case -- a definition that is never read at all (its only purpose
         # is to occupy a pool slot).
-        if (name in symbols) or foreign:
+        # symbols.txt presence is NOT cross-TU evidence: the splitter emits EVERY retail
+        # data symbol there, statics included, so the file carries zero linkage
+        # information (precedent: sIntersectUnused0 is in symbols.txt, defined in
+        # src/track/intersect.c, and has zero external references). Only an actual
+        # reference from a DIFFERENT source file proves a cross-TU object.
+        if foreign:
             continue                                   # allowed cross-TU exception
         if other_reads:
             continue                                   # used as a real array
         note = " [never read -- dead pool anchor]" if not zero_reads else ""
         hits.append((rel, n, "SINGLE_ELEM_CONST_ARRAY", snippet + note))
+    return hits
+
+
+def _fn_defs(text):
+    """[(lineno, name, is_static)] for every column-0 function definition."""
+    out = []
+    lines = text.splitlines()
+    for i, raw in enumerate(lines, 1):
+        line = strip_line_comment(raw)
+        if not line or line[0].isspace() or line.rstrip().endswith(";"):
+            continue
+        if line.lstrip().startswith(("#", "/", "*", "}")):
+            continue
+        m = RE_FN_DEF.match(line)
+        if not m:
+            continue
+        # a definition opens a body: '{' on this line, or on a later line that is
+        # still part of the signature (a wrapped parameter list).
+        j, seen = i - 1, 0
+        while j < len(lines) and seen < 4:
+            if "{" in strip_line_comment(lines[j]):
+                out.append((i, m.group("name"),
+                            bool(m.group("static")) and not m.group("inline")))
+                break
+            if strip_line_comment(lines[j]).rstrip().endswith(";"):
+                break
+            j += 1
+            seen += 1
+    return out
+
+
+def scan_uncalled_statics(files):
+    """Transitive census of static functions that nothing in the tree calls.
+
+    A reference is attributed to the column-0 function definition that precedes
+    it in the same file; a reference on a column-0 line is file scope (an
+    initialiser table) and always counts as live. A static reachable only from
+    other uncalled statics is itself uncalled, so the marking is iterated to a
+    fixpoint -- a mutually-recursive dead cluster is caught whole.
+    """
+    defs = {}                      # name -> (rel, lineno)
+    owners = {}                    # rel -> sorted [(lineno, name)]
+    for rel, text in files.items():
+        if rel.endswith(".h"):
+            continue
+        fns = _fn_defs(text)
+        owners[rel] = [(ln, nm) for ln, nm, _st in fns]
+        for ln, nm, st in fns:
+            if st and nm not in defs:
+                defs[nm] = (rel, ln)
+    if not defs:
+        return []
+    callers = {n: set() for n in defs}       # name -> set of owner fns / None
+    for rel, text in files.items():
+        if not any(n in text for n in defs):
+            continue
+        own = owners.get(rel, [])
+        for idx, raw in enumerate(text.splitlines(), 1):
+            line = strip_line_comment(raw)
+            if not line.strip():
+                continue
+            file_scope = not line[0].isspace()
+            here = None
+            for ln, nm in own:
+                if ln <= idx:
+                    here = nm
+                else:
+                    break
+            for name in defs:
+                drel, dln = defs[name]
+                if rel == drel and idx == dln:
+                    continue                  # the definition itself
+                if not re.search(r"\b" + re.escape(name) + r"\b", line):
+                    continue
+                callers[name].add(None if file_scope else here)
+    dead = {n for n in defs if not callers[n]}
+    while True:
+        grew = {n for n in defs
+                if n not in dead and callers[n] and callers[n] <= dead}
+        if not grew:
+            break
+        dead |= grew
+    hits = []
+    for name in sorted(dead):
+        rel, ln = defs[name]
+        text = files[rel].splitlines()
+        hits.append((rel, ln, "UNCALLED_STATIC_FN", text[ln - 1].strip()))
     return hits
 
 
@@ -238,6 +362,7 @@ def collect(roots=SCAN_ROOTS, base=REPO, strict_lbl=False):
     for rel, text in sorted(files.items()):
         hits += scan_file(rel, text, strict_lbl)
     hits += scan_one_elem(files, base)
+    hits += scan_uncalled_statics(files)
     return sorted(hits, key=lambda h: (h[0], h[1], h[2]))
 
 
@@ -325,11 +450,47 @@ def self_test():
     # disagreed by one, and the delta was a one-element const array that is NEVER
     # READ. A reads-keyed check cannot see it, so the class is keyed on the
     # definition. This asserts the never-read variant stays caught.
-    oe = [h for h in hits if h[2] == "SINGLE_ELEM_CONST_ARRAY"]
+    # Synthetic, so the guard survives the tree it guards: the instance it used
+    # to name has since been purged, which silently turned the check red.
+    synth = scan_one_elem({"src/main/_probe.c":
+                           "static const f32 sNeverRead[1] = {1.0f};\n"},
+                          base=os.path.join(REPO, "does_not_exist"))
     chk("never-read one-element const array is caught",
-        any("gWarpPadRestZero" in h[3] for h in oe))
+        len(synth) == 1 and synth[0][2] == "SINGLE_ELEM_CONST_ARRAY")
     chk("never-read variant is labelled as dead",
-        any("gWarpPadRestZero" in h[3] and "never read" in h[3] for h in oe))
+        bool(synth) and "never read" in synth[0][3])
+    chk("one-element const array read as name[0] is caught",
+        len(scan_one_elem({"src/main/_probe.c":
+                           "static const f32 sPinned[1] = {1.0f};\n"
+                           "void f(void) { g(sPinned[0]); }\n"},
+                          base=os.path.join(REPO, "does_not_exist"))) == 1)
+    chk("genuine indexed array is not caught",
+        scan_one_elem({"src/main/_probe.c":
+                       "static const f32 sReal[1] = {1.0f};\n"
+                       "void f(int i) { g(sReal[i]); }\n"},
+                      base=os.path.join(REPO, "does_not_exist")) == [])
+
+    # UNCALLED_STATIC_FN, positive: the curves.c cluster is the ground truth for
+    # this class, and curveSpeedAt is the transitive case -- it IS referenced,
+    # but only from other uncalled statics, so a non-transitive scan misses it.
+    uc = [h for h in hits if h[2] == "UNCALLED_STATIC_FN"]
+    chk("uncalled static caught", any("curveBuildArcSegments" in h[3] for h in uc))
+    chk("transitive dead cluster caught",
+        any("curveSpeedAt" in h[3] for h in uc))
+
+    # NEGATIVE: a plain static WITH call sites must never be flagged. MWCC
+    # inlines these and still emits an out-of-line body that mwld strips, so they
+    # look identical to a phantom in the object and are separated only by having
+    # a caller in the source.
+    called = ("wctemplebri_deformVertex", "LargeCrate_spawnPickup",
+              "Obj_HeadingRadians", "DIMCannon_explodeBall")
+    leaked_called = [h for h in uc if any(c in h[3] for c in called)]
+    chk("plain static with call sites not flagged", not leaked_called,
+        "" if not leaked_called else "leaked %d" % len(leaked_called))
+
+    # NEGATIVE: an unused `static inline` emits no .text and is out of class.
+    chk("unused static inline not flagged",
+        not [h for h in uc if h[3].startswith("static inline")])
 
     # POSITIVE: the SDK really does contain the shapes, so the patterns fire
     # when pointed at code that has them. This is the control that proves a
@@ -357,6 +518,33 @@ def self_test():
         chk("historical corpus reachable", False, str(exc))
 
     # SANITY: scanning nothing must yield nothing (guards the walker).
+    # --- symbols.txt is not linkage evidence (regression guard) -----------------
+    # The exemption used to read `if (name in symbols) or foreign`, which hid 14
+    # real violations whose names merely appear in symbols.txt -- including
+    # lbl_803E23C0, which the ban names BY NAME. The splitter lists every retail
+    # data symbol, statics included, so presence there proves nothing.
+    synth_neverread = {"a.c": "const f32 gSynthNeverRead[1] = {0.0f};\n"}
+    synth_zeroread = {"a.c": "const f32 gSynthZeroRead[1] = {1.0f};\n"
+                             "void f(void) { use(gSynthZeroRead[0]); }\n"}
+    synth_realarray = {"a.c": "const f32 gSynthReal[1] = {1.0f};\n"
+                              "void f(void) { g(gSynthReal); }\n"}
+    synth_crosstu = {"a.c": "const f32 gSynthShared[1] = {1.0f};\n",
+                     "b.c": "void f(void) { use(gSynthShared[0]); }\n"}
+    r_never = scan_one_elem(synth_neverread)
+    chk("synthetic never-read one-element array is caught", len(r_never) == 1)
+    chk("never-read variant is labelled as dead",
+        bool(r_never) and "never read" in r_never[0][3])
+    chk("synthetic [0]-only read is caught", len(scan_one_elem(synth_zeroread)) == 1)
+    chk("a genuine array use is NOT flagged", len(scan_one_elem(synth_realarray)) == 0)
+    chk("a cross-TU referenced object is NOT flagged", len(scan_one_elem(synth_crosstu)) == 0)
+    _syms = load_symbols()
+    _oe = [h for h in hits if h[2] == "SINGLE_ELEM_CONST_ARRAY"]
+    _listed = [h for h in _oe
+               if (lambda m: m and m.group(1) in _syms)(
+                   re.search(r"\b([A-Za-z_]\w*)\s*\[\s*1\s*\]", h[3]))]
+    chk("symbols.txt-listed but unreferenced instances ARE caught",
+        bool(_listed) or not _syms, "(%d visible)" % len(_listed))
+
     chk("empty scope yields empty result", collect(roots=["src/does_not_exist"]) == [])
     return ok
 

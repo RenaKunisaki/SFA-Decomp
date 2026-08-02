@@ -2041,10 +2041,10 @@ void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params)
     cloud = (NewCloud*)NC_CLOUD;
     if (cloud == NULL)
     {
-        fl = params[0x58];
+        fl = ((CloudSpawnParams*)params)->flags58;
         if (!(fl & NEWCLOUD_CMD_DESPAWN) && !(fl & NEWCLOUD_CMD_RELOCATE) && !(fl & NEWCLOUD_CMD_KILL))
         {
-            if ((fl & NEWCLOUD_CMD_SPAWN) && (fl & NEWCLOUD_CMD_ANCHOROBJ) && params[0x5d] != 0)
+            if ((fl & NEWCLOUD_CMD_SPAWN) && (fl & NEWCLOUD_CMD_ANCHOROBJ) && ((CloudSpawnParams*)params)->stationaryInit != 0)
             {
                 newClouds((CloudSpawnParams*)params, objB, posA[0], posA[1], posA[2]);
             }
@@ -2059,15 +2059,15 @@ void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params)
         }
         if (params[0x58] & NEWCLOUD_CMD_SPAWN)
         {
-            if (params[0x5c] == 0 || params[0x5c] == 4)
+            if (((CloudSpawnParams*)params)->cloudType == 0 || ((CloudSpawnParams*)params)->cloudType == 4)
             {
                 switch (cfg->cloudIndex)
                 {
                 case 0:
-                    *(s16*)(env + 0xe) = (s16)cfg->envfxActId - 1;
-                    *(int*)(env + 0x14) = posA[0];
-                    *(int*)(env + 0x18) = posA[1];
-                    *(int*)(env + 0x1c) = posA[2];
+                    ((SaveGameEnvState*)env)->cloudEnvfxActIds[0] = (s16)cfg->envfxActId - 1;
+                    ((SaveGameEnvState*)env)->cloudPos[0][0] = posA[0];
+                    ((SaveGameEnvState*)env)->cloudPos[0][1] = posA[1];
+                    ((SaveGameEnvState*)env)->cloudPos[0][2] = posA[2];
                     if ((s8)env[cfg->cloudIndex + 0x41] == -1)
                     {
                         return;
@@ -2090,10 +2090,10 @@ void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params)
                     }
                     break;
                 case 1:
-                    *(s16*)(env + 0x10) = (s16)cfg->envfxActId - 1;
-                    *(int*)(env + 0x20) = posA[0];
-                    *(int*)(env + 0x24) = posA[1];
-                    *(int*)(env + 0x28) = posA[2];
+                    ((SaveGameEnvState*)env)->cloudEnvfxActIds[1] = (s16)cfg->envfxActId - 1;
+                    ((SaveGameEnvState*)env)->cloudPos[1][0] = posA[0];
+                    ((SaveGameEnvState*)env)->cloudPos[1][1] = posA[1];
+                    ((SaveGameEnvState*)env)->cloudPos[1][2] = posA[2];
                     if ((s8)env[cfg->cloudIndex + 0x41] == -1)
                     {
                         return;
@@ -2116,10 +2116,10 @@ void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params)
                     }
                     break;
                 case 2:
-                    *(s16*)(env + 0x12) = (s16)cfg->envfxActId - 1;
-                    *(int*)(env + 0x2c) = posA[0];
-                    *(int*)(env + 0x30) = posA[1];
-                    *(int*)(env + 0x34) = posA[2];
+                    ((SaveGameEnvState*)env)->cloudEnvfxActIds[2] = (s16)cfg->envfxActId - 1;
+                    ((SaveGameEnvState*)env)->cloudPos[2][0] = posA[0];
+                    ((SaveGameEnvState*)env)->cloudPos[2][1] = posA[1];
+                    ((SaveGameEnvState*)env)->cloudPos[2][2] = posA[2];
                     if ((s8)env[cfg->cloudIndex + 0x41] == -1)
                     {
                         return;
@@ -2150,7 +2150,7 @@ void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params)
     {
         return;
     }
-    if ((fl = params[0x58]) & NEWCLOUD_CMD_SPAWN)
+    if ((fl = ((CloudSpawnParams*)params)->flags58) & NEWCLOUD_CMD_SPAWN)
     {
         return;
     }

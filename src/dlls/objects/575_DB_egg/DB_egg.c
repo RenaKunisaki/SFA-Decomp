@@ -202,48 +202,48 @@ void dbegg_setupFromDef(GameObject* obj, u8* state)
     f32 surfaceProbeOut;
 
     config = (DbeggPlacement*)(obj)->anim.placementData;
-    state[0x119] = 0;
+    ((DbEggState*)state)->flags119 = 0;
     (obj)->anim.rotX = (s16)(config->facingAngleByte << 8);
     (obj)->anim.rotY = 0;
     (obj)->anim.rotZ = 0;
     (obj)->anim.rootMotionScale = (f32)(u32)config->speedScaleByte / 64.0f;
     (obj)->anim.rootMotionScale = (obj)->anim.rootMotionScale * (obj)->anim.modelInstance->rootMotionScaleBase;
-    state[0x118] = (u8)(mainGetBit(config->triggerGameBit) != 0 ? 3 : 1);
-    if (state[0x118] == 1)
+    ((DbEggState*)state)->mode = (u8)(mainGetBit(config->triggerGameBit) != 0 ? 3 : 1);
+    if (((DbEggState*)state)->mode == 1)
     {
         if (dbegg_probeSurface(obj, &surfaceProbeOut, 0.0f, 0.0f, 1) == 0)
         {
-            state[0x118] = 2;
+            ((DbEggState*)state)->mode = 2;
         }
     }
     if (config->behaviorMode != 0)
     {
-        state[0x119] |= 1;
+        ((DbEggState*)state)->flags119 |= 1;
         if (config->behaviorMode == 2)
-            state[0x119] |= 2;
+            ((DbEggState*)state)->flags119 |= 2;
         if (config->behaviorMode == 3)
-            state[0x118] = 10;
+            ((DbEggState*)state)->mode = 10;
         if (config->behaviorMode == 4)
         {
-            state[0x119] |= 4;
-            state[0x119] = (u8)(state[0x119] & ~1);
+            ((DbEggState*)state)->flags119 |= 4;
+            ((DbEggState*)state)->flags119 = (u8)(((DbEggState*)state)->flags119 & ~1);
         }
         if (config->behaviorMode == 5)
         {
-            state[0x119] |= 8;
-            state[0x119] |= 16;
+            ((DbEggState*)state)->flags119 |= 8;
+            ((DbEggState*)state)->flags119 |= 16;
         }
         if (config->behaviorMode == 6)
         {
             Obj_SetActiveModelIndex(obj, 1);
-            state[0x119] |= 8;
-            state[0x119] |= 16;
+            ((DbEggState*)state)->flags119 |= 8;
+            ((DbEggState*)state)->flags119 |= 16;
         }
         if (config->behaviorMode == 7)
-            state[0x119] |= 32;
+            ((DbEggState*)state)->flags119 |= 32;
     }
-    state[0x118] = (u8)(mainGetBit(config->activateGameBit) != 0 ? 5 : 12);
-    if (state[0x118] == 5)
+    ((DbEggState*)state)->mode = (u8)(mainGetBit(config->activateGameBit) != 0 ? 5 : 12);
+    if (((DbEggState*)state)->mode == 5)
     {
         objAddObjectType((int)obj, DBEGG_OBJGROUP);
     }
@@ -407,13 +407,13 @@ void dbegg_computeFlocking(GameObject* obj, f32* vel)
             f32 dx = ((GameObject*)sibling)->anim.localPosX - obj->anim.localPosX;
             f32 dz = ((GameObject*)sibling)->anim.localPosZ - obj->anim.localPosZ;
             f32 dist = sqrtf(dx * dx + dz * dz);
-            f32 radius = 1.5f * (f32)(u32) * (u8*)(((GameObject*)sibling)->anim.placementDataAddress + 0x19);
+            f32 radius = 1.5f * (f32)(u32)((DbeggPlacement*)((GameObject*)sibling)->anim.placementDataAddress)->forceRadiusByte;
             if (dist < radius)
             {
                 force = (radius - dist) / radius;
-                force = force * (10.0f * *(f32*)(sibling + 8));
-                sumX += force * mathSinf((3.1415927f * (f32)(int)*(s16*)sibling) / 32768.0f);
-                sumZ += force * mathCosf((3.1415927f * (f32)(int)*(s16*)sibling) / 32768.0f);
+                force = force * (10.0f * ((GameObject*)sibling)->anim.rootMotionScale);
+                sumX += force * mathSinf((3.1415927f * (f32)(int)((GameObject*)sibling)->anim.rotX) / 32768.0f);
+                sumZ += force * mathCosf((3.1415927f * (f32)(int)((GameObject*)sibling)->anim.rotX) / 32768.0f);
             }
         }
         objCursor++;
@@ -476,12 +476,12 @@ void dbegg_hitDetect(GameObject* obj)
     state = (obj)->extra;
     if (hit == 0x12)
     {
-        if (state[0x118] != 4)
+        if (((DbEggState*)state)->mode != 4)
         {
             Obj_GetPlayerObject();
         }
     }
-    if (state[0x118] != 9)
+    if (((DbEggState*)state)->mode != 9)
     {
         void* hitFrom = &(obj)->anim.previousLocalPosX;
         void* hitTo = &(obj)->anim.localPosX;
@@ -683,7 +683,7 @@ void dbegg_update(GameObject* obj)
             (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             break;
         case DBEGG_MODE_PICKUP_PROMPT:
-            if (Vec_xzDistance((f32*)((int)obj + 0x18), (f32*)(data + 8)) > 150.0f &&
+            if (Vec_xzDistance(&(obj)->anim.worldPosX, (f32*)(data + 8)) > 150.0f &&
                 (egg->flags119 & 2) == 0)
             {
                 playerObj = Obj_GetPlayerObject();
@@ -782,7 +782,7 @@ void dbegg_update(GameObject* obj)
                     ((obj)->anim.velocityX * (obj)->anim.velocityX + (obj)->anim.velocityY * (obj)->anim.velocityY));
                 if (fx > 4.6f * timeDelta)
                 {
-                    Vec3_Normalize((f32*)((int)obj + 0x24));
+                    Vec3_Normalize(&(obj)->anim.velocityX);
                     (obj)->anim.velocityX = (obj)->anim.velocityX * (4.6f * timeDelta);
                     (obj)->anim.velocityY = (obj)->anim.velocityY * (4.6f * timeDelta);
                     (obj)->anim.velocityZ = (obj)->anim.velocityZ * (4.6f * timeDelta);
@@ -851,7 +851,7 @@ void dbegg_update(GameObject* obj)
         {
             if (mainGetBit(0x3c4) == 0)
             {
-                if (Vec_xzDistance((f32*)((int)obj + 0x18), (f32*)((int)player + 0x18)) < 25.0f)
+                if (Vec_xzDistance(&(obj)->anim.worldPosX, &player->anim.worldPosX) < 25.0f)
                 {
                     if ((egg->flags119 & 1) == 0)
                     {

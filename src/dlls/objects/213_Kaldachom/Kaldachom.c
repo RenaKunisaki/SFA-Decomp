@@ -500,9 +500,9 @@ void kaldachom_handleAnimEvents(GameObject* obj, KaldachomState* objectState, Gr
     }
 }
 
-static const f32 gKaldachomScrollSteps[1] = {127.0f};
+const f32 gKaldachomTextureIdScale[1] = {127.0f};
 const f32 gKaldachomPi[1] = {3.1415927f};
-static const f32 gKaldachomHalfTurn[1] = {32768.0f};
+const f32 gKaldachomAngleUnitScale[1] = {32768.0f};
 
 void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAddress) {
     KaldachomControl* control;
@@ -705,9 +705,9 @@ void kaldachom_update(GameObject* obj) {
                 texture = (int)objFindTexture(obj, 0, 0);
                 ((KaldachomControl*)ref)->textureScrollAngle += 0x1000;
                 scrollPhase =
-                    mathSinf((gKaldachomPi[0] * (f32)(s32)((KaldachomControl*)ref)->textureScrollAngle) / gKaldachomHalfTurn[0]);
+                    mathSinf((gKaldachomPi[0] * (f32)(s32)((KaldachomControl*)ref)->textureScrollAngle) / gKaldachomAngleUnitScale[0]);
                 scrollPhase = 1.0f + scrollPhase;
-                ((ObjTextureRuntimeSlot*)texture)->textureId = (int)(gKaldachomScrollSteps[0] * scrollPhase);
+                ((ObjTextureRuntimeSlot*)texture)->textureId = (int)(gKaldachomTextureIdScale[0] * scrollPhase);
                 player = Obj_GetPlayerObject();
                 objectState->targetObj = player;
                 kaldachom_handleAnimEvents(obj, objectState, &objectState->ground);

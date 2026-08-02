@@ -585,6 +585,10 @@ void Lightfoot_RecordCompletedChallengeTargetHit(GameObject* obj, GroundBaddieSt
  * collision query tests. Low byte = behaviour flags; the high bits select the
  * map-surface type (consumed by trackBuildBlockTriangles).
  */
+const f32 gDll1B5PulseTimerInterval[1] = {15.0f};
+const f32 gDll1B5PulseSpawnOffsetY[1] = {35.0f};
+const f32 gDll1B5PulseBurstScale[1] = {0.2f};
+
 void Lightfoot_ProcessHitResponseFlags(int obj, BaddieState* inner)
 {
     if (inner->eventFlags & 4)
@@ -774,7 +778,7 @@ int Lightfoot_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
             inner->configFlags = inner->configFlags | 1;
             mainSetBits(placement->eventGameBit, 1);
             arr[3] = 0.0f;
-            arr[4] = 35.0f;
+            arr[4] = gDll1B5PulseSpawnOffsetY[0];
             arr[5] = 0.0f;
             j = 0x19;
             scale = 0.8f;
@@ -795,17 +799,17 @@ int Lightfoot_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
             if (timerRec->pulseTimer <= 0.0f)
             {
                 mode = 3;
-                timerRec->pulseTimer += 15.0f;
+                timerRec->pulseTimer += gDll1B5PulseTimerInterval[0];
             }
             else
             {
                 mode = 0;
             }
             snd[0] = 0.0f;
-            snd[1] = 35.0f;
+            snd[1] = gDll1B5PulseSpawnOffsetY[0];
             snd[2] = 0.0f;
             Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_foot_metal_scuff_455);
-            objfx_spawnPulseBurst(obj, 0.2f * obj->anim.rootMotionScale, 3, mode, 0, snd);
+            objfx_spawnPulseBurst(obj, gDll1B5PulseBurstScale[0] * obj->anim.rootMotionScale, 3, mode, 0, snd);
         }
     }
     inner->flags400 = inner->flags400 | 2;
@@ -991,15 +995,15 @@ void dll437_update(GameObject* obj) {
             controlState->pulseTimer -= timeDelta;
             if (controlState->pulseTimer <= 0.0f) {
                 workValue = 3;
-                controlState->pulseTimer += 15.0f;
+                controlState->pulseTimer += gDll1B5PulseTimerInterval[0];
             } else {
                 workValue = 0;
             }
             pulseOffset[0] = 0.0f;
-            pulseOffset[1] = 35.0f;
+            pulseOffset[1] = gDll1B5PulseSpawnOffsetY[0];
             pulseOffset[2] = 0.0f;
             Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_foot_metal_scuff_455);
-            objfx_spawnPulseBurst(obj, 0.2f * obj->anim.rootMotionScale, 3, workValue, 0, pulseOffset);
+            objfx_spawnPulseBurst(obj, gDll1B5PulseBurstScale[0] * obj->anim.rootMotionScale, 3, workValue, 0, pulseOffset);
         }
         control->wanderTimer -= timeDelta;
     }
@@ -1127,7 +1131,7 @@ void dll437_init(GameObject* obj, const Dll1B5Placement* placement, int isReload
     Lightfoot_ResetScriptedPosition(obj);
     ObjAnim_SetMoveProgress((ObjAnimComponent*)obj, (f32)(s32)randomGetRange(0, 0x63) / 100.0f);
     ((Dll1B5ControlState*)control)->movementSfxId = (u16)(randomGetRange(0, 1) != 0 ? 0x133 : 0x134);
-    ((Dll1B5ControlState*)control)->pulseTimer = 15.0f;
+    ((Dll1B5ControlState*)control)->pulseTimer = gDll1B5PulseTimerInterval[0];
     if (obj->userData1 != 0) {
         ObjHits_DisableObject(obj);
     }

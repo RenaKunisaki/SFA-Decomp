@@ -70,7 +70,6 @@ const EWColorTable gDREarthWarriorColors = {
 };
 static const u8 gDREarthWarriorPathSetupParam[4] = {1, 1, 1, 1};
 
-/* Legacy helper retained because its literals establish the retail MWCC pool group. */
 static void DR_EarthWarrior_setupPathState(u8* pathState, DREarthWarriorInitData* base, EarthWarriorSub* warrior)
 {
     (*gPathControlInterface)->setup(pathState, 4, base->unkC, base->unk3C, (void*)gDREarthWarriorPathSetupParam);
@@ -132,7 +131,6 @@ int DR_EarthWarrior_updateLeap(GameObject* obj, EarthWarriorSub* warrior, Baddie
     return 0;
 }
 
-/* Legacy helper retained because its literals establish the retail MWCC pool group. */
 static void DR_EarthWarrior_applySlowTurn(GameObject* obj, EarthWarriorSub* warrior, BaddieState* baddie)
 {
     baddie->moveSpeed = 0.02f;

@@ -91,6 +91,8 @@ void wcapertures_free(GameObject* obj)
     }
 }
 
+const f32 gWcAperturesZero[1] = {0.0f};
+
 void wcapertures_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     WCAperturesState* state = (obj)->extra;
@@ -131,7 +133,7 @@ void wcapertures_hitDetect(GameObject* obj)
             ev.arg1 = 0;
         col[0] = 5.0f;
         col[1] = -0.788130045f;
-        col[2] = 0.0f;
+        col[2] = gWcAperturesZero[0];
         (*gPartfxInterface)
             ->spawnObject((void*)obj, WCAPERTURES_PARTFX_OPEN, &ev, WCAPERTURES_PARTFX_KIND,
                           WCAPERTURES_PARTFX_INVALID_HANDLE, col);

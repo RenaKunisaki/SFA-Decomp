@@ -36,9 +36,6 @@
 #include "main/rcp_dolphin_render_api.h"
 #include "dolphin/gx/GXBump.h"
 
-extern void* lbl_803DCD10;
-extern char* lbl_803DCD08;
-
 static int pathSearchNodeMatchesTarget(PathSearch* search, PathSearchNode* node) {
     RomCurveDef* point;
     int target;

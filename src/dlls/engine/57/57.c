@@ -5,13 +5,11 @@
 #include "main/rcp_dolphin_api.h"
 #include "sys/objects.h"
 #include "main/dll/dll_0039_dummy39.h"
+#include "main/pause_menu_api.h"
 
 #define DUMMY39_COUNTDOWN_FRAMES 0x28
 #define DUMMY39_WARP_MAP         0x60
 #define DUMMY39_MAX_STEP_FRAMES  3
-
-extern u8 gDummy39Countdown;
-extern u8* gDummy39Texture;
 
 void Dummy39_render(void)
 {

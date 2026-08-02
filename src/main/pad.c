@@ -34,10 +34,6 @@ STATIC_ASSERT(offsetof(PadStateBlock, statusBuffers[0]) == 0x40);
 STATIC_ASSERT(offsetof(PadStateBlock, statusBuffers[1]) == 0x70);
 STATIC_ASSERT(sizeof(PadStateBlock) == 0xA0);
 
-extern u32 gPadButtonsPrevious[4];
-extern u32 gPadButtonsHeld[4];
-extern u32 gPadButtonsReleased[4];
-extern u32 gPadButtonsJustPressed[4];
 extern PADStatus gPadStatuses[2][4];
 
 u8 gPadStatusBufferIndex;

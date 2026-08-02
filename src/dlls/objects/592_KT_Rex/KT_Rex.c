@@ -51,8 +51,6 @@ int gKTRexContactEffectCooldown;
 StaffCollisionInterface** gKTRexResource;
 
 KTRexWork gKTRexEffectSpawnWork;
-void* gKTRexStateHandlersA[12];
-void* gKTRexStateHandlersB[10];
 
 s16 gKTRexMoveIdByLaneB05[4] = {9, 0x12, 0x12, 0};
 s16 gKTRexWalkMoveIdByLane[4] = {1, 2, 3, 0};
@@ -73,7 +71,7 @@ s16 gKTRexLaneModeGameBits[4] = {0x560, 0x561, 0x562, 0x563};
 
 const KtrexMsgBlob gKTRexMsgTemplate = {{6, 0x69, 0x69, 0xFF}};
 
-static inline u8 ktrex_getLaneMaskForTimer(int timer)
+static u8 ktrex_getLaneMaskForTimer(int timer)
 {
     u8 laneMasks[4] = {2, 8, 1, 4};
 
@@ -81,7 +79,7 @@ static inline u8 ktrex_getLaneMaskForTimer(int timer)
     return laneMasks[timer];
 }
 
-static inline u8 ktrex_hasLaneLerpOvershot(void)
+static u8 ktrex_hasLaneLerpOvershot(void)
 {
     if ((gKTRexState->currentLaneMask & gKTRexState->activeLaneMask) != 0)
     {
@@ -1164,7 +1162,7 @@ void ktrex_updateAttackEffects(GameObject* obj)
         {
             if (randomGetRange(0, 5) == 0 && gKTRexState->lightning[i] == NULL)
             {
-                ktrex_spawnRandomEnergyArc(obj, randomGetRange(8, 0xc), 100.0f, i);
+                ((void (*)(GameObject*, int, f32, int))ktrex_spawnRandomEnergyArc)(obj, randomGetRange(8, 0xc), 100.0f, i);
             }
         }
     }
@@ -1788,6 +1786,10 @@ void ktrex_initialiseStateHandlerTables(void)
     gKTRexStateHandlersA[10] = ktrex_stateHandlerA10;
     gKTRexStateHandlersA[11] = ktrex_stateHandlerA11;
 }
+
+void* gKTRexStateHandlersB[10];
+
+void* gKTRexStateHandlersA[12];
 
 s16 gKTRexTurnMoveIdByLaneAndDir[6] = {8, 14, 16, 17, 16, 17};
 f32 gKTRexCurvePhaseByVariantB04[3] = {0.006f, 0.003f, 0.003f};

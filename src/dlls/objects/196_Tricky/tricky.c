@@ -352,6 +352,19 @@ void tricky_updateModelVariantFade(int obj, int state)
     }
 }
 
+static int trickyEventTimeExpired(TrickyState* state)
+{
+    if (-100000.0f == state->eventTime)
+    {
+        return 1;
+    }
+    if ((state->currentTime - state->eventTime) > 8.0f)
+    {
+        return 1;
+    }
+    return 0;
+}
+
 /* Latch the impress move: set stateFlags bit 0x80000000 and prime impressTimer. */
 void trickyImpress(GameObject* obj)
 {
@@ -602,6 +615,14 @@ int trickySelectQueuedCommandTarget(TrickyState* state, int commandType)
 /* "staff" (DLL 0xE2) */
 #define SKEETLA_PARTICLE_SPAWN_FLAGS   0x200001
 #define SKEETLA_PARTICLE_RANDOM_RATE   4
+static f32 trickyApproachSpeedStep(f32 speed, f32 target)
+{
+    if (speed > target)
+    {
+        return -0.15f;
+    }
+    return 0.05f;
+}
 void tricky_state04_nop(void);
 void tricky_updateBallRoll();
 void tricky_state06_nop(void);
@@ -879,6 +900,29 @@ void trickyUpdateCollisionAndPathState(u8* obj)
     ((GameObject*)obj)->anim.rotZ = state->pathRotZ;
 }
 
+static f32 trickyRouteTurnRate(f32 distance)
+{
+    f32 rate;
+    f32 limit;
+
+    rate = 0.02f;
+    limit = 600.0f;
+    if (distance > limit)
+    {
+        rate = 0.005f;
+    }
+    return rate;
+}
+
+static f32 trickyRouteStep(RomCurveWalker* route)
+{
+    if (route->reverse != 0)
+    {
+        return -2.0f;
+    }
+    return 2.0f;
+}
+
 int trickyAdvanceRouteTargetAhead(GameObject* obj, RomCurveWalker* route, f32 speed)
 {
     f32 limit;
@@ -1071,6 +1115,16 @@ static inline void skeetla_playFootstepSfx(u8* obj, u16 sfxId)
     {
         objSoundStartTimed((GameObject*)obj, &((TrickyState*)state)->soundState, sfxId, 0x500, -1, 0);
     }
+}
+
+static f32 trickyBinAngleToRadians(int binAngle)
+{
+    f32 halfTurn;
+    f32 scale;
+
+    halfTurn = 3.1415927f;
+    scale = 32768.0f;
+    return halfTurn * (f32)binAngle / scale;
 }
 
 int moveTricky(GameObject* obj, f32* targetPos)
@@ -1399,12 +1453,12 @@ void* trickyFindNearestLinkedRouteEntry(u8* context, u8* routeDef, int linkSelec
     if (count != 0)
     {
         bestDistance = getXZDistance(&((TrickyState*)context)->playerObj->anim.worldPosX,
-                                     (f32*)((u8*)candidates[0] + 8));
+                                     &((RomCurveDef*)candidates[0])->x);
         bestIndex = 0;
         for (i = 1; i < count; i++)
         {
             distance = getXZDistance(&((TrickyState*)context)->playerObj->anim.worldPosX,
-                                     (f32*)((u8*)candidates[i] + 8));
+                                     &((RomCurveDef*)candidates[i])->x);
             if (distance < bestDistance)
             {
                 bestDistance = distance;
@@ -3402,7 +3456,7 @@ void tricky_stateGoToWarpPoint(u8* self, u8* state)
     rejectDist = 2500.0f;
     for (; i < count; i++)
     {
-        dist = getXZDistance((f32*)((u8*)((TrickyState*)state)->playerObj + 0x18), (f32*)(*objs + 0x18));
+        dist = getXZDistance(&((TrickyState*)state)->playerObj->anim.worldPosX, &((GameObject*)*objs)->anim.worldPosX);
         if (dist > rejectDist)
         {
             dist = getXZDistance((f32*)(self + 0x18), (f32*)(*objs + 0x18));
@@ -5310,10 +5364,10 @@ int trickyGuardFindBaddieTarget(TrickyState* trickyState)
     list = groupObjects;
     for (; (s16)i < count; i++)
     {
-        d = getXZDistance((float*)(*list + 0x18), trickyState->guardPoint);
+        d = getXZDistance(&((GameObject*)*list)->anim.worldPosX, trickyState->guardPoint);
         if (best == 0)
         {
-            if (trickyState->guardWalkGroup == Objfsa_GetWalkGroupIndexAtPoint((float*)(*list + 0x18), 0x0))
+            if (trickyState->guardWalkGroup == Objfsa_GetWalkGroupIndexAtPoint(&((GameObject*)*list)->anim.worldPosX, 0x0))
             {
                 bestDist = d;
                 best = *list;
@@ -5742,12 +5796,12 @@ void tricky_updateBallRoll(int obj, TrickyState* ball)
         if (nodeCount != 0)
         {
             targetNode = (int)(*gRomCurveInterface)->getById(nodeIds[0]);
-            bestDistance = getXZDistance((float*)((int)ts->followObj + 0x18), (float*)(targetNode + 8));
+            bestDistance = getXZDistance(&ts->followObj->anim.worldPosX, &((RomCurveDef*)targetNode)->x);
 
             for (i = 1, link = &nodeIds[1]; i < nodeCount; i++)
             {
                 candidateNode = (int)(*gRomCurveInterface)->getById(*link);
-                distance = getXZDistance((float*)((int)ts->followObj + 0x18), (float*)(candidateNode + 8));
+                distance = getXZDistance(&ts->followObj->anim.worldPosX, &((RomCurveDef*)candidateNode)->x);
                 if (distance < bestDistance)
                 {
                     targetNode = candidateNode;
@@ -5816,7 +5870,7 @@ void tricky_updateBallRoll(int obj, TrickyState* ball)
     {
         trickyUpdateMovementState((GameObject*)obj, 5.0f, ball);
         if (Objfsa_GetWalkGroupIndexAtPoint((float*)&((GameObject*)obj)->anim.worldPosX, NULL) ==
-            (walkGroup = Objfsa_GetWalkGroupIndexAtPoint((float*)((int)ts->scratch700.ptr + 8), NULL)))
+            (walkGroup = Objfsa_GetWalkGroupIndexAtPoint(&((RomCurveDef*)ts->scratch700.ptr)->x, NULL)))
         {
             curve = (int)ts->scratch700.ptr;
 
@@ -5826,8 +5880,8 @@ void tricky_updateBallRoll(int obj, TrickyState* ball)
             nextNode = (*gRomCurveInterface)->getRandomBlockedLink((RomCurveDef*)curve, 0);
             toNode = (int)(*gRomCurveInterface)->getById(nextNode);
 
-            bestDistance = getXZDistance((float*)((u8*)ts->playerObj + 0x18), (float*)(fromNode + 8));
-            distance = getXZDistance((float*)((u8*)ts->playerObj + 0x18), (float*)(toNode + 8));
+            bestDistance = getXZDistance(&ts->playerObj->anim.worldPosX, &((RomCurveDef*)fromNode)->x);
+            distance = getXZDistance(&ts->playerObj->anim.worldPosX, &((RomCurveDef*)toNode)->x);
 
             curveArg = (void*)curve;
             if (bestDistance > distance)
@@ -5986,7 +6040,7 @@ void trickyDigTunnel(u8* obj, u8* state)
     case 1:
         trickyDebugPrint((char*)(base + 0x7b8));
         trickyUpdateMovementState((GameObject*)obj, 5.0f, (TrickyState*)state);
-        gidx = Objfsa_GetWalkGroupIndexAtPoint((f32*)(obj + 0x18), NULL);
+        gidx = Objfsa_GetWalkGroupIndexAtPoint(&((GameObject*)obj)->anim.worldPosX, NULL);
         if (((RomCurveDef*)((TrickyState*)state)->scratch708.ptr)->walkGroup == gidx)
         {
             state[0x9] = 1;
@@ -6004,7 +6058,7 @@ void trickyDigTunnel(u8* obj, u8* state)
         }
         else
         {
-            if (Objfsa_GetWalkGroupIndexAtPoint((f32*)(obj + 0x18), NULL) == 0)
+            if (Objfsa_GetWalkGroupIndexAtPoint(&((GameObject*)obj)->anim.worldPosX, NULL) == 0)
             {
                 ((TrickyState*)state)->stateFlags |= 0x2010;
             }
@@ -6139,7 +6193,7 @@ void trickyDigTunnel(u8* obj, u8* state)
     case 7:
         trickyDebugPrint((char*)(base + 0x824));
         gidx = Objfsa_GetWalkGroupIndexAtPoint(&((TrickyState*)state)->playerObj->anim.worldPosX, NULL);
-        if (Objfsa_GetWalkGroupIndexAtPoint((f32*)(obj + 0x18), NULL) == gidx)
+        if (Objfsa_GetWalkGroupIndexAtPoint(&((GameObject*)obj)->anim.worldPosX, NULL) == gidx)
         {
             state[0x8] = 1;
             state[0xa] = 0;
@@ -8171,7 +8225,7 @@ void Tricky_commandPlayBall(int* obj, int commandEnabled, int targetObj)
             {
                 return;
             }
-            state->scratch700.i = (int)Objfsa_FindNearestEnabledCurveType24((void*)(targetObj + 0x18), -1, 3);
+            state->scratch700.i = (int)Objfsa_FindNearestEnabledCurveType24(&((GameObject*)targetObj)->anim.worldPosX, -1, 3);
             state->scratch710.f = (f32)(int)randomGetRange(0x168, 0x28);
             state->stateIndex = 5;
             state->followObj = (GameObject*)targetObj;
@@ -8664,7 +8718,7 @@ void Tricky_hitDetect(GameObject* obj)
     else
     {
         firepipeObj = ObjList_FindObjectById(TRICKY_HEIGHT_TRACK_FIREPIPE_OBJECT_ID);
-        if ((firepipeObj != 0) && (getXZDistance(&obj->anim.worldPosX, (f32*)((int)firepipeObj + 0x18)) < 841.0f))
+        if ((firepipeObj != 0) && (getXZDistance(&obj->anim.worldPosX, &((GameObject*)firepipeObj)->anim.worldPosX) < 841.0f))
         {
             ((TrickyState*)state)->heightTracking = 1;
             ((TrickyState*)state)->heightTrackObjId = TRICKY_HEIGHT_TRACK_FIREPIPE_OBJECT_ID;

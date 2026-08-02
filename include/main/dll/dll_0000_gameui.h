@@ -69,8 +69,11 @@ typedef struct
     u8 padAC8[0xf0]; /* 0xac8 */
     int visibleItemStates[7]; /* 0xbb8 */
     void* visibleItemTextures[7]; /* 0xbd4 */
-    u8 padBF0[0x30]; /* 0xbf0 */
+    struct GameObject* ringIcons[3]; /* 0xbf0 */
+    struct GameObject* ringModels[3]; /* 0xbfc */
+    u8 padC08[0x18]; /* 0xc08 */
     struct GameObject* anims[4]; /* 0xc20 */
+    struct GameObject* menuObjects[2]; /* 0xc30 */
 } CMenuHud;
 
 typedef struct

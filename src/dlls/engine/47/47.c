@@ -234,9 +234,9 @@ int Carryable_updateHeld(GameObject* obj, void* state)
             }
             if (hit != 0)
             {
-                u8* owner = (u8*)hit->anim.hitboxTransformState;
-                u8 slot = (*(u8*)(owner + 0x10f))++;
-                ((void**)(owner + 0x100))[(s8)slot] = obj;
+                ObjHitboxTransformState* owner = hit->anim.hitboxTransformState;
+                u8 slot = owner->contactObjectCount++;
+                owner->contactObjects[(s8)slot] = obj;
             }
         }
     }

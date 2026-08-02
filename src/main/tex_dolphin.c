@@ -76,7 +76,6 @@ s8 gTexIndMtxScaleExp = -2;
 
 extern f32 lbl_803DEBCC;
 extern const f32 lbl_803DEBFC;
-extern const f32 gTrackPackedCoordScale;
 extern const f32 gTexIndMtxScale;
 extern f32 lbl_803DEC28;
 extern int lbl_803DEBB0;
@@ -86,7 +85,6 @@ extern int gLightmapDrawQueueCount;
 extern int* gCloudLayerTexture;
 extern int gTexIndMtxTable[];
 extern u8 gLightmapDrawQueue[];
-extern u8 gCloudLayerTexMatrix[0x30];
 #define FRUSTUM_PLANE_COUNT 5
 u8 gRcpPendingWarpDest[0x10];
 FrustumPlane gViewFrustumPlanes[FRUSTUM_PLANE_COUNT];
@@ -1008,22 +1006,12 @@ typedef struct TrackTriangle
 
 #include "main/dll/ppcwgpipe_struct.h"
 
-extern u32 gSunFlareScissorX;
-extern u32 gSunFlareScissorY;
-extern u32 gSunFlareScissorWidth;
-extern u32 gSunFlareScissorHeight;
-extern u8 gGlowLightCount;
 extern ModelLightStruct* gGlowLightList[];
-extern u8 gMapBlockCount;
 extern int gHitsTab;
-extern int gMapBlockIndexCount;
-extern int* gMapBlockIndexList;
 extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
 extern int sSynthFadeUnit;
 extern int renderFlags;
 extern u8 colorScale;
-extern f32 gSunFlareFade;
-extern int gSunOcclusionSampleOffsets[];
 extern f32 lbl_803DEBDC;
 extern f32 lbl_803DEC40;
 

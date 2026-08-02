@@ -42,7 +42,7 @@ f32 gCloudOverridePositionX;
 f32 gCloudOverridePositionY;
 f32 gCloudOverridePositionZ;
 
-volatile f32 gCloudActionGlareQuadSize[2] = {8000.0f, 0.0f};
+f32 gCloudActionGlareQuadSize[2] = {8000.0f, 0.0f};
 
 #define GXWGFifo (*(volatile PPCWGPipe*)0xCC008000)
 
@@ -299,9 +299,11 @@ void renderClouds(int a, int b, int c, int d)
         v = -gCloudActionGlareQuadSize[0];
         GXPos3f32(v, v, c0);
         GXTex2f32(c0, c0);
-        GXPos3f32(gCloudActionGlareQuadSize[0], -gCloudActionGlareQuadSize[0], c0);
+        v = -gCloudActionGlareQuadSize[0];
+        GXPos3f32(gCloudActionGlareQuadSize[0], v, c0);
         GXTex2f32(c1, c0);
-        GXPos3f32(gCloudActionGlareQuadSize[0], gCloudActionGlareQuadSize[0], c0);
+        v = gCloudActionGlareQuadSize[0];
+        GXPos3f32(gCloudActionGlareQuadSize[0], v, c0);
         GXTex2f32(c1, c1);
         v = gCloudActionGlareQuadSize[0];
         GXPos3f32(-v, v, c0);

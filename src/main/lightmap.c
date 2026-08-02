@@ -79,17 +79,10 @@ extern FrustumPlane gViewFrustumPlanes[];
 
 extern u8 gMapBlockCount; /* count of allocated blocks */
 extern u32 gCloudLayerTexture;
-extern u16 lbl_803DCEAC;
-extern u8 gGlowLightCount;
-extern s32 heatEffectIntensity;
-extern u8 gLightmapScreenImageEnabled;
 extern s8 gMapBlockDrawOrderFrontToBack[];
 extern s8 gMapBlockDrawOrderBackToFront[];
 extern int gMapBlockCellStateTables[];
-extern s8* gMapLayerCellStates;
 extern s32 gMapCurRomListSlot;
-extern f32 lbl_803DCE58;
-extern f32 lbl_803DCE54;
 extern EnvironmentUpdateInterface** lbl_803DCAB0;
 extern s32 gHeatEffectFadeDirection;
 
@@ -224,14 +217,9 @@ void* RomList_GetLoadedPages(void)
 }
 
 u32 gVisibleObjectSortKeys[0x400];
-extern int gLightmapDeferredObjectCount;
-extern s16 gVisibleObjectSortKeyCount;
 
 
 extern s16* gMapBlockCellEntryTables[];
-extern f32 gMapBlockWorldSize;
-extern int gMapBlockOriginX;
-extern int gMapBlockOriginZ;
 
 int coordsToMapCell(f32 x, f32 z)
 {
@@ -302,8 +290,6 @@ int objPosToMapBlockIdx(f32 x, f32 y, f32 z)
     }
     return -1;
 }
-
-extern void* gCurRomListPage;
 
 int* mapRomListFindItem(int needle, int* out_idx, int* out_outer, int* out_type, int* out_lastpage)
 {
@@ -698,23 +684,6 @@ void renderSceneGeometry(u8 renderType, s8* order)
     }
     while (layer >= 0);
 }
-extern u8 bEnableMotionBlur;
-extern f32 gMotionBlurAmount;
-
-extern u8 bEnableBlurFilter;
-extern f32 blurFilterX;
-extern f32 blurFilterY;
-extern f32 blurFilterZ;
-extern u8 bBlurFilterUseArea;
-extern u8 bBiggerBlurFilter;
-extern u8 bEnableDistortionFilter;
-extern f32 distortionFilterAngle1;
-extern f32 distortionFilterAngle2;
-extern u8 distortionFilterColor[3];
-extern u8 bEnableMonochromeFilter;
-extern u8 bEnableSpiritVision;
-extern u8 bEnableViewFinderHud;
-extern s32 bEnableColorFilter;
 
 void sceneDraw(void)
 {
@@ -895,7 +864,6 @@ void sceneDraw(void)
     shadowVolumesSetDirty(0);
 }
 
-extern s8 curMapType;
 extern int gSceneCamera;
 
 void sceneRender(int wpad0, int wpad1, int wpad2, int wpad3, int wpad4, int wpad5)

@@ -33,7 +33,7 @@ CameraModeViewfinderState* gCameraModeViewfinderState;
 
 char sCameraModeViewfinderYDebugFormat[] = "y=%f\n";
 
-extern const f32 gCameraModeViewfinderTargetHeight;
+const f32 gCameraModeViewfinderTargetHeight[1] = {35.0f};
 extern const f32 gCameraModeViewfinderStickScale;
 
 void firstPersonPlaceCamera(GameObject* focus, int resetClamp) {
@@ -56,7 +56,7 @@ void firstPersonPlaceCamera(GameObject* focus, int resetClamp) {
         gCameraModeViewfinderState->cameraPositionZ = prevPosZ;
     } else {
         gCameraModeViewfinderState->cameraPositionX = self->anim.worldPosX;
-        gCameraModeViewfinderState->cameraPositionY = 35.0f + self->anim.worldPosY;
+        gCameraModeViewfinderState->cameraPositionY = gCameraModeViewfinderTargetHeight[0] + self->anim.worldPosY;
         gCameraModeViewfinderState->cameraPositionZ = self->anim.worldPosZ;
         gCameraModeViewfinderState->clampedPositionY = gCameraModeViewfinderState->cameraPositionY;
     }
@@ -65,7 +65,7 @@ void firstPersonPlaceCamera(GameObject* focus, int resetClamp) {
         galleonState = DBprotection_getCameraState(galleon);
         if (galleonState == 2) {
             localOffset[0] = self->anim.worldPosX - galleon->anim.worldPosX;
-            localOffset[1] = (35.0f + self->anim.worldPosY) - galleon->anim.worldPosY;
+            localOffset[1] = (gCameraModeViewfinderTargetHeight[0] + self->anim.worldPosY) - galleon->anim.worldPosY;
             localOffset[2] = self->anim.worldPosZ - galleon->anim.worldPosZ;
             vecRotateZXY(&galleon->anim.rotX, localOffset);
             gCameraModeViewfinderState->cameraPositionX = galleon->anim.worldPosX + localOffset[0];
@@ -435,7 +435,7 @@ void CameraModeViewfinder_update(CameraObject* camera) {
         if (relativeDistance < 10.0f) {
             camera->anim.rotY = 0;
         } else {
-            relativeY = camera->anim.worldPosY - (focus->anim.worldPosY + gCameraModeViewfinderTargetHeight);
+            relativeY = camera->anim.worldPosY - (focus->anim.worldPosY + gCameraModeViewfinderTargetHeight[0]);
             angleDiff = getAngle(relativeY, relativeDistance) & 0xffff;
             angleDiff -= camera->anim.rotY & 0xffffU;
             if (angleDiff > 0x8000) {

@@ -2,7 +2,6 @@
 
 #ifndef NAN
 #define NAN (*(float*)__float_nan)
-extern unsigned long __float_nan[];
 #endif
 
 #ifdef __STDC__

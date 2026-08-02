@@ -28,4 +28,14 @@ extern s32 gObjLevelLockSlots[2];
 
 #include "main/mldf_fileid.h"
 
+extern volatile int gAssetLoadInFlightFlags;
+extern s16 gDefragDelayFrames;
+extern int gPendingDvdReadCount;
+extern u8 gVideoRetracePending;
+extern int gModelsArchiveLoadCount;
+extern void* lbl_803DCD10;
+extern char* lbl_803DCD08;
+extern s16 gForceNextLoadSync;
+extern u8 gLoadFilesInitDone;
+
 #endif /* MAIN_PI_DOLPHIN_H_ */

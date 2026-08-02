@@ -89,13 +89,12 @@ int gWorldObjEffectRenderDelay;
 GameObject* gWorldObjEffectTargetObj;
 
 void worldobj_spawnGreatFoxEffects(GameObject* obj) {
-    static const f32 sWorldObjGreatFoxOffsetScale[1] = {0.64f};
     WorldObjEffectParams params;
     u8 i;
     f32 scale;
     f32 offsetScale;
 
-    for (i = 0, offsetScale = sWorldObjGreatFoxOffsetScale[0]; i < GREAT_FOX_EFFECT_COUNT; i++) {
+    for (i = 0, offsetScale = 0.64f; i < GREAT_FOX_EFFECT_COUNT; i++) {
         GreatFoxFxEntry* effect;
 
         scale = obj->anim.rootMotionScale;
@@ -106,17 +105,17 @@ void worldobj_spawnGreatFoxEffects(GameObject* obj) {
         objfx_spawnMaskedHitEffect(obj, scale * effect->effectScale, 3, effect->effectType, effect->mask, &params);
     }
     params.effectScale = -1.0f;
-    params.offsetX = sWorldObjGreatFoxOffsetScale[0] * (-0.823f * obj->anim.rootMotionScale);
-    params.offsetY = sWorldObjGreatFoxOffsetScale[0] * (-0.084f * obj->anim.rootMotionScale);
-    params.offsetZ = sWorldObjGreatFoxOffsetScale[0] * (-2.6f * obj->anim.rootMotionScale);
+    params.offsetX = 0.64f * (-0.823f * obj->anim.rootMotionScale);
+    params.offsetY = 0.64f * (-0.084f * obj->anim.rootMotionScale);
+    params.offsetZ = 0.64f * (-2.6f * obj->anim.rootMotionScale);
     objfx_spawnLightPulse(obj, 0.025f * obj->anim.rootMotionScale, 1, 0, 6, 0.7f, &params);
     params.offsetX = 0.0f;
-    params.offsetY = sWorldObjGreatFoxOffsetScale[0] * (0.209f * obj->anim.rootMotionScale);
-    params.offsetZ = sWorldObjGreatFoxOffsetScale[0] * (-3.6f * obj->anim.rootMotionScale);
+    params.offsetY = 0.64f * (0.209f * obj->anim.rootMotionScale);
+    params.offsetZ = 0.64f * (-3.6f * obj->anim.rootMotionScale);
     objfx_spawnLightPulse(obj, 0.025f * obj->anim.rootMotionScale, 1, 0, 6, 0.5f, &params);
-    params.offsetX = sWorldObjGreatFoxOffsetScale[0] * (0.823f * obj->anim.rootMotionScale);
-    params.offsetY = sWorldObjGreatFoxOffsetScale[0] * (-0.084f * obj->anim.rootMotionScale);
-    params.offsetZ = sWorldObjGreatFoxOffsetScale[0] * (-2.6f * obj->anim.rootMotionScale);
+    params.offsetX = 0.64f * (0.823f * obj->anim.rootMotionScale);
+    params.offsetY = 0.64f * (-0.084f * obj->anim.rootMotionScale);
+    params.offsetZ = 0.64f * (-2.6f * obj->anim.rootMotionScale);
     objfx_spawnLightPulse(obj, 0.025f * obj->anim.rootMotionScale, 1, 0, 6, 0.7f, &params);
 }
 

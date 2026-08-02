@@ -10,6 +10,15 @@
  * moon direction and colour plus the ambient colour. Only fields with
  * read/write evidence in sky.c are named; everything else is padded.
  */
+typedef struct SkyBlendStateFlags
+{
+    u8 unused80 : 1;
+    u8 active : 1;
+    u8 visibility : 1;
+    u8 cloud : 2;
+    u8 rest : 3;
+} SkyBlendStateFlags;
+
 typedef struct SkyLight {
     f32 redCurve[7];
     f32 greenCurve[7];
@@ -55,10 +64,12 @@ typedef struct SkyLight {
     f32 blendFactor;
     f32 unk9C;
     u8 blendAlpha;
-    u8 unkA1[3];
+    SkyBlendStateFlags flags;
+    u8 unkA2[2];
 } SkyLight;
 
 STATIC_ASSERT(sizeof(SkyLight) == 0xA4);
+STATIC_ASSERT(offsetof(SkyLight, flags) == 0xA1);
 STATIC_ASSERT(offsetof(SkyLight, blendTargetR) == 0x54);
 STATIC_ASSERT(offsetof(SkyLight, overrideMoonColorR) == 0x64);
 STATIC_ASSERT(offsetof(SkyLight, blendFactor) == 0x98);

@@ -71,7 +71,7 @@ void wctemplebri_updateModelWarp(GameObject* obj, WCTempleBriState* state)
     state->wavePhaseB = phase;
 }
 
-static inline void wctemplebri_deformVertex(ObjModel* model, ModelFileHeader* modelBase, WCTempleBriState* state, int i)
+static void wctemplebri_deformVertex(ObjModel* model, ModelFileHeader* modelBase, WCTempleBriState* state, int i)
 {
     s16* curr = ObjModel_GetCurrentVertexCoords(model, i);
     s16* base = ObjModel_GetBaseVertexCoords(modelBase, i);
@@ -96,7 +96,7 @@ int wctemplebri_SeqFn(GameObject* obj, int p2, ObjSeqState* animUpdate)
     animUpdate->movementState = 0;
     animUpdate->savedFlags &= ~WCTEMPLEBRI_PAYLOAD_BLOCK_FLAG;
     animUpdate->flags &= ~WCTEMPLEBRI_PAYLOAD_BLOCK_FLAG;
-    wctemplebri_updateModelWarp(obj, state);
+    ((void (*)(GameObject*, WCTempleBriState*))wctemplebri_updateModelWarp)(obj, state);
     if (animUpdate->curEventId == WCTEMPLEBRI_PAYLOAD_TRIGGER)
     {
         state->active = 1;
@@ -173,7 +173,7 @@ void wctemplebri_update(GameObject* obj)
 
     Obj_GetPlayerObject();
     state = obj->extra;
-    wctemplebri_updateModelWarp(obj, state);
+    ((void (*)(GameObject*, WCTempleBriState*))wctemplebri_updateModelWarp)(obj, state);
     model = Obj_GetActiveModel(obj);
     modelBase = model->file;
     for (i = 0; i < modelBase->vertexCount; i++)

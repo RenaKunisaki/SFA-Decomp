@@ -150,6 +150,111 @@ Closed classes with no reachable spelling — bank on sight, details in the memo
   unscored functions), zlbDecompress, pi_videoinit, render.o gap_03; fn_80007F78 (register
   pressure).
 
+## 6. Banned-shape removal in a demoted DLL TU (purge-priced, measured 2026-08-02)
+
+The `tools/banned_shapes_check.py` sweep of `21b90aff9f` + `5b120c0545` removed 22 pool
+anchors / volatile puns and 2 gotos across 15 DLL units, demoting each. Both commit messages
+record `dfuzzy +0.000000 / ddata +0.000000 / 0 per-function regressions`; a full rebuild plus
+`report.json` at each of the two shas measures otherwise, so the rows below are the real
+standing price. That false zero is what `tools/score_delta_gate.py` now exists to prevent: the
+purge DEMOTED every unit it touched, and a demoted unit is invisible to the forced-link/DOL gate,
+while `matched_code` does not move when a unit's literal pool shrinks. Only a scan of per-function
+`fuzzy_match_percent` **and** per-unit `matched_data` **and** the complete flags, over full
+rebuilds at both endpoints, can see this class. The gate reproduces the rows below from the two
+shas, and refuses to print a zero until a synthetic regression injected into real source has come
+back RED.
+
+Window `cd782d6179` -> `5b120c0545`: tree 99.81533 -> 99.81422, matched_data 1198129 ->
+1197137 (-992), complete_units 877 -> 862. Every row below was 100.0 before the purge.
+
+| Function | Unit | Score | Gap | Shape removed |
+|---|---|---|---|---|
+| worldobj_spawnGreatFoxEffects | objects/467 | 98.333 | 1.667 | `static const f32 s...[1] = {0.64f}` |
+| renderClouds | engine/9 | 99.429 | 0.571 | `volatile f32 gCloudActionGlareQuadSize[2]` |
+| mmpMoonRock_update | objects/386_MMP_moonroc | 99.516 | 0.484 | inner-loop early-exit `goto` |
+| trickyBallMove | objects/245_SidekickBal | 99.637 | 0.363 | cross-arm `goto noFloorDepth` |
+| SmallBasket_spawnContents | objects/260_SmallBasket | 99.908 | 0.092 | `const f32 g...[1]` x4 |
+
+**Mechanisms, one per row.**
+
+- **467.** The anchor's `[0]` read is a load from a user object, so it stays a source-placed
+  statement and is emitted before the loop-invariant array-base hoist. A plain `0.64f` is
+  const-folded, its load becomes an optimizer-placed invariant remat, and it lands AFTER
+  `lis/addi gGreatFoxEffects` instead of before it. That 2-instruction move is the entire
+  divergence; the pool itself still mints in retail's order. Probed inert or worse: hoisted
+  assignment statement, initialiser-at-declaration, literal inlined with the local deleted,
+  `while` form, swapped comma-init order, function-scope `effect`, all 24 local-decl
+  permutations (all 98.333), explicit base-pointer local (96.667), block-scope `effect`
+  initialiser (96.575).
+- **engine/9.** Retail issues two back-to-back `lfs` of `gCloudActionGlareQuadSize` for the
+  third quad vertex; without `volatile` our build value-numbers them into one. No non-volatile
+  spelling forces a reload of a plain global that the compiler has already proven unchanged.
+- **MMP_moonroc.** Seeding `spacingClear = 1` before the loop makes it live ACROSS the loop,
+  costing one extra callee-saved GPR (`_savegpr_26` vs retail `_savegpr_27`); the `goto` wrote
+  the flag on both exit paths and needed none. Probed: assign-on-both-paths 98.606,
+  `spacingClear = i == count` after the loop 99.240, zero-seed + post-loop test 98.813 — the
+  landed seed-and-break form is already the best structured spelling.
+- **SidekickBal.** The `goto` tail-shared the else arm's `li r0,0`; the structured form
+  duplicates it. Probed: hoisted zero-init 98.924, merged-condition else 97.128, ternary
+  98.045 — again the landed form is the best.
+- **SmallBasket.** #82 scratch-FPR perm (`fdivs f2,f31,f30` vs ours `f1`) that the anchor had
+  pinned. Four spellings of the health-percent chain probed: two inert, two worse.
+
+**Data price.** The anchors were real `.sdata2` atoms, so deleting them shortens and rotates
+each unit's pool: 209_TumbleWeedB -148, 260_SmallBasket -120, 678_ARWSquadron -120,
+213_Kaldachom -112, 701 -92, 300_Transporter -80, 373_DFropenode -76, 523_FireFly -76,
+679_ARWProximit -64, 683_LGTProjecte -32. Not recoverable without the anchors; the
+class-2 note applies (the legal `const f32 name[1]` reconnect needs a satisfied naming law,
+and none of these symbols has one).
+
+The `203 -72` row that stood here is RECOVERED and struck (`a21f332847`, 2026-08-02): that
+unit's anchor was not deleted, it was demoted to a `const f32` SCALAR, and MWCC folds a read
+of a const scalar into a fresh pool literal. The named object was emitted at its declaration
+point and then never referenced, while the two reads minted a second copy of `0.1f` at the
+end of the pool. Restoring the one-element array form — legal here because
+`gDllCBDefaultAnimSpeed` is in `config/GSAE01/symbols.txt` — reconnects the reads, drops the
+duplicate, and returns 203 to 328/328 data. **Scalar-vs-array is the tell to check before
+pricing any row in this section: a folded scalar shows up as a named `.sdata2` object with
+zero relocations against it and a duplicate of its value elsewhere in the pool.**
+
+**Standing verdict.** All five rows are at their best structured spelling; do not re-probe
+without a genuinely new lever. The DOL still holds because every affected unit was demoted.
+
+## 6b. Same class in two `src/main` units: `trig` + `rcp_dolphin` (purge-priced, measured 2026-08-02)
+
+`4461d0aa45` removed eight `const T x[1] = {V}` anchors — five sin/cos approximation
+coefficients from `src/main/trig.c`, three distortion constants from `src/main/rcp_dolphin.c`,
+demoting `rcp_dolphin`. The commit measured and stated `matched_data -272` (trig -192,
+rcp_dolphin -80) at `matched_code +0` and `matched_functions +0`. All three of those figures
+reproduce exactly. They are also the half of the price that a threshold counter can see:
+`matched_code` and `matched_functions` only move when a function crosses 100.0, and every
+`trig` function was already at 99.97-99.98, so eight of them lost fuzzy score without moving
+either counter by a byte.
+
+| Function | Before | After | Gap |
+|---|---|---|---|
+| fsin16HighPrecision | 99.981 | 94.212 | 5.769 |
+| fcos16HighPrecision | 99.981 | 94.212 | 5.769 |
+| fsin16Precise | 99.976 | 95.585 | 4.390 |
+| fcos16Precise | 99.976 | 95.585 | 4.390 |
+| fcos16 | 99.973 | 96.730 | 3.243 |
+| fsin16 | 99.973 | 96.730 | 3.243 |
+| fsin16Approx | 99.970 | 98.152 | 1.818 |
+| fcos16Approx | 99.970 | 98.152 | 1.818 |
+
+Tree fuzzy 99.81535 -> 99.811676, **-0.003674 — 3.3x the entire 22-instance section-6 window
+(-0.00111) from a quarter as many instances.** `trig` `.text` 99.975 -> 95.926 and its `.sdata2`
+100.0 -> 61.458 at unchanged section size, with unit `matched_data` 192 -> 0: removing five words
+rotates the whole pool, so the section loses every byte rather than the five. `rcp_dolphin` keeps
+`.text` at 100.0 and pays only `.sdata2` 100.0 -> 14.634 (-80), and its demotion is what keeps the
+DOL green.
+
+**Standing verdict.** Banked, not reverted — section 6's law applies: the shape is banned and the
+anchors are load-bearing, so there is no free subset to retune toward. The only known recovery is
+section 2's legal `const f32 name[1] = {v}` reconnect, which is gated on the naming law and on the
+checker's cross-TU exemption; that is a pool/naming-lane question, not a retune. Reproduce with
+`python3 tools/score_delta_gate.py --commits fff7ee912c 86334e8343`.
+
 ## Related recurring REGRESSION class (fixable — not priced, listed so windows get scanned)
 
 Pool-const purge/retune commits historically gated on matched_code only and twice shipped
@@ -157,3 +262,280 @@ per-fn regressions (fcmpo operand-order flips: sky2_run via `zero < best.x` -> `
 fixed in `2c32711828`; DIMCannon_updateAim sibling) and once shipped matched_data -4936
 (engine/0 purge, retuned in `f596800ffa`). Delta-scan every merge window with per-fn fuzzy
 AND matched_data; an fcmpo flip is repaired by restoring the retail operand order in source.
+The `21b90aff9f`/`5b120c0545` pair (section 6) is the third instance and the first where the
+regression was NOT retunable — a purge whose price is real still has to be measured and
+banked, not reported as zero.
+
+## 7. Uncalled statics are NOT automatically fabricated (class REFUTED, 2026-08-02)
+
+A census of our-only `.text` symbols (present in `build/GSAE01/src/**.o`, absent from the
+retail carve) reports ~2.4 KB across 18 game units, and the shape is genuinely dangerous:
+objdiff pairs our functions against RETAIL functions by name, so a body that is not in the
+DOL has no pair and is never scored. It is therefore a free place to park fabricated code
+that exists only to mint `.sdata2` literals in the order the carve wants. Two separate
+classes hide under that one census number, and only one of them is a hack.
+
+**Not the class — a plain static WITH call sites (820 B, 14 units).** MWCC inlines a plain
+`static` at every call site and *still* emits the out-of-line body; mwld strips it at link.
+`WM_LevelCon`, `LargeCrate`, `Landed_Arwi`, `502`, `DIMCannon`, `ARWSpeedStr`, `obj_movelib`,
+`329`, `engine/73`, `446`, `501` and `WCTempleBri` are all this. It is the deliberate idiom
+of `caf9ee4472` (WCTempleBri), where compiling the deform helper at its definition site is
+what puts retail's bias doubles in the right order. Leave them.
+
+**The real question — a static with NO call site (1616 B, 8 units).** Decided by one
+experiment: *MWCC does not intern a file-scope const against a pool literal.* Declaring
+`const f32 k[1] = {4.0f};` in `main/curves.c` alongside functions that already load `4.0f`
+grew `.sdata2` from 0x44 to 0x64 — nine duplicated words. So a slot that live retail code
+loads can never have been a declared const; it is a pool literal, minted on FIRST USE in text
+order. Whenever such a slot sits AHEAD of the first live function that loads it, the only
+possible minter is code that ran earlier and is not in the DOL — dead code that mwld stripped.
+
+Every phantom-minted slot in all eight units is loaded by a live retail function:
+
+| unit | uncalled statics | phantom-minted slots | shared with live code | delete cost |
+|---|---|---|---|---|
+| `main/curves.c` | 4 | 9 | 9 | -68 |
+| `599_DR_EarthWar` | 2 | 14 | 14 | -192 |
+| `625` | 2 | 6 | 6 | -104 |
+| `700_Andross` | 1 | 9 | 9 | -268 |
+| `main/shadow_dolphin.c` | 1 | 2 | 2 | -88 |
+| `engine/20_Hcurves` | 1 | 1 | 1 | -72 |
+| `Hcurves_romcurve` | 1 | 1 | 1 | -88 |
+| `203` | 1 | 0 | 0 | 0 |
+
+The sharpest single proofs: `curves.c` slot 0x18 holds `0.16666667f`, which no surviving
+function computes with, yet it sits eighth in a pool whose ninth slot is the first live
+function's first literal; and `599_DR_EarthWar` puts the compiler's own int-to-float bias
+double at 0x08, ahead of `DR_EarthWarrior_feed`'s `4.32f` at 0x10 — a bias double cannot be
+declared, so something converted an int before the first surviving function ran. Its second
+uncalled helper accounts for slots 0x38-0x48 as `0.02, 2.0, 0.5, 0.75, 32768.0`, the exact
+literal order of a five-statement body. **Deleting these seven reconstructions would cost 880
+matched_data and buy nothing; they stay, and they are in the checker baseline.**
+
+`203`'s `dll_CB_getStateHandler` was the one true positive: no call site, no minted slot, not
+one data byte moved. Deleted in `a21f332847`.
+
+**Gate.** `tools/banned_shapes_check.py` now carries `UNCALLED_STATIC_FN` — a source-only,
+transitive census (a cluster reachable only from other uncalled statics is itself uncalled,
+which is how `curveSpeedAt` is caught). `static inline` is out of class: an inline nothing
+calls is never expanded and never emitted. A new hit is not automatically a hack — adjudicate
+it against the unit's pool with the sharing test above before accepting or deleting it.
+
+## 8. Campaign-wide audit of the purge lane (2026-08-02)
+
+`docs/purge_campaign_audit.md` rebuilds BOTH endpoints of all 42 purge-shaped commits and diffs
+them with `tools/score_delta_gate.py`: 27 clean, 15 RED, gross -8168 B `matched_data` and
+-0.032980 tree fuzzy, of which 5016 B were given back by the retunes already recorded here,
+672 B by later pool work, and 2480 B still stand. Sections 6 and 6b cover 1192 B of that
+residue. The remaining 1288 B is `72eec6655f`, which shipped with an empty commit body and is
+priced nowhere; its open rows are listed in the audit and are recoverable.
+
+The audit also adds a third sensor blind spot to the two this file already records: a pool
+rotation inside an already-NonMatching unit loses `matched_data` at `dfuzzy +0.000000` with zero
+per-function regressions and zero demotions, so neither the demotion tell nor the threshold
+counters fire. `5d467157cb` -144, `f5fe00213f` -60, `620b69dc2d` -16.
+
+## 8. `.sdata2` mint-order divergence with byte-identical code (measured 2026-08-02)
+
+The residual `.sdata2` gaps left on the pool leads are one class, and it is not the
+folded-scalar class of §7. Code is byte-identical; only the ORDER in which MWCC minted the
+pool differs. Measured layout rule (this tree, GC/2.0):
+
+1. `.sdata2` objects are laid out **sequentially in mint order**, 8-byte objects forced to
+   8-alignment. The 4-byte hole that forcing leaves is **never backfilled** — 0 backfills
+   across all 675 source objects that have a `.sdata2`.
+2. Mint order is: file-scope objects at their **declaration point**, then per function in
+   source order — its front-end literals in source order, then the backend's own
+   int-to-float bias doubles.
+3. A file-scope `const f32 X = V;` (`static` or not) is **folded at the read site**: the
+   object is still emitted at its declaration point *and* a duplicate literal is minted at
+   first use. Measured in `679_ARWProximit`: adding the three consts left all three duplicate
+   literals in place, 18 words against retail's 16.
+4. The only read that does not fold is an array subscript — i.e. the `SINGLE_ELEM_CONST_ARRAY`
+   that `tools/banned_shapes_check.py` bans (75 baselined, regrowth is a gate failure).
+
+**RETRACTION (same day).** The paragraph that stood here concluded that a displaced pool head is
+unreachable because the only non-folding read is the banned 1-element pin. That is wrong, and
+`015b98abbd` ("pool: recover the constants nine more units declare") had already refuted it.
+The pin is adjudicated per instance, not forbidden outright: when the retail pool proves a slot
+was a declared const, the instance is accepted into `tools/banned_shapes_baseline.txt` (75 -> 86
+entries over that commit). Its reference-count spec is the adjudication test — a literal never
+dedups into a file-scope const, so a slot's retail reference count says how many sites must
+convert, and a value appearing twice in retail's pool but once in ours means the earlier copy is
+a const and the later a literal. `679_ARWProximit`, listed below as priced, was recovered that
+way. What survives from this section is the layout model above, the classifier in 8b, and the
+three rows the const rule does not reach.
+
+A second, hack-free route exists whenever the displaced values sit in a **duplicated block**
+rather than in scattered scalars: extract that block as a `static` helper defined at the point
+the pool wants the mint (the definition-site lens — `a4656c3766`, `144c1a9855`). Measured on
+`679_ARWProximit` before the const version landed: two teardown helpers
+(`arwproximit_destroyByHit` minting `0.0f, 100.0f`, then `arwproximit_detonate` minting
+`127.0f`) placed ahead of `arwproximit_render` gave `.sdata2` 120/120 with all nine functions at
+100.0, zero `banned_shapes_check` hits, and a clean `MatchingFor` flip (DOL sha1 unchanged).
+Prefer it when the block is genuinely shared; it costs no baseline entry.
+
+Sweep result: the §7 folded-scalar tell (a named `.sdata2` object with zero relocations) has
+**17 instances tree-wide and every one is in a unit with `gap == 0`** — that lens is exhausted,
+do not re-survey it.
+
+| unit | gap | mechanism | probe result |
+| --- | --- | --- | --- |
+| `679_ARWProximit` | 64 | retail mints `0.0f, 100.0f, 127.0f` ahead of `arwproximit_render`'s `1.0f`; all three are read only from inside `arwproximit_update` | 1-element-array form gives **120/120 data, all 9 functions still 100.0** — and trips `banned_shapes_check` as regrowth. RECOVERED in `015b98abbd`; measured price before that was 64 B |
+| `engine/68` | 128 | **not** a wrong constant: retail's `120.0f` at `.sdata2+0x44` is a plain literal of `firstPersonDoControls`, minted between `15360.0f` (0x40) and `16.0f` (0x48) | plain literal makes `.sdata2` byte-identical (64/192 -> **192/192**) but drops `firstPersonDoControls` 100.0 -> 94.512; tree 99.811676 -> 99.809730. PRICED 128 B |
+| `engine/7` | 232 | one missing 4-byte mint cascades: retail mints a `1.0f` at 0x0c as a front-end literal of `lightningGetRemainingFraction`, after its `0.0f` and before its two bias doubles. Ours has only the `0.0f`, so 0x0c stays a hole, every later slot shifts 4, and a second hole opens at 0x84 | the missing `1.0f` emits no code in retail's `fn1` either — recovering it needs a phantom minter. DECLINE |
+| `237`, `704`, `model`/`modellight`, `213_Kaldachom`, `279_AppleOnTree`, `597`, `195_Player`, `intersect_render`, `main/object` | 88-784 | same class; several heads are led by a bias double, which cannot be declared at all | not probed individually — the class verdict covers them |
+
+`engine/68` carries a second, separate defect worth a code lane: `firstPersonDoControls` only
+holds 100.0 because it divides by `gCameraModeViewfinderStickScale`, an `extern const f32` that
+**no translation unit defines**. Being an opaque global, it blocks `-opt propagation` from
+sinking the single-use temp `spinI` past the `camera->anim.rotX` store; with any in-TU form of
+the constant MWCC sinks it and ~14 instructions move. The extern is a crutch, not a constant.
+Also measured there: file-scope `const f32` 94.512; function-local `static const f32` folds to a
+literal (data 192/192, code 94.512); `const f32 X[1]` restores 100.0 but the object lands at the
+declaration point (0x00) or at the start of the function's static run (0x20), never at 0x44.
+
+### 8b. The intra-function half of the class: statement order, and why it is still priced
+
+Some gapped pools are not a cross-function order problem at all — every literal belongs to the
+same function in the same sequence, and only the order *within* one function differs. Those look
+like a free win (reorder statements, keep the code) and they are not. `engine/69`
+(`CameraModeTalk_update`, gap 64, the whole `.sdata2`) is the clean specimen. Retail mints
+`6.0, 0.2, 50.0, 25.0, 0.0625` but *loads* them `6.0, 0.2, 25.0, 50.0, 0.0625`: the `25.0f` is a
+local assigned before the clamp (hoisted load), the `50.0f` is a literal inside the expression
+(load at use). To mint `50.0f` first, the source needs a **live** `50.0f` ahead of the
+`followTermB = 25.0f;` statement — and every live form moves its load:
+
+| probe | `.sdata2` 0x2c/0x30 | `CameraModeTalk_update` |
+| --- | --- | --- |
+| tip | wrong order | **100.0** |
+| `followDist = 50.0f;` temp, used in the expression | fixed | 98.773 |
+| drop the `followTermB` temp, write `(50.0f + 25.0f * heightT)` | fixed | 99.033 |
+| `followDist = 50.0f;` as a **dead** store, expression unchanged | unchanged | 99.907 |
+
+The last row is the general fact worth keeping: **a dead store is eliminated before literal
+minting and mints nothing**, so it is useless as well as a phantom minter. Every intra-function
+row therefore has the same shape — the mint order is only reachable through a live use, and a
+live use is exactly what moves the load. `engine/69` is PRICED 64 B; `578_DBstealerwo`,
+`main/trig`, `609_DR_LaserCan`, `engine/19`, `429_SH_thorntai`, `202/mikaladon` are the same
+sub-class.
+
+Classifier for a new row (`.sdata2` all-or-nothing, so a partial pool fix scores zero): map each
+pool slot to the function of its first reference on both sides. Same function sequence with
+different first-reference offsets = intra-function (8b). Different function sequence = the
+cross-function mint order of §8.
+
+## 9. The opaque-extern crutch: the oracle, the tree-wide census, and the plain-literal price
+
+§8 named one instance of this shape — `engine/68`'s `gCameraModeViewfinderStickScale`, an
+`extern const f32` that no translation unit defines, whose only working role is to be opaque
+enough to stop `-opt propagation`. `90b1a0f251` then closed five instances of it by defining the
+constant in the unit that reads it. This section is the tree-wide sweep behind that class: the
+oracle that tells a crutch from an honest cross-TU reference, what is left after `90b1a0f251`,
+and a measured price for the plain-literal route so it is not tried again unpriced.
+
+### The oracle: `nm` retail's own split object
+
+The tree carries ~3040 `extern` object declarations. 371 name a symbol **no object in the tree
+defines**; 211 of those are scalars in game code (`src/main`, `src/track`, `src/dlls`) that
+`symbols.txt` places in `.sdata2`. Neither "nothing defines it" nor "it is in `symbols.txt`"
+separates a crutch from an honest reference: the honest form is also undefined by us, and
+`symbols.txt` carries no linkage information at all.
+
+What separates them is the **retail split object for the same unit**:
+
+- retail's `.o` also lists the symbol `U` → retail's own TU referenced it across a TU boundary,
+  and our `extern` is a faithful reconstruction. `engine/75`'s eleven `gCamClimb*` are this
+  case: retail's `75.o` UNDs every one of them.
+- retail's `.o` **defines** it (`R`/`D` at an offset) → retail's TU minted that word itself and
+  we did not. The `extern` is standing in for a mint. That is the crutch, and it is also a
+  latent link failure, because only the carve is supplying the symbol.
+
+The sweep is cheap and exhaustive, and its result is mostly a **retirement**: of the 211 rows,
+**148 are honest** and should never be flagged by a later census. **71 were crutches** at
+`8c2eb8998a`; `90b1a0f251` closed five (`render`, `589_BossDrakor`, and one slot each in
+`engine/68`, `vecmath`, `engine/5`), leaving **66 in 10 units** at that tip:
+
+| unit | crutches | pool words missing / extra | data at `90b1a0f251` |
+| --- | --- | --- | --- |
+| `dlls/engine/0/0` | 20 | 18 / 1 | 8972/9952 |
+| `main/object` | 16 | 18 / 0 | 520/608 |
+| `main/newshadows` | 12 | 13 / 0 | 16388/16668 |
+| `main/model` | 7 | 9 / 1 | 496/612 |
+| `dlls/objects/195_Player/player` | 3 | 0 / 0 | 10168/10168 |
+| `main/objhits` | 2 | 2 / 0 | 8352/8440 |
+| `main/vecmath` | 2 | 3 / 0 | 0/84 |
+| `dlls/engine/5/5` | 2 | 1 / 0 | 600/776 |
+| `dlls/engine/68/68` | 1 | 1 / 1 | 64/192 |
+| `dlls/objects/704/704` | 1 | 0 / 1 | 720/884 |
+
+The census reproduces the ELF-level pool shortfall from the other side — `engine/0`,
+`main/object`, `main/newshadows` and `main/model` are the top rows of both — which is the useful
+consequence: **most of the missing-word debt in those four units is this shape, not a naming gap.**
+
+### The plain-literal route is priced everywhere (negative control)
+
+Replacing every crutch read in a unit with the plain literal carried in retail's own pool word,
+rebuilding only that object, all other gates unchanged. Measured at `8c2eb8998a`, before
+`90b1a0f251` reworked five of these slots; the rows are kept because they are the control the
+`const`-definition route should be judged against, and because nine of the ten recover nothing.
+
+| unit | tree fuzzy | tree matched_data | worst function |
+| --- | --- | --- | --- |
+| `engine/0/0` | 99.81176 -> 99.79668 | 1201521 -> **1196585 (-4936)** | `pauseMenuDrawTaskHintPanel` 100.0 -> 71.028 |
+| `main/newshadows` | -> 99.80027 | +0 | `evalNoisePlacements` 100.0 -> 87.057 |
+| `main/model` | -> 99.80949 | +0 | `Model_GetVertexPosition` 100.0 -> 73.033 |
+| `main/vecmath` | -> 99.81110 | +0 | `mtx44_multSafe` 100.0 -> 98.640 |
+| `main/objhits` | -> 99.80982 | +0 | `ObjHits_CheckSkeletonPair` 99.247 -> 96.792 |
+| `main/object` | -> 99.81141 | +0 | `modelInitBones` 100.0 -> 98.267 |
+| `dlls/objects/704/704` | -> 99.81149 | +0 | `titleScreenDrawMenuFrame` 99.776 -> 99.488 |
+| `589_BossDrakor` | -> 99.81158 | +0 | `bossdrakor_update` 99.854 -> 99.626 |
+| `engine/68` | -> 99.80965 | 1201521 -> 1201649 (+128) | `firstPersonDoControls` 100.0 -> 94.512 |
+| `engine/5/5` | -> 99.81089 | 1201521 -> 1201697 (+176) | `renderSunAndMoon` 99.476 -> 98.214 |
+
+`engine/68` reproduces §8's figures exactly on an independent harness, which is the control for
+the rest of the table. Three facts fall out:
+
+1. **The all-or-nothing law holds in both directions.** Nine rows recover **zero** data even
+   where the literal lands in the right slot, because one displaced word voids the section.
+   `engine/0` is the reverse case and the one to be careful with: inserting 20 correct words
+   into a section that was already scoring **destroyed 4936 bytes**. A partial pool fix is not
+   merely worth 0, it can be worth far less than 0.
+2. **Where the pool already matches byte-for-byte, the crutch is buying code and nothing else.**
+   `player`, `704` and (before `90b1a0f251`) `BossDrakor` already emit the very word the extern
+   points at; the extern's only effect is to force a separate opaque load instead of letting
+   MWCC fold or CSE the literal. Removing it costs 0.06-0.29 on a function for no data at all,
+   so those three rows are ban-reduction with no compensating recovery.
+3. The plain literal is therefore the wrong instrument. `90b1a0f251`'s rule is the operative one:
+   a named `.sdata2` symbol is materialised after the other operand and is not CSE'd, an interned
+   literal is materialised before it and is, so the choice is a `.text` decision first.
+
+### `engine/5`'s last word: reachable, and priced (measured at `90b1a0f251`)
+
+`engine/5` is one slot from a byte-identical pool: retail's `0.55f`
+(`gSkySunMoonRiseScale`) at `.sdata2+0x5c`, a front-end literal of `renderSunAndMoon` minted
+between `28800.0f` (0x58) and `2.0f` (0x60). It cannot be reached by a definition, because a
+file-scope object mints at its **declaration point** and 0x5c sits in the middle of the
+function's own literal run — no declaration position exists that lands there. Writing the plain
+literal does not reach it either: `scale` is single-use and `-opt propagation` sinks the whole
+assignment past the `2.0f` and `400.0f` statements to its consumer, so `0.55f` mints two slots
+late. Splitting the statement blocks the sink and is the only form that reaches the slot:
+
+```c
+scale = 0.55f * riseT;
+scale = 1.0f - scale;
+```
+
+`.sdata2` then goes byte-identical, **600/776 -> 776/776**, tree 99.81176 -> 99.81078,
+matched_data **1203257 -> 1203433 (+176)**, `renderSunAndMoon` 99.476 -> 98.018. The `-(x - 1.0f)`
+spelling of the same split is worse (97.608), and a *named* second temp (`riseScale`) does not
+work at all — it changes the liveness, the sink returns and the pool goes back to three wrong
+words. Left unlanded: it trades 0.00098 fuzzy for 176 bytes and one opaque extern, and that is
+the owner's trade, not a lane's.
+
+### Do not re-survey
+
+The 148 honest rows are settled by the oracle; a later census should not re-flag them.
+`main/render` is the one structurally unreachable row even after `90b1a0f251`: retail's
+`.sdata2` there is 64 bytes of which 60 are `pad_11_803DE508_sdata2`, another TU's data, so the
+section stays 15 words short (9040/9104) no matter how its own constant is spelled.

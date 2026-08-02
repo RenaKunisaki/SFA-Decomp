@@ -99,7 +99,7 @@ extern f32 gHoodedZyckLargeTargetSpeedScale;
 
 extern f32 gHoodedZyckEmergeMoveSpeed;
 
-static inline void hoodedZyck_tickPhaseTimer(EnemyState* st)
+static void hoodedZyck_tickPhaseTimer(EnemyState* st)
 {
     st->duster.phaseTimer = st->duster.phaseTimer - timeDelta;
     if (st->duster.phaseTimer <= 0.0f)
@@ -108,7 +108,7 @@ static inline void hoodedZyck_tickPhaseTimer(EnemyState* st)
     }
 }
 
-static inline int hoodedZyck_getAngleDelta(GameObject* obj, GameObject* target)
+static int hoodedZyck_getAngleDelta(GameObject* obj, GameObject* target)
 {
     f32 d = (f32)(int)((u16)getAngle(obj->anim.localPosX - target->anim.localPosX,
                                      obj->anim.localPosZ - target->anim.localPosZ) -

@@ -8,15 +8,6 @@
 
 typedef struct Texture Texture;
 
-typedef struct SkyBlendStateFlags
-{
-    u8 unused80 : 1;
-    u8 active : 1;
-    u8 visibility : 1;
-    u8 cloud : 2;
-    u8 rest : 3;
-} SkyBlendStateFlags;
-
 typedef struct SkyVec3
 {
     f32 x, y, z;

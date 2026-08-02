@@ -117,6 +117,9 @@ int DIMbosstonsil_startIdleHitReaction(GameObject* obj, DIMbosstonsilState* stat
     state->moveSpeed = 0.01f;
     return 0;
 }
+const f32 gDIMbosstonsilThirty[1] = {30.0f};
+const f32 gDIMbosstonsilFifty[1] = {50.0f};
+
 void DIMbosstonsil_checkHit(GameObject* obj, DIMbosstonsilState* state) {
     int hitObj;
     int modelPart;
@@ -217,8 +220,8 @@ void dimBossTonsil_newState_hitFightMain(GameObject* obj, ObjSeqState* animUpdat
         if (timer > 100.0f) {
             timer = 100.0f;
         }
-        if (timer < 30.0f) {
-            timer = 30.0f;
+        if (timer < gDIMbosstonsilThirty[0]) {
+            timer = gDIMbosstonsilThirty[0];
         }
         gDIMbosstonsilNextRumbleTime = gDIMbosstonsilNextRumbleTime + timer;
         doRumble(8.0f);
@@ -542,21 +545,21 @@ void DIMbosstonsil_init(GameObject* obj, u32 placementAddress, int isAltVariant)
     gDIMbosstonsilFightTimer = 0.0f;
     gDIMbosstonsilRumbleElapsed = 0.0f;
     gDIMbosstonsilRouteDelayTimer = 0.0f;
-    gDIMbosstonsilNextRumbleTime = 30.0f;
+    gDIMbosstonsilNextRumbleTime = gDIMbosstonsilThirty[0];
     gDIMbosstonsilLight = objCreateLight(0, 1);
     if (gDIMbosstonsilLight != NULL) {
         modelLightStruct_setLightKind(gDIMbosstonsilLight, MODEL_LIGHT_KIND_POINT);
         modelLightStruct_setDiffuseColor(gDIMbosstonsilLight, 0xff, 0, 0, 0x7f);
         modelLightStruct_setSpecularColor(gDIMbosstonsilLight, 0xff, 0, 0, 0x7f);
-        modelLightStruct_setDistanceAttenuation(gDIMbosstonsilLight, 30.0f, 50.0f);
+        modelLightStruct_setDistanceAttenuation(gDIMbosstonsilLight, gDIMbosstonsilThirty[0], gDIMbosstonsilFifty[0]);
         lightSetField4D((ModelLightStruct*)gDIMbosstonsilLight, 1);
         modelLightStruct_setEnabled(gDIMbosstonsilLight, 1, 0.0f);
-        modelLightStruct_setGlowProjectionRadius((ModelLightStruct*)gDIMbosstonsilLight, 50.0f);
+        modelLightStruct_setGlowProjectionRadius((ModelLightStruct*)gDIMbosstonsilLight, gDIMbosstonsilFifty[0]);
         modelLightStruct_setDiffuseTargetColor(gDIMbosstonsilLight, 0xff, 0x7f, 0, 0x40);
         modelLightStruct_setSpecularTargetColor((ModelLightStruct*)gDIMbosstonsilLight, 0xff, 0x7f, 0, 0x40);
         modelLightStruct_startColorFade(gDIMbosstonsilLight, 2, 0x3c);
         modelLightStruct_setAffectsAabbLightSelection((ModelLightStruct*)gDIMbosstonsilLight, 1);
-        modelLightStruct_setupGlow(gDIMbosstonsilLight, 0, 0xff, 0, 0, 0x7f, 50.0f);
+        modelLightStruct_setupGlow(gDIMbosstonsilLight, 0, 0xff, 0, 0, 0x7f, gDIMbosstonsilFifty[0]);
     }
 }
 

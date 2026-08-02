@@ -8,10 +8,6 @@
 #include "main/dll/dll_0015_save_settings.h"
 #include "main/lightmap.h"
 
-
-extern u8 sGameTextFallbackBufSlots[];
-extern int gGameTextFallbackBuf;
-
 void* gameTextGetPhrase(int textId, int phraseIndex)
 {
     char* strings;

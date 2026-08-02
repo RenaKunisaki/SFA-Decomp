@@ -66,6 +66,20 @@ void imSnowClaw_syncMountTransform(GameObject* obj, GameObject* mount, int rende
     obj->anim.velocityZ = mount->anim.velocityZ;
 }
 
+static void imSnowClaw_advanceLinkedMove(GameObject* obj, GameObject* mount) {
+    f32 moveAmount;
+    f32 moveStep;
+    int moveNegative;
+
+    if (obj->anim.currentMove != IM_SNOW_CLAW_MOVE_ID) {
+        ObjAnim_SetCurrentMove((int)obj, IM_SNOW_CLAW_MOVE_ID, 0.0f, 0);
+    }
+    (*(IMSnowClawMountInterface**)mount->anim.dll)->getNormalizedSpeed(mount, &moveStep);
+    moveStep = 0.01f;
+    (*(IMSnowClawMountInterface**)mount->anim.dll)->func12(mount, &moveAmount, &moveNegative);
+    ObjAnim_AdvanceCurrentMove((int)obj, moveStep, (f32)(u32)framesThisStep, NULL);
+}
+
 int imSnowClaw_sequenceCallback(GameObject* obj, int unusedArg2, ObjSeqState* animUpdate) {
     GameObject* mount;
     IMSnowClawState* state = obj->extra;
@@ -166,8 +180,8 @@ void imSnowClaw_render(GameObject* obj, int renderArg2, int renderArg3, int rend
         if (mountActive != 0) {
             obj->anim.flags |= IM_SNOW_CLAW_MOUNT_ACTIVE_FLAG;
             visible = objUpdateOpacity(mount);
-            imSnowClaw_syncMountTransform(obj, mount, renderArg2, renderArg3, renderArg4, renderArg5, visible,
-                                          state->mountAlpha, 1);
+            ((void (*)(GameObject*, GameObject*, int, int, int, int, int, int, int))imSnowClaw_syncMountTransform)(
+                obj, mount, renderArg2, renderArg3, renderArg4, renderArg5, visible, state->mountAlpha, 1);
         } else {
             obj->anim.flags &= ~IM_SNOW_CLAW_MOUNT_ACTIVE_FLAG;
         }
@@ -192,7 +206,8 @@ void imSnowClaw_hitDetect(GameObject* obj) {
 
     if (mount != NULL) {
         if ((*(IMSnowClawMountInterface**)mount->anim.dll)->getRiderMode(mount) == 2) {
-            imSnowClaw_syncMountTransform(obj, state->mount, 0, 0, 0, 0, 0, 0, 0);
+            ((void (*)(GameObject*, GameObject*, int, int, int, int, int, int, int))imSnowClaw_syncMountTransform)(
+                obj, state->mount, 0, 0, 0, 0, 0, 0, 0);
         }
     }
 }
@@ -249,18 +264,7 @@ void imSnowClaw_update(GameObject* obj) {
     }
 
     if (obj->anim.romDefNo == IM_SNOW_CLAW_RENDER_GATE_SEQ_ID || mainGetBit(GAMEBIT_IM_BikeRelated03A2) != 0) {
-        GameObject* mount = state->mount;
-        int moveNegative;
-        f32 moveStep;
-        f32 moveAmount;
-
-        if (obj->anim.currentMove != IM_SNOW_CLAW_MOVE_ID) {
-            ObjAnim_SetCurrentMove((int)obj, IM_SNOW_CLAW_MOVE_ID, 0.0f, 0);
-        }
-        (*(IMSnowClawMountInterface**)mount->anim.dll)->getNormalizedSpeed(mount, &moveStep);
-        moveStep = 0.01f;
-        (*(IMSnowClawMountInterface**)mount->anim.dll)->func12(mount, &moveAmount, &moveNegative);
-        ObjAnim_AdvanceCurrentMove((int)obj, moveStep, (f32)(u32)framesThisStep, NULL);
+        imSnowClaw_advanceLinkedMove(obj, state->mount);
         if (state->mount != NULL) {
             f32 distanceFade;
             GameObject* player = Obj_GetPlayerObject();

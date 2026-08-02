@@ -41,7 +41,8 @@
 #define FIREFLY_AMP_MAX           0x3c
 #define FIREFLY_RADIUS_MARGIN     0x14
 
-const f32 gFireflyDespawnFrames[1] = {180.0f};
+static const f32 sFireFlyDespawnDelay[1] = {180.0f};
+
 
 int firefly_animEventCallback(GameObject* obj)
 {
@@ -290,7 +291,7 @@ void firefly_activeTick(GameObject* obj)
                     {
                         FireFlyState* st = (obj)->extra;
                         (obj)->anim.flags = (s16)((obj)->anim.flags | OBJANIM_FLAG_HIDDEN);
-                        st->despawnTimer = gFireflyDespawnFrames[0];
+                        st->despawnTimer = sFireFlyDespawnDelay[0];
                         gameBitIncrement(FIREFLY_COLLECT_COUNT_BIT_A);
                         gameBitIncrement(FIREFLY_COLLECT_COUNT_BIT_B);
                         Sfx_PlayFromObject(obj, SFXTRIG_lockoff22);
@@ -344,7 +345,7 @@ void firefly_update(GameObject* obj)
         {
             FireFlyState* st = obj->extra;
             obj->anim.flags = (s16)(obj->anim.flags | OBJANIM_FLAG_HIDDEN);
-            st->despawnTimer = gFireflyDespawnFrames[0];
+            st->despawnTimer = sFireFlyDespawnDelay[0];
             gameBitIncrement(FIREFLY_COLLECT_COUNT_BIT_A);
             gameBitIncrement(FIREFLY_COLLECT_COUNT_BIT_B);
             Sfx_PlayFromObject(obj, SFXTRIG_lockoff22);
@@ -370,7 +371,7 @@ void firefly_update(GameObject* obj)
     {
         if (timerCountDown(&state->lifeTimer) != 0)
         {
-            state->despawnTimer = gFireflyDespawnFrames[0];
+            state->despawnTimer = sFireFlyDespawnDelay[0];
         }
         if (state->despawnTimer > 0.0f)
         {

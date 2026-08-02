@@ -499,10 +499,10 @@ void setupCausticBaseTevStages(void* viewMtx)
     getNewShadowCausticTexture((u32*)&obj7c);
     if (obj7c != NULL)
     {
-        void* obj = obj7c + 0x20;
-        if (obj7c[0x48] != 0)
+        void* obj = ((Texture*)obj7c)->gxTexObj;
+        if (((Texture*)obj7c)->preloaded != 0)
         {
-            GXLoadTexObjPreLoaded((GXTexObj*)obj, *(GXTexRegion**)(obj7c + 0x40), 2);
+            GXLoadTexObjPreLoaded((GXTexObj*)obj, (GXTexRegion*)((Texture*)obj7c)->tmemAddr, 2);
         }
         else
         {
@@ -528,10 +528,10 @@ void setupCausticBaseTevStages(void* viewMtx)
     getNewShadowRampTexture((u32*)&obj80);
     if (obj80 != NULL)
     {
-        void* obj = obj80 + 0x20;
-        if (obj80[0x48] != 0)
+        void* obj = ((Texture*)obj80)->gxTexObj;
+        if (((Texture*)obj80)->preloaded != 0)
         {
-            GXLoadTexObjPreLoaded((GXTexObj*)obj, *(GXTexRegion**)(obj80 + 0x40), 3);
+            GXLoadTexObjPreLoaded((GXTexObj*)obj, (GXTexRegion*)((Texture*)obj80)->tmemAddr, 3);
         }
         else
         {
@@ -600,10 +600,10 @@ void addShadowFalloffTevStages(void)
     id = gRcpNextTexMap;
     if (obj1 != NULL)
     {
-        void* obj = obj1 + 0x20;
-        if (obj1[0x48] != 0)
+        void* obj = ((Texture*)obj1)->gxTexObj;
+        if (((Texture*)obj1)->preloaded != 0)
         {
-            GXLoadTexObjPreLoaded((GXTexObj*)obj, *(GXTexRegion**)(obj1 + 0x40), id);
+            GXLoadTexObjPreLoaded((GXTexObj*)obj, (GXTexRegion*)((Texture*)obj1)->tmemAddr, id);
         }
         else
         {
@@ -654,10 +654,10 @@ void addShadowFalloffTevStages(void)
     id = gRcpNextTexMap;
     if (obj2 != NULL)
     {
-        void* obj = obj2 + 0x20;
-        if (obj2[0x48] != 0)
+        void* obj = ((Texture*)obj2)->gxTexObj;
+        if (((Texture*)obj2)->preloaded != 0)
         {
-            GXLoadTexObjPreLoaded((GXTexObj*)obj, *(GXTexRegion**)(obj2 + 0x40), id);
+            GXLoadTexObjPreLoaded((GXTexObj*)obj, (GXTexRegion*)((Texture*)obj2)->tmemAddr, id);
         }
         else
         {
@@ -1619,10 +1619,10 @@ void addSignedOverlayTexStage(u8* texSrc, void* texMtx, u8* color)
         int id = gRcpNextTexMap;
         if (texSrc != NULL)
         {
-            GXTexObj* obj = (GXTexObj*)(texSrc + 0x20);
-            if (texSrc[0x48] != 0)
+            GXTexObj* obj = (GXTexObj*)((Texture*)texSrc)->gxTexObj;
+            if (((Texture*)texSrc)->preloaded != 0)
             {
-                GXLoadTexObjPreLoaded(obj, *(GXTexRegion**)(texSrc + 0x40), id);
+                GXLoadTexObjPreLoaded(obj, (GXTexRegion*)((Texture*)texSrc)->tmemAddr, id);
             }
             else
             {
@@ -1728,10 +1728,10 @@ void addCastShadowTevStages(u8* objInst)
     id = gRcpNextTexMap;
     if (src != NULL)
     {
-        void* obj = src + 0x20;
-        if (src[0x48] != 0)
+        void* obj = ((Texture*)src)->gxTexObj;
+        if (((Texture*)src)->preloaded != 0)
         {
-            GXLoadTexObjPreLoaded((GXTexObj*)obj, *(GXTexRegion**)(src + 0x40), id);
+            GXLoadTexObjPreLoaded((GXTexObj*)obj, (GXTexRegion*)((Texture*)src)->tmemAddr, id);
         }
         else
         {
@@ -1742,10 +1742,10 @@ void addCastShadowTevStages(u8* objInst)
     obj2 = *(u8**)(objInst + 0x60);
     if (obj2 != NULL)
     {
-        void* obj = obj2 + 0x20;
-        if (obj2[0x48] != 0)
+        void* obj = ((Texture*)obj2)->gxTexObj;
+        if (((Texture*)obj2)->preloaded != 0)
         {
-            GXLoadTexObjPreLoaded((GXTexObj*)obj, *(GXTexRegion**)(obj2 + 0x40), id);
+            GXLoadTexObjPreLoaded((GXTexObj*)obj, (GXTexRegion*)((Texture*)obj2)->tmemAddr, id);
         }
         else
         {
@@ -1876,10 +1876,10 @@ void addProjectedLightTevStage(u8* texSrc, void* texMtx, int stageMode, int comp
     texmap = gRcpNextTexMap;
     if (texSrc != NULL)
     {
-        GXTexObj* tex = (GXTexObj*)(texSrc + 0x20);
-        if (texSrc[0x48] != 0)
+        GXTexObj* tex = (GXTexObj*)((Texture*)texSrc)->gxTexObj;
+        if (((Texture*)texSrc)->preloaded != 0)
         {
-            GXLoadTexObjPreLoaded(tex, *(GXTexRegion**)(texSrc + 0x40), texmap);
+            GXLoadTexObjPreLoaded(tex, (GXTexRegion*)((Texture*)texSrc)->tmemAddr, texmap);
         }
         else
         {

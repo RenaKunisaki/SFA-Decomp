@@ -14,6 +14,7 @@
 #include "main/fileio.h"
 #include "string.h"
 #include "main/dll/FRONT/picmenu.h"
+#include "main/attract_movie_api.h"
 
 char sPicMenuThpMagic[] = "THP";
 
@@ -27,12 +28,7 @@ enum
 };
 
 extern char gAttractMovieAudioDmaBuffer[0x50C];
-extern s32 gAttractMovieAudioActive;
 extern AIDCallback gAttractMovieAudioPrevDmaCallback;
-extern s32 gAttractMovieAudioMode;
-extern u32 gAttractMovieAudioMixSourceAddr;
-extern u32 gAttractMovieAudioPendingSourceAddr;
-extern u32 gAttractMovieAudioDmaBufferIndex;
 
 BOOL movieLoad(const char* fileName, void* onMemory)
 {

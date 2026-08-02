@@ -63,7 +63,7 @@ void dll_CB_handleMessage(GameObject* obj, int message);
 
 extern DllCBMoveHandler gDllCBMoveHandlers[4];
 extern DllCBStateHandler gDllCBStateHandlers[6];
-extern const f32 gDllCBDefaultAnimSpeed;
+extern const f32 gDllCBDefaultAnimSpeed[1];
 extern int gDllCBHitReactionMoves[30];
 extern u8 gDllCBHitReactionDamage[32];
 extern ObjectDescriptor12 gDllCBObjDescriptor;

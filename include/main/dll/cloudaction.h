@@ -14,7 +14,7 @@ typedef struct CloudEnvTbl
 STATIC_ASSERT(sizeof(CloudEnvTbl) == 0x38);
 
 extern CloudEnvTbl gCloudActionEnvTbl;
-extern volatile f32 gCloudActionGlareQuadSize[2];
+extern f32 gCloudActionGlareQuadSize[2];
 extern s32 lbl_803DB618[2];
 
 void cloudaction_func08_nop(void);

@@ -885,8 +885,8 @@ void drakorhoverpad_updateMain(GameObject* obj)
         c = curve->reverse;
         if ((c == 0 && curve->atSegmentEnd != 0) || (c != 0 && curve->atSegmentEnd == 0))
         {
-            if (drakorhoverpad_handlePathPointEvent(obj, *(u8*)((u8*)curve->nodeA0 + 0x18),
-                                                    *(u8*)((u8*)curve->nodeA4 + 0x18), &evOut) != 0)
+            if (drakorhoverpad_handlePathPointEvent(obj, (u8)((RomCurveDef*)curve->nodeA0)->action,
+                                                    (u8)((RomCurveDef*)curve->nodeA4)->action, &evOut) != 0)
             {
                 drakorhoverpad_update(curve, evOut);
             }

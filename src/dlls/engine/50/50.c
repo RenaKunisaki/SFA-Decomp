@@ -117,8 +117,8 @@ void runLoadingScreens(void)
                           gTitleScreenInitFadeFrames);
         }
         drawTexture((void*)gTitleScreenInitLoadingTextures[1],
-                    (f32)(u32)((int)(0x280 - (u32) * (u16*)(gTitleScreenInitLoadingTextures[1] + 0xa)) >> 1),
-                    (f32)(u32)((int)(0x1e0 - (u32) * (u16*)(gTitleScreenInitLoadingTextures[1] + 0xc)) >> 1), alpha,
+                    (f32)(u32)((int)(0x280 - (u32)((Texture*)gTitleScreenInitLoadingTextures[1])->width) >> 1),
+                    (f32)(u32)((int)(0x1e0 - (u32)((Texture*)gTitleScreenInitLoadingTextures[1])->height) >> 1), alpha,
                     0x119);
     }
     else if (gTitleScreenInitLoadingFrameCounter < 0x258)
@@ -139,8 +139,8 @@ void runLoadingScreens(void)
                           gTitleScreenInitFadeFrames);
         }
         drawTexture((void*)gTitleScreenInitLoadingTextures[2],
-                    (f32)(u32)((int)(0x280 - (u32) * (u16*)(gTitleScreenInitLoadingTextures[2] + 0xa)) >> 1),
-                    (f32)(u32)((int)(0x1e0 - (u32) * (u16*)(gTitleScreenInitLoadingTextures[2] + 0xc)) >> 1), alpha,
+                    (f32)(u32)((int)(0x280 - (u32)((Texture*)gTitleScreenInitLoadingTextures[2])->width) >> 1),
+                    (f32)(u32)((int)(0x1e0 - (u32)((Texture*)gTitleScreenInitLoadingTextures[2])->height) >> 1), alpha,
                     0x119);
     }
 

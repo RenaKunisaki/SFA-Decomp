@@ -100,7 +100,6 @@ typedef struct ObjHitBufs
 } ObjHitBufs;
 extern const f32 gModelDotClampMax;
 extern f32 gModelDotClampMin;
-extern f32 gMapSavedPlayerOffsetX;
 extern f32 gMapSavedPlayerOffsetZ;
 
 void setGQR7Packed(int a, int b, int c, int d);

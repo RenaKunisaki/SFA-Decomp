@@ -661,7 +661,7 @@ f32 drcloudcage_getRouteIntensity(GameObject* obj, int state)
         if (gSnowBikeLeaderRouteRank == -1)
         {
             rank = (int)Obj_GetPlayerObject();
-            d = Vec_distance(&obj->anim.worldPosX, (f32*)(rank + 0x18));
+            d = Vec_distance(&obj->anim.worldPosX, &((GameObject*)rank)->anim.worldPosX);
             d *= 0.5f;
         }
         else
@@ -1100,6 +1100,18 @@ void SnowBike_UpdateAirMeter(u32 obj, int stateRaw)
     }
 }
 
+static void SnowBike_ResetAirMeter(SnowBikeState* s)
+{
+    s->airMeterMax = 70000.0f;
+    s->airDrainRate = 1.0f;
+    s->airMeterCurrent = 69999.0f;
+    if (s->riderMode == 2)
+    {
+        (*gGameUIInterface)->initAirMeter((int)s->airMeterMax, SNOWBIKE_AIRMETER_BGTEXTURE);
+        (*gGameUIInterface)->airMeterSetField24(4.0f);
+    }
+}
+
 void SnowBike_onSeqFree(GameObject* obj)
 {
     SnowBikeState* state = obj->extra;
@@ -1201,6 +1213,18 @@ int SnowBike_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
 
     st->routeFlags.active = 0;
     return 0;
+}
+
+static void SnowBike_SnapSmallToZero(f32* value)
+{
+    f32 v = *value;
+    if (v < 0.01f)
+    {
+        if (v > -0.01f)
+        {
+            *value = 0.0f;
+        }
+    }
 }
 
 void SnowBike_UpdateCollisionResponse(GameObject* obj, int stateRaw)
@@ -1509,6 +1533,11 @@ void SnowBike_UpdateExhaustFx(GameObject* obj, int stateRaw)
     st->turnForceGain += timeDelta * (k * (target544 - st->turnForceGain));
 }
 
+static f32 SnowBike_GetStickAngleDeg(f32 stickX, f32 stickY)
+{
+    return (f32)(u16)getAngle(stickX, stickY) / 182.04f;
+}
+
 void SnowBike_UpdateLiftSway(int obj, int state)
 {
     PickupFlags* flags;
@@ -1655,28 +1684,14 @@ void SnowBike_UpdateLiftSway(int obj, int state)
         v = ((DRPickupState*)state)->accumX;
         lim = ((DRPickupState*)state)->clampLimitX;
         ((DRPickupState*)state)->accumX = (v < -lim) ? -lim : ((v > lim) ? lim : v);
-        v = ((DRPickupState*)state)->accumX;
-        if (v < 0.01f)
-        {
-            if (v > -0.01f)
-            {
-                ((DRPickupState*)state)->accumX = 0.0f;
-            }
-        }
+        SnowBike_SnapSmallToZero(&((DRPickupState*)state)->accumX);
     }
 
     {
         f32 v = ((DRPickupState*)state)->accumY;
         f32 lim = -((DRPickupState*)state)->clampLimitY;
         ((DRPickupState*)state)->accumY = (v < lim) ? lim : ((v > 1.0f) ? 1.0f : v);
-        v = ((DRPickupState*)state)->accumY;
-        if (v < 0.01f)
-        {
-            if (v > -0.01f)
-            {
-                ((DRPickupState*)state)->accumY = 0.0f;
-            }
-        }
+        SnowBike_SnapSmallToZero(&((DRPickupState*)state)->accumY);
     }
 
     {
@@ -1685,14 +1700,7 @@ void SnowBike_UpdateLiftSway(int obj, int state)
         v = ((DRPickupState*)state)->accumZ;
         lim = ((DRPickupState*)state)->clampLimitZ;
         ((DRPickupState*)state)->accumZ = (v < -lim) ? -lim : ((v > lim) ? lim : v);
-        v = ((DRPickupState*)state)->accumZ;
-        if (v < 0.01f)
-        {
-            if (v > -0.01f)
-            {
-                ((DRPickupState*)state)->accumZ = 0.0f;
-            }
-        }
+        SnowBike_SnapSmallToZero(&((DRPickupState*)state)->accumZ);
     }
 }
 
@@ -1936,15 +1944,7 @@ void SnowBike_setMountState(GameObject* obj, int type)
         bit = (((SnowBikeState*)state)->flags428 >> 5) & 1;
         if (bit != 0)
         {
-            ((SnowBikeState*)state)->airMeterMax = 70000.0f;
-            ((SnowBikeState*)state)->airDrainRate = 1.0f;
-            ((SnowBikeState*)state)->airMeterCurrent = 69999.0f;
-            if (((SnowBikeState*)state)->riderMode == 2)
-            {
-                (*gGameUIInterface)
-                    ->initAirMeter((int)((SnowBikeState*)state)->airMeterMax, SNOWBIKE_AIRMETER_BGTEXTURE);
-                (*gGameUIInterface)->airMeterSetField24(4.0f);
-            }
+            SnowBike_ResetAirMeter((SnowBikeState*)state);
         }
         if (obj->anim.romDefNo == SNOWBIKE_IM_BIKE_OBJ)
         {
@@ -2293,7 +2293,7 @@ void SnowBike_update(GameObject* obj)
             if (drshackle_updateAttachedPosition(obj, (ShackleSwingState*)state) != 0)
             {
                 SnowBike_UpdateExhaustFx(obj, (int)state);
-                SnowBike_buildOrientationMatrices(obj, (int)state);
+                ((void (*)(GameObject*, int))SnowBike_buildOrientationMatrices)(obj, (int)state);
                 if (s->collisionFxTimer)
                 {
                     PSVECScale((Vec*)(state + 0x464), (Vec*)(state + 0x47c),
@@ -2355,9 +2355,7 @@ void SnowBike_update(GameObject* obj)
             s->buttonsHeld = getButtonsHeld(0);
             s->buttonsJustPressed = getButtonsJustPressed(0);
             s->buttonsJustPressedIfNotBusy = getButtonsJustPressedIfNotBusy(0);
-            s->steerAngleDeg =
-                (f32)(u16)getAngle(s->stickX, (f32) - (int)s->stickY) /
-                182.04f;
+            s->steerAngleDeg = SnowBike_GetStickAngleDeg(s->stickX, (f32) - (int)s->stickY);
             s->stickX = s->stickX / 56.0f;
             value = s->stickX;
             if (value < -1.0f)
@@ -2374,7 +2372,7 @@ void SnowBike_update(GameObject* obj)
             }
             s->stickX = clamped;
             SnowBike_UpdateExhaustFx(obj, (int)state);
-            SnowBike_buildOrientationMatrices(obj, (int)state);
+            ((void (*)(GameObject*, int))SnowBike_buildOrientationMatrices)(obj, (int)state);
             if (s->collisionFxTimer)
             {
                 PSVECScale((Vec*)(state + 0x464), (Vec*)(state + 0x47c), s->collisionFxDamping);
@@ -2465,20 +2463,12 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     s->yawCurrent = rot;
     s->yaw = rot;
     obj->anim.rotX = rot;
-    SnowBike_InitTuning(obj, (int)state);
+    ((void (*)(GameObject*, int))SnowBike_InitTuning)(obj, (int)state);
     if (flag == 0)
     {
         if (s->routeFlags.uiPrompt)
         {
-            s->airMeterMax = 70000.0f;
-            s->airDrainRate = 1.0f;
-            s->airMeterCurrent = 69999.0f;
-            if (s->riderMode == 2)
-            {
-                (*gGameUIInterface)
-                    ->initAirMeter((int)s->airMeterMax, SNOWBIKE_AIRMETER_BGTEXTURE);
-                (*gGameUIInterface)->airMeterSetField24(4.0f);
-            }
+            SnowBike_ResetAirMeter(s);
         }
     }
     if (params->startFlag != 0)

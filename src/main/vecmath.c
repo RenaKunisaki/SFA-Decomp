@@ -215,7 +215,7 @@ void vecRotateYXZ(s16* a, f32* v)
     v[2] = z;
 }
 
-extern f32 lbl_803DE7F0;
+const f32 gVecMathAngleScaleInv[1] = {1.0f / 65536.0f};
 
 void vecRotateZXY(s16* rotation, f32* vector)
 {
@@ -255,17 +255,17 @@ void mtxRotateByVec3s(f32* mtx, const void* transform)
     const MatrixTransform* xf = (const MatrixTransform*)transform;
 
     s = (f32)(int)(65536.0f * fcos16((u16)xf->rotX));
-    cx = s * lbl_803DE7F0;
+    cx = s * gVecMathAngleScaleInv[0];
     s = (f32)(int)(65536.0f * fsin16((u16)xf->rotX));
-    sx = s * lbl_803DE7F0;
+    sx = s * gVecMathAngleScaleInv[0];
     s = (f32)(int)(65536.0f * fcos16((u16)xf->rotY));
-    cy = s * lbl_803DE7F0;
+    cy = s * gVecMathAngleScaleInv[0];
     s = (f32)(int)(65536.0f * fsin16((u16)xf->rotY));
-    sy = s * lbl_803DE7F0;
+    sy = s * gVecMathAngleScaleInv[0];
     cz = (f32)(int)(65536.0f * fcos16((u16)xf->rotZ));
-    cz = cz * lbl_803DE7F0;
+    cz = cz * gVecMathAngleScaleInv[0];
     sz = (f32)(int)(65536.0f * fsin16((u16)xf->rotZ));
-    sz = sz * lbl_803DE7F0;
+    sz = sz * gVecMathAngleScaleInv[0];
 
     t1 = cy * cz;
     s = t1 * cx;
@@ -329,8 +329,6 @@ void mtxRotateByVec3s(f32* mtx, const void* transform)
     mtx[14] = t1;
     mtx[15] = 1.0f;
 }
-
-extern f32 lbl_803DE80C;
 
 void mtx44ScaleRow1(f32* p, f32 s)
 {
@@ -614,64 +612,4 @@ void Matrix_TransformPoint(const f32* matrix, f32 x, f32 y, f32 z, f32* outX, f3
     *outX = matrix[12] + (matrix[0] * x + matrix[4] * y + matrix[8] * z);
     *outY = matrix[13] + (matrix[1] * x + matrix[5] * y + matrix[9] * z);
     *outZ = matrix[14] + (matrix[2] * x + matrix[6] * y + matrix[10] * z);
-}
-
-void Vec3_ReflectAgainstNormal(f32* normal, f32* velocity, f32* out)
-{
-    f32 yProduct = normal[1] * velocity[1];
-    f32 dot = yProduct + normal[0] * velocity[0] + normal[2] * velocity[2];
-    if (dot > 0.0f)
-    {
-        out[0] = velocity[0];
-        out[1] = velocity[1];
-        out[2] = velocity[2];
-    }
-    else
-    {
-        f32 reflectionScale = dot * lbl_803DE80C;
-        out[0] = normal[0];
-        out[1] = normal[1];
-        out[2] = normal[2];
-        out[0] *= reflectionScale;
-        out[1] *= reflectionScale;
-        out[2] *= reflectionScale;
-        out[0] += velocity[0];
-        out[1] += velocity[1];
-        out[2] += velocity[2];
-    }
-}
-
-void Vec3_ScaleAdd(const f32* base, const f32* vector, f32 scale, f32* out)
-{
-    out[0] = scale * vector[0] + base[0];
-    out[1] = scale * vector[1] + base[1];
-    out[2] = scale * vector[2] + base[2];
-}
-
-f32 Vec3_Normalize(f32* vector)
-{
-    f32 length;
-    f32 inverseLength;
-
-    length = sqrtf(vector[0] * vector[0] + vector[1] * vector[1] + vector[2] * vector[2]);
-    if (0.0f != length)
-    {
-        inverseLength = 1.0f / length;
-        vector[0] *= inverseLength;
-        vector[1] *= inverseLength;
-        vector[2] *= inverseLength;
-    }
-    return length;
-}
-
-void Vec3_Cross(f32* lhs, f32* rhs, f32* out)
-{
-    out[0] = lhs[1] * rhs[2] - lhs[2] * rhs[1];
-    out[1] = lhs[2] * rhs[0] - lhs[0] * rhs[2];
-    out[2] = lhs[0] * rhs[1] - lhs[1] * rhs[0];
-}
-
-f32 Vec3_Length(const f32* vector)
-{
-    return sqrtf(vector[0] * vector[0] + vector[1] * vector[1] + vector[2] * vector[2]);
 }

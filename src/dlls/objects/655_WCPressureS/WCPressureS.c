@@ -122,10 +122,8 @@ static inline u8 wcpressures_scanTrackedObjects(int stateAddress) {
         trackedObject = *(GameObject**)(stateAddress + slotIndex * 4 + offsetof(WCPressuresState, objects));
         if (trackedObject != NULL) {
             positionAddress = stateAddress + slotIndex * 8;
-            if (*(f32*)(positionAddress + offsetof(WCPressuresState, savedPos[0].x)) ==
-                    trackedObject->anim.localPosX &&
-                *(f32*)(positionAddress + offsetof(WCPressuresState, savedPos[0].z)) ==
-                    trackedObject->anim.localPosZ) {
+            if (*(f32*)(positionAddress + offsetof(WCPressuresState, savedPos[0].x)) == trackedObject->anim.localPosX &&
+                *(f32*)(positionAddress + offsetof(WCPressuresState, savedPos[0].z)) == trackedObject->anim.localPosZ) {
                 foundStationaryObject = 1;
             } else {
                 *(u32*)(stateAddress + slotIndex * 4 + offsetof(WCPressuresState, objects)) = 0;
@@ -138,8 +136,9 @@ static inline u8 wcpressures_scanTrackedObjects(int stateAddress) {
 void wcpressures_update(GameObject* obj) {
     WCPressuresSetup* setup = (WCPressuresSetup*)obj->anim.placementData;
     WCPressuresState* state = (WCPressuresState*)obj->extra;
-    int contactIndex;
     int contactOffset;
+    GameObject* contact;
+    int contactIndex;
     f32 pressedY;
 
     if (setup->activateBit > 0 && mainGetBit(setup->activateBit) == 0) {
@@ -152,8 +151,8 @@ void wcpressures_update(GameObject* obj) {
     if (obj->anim.hitboxTransformState->contactObjectCount > 0) {
         for (contactIndex = 0, contactOffset = 0; contactIndex < obj->anim.hitboxTransformState->contactObjectCount;
              contactOffset += 4, contactIndex++) {
-            GameObject* contact = *(GameObject**)((u8*)obj->anim.hitboxTransformState + contactOffset +
-                                                  offsetof(ObjHitboxTransformState, contactObjects));
+            contact = *(GameObject**)((u8*)obj->anim.hitboxTransformState + contactOffset +
+                                      offsetof(ObjHitboxTransformState, contactObjects));
             if (contact->anim.localPosY - obj->anim.localPosY > (f32)(u32)setup->triggerHeight) {
                 wcpressures_addTrackedObject(obj, contact);
             }

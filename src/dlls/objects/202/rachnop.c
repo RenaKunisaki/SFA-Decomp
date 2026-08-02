@@ -303,11 +303,11 @@ u32 fireflyLanternSteerTowardTarget(short* obj, int state, u32 turnTime, f32 max
         dy = maxDistance * (dy * ratio);
     }
     dxA -= dxDiff;
-    turnStep = objY - dy;
-    wallPlaneClampMoveTarget(moveTarget, &fs->wallPlane, dxA, turnStep);
+    dy = objY - dy;
+    wallPlaneClampMoveTarget(moveTarget, &fs->wallPlane, dxA, dy);
     PSVECSubtract((Vec*)moveTarget, (Vec*)(obj + 6), (Vec*)moveDelta);
     objMove((GameObject*)obj, moveDelta[0], moveDelta[1], moveDelta[2]);
-    turnStep = lbl_803E2A00;
+    turnStep = 0.0f;
     o->anim.velocityX = turnStep;
     o->anim.velocityY = turnStep;
     o->anim.velocityZ = turnStep;

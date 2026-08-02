@@ -860,7 +860,7 @@ void bossdrakor_update(GameObject* obj)
     if (timerCountDown(&drakorState->attackTimer) != 0)
     {
         bossdrakor_spawnAttackObjects(obj, drakorState, drakorState->attackType);
-        if (drakorState->attackTimerDuration != lbl_803E6510)
+        if (drakorState->attackTimerDuration)
         {
             s16toFloat(&drakorState->attackTimer,
                        drakorState->attackTimerDuration);

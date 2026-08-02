@@ -205,6 +205,16 @@ ObjectDescriptor14 gPushableObjDescriptor = {
 char sPushPullObjectHitpointOverflow[] = "PUSHPULL OBJECT: hitpoint overflow\n";
 const PushableRadii gPushableDefaultBox = {{0.0f, 0.0f, 0.0f, 0.0f}};
 
+static void pushable_driftEyePos(f32* pos, f32 driftSpeed, f32 limit)
+{
+    *pos += driftSpeed;
+    if (*pos > limit) {
+        *pos = limit;
+    } else if (*pos < PUSHABLE_ZERO) {
+        *pos = limit;
+    }
+}
+
 int pushable_updateCurtain(int obj, PushableState* state) {
     int placement;
     GameObject* player;
@@ -346,18 +356,8 @@ int pushable_updateMagicGem(GameObject* obj, PushableState* state) {
             Resource_Release(effectInterface);
             Sfx_PlayFromObject(obj, SFXTRIG_espar5_c);
         } else {
-            state->eyePosX += state->eyeDriftSpeedX;
-            if (state->eyePosX > PUSHABLE_MAGIC_GEM_EYE_POSITION_MAX) {
-                state->eyePosX = PUSHABLE_MAGIC_GEM_EYE_POSITION_MAX;
-            } else if (state->eyePosX < PUSHABLE_ZERO) {
-                state->eyePosX = PUSHABLE_MAGIC_GEM_EYE_POSITION_MAX;
-            }
-            state->eyePosY += state->eyeDriftSpeedY;
-            if (state->eyePosY > PUSHABLE_MAGIC_GEM_EYE_POSITION_MAX) {
-                state->eyePosY = PUSHABLE_MAGIC_GEM_EYE_POSITION_MAX;
-            } else if (state->eyePosY < PUSHABLE_ZERO) {
-                state->eyePosY = PUSHABLE_MAGIC_GEM_EYE_POSITION_MAX;
-            }
+            pushable_driftEyePos(&state->eyePosX, state->eyeDriftSpeedX, PUSHABLE_MAGIC_GEM_EYE_POSITION_MAX);
+            pushable_driftEyePos(&state->eyePosY, state->eyeDriftSpeedY, PUSHABLE_MAGIC_GEM_EYE_POSITION_MAX);
             eyeScaledX = state->eyePosX * (PUSHABLE_MAGIC_GEM_BLINK_SCALE_BASE + state->blinkPhase);
             eyeScaledY = state->eyePosY * (PUSHABLE_MAGIC_GEM_BLINK_SCALE_BASE + state->blinkPhase);
             texture->colorR = (u8)(int)state->eyeOpenAmount;
@@ -1211,7 +1211,7 @@ void pushable_update(GameObject* obj) {
             obj->anim.localPosY = placement->posY;
             obj->anim.localPosZ = (f32)(PUSHABLE_CURTAIN_POSITION_Z + (f64)placement->posZ);
         }
-        pushable_updateCurtain((int)obj, state);
+        ((int (*)(int, PushableState*))pushable_updateCurtain)((int)obj, state);
         break;
     case PUSHABLE_SEQ_ID_DIM2_ICE_BLOCK:
         if (PUSHABLE_ZERO == state->prevWaterDepth && state->waterDepth > PUSHABLE_ZERO) {
@@ -1360,13 +1360,13 @@ void pushable_init(GameObject* obj, PushableObjectDef* setup) {
     state->savePosEnabled = 1;
     switch (obj->anim.romDefNo) {
     case PUSHABLE_SEQ_ID_MAGIC_GEM_21E:
-        pushable_initMagicGem(obj, state);
+        ((void (*)(GameObject*, PushableState*))pushable_initMagicGem)(obj, state);
         break;
     case PUSHABLE_SEQ_ID_MAGIC_GEM_411:
-        pushable_initMagicGem(obj, state);
+        ((void (*)(GameObject*, PushableState*))pushable_initMagicGem)(obj, state);
         break;
     case PUSHABLE_SEQ_ID_WC_PUSH_BLOCK:
-        pushable_initWcPushBlock(obj, state);
+        ((void (*)(GameObject*, PushableState*))pushable_initWcPushBlock)(obj, state);
         break;
     case PUSHABLE_SEQ_ID_DIM_PUSH_BLOCK:
         if (setup->gameBit > PUSHABLE_NO_GAME_BIT && mainGetBit(setup->gameBit) != 0) {

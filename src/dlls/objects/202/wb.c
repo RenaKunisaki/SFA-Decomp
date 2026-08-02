@@ -112,9 +112,29 @@ void wbUpdateWhileFrozen(int obj, u8* state, GameObject* attacker, int eventKind
     return;
 }
 
-void wbUpdateEngaged(u32 obj, int state)
+static void wbTickDecoyTimer(u32 obj, EnemyState* state)
 {
     u32 randVal;
+
+    state->duster.decoyTimer = state->duster.decoyTimer - timeDelta;
+    if (state->duster.decoyTimer <= 0.0f)
+    {
+        if ((state->controlFlags & 0x600) != 0)
+        {
+            randVal = randomGetRange(0x96, 0xfa);
+            state->duster.decoyTimer = (float)(int)randVal;
+        }
+        else
+        {
+            randVal = randomGetRange(600, 0x352);
+            state->duster.decoyTimer = (float)(int)randVal;
+        }
+        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_eba_pollenspin);
+    }
+}
+
+void wbUpdateEngaged(u32 obj, int state)
+{
     GameObject* tracked;
     f32 moveSpeed;
     ObjHitsPriorityState* hitState;
@@ -130,21 +150,7 @@ void wbUpdateEngaged(u32 obj, int state)
     {
         Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_mn_heart1_c_261);
     }
-    ((EnemyState*)state)->duster.decoyTimer = ((EnemyState*)state)->duster.decoyTimer - timeDelta;
-    if (((EnemyState*)state)->duster.decoyTimer <= 0.0f)
-    {
-        if ((((EnemyState*)state)->controlFlags & 0x600) != 0)
-        {
-            randVal = randomGetRange(0x96, 0xfa);
-            ((EnemyState*)state)->duster.decoyTimer = (float)(int)randVal;
-        }
-        else
-        {
-            randVal = randomGetRange(600, 0x352);
-            ((EnemyState*)state)->duster.decoyTimer = (float)(int)randVal;
-        }
-        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_eba_pollenspin);
-    }
+    wbTickDecoyTimer(obj, (EnemyState*)state);
     if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
         ObjAnim_SetCurrentMove(obj, 3, 0.0f, ((EnemyState*)state)->rootMotionFlags);
@@ -207,7 +213,6 @@ void wbUpdateEngaged(u32 obj, int state)
 
 void wbUpdateIdle(u32 obj, int state)
 {
-    u32 randVal;
     RomCurveWalker* route;
     ObjPlacement* placement;
     f32 moveSpeed;
@@ -222,21 +227,7 @@ void wbUpdateIdle(u32 obj, int state)
     {
         Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_mn_heart1_c_261);
     }
-    ((EnemyState*)state)->duster.decoyTimer = ((EnemyState*)state)->duster.decoyTimer - timeDelta;
-    if (((EnemyState*)state)->duster.decoyTimer <= 0.0f)
-    {
-        if ((((EnemyState*)state)->controlFlags & 0x600) != 0)
-        {
-            randVal = randomGetRange(0x96, 0xfa);
-            ((EnemyState*)state)->duster.decoyTimer = (float)(int)randVal;
-        }
-        else
-        {
-            randVal = randomGetRange(600, 0x352);
-            ((EnemyState*)state)->duster.decoyTimer = (float)(int)randVal;
-        }
-        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_eba_pollenspin);
-    }
+    wbTickDecoyTimer(obj, (EnemyState*)state);
     if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
         ObjAnim_SetCurrentMove(obj, 0, 0.0f, ((EnemyState*)state)->rootMotionFlags);

@@ -1316,8 +1316,6 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4);
 static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask);
 static void objRenderChild(int* child, int* parent, u8 isShadow);
 
-extern volatile int gAssetLoadInFlightFlags;
-extern s16 gDefragDelayFrames;
 extern u32 gAssetLoadCompletedFlags;
 
 
@@ -3496,8 +3494,6 @@ void objSetRenderingShadowPass(u8 x)
 }
 
 
-extern int gPendingDvdReadCount;
-
 void initLoadFileReadCb(s32 result, DVDFileInfo* fileInfo)
 {
     if (result < 0)
@@ -3947,8 +3943,6 @@ void romListReadCb(s32 result, DVDFileInfo* fileInfo)
         AtomicSList_Push(gDvdFileInfoPool, fileInfo);
     }
 }
-
-extern u32 gResourceFileBuffers[];
 
 void blocksReadCb(s32 result, DVDFileInfo* fileInfo)
 {

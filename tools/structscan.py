@@ -15,6 +15,7 @@ struc > 0 is a real shape difference, which is where the source levers apply.
 this one function flips the whole unit.
 """
 import argparse
+import difflib
 import json
 import re
 import subprocess
@@ -69,11 +70,15 @@ def main():
             b = words(os.path.join(ROOT, cu["base_path"]), f["name"])
             if not a or not b:
                 continue
+            sm = difflib.SequenceMatcher(None, [w for w, _ in a], [w for w, _ in b], autojunk=False)
+            diff = []
+            for tag, i1, i2, j1, j2 in sm.get_opcodes():
+                if tag != "equal":
+                    diff.extend(range(i1, i2 if i2 > i1 else i1 + 1))
             n = min(len(a), len(b))
-            diff = [i for i in range(n) if a[i][0] != b[i][0]]
             if args.max_ndiff and len(diff) > args.max_ndiff:
                 continue
-            struc = sum(1 for i in diff if a[i][1] != b[i][1]) + abs(len(a) - len(b))
+            struc = sum(1 for i in diff if i < n and a[i][1] != b[i][1]) + abs(len(a) - len(b))
             rows.append((size, fuzzy, len(diff), struc, unit["name"], f["name"], remaining))
 
     rows.sort(reverse=True)

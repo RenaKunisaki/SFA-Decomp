@@ -91,9 +91,9 @@
 /* guardClaw_update: state-table driver: walks the 12-byte gSeq11EStateTable state
  * rows, advancing on GameBit + sequence flags and kicking the matching anim. */
 
-const f32 gMikaladonZero = 0.0f;
+const f32 gMikaladonZero[1] = {0.0f};
 
-const f32 gMikaladonDefaultPeriod = 60.0f;
+const f32 gMikaladonDefaultPeriod[1] = {60.0f};
 
 enum MikaladonVerticalPhase
 {
@@ -206,16 +206,16 @@ void mikaladon_update(GameObject* obj, MikaladonState* state)
     obj->anim.velocityZ = oneOverTimeDelta * (cosOut - obj->anim.localPosZ);
     baddieTurnTowardLookDir(obj, state, 0xf, 7.5f, 1.0f, 0);
     state->actor.ambientSfxTimer -= timeDelta;
-    if (state->actor.ambientSfxTimer <= gMikaladonZero)
+    if (state->actor.ambientSfxTimer <= gMikaladonZero[0])
     {
         state->actor.ambientSfxTimer =
             (f32)(int)randomGetRange(MIKALADON_AMBIENT_SFX_MIN_DELAY, MIKALADON_AMBIENT_SFX_MAX_DELAY);
         Sfx_PlayFromObject(obj, SFXTRIG_id_31);
     }
     state->actor.loopSfxTimer -= timeDelta;
-    if (state->actor.loopSfxTimer <= gMikaladonZero)
+    if (state->actor.loopSfxTimer <= gMikaladonZero[0])
     {
-        state->actor.loopSfxTimer = gMikaladonDefaultPeriod;
+        state->actor.loopSfxTimer = gMikaladonDefaultPeriod[0];
         Sfx_PlayFromObject(obj, SFXTRIG_id_24a);
     }
 }
@@ -226,7 +226,7 @@ void mikaladon_init(GameObject* obj, MikaladonState* state)
     f32 lblA;
     f32 a, b;
 
-    zero = gMikaladonDefaultPeriod;
+    zero = gMikaladonDefaultPeriod[0];
     ((EnemyState*)state)->sightRange = zero;
     ((EnemyState*)state)->flags2E4 = 1;
     ((EnemyState*)state)->animPlaySpeed = 0.01f;

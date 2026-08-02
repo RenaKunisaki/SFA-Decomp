@@ -121,7 +121,7 @@ int hightop_stateHandler10(GameObject* obj, HighTopRuntime* stateArg)
     {
         rt->substate = 3;
     }
-    if (Vec_distance((f32*)((char*)Obj_GetPlayerObject() + 0x18), &obj->anim.worldPosX) > 700.0f)
+    if (Vec_distance(&Obj_GetPlayerObject()->anim.worldPosX, &obj->anim.worldPosX) > 700.0f)
     {
         if (randomChanceOneIn(500) != 0)
         {
@@ -262,7 +262,7 @@ int hightop_stateHandler09(GameObject* obj, HighTopRuntime* stateArg)
     }
     else
     {
-        if (Vec_distance((f32*)((char*)Obj_GetPlayerObject() + 0x18), &(obj)->anim.worldPosX) > 700.0f)
+        if (Vec_distance(&Obj_GetPlayerObject()->anim.worldPosX, &(obj)->anim.worldPosX) > 700.0f)
         {
         if (randomChanceOneIn(0x1f4) != 0)
             {
