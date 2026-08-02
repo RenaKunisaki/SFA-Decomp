@@ -65,7 +65,7 @@ STATIC_ASSERT(offsetof(DllCESiblingInterface, handleMessage) == DLL_CE_MESSAGE_C
 #define DLL_CE_COORDINATION_ATTACKING 0x1
 #define DLL_CE_COORDINATION_HIDDEN    0x2
 
-u8 gDllCEHitReactionScratch[0x18];
+PartFxSpawnParams gDllCEHitReactionScratch;
 ChukChukStateHandler gChukChukCheckHandlers[6];
 ChukChukStateHandler gChukChukMoveHandlers[8];
 
@@ -632,7 +632,7 @@ void chukChuk_updateTargeting(GameObject* obj, int objectStateAddress, int state
         (*gBaddieControlInterface)
             ->updateHitReaction(obj, (void*)stateAddress, (char*)objectStateAddress + 0x35c,
                                 ((GroundBaddieState*)objectStateAddress)->gameBitB, gDllCEHitReactionMoves,
-                                gDllCEHitReactionDamage, 1, gDllCEHitReactionScratch);
+                                gDllCEHitReactionDamage, 1, &gDllCEHitReactionScratch);
 
     if (hitReactionUpdated != 0) {
         void* playerChild = player->childObjs[0];

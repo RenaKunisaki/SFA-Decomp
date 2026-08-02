@@ -27,6 +27,31 @@ STATIC_ASSERT(offsetof(DRCloudRunnerPlacement, spawnRot) == 0x18);
 STATIC_ASSERT(offsetof(DRCloudRunnerPlacement, airMeterCapacity) == 0x1A);
 STATIC_ASSERT(offsetof(DRCloudRunnerPlacement, enableGameBit) == 0x1E);
 
+typedef struct DRCloudRunnerMoveParams
+{
+    u8 unk00[12];
+    Vec3f pathPointsA;
+    Vec3f pathCollisionA;
+    Vec3f pathPointsB;
+    Vec3f pathCollisionB;
+    Vec3f pathPointsC;
+    Vec3f pathCollisionC;
+    Vec3f unk54;
+    s16 moveIds[6];
+    s16 pitchAngles[6];
+    f32 unk78[6];
+    f32 inputScaleX[3];
+    f32 inputScaleZ[3];
+    f32 speedMax[3];
+    f32 speedMin[3];
+    f32 moveSpeeds[4];
+} DRCloudRunnerMoveParams;
+
+STATIC_ASSERT(sizeof(DRCloudRunnerMoveParams) == 0xD0);
+STATIC_ASSERT(offsetof(DRCloudRunnerMoveParams, moveIds) == 0x60);
+STATIC_ASSERT(offsetof(DRCloudRunnerMoveParams, inputScaleX) == 0x90);
+STATIC_ASSERT(offsetof(DRCloudRunnerMoveParams, moveSpeeds) == 0xC0);
+
 extern void* gDRCloudRunnerStateHandlers[];
 extern void* gDRCloudRunnerDefaultStateHandler;
 extern s16 gDRCloudRunnerDefaultRotX;
@@ -34,7 +59,7 @@ extern s16 gDRCloudRunnerHeadingAngleOffset;
 extern s16 gDRCloudRunnerSmoothedRotX;
 extern const s16 gDRCloudRunnerGameBitIds[4];
 extern const int gDRCloudRunnerCurveIds[4];
-extern u8 gDRCloudRunnerMoveParamTable[];
+extern DRCloudRunnerMoveParams gDRCloudRunnerMoveParamTable;
 extern int gDRCloudRunnerAirMeterBaseline;
 extern const Vec3f gDRCloudRunnerVecTable[];
 extern s16 gDRCloudRunnerRollAngleLimits;

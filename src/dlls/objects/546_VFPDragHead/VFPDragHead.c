@@ -73,7 +73,7 @@ void VFPDragHead_hitDetect(void)
 
 void VFPDragHead_update(GameObject* obj)
 {
-    int state = (s8)(*(s8**)&obj->anim.placementData)[0x19];
+    int state = (s8)((VfpDragHeadPlacement*)obj->anim.placement)->variant;
     VfpDragHeadState* self2;
 
     if (state == 2)

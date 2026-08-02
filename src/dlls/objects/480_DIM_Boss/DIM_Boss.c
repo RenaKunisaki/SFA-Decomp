@@ -1120,25 +1120,22 @@ void DIM2icicle_updateHitResponse(GameObject* obj, BaddieState* playerState) {
             if (gDim2IcicleHitCooldown == 0) {
                 Sfx_PlayFromObject(obj, SFXTRIG_sc_npu_216_4b2);
                 hitEntries = (Dim2IcicleHitEntry*)DIM2Icicle_GetActiveModel(obj)[0x14];
-                ((DIMbossEffectMarker*)gDim2IcicleHitFxBuffer)->x = playerMapOffsetX + hitEntries[hitType].positionX;
-                ((DIMbossEffectMarker*)gDim2IcicleHitFxBuffer)->y = hitEntries[hitType].positionY;
-                ((DIMbossEffectMarker*)gDim2IcicleHitFxBuffer)->z = playerMapOffsetZ + hitEntries[hitType].positionZ;
+                gDim2IcicleHitFxBuffer.x = playerMapOffsetX + hitEntries[hitType].positionX;
+                gDim2IcicleHitFxBuffer.y = hitEntries[hitType].positionY;
+                gDim2IcicleHitFxBuffer.z = playerMapOffsetZ + hitEntries[hitType].positionZ;
                 (*gPartfxInterface)
-                    ->spawnObject(obj, DIM2ICICLE_PARTFX_HIT, gDim2IcicleHitFxBuffer, 0x200001, -1, NULL);
-                ((DIMbossEffectMarker*)gDim2IcicleHitFxBuffer)->x =
-                    ((DIMbossEffectMarker*)gDim2IcicleHitFxBuffer)->x - obj->anim.worldPosX;
-                ((DIMbossEffectMarker*)gDim2IcicleHitFxBuffer)->y =
-                    ((DIMbossEffectMarker*)gDim2IcicleHitFxBuffer)->y - obj->anim.worldPosY;
-                ((DIMbossEffectMarker*)gDim2IcicleHitFxBuffer)->z =
-                    ((DIMbossEffectMarker*)gDim2IcicleHitFxBuffer)->z - obj->anim.worldPosZ;
-                ((DIMbossEffectMarker*)gDim2IcicleHitFxBuffer)->scale = 1.0f;
-                ((DIMbossEffectMarker*)gDim2IcicleHitFxBuffer)->rotX = 0;
-                ((DIMbossEffectMarker*)gDim2IcicleHitFxBuffer)->rotY = 0;
-                ((DIMbossEffectMarker*)gDim2IcicleHitFxBuffer)->rotZ = 0;
+                    ->spawnObject(obj, DIM2ICICLE_PARTFX_HIT, &gDim2IcicleHitFxBuffer, 0x200001, -1, NULL);
+                gDim2IcicleHitFxBuffer.x = gDim2IcicleHitFxBuffer.x - obj->anim.worldPosX;
+                gDim2IcicleHitFxBuffer.y = gDim2IcicleHitFxBuffer.y - obj->anim.worldPosY;
+                gDim2IcicleHitFxBuffer.z = gDim2IcicleHitFxBuffer.z - obj->anim.worldPosZ;
+                gDim2IcicleHitFxBuffer.scale = 1.0f;
+                gDim2IcicleHitFxBuffer.rotX = 0;
+                gDim2IcicleHitFxBuffer.rotY = 0;
+                gDim2IcicleHitFxBuffer.rotZ = 0;
                 desc.unknown04 += randomGetRange(0, 0x9b);
                 desc.unknown08 += randomGetRange(0, 0x9b);
-                ((void (*)(int, int, u8*, int, int, Dim2IcicleHitDescriptor*)) *
-                 (VtableFn**)(*(int*)gDIMbossHitEffectResource + 4))((int)obj, 0, gDim2IcicleHitFxBuffer, 1, -1, &desc);
+                ((void (*)(int, int, DIMbossEffectMarker*, int, int, Dim2IcicleHitDescriptor*)) *
+                 (VtableFn**)(*(int*)gDIMbossHitEffectResource + 4))((int)obj, 0, &gDim2IcicleHitFxBuffer, 1, -1, &desc);
                 gDim2IcicleHitCooldown = 0x1e;
             }
         } else {
@@ -1878,6 +1875,6 @@ DIMbossHitDetectAnimHandlerTable gDIMbossHitDetectAnimTable;
 DIMbossAnimHandlerTable gDIMbossAnimTable;
 MoveLibState gDIMbossAnimController;
 f32 gDIMbossRenderMtx[12];
-u8 gDim2IcicleHitFxBuffer[0x18];
+DIMbossEffectMarker gDim2IcicleHitFxBuffer;
 PartFxSpawnParams gDim2IcicleDustFxSource;
 f32 gDIMbossAnimScratchBase[3];

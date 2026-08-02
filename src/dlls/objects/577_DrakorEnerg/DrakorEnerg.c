@@ -89,7 +89,7 @@ void drakorenergy_update(int obj)
     f32 spd;
     Vec interceptPt;
     Vec seekDir;
-    s16 colorRGB[12];
+    PartFxSpawnParams colorRGB;
     GameObject* o = (GameObject*)obj;
     DrakorEnergyState* s = state;
 
@@ -121,10 +121,10 @@ void drakorenergy_update(int obj)
         o->anim.velocityY += -0.4f;
         objMove((GameObject*)obj, o->anim.velocityX, o->anim.velocityY,
                 o->anim.velocityZ);
-        colorRGB[2] = 0xff;
-        colorRGB[1] = 0xff - s->phase % 0x500;
-        colorRGB[0] = 0xff;
-        (*gPartfxInterface)->spawnObject((void*)obj, DRAKORENERGY_PARTFX, colorRGB, 0, -1, NULL);
+        colorRGB.arg2 = 0xff;
+        colorRGB.arg1 = 0xff - s->phase % 0x500;
+        colorRGB.arg0 = 0xff;
+        (*gPartfxInterface)->spawnObject((void*)obj, DRAKORENERGY_PARTFX, &colorRGB, 0, -1, NULL);
         break;
     case DRAKORENERGY_MODE_BOBBING:
         o->anim.velocityY =
@@ -161,9 +161,9 @@ void drakorenergy_update(int obj)
             PSVECScale(&seekDir, &o->anim.velocity, spd);
             objMove((GameObject*)obj, o->anim.velocityX * timeDelta, o->anim.velocityY * timeDelta,
                     o->anim.velocityZ * timeDelta);
-            colorRGB[2] = 0xff;
-            colorRGB[1] = 0;
-            colorRGB[0] = 0xff;
+            colorRGB.arg2 = 0xff;
+            colorRGB.arg1 = 0;
+            colorRGB.arg0 = 0xff;
             objfx_spawnFlaggedTrailBurst((void*)obj, gDrakorEnergyTrailScale, 1, 0xc22, 0x14, (void*)(obj + 0x24));
         }
         break;
