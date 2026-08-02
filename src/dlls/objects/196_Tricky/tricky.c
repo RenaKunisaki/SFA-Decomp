@@ -1453,12 +1453,12 @@ void* trickyFindNearestLinkedRouteEntry(u8* context, u8* routeDef, int linkSelec
     if (count != 0)
     {
         bestDistance = getXZDistance(&((TrickyState*)context)->playerObj->anim.worldPosX,
-                                     (f32*)((u8*)candidates[0] + 8));
+                                     &((RomCurveDef*)candidates[0])->x);
         bestIndex = 0;
         for (i = 1; i < count; i++)
         {
             distance = getXZDistance(&((TrickyState*)context)->playerObj->anim.worldPosX,
-                                     (f32*)((u8*)candidates[i] + 8));
+                                     &((RomCurveDef*)candidates[i])->x);
             if (distance < bestDistance)
             {
                 bestDistance = distance;
@@ -5796,12 +5796,12 @@ void tricky_updateBallRoll(int obj, TrickyState* ball)
         if (nodeCount != 0)
         {
             targetNode = (int)(*gRomCurveInterface)->getById(nodeIds[0]);
-            bestDistance = getXZDistance(&ts->followObj->anim.worldPosX, (float*)(targetNode + 8));
+            bestDistance = getXZDistance(&ts->followObj->anim.worldPosX, &((RomCurveDef*)targetNode)->x);
 
             for (i = 1, link = &nodeIds[1]; i < nodeCount; i++)
             {
                 candidateNode = (int)(*gRomCurveInterface)->getById(*link);
-                distance = getXZDistance(&ts->followObj->anim.worldPosX, (float*)(candidateNode + 8));
+                distance = getXZDistance(&ts->followObj->anim.worldPosX, &((RomCurveDef*)candidateNode)->x);
                 if (distance < bestDistance)
                 {
                     targetNode = candidateNode;
@@ -5870,7 +5870,7 @@ void tricky_updateBallRoll(int obj, TrickyState* ball)
     {
         trickyUpdateMovementState((GameObject*)obj, 5.0f, ball);
         if (Objfsa_GetWalkGroupIndexAtPoint((float*)&((GameObject*)obj)->anim.worldPosX, NULL) ==
-            (walkGroup = Objfsa_GetWalkGroupIndexAtPoint((float*)((int)ts->scratch700.ptr + 8), NULL)))
+            (walkGroup = Objfsa_GetWalkGroupIndexAtPoint(&((RomCurveDef*)ts->scratch700.ptr)->x, NULL)))
         {
             curve = (int)ts->scratch700.ptr;
 
@@ -5880,8 +5880,8 @@ void tricky_updateBallRoll(int obj, TrickyState* ball)
             nextNode = (*gRomCurveInterface)->getRandomBlockedLink((RomCurveDef*)curve, 0);
             toNode = (int)(*gRomCurveInterface)->getById(nextNode);
 
-            bestDistance = getXZDistance(&ts->playerObj->anim.worldPosX, (float*)(fromNode + 8));
-            distance = getXZDistance(&ts->playerObj->anim.worldPosX, (float*)(toNode + 8));
+            bestDistance = getXZDistance(&ts->playerObj->anim.worldPosX, &((RomCurveDef*)fromNode)->x);
+            distance = getXZDistance(&ts->playerObj->anim.worldPosX, &((RomCurveDef*)toNode)->x);
 
             curveArg = (void*)curve;
             if (bestDistance > distance)
