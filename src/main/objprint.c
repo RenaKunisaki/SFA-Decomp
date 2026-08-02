@@ -895,7 +895,7 @@ s16 objJointTracksAimAtTarget(GameObject* obj, GameObject* target, f32* pos, u8*
             ((ObjJointTrackPair*)p4)->yaw.angle = dst[0];
             characterTrackJointYaw((s16*)p4, found[0]);
             ((ObjJointTrackPair*)p4)->pitch.angle = dst[1];
-            characterTrackJointPitch((s16*)(p4 + 0x30), found[0], 10.0f, 500.0f);
+            characterTrackJointPitch((s16*)&((ObjJointTrackPair*)p4)->pitch, found[0], 10.0f, 500.0f);
             p4 += 0x60;
         } else {
             s16* fv = found[0];
@@ -948,7 +948,7 @@ int characterTrackJointList(GameObject* objArg, int* keyList, int countArg, u8* 
     while (i < count) {
         found = objFindJointVecByKey(obj, *keys);
         total += characterTrackJointYaw((s16*)p4, found);
-        total += characterTrackJointPitch((s16*)(p4 + 0x30), found, 10.0f, 500.0f);
+        total += characterTrackJointPitch((s16*)&((ObjJointTrackPair*)p4)->pitch, found, 10.0f, 500.0f);
         keys++;
         i++;
         p4 += 0x60;
