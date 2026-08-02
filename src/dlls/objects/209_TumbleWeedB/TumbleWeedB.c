@@ -52,9 +52,6 @@
 #define TUMBLEWEED_BUSH_ROTATION_X_SHIFT     8
 #define TUMBLEWEED_BUSH_ROTATION_YZ_SHIFT    7
 #define TUMBLEWEED_BUSH_PIECE_SCALE          64.0f
-#define TUMBLEWEED_BUSH_RENDER_SCALE         1.0f
-#define TUMBLEWEED_BUSH_INIT_SCALE           0.0f
-#define TUMBLEWEED_BUSH_HIT_RADIUS           15.0f
 #define TUMBLEWEED_BUSH_HIT_Y_MIN            -5.0f
 #define TUMBLEWEED_BUSH_HIT_Y_MAX            100.0f
 #define TUMBLEWEED_BUSH_NEAREST_INITIAL_DIST 3.4028235e38f
@@ -200,11 +197,13 @@ void TumbleWeedBush_free(GameObject* obj) {
     (void)obj;
 }
 
+const f32 gTumbleweedBushRenderScale[1] = {1.0f};
+
 void TumbleWeedBush_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
     s32 visibleInt = visible;
 
     if (visibleInt != 0) {
-        objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, TUMBLEWEED_BUSH_RENDER_SCALE);
+        objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, gTumbleweedBushRenderScale[0]);
     }
 }
 
@@ -260,6 +259,9 @@ void TumbleWeedBush_update(GameObject* obj) {
     }
 }
 
+const f32 gTumbleweedBushInitScale[1] = {0.0f};
+const f32 gTumbleweedBushHitRadius[1] = {15.0f};
+
 void TumbleWeedBush_init(GameObject* obj, TumbleweedBushPlacement* placement, int flags) {
     TumbleweedBushState* state;
     f32 scale;
@@ -267,7 +269,7 @@ void TumbleWeedBush_init(GameObject* obj, TumbleweedBushPlacement* placement, in
     int pieceIndex;
 
     state = obj->extra;
-    state->scale = TUMBLEWEED_BUSH_INIT_SCALE;
+    state->scale = gTumbleweedBushInitScale[0];
     state->triggerRadius = (u16)(placement->radiusByte * 2);
     state->variant = placement->variant;
     obj->anim.rotZ =
@@ -277,7 +279,7 @@ void TumbleWeedBush_init(GameObject* obj, TumbleweedBushPlacement* placement, in
     obj->anim.rotX = (s16)(placement->rotXByte << TUMBLEWEED_BUSH_ROTATION_X_SHIFT);
     obj->anim.rootMotionScale = placement->scale;
     scale = obj->anim.rootMotionScale;
-    ObjHitbox_SetCapsuleBounds((ObjAnimComponent*)obj, (s32)(TUMBLEWEED_BUSH_HIT_RADIUS * scale),
+    ObjHitbox_SetCapsuleBounds((ObjAnimComponent*)obj, (s32)(gTumbleweedBushHitRadius[0] * scale),
                                (s32)(TUMBLEWEED_BUSH_HIT_Y_MIN * scale), (s32)(TUMBLEWEED_BUSH_HIT_Y_MAX * scale));
     switch (obj->anim.romDefNo) {
     case TUMBLEWEED_BUSH_SEQUENCE_A:

@@ -28,6 +28,9 @@
 
 u8 gWcTileGridB[8][8];
 
+const f32 gWcLevelContZero[1] = {0.0f};
+const f32 gWcPushBlockTileResetTime[1] = {20.0f};
+
 void wclevelcont_updateAct2State(GameObject* obj, WcLevelControlState* state)
 {
     f32 sunTime;
@@ -96,17 +99,17 @@ void wclevelcont_updateAct2State(GameObject* obj, WcLevelControlState* state)
         }
         else if (mainGetBit(WCPUSHBLOCK_GAMEBIT_A_FADE) != 0)
         {
-            if (state->tileAResetTimer <= lbl_803E6DA8)
+            if (state->tileAResetTimer <= gWcLevelContZero[0])
             {
                 mainSetBits(WCPUSHBLOCK_GAMEBIT_A_COUNT, 0);
                 memcpy(gWcTileGridA, gWcTileGridAInitial.g, 0x40);
-                state->tileAResetTimer = gWcPushBlockTileResetTime;
+                state->tileAResetTimer = gWcPushBlockTileResetTime[0];
             }
         }
-        if (state->tileAResetTimer > lbl_803E6DA8)
+        if (state->tileAResetTimer > gWcLevelContZero[0])
         {
             state->tileAResetTimer -= timeDelta;
-            if (state->tileAResetTimer <= lbl_803E6DA8)
+            if (state->tileAResetTimer <= gWcLevelContZero[0])
                 mainSetBits(WCPUSHBLOCK_GAMEBIT_A_FADE, 0);
         }
     }
@@ -121,17 +124,17 @@ void wclevelcont_updateAct2State(GameObject* obj, WcLevelControlState* state)
         }
         else if (mainGetBit(WCPUSHBLOCK_GAMEBIT_B_FADE) != 0)
         {
-            if (state->tileBResetTimer <= lbl_803E6DA8)
+            if (state->tileBResetTimer <= gWcLevelContZero[0])
             {
                 mainSetBits(WCPUSHBLOCK_GAMEBIT_B_COUNT, 0);
                 memcpy(gWcTileGridB, gWcTileGridBInitial.g, 0x40);
-                state->tileBResetTimer = gWcPushBlockTileResetTime;
+                state->tileBResetTimer = gWcPushBlockTileResetTime[0];
             }
         }
-        if (state->tileBResetTimer > lbl_803E6DA8)
+        if (state->tileBResetTimer > gWcLevelContZero[0])
         {
             state->tileBResetTimer -= timeDelta;
-            if (state->tileBResetTimer <= lbl_803E6DA8)
+            if (state->tileBResetTimer <= gWcLevelContZero[0])
                 mainSetBits(WCPUSHBLOCK_GAMEBIT_B_FADE, 0);
         }
     }
@@ -319,7 +322,7 @@ int wclevelcont_seqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
     {
         f32 t = state->eventTimer - timeDelta;
         state->eventTimer = t;
-        if (t <= lbl_803E6DA8)
+        if (t <= gWcLevelContZero[0])
         {
             GameObject* player;
             mainSetBits(0x7f7, 1);
@@ -331,7 +334,7 @@ int wclevelcont_seqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
     {
         f32 t = state->eventTimer - timeDelta;
         state->eventTimer = t;
-        if (t <= lbl_803E6DA8)
+        if (t <= gWcLevelContZero[0])
         {
             GameObject* player;
             mainSetBits(0x802, 1);
@@ -378,7 +381,7 @@ int wclevelcont_traceMoveB(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
             mapGetBlockOriginForPos(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &px, &pz);
             {
                 f32 base = 24.0f;
-                *outX = base + (224.0f + px + lbl_803E6DA8);
+                *outX = base + (224.0f + px + gWcLevelContZero[0]);
                 *outZ = base + (128.0f + pz + (f32)(bi * 48));
             }
             a -= 1;
@@ -428,7 +431,7 @@ int wclevelcont_traceMoveB(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
             {
                 f32 base = 24.0f;
                 *outX = base + (224.0f + px + (f32)(ai * 48));
-                *outZ = base + (128.0f + pz + lbl_803E6DA8);
+                *outZ = base + (128.0f + pz + gWcLevelContZero[0]);
             }
             b -= 1;
             limit = -1;
@@ -561,7 +564,7 @@ int wclevelcont_traceMoveA(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
             {
                 f32 base = 24.0f;
                 f32 tx = 32.0f + px;
-                *outX = base + (tx + lbl_803E6DA8);
+                *outX = base + (tx + gWcLevelContZero[0]);
                 *outZ = (129.0f + pz + (f32)(bi * 48)) + base;
             }
             a -= 1;
@@ -617,7 +620,7 @@ int wclevelcont_traceMoveA(GameObject* obj, s16 a, s16 b, f32* outX, f32* outZ, 
                 f32 tz;
                 *outX = (32.0f + px + (f32)(ai * 48)) + base;
                 tz = 129.0f + pz;
-                *outZ = base + (tz + lbl_803E6DA8);
+                *outZ = base + (tz + gWcLevelContZero[0]);
             }
             b -= 1;
             limit = -1;
@@ -826,7 +829,7 @@ void wclevelcont_update(GameObject* obj)
             getEnvfxActImmediately(obj, obj, WCLEVELCONT_ENVFX_B, 0);
             getEnvfxActImmediately(obj, obj, WCLEVELCONT_ENVFX_C, 0);
             getEnvfxActImmediately(obj, obj, WCLEVELCONT_ENVFX_D, 0);
-            skySetLightIndex(0, lbl_803E6DA8);
+            skySetLightIndex(0, gWcLevelContZero[0]);
             mainSetBits(GAMEBIT_WC_MagicCaveRelated0E05, 1);
         }
         obj->userData1 = 1;
