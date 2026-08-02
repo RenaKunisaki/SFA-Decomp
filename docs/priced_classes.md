@@ -156,9 +156,13 @@ The `tools/banned_shapes_check.py` sweep of `21b90aff9f` + `5b120c0545` removed 
 anchors / volatile puns and 2 gotos across 15 DLL units, demoting each. Both commit messages
 record `dfuzzy +0.000000 / ddata +0.000000 / 0 per-function regressions`; a full rebuild plus
 `report.json` at each of the two shas measures otherwise, so the rows below are the real
-standing price. (Cause of the false zero not established — the A26-A31 harness trap, where a
-failed probe leaves the `.o` deleted and a later read hits a frozen report, produces exactly
-this reading; any purge harness needs a positive control.)
+standing price. That false zero is what `tools/score_delta_gate.py` now exists to prevent: the
+purge DEMOTED every unit it touched, and a demoted unit is invisible to the forced-link/DOL gate,
+while `matched_code` does not move when a unit's literal pool shrinks. Only a scan of per-function
+`fuzzy_match_percent` **and** per-unit `matched_data` **and** the complete flags, over full
+rebuilds at both endpoints, can see this class. The gate reproduces the rows below from the two
+shas, and refuses to print a zero until a synthetic regression injected into real source has come
+back RED.
 
 Window `cd782d6179` -> `5b120c0545`: tree 99.81533 -> 99.81422, matched_data 1198129 ->
 1197137 (-992), complete_units 877 -> 862. Every row below was 100.0 before the purge.

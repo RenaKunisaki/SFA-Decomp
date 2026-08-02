@@ -38,6 +38,22 @@ pun; and an `lbl_`-named **scalar** const is the pool-reconstruction hack, while
 Run `--self-test` before trusting any census from it: it validates in both directions, firing on the
 historical corpus at the `pre-hack-purge` tag and staying silent on the exempt and hardware cases.
 
+**A purge is not free until it has been measured, and the measurement needs a control of its own:
+`python3 tools/score_delta_gate.py --commits <before> <after>`.** Two purge commits (`21b90aff9f`
+and `5b120c0545`) each reported `ddata +0.000000 / 0 per-function regressions` and were wrong on
+both counts; the real price is banked in `docs/priced_classes.md` §6. Nothing downstream caught it,
+because the purge **demoted** the units it touched — a NonMatching unit is allowed to differ, so the
+forced-link/DOL gate stays green, and `matched_code` does not move when a unit's literal pool
+shrinks. The gate rebuilds both endpoints from scratch in throwaway worktrees and diffs per-function
+`fuzzy_match_percent` (pairing renames by address and size), per-unit `matched_data`, per-unit
+`complete`, and per-section scores. Before it will print any verdict it injects a synthetic
+regression into real source, rebuilds through the real pipeline, and requires the differ to catch
+it; then it restores the file byte-for-byte and requires the diff to go clean again. It also refuses
+a report whose schema it cannot score, since a loader reading the wrong JSON path reports zero
+regressions against every input. `--self-test` validates the differ against ground truth with no
+build; `--integrity-only <report.json>` scans one endpoint for units marked complete while scoring
+below 100.
+
 ### Compliance state at 2026-08-02 (the audit that motivated the checker)
 
 **All 50 instances are post-purge RE-ENTRIES** — none survived the original purge. They arrived over
