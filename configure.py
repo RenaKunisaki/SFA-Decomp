@@ -1097,6 +1097,7 @@ config.libs = [
             # dlls/engine
             Object(NonMatching, "dlls/engine/0/0.c", extra_cflags=["-inline", "noauto"]),
             Object(NonMatching, "dlls/engine/1_camcontrol/camcontrol.c"),
+            Object(NonMatching, "dlls/engine/2/maketex.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "dlls/engine/2/2.c", cflags=cflags_dll_noopt_noloopinv_noautoinline),
             Object(NonMatching, "dlls/engine/3/3.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/engine/4/4.c", cflags=cflags_base),
