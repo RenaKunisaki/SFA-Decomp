@@ -190,13 +190,25 @@ main/objanim.c:
 	.sdata2     start:0x803DE8E0 end:0x803DE910
 
 main/objhits.c:
-	.text       start:0x80030688 end:0x8003BB84
+	.text       start:0x80030688 end:0x80036C0C
 	.rodata     start:0x802C1B00 end:0x802C1B10
-	.data       start:0x802CADA0 end:0x802CAED0
-	.bss        start:0x803408F8 end:0x80342E10
-	.sdata      start:0x803DB450 end:0x803DB468
+	.data       start:0x802CADA0 end:0x802CAE20
+	.bss        start:0x803408F8 end:0x803428F8
+	.sdata      start:0x803DB450 end:0x803DB460
+	.sdata2     start:0x803DE910 end:0x803DE968
+
+main/objlib.c:
+	.text       start:0x80036C0C end:0x80038988
+	.data       start:0x802CAE20 end:0x802CAE88
+	.bss        start:0x803428F8 end:0x80342E10
+	.sdata2     start:0x803DE968 end:0x803DE998
+
+main/objprint.c:
+	.text       start:0x80038988 end:0x8003BB84
+	.data       start:0x802CAE88 end:0x802CAED0
+	.sdata      start:0x803DB460 end:0x803DB468
 	.sbss       start:0x803DCC08 end:0x803DCC20
-	.sdata2     start:0x803DE910 end:0x803DE9F0
+	.sdata2     start:0x803DE998 end:0x803DE9F0
 
 main/objprint_dolphin.c:
 	.text       start:0x8003BB84 end:0x800443CC
