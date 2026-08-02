@@ -1,4 +1,5 @@
 #include "dolphin.h"
+#include "stdlib.h"
 
 static u32 sRandState;
 

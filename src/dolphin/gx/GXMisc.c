@@ -2,6 +2,7 @@
 #include "dolphin/gx/__gx.h"
 #include "dolphin/gx/GXMisc.h"
 #include "dolphin/PPCArch.h"
+#include "dolphin/gx/GXCpu2Efb.h"
 
 #define __GXData gx
 

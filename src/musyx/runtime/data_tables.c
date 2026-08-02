@@ -10,6 +10,7 @@
 #include "musyx/sal_dsp.h"
 #include "musyx/data_tables.h"
 #include "musyx/snd_service.h"
+#include "musyx/synth_jobs.h"
 
 
 #define dataLayerTab           (((SynthDataTables*)dataSmpSDirs)->layer)

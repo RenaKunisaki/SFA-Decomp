@@ -26,6 +26,7 @@ __declspec(section ".init") static void __check_pad3(void)
     }
 }
 
+void __start(void);
 __declspec(section ".init") __declspec(weak) asm void __start(void)
 {
     nofralloc

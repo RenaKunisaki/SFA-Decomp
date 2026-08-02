@@ -1,5 +1,6 @@
 #include <dolphin/gx.h>
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
+#include "dolphin/gx/GXDraw.h"
 
 extern const f32 lbl_803E7730;
 extern const f32 GXDrawTwoPi;

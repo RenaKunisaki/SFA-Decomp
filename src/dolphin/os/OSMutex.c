@@ -1,4 +1,5 @@
 #include "dolphin.h"
+#include "dolphin/os/OSPriv.h"
 
 #define DEQUEUE_HEAD(mutex, queue, link) \
     do { \

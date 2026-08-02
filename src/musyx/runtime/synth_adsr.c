@@ -4,6 +4,7 @@
 #include "musyx/adsr_setup.h"
 #include "musyx/adsr_handle.h"
 #include "musyx/adsr_lowprec.h"
+#include "musyx/voice_conv.h"
 
 
 u32 voiceConvertDbToLinear(u32 timeCents)

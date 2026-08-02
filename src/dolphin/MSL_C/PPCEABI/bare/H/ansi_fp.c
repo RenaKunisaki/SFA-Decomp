@@ -1,6 +1,13 @@
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/ansi_fp.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/limits.h"
 
+int __count_trailing_zerol(unsigned long x);
+void __ull2dec(decimal* result, unsigned long long val);
+void __timesdec(decimal* result, const decimal* x, const decimal* y);
+void __str2dec(decimal* d, const char* s, short exp);
+void __two_exp(decimal* result, short exp);
+void __num2dec_internal(decimal* d, double x);
+
 int __count_trailing_zerol(unsigned long x) {
     int result = 0;
     int bits_not_checked = sizeof(unsigned long) * CHAR_BIT;

@@ -1,6 +1,7 @@
 #include "stddef.h"
 #include "PowerPC_EABI_Support/Runtime/NMWException.h"
 #include "dolphin/os/__ppc_eabi_init.h"
+#include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/abort_exit.h"
 
 extern void (*_dtors[])(void);
 

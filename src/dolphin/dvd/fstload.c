@@ -1,5 +1,6 @@
 #include <dolphin.h>
 #include "string.h"
+#include "dolphin/dvd/__dvd.h"
 
 
 static u8 bb2Buf[63];

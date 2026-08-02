@@ -1,4 +1,5 @@
 #include <dolphin/exi.h>
+#include "OdemuExi2/odemuexi/DebuggerDriver.h"
 
 u8 EXIInputFlag;
 

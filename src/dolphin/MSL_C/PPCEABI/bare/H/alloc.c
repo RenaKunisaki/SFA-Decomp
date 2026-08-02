@@ -1,5 +1,6 @@
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/string.h"
 #include "Runtime.PPCEABI.H/GCN_mem_alloc.h"
+#include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/alloc.h"
 
 
 typedef struct Block {
@@ -117,6 +118,9 @@ static const unsigned long fix_pool_sizes[] = {4, 12, 20, 36, 52, 68};
 
 #define Block_empty(ths) \
     (_sb = (SubBlock*)((char*)(ths) + 16)), SubBlock_is_free(_sb) && SubBlock_size(_sb) == Block_size((ths)) - 24
+
+void Block_link(Block* ths, SubBlock* sb);
+void deallocate_from_fixed_pools(__mem_pool_obj* pool_obj, void* ptr, unsigned long size);
 
 void Block_link(Block* ths, SubBlock* sb)
 {
