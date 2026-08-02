@@ -284,7 +284,7 @@ u8 gTevIndStageCount;
 u32 screenWidth;
 u16 gDepthReadResultCount;
 u16 gDepthReadPendingCount;
-static u32 sIntersectUnused0;
+u32 sIntersectUnused0;
 u8 gWaterFxDisabled;
 u8 gWaterQuadWriteIdx;
 u8 gWaterRippleWriteIdx;
