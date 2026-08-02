@@ -87,6 +87,12 @@ rematerialize, the more readily it demotes. The gradient is that cost ordering.
 > functions built on the old classifier is counting mostly arithmetic: the true address
 > population is **122 members image-wide**, with only 48 co-live address/param pairs.
 >
+> **If you are writing a value classifier, do not copy the naive form.** `addi`/`addis` is an
+> address materialization **only when the instruction carries a relocation**; otherwise it is
+> arithmetic. The check is two lines against `objdump -drz` output, and skipping it inflates the
+> class ~8x and silently averages two populations that behave differently. Every tool in this
+> session's record already carries the fix; the hazard is new tooling reproducing the old shape.
+>
 > **Follow-up: the "fourth tier at the bottom" lead is REFUTED — do not reopen it.** The
 > corrected numbers suggested the stack might extend to `R > L_mem > {L_const,L_comp} > P >
 > L_ADDR`. Grown on TRAIN with the reloc-aware classifier it does not survive, and the
