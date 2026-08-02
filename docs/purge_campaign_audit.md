@@ -131,6 +131,33 @@ still 0.100 below its pre-commit score. The removal was policy-correct — the s
    retail claim" — but applies the guard only to MatchingFor/Matching units. The same minting
    costs `matched_data` in a NonMatching unit; it just costs it silently.
 
+   Even `matched_data` only half sees it, because `matched_data` is all-or-nothing per section: a
+   section already short of 100 can be rotated arbitrarily further from its carve for free.
+   `tools/score_delta_gate.py` therefore now carries a **pool word-diff** that is not derived from
+   any score — it reads our built object and the retail carve straight out of the ELF and compares
+   their `.sdata2` / `.sdata` / `.rodata` / `.data` sections word for word, positionally and as a
+   multiset. A rotation preserves the multiset exactly, so it is the positional-hit count that
+   collapses; an outright word loss moves the multiset shortfall instead. Re-running the three
+   commits above through it, all three come back RED on the word-diff alone: `5d467157cb`
+   **8 rows** where `matched_data` moves in 3 units, `f5fe00213f` **5 rows** where it moves in 2,
+   `620b69dc2d` **1 row**. The rows in excess of the `matched_data` rows are units whose pool grew
+   past its retail claim inside a section that was already scoring zero — precisely the
+   free-of-charge drift this blind spot is about, and invisible on every other axis. Each of the
+   three also drops positional hits (`SB_Galleon` 20 -> 0, `285` 5 -> 0, `object` 4 -> 2), so the
+   verdict does not rest on the growth rows alone.
+
+   Two commits the table above calls clean were re-run as negative controls. `08c31701b2` stays
+   clean on the word-diff too. **`953103973c` does not**: it turns RED on one row,
+   `engine/68 .sdata2 extra 8 -> 28`, at `ddata +0`, `dfuzzy +0.000000`, zero regressions and zero
+   demotions — the exact shape of this blind spot. Its own commit body explains it without
+   realising: it literalised "20 of the 23 pool-const externs", and each of those was a read of
+   *another* TU's pool, so each literal minted a word in `engine/68`'s own `.sdata2` — twenty of
+   them, which is the delta to the word. The commit's three stated figures are all true and all
+   blind. This is **not** a standing loss: a later re-split carved those words into the unit's own
+   claim, and at tip `engine/68 .sdata2` scores 96.875 with a single word missing (the `120.0f` at
+   `0x44` that commit deliberately held back). The table's verdict for `953103973c` should be read
+   as clean-on-the-score-axes, RED on the word-diff.
+
 A fourth is not a sensor problem: `09bb75cc96` stated "Zero cost, and no residue" and quoted
 per-unit `matched_code` figures, but actually moved `matched_code` **-2584** and
 `matched_functions` **-3** along with -64 B and three regressions. Even the counter it did gate

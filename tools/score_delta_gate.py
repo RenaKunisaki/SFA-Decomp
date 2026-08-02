@@ -19,6 +19,15 @@ MEASUREMENT was wrong, and nothing downstream caught it:
   * and a loader that reaches for the wrong JSON path scores every function
     -1 on BOTH sides, so its regression list is empty by construction.
 
+There is a fourth way to lose ground with every score axis flat, and no score
+can see it. matched_data is all-or-nothing per section, so a data section that
+is already short of 100 can be rotated arbitrarily far from its retail carve
+for free: ddata +0, dfuzzy +0.000000, no regression, no demotion, not one
+instruction changed. That is what 5d467157cb, f5fe00213f and 620b69dc2d each
+did (-144, -60, -16 bytes). The answer is not another score: it is to compare
+the bytes. The POOL WORD-DIFF below reads our built objects and the retail
+carve straight out of the ELF and diffs their data sections word for word.
+
 That last one is not hypothetical. objdiff's report puts a function's score at
 `function["fuzzy_match_percent"]`; a loader written against
 `function["measures"]["fuzzy_match_percent"]` gets an empty dict for every
@@ -43,6 +52,15 @@ What it compares
   per unit       metadata.complete -- a DEMOTION is reported even when it costs
                  nothing, because demotion is what blinds the DOL gate.
   per section    fuzzy_match_percent, so a pool that scores 0/84 is visible.
+  per section    the POOL WORD-DIFF: our built object's data sections compared
+                 word for word against the retail carve, positionally and as a
+                 multiset. This is the only layer here that is not derived from
+                 a score, and it is the only one that sees a pool ROTATION
+                 inside an already-NonMatching unit -- matched_data is
+                 all-or-nothing per section, so a section already short of 100
+                 can be rotated further from its carve at ddata +0, dfuzzy
+                 +0.000000, zero regressions and zero demotions. 5d467157cb,
+                 f5fe00213f and 620b69dc2d each did exactly that.
   tree           the top-level measures block.
   the DOL        endpoint B is force-linked (main.dol and main.elf deleted
                  first, or ninja no-ops) and its md5 compared to retail, because
@@ -69,12 +87,14 @@ verdict is worthless and must not be quoted.
 """
 
 import argparse
+import collections
 import copy
 import hashlib
 import json
 import os
 import re
 import shutil
+import struct
 import subprocess
 import sys
 
@@ -96,6 +116,14 @@ STUCK_UNSCORED = {
 # once. It is written, measured, and removed inside one call, and the file is
 # md5-verified back to its original bytes.
 CONTROL_MUTATION = "    { static int zzScoreDeltaGateControl; zzScoreDeltaGateControl++; }\n"
+
+# Blind spot 3: a pool rotation inside an already-NonMatching unit. matched_data
+# is all-or-nothing per section, so a section that is already short of 100 can be
+# rotated further from its retail carve at ddata +0, dfuzzy +0.000000, zero
+# per-function regressions and zero demotions. Nothing in the score model sees
+# it. These are the PROGBITS data sections compared word for word instead.
+POOL_SECTION_PREFIXES = (".sdata2", ".sdata", ".rodata", ".data")
+SHT_PROGBITS = 1
 
 
 class SchemaError(Exception):
@@ -151,6 +179,9 @@ class Report:
         self.units = units
         self.raw_version = raw_version
         self.label = label or path
+        # {(unit, section): PoolStat} once a build tree has been read, or None
+        # while this endpoint is report-only. Never {} -- see pool_fingerprint.
+        self.pools = None
 
     @property
     def unscored(self):
@@ -252,6 +283,159 @@ def load_report(path, label=None, min_functions=1000):
 EPS = 1e-6
 
 
+# ---------------------------------------------------------------------------
+# pool word-diff -- the sensor for blind spot 3
+# ---------------------------------------------------------------------------
+
+class PoolStat:
+    """One data section of one unit, ours against the retail carve.
+
+    `hits` is the number of positionally identical 32-bit words. It is the
+    field a ROTATION moves: a rotation preserves the word multiset exactly, so
+    `missing` and `extra` stay flat while `hits` collapses. `missing` is the
+    field an actual word LOSS moves. Between them they see every way a pool can
+    drift from its carve, and neither is derived from a score.
+    """
+
+    __slots__ = ("unit", "section", "hits", "ours", "retail", "missing", "extra")
+
+    def __init__(self, unit, section, hits, ours, retail, missing, extra):
+        self.unit = unit
+        self.section = section
+        self.hits = hits
+        self.ours = ours
+        self.retail = retail
+        self.missing = missing
+        self.extra = extra
+
+    @property
+    def key(self):
+        return (self.unit, self.section)
+
+    def __repr__(self):
+        return ("PoolStat(%s %s hits=%d/%d missing=%d extra=%d)"
+                % (self.unit, self.section, self.hits, self.retail,
+                   self.missing, self.extra))
+
+
+def elf_progbits(path):
+    """Minimal ELF32 big-endian section reader.
+
+    objcopy would do this too, but at two subprocesses per section per object
+    it costs minutes across ~1000 units at two endpoints; reading the headers
+    directly costs under a second.
+    """
+    with open(path, "rb") as fh:
+        blob = fh.read()
+    if blob[:4] != b"\x7fELF" or len(blob) < 0x34:
+        raise SchemaError("%s is not an ELF object" % path)
+    if blob[4] != 1 or blob[5] != 2:
+        raise SchemaError("%s is not ELF32 big-endian" % path)
+    shoff, = struct.unpack_from(">I", blob, 0x20)
+    shentsize, shnum, shstrndx = struct.unpack_from(">HHH", blob, 0x2E)
+    if not shoff or not shnum:
+        return {}
+
+    def header(i):
+        return struct.unpack_from(">IIIIII", blob, shoff + i * shentsize)
+
+    _n, _t, _f, _a, stroff, strsize = header(shstrndx)
+    strtab = blob[stroff:stroff + strsize]
+    out = {}
+    for i in range(shnum):
+        nameoff, typ, _flags, _addr, off, size = header(i)
+        if typ != SHT_PROGBITS:
+            continue
+        end = strtab.find(b"\0", nameoff)
+        name = strtab[nameoff:end].decode("ascii", "replace")
+        if not name.startswith(POOL_SECTION_PREFIXES):
+            continue
+        out[name] = blob[off:off + size]
+    return out
+
+
+def _words(blob):
+    n = len(blob) // 4
+    return list(struct.unpack(">%dI" % n, blob[:n * 4])) if n else []
+
+
+def compare_pool(unit, section, ours_blob, retail_blob):
+    ours, retail = _words(ours_blob), _words(retail_blob)
+    hits = sum(1 for x, y in zip(ours, retail) if x == y)
+    co, cr = collections.Counter(ours), collections.Counter(retail)
+    missing = sum((cr - co).values())
+    extra = sum((co - cr).values())
+    return PoolStat(unit, section, hits, len(ours), len(retail), missing, extra)
+
+
+def obj_paths(wt, source_path):
+    """(ours, retail carve) for a unit, from its report source_path."""
+    stem = os.path.splitext(source_path)[0]
+    if not stem.startswith("src/"):
+        return None, None
+    build = os.path.join(wt, "build", VERSION)
+    return (os.path.join(build, stem + ".o"),
+            os.path.join(build, "obj" + stem[3:] + ".o"))
+
+
+def pool_fingerprint(wt, report):
+    """Every unit's data sections, ours against the retail carve.
+
+    Returns {(unit, section): PoolStat}, or None if this endpoint has no build
+    tree to read (a bare --reports run), so the caller can say so rather than
+    print a zero it did not earn.
+    """
+    if not wt or not os.path.isdir(os.path.join(wt, "build", VERSION)):
+        return None
+    stats = {}
+    for name, unit in report.units.items():
+        if not unit.source_path:
+            continue
+        ours_p, retail_p = obj_paths(wt, unit.source_path)
+        if not ours_p or not (os.path.exists(ours_p) and os.path.exists(retail_p)):
+            continue
+        ours = elf_progbits(ours_p)
+        retail = elf_progbits(retail_p)
+        for sec in set(ours) | set(retail):
+            st = compare_pool(name, sec, ours.get(sec, b""), retail.get(sec, b""))
+            if st.retail or st.ours:
+                stats[st.key] = st
+    if not stats:
+        raise SchemaError(
+            "%s: pool fingerprint is empty -- no unit's objects could be read, "
+            "so a clean pool verdict here would be a false clean" % wt)
+    return stats
+
+
+def diff_pools(pa, pb):
+    """Rows where our pool moved AWAY from the carve, and rows where it moved
+    toward it. A row is reported when the positional agreement drops or the
+    word shortfall grows -- neither of which needs any score to move."""
+    worse, better = [], []
+    if pa is None or pb is None:
+        return worse, better
+    for key in set(pa) | set(pb):
+        sa, sb = pa.get(key), pb.get(key)
+        if sa is None or sb is None:
+            # A data section that appeared or vanished outright.
+            zero = PoolStat(key[0], key[1], 0, 0,
+                            (sb or sa).retail, (sb or sa).retail, 0)
+            sa, sb = (sa or zero), (sb or zero)
+        # Growth past the retail claim counts against us -- that is how a
+        # freshly minted @N anon shows up -- but not when the same edit also
+        # bought positional agreement, which is a section being filled in
+        # rather than drifting.
+        drifted = (sb.hits < sa.hits or sb.missing > sa.missing
+                   or (sb.extra > sa.extra and sb.hits <= sa.hits))
+        if drifted:
+            worse.append((sa, sb))
+        elif sb.hits > sa.hits or sb.missing < sa.missing or sb.extra < sa.extra:
+            better.append((sa, sb))
+    worse.sort(key=lambda r: (r[1].hits - r[0].hits, r[0].missing - r[1].missing))
+    better.sort(key=lambda r: (r[0].hits - r[1].hits, r[1].missing - r[0].missing))
+    return worse, better
+
+
 class Delta:
     def __init__(self):
         self.regressed = []      # (key, before, after)
@@ -265,6 +449,9 @@ class Delta:
         self.demoted = []
         self.promoted = []
         self.sections = []       # (unit, section, before, after)
+        self.pool_worse = []     # (PoolStat A, PoolStat B) -- rotated or lost
+        self.pool_better = []
+        self.pools_read = False  # False when neither endpoint had a build tree
         self.tree = {}
 
     @property
@@ -280,7 +467,8 @@ class Delta:
         """Rows that fail the gate. Demotion alone is policy, not failure --
         but it IS what blinds the DOL gate, so it is always printed."""
         return (bool(self.regressed) or bool(self.lost) or bool(self.new_unscored)
-                or bool(self.data_loss) or bool(self.unexpected_unscored))
+                or bool(self.data_loss) or bool(self.unexpected_unscored)
+                or bool(self.pool_worse))
 
 
 def pair_renames(lost, new):
@@ -350,6 +538,9 @@ def diff_reports(a, b):
             pb = ub.sections.get(sec, (0.0, 0))[0]
             if abs(pa - pb) > 1e-4:
                 d.sections.append((name, sec, pa, pb))
+
+    d.pools_read = a.pools is not None and b.pools is not None
+    d.pool_worse, d.pool_better = diff_pools(a.pools, b.pools)
     return d
 
 
@@ -407,6 +598,22 @@ def render(d, a, b, out=sys.stdout):
         w("SECTION fuzzy deltas %d\n" % len(d.sections))
         for n, sec, x, y in sorted(d.sections, key=lambda r: r[3] - r[2])[:60]:
             w("  SECT  %-52s %-10s %7.3f -> %7.3f\n" % (n, sec, x, y))
+
+    if not d.pools_read:
+        w("\nPOOL word-diff: NOT RUN -- no build tree at one or both endpoints, "
+          "so a rotation here would be invisible\n")
+    else:
+        w("\nPOOL word-diff (ours vs the retail carve, per data section) "
+          "worse %d / better %d\n" % (len(d.pool_worse), len(d.pool_better)))
+        for sa, sb in d.pool_worse[:60]:
+            w("  POOL  %-52s %-10s hits %5d -> %-5d (%+d)  missing %d -> %d  "
+              "extra %d -> %d\n"
+              % (sb.unit, sb.section, sa.hits, sb.hits, sb.hits - sa.hits,
+                 sa.missing, sb.missing, sa.extra, sb.extra))
+        for sa, sb in d.pool_better[:40]:
+            w("  POOL+ %-52s %-10s hits %5d -> %-5d (%+d)  missing %d -> %d\n"
+              % (sb.unit, sb.section, sa.hits, sb.hits, sb.hits - sa.hits,
+                 sa.missing, sb.missing))
     w("\nVERDICT: %s\n" % ("RED" if d.red else "CLEAN"))
     return d
 
@@ -822,6 +1029,62 @@ def self_test(real_report=None):
     chk("a section falling to 0% is reported",
         any(s[1] == ".sdata2" and s[3] == 0.0 for s in d.sections))
 
+    # BLIND SPOT 3. Everything above is derived from a score, and a pool
+    # rotation inside an already-NonMatching unit moves no score at all: the
+    # section is already short of 100 so matched_data (all-or-nothing per
+    # section) does not move, nothing is demoted, and not one instruction
+    # changed. The pool word-diff is the only sensor that fires, so it gets its
+    # own controls in both directions.
+    carve = struct.pack(">8I", 1, 2, 3, 4, 5, 6, 7, 8)
+    same = carve
+    rotated = struct.pack(">8I", 5, 6, 7, 8, 1, 2, 3, 4)   # same multiset
+    lost_word = struct.pack(">8I", 1, 2, 3, 4, 5, 6, 7, 99)
+
+    base_pool = {("u", ".sdata2"): compare_pool("u", ".sdata2", same, carve)}
+    chk("an exact pool scores every word as a positional hit",
+        base_pool[("u", ".sdata2")].hits == 8
+        and base_pool[("u", ".sdata2")].missing == 0)
+
+    rot = compare_pool("u", ".sdata2", rotated, carve)
+    chk("a rotation preserves the word multiset (missing/extra stay 0)",
+        rot.missing == 0 and rot.extra == 0)
+    worse, better = diff_pools(base_pool, {("u", ".sdata2"): rot})
+    chk("a pool ROTATION at flat multiset is reported worse",
+        len(worse) == 1 and worse[0][1].hits == 0 and not better)
+
+    d = diff_reports(base, parse_report(copy.deepcopy(base_doc), path="synthetic-B"))
+    d.pool_worse, d.pool_better = worse, better
+    chk("a pool rotation alone turns the verdict RED", d.red)
+
+    worse, better = diff_pools(
+        base_pool, {("u", ".sdata2"): compare_pool("u", ".sdata2", lost_word, carve)})
+    chk("a pool WORD LOSS is reported worse",
+        len(worse) == 1 and worse[0][1].missing == 1)
+
+    worse, better = diff_pools(
+        {("u", ".sdata2"): rot}, base_pool)
+    chk("a pool moving TOWARD the carve is better, not worse",
+        not worse and len(better) == 1 and better[0][1].hits == 8)
+
+    # Growth past the carve is the freshly-minted-@N tell and counts against
+    # us, but only when it did not also buy positional agreement -- a section
+    # being filled in grows too.
+    grew_only = compare_pool("u", ".sdata2", carve + struct.pack(">I", 77), carve)
+    worse, better = diff_pools(base_pool, {("u", ".sdata2"): grew_only})
+    chk("growth past the carve with no hits gained is worse",
+        len(worse) == 1 and worse[0][1].extra == 1)
+    thin = {("u", ".sdata2"): compare_pool("u", ".sdata2", carve[:8], carve)}
+    worse, better = diff_pools(thin, {("u", ".sdata2"): grew_only})
+    chk("growth that also bought positional hits is better, not worse",
+        not worse and len(better) == 1)
+
+    worse, better = diff_pools(base_pool, dict(base_pool))
+    chk("an unchanged pool is silent", not worse and not better)
+
+    chk("a report-only endpoint reports the pool diff as NOT RUN",
+        diff_pools(None, base_pool) == ([], [])
+        and not diff_reports(base, base).pools_read)
+
     # THE SCHEMA GUARD. This is the failure that produced the false zeros: a
     # loader reaching for function["measures"]["fuzzy_match_percent"] finds an
     # empty dict, scores every function the same sentinel, and reports zero
@@ -871,6 +1134,30 @@ def self_test(real_report=None):
         d = diff_reports(r, parse_report(doc, path="real-mutated"))
         chk("injected loss in the REAL report is caught",
             bool(d.regressed) and bool(d.data_loss) and d.red)
+
+        # And the pool sensor against the real build tree, not a synthetic one:
+        # it must read a real fingerprint, be silent against itself, and catch a
+        # rotation injected into it.
+        wt = os.path.dirname(os.path.dirname(os.path.dirname(
+            os.path.abspath(real_report))))
+        try:
+            pools = pool_fingerprint(wt, r)
+        except (SchemaError, OSError) as exc:
+            pools = None
+            chk("real build tree yields a pool fingerprint", False, str(exc)[:70])
+        if pools:
+            chk("real build tree yields a pool fingerprint", True,
+                "%d data sections" % len(pools))
+            chk("real fingerprint against itself is silent",
+                diff_pools(pools, dict(pools)) == ([], []))
+            victim = max(pools.values(), key=lambda s: s.hits)
+            spun = dict(pools)
+            spun[victim.key] = PoolStat(victim.unit, victim.section, 0,
+                                        victim.ours, victim.retail,
+                                        victim.missing, victim.extra)
+            worse, _b = diff_pools(pools, spun)
+            chk("a rotation injected into the REAL fingerprint is caught",
+                len(worse) == 1 and worse[0][1].key == victim.key)
 
     print("\nself-test: %s" % ("PASS" if ok else "FAIL"))
     return ok
@@ -958,6 +1245,16 @@ def main(argv=None):
     if args.reports:
         a = load_report(args.reports[0], label=args.reports[0])
         b = load_report(args.reports[1], label=args.reports[1])
+        # A report.json sits at <tree>/build/GSAE01/report.json, so its tree is
+        # three levels up. When both are still on disk the pool word-diff runs
+        # here too; when they are not, render() says so instead of reading zero.
+        for rep, path in ((a, args.reports[0]), (b, args.reports[1])):
+            wt = os.path.dirname(os.path.dirname(os.path.dirname(
+                os.path.abspath(path))))
+            try:
+                rep.pools = pool_fingerprint(wt, rep)
+            except SchemaError:
+                rep.pools = None
         if not args.no_positive_control:
             print("differ-layer control:")
             if not self_test(None):
@@ -1002,7 +1299,10 @@ def main(argv=None):
                 provision(wt, args.compilers, args.binutils, args.tools)
                 build(wt)
             rp = report_path(wt)
-            reports[label] = (load_report(rp, label="%s (%s)" % (sha[:10], wt)), wt)
+            rep = load_report(rp, label="%s (%s)" % (sha[:10], wt))
+            rep.pools = pool_fingerprint(wt, rep)
+            print("  %s: pool fingerprint over %d data sections" % (label, len(rep.pools)))
+            reports[label] = (rep, wt)
 
         if not args.no_positive_control:
             print("\nbuild-layer control at endpoint B:")
