@@ -1965,36 +1965,36 @@ void GameUI_func0E(u8 x)
 }
 void hudDrawTimedElement(int unused, void* element)
 {
-    int* e = element;
-    if (e[1] < 0)
+    HudItemInfoPopup* e = element;
+    if (e->framesLeft < 0)
         return;
-    e[1] = e[1] - framesThisStep;
-    if (e[1] < 0)
+    e->framesLeft = e->framesLeft - framesThisStep;
+    if (e->framesLeft < 0)
     {
-        textureFree((Texture*)((u8*)e[0]));
-        e[0] = 0;
+        textureFree((Texture*)e->texture);
+        e->texture = 0;
         return;
     }
-    if ((f32)e[1] < 30.0f)
+    if ((f32)e->framesLeft < 30.0f)
     {
-        *(f32*)((char*)e + 0x8) = hudElementOpacity * (f32)e[1] / 30.0f;
+        e->alpha = hudElementOpacity * (f32)e->framesLeft / 30.0f;
     }
     else
     {
         f32 op = hudElementOpacity;
-        if (op != *(f32*)((char*)e + 0x8))
+        if (op != e->alpha)
         {
-            *(f32*)((char*)e + 0x8) = 8.5f * (f32)(u32)framesThisStep + *(f32*)((char*)e + 0x8);
-            if (*(f32*)((char*)e + 0x8) > op)
+            e->alpha = 8.5f * (f32)(u32)framesThisStep + e->alpha;
+            if (e->alpha > op)
             {
-                *(f32*)((char*)e + 0x8) = op;
+                e->alpha = op;
             }
         }
     }
     memset(gHudTimedElementTexSlot, 0, 0xc);
-    gHudTimedElementTexSlot[0] = e[0];
+    gHudTimedElementTexSlot[0] = (int)e->texture;
     gHudTimedElementTexSlot[3] = 0;
-    drawTexture(gHudTimedElementTexSlot, 36.0f, (f32)(gGameUiScreenHeightOffset + 0xaf), (u8)*(f32*)((char*)e + 0x8), 0x100);
+    drawTexture(gHudTimedElementTexSlot, 36.0f, (f32)(gGameUiScreenHeightOffset + 0xaf), (u8)e->alpha, 0x100);
 }
 
 

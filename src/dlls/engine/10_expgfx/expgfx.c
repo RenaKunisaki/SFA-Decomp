@@ -376,9 +376,9 @@ void objfx_spawnRandomBurst(void* obj, u8 type, u8 count, void* origin, f32 mult
         vecRotateZXY((s16*)randAngles, params.position);
         if (origin != NULL)
         {
-            params.position[0] += ((GameObject*)origin)->anim.localPosX;
-            params.position[1] += ((GameObject*)origin)->anim.localPosY;
-            params.position[2] += ((GameObject*)origin)->anim.localPosZ;
+            params.position[0] += ((PartFxSpawnParams*)origin)->posX;
+            params.position[1] += ((PartFxSpawnParams*)origin)->posY;
+            params.position[2] += ((PartFxSpawnParams*)origin)->posZ;
         }
         params.effectParam = burstTbl.entries[type].effectParam;
         params.pad00[1] = burstTbl.entries[type].extraParam;

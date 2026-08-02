@@ -1238,7 +1238,7 @@ u8 dll_19_getClearDirectionMask(GameObject* obj, void* state, f32 dist)
         if (ok != 0)
         {
             if (trackGetLineIntersect(&obj->anim.localPosX, world, 1.0f, 0, (TrackBBoxHit*)bboxOut,
-                                   (GameObject*)obj, *(u8*)((u8*)state + 0x261), -1, 0, 0) != 0)
+                                   (GameObject*)obj, ((Dll19State*)state)->unk261, -1, 0, 0) != 0)
             {
                 ok = 0;
             }

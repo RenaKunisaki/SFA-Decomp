@@ -15,6 +15,7 @@
 #include "main/carryable_interface.h"
 #include "main/dll/objfx_api.h"
 #include "main/dll/player_api.h"
+#include "main/dll/player_state.h"
 #include "main/dll/tricky_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
@@ -189,11 +190,11 @@ void mmpMoonRock_throwFromPlayer(GameObject* obj) {
     MMPMoonRockState* state = obj->extra;
     MatrixTransform rotation;
     GameObject* player = Obj_GetPlayerObject();
-    u8* playerState = player->extra;
+    PlayerState* playerState = player->extra;
     f32 zeroVel = 0.0f;
     obj->anim.velocityX = zeroVel;
-    obj->anim.velocityY = 0.75f * *(f32*)((char*)playerState + 0x298) + 2.2f;
-    obj->anim.velocityZ = -0.75f * *(f32*)((char*)playerState + 0x298) + -2.2f;
+    obj->anim.velocityY = 0.75f * playerState->baddie.inputMagnitude + 2.2f;
+    obj->anim.velocityZ = -0.75f * playerState->baddie.inputMagnitude + -2.2f;
     rotation.x = zeroVel;
     rotation.y = zeroVel;
     rotation.z = zeroVel;

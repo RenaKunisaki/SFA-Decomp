@@ -686,7 +686,7 @@ static int objShadowGetFadedAlpha(GameObject* obj, u8 param) {
     inv = 1.0f - inv;
     {
         int n = (int)((f32)param * inv);
-        return (n * (*(u8*)((char*)obj + 0x37) + 1)) >> 8;
+        return (n * (obj->anim.renderAlpha + 1)) >> 8;
     }
 }
 
