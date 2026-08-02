@@ -16,7 +16,6 @@
 #include "main/dll/dll_00E2_staff_api.h"
 #include "main/dll/dll_0057_cameramodetitle.h"
 #include "main/dll/modgfx_interface.h"
-#include "main/dll/player_api.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/waterfx_interface.h"
 #include "game/objects/object.h"

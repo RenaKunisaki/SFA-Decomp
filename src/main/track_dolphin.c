@@ -451,7 +451,7 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
     {
         if (segment != -1)
         {
-            u8* tbl = *(u8**)(*(int*)&target->anim.modelInstance + 0x38);
+            u8* tbl = target->anim.modelInstance->intersectionSegmentRanges;
             start = tbl[segment * 2];
             end = tbl[segment * 2 + 1];
         }
@@ -461,8 +461,8 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
             end = *(u8*)(*(int*)&target->anim.modelInstance + 0x5c);
         }
         lineIdx = 0;
-        vt = *(int*)(*(int*)&target->anim.modelInstance + 0x34);
-        vp = *(int*)(*(int*)&target->anim.modelInstance + 0x3c);
+        vt = (int)target->anim.modelInstance->intersectionLines;
+        vp = (int)target->anim.modelInstance->intersectionPoints;
         if (target->objectFlags & 0x100)
         {
             end = 0;

@@ -800,7 +800,7 @@ void staff_startSwipe(GameObject* obj, s16 idx, f32 f1, f32 f2) {
     slot->endIndex = 0;
     slot->vertexCount = 0;
     slot->idx = idx;
-    *(void**)((char*)slots + 0x48) = slot;
+    ((StaffState*)slots)->activeSlot = slot;
 }
 
 void staff_setHitReactValue(GameObject* obj, s32 v) {

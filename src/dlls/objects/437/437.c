@@ -343,7 +343,7 @@ int Lightfoot_UpdateWanderSteering(GameObject* obj, int state, f32 fv)
     if (sub->completionCountdown == 0)
     {
         obj->anim.rotX +=
-            (s16)((f32)(s32)((u16) * (u16*)((char*)sub + 0x20) - 0x7fff) * timeDelta / 4.0f);
+            (s16)((f32)(s32)(sub->targetYawDelta - 0x7fff) * timeDelta / 4.0f);
     }
     (*gPlayerInterface)->updateAnimRootMotion(obj, (void*)state, fv, 1);
     return 0;

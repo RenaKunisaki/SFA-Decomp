@@ -251,7 +251,7 @@ int kaldachom_stateHandlerA07(GameObject* obj, GroundBaddieState* state) {
             }
             if (linkedObj != NULL) {
                 f32 fz = 0.0f;
-                (**(void (**)(GameObject*, f32, f32, f32))(*(int*)(*(int*)((char*)linkedObj + 0x68)) + 0x2c))(
+                (**(void (**)(GameObject*, f32, f32, f32))(*(int*)(*(int*)&linkedObj->anim.dll) + 0x2c))(
                     linkedObj, fz, 1.0f, fz);
             }
         }
@@ -696,7 +696,7 @@ void kaldachom_update(GameObject* obj) {
                           ->findAggroTarget(obj, objectState, (f32)(u32)objectState->aggroRange, 0x8000);
                 if ((void*)ref != NULL) {
                     (*gBaddieControlInterface)
-                        ->startHitReaction(obj, objectState, &objectState->ground.routeNav, objectState->gameBitB, NULL, 0,
+                        ->startHitReaction(obj, objectState, (char*)objectState + 0x35c, objectState->gameBitB, NULL, 0,
                                            0, 4, -1);
                     *(u8*)&objectState->ground.baddie.hasTarget = 0;
                     *(u16*)&objectState->targetState = 1;

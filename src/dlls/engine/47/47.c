@@ -168,7 +168,7 @@ int Carryable_updateHeld(GameObject* obj, void* state)
             u8 a, b, c, d, e;
         }* t;
         int newCarryState = 0;
-        t = (void*)*(u8**)((u8*)obj + 0x78);
+        t = (void*)obj->anim.hitVolumeBounds;
         if ((t[obj->hitVolumeIndex].e & 0xf) == 6 && (buttonGetDisabled(0) & PAD_BUTTON_A) == 0 &&
             (obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0 &&
             obj->userData2 == 0)
@@ -234,7 +234,7 @@ int Carryable_updateHeld(GameObject* obj, void* state)
             }
             if (hit != 0)
             {
-                u8* owner = *(u8**)((u8*)hit + 0x58);
+                u8* owner = (u8*)hit->anim.hitboxTransformState;
                 u8 slot = (*(u8*)(owner + 0x10f))++;
                 ((void**)(owner + 0x100))[(s8)slot] = obj;
             }

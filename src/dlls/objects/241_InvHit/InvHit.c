@@ -146,7 +146,7 @@ void InvHit_update(GameObject* obj) {
     case INVHIT_MODE_SELF_FREE: {
         ObjHitsPriorityState* hitState = *(ObjHitsPriorityState**)&obj->anim.hitReactState;
         char* ownerHitSlot;
-        char* ownerHitState = *(char**)(obj->userData1 + 0x54);
+        char* ownerHitState = (char*)((GameObject*)obj->userData1)->anim.hitReactState;
         int ownerHitIndex;
 
         ownerHitIndex = 0;

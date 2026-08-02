@@ -1032,7 +1032,7 @@ int dll_19_updateSequenceMovement(GameObject* obj, ObjSeqState* seq, char* st, v
 
 f32 dll_19_func0B(GameObject* obj)
 {
-    return *(f32*)((char*)obj->extra + 0x3e4);
+    return ((GroundBaddieState*)obj->extra)->pathRadius;
 }
 
 u16 dll_19_func0A(GameObject* obj)

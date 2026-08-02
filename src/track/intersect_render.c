@@ -17,7 +17,6 @@
 #include "main/gametext_command_api.h"
 #include "main/gametext_show_str_api.h"
 #include "main/gameloop_api.h"
-#include "main/gamebits_api.h"
 #include "main/frame_timing.h"
 #include "main/trig.h"
 #include "main/camera.h"
@@ -105,16 +104,13 @@ static const IndStageInitData sIndStageInitData = {
 static const IndMtxInit sIndMtxZeroInit = {{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}};
 
 
-extern GXColor gProjectedShadowFogColor;
+extern GXColor lbl_803E8454;
 
-f32 gWaterReflectionIndTexMtx[3][2][3] = {
-    {{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, -0.5f}},
-    {{0.0f, 0.8f, 0.0f}, {0.0f, 0.0f, 0.8f}},
-    {{0.0f, -0.2f, 0.0f}, {0.0f, 0.0f, 0.2f}}};
-f32 gFrozenObjectIndTexMtx[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
-f32 gScreenImageIndTexMtx1[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
-f32 gScreenImageIndTexMtx2[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
-f32 gWhirlpoolIndTexMtx[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
+extern f32 gWaterReflectionIndTexMtx[3][2][3];
+extern f32 gFrozenObjectIndTexMtx[2][3];
+extern f32 gScreenImageIndTexMtx1[2][3];
+extern f32 gScreenImageIndTexMtx2[2][3];
+extern f32 gWhirlpoolIndTexMtx[2][3];
 
 extern inline float sqrtf(float x)
 {
@@ -154,7 +150,7 @@ static const GXColor sColorFilterKColor1 = {0x6E, 0x6E, 0x6E, 0};
 static const GXColor sColorFilterKColor2 = {0x14, 0x14, 0x14, 0};
 static const GXColor sColorFilterTevColor = {0x0A, 0x0A, 0x0A, 255};
 
-extern u32 gProjectedShadowFogColorBits;
+extern u32 lbl_803E8450;
 int cardProbe(u8 retry);
 void showMemCardError(u8 err);
 void cardShowLoadingMsg(u8 kind);
@@ -341,7 +337,7 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
     else
     {
         u8 zCompLoc = 1;
-        if (((GameObject*)obj_a)->anim.renderAlpha < 0xFF || (((Shader*)renderOp)->flags & 0x40000000) != 0 ||
+        if (((u8*)obj_a)[0x37] < 0xFF || (((Shader*)renderOp)->flags & 0x40000000) != 0 ||
             ((Shader*)renderOp)->alpha < 0xFF)
         {
             GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
@@ -1192,7 +1188,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
     GXSetNumTexGens(3);
     GXSetNumTevStages(2);
 
-    alpha_byte = (((Shader*)renderOp)->alpha * ((GameObject*)obj_a)->anim.renderAlpha) >> 8;
+    alpha_byte = (((Shader*)renderOp)->alpha * ((u8*)obj_a)[0x37]) >> 8;
     temp.a = alpha_byte;
     GXSetTevKColor(GX_KCOLOR0, temp);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
@@ -1208,7 +1204,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
     {
         u8 zCompLoc = 1;
         int ref1;
-        if (((GameObject*)obj_a)->anim.renderAlpha < 0xff || (((Shader*)renderOp)->flags & 0x40000000) != 0 ||
+        if (((u8*)obj_a)[0x37] < 0xff || (((Shader*)renderOp)->flags & 0x40000000) != 0 ||
             ((Shader*)renderOp)->alpha < 0xff)
         {
             GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
@@ -1961,7 +1957,7 @@ u32 objCausticReflectionRenderCb(int handle, void* model)
     GXSetTevColorOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
 
-    temp.a = ((GameObject*)handle)->anim.renderAlpha;
+    temp.a = ((u8*)(int)handle)[0x37];
     GXSetTevKColor(GX_KCOLOR0, temp);
     GXSetTevKAlphaSel(GX_TEVSTAGE2, GX_TEV_KASEL_K0_A);
     GXSetTevDirect(GX_TEVSTAGE2);
@@ -2916,7 +2912,7 @@ void objectShadow_setupProjectedTextureDepthFade(ProjectedShadowTexture* shadow,
     f32 q;
     u8 t;
 
-    kc = gProjectedShadowFogColor;
+    kc = lbl_803E8454;
     PSMTXConcat(shadow->textureMtx, mtx, m58);
     GXLoadTexMtxImm(m58, GX_TEXMTX0, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_POS, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
@@ -3019,7 +3015,7 @@ void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u
     buf_54 = *(Blk28*)&sIndStageInitData.blk[4];
     buf_38 = *(Blk28*)&sIndStageInitData.blk[5];
     stab = sProjectedShadowStageCounts;
-    *(u32*)&fog_var = gProjectedShadowFogColorBits;
+    *(u32*)&fog_var = lbl_803E8450;
 
     PSMTXConcat(shadow->textureMtx, mtx, mtx_110);
     GXLoadTexMtxImm(mtx_110, GX_TEXMTX0, GX_MTX2x4);

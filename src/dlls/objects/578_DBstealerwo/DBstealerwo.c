@@ -2244,9 +2244,10 @@ void dbstealerworm_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vi
                 objDoParticleFx(obj, 1.0f, 3, state->glowAlpha, 0);
             }
             path = *(char**)&sub->linkedObj;
-            if (path != NULL && *(void**)(path + 0x50) != NULL)
+            if (path != NULL && ((GameObject*)path)->anim.modelInstance != NULL)
             {
-                ObjPath_GetPointWorldPosition(obj, 3, (f32*)(path + 0xc), (f32*)(path + 0x10), (f32*)(path + 0x14), 0);
+                ObjPath_GetPointWorldPosition(obj, 3, &((GameObject*)path)->anim.localPosX, &((GameObject*)path)->anim.localPosY,
+                                              &((GameObject*)path)->anim.localPosZ, 0);
                 objRenderModelAndHitVolumes((GameObject*)sub->linkedObj, p2, p3, p4, p5, 1.0f);
             }
         }

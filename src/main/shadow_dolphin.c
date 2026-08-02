@@ -885,7 +885,7 @@ int shadowInit(GameObject* obj, u32 arena, int flags)
     {
         modelState->shadowRenderResource = OBJECT_SHADOW_MESH_UNCACHED;
     }
-    modelState->shadowScale = *(f32*)obj->anim.modelInstance;
+    modelState->shadowScale = obj->anim.modelInstance->shadowScaleBase;
     modelState->shadowModelScale = *(f32*)((char*)obj->anim.modelInstance + 0x88);
     modelState->shadowOffsetX = gShadowOffsetX;
     modelState->shadowOffsetY = gShadowOffsetY;

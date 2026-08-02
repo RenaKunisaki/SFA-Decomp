@@ -1964,10 +1964,10 @@ void objUpdateHitSpheres(u8* hitState, u8* hdrOwner, u8* prevObj, u8* boneMtx, u
     ObjHitBufs* st;
 
     hitSample = NULL;
-    hitReact = *(u8**)(obj + 0x54);
+    hitReact = (u8*)((GameObject*)obj)->anim.hitReactState;
     if (hitReact != NULL)
     {
-        if (*(u8*)(*(u8**)(obj + 0x50) + 0x66) != 0)
+        if (((GameObject*)obj)->anim.modelInstance->hitReactStateCount != 0)
         {
             sampleCount = (int)*(s16*)(hitReact + 4) >> 2;
             if (sampleCount > 0)
@@ -1988,15 +1988,15 @@ void objUpdateHitSpheres(u8* hitState, u8* hdrOwner, u8* prevObj, u8* boneMtx, u
         }
     }
 
-    if (*(u8**)(prevObj + 0x54) != NULL)
+    if ((u8*)((GameObject*)prevObj)->anim.hitReactState != NULL)
     {
-        *(u8*)(*(u8**)(prevObj + 0x54) + 0xaf) -= 1;
-        if (*(s8*)(*(u8**)(prevObj + 0x54) + 0xaf) < 0)
+        *(u8*)((u8*)((GameObject*)prevObj)->anim.hitReactState + 0xaf) -= 1;
+        if (*(s8*)((u8*)((GameObject*)prevObj)->anim.hitReactState + 0xaf) < 0)
         {
-            *(u8*)(*(u8**)(prevObj + 0x54) + 0xaf) = 0;
+            *(u8*)((u8*)((GameObject*)prevObj)->anim.hitReactState + 0xaf) = 0;
         }
-        *(u32*)(*(u8**)(prevObj + 0x54) + 0x4c) = *(u32*)(*(u8**)(prevObj + 0x54) + 0x48);
-        *(void**)(*(u8**)(prevObj + 0x54) + 0x48) = hitSample;
+        *(u32*)((u8*)((GameObject*)prevObj)->anim.hitReactState + 0x4c) = *(u32*)((u8*)((GameObject*)prevObj)->anim.hitReactState + 0x48);
+        *(void**)((u8*)((GameObject*)prevObj)->anim.hitReactState + 0x48) = hitSample;
     }
 
     st = (ObjHitBufs*)hitState;

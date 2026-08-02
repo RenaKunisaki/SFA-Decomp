@@ -205,7 +205,7 @@ void drshackle_update(GameObject* obj)
         list = (u32*)objGetAllOfType(DFROPENODE_OBJECT_GROUP, &count);
         while (count-- != 0)
         {
-            sub = *(int*)(*list + 0x4c);
+            sub = (int)((GameObject*)*list)->anim.placementData;
             for (j = 0; j < ((DrshackleState*)state)->slotCount; j++)
             {
                 if (*(u8*)(sub + 0x18) == placement->pathObjGroupBase + j * 4)

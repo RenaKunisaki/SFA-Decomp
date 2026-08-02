@@ -284,7 +284,7 @@ u8 gTevIndStageCount;
 u32 screenWidth;
 u16 gDepthReadResultCount;
 u16 gDepthReadPendingCount;
-u32 lbl_803DCFFC;
+static u32 sIntersectUnused0;
 u8 gWaterFxDisabled;
 u8 gWaterQuadWriteIdx;
 u8 gWaterRippleWriteIdx;
@@ -325,6 +325,16 @@ GXColor gScreenImageKColor2 = {0, 0x80, 0, 0};
 GXColor gScreenImageKColor3 = {0x80, 0, 0x80, 0};
 u32 gWhirlpoolReflectionTintColor = 0xFFFFFF60;
 u32 gWhirlpoolReflectionKColor = 0xA0A0A080;
+
+
+f32 gWaterReflectionIndTexMtx[3][2][3] = {
+    {{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, -0.5f}},
+    {{0.0f, 0.8f, 0.0f}, {0.0f, 0.0f, 0.8f}},
+    {{0.0f, -0.2f, 0.0f}, {0.0f, 0.0f, 0.2f}}};
+f32 gFrozenObjectIndTexMtx[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
+f32 gScreenImageIndTexMtx1[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
+f32 gScreenImageIndTexMtx2[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
+f32 gWhirlpoolIndTexMtx[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
 
 #include "track/intersect_internal.h"
 
