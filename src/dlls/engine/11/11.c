@@ -1226,7 +1226,7 @@ void dll_0B_updateActiveEffects(void)
                         ((ObjPlacement*)o)->posY = tmpl.posY;
                         ((ObjPlacement*)o)->posZ = tmpl.posZ;
                         *(int*)eff = (int)objSetupObject((ObjPlacement*)o, 5, -1, -1, NULL);
-                        *(int*)(*(int*)eff + 0xf8) = 1;
+                        ((PartfxEffectState*)eff)->instanceObject->userData2 = 1;
                     }
                     else if (*(void**)eff != NULL)
                     {
@@ -1242,9 +1242,9 @@ void dll_0B_updateActiveEffects(void)
                             tmpl.posY = ((PartfxEffectState*)eff)->sourcePosY + tmpl.posY;
                             tmpl.posZ = ((PartfxEffectState*)eff)->sourcePosZ + tmpl.posZ;
                         }
-                        *(f32*)(*(int*)eff + 0x18) = tmpl.posX;
-                        *(f32*)(*(int*)eff + 0x1c) = tmpl.posY;
-                        *(f32*)(*(int*)eff + 0x20) = tmpl.posZ;
+                        ((PartfxEffectState*)eff)->instanceObject->anim.worldPosX = tmpl.posX;
+                        ((PartfxEffectState*)eff)->instanceObject->anim.worldPosY = tmpl.posY;
+                        ((PartfxEffectState*)eff)->instanceObject->anim.worldPosZ = tmpl.posZ;
                     }
                     if (*(void**)eff != NULL)
                     {
