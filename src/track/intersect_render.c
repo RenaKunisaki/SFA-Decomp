@@ -106,11 +106,14 @@ static const IndMtxInit sIndMtxZeroInit = {{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}}
 
 extern GXColor lbl_803E8454;
 
-extern f32 gWaterReflectionIndTexMtx[3][2][3];
-extern f32 gFrozenObjectIndTexMtx[2][3];
-extern f32 gScreenImageIndTexMtx1[2][3];
-extern f32 gScreenImageIndTexMtx2[2][3];
-extern f32 gWhirlpoolIndTexMtx[2][3];
+f32 gWaterReflectionIndTexMtx[3][2][3] = {
+    {{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, -0.5f}},
+    {{0.0f, 0.8f, 0.0f}, {0.0f, 0.0f, 0.8f}},
+    {{0.0f, -0.2f, 0.0f}, {0.0f, 0.0f, 0.2f}}};
+f32 gFrozenObjectIndTexMtx[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
+f32 gScreenImageIndTexMtx1[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
+f32 gScreenImageIndTexMtx2[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
+f32 gWhirlpoolIndTexMtx[2][3] = {{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}};
 
 extern inline float sqrtf(float x)
 {
