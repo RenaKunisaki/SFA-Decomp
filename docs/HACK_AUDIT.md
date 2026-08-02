@@ -63,6 +63,69 @@ match-volatile. Both are now covered and both are pinned by self-tests. The meth
 worth more than the count: **two scans agreeing on a total is not agreement on a set** — reconcile
 membership, not cardinality.
 
+### Purge price sheet -- 16 files / 29 instances, measured 2026-08-02 @cd782d6179
+
+Method per row: plain-literal or structured replacement, DEMOTE to NonMatching where the unit was
+MatchingFor, full `ninja`, tree-wide metrics vs baseline, `cmp` against `orig/GSAE01/sys/main.dol`,
+per-function regression scan, revert. Baseline: code 87.212080 / data 99.015740 / 9285 fns /
+fuzzy 99.815330, DOL identical.
+
+**Control first:** demotion ALONE (flip, no purge) measures **+0.000000 on every metric with DOL
+SAME**, so each row prices the purge and not the flip. Without that control the rows are
+uninterpretable.
+
+| file | n | class | dcode% | ddata% | dfns | DOL | verdict |
+|---|---|---|---|---|---|---|---|
+| 260_SmallBasket | 4 | 1-elem array | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
+| 209_TumbleWeedB | 3 | 1-elem array | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
+| 679_ARWProximit | 3 | 1-elem array | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
+| 213_Kaldachom | 2 | 1-elem array | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
+| 300_Transporter | 1 | 1-elem, never read | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
+| 373_DFropenode | 1 | 1-elem array | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
+| 467 | 1 | 1-elem array | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
+| 523_FireFly | 1 | 1-elem array | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
+| 678_ARWSquadron | 1 | 1-elem array | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
+| 683_LGTProjecte | 1 | 1-elem array | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
+| 701 | 1 | 1-elem array | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
+| 203 | 2 | volatile pun | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
+| engine/9 | 1 | volatile decl | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** (+ header extern) |
+| 245_SidekickBal | 1 | goto | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
+| 386_MMP_moonroc | 1 | goto | +0.000000 | +0.000000 | +0 | SAME | **FREE - LANDED** |
+| main/track_dolphin | 5 | goto | -- | -- | -- | n/a | **NOT MECHANICALLY PRICEABLE** (below) |
+
+Landed as `21b90aff9f` (22 instances / 13 units) and `5b120c0545` (2 gotos). **All 24 measured
+instances were free**; the whole set cost nothing on any gate.
+
+**Demotion is load-bearing, and that is the round's real finding.** Purging *without* demoting builds
+clean and leaves every score delta at zero, yet **breaks DOL byte-identity** -- the objects change in
+a region the score cannot see. This is the purge gate's final form earning its keep: `matched_data`
+cannot separate "pairing artifact" from "bytes differ", and only the DOL distinguishes them. Since a
+purged object is no longer byte-identical to retail, `NonMatching` is its honest state per CLAUDE.md,
+and demoting lets the retail object link so the DOL holds. Corollary for reading the table: on a
+demoted row **`DOL SAME` is vacuous** (the retail object links by construction) -- the informative
+columns are the score deltas, which is why the demotion-only control is mandatory.
+
+**track_dolphin is not a mechanical purge.** Its 5 gotos exit from nesting **depth 7-8 to depth 4**
+(`goto hitCheck` x4) and **depth 6 to depth 2** (`goto slotComplete`) inside
+`trackGetIntersect2`. Structuring them needs flag variables threaded through three to four enclosing
+loops -- a rewrite whose codegen impact would swamp the gotos themselves, so any "price" measured
+from a mechanical transform would be measuring the rewrite, not the purge. The unit is already
+NonMatching (48.241% code), so it carries no DOL exposure and no demotion is required; it needs a
+dedicated derivation round, not a purge pass.
+
+**Semantic safety was verified before application, not inferred from the score.** engine/9's
+`gCloudActionGlareQuadSize` has no ISR/DVD/ARQ/alarm path (the callbacks in that unit are the
+ordinary resource-descriptor table); 203's `gDllCBDefaultAnimSpeed` is a same-TU `const f32 = 0.1f`
+whose pun reads a compile-time constant; MMP_moonroc's `spacingClear` is written on every path
+reaching its read (0 via the goto, 1 via fallthrough), which is what makes seed-and-break exact.
+
+### ⚠️ Baseline keying is line-number based, and that is brittle
+`tools/banned_shapes_baseline.txt` keys `file:line:class`, so **any edit above an instance reports it
+as one fix plus one regrowth**. Observed live: a peer commit shifted MMP_moonroc's goto 427 -> 426 and
+the checker read "1 fixed, 1 regrowth" for an untouched instance. Read a fix/regrowth pair in the same
+file and class as a line shift until proven otherwise; a future revision should key on symbol or
+snippet instead.
+
 ### Provenance, when auditing a rehoming tree
 
 `git log -S` dates when a line **moved**, not when it was **written**. In a tree that rehomes sources
