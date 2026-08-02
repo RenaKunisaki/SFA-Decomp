@@ -66,6 +66,7 @@ int shaderReturnZeroStub(int unused);
 extern s16 gArrivedWarpIndex;
 extern u8 gWarpArrivalTimer;
 extern f32 gMapSavedPlayerOffsetX;
+extern f32 gMapSavedPlayerOffsetZ;
 extern s16* gMapBlockIds;
 extern u8* gMapBlockRefCounts;
 extern s16 gTrkBlkTabCount;

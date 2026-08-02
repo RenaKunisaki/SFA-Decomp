@@ -746,7 +746,7 @@ s16 gForceNextLoadSync;
 u8 gLoadFilesInitDone;
 void** gDvdFileInfoPool;
 int gPendingDvdReadCount;
-u32 gAssetLoadCompletedFlags;
+volatile int gAssetLoadCompletedFlags;
 volatile int gAssetLoadInFlightFlags;
 int gModelsArchiveLoadCount;
 s16 gDefragDelayFrames;
@@ -1316,7 +1316,7 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4);
 static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask);
 static void objRenderChild(int* child, int* parent, u8 isShadow);
 
-extern u32 gAssetLoadCompletedFlags;
+extern volatile int gAssetLoadCompletedFlags;
 
 
 #define OBJPRINT_MODEL_DEF(obj)         (((ObjAnimComponent*)(obj))->modelInstance)

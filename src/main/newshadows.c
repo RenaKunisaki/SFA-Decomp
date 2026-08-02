@@ -348,7 +348,6 @@ extern const f32 lbl_803DEDFC;
 extern const f32 lbl_803DEE14;
 extern const f32 lbl_803DEE18;
 extern const f32 lbl_803DEE1C;
-extern f32 gMapSavedPlayerOffsetX, gMapSavedPlayerOffsetZ;
 
 static inline void boxBlurRow(u8* row, u8* blurred, int size, int window)
 {

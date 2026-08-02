@@ -81,7 +81,7 @@ static inline void GXPosition1x8(const u8 x) { GXWGFifo.u8 = x; }
 
 
 extern u32 gLightmapDrawQueue[];
-extern s32 gLightmapDrawQueueCount;
+extern int gLightmapDrawQueueCount;
 
 
 typedef struct LightmapDrawEntry

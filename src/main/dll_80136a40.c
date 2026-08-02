@@ -51,8 +51,8 @@ char sErrFmtRegisterRange[] = "%d - %d";
 /* debug font glyph-atlas texture asset (gDebugFontTex0) */
 #define DEBUG_FONT_TEXTURE0_ID 0x25D
 
-extern u16* externalFrameBuffer1;
-extern u16* externalFrameBuffer0;
+extern void* externalFrameBuffer1;
+extern void* externalFrameBuffer0;
 
 u16 gErrExceptionType;
 OSContext* gErrContext;

@@ -82,7 +82,7 @@ extern int lbl_803DEBB0;
 extern ModelLightStruct* gTexDimmedLightList[2];
 extern ModelLightStruct* gTexBlockLightList[2];
 extern int gLightmapDrawQueueCount;
-extern int* gCloudLayerTexture;
+extern void* gCloudLayerTexture;
 extern int gTexIndMtxTable[];
 extern u8 gLightmapDrawQueue[];
 #define FRUSTUM_PLANE_COUNT 5
@@ -1007,7 +1007,7 @@ typedef struct TrackTriangle
 #include "main/dll/ppcwgpipe_struct.h"
 
 extern ModelLightStruct* gGlowLightList[];
-extern int gHitsTab;
+extern void* gHitsTab;
 extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
 extern int sSynthFadeUnit;
 extern int renderFlags;

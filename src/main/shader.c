@@ -134,7 +134,7 @@ f32 distortionFilterAngle2;
 u8 distortionFilterColor[3];
 f32 distortionFilterAngle1;
 s32 bEnableColorFilter;
-int* gCloudLayerTexture;
+void* gCloudLayerTexture;
 int gLightmapDrawQueueCount;
 ModelLightStruct* gTexBlockLightList[2];
 ModelLightStruct* gTexDimmedLightList[2];

@@ -97,7 +97,6 @@ typedef struct ObjHitBufs
     u8* bufs[2];
     u8* cur;
 } ObjHitBufs;
-extern f32 gMapSavedPlayerOffsetZ;
 
 void setGQR7Packed(int a, int b, int c, int d);
 u8* modelBoneTransforms_next(u8* stream, int* dx, int* dy, int* dz);
