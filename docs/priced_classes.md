@@ -744,8 +744,8 @@ For each function, walk its `.text` in address order and write down the **value*
 compare the two sequences. If they are equal, the two objects' code asks for exactly the same
 constants in exactly the same order, and only the slot each constant lives in differs.
 
-`/private/tmp/a66_seq.py <src> <worktree> [section]` does this. Run over all 33 sub-100 data
-sections at `e173a2c951`:
+`tools/pool_value_sequence.py <src> [section]` does this, and `--all` runs it over every
+sub-100 data section in the report. At `e173a2c951`:
 
 | result | sections |
 | --- | --- |
