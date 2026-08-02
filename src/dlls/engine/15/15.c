@@ -32,7 +32,6 @@ u32 playerOverride;
 #define PLAYER_MOVE_INPUT_MIN         -65.0f
 #define PLAYER_MOVE_NEAR_DISTANCE     15.0f
 #define PLAYER_MOVE_DISTANCE_SCALE    3.0f
-#define PLAYER_MOVE_ONE               1.0f
 #define PLAYER_MOVE_VELOCITY_DAMPING  0.97f
 #define PLAYER_MOVE_DEG_TO_ANGLE      182.04f
 #define PLAYER_MOVE_INPUT_THRESHOLD   0.05f
@@ -132,6 +131,8 @@ void player_followCurve(GameObject* obj, int* state, f32 cx, f32 cz, f32 t, int 
     }
 }
 
+const f32 gPlayerMoveOne[1] = {1.0f};
+
 void player_applyVelocityStep(GameObject* obj, int* ctx, f32 t)
 {
     int flags;
@@ -157,7 +158,7 @@ void player_applyVelocityStep(GameObject* obj, int* ctx, f32 t)
         desc.rotX = obj->anim.rotX;
         desc.rotY = obj->anim.rotY;
         desc.rotZ = 0;
-        desc.scale = PLAYER_MOVE_ONE;
+        desc.scale = gPlayerMoveOne[0];
         desc.x = PLAYER_MOVE_ZERO;
         desc.y = PLAYER_MOVE_ZERO;
         desc.z = PLAYER_MOVE_ZERO;
@@ -484,9 +485,9 @@ void player_render2(GameObject* obj, int* state, f32 f1, f32 f2)
 {
     f32 cur = ((BaddieState*)state)->nudgeYawProgress;
     f32 new_ = f2 * f1 + cur;
-    if (new_ > PLAYER_MOVE_ONE)
+    if (new_ > gPlayerMoveOne[0])
     {
-        new_ = PLAYER_MOVE_ONE;
+        new_ = gPlayerMoveOne[0];
     }
     {
         f32 delta = new_ - cur;
@@ -502,9 +503,9 @@ void player_modelMtxFn(f32* mtx, int* state, f32 f1, f32 f2)
 {
     f32 cur = ((BaddieState*)state)->nudgePosProgress;
     f32 new_ = f2 * f1 + cur;
-    if (new_ > PLAYER_MOVE_ONE)
+    if (new_ > gPlayerMoveOne[0])
     {
-        new_ = PLAYER_MOVE_ONE;
+        new_ = gPlayerMoveOne[0];
     }
     {
         f32 delta = new_ - cur;
@@ -910,20 +911,20 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
         localTransform.rotX = ((GameObject*)pos)->anim.rotX;
         localTransform.rotY = ((GameObject*)pos)->anim.rotY;
         localTransform.rotZ = ((GameObject*)pos)->anim.rotZ;
-        localTransform.scale = PLAYER_MOVE_ONE;
+        localTransform.scale = gPlayerMoveOne[0];
         localTransform.x = PLAYER_MOVE_ZERO;
         localTransform.y = PLAYER_MOVE_ZERO;
         localTransform.z = PLAYER_MOVE_ZERO;
         setMatrixFromObjectPos(matrix, &localTransform);
 
         axes = ((BaddieState*)state)->orientationAxesOut;
-        Matrix_TransformPoint(matrix, PLAYER_MOVE_ZERO, PLAYER_MOVE_ZERO, PLAYER_MOVE_ONE, &axes[0], &axes[1],
+        Matrix_TransformPoint(matrix, PLAYER_MOVE_ZERO, PLAYER_MOVE_ZERO, gPlayerMoveOne[0], &axes[0], &axes[1],
                               &axes[2]);
         axes = ((BaddieState*)state)->orientationAxesOut;
-        Matrix_TransformPoint(matrix, PLAYER_MOVE_ZERO, PLAYER_MOVE_ONE, PLAYER_MOVE_ZERO, &axes[3], &axes[4],
+        Matrix_TransformPoint(matrix, PLAYER_MOVE_ZERO, gPlayerMoveOne[0], PLAYER_MOVE_ZERO, &axes[3], &axes[4],
                               &axes[5]);
         axes = ((BaddieState*)state)->orientationAxesOut;
-        Matrix_TransformPoint(matrix, PLAYER_MOVE_ONE, PLAYER_MOVE_ZERO, PLAYER_MOVE_ZERO, &axes[6], &axes[7],
+        Matrix_TransformPoint(matrix, gPlayerMoveOne[0], PLAYER_MOVE_ZERO, PLAYER_MOVE_ZERO, &axes[6], &axes[7],
                               &axes[8]);
     }
 
@@ -978,7 +979,7 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
                 limit = PLAYER_MOVE_OVERRIDE_MIN;
             }
 
-            if (dist < PLAYER_MOVE_ONE)
+            if (dist < gPlayerMoveOne[0])
             {
                 ((GameObject*)pos)->anim.localPosX = ((GameObject*)overrideObj)->anim.localPosX;
                 ((GameObject*)pos)->anim.localPosZ = ((GameObject*)overrideObj)->anim.localPosZ;

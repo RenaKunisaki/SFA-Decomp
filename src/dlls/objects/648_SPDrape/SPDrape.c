@@ -74,6 +74,8 @@ void spdrape_hitDetect(void)
 {
 }
 
+const f32 gSpDrapeZero[1] = {0.0f};
+
 void spdrape_update(GameObject* obj)
 {
     SpdrapeState* state;
@@ -95,7 +97,7 @@ void spdrape_update(GameObject* obj)
             {
                 if (state->planeD + (state->planeNormalX * player->anim.localPosX +
                                      state->planeNormalZ * player->anim.localPosZ) <
-                    0.0f)
+                    gSpDrapeZero[0])
                 {
                     state->moveTable = (int)gSpDrapeSwingLeftMoveTable;
                 }
@@ -104,7 +106,7 @@ void spdrape_update(GameObject* obj)
                     state->moveTable = (int)gSpDrapeSwingRightMoveTable;
                 }
             }
-            ObjAnim_SetCurrentMove((int)obj, **(u8**)&state->moveTable, 0.0f, 0);
+            ObjAnim_SetCurrentMove((int)obj, **(u8**)&state->moveTable, gSpDrapeZero[0], 0);
             state->animSpeed = 0.0175f;
             Sfx_PlayFromObject(obj, SFXTRIG_cagesqk11);
             Camera_GetCurrent();
@@ -117,14 +119,14 @@ void spdrape_update(GameObject* obj)
             if (getXZDistance(&(obj)->anim.worldPosX, &player->anim.worldPosX) > SP_DRAPE_LEAVE_RADIUS)
             {
                 ObjAnim_SetCurrentMove((int)obj, (*(u8**)&state->moveTable)[SPDRAPE_MOVE_CLOSE],
-                                       0.0f, 0);
+                                       gSpDrapeZero[0], 0);
                 Sfx_PlayFromObject(obj, SFXTRIG_cagesqk11);
                 state->animSpeed = 0.0165f;
             }
             else
             {
                 ObjAnim_SetCurrentMove((int)obj, (*(u8**)&state->moveTable)[SPDRAPE_MOVE_HOLD],
-                                       0.0f, 0);
+                                       gSpDrapeZero[0], 0);
                 state->animSpeed = 0.0144f;
             }
         }
@@ -135,7 +137,7 @@ void spdrape_update(GameObject* obj)
         if (getXZDistance(&(obj)->anim.worldPosX, &player->anim.worldPosX) > SP_DRAPE_LEAVE_RADIUS)
         {
             ObjAnim_SetCurrentMove((int)obj, (*(u8**)&state->moveTable)[SPDRAPE_MOVE_CLOSE],
-                                   0.0f, 0);
+                                   gSpDrapeZero[0], 0);
             Sfx_StopObjectChannel(obj, 0x40);
             Sfx_PlayFromObject(obj, SFXTRIG_cagesqk11);
             state->animSpeed = 0.0165f;
@@ -150,7 +152,7 @@ void spdrape_update(GameObject* obj)
             {
                 if (state->planeD + (state->planeNormalX * player->anim.localPosX +
                                      state->planeNormalZ * player->anim.localPosZ) <
-                    0.0f)
+                    gSpDrapeZero[0])
                 {
                     state->moveTable = (int)gSpDrapeSwingLeftMoveTable;
                 }
@@ -159,13 +161,13 @@ void spdrape_update(GameObject* obj)
                     state->moveTable = (int)gSpDrapeSwingRightMoveTable;
                 }
             }
-            ObjAnim_SetCurrentMove((int)obj, **(u8**)&state->moveTable, 0.0f, 0);
+            ObjAnim_SetCurrentMove((int)obj, **(u8**)&state->moveTable, gSpDrapeZero[0], 0);
             Sfx_PlayFromObject(obj, SFXTRIG_cagesqk11);
             state->animSpeed = 0.0175f;
         }
         else if (state->moveActive != 0)
         {
-            ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
+            ObjAnim_SetCurrentMove((int)obj, 0, gSpDrapeZero[0], 0);
             state->animSpeed = 0.0072f;
             Camera_GetCurrent();
         }
@@ -199,7 +201,7 @@ void spdrape_init(GameObject* obj, SpdrapeObjectDef* def)
     {
         if (state->planeNormalX * player->anim.localPosX + state->planeNormalZ * player->anim.localPosZ +
                 state->planeD <
-            0.0f)
+            gSpDrapeZero[0])
         {
             state->moveTable = (int)gSpDrapeSwingLeftMoveTable;
         }

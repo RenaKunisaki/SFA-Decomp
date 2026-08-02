@@ -67,19 +67,19 @@ STATIC_ASSERT(sizeof(ScTotemBondLightfootSetup) == 0x38);
 #define SC_TOTEM_BOND_SCREEN_TRANSITION_STATE 1
 #define SC_TOTEM_BOND_LIGHTFOOT_ALPHA         0x1E
 
-#define SC_TOTEM_BOND_INITIAL_RADIUS   -130.0f
-#define SC_TOTEM_BOND_SPAWN_DELAY      30.0f
 #define SC_TOTEM_BOND_COMPLETION_DELAY 35.0f
-#define SC_TOTEM_BOND_CAMERA_HEIGHT    30.0f
 #define SC_TOTEM_BOND_CAMERA_DISTANCE  72.0f
 #define SC_TOTEM_BOND_ROTATION_SPEED   512.0f
+
+const f32 gScTotemBondInitialRadius[1] = {-130.0f};
+const f32 gScTotemBondThirty[1] = {30.0f};
 
 static inline void sc_totembond_beginOrbGame(GameObject* obj, ScTotemBondState* state) {
     state->active = 1;
     obj->anim.rotX = 0x3FFF;
     state->ringIndex = (s16)(u16)((s32)obj->anim.rotX / SC_TOTEM_BOND_RING_ANGLE_STEP);
     ObjHits_DisableObject(obj);
-    sc_totembond_spawnGameBitOrbs(obj, state, SC_TOTEM_BOND_INITIAL_RADIUS);
+    sc_totembond_spawnGameBitOrbs(obj, state, gScTotemBondInitialRadius[0]);
     mainSetBits(gTotemBondRingGameBits[state->ringIndex], 1);
     obj->anim.alpha = 0;
     state->eventFlags &= ~SC_TOTEM_BOND_EVENT_START_ORBS;
@@ -87,7 +87,7 @@ static inline void sc_totembond_beginOrbGame(GameObject* obj, ScTotemBondState* 
     (*gGameUIInterface)->setCMenuShouldClose(1);
     setHudForceShowMask(1);
     (*gScreenTransitionInterface)->step(SC_TOTEM_BOND_SCREEN_TRANSITION, SC_TOTEM_BOND_SCREEN_TRANSITION_STATE);
-    state->spawnTimer = SC_TOTEM_BOND_SPAWN_DELAY;
+    state->spawnTimer = gScTotemBondThirty[0];
     Music_Trigger(MUSICTRIG_WLC_Puzzle_f0, 1);
 }
 
@@ -294,7 +294,7 @@ void sc_totembond_update(GameObject* obj) {
 
         playerTeleport(player, &obj->anim.localPos, &obj->anim.rotation, 0);
         state->cameraX = obj->anim.localPosX;
-        state->cameraY = SC_TOTEM_BOND_CAMERA_HEIGHT + obj->anim.localPosY;
+        state->cameraY = gScTotemBondThirty[0] + obj->anim.localPosY;
         state->cameraZ = obj->anim.localPosZ;
         state->cameraYaw = (s16)(0x8000 - obj->anim.rotX);
         state->cameraPitch = obj->anim.rotY;
