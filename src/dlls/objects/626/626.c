@@ -60,12 +60,12 @@ void* gHighTopDefaultStateHandler;
 f32 gHighTopGroundMarkerMtx[16];
 void* gHighTopStateHandlers[12];
 
-u8 lbl_803DC308[8] = {0x04, 0x5D, 0x10, 0x00, 0x03, 0x00, 0x00, 0x00};
+u8 gHighTopAmbientSoundDef[8] = {0x04, 0x5D, 0x10, 0x00, 0x03, 0x00, 0x00, 0x00};
 s16 gHighTopMovementSfxIds[2] = {0x1A2, 0x1A3};
 s16 lbl_803DC314[2] = {0x62F, 0};
 f32 gHighTopPathPointRadii[2] = {25.0f, 25.0f};
 int gHighTopAirMeterInitValue = 100;
-f32 lbl_803DC324 = 0.9f;
+f32 gHighTopCurveFollowSpeedFactor = 0.9f;
 s16 gHighTopLookYawOffset = -0x8000;
 s16 gHighTopBandMoveIds[2] = {0xB, 0x1};
 s16 gHighTopProgressGameBitIds[4] = {0xCA3, 0xCA4, 0xCA5, 0xCA6};
@@ -190,7 +190,7 @@ int hightop_stateHandler09(GameObject* obj, HighTopRuntime* stateArg)
         if (randomChanceOneIn(0x64) != 0)
         {
             objSoundStartFromDef(obj, &state->modelSoundState,
-                                (ObjSoundDef*)(lbl_803DC308 + randomGetRange(0, 0) * 6), 1);
+                                (ObjSoundDef*)(gHighTopAmbientSoundDef + randomGetRange(0, 0) * 6), 1);
         }
         if (stateArg->baddie.moveDone != 0)
         {
@@ -529,7 +529,7 @@ int hightop_stateHandler04(GameObject* obj, HighTopRuntime* stateArg)
     }
     return 0;
 }
-u8 lbl_8032AAB0[0x80] = {
+u8 gHighTopConfigTable[0x80] = {
     0x04, 0x30, 0x0B, 0x00, 0x03, 0x00, 0x04, 0x31, 0x05, 0x00, 0x02, 0x00, 0x04, 0x32, 0x0B, 0x00,
     0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x02,
     0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00, 0x05,
@@ -1064,7 +1064,7 @@ void HighTop_hitDetect(GameObject* obj)
     }
     Obj_SpawnHitLightAndFade(obj, (const Vec3f*)&l8, 20.0f);
     objSoundStartFromDef(obj, &runtime->modelSoundState,
-                        (ObjSoundDef*)(lbl_803DC308 + randomGetRange(0, 0) * 6), 1);
+                        (ObjSoundDef*)(gHighTopAmbientSoundDef + randomGetRange(0, 0) * 6), 1);
     st = runtime->baddie.controlMode;
     if (st != 3)
     {
@@ -1121,7 +1121,7 @@ void HighTop_update(GameObject* obj)
     if ((runtime->flagsC40 & HIGHTOP_FLAG_CURVE_FOLLOW) != 0)
     {
         int ev = Obj_UpdateRomCurveFollowVelocity((GameObject*)self, &runtime->curveWalker,
-                                                  lbl_803DC324 *
+                                                  gHighTopCurveFollowSpeedFactor *
                                                       (runtime->curveFollowSpeedScale * timeDelta),
                                                   70.0f, 8.0f * timeDelta, 0);
         if (ev != 0)
@@ -1173,7 +1173,7 @@ void HighTop_update(GameObject* obj)
     if (randomGetRange(0, 0x64) == 0)
     {
         objSoundStartFromDef((GameObject*)self, &((HighTopRuntime*)state)->modelSoundState,
-                            (ObjSoundDef*)&lbl_8032AAB0[randomGetRange(0, 2) * 6], 0);
+                            (ObjSoundDef*)&gHighTopConfigTable[randomGetRange(0, 2) * 6], 0);
     }
     if (runtime->flagsC49.b7 != 0)
     {
@@ -1190,7 +1190,7 @@ void HighTop_update(GameObject* obj)
 
 void HighTop_init(GameObject* obj, HighTopPlacement* placement)
 {
-    u8* base = lbl_8032AAB0;
+    u8* base = gHighTopConfigTable;
     HighTopRuntime* runtime = (obj)->extra;
     u8* pathState;
     ObjModelState* node;

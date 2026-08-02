@@ -1701,7 +1701,7 @@ void skyRenderTimeOfDayBackdrop(void)
         cam = Camera_GetCurrent();
         frac = Camera_GetFovY();
         frac = frac / 2.0f;
-        texHeightF = (f32)(u32) * (u16*)(texC + 0xc);
+        texHeightF = (f32)(u32)((Texture*)texC)->height;
         sinProd = texHeightF * frac / 180.0f;
         sinProd *= 3.0f;
         sinProd *= mathCosf(3.1415927f * (f32)-cam->worldRoll / 32768.0f);
