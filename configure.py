@@ -1809,7 +1809,7 @@ config.libs = [
 
             # main
             Object(NonMatching, "main/render.c"),
-            Object(NonMatching, "main/audio.c", cflags=cflags_dll_noopt_nostrength_noautoinline),
+            Object(NonMatching, "main/audio.c", mw_version="GC/1.3", cflags=cflags_dll_noopt_nostrength_noautoinline),
             Object(MatchingFor("GSAE01"), "main/audio_sfx.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/audio_stream.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "main/camera.c", cflags=cflags_dll_noopt_noautoinline),

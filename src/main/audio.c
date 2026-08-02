@@ -76,7 +76,7 @@ int gAudioArqRequestIndex;
 
 /* gAudioPendingLoadFlags / gAudioCompletedLoadFlags: one bit per async
  * resource load, set when enqueued and cleared/mirrored when the load
- * callback fires. (Pending clears use a 64-bit mask: ~(u64)FLAG.) */
+ * callback fires. */
 #define AUDIO_LOAD_MUSIC_TRIGGERS 0x1   /* music trigger table */
 #define AUDIO_LOAD_SFX_TRIGGERS   0x2   /* sfx trigger table */
 #define AUDIO_LOAD_STREAMS        0x4   /* stream table */
@@ -293,7 +293,7 @@ void sampleBufferSLoadedCallback(s32 status, DVDFileInfo* fileInfo)
         saved = mmSetFreeDelay(0);
         mm_free(fileInfo);
         mmSetFreeDelay(saved);
-        gAudioPendingLoadFlags &= ~(u64)AUDIO_LOAD_S_SAMPLE_BUF;
+        gAudioPendingLoadFlags &= ~AUDIO_LOAD_S_SAMPLE_BUF;
         gAudioCompletedLoadFlags |= AUDIO_LOAD_S_SAMPLE_BUF;
     }
 }
@@ -315,7 +315,7 @@ void sampleDirectorySLoadedCallback(s32 status, DVDFileInfo* fileInfo)
         saved = mmSetFreeDelay(0);
         mm_free(fileInfo);
         mmSetFreeDelay(saved);
-        gAudioPendingLoadFlags &= ~(u64)AUDIO_LOAD_S_SAMPLE_DIR;
+        gAudioPendingLoadFlags &= ~AUDIO_LOAD_S_SAMPLE_DIR;
         gAudioCompletedLoadFlags |= AUDIO_LOAD_S_SAMPLE_DIR;
     }
 }
@@ -337,7 +337,7 @@ void projectDataSLoadedCallback(s32 status, DVDFileInfo* fileInfo)
         saved = mmSetFreeDelay(0);
         mm_free(fileInfo);
         mmSetFreeDelay(saved);
-        gAudioPendingLoadFlags &= ~(u64)AUDIO_LOAD_S_PROJECT;
+        gAudioPendingLoadFlags &= ~AUDIO_LOAD_S_PROJECT;
         gAudioCompletedLoadFlags |= AUDIO_LOAD_S_PROJECT;
     }
 }
@@ -359,7 +359,7 @@ void poolDataSLoadedCallback(s32 status, DVDFileInfo* fileInfo)
         saved = mmSetFreeDelay(0);
         mm_free(fileInfo);
         mmSetFreeDelay(saved);
-        gAudioPendingLoadFlags &= ~(u64)AUDIO_LOAD_S_POOL;
+        gAudioPendingLoadFlags &= ~AUDIO_LOAD_S_POOL;
         gAudioCompletedLoadFlags |= AUDIO_LOAD_S_POOL;
     }
 }
@@ -381,7 +381,7 @@ void sampleBufferMLoadedCallback(s32 status, DVDFileInfo* fileInfo)
         saved = mmSetFreeDelay(0);
         mm_free(fileInfo);
         mmSetFreeDelay(saved);
-        gAudioPendingLoadFlags &= ~(u64)AUDIO_LOAD_M_SAMPLE_BUF;
+        gAudioPendingLoadFlags &= ~AUDIO_LOAD_M_SAMPLE_BUF;
         gAudioCompletedLoadFlags |= AUDIO_LOAD_M_SAMPLE_BUF;
     }
 }
@@ -403,7 +403,7 @@ void sampleDirectoryMLoadedCallback(s32 status, DVDFileInfo* fileInfo)
         saved = mmSetFreeDelay(0);
         mm_free(fileInfo);
         mmSetFreeDelay(saved);
-        gAudioPendingLoadFlags &= ~(u64)AUDIO_LOAD_M_SAMPLE_DIR;
+        gAudioPendingLoadFlags &= ~AUDIO_LOAD_M_SAMPLE_DIR;
         gAudioCompletedLoadFlags |= AUDIO_LOAD_M_SAMPLE_DIR;
     }
 }
@@ -425,7 +425,7 @@ void projectDataMLoadedCallback(s32 status, DVDFileInfo* fileInfo)
         saved = mmSetFreeDelay(0);
         mm_free(fileInfo);
         mmSetFreeDelay(saved);
-        gAudioPendingLoadFlags &= ~(u64)AUDIO_LOAD_M_PROJECT;
+        gAudioPendingLoadFlags &= ~AUDIO_LOAD_M_PROJECT;
         gAudioCompletedLoadFlags |= AUDIO_LOAD_M_PROJECT;
     }
 }
@@ -448,7 +448,7 @@ void poolDataMLoadedCallback(s32 status, DVDFileInfo* fileInfo)
         saved = mmSetFreeDelay(0);
         mm_free(fileInfo);
         mmSetFreeDelay(saved);
-        gAudioPendingLoadFlags &= ~(u64)AUDIO_LOAD_M_POOL;
+        gAudioPendingLoadFlags &= ~AUDIO_LOAD_M_POOL;
         gAudioCompletedLoadFlags |= AUDIO_LOAD_M_POOL;
     }
 }
@@ -473,7 +473,7 @@ void streamsLoadedCallback(s32 status, DVDFileInfo* fileInfo)
         saved = mmSetFreeDelay(0);
         mm_free(fileInfo);
         mmSetFreeDelay(saved);
-        gAudioPendingLoadFlags &= ~(u64)AUDIO_LOAD_STREAMS;
+        gAudioPendingLoadFlags &= ~AUDIO_LOAD_STREAMS;
         gAudioCompletedLoadFlags |= AUDIO_LOAD_STREAMS;
         stream = gStreamsData;
         streamCount = gStreamsCount;
@@ -503,7 +503,7 @@ void sfxTriggersLoadedCallback(s32 status, DVDFileInfo* fileInfo)
         saved = mmSetFreeDelay(0);
         mm_free(fileInfo);
         mmSetFreeDelay(saved);
-        gAudioPendingLoadFlags &= ~(u64)AUDIO_LOAD_SFX_TRIGGERS;
+        gAudioPendingLoadFlags &= ~AUDIO_LOAD_SFX_TRIGGERS;
         gAudioCompletedLoadFlags |= AUDIO_LOAD_SFX_TRIGGERS;
     }
 }
@@ -525,7 +525,7 @@ void musicTriggersLoadedCallback(s32 status, DVDFileInfo* fileInfo)
         saved = mmSetFreeDelay(0);
         mm_free(fileInfo);
         mmSetFreeDelay(saved);
-        gAudioPendingLoadFlags &= ~(u64)AUDIO_LOAD_MUSIC_TRIGGERS;
+        gAudioPendingLoadFlags &= ~AUDIO_LOAD_MUSIC_TRIGGERS;
         gAudioCompletedLoadFlags |= AUDIO_LOAD_MUSIC_TRIGGERS;
     }
 }
@@ -847,7 +847,7 @@ static void MIDIWADLoadedCallback(s32 status, DVDFileInfo* fileInfo) {
     } else {
         DVDClose(fileInfo);
         mm_free(fileInfo);
-        gAudioPendingLoadFlags &= ~(u64)AUDIO_LOAD_MIDI_WAD;
+        gAudioPendingLoadFlags &= ~AUDIO_LOAD_MIDI_WAD;
         gAudioCompletedLoadFlags |= AUDIO_LOAD_MIDI_WAD;
     }
 }
