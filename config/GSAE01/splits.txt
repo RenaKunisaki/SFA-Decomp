@@ -341,7 +341,7 @@ dlls/engine/2/2.c:
 	.bss        start:0x80396918 end:0x8039A7A8
 	.sdata      start:0x803DB700 end:0x803DB750
 	.sbss       start:0x803DD060 end:0x803DD128
-	.sdata2     start:0x803DEFB0 end:0x803DF058
+	.sdata2     start:0x803DEFA0 end:0x803DF058
 
 dlls/engine/5/5.c:
 	.text       start:0x80088758 end:0x8008C974
@@ -3870,7 +3870,7 @@ dlls/objects/653_WCLevelCont/WCLevelCont.c:
 	.text       start:0x802251B4 end:0x802272C8
 	.data       start:0x8032B008 end:0x8032B178
 	.bss        start:0x803AD298 end:0x803AD320
-	.sdata2     start:0x803E6DB0 end:0x803E6DDC
+	.sdata2     start:0x803E6DA8 end:0x803E6DDC
 
 dlls/objects/654_WCBeacon/WCBeacon.c:
 	.text       start:0x802272C8 end:0x802276AC
