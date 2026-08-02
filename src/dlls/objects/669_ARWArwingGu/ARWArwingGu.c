@@ -113,6 +113,8 @@ void ARWArwingGu_hitDetect(void)
 {
 }
 
+static const f32 gArwingGuAlphaMax[1] = {255.0f};
+
 void ARWArwingGu_update(GameObject* obj)
 {
     ObjAnimComponent* objAnim = &(obj)->anim;
@@ -152,19 +154,19 @@ void ARWArwingGu_update(GameObject* obj)
         f32 alpha;
         if (state->fadeIn != 0)
         {
-            alpha = 255.0f * timeDelta + (f32)(u32)objAnim->alpha;
+            alpha = gArwingGuAlphaMax[0] * timeDelta + (f32)(u32)objAnim->alpha;
         }
         else
         {
-            alpha = (f32)(u32)objAnim->alpha - 255.0f * timeDelta;
+            alpha = (f32)(u32)objAnim->alpha - gArwingGuAlphaMax[0] * timeDelta;
         }
         if (alpha < 0.0f)
         {
             alpha = 0.0f;
         }
-        else if (alpha > 255.0f)
+        else if (alpha > gArwingGuAlphaMax[0])
         {
-            alpha = 255.0f;
+            alpha = gArwingGuAlphaMax[0];
         }
         objAnim->alpha = alpha;
         break;
