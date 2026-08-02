@@ -50,6 +50,9 @@ force_active:
   # (its own switch jumptable is the only thing that names it); dropping it
   # would shorten .text and shift every later section.
   - surfaceSfxGetRecord
+  # intersect.c: the retail link retained this unreferenced .sbss word;
+  # dropping it would shorten the section and shift every later .sbss address.
+  - lbl_803DCFFC
 
 # Path to the main.dol file.
 object: sys/main.dol
