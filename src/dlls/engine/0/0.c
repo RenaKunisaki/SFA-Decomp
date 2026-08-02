@@ -9215,4 +9215,3 @@ u8 gPauseMenuScarabCapacity;
 int gLastTaskHintId;
 u8* gDummy39Texture;
 u8 gDummy39Countdown;
-u32 lbl_8031C164 = 0;

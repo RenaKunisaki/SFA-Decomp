@@ -25,7 +25,6 @@
 u32 pRestartPoint;
 u8* gSaveGameWorkBuffer;
 s8 gSaveGameMapActCacheIdx[2];
-static int sSaveGameUnused0;
 int gSaveGameObjGroupCacheIdx[2];
 u8 saveGameLoadStatus;
 
