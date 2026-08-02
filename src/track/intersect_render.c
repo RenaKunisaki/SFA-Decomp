@@ -104,7 +104,7 @@ static const IndStageInitData sIndStageInitData = {
 static const IndMtxInit sIndMtxZeroInit = {{0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f}};
 
 
-extern GXColor lbl_803E8454;
+extern GXColor gProjectedShadowFogColor;
 
 f32 gWaterReflectionIndTexMtx[3][2][3] = {
     {{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, -0.5f}},
@@ -153,7 +153,7 @@ static const GXColor sColorFilterKColor1 = {0x6E, 0x6E, 0x6E, 0};
 static const GXColor sColorFilterKColor2 = {0x14, 0x14, 0x14, 0};
 static const GXColor sColorFilterTevColor = {0x0A, 0x0A, 0x0A, 255};
 
-extern u32 lbl_803E8450;
+extern u32 gProjectedShadowFogColorBits;
 int cardProbe(u8 retry);
 void showMemCardError(u8 err);
 void cardShowLoadingMsg(u8 kind);
@@ -2915,7 +2915,7 @@ void objectShadow_setupProjectedTextureDepthFade(ProjectedShadowTexture* shadow,
     f32 q;
     u8 t;
 
-    kc = lbl_803E8454;
+    kc = gProjectedShadowFogColor;
     PSMTXConcat(shadow->textureMtx, mtx, m58);
     GXLoadTexMtxImm(m58, GX_TEXMTX0, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_POS, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
@@ -3018,7 +3018,7 @@ void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u
     buf_54 = *(Blk28*)&sIndStageInitData.blk[4];
     buf_38 = *(Blk28*)&sIndStageInitData.blk[5];
     stab = sProjectedShadowStageCounts;
-    *(u32*)&fog_var = lbl_803E8450;
+    *(u32*)&fog_var = gProjectedShadowFogColorBits;
 
     PSMTXConcat(shadow->textureMtx, mtx, mtx_110);
     GXLoadTexMtxImm(mtx_110, GX_TEXMTX0, GX_MTX2x4);
