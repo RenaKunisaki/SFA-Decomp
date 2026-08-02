@@ -320,3 +320,17 @@ transitive census (a cluster reachable only from other uncalled statics is itsel
 which is how `curveSpeedAt` is caught). `static inline` is out of class: an inline nothing
 calls is never expanded and never emitted. A new hit is not automatically a hack — adjudicate
 it against the unit's pool with the sharing test above before accepting or deleting it.
+
+## 8. Campaign-wide audit of the purge lane (2026-08-02)
+
+`docs/purge_campaign_audit.md` rebuilds BOTH endpoints of all 42 purge-shaped commits and diffs
+them with `tools/score_delta_gate.py`: 27 clean, 15 RED, gross -8168 B `matched_data` and
+-0.032980 tree fuzzy, of which 5016 B were given back by the retunes already recorded here,
+672 B by later pool work, and 2480 B still stand. Sections 6 and 6b cover 1192 B of that
+residue. The remaining 1288 B is `72eec6655f`, which shipped with an empty commit body and is
+priced nowhere; its open rows are listed in the audit and are recoverable.
+
+The audit also adds a third sensor blind spot to the two this file already records: a pool
+rotation inside an already-NonMatching unit loses `matched_data` at `dfuzzy +0.000000` with zero
+per-function regressions and zero demotions, so neither the demotion tell nor the threshold
+counters fire. `5d467157cb` -144, `f5fe00213f` -60, `620b69dc2d` -16.
