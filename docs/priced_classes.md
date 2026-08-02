@@ -424,3 +424,118 @@ Classifier for a new row (`.sdata2` all-or-nothing, so a partial pool fix scores
 pool slot to the function of its first reference on both sides. Same function sequence with
 different first-reference offsets = intra-function (8b). Different function sequence = the
 cross-function mint order of §8.
+
+## 9. The opaque-extern crutch: the oracle, the tree-wide census, and the plain-literal price
+
+§8 named one instance of this shape — `engine/68`'s `gCameraModeViewfinderStickScale`, an
+`extern const f32` that no translation unit defines, whose only working role is to be opaque
+enough to stop `-opt propagation`. `90b1a0f251` then closed five instances of it by defining the
+constant in the unit that reads it. This section is the tree-wide sweep behind that class: the
+oracle that tells a crutch from an honest cross-TU reference, what is left after `90b1a0f251`,
+and a measured price for the plain-literal route so it is not tried again unpriced.
+
+### The oracle: `nm` retail's own split object
+
+The tree carries ~3040 `extern` object declarations. 371 name a symbol **no object in the tree
+defines**; 211 of those are scalars in game code (`src/main`, `src/track`, `src/dlls`) that
+`symbols.txt` places in `.sdata2`. Neither "nothing defines it" nor "it is in `symbols.txt`"
+separates a crutch from an honest reference: the honest form is also undefined by us, and
+`symbols.txt` carries no linkage information at all.
+
+What separates them is the **retail split object for the same unit**:
+
+- retail's `.o` also lists the symbol `U` → retail's own TU referenced it across a TU boundary,
+  and our `extern` is a faithful reconstruction. `engine/75`'s eleven `gCamClimb*` are this
+  case: retail's `75.o` UNDs every one of them.
+- retail's `.o` **defines** it (`R`/`D` at an offset) → retail's TU minted that word itself and
+  we did not. The `extern` is standing in for a mint. That is the crutch, and it is also a
+  latent link failure, because only the carve is supplying the symbol.
+
+The sweep is cheap and exhaustive, and its result is mostly a **retirement**: of the 211 rows,
+**148 are honest** and should never be flagged by a later census. **71 were crutches** at
+`8c2eb8998a`; `90b1a0f251` closed five (`render`, `589_BossDrakor`, and one slot each in
+`engine/68`, `vecmath`, `engine/5`), leaving **66 in 10 units** at that tip:
+
+| unit | crutches | pool words missing / extra | data at `90b1a0f251` |
+| --- | --- | --- | --- |
+| `dlls/engine/0/0` | 20 | 18 / 1 | 8972/9952 |
+| `main/object` | 16 | 18 / 0 | 520/608 |
+| `main/newshadows` | 12 | 13 / 0 | 16388/16668 |
+| `main/model` | 7 | 9 / 1 | 496/612 |
+| `dlls/objects/195_Player/player` | 3 | 0 / 0 | 10168/10168 |
+| `main/objhits` | 2 | 2 / 0 | 8352/8440 |
+| `main/vecmath` | 2 | 3 / 0 | 0/84 |
+| `dlls/engine/5/5` | 2 | 1 / 0 | 600/776 |
+| `dlls/engine/68/68` | 1 | 1 / 1 | 64/192 |
+| `dlls/objects/704/704` | 1 | 0 / 1 | 720/884 |
+
+The census reproduces the ELF-level pool shortfall from the other side — `engine/0`,
+`main/object`, `main/newshadows` and `main/model` are the top rows of both — which is the useful
+consequence: **most of the missing-word debt in those four units is this shape, not a naming gap.**
+
+### The plain-literal route is priced everywhere (negative control)
+
+Replacing every crutch read in a unit with the plain literal carried in retail's own pool word,
+rebuilding only that object, all other gates unchanged. Measured at `8c2eb8998a`, before
+`90b1a0f251` reworked five of these slots; the rows are kept because they are the control the
+`const`-definition route should be judged against, and because nine of the ten recover nothing.
+
+| unit | tree fuzzy | tree matched_data | worst function |
+| --- | --- | --- | --- |
+| `engine/0/0` | 99.81176 -> 99.79668 | 1201521 -> **1196585 (-4936)** | `pauseMenuDrawTaskHintPanel` 100.0 -> 71.028 |
+| `main/newshadows` | -> 99.80027 | +0 | `evalNoisePlacements` 100.0 -> 87.057 |
+| `main/model` | -> 99.80949 | +0 | `Model_GetVertexPosition` 100.0 -> 73.033 |
+| `main/vecmath` | -> 99.81110 | +0 | `mtx44_multSafe` 100.0 -> 98.640 |
+| `main/objhits` | -> 99.80982 | +0 | `ObjHits_CheckSkeletonPair` 99.247 -> 96.792 |
+| `main/object` | -> 99.81141 | +0 | `modelInitBones` 100.0 -> 98.267 |
+| `dlls/objects/704/704` | -> 99.81149 | +0 | `titleScreenDrawMenuFrame` 99.776 -> 99.488 |
+| `589_BossDrakor` | -> 99.81158 | +0 | `bossdrakor_update` 99.854 -> 99.626 |
+| `engine/68` | -> 99.80965 | 1201521 -> 1201649 (+128) | `firstPersonDoControls` 100.0 -> 94.512 |
+| `engine/5/5` | -> 99.81089 | 1201521 -> 1201697 (+176) | `renderSunAndMoon` 99.476 -> 98.214 |
+
+`engine/68` reproduces §8's figures exactly on an independent harness, which is the control for
+the rest of the table. Three facts fall out:
+
+1. **The all-or-nothing law holds in both directions.** Nine rows recover **zero** data even
+   where the literal lands in the right slot, because one displaced word voids the section.
+   `engine/0` is the reverse case and the one to be careful with: inserting 20 correct words
+   into a section that was already scoring **destroyed 4936 bytes**. A partial pool fix is not
+   merely worth 0, it can be worth far less than 0.
+2. **Where the pool already matches byte-for-byte, the crutch is buying code and nothing else.**
+   `player`, `704` and (before `90b1a0f251`) `BossDrakor` already emit the very word the extern
+   points at; the extern's only effect is to force a separate opaque load instead of letting
+   MWCC fold or CSE the literal. Removing it costs 0.06-0.29 on a function for no data at all,
+   so those three rows are ban-reduction with no compensating recovery.
+3. The plain literal is therefore the wrong instrument. `90b1a0f251`'s rule is the operative one:
+   a named `.sdata2` symbol is materialised after the other operand and is not CSE'd, an interned
+   literal is materialised before it and is, so the choice is a `.text` decision first.
+
+### `engine/5`'s last word: reachable, and priced (measured at `90b1a0f251`)
+
+`engine/5` is one slot from a byte-identical pool: retail's `0.55f`
+(`gSkySunMoonRiseScale`) at `.sdata2+0x5c`, a front-end literal of `renderSunAndMoon` minted
+between `28800.0f` (0x58) and `2.0f` (0x60). It cannot be reached by a definition, because a
+file-scope object mints at its **declaration point** and 0x5c sits in the middle of the
+function's own literal run — no declaration position exists that lands there. Writing the plain
+literal does not reach it either: `scale` is single-use and `-opt propagation` sinks the whole
+assignment past the `2.0f` and `400.0f` statements to its consumer, so `0.55f` mints two slots
+late. Splitting the statement blocks the sink and is the only form that reaches the slot:
+
+```c
+scale = 0.55f * riseT;
+scale = 1.0f - scale;
+```
+
+`.sdata2` then goes byte-identical, **600/776 -> 776/776**, tree 99.81176 -> 99.81078,
+matched_data **1203257 -> 1203433 (+176)**, `renderSunAndMoon` 99.476 -> 98.018. The `-(x - 1.0f)`
+spelling of the same split is worse (97.608), and a *named* second temp (`riseScale`) does not
+work at all — it changes the liveness, the sink returns and the pool goes back to three wrong
+words. Left unlanded: it trades 0.00098 fuzzy for 176 bytes and one opaque extern, and that is
+the owner's trade, not a lane's.
+
+### Do not re-survey
+
+The 148 honest rows are settled by the oracle; a later census should not re-flag them.
+`main/render` is the one structurally unreachable row even after `90b1a0f251`: retail's
+`.sdata2` there is 64 bytes of which 60 are `pad_11_803DE508_sdata2`, another TU's data, so the
+section stays 15 words short (9040/9104) no matter how its own constant is spelled.
