@@ -220,6 +220,41 @@ zero relocations against it and a duplicate of its value elsewhere in the pool.*
 **Standing verdict.** All five rows are at their best structured spelling; do not re-probe
 without a genuinely new lever. The DOL still holds because every affected unit was demoted.
 
+## 6b. Same class in two `src/main` units: `trig` + `rcp_dolphin` (purge-priced, measured 2026-08-02)
+
+`4461d0aa45` removed eight `const T x[1] = {V}` anchors — five sin/cos approximation
+coefficients from `src/main/trig.c`, three distortion constants from `src/main/rcp_dolphin.c`,
+demoting `rcp_dolphin`. The commit measured and stated `matched_data -272` (trig -192,
+rcp_dolphin -80) at `matched_code +0` and `matched_functions +0`. All three of those figures
+reproduce exactly. They are also the half of the price that a threshold counter can see:
+`matched_code` and `matched_functions` only move when a function crosses 100.0, and every
+`trig` function was already at 99.97-99.98, so eight of them lost fuzzy score without moving
+either counter by a byte.
+
+| Function | Before | After | Gap |
+|---|---|---|---|
+| fsin16HighPrecision | 99.981 | 94.212 | 5.769 |
+| fcos16HighPrecision | 99.981 | 94.212 | 5.769 |
+| fsin16Precise | 99.976 | 95.585 | 4.390 |
+| fcos16Precise | 99.976 | 95.585 | 4.390 |
+| fcos16 | 99.973 | 96.730 | 3.243 |
+| fsin16 | 99.973 | 96.730 | 3.243 |
+| fsin16Approx | 99.970 | 98.152 | 1.818 |
+| fcos16Approx | 99.970 | 98.152 | 1.818 |
+
+Tree fuzzy 99.81535 -> 99.811676, **-0.003674 — 3.3x the entire 22-instance section-6 window
+(-0.00111) from a quarter as many instances.** `trig` `.text` 99.975 -> 95.926 and its `.sdata2`
+100.0 -> 61.458 at unchanged section size, with unit `matched_data` 192 -> 0: removing five words
+rotates the whole pool, so the section loses every byte rather than the five. `rcp_dolphin` keeps
+`.text` at 100.0 and pays only `.sdata2` 100.0 -> 14.634 (-80), and its demotion is what keeps the
+DOL green.
+
+**Standing verdict.** Banked, not reverted — section 6's law applies: the shape is banned and the
+anchors are load-bearing, so there is no free subset to retune toward. The only known recovery is
+section 2's legal `const f32 name[1] = {v}` reconnect, which is gated on the naming law and on the
+checker's cross-TU exemption; that is a pool/naming-lane question, not a retune. Reproduce with
+`python3 tools/score_delta_gate.py --commits fff7ee912c 86334e8343`.
+
 ## Related recurring REGRESSION class (fixable — not priced, listed so windows get scanned)
 
 Pool-const purge/retune commits historically gated on matched_code only and twice shipped
