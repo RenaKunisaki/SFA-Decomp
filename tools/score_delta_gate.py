@@ -44,6 +44,10 @@ What it compares
                  nothing, because demotion is what blinds the DOL gate.
   per section    fuzzy_match_percent, so a pool that scores 0/84 is visible.
   tree           the top-level measures block.
+  the DOL        endpoint B is force-linked (main.dol and main.elf deleted
+                 first, or ninja no-ops) and its md5 compared to retail, because
+                 a MatchingFor DLL unit's pool links into main.dol .sdata2 and a
+                 purge there can grow the DOL while all_source stays green.
 
 Usage
 -----
@@ -507,6 +511,30 @@ def build(wt, quiet=False):
     return rp
 
 
+def dol_gate(wt, quiet=False):
+    """The forced-link gate, run in-process so a window scan cannot skip it.
+
+    Deleting main.dol/main.elf first is not decoration: without the delete
+    ninja has nothing to do and the check is a no-op. A MatchingFor DLL unit's
+    literal pool links into main.dol's .sdata2, so a purge can GROW the DOL and
+    leave staging red while `all_source` stays green.
+    """
+    dol = os.path.join(wt, "build", VERSION, "main.dol")
+    elf = os.path.join(wt, "build", VERSION, "main.elf")
+    for p in (dol, elf):
+        if os.path.exists(p):
+            os.remove(p)
+    run(["ninja", os.path.join("build", VERSION, "ok")], cwd=wt)
+    got = md5(dol)
+    retail = os.path.join(wt, "orig", VERSION, "sys", "main.dol")
+    want = md5(retail) if os.path.exists(retail) else None
+    ok = want is None or got == want
+    if not quiet:
+        print("  forced link: main.dol md5 %s %s" % (
+            got, "== retail" if ok else "!= retail %s  *** DOL IS RED ***" % want))
+    return ok, got, want
+
+
 def rebuild_unit(wt, obj_rel):
     run(["ninja", obj_rel], cwd=wt)
     rp = report_path(wt)
@@ -904,6 +932,8 @@ def main(argv=None):
                     help="skip the control; the verdict is then UNPROVEN")
     ap.add_argument("--integrity", action="store_true",
                     help="also scan endpoint B for complete units scoring < 100")
+    ap.add_argument("--no-dol-gate", action="store_true",
+                    help="skip the forced-link / DOL byte-identity check at B")
     ap.add_argument("--real-report", default=os.path.join(
         REPO, "build", VERSION, "report.json"),
         help="a real report.json for --self-test to validate against")
@@ -981,11 +1011,19 @@ def main(argv=None):
         else:
             print("\nWARNING: build-layer control skipped; verdict is UNPROVEN.\n")
 
+        dol_ok = True
+        if not args.no_dol_gate:
+            print("forced-link gate at endpoint B:")
+            dol_ok, _got, _want = dol_gate(reports["B"][1])
+            print("")
+
         d = render(diff_reports(reports["A"][0], reports["B"][0]),
                    reports["A"][0], reports["B"][0])
+        if not dol_ok:
+            print("VERDICT OVERRIDDEN: RED -- main.dol no longer matches retail\n")
         if args.integrity:
             integrity_scan(reports["B"][0])
-        return 1 if d.red else 0
+        return 1 if (d.red or not dol_ok) else 0
     except ControlError as exc:
         print("\nPOSITIVE CONTROL FAILED: %s" % exc)
         return 3
