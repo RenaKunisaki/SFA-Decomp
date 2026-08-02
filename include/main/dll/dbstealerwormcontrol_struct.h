@@ -12,9 +12,23 @@ struct GameObject;
 #define DBWORM_FLAG14_FX_DUST 0x2 /* emit the small dust burst (partfx 0x345) */
 #define DBWORM_FLAG14_FX_SPRAY 0x4 /* emit the large spray burst (partfx 0x343 x10) */
 
+typedef struct DbStealerwormScriptStep
+{
+    int code;
+    int mode;
+    int objGroup;
+} DbStealerwormScriptStep;
+
+typedef struct DbStealerwormScript
+{
+    const DbStealerwormScriptStep* steps;
+    s16 stepCount;
+    s16 unk6;
+} DbStealerwormScript;
+
 typedef struct DbStealerwormControl
 {
-    int cfg; /* entry in the gDbStealerwormScriptTable table (stride 8 ints) */
+    const DbStealerwormScript* cfg;
     f32 unk04;
     f32 unk08;
     f32 countdown; /* countdown; init randomGetRange(10, 300) */
@@ -28,7 +42,7 @@ typedef struct DbStealerwormControl
     };
     s16 msgSlotIndex; /* queued message-config slot index (-1 = none); pushed as the type-7 frame payload */
     u8 unk1E[2];
-    int routeCursor; /* cursor into the cfg route list (12-byte entries) */
+    const DbStealerwormScriptStep* routeCursor;
     RingBufferQueue* msgStack; /* queued 3-word messages */
     int msgCode; /* current message word 0: code dispatched to the player interface (frame[0]) */
     int msgMode; /* current message word 1: target-acquisition mode 0/1 (frame[1]) */

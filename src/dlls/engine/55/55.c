@@ -320,11 +320,11 @@ void languageMenuInit(void)
 typedef struct OptionsMenuPanels
 {
     u8 pad00[0x10];
-    s8* audioEntries;
+    TitleMenuTextEntry* audioEntries;
     u32 unk_14;
     u8 audioCount;
     u8 pad19[0x20 - 0x19];
-    s8* optionEntries;
+    TitleMenuTextEntry* optionEntries;
     u32 unk_24;
     u8 optionCount;
 } OptionsMenuPanels;
@@ -343,14 +343,14 @@ void optionsMenu_openAudioPanel(void)
 
     if (isCheatUnlocked(2) != 0)
     {
-        panels->audioEntries[0x10b] = 5;
-        *(u16*)(panels->audioEntries + 0x142) = (u16)(*(u16*)(panels->audioEntries + 0x142) & ~TITLE_MENU_TEXT_ENTRY_HIDDEN);
-        panels->audioEntries[0x146] = 4;
+        panels->audioEntries[4].pad18[3] = 5;
+        panels->audioEntries[5].flags = (u16)(panels->audioEntries[5].flags & ~TITLE_MENU_TEXT_ENTRY_HIDDEN);
+        panels->audioEntries[5].pad18[2] = 4;
     }
     else
     {
-        panels->audioEntries[0x10b] = -1;
-        *(u16*)(panels->audioEntries + 0x142) = (u16)(*(u16*)(panels->audioEntries + 0x142) | TITLE_MENU_TEXT_ENTRY_HIDDEN);
+        panels->audioEntries[4].pad18[3] = -1;
+        panels->audioEntries[5].flags = (u16)(panels->audioEntries[5].flags | TITLE_MENU_TEXT_ENTRY_HIDDEN);
     }
 
     gTitleMenuLinkInterface->vtable->setup(panels->audioEntries, panels->audioCount, 0, NULL, 0, 0, 0x14, 0xc8, 0xff,
@@ -390,11 +390,11 @@ void optionsMenu_openGeneralPanel(void)
 {
     OptionsMenuPanels* panels;
     int lastUnlocked;
-    int entryOffset;
+    int entryIndex;
     int cheatId;
     TitleMenuItem** slot[1];
     int cheatId2;
-    int entryOffset2;
+    int entryIndex2;
     int lastUnlocked2;
 
     if (gOptionsActivePanel != -1)
@@ -406,36 +406,36 @@ void optionsMenu_openGeneralPanel(void)
 
     lastUnlocked = -1;
     cheatId = 3;
-    entryOffset = 0xb4;
+    entryIndex = 3;
     do
     {
         if (isCheatUnlocked((u8)(cheatId - 2)) != 0)
         {
-            panels->optionEntries[entryOffset - 0x21] = cheatId;
-            *(u16*)(panels->optionEntries + entryOffset + 0x16) &= ~TITLE_MENU_TEXT_ENTRY_HIDDEN;
+            panels->optionEntries[entryIndex - 1].pad18[3] = cheatId;
+            panels->optionEntries[entryIndex].flags &= ~TITLE_MENU_TEXT_ENTRY_HIDDEN;
             lastUnlocked = cheatId;
         }
         else
         {
-            panels->optionEntries[entryOffset - 0x21] = lastUnlocked;
-            *(u16*)(panels->optionEntries + entryOffset + 0x16) |= TITLE_MENU_TEXT_ENTRY_HIDDEN;
+            panels->optionEntries[entryIndex - 1].pad18[3] = lastUnlocked;
+            panels->optionEntries[entryIndex].flags |= TITLE_MENU_TEXT_ENTRY_HIDDEN;
         }
-        entryOffset -= 0x3c;
+        entryIndex--;
         cheatId--;
     } while (cheatId > 1);
 
     lastUnlocked2 = 1;
     cheatId2 = 2;
-    entryOffset2 = 0x78;
+    entryIndex2 = 2;
     do
     {
         if (isCheatUnlocked((u8)(cheatId2 - 2)) != 0)
         {
-            panels->optionEntries[entryOffset2 + 0x1a] = lastUnlocked2;
-            *(u16*)(panels->optionEntries + entryOffset2 + 0x16) &= ~TITLE_MENU_TEXT_ENTRY_HIDDEN;
+            panels->optionEntries[entryIndex2].pad18[2] = lastUnlocked2;
+            panels->optionEntries[entryIndex2].flags &= ~TITLE_MENU_TEXT_ENTRY_HIDDEN;
             lastUnlocked2 = cheatId2;
         }
-        entryOffset2 += 0x3c;
+        entryIndex2++;
         cheatId2++;
     } while (cheatId2 < 4);
 

@@ -83,7 +83,7 @@ void DR_EarthWarrior_feed(GameObject* obj, int mode) {
         state->sub.energy += 4;
         objSoundStartTimed(obj, &state->modelSoundState, 0x291, 0x1000, -1, 1);
         state->sub.unk8EC = 4.32f;
-        *(f32*)((char*)lbl_8033527C + 0x24) = state->sub.unk8EC;
+        lbl_8033527C[4].maxSpeed = state->sub.unk8EC;
         break;
     default:
         break;
@@ -94,16 +94,16 @@ int DR_EarthWarrior_updateLeap(GameObject* obj, EarthWarriorSub* warrior, Baddie
     *(u32*)&warrior->unk360 |= 0x1000000LL;
     baddie->moveSpeed = 0.035f;
     if ((obj)->anim.currentMoveProgress > 0.1f && (obj)->anim.currentMoveProgress < 0.25f &&
-        baddie->animSpeedC > *(f32*)((char*)warrior->configRow + 0x1c) - 0.4f && baddie->inputMagnitude > 0.8f &&
+        baddie->animSpeedC > warrior->configRow[3].maxSpeed - 0.4f && baddie->inputMagnitude > 0.8f &&
         warrior->frameCounter >= 0x96) {
         ((ByteFlags*)&warrior->flags3F0)->b40 = 1;
         ((ByteFlags*)&warrior->flags3F0)->b80 = 0;
         warrior->soundId = warrior->soundIdReload;
         baddie->moveSpeed = 0.0165f;
-        ObjAnim_SetCurrentMove((int)obj, *(s16*)((char*)warrior->moveTable + 0x3a), 0.0f, 0);
+        ObjAnim_SetCurrentMove((int)obj, warrior->moveTable[0x1d], 0.0f, 0);
         ObjAnim_SetCurrentEventStepFrames((struct ObjAnimComponent*)obj, 0x10);
         warrior->leapStartYaw = warrior->currentYaw;
-        warrior->animSpeedRate = (0.2f + (*(f32*)((char*)warrior->configRow + 0x14) + baddie->animSpeedC)) / 60.0f;
+        warrior->animSpeedRate = (0.2f + (warrior->configRow[2].maxSpeed + baddie->animSpeedC)) / 60.0f;
         warrior->appliedYaw = warrior->currentYaw;
         warrior->currentYaw += 0x8000;
         baddie->animSpeedC = -baddie->animSpeedC;
@@ -111,7 +111,7 @@ int DR_EarthWarrior_updateLeap(GameObject* obj, EarthWarriorSub* warrior, Baddie
     }
     if (((ByteFlags*)&warrior->flags3F0)->b80 != 0) {
         f32 lim;
-        if (baddie->animSpeedC <= (lim = *(f32*)((char*)warrior->configRow + 0x10)) && baddie->animSpeedA <= lim) {
+        if (baddie->animSpeedC <= (lim = warrior->configRow[2].minSpeed) && baddie->animSpeedA <= lim) {
             warrior->savedYaw = warrior->currentYaw;
             ((ByteFlags*)&warrior->flags3F0)->b40 = 0;
             ((ByteFlags*)&warrior->flags3F0)->b80 = 0;
@@ -331,20 +331,20 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int controllerState) {
             warrior->currentYawStepRate *= m2;
         }
         warrior->targetAnimSpeed *= 0.75f;
-        if (warrior->targetAnimSpeed < *(f32*)(warrior->configRow + 0xc)) {
-            warrior->targetAnimSpeed = *(f32*)(warrior->configRow + 0xc);
+        if (warrior->targetAnimSpeed < warrior->configRow[1].maxSpeed) {
+            warrior->targetAnimSpeed = warrior->configRow[1].maxSpeed;
         }
         hitState->hitVolumePriority = 0x15;
         hitState->hitVolumeId = 2;
     }
     if (!((ByteFlags*)&state->sub.flags994)->b01 && !((ByteFlags*)&warrior->flags3F0)->b40 &&
         !((ByteFlags*)&warrior->flags3F0)->b80 &&
-        ((EarthWarriorState*)controllerState)->baddie.animSpeedC > 0.3f + *(f32*)(warrior->configRow + 0x14) &&
+        ((EarthWarriorState*)controllerState)->baddie.animSpeedC > 0.3f + warrior->configRow[2].maxSpeed &&
         (warrior->unk470 < -0.3f || warrior->frameCounter >= 0x96)) {
         ((ByteFlags*)&warrior->flags3F0)->b80 = 1;
         *(u32*)&warrior->unk360 |= 0x1000000LL;
         warrior->animSpeedRate = ((EarthWarriorState*)controllerState)->baddie.animSpeedA;
-        ObjAnim_SetCurrentMove((int)obj, *(s16*)(warrior->moveTable + 0x3c), 0.0f, 0);
+        ObjAnim_SetCurrentMove((int)obj, warrior->moveTable[0x1e], 0.0f, 0);
         ((EarthWarriorState*)controllerState)->baddie.moveSpeed = 0.035f;
     }
     if (!((ByteFlags*)&warrior->flags3F0)->b80 && !((ByteFlags*)&warrior->flags3F0)->b40) {
@@ -369,8 +369,8 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int controllerState) {
                 v = -v;
             }
             *(s16*)&warrior->currentYaw = (182.044f * v + (f32)(s32)warrior->currentYaw);
-        } else if (((EarthWarriorState*)controllerState)->baddie.animSpeedC <= *(f32*)(warrior->configRow + 0x4) &&
-                   ((EarthWarriorState*)controllerState)->baddie.animSpeedA <= *(f32*)(warrior->configRow + 0xc)) {
+        } else if (((EarthWarriorState*)controllerState)->baddie.animSpeedC <= warrior->configRow[0].maxSpeed &&
+                   ((EarthWarriorState*)controllerState)->baddie.animSpeedA <= warrior->configRow[1].maxSpeed) {
             warrior->currentYaw += warrior->turnDegrees * 0xb6;
         }
     }
@@ -383,8 +383,8 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int controllerState) {
         }
         ((EarthWarriorState*)controllerState)->baddie.animSpeedC += r;
         ((EarthWarriorState*)controllerState)->baddie.animSpeedC =
-            (((EarthWarriorState*)controllerState)->baddie.animSpeedC < *(f32*)warrior->configRow)
-                ? *(f32*)warrior->configRow
+            (((EarthWarriorState*)controllerState)->baddie.animSpeedC < warrior->configRow[0].minSpeed)
+                ? warrior->configRow[0].minSpeed
                 : ((((EarthWarriorState*)controllerState)->baddie.animSpeedC > warrior->animSpeedMax)
                        ? warrior->animSpeedMax
                        : ((EarthWarriorState*)controllerState)->baddie.animSpeedC);
@@ -420,16 +420,16 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int controllerState) {
         warrior->soundId = (warrior->attackStage > 3) ? 0xa : 8;
         {
             f32 v294 = ((EarthWarriorState*)controllerState)->baddie.animSpeedC;
-            if (v294 < ((f32*)warrior->configRow)[i2]) {
+            if (v294 < (&warrior->configRow[0].minSpeed)[i2]) {
                 if (warrior->attackPhase == 4) {
-                    if (((EarthWarriorState*)controllerState)->baddie.animSpeedA < *(f32*)(warrior->configRow + 0x10) &&
+                    if (((EarthWarriorState*)controllerState)->baddie.animSpeedA < warrior->configRow[2].minSpeed &&
                         ((BaddieState*)controllerState)->inputMagnitude < 0.2f) {
                         return 2;
                     }
                 } else {
                     warrior->attackPhase -= 4;
                 }
-            } else if (v294 >= *(f32*)((char*)(warrior->configRow + 4) + i2 * 4)) {
+            } else if (v294 >= (&warrior->configRow[0].maxSpeed)[i2]) {
                 if (warrior->attackPhase < 0x14) {
                     if (warrior->attackPhase == 0) {
                         blend = 0.85f;
@@ -441,12 +441,12 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, int controllerState) {
             }
         }
         if ((skip != 0 || (void*)warrior->prevMoveTable != (void*)warrior->moveTable ||
-             (obj)->anim.currentMove != *(s16*)(warrior->moveTable + warrior->attackPhase * 2)) &&
+             (obj)->anim.currentMove != warrior->moveTable[warrior->attackPhase]) &&
             (ObjAnim_GetCurrentEventCountdown(&obj->anim) == 0 || ((ByteFlags*)&warrior->flags3F2)->b10 != 0)) {
             if ((obj)->anim.currentMove == 0x14) {
                 blend = 0.85f;
             }
-            ObjAnim_SetCurrentMove((int)obj, *(s16*)(warrior->moveTable + warrior->attackPhase * 2), blend, 0);
+            ObjAnim_SetCurrentMove((int)obj, warrior->moveTable[warrior->attackPhase], blend, 0);
         }
     }
     if (!((ByteFlags*)&warrior->flags3F0)->b80 && !((ByteFlags*)&warrior->flags3F0)->b40 &&
@@ -490,10 +490,10 @@ int DR_EarthWarrior_stateHandler01(GameObject* obj, int baddie) {
     }
     if (*(f32*)&((EarthWarriorState*)baddie)->baddie.trackedObj >= 0.22f &&
         ((BaddieState*)baddie)->inputMagnitude >= 0.22f &&
-        ((BaddieState*)baddie)->animSpeedC >= *(f32*)(warrior->configRow + 0x4)) {
+        ((BaddieState*)baddie)->animSpeedC >= warrior->configRow[0].maxSpeed) {
         return 3;
     }
-    moveId = *(s16*)warrior->moveTable;
+    moveId = warrior->moveTable[0];
     ((BaddieState*)baddie)->stateId = 0;
     warrior->animSpeedMax = 4.32f;
     {
@@ -516,8 +516,8 @@ int DR_EarthWarrior_stateHandler01(GameObject* obj, int baddie) {
         ((BaddieState*)baddie)->velSmoothTime = 8.0f;
         ((BaddieState*)baddie)->moveSpeed = 0.005f;
     }
-    if ((obj)->anim.currentMove == *(s16*)(warrior->moveTable + 0x30) ||
-        (obj)->anim.currentMove == *(s16*)(warrior->moveTable + 0x32)) {
+    if ((obj)->anim.currentMove == warrior->moveTable[0x18] ||
+        (obj)->anim.currentMove == warrior->moveTable[0x19]) {
         if (((BaddieState*)baddie)->moveDone != 0 && ObjAnim_GetCurrentEventCountdown(&obj->anim) == 0 &&
             !((ByteFlags*)&state->sub.flags994)->b01) {
             ObjAnim_SetCurrentMove((int)obj, moveId, 0.0f, 0);
@@ -994,8 +994,8 @@ void DR_EarthWarrior_init(GameObject* obj, DREarthWarriorPlacement* def) {
     state->moveLib.modeBits |= 2;
     state->sub.unk8EC = 4.32f;
     state->sub.energy = def->energyCapacity;
-    state->sub.moveTable = (int)base->moveTable;
-    state->sub.configRow = (int)base->configRow;
+    state->sub.moveTable = (const s16*)base->moveTable;
+    state->sub.configRow = (const EWSpeedRange*)base->configRow;
     {
         f32 v = 1.0f;
         state->sub.unk834 = v;
@@ -1064,9 +1064,9 @@ u8 gDREarthWarriorInitData[132] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x09, 0x00, 0x00, 0x00, 0x0A,
 };
 
-int lbl_8033527C[12] = {
-    0x3BA3D70A, 0x3E75C290, 0x3E449BA6, 0x3FA5E355, 0x3F9FBE77, 0x4010624E,
-    0x400D4FE0, 0x405A1CAC, 0x40570A3E, 0x408A3D71, 0x4089999A, 0x408A3D71,
+EWSpeedRange lbl_8033527C[6] = {
+    {0.005f, 0.24000001f}, {0.192f, 1.2960001f}, {1.248f, 2.256f},
+    {2.2080002f, 3.408f},  {3.3600001f, 4.32f},  {4.3f, 4.32f},
 };
 
 u8 gDREarthWarriorRowIndices[960] = {

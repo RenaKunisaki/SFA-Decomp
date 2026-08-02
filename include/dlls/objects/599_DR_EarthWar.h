@@ -11,6 +11,11 @@
 #include "main/objprint_sound_api.h"
 #include "main/objseq.h"
 
+typedef struct EWSpeedRange {
+    f32 minSpeed;
+    f32 maxSpeed;
+} EWSpeedRange;
+
 typedef struct DREarthWarriorPlacement {
     ObjPlacement base;
     s8 spawnYaw;
@@ -27,9 +32,9 @@ typedef struct EarthWarriorSub {
     u8 flags3F1;
     u8 flags3F2;
     u8 pad3F3[5];
-    int moveTable;
-    int prevMoveTable;
-    int configRow;
+    const s16* moveTable;
+    const s16* prevMoveTable;
+    const EWSpeedRange* configRow;
     f32 animSpeedMax;
     f32 targetAnimSpeed;
     u8 pad40C[4];
@@ -232,7 +237,7 @@ extern void* gDREarthWarriorStateHandlers[4];
 extern void* gDREarthWarriorDefaultStateHandler;
 extern void* gEarthWarriorResource;
 extern u8 gDREarthWarriorInitData[132];
-extern int lbl_8033527C[12];
+extern EWSpeedRange lbl_8033527C[6];
 extern u8 gDREarthWarriorRowIndices[960];
 extern const EWPathRange gDREarthWarriorLookInitData1;
 extern const EWPathRange gDREarthWarriorLookInitData2;
