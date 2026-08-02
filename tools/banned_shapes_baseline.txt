@@ -17,8 +17,8 @@ src/dlls/objects/202/hagabon_mk2.c:149:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/202/hagabon_mk2.c:151:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/202/mikaladon.c:94:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/202/mikaladon.c:96:SINGLE_ELEM_CONST_ARRAY
-src/dlls/objects/202/vambat.c:99:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/202/vambat.c:101:SINGLE_ELEM_CONST_ARRAY
+src/dlls/objects/202/vambat.c:99:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/203/203.c:206:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/213_Kaldachom/Kaldachom.c:503:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/226/226.c:444:SINGLE_ELEM_CONST_ARRAY
@@ -31,6 +31,12 @@ src/dlls/objects/437/437.c:589:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/437/437.c:590:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/443_SC_totembon/SC_totembon.c:74:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/443_SC_totembon/SC_totembon.c:75:SINGLE_ELEM_CONST_ARRAY
+src/dlls/objects/458_DIMExplosio/DIMExplosio.c:206:SINGLE_ELEM_CONST_ARRAY
+src/dlls/objects/458_DIMExplosio/DIMExplosio.c:207:SINGLE_ELEM_CONST_ARRAY
+src/dlls/objects/458_DIMExplosio/DIMExplosio.c:208:SINGLE_ELEM_CONST_ARRAY
+src/dlls/objects/458_DIMExplosio/DIMExplosio.c:209:SINGLE_ELEM_CONST_ARRAY
+src/dlls/objects/458_DIMExplosio/DIMExplosio.c:210:SINGLE_ELEM_CONST_ARRAY
+src/dlls/objects/458_DIMExplosio/DIMExplosio.c:211:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/458_DIMExplosio/DIMExplosio.c:90:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/458_DIMExplosio/DIMExplosio.c:91:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/458_DIMExplosio/DIMExplosio.c:92:SINGLE_ELEM_CONST_ARRAY
@@ -38,12 +44,6 @@ src/dlls/objects/458_DIMExplosio/DIMExplosio.c:93:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/458_DIMExplosio/DIMExplosio.c:94:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/458_DIMExplosio/DIMExplosio.c:95:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/458_DIMExplosio/DIMExplosio.c:96:SINGLE_ELEM_CONST_ARRAY
-src/dlls/objects/458_DIMExplosio/DIMExplosio.c:206:SINGLE_ELEM_CONST_ARRAY
-src/dlls/objects/458_DIMExplosio/DIMExplosio.c:207:SINGLE_ELEM_CONST_ARRAY
-src/dlls/objects/458_DIMExplosio/DIMExplosio.c:208:SINGLE_ELEM_CONST_ARRAY
-src/dlls/objects/458_DIMExplosio/DIMExplosio.c:209:SINGLE_ELEM_CONST_ARRAY
-src/dlls/objects/458_DIMExplosio/DIMExplosio.c:210:SINGLE_ELEM_CONST_ARRAY
-src/dlls/objects/458_DIMExplosio/DIMExplosio.c:211:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/482_DIM_BossTon/DIM_BossTon.c:120:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/482_DIM_BossTon/DIM_BossTon.c:121:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/521_WM_LevelCon/WM_LevelCon.c:84:SINGLE_ELEM_CONST_ARRAY
@@ -55,8 +55,8 @@ src/dlls/objects/589_BossDrakor/BossDrakor.c:230:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/597/597.c:72:LBL_CONST_DEF
 src/dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c:1239:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c:1240:SINGLE_ELEM_CONST_ARRAY
-src/dlls/objects/599_DR_EarthWar/DR_EarthWar.c:73:UNCALLED_STATIC_FN
 src/dlls/objects/599_DR_EarthWar/DR_EarthWar.c:134:UNCALLED_STATIC_FN
+src/dlls/objects/599_DR_EarthWar/DR_EarthWar.c:73:UNCALLED_STATIC_FN
 src/dlls/objects/625/625.c:194:UNCALLED_STATIC_FN
 src/dlls/objects/625/625.c:202:UNCALLED_STATIC_FN
 src/dlls/objects/648_SPDrape/SPDrape.c:77:SINGLE_ELEM_CONST_ARRAY
@@ -69,7 +69,8 @@ src/main/curves.c:10:UNCALLED_STATIC_FN
 src/main/curves.c:15:UNCALLED_STATIC_FN
 src/main/curves.c:38:UNCALLED_STATIC_FN
 src/main/curves.c:57:UNCALLED_STATIC_FN
-src/main/modellight.c:248:SINGLE_ELEM_CONST_ARRAY
+src/main/modellight.c:248:UNCALLED_STATIC_FN
+src/main/modellight.c:282:UNCALLED_STATIC_FN
 src/main/shadow_dolphin.c:152:UNCALLED_STATIC_FN
 src/main/track_dolphin.c:2298:GOTO
 src/main/track_dolphin.c:2359:GOTO

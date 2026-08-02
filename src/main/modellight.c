@@ -245,7 +245,10 @@ static u8 modelLightStruct_projectedLightIntersectsObject(ModelLightStruct* ligh
     return 1;
 }
 
-const f32 gModelLightMaxProjectionFarZ[1] = {500.0f};
+static void modelLightStruct_resetProjectionFarZ(ModelLightStruct* light)
+{
+    light->projectionFarZ = 500.0f;
+}
 
 static f32 modelLightStruct_getObjectIntensity(ModelLightStruct* light, GameObject* obj) {
     f32 delta[3];
@@ -274,6 +277,11 @@ static f32 modelLightStruct_getObjectIntensity(ModelLightStruct* light, GameObje
     }
 
     return amount;
+}
+
+static f32 modelLightColorComponentToScale(u8 component)
+{
+    return component / 255.0f;
 }
 
 void modelLightStruct_updateColorFade(ModelLightStruct* light)
@@ -465,7 +473,7 @@ f32* modelLightStruct_getProjectionTexMtx(ModelLightStruct* p)
 
 void modelLightStruct_setProjectionFarZ(ModelLightStruct* p, f32 v)
 {
-    p->projectionFarZ = (v < p->projectionNearZ) ? p->projectionNearZ : ((v > gModelLightMaxProjectionFarZ[0]) ? gModelLightMaxProjectionFarZ[0] : v);
+    p->projectionFarZ = (v < p->projectionNearZ) ? p->projectionNearZ : ((v > 500.0f) ? 500.0f : v);
 }
 
 ModelLightStruct* gModelLightList[0x32];
@@ -1286,7 +1294,7 @@ void modelLightStruct_selectObjectLights(GameObject* obj, ModelLightStruct** out
                 {
                     PSVECSubtract(&obj->anim.worldPos, &light->worldPos, (Vec*)delta);
                     dist = PSVECMag((Vec*)delta);
-                    intensity = gModelLightMaxProjectionFarZ[0];
+                    intensity = 500.0f;
                     light->selectionScore = intensity + intensity / dist;
                     light->lightAmount = modelLightStruct_getObjectIntensity(light, obj);
                 }
