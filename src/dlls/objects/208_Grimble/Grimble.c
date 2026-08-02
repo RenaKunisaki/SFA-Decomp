@@ -40,7 +40,6 @@
 #define GRIMBLE_PATH_GET_ROTATION_CALLBACK_OFFSET 0x34
 
 void* gGrimbleStateHandlersB[6];
-void* gGrimbleStateHandlersA[10];
 
 int grimble_stateHandlerB05(GameObject* obj, GroundBaddieState* state) {
     GroundBaddieState* objectState = obj->extra;
@@ -784,6 +783,8 @@ void grimble_update(GameObject* obj) {
         }
     }
 }
+
+void* gGrimbleStateHandlersA[10];
 
 void grimble_init(GameObject* obj, ObjPlacement* placement, int flags) {
     GroundBaddieState* state = obj->extra;

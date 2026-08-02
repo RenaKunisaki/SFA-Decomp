@@ -67,7 +67,6 @@ STATIC_ASSERT(offsetof(DllCESiblingInterface, handleMessage) == DLL_CE_MESSAGE_C
 
 PartFxSpawnParams gDllCEHitReactionScratch;
 ChukChukStateHandler gChukChukCheckHandlers[6];
-ChukChukStateHandler gChukChukMoveHandlers[8];
 
 int gDllCEHitReactionMoves[30] = {
     5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
@@ -771,6 +770,8 @@ void dll_CE_update(GameObject* obj, int unusedA, int unusedB) {
         }
     }
 }
+
+ChukChukStateHandler gChukChukMoveHandlers[8];
 
 void dll_CE_init(GameObject* obj, DllCEPlacement* placement, int flags) {
     GroundBaddieState* state;

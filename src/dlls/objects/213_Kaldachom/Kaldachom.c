@@ -82,7 +82,6 @@ f32 gKaldachomDustSpawnScratch;
 void* gKaldachomEffectResource;
 PartFxSpawnParams gKaldachomHitLightWork;
 KaldachomStateHandler gKaldachomStateHandlersB[6];
-KaldachomStateHandler gKaldachomStateHandlersA[8];
 
 s16 gKaldachomMoves[6] = {0, 0, 1, 1, 2, 0};
 
@@ -726,6 +725,8 @@ void kaldachom_update(GameObject* obj) {
         }
     }
 }
+
+KaldachomStateHandler gKaldachomStateHandlersA[8];
 
 void kaldachom_init(GameObject* obj, KaldachomPlacement* placement, int flags) {
     KaldachomState* state;

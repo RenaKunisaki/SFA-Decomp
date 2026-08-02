@@ -15,10 +15,10 @@ enum
 };
 
 char gPicMenuVideoDecodeThreadArea[0x18];
-OSMessageQueue gPicMenuDecodedTextureSetQueue;
-OSMessageQueue gPicMenuFreeTextureSetQueue;
-OSThread gPicMenuVideoDecodeThread;
-char gPicMenuVideoDecodeThreadStack[0x1000];
+
+extern OSMessageQueue gPicMenuDecodedTextureSetQueue;
+extern OSMessageQueue gPicMenuFreeTextureSetQueue;
+extern OSThread gPicMenuVideoDecodeThread;
 
 s32 gAttractMovieIdleFrameCount;
 s32 gPicMenuVideoDecodePrepareReady;
@@ -237,3 +237,8 @@ BOOL CreateVideoDecodeThread(OSPriority priority, u32 onMemoryArg)
     gPicMenuVideoDecodePrepareReady = 1;
     return 1;
 }
+
+OSThread gPicMenuVideoDecodeThread;
+char gPicMenuVideoDecodeThreadStack[0x1000];
+OSMessageQueue gPicMenuFreeTextureSetQueue;
+OSMessageQueue gPicMenuDecodedTextureSetQueue;

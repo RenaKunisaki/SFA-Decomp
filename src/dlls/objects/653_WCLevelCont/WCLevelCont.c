@@ -27,7 +27,6 @@
 #define WCLEVELCONT_ENVFX_D 0x1fd
 
 u8 gWcTileGridB[8][8];
-u8 gWcTileGridA[9][8];
 
 void wclevelcont_updateAct2State(GameObject* obj, WcLevelControlState* state)
 {
@@ -187,6 +186,8 @@ void wclevelcont_updateAct2State(GameObject* obj, WcLevelControlState* state)
             mainSetBits(GAMEBIT_TrickyTalk, randomGetRange(6, 7));
     }
 }
+
+u8 gWcTileGridA[9][8];
 
 void wclevelcont_updateAct1State(GameObject* obj, WcLevelControlState* state)
 {

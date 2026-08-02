@@ -50,7 +50,6 @@ u8 gAudioStreamDvdState;
 u8 gAudioStreamPlaying;
 
 DVDCommandBlock gAudioStreamDvdBlockCurrent;
-AudioDvdStreamContext gAudioStreamDvdBlockPrepared;
 
 // AISetStreamPlayState() states
 #define AI_STREAM_STOP  0
@@ -103,6 +102,8 @@ void AudioStream_StopAll(void)
     gAudioStreamMusicFadeFlagB = 0;
     gAudioStreamMusicFadeFlagA = 0;
 }
+
+AudioDvdStreamContext gAudioStreamDvdBlockPrepared;
 
 void AudioStream_Nop(int unused)
 {
