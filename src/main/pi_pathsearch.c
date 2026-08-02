@@ -342,7 +342,7 @@ int pathSearchBuildPath(PathSearch* search) {
 
 int pathSearchStep(PathSearch* search, u32 n_) {
     int n;
-    int* q = (int*)search;
+    PathSearch* q = (PathSearch*)(int)search;
     int idx;
     int done;
     int result;
@@ -352,24 +352,24 @@ int pathSearchStep(PathSearch* search, u32 n_) {
     done = 0;
     result = 0;
     while (done == 0 && n != 0) {
-        heap = *(PathHeapEntry**)((char*)q + 0x4);
-        if (*(s16*)((char*)q + 0x22) == 0) {
+        heap = q->heap;
+        if (q->heapSize == 0) {
             idx = -1;
         } else {
             idx = heap[1].nodeIndex;
-            heap[1].priority = heap[*(s16*)((char*)q + 0x22)].priority;
-            heap[1].nodeIndex = heap[(*(s16*)((char*)q + 0x22))--].nodeIndex;
-            pathSearchHeapSiftDown(heap, *(s16*)((char*)q + 0x22), 1);
+            heap[1].priority = heap[q->heapSize].priority;
+            heap[1].nodeIndex = heap[q->heapSize--].nodeIndex;
+            pathSearchHeapSiftDown(heap, q->heapSize, 1);
         }
         if (idx >= 0) {
-            elem = (PathSearchNode*)(*(int*)((char*)q + 0) + idx * 16);
-            *(int*)((char*)q + 0x1c) = idx;
-            if (pathSearchNodeMatchesTarget((PathSearch*)q, elem) != 0) {
+            elem = &q->nodes[idx];
+            q->currentNode = idx;
+            if (pathSearchNodeMatchesTarget(q, elem) != 0) {
                 done = 1;
                 result = 1;
             } else {
                 elem->visited = 1;
-                pathSearchExpandNode((PathSearch*)q, elem, idx);
+                pathSearchExpandNode(q, elem, idx);
             }
         } else {
             done = 1;

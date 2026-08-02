@@ -32,6 +32,7 @@
 #include "main/audio/sfx_play_api.h"
 #include "main/dll/dll_0282_barrelgener.h"
 #include "main/dll/rom_curve_interface.h"
+#include "main/dll/objfsa_romcurve.h"
 #include "game/objects/object.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "dlls/object_descriptor.h"
@@ -203,11 +204,11 @@ static f32 drakorhoverpad_nodeWobbleSpeed(DrakorCurveNode** slot, int angle)
     return (*(f32*)&gDrakorHoverpadSpeedStep) * ((f32)(u32)(*slot)->tangentMag * mathSinf(3.1415927f * (f32)angle / 32768.0f));
 }
 
-int drakorhoverpad_pickMaskedNextPoint(int* pad, int exclude, int maxIndex);
+int drakorhoverpad_pickMaskedNextPoint(ObjfsaRomCurveDef* pad, int exclude, int maxIndex);
 
-int drakorhoverpad_pickUnmaskedNextPoint(int* pad, int exclude, int maxIndex);
+int drakorhoverpad_pickUnmaskedNextPoint(ObjfsaRomCurveDef* pad, int exclude, int maxIndex);
 
-int drakorhoverpad_pickMaskedNextPoint(int* pad, int exclude, int maxIndex)
+int drakorhoverpad_pickMaskedNextPoint(ObjfsaRomCurveDef* pad, int exclude, int maxIndex)
 {
     int collected[4];
     int pt;
@@ -219,8 +220,8 @@ int drakorhoverpad_pickMaskedNextPoint(int* pad, int exclude, int maxIndex)
     bit = 1;
     for (i = 0; i < 4; i++)
     {
-        pt = pad[7 + i];
-        if (pt > -1 && (*(s8*)((char*)pad + 0x1b) & bit) != 0 && pt != exclude)
+        pt = pad->linkIds[i];
+        if (pt > -1 && (pad->blockedLinkMask & bit) != 0 && pt != exclude)
         {
             collected[count++] = pt;
         }
@@ -241,7 +242,7 @@ int drakorhoverpad_pickMaskedNextPoint(int* pad, int exclude, int maxIndex)
     return -1;
 }
 
-int drakorhoverpad_pickUnmaskedNextPoint(int* pad, int exclude, int maxIndex)
+int drakorhoverpad_pickUnmaskedNextPoint(ObjfsaRomCurveDef* pad, int exclude, int maxIndex)
 {
     int collected[4];
     int pt;
@@ -253,8 +254,8 @@ int drakorhoverpad_pickUnmaskedNextPoint(int* pad, int exclude, int maxIndex)
     bit = 1;
     for (i = 0; i < 4; i++)
     {
-        pt = pad[7 + i];
-        if (pt > -1 && (*(s8*)((char*)pad + 0x1b) & bit) == 0 && pt != exclude)
+        pt = pad->linkIds[i];
+        if (pt > -1 && (pad->blockedLinkMask & bit) == 0 && pt != exclude)
         {
             collected[count++] = pt;
         }
@@ -296,11 +297,11 @@ int drakorhoverpad_update(RomCurveWalker* curve, int maxIndex)
     memcpy(curve->hermZ, curve->hermZ2, 16);
     if (curve->reverse != 0)
     {
-        result = drakorhoverpad_pickMaskedNextPoint((int*)curve->nodeA0, -1, maxIndex);
+        result = drakorhoverpad_pickMaskedNextPoint((ObjfsaRomCurveDef*)curve->nodeA0, -1, maxIndex);
     }
     else
     {
-        result = drakorhoverpad_pickUnmaskedNextPoint((int*)curve->nodeA0, -1, maxIndex);
+        result = drakorhoverpad_pickUnmaskedNextPoint((ObjfsaRomCurveDef*)curve->nodeA0, -1, maxIndex);
     }
     if (result != -1)
     {
