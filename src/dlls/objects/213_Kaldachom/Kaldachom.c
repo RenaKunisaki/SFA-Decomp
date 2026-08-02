@@ -76,8 +76,8 @@ STATIC_ASSERT(sizeof(KaldachomCombatStack) == 0x1C);
 
 
 const KaldachomCombatParams gKaldachomCombatParams = {8, 255, 255, 120};
-f32 gKaldachomMouthSpawnScratch;
 int lbl_803DDA9C;
+f32 gKaldachomMouthSpawnScratch;
 f32 gKaldachomDustSpawnScratch;
 void* gKaldachomEffectResource;
 PartFxSpawnParams gKaldachomHitLightWork;

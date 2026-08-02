@@ -23,7 +23,7 @@
 #define LINK_ITEM_SLOTS 25
 
 extern u8 linkTextures[0x30];
-s8 gTumbleweedBushInputEnabled[5];
+s8 gTumbleweedBushInputEnabled;
 s8 linkSelected;
 s8 gTumbleweedBushItemCount;
 s8 gTumbleweedBushPulseDir;
@@ -641,7 +641,7 @@ u32 Link_update(void)
         }
     }
 
-    if (gTumbleweedBushInputEnabled[0] != 0)
+    if (gTumbleweedBushInputEnabled != 0)
     {
         buttons = getButtonsJustPressed(0);
         acceptPressed = 0;
@@ -685,7 +685,7 @@ u32 Link_update(void)
         gTumbleweedBushPulseDir = (s8)(*(s8*)&gTumbleweedBushPulseDir ^ 1);
     }
 
-    gTumbleweedBushInputEnabled[0] = 1;
+    gTumbleweedBushInputEnabled = 1;
     Link_refreshOverlappingItemTimers();
     Link_scanItemVerticalBounds();
     return result;
@@ -721,7 +721,7 @@ void Link_setup(LinkMenuItem* items, int count, int selected, const char* defaul
         gTumbleweedBushPulse = 0xff;
         linkSelected = selected;
         gTumbleweedBushPulseDir = 0;
-        gTumbleweedBushInputEnabled[0] = 0;
+        gTumbleweedBushInputEnabled = 0;
 
         memcpy(gTumbleweedBushItems, items, count * sizeof(LinkMenuItem));
 

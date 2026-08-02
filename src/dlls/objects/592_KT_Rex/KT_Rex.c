@@ -1559,11 +1559,6 @@ void ktrex_hitDetect(GameObject* obj)
     }
 }
 
-static void* ktrex_getStateHandler(int state)
-{
-    return gKTRexStateHandlersA[state];
-}
-
 void ktrex_update(GameObject* obj)
 {
     GroundBaddieState* runtime;

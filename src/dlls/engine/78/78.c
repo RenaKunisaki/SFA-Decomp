@@ -16,8 +16,8 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 
-CameraModeWorldMapState* gCameraModeWorldMapState;
 int lbl_803DD58C;
+CameraModeWorldMapState* gCameraModeWorldMapState;
 f32 gWorldMapBriefingPortraitHeightOffsets[4] = {-3.0f, -3.5f, -3.5f, -3.0f};
 
 void CameraModeWorldMap_copyToCurrent(void* value, CameraModeWorldMapAction action) {

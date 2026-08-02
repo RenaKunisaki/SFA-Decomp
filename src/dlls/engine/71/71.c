@@ -27,8 +27,8 @@ enum CameraModePathCurveType {
 
 extern char sPathCamNeedTwoControlPointsError[];
 
-CameraModePathState* gCameraModePathState;
 int lbl_803DD564;
+CameraModePathState* gCameraModePathState;
 
 RomCurvePathNode* pathcam_walkToPathEnd(RomCurvePathNode* node, int* count, int tag);
 void pathcam_findTaggedNodeWindow(RomCurvePathNode* node, int* out, int tag);

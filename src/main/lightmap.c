@@ -995,12 +995,6 @@ void updateEnvironment(int mode)
 }
 
 
-int isDrawDistanceEnabled(void) { return renderFlags & RENDERFLAG_DRAW_DISTANCE; }
-
-
-int isWidescreen(void) { return renderFlags & RENDERFLAG_WIDESCREEN; }
-u32 shouldDrawShadows(void) { return renderFlags & RENDERFLAG_DRAW_SHADOWS; }
-int shouldDrawClouds(void) { return renderFlags & RENDERFLAG_DRAW_CLOUDS; }
 
 
 void lightmapDrawQueuedObject(GameObject* obj);

@@ -32,8 +32,8 @@
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 
-f32 lbl_803DDD68;
 int lbl_803DDD6C;
+f32 lbl_803DDD68;
 f32 gLaserCannonAdvanceSpeed = 5.0f;
 s16 gLaserCannonPitchStep = 0x80;
 s16 gLaserCannonMaxAimStep = 0x400;
