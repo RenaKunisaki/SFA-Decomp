@@ -712,7 +712,7 @@ void playerRunStateMachine(GameObject* obj, BaddieState* state, f32 dt, PlayerSt
             state->stateId = 0;
             if (obj->anim.hitReactState != NULL)
             {
-                *(u8*)((u8*)obj->anim.hitReactState + 0x70) = 0;
+                ((ObjHitsPriorityState*)obj->anim.hitReactState)->suppressOutgoingHits = 0;
             }
         }
         else if (result < 0)
@@ -738,7 +738,7 @@ void playerRunStateMachine(GameObject* obj, BaddieState* state, f32 dt, PlayerSt
                 state->stateId = 0;
                 if (obj->anim.hitReactState != NULL)
                 {
-                    *(u8*)((u8*)obj->anim.hitReactState + 0x70) = 0;
+                    ((ObjHitsPriorityState*)obj->anim.hitReactState)->suppressOutgoingHits = 0;
                 }
             }
             done = 1;

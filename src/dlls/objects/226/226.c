@@ -510,7 +510,7 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg) {
     ObjWeaponDaTable* weaponDaTable;
     u8* slot;
     GameObject* obj;
-    u8* model2;
+    ObjAnimState* model2;
     s16* tbl;
     int count;
     int count2;
@@ -539,13 +539,13 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg) {
         angle = (gStaffPi * (f32)(int)-ang) / gStaffAngleUnitScale;
         sinv = mathSinf(angle);
         cosv = mathCosf(angle);
-        model2 = *(u8**)((char*)Obj_GetActiveModel(obj) + 0x2c);
+        model2 = ((ObjAnimBank*)Obj_GetActiveModel(obj))->currentState;
         weaponDaTable = obj->anim.weaponDaTable;
         if (weaponDaTable != NULL && weaponDaTable->byteCount > 0) {
             f32 sw;
             slot = (u8*)((StaffState*)swipe)->activeSlot;
-            count = (int)(2.0f * *(f32*)(model2 + 0x14));
-            prog = ((StaffSwipeSlot*)slot)->lengthScale * *(f32*)(model2 + 0x14);
+            count = (int)(2.0f * model2->frameLength);
+            prog = ((StaffSwipeSlot*)slot)->lengthScale * model2->frameLength;
             if (((StaffSwipeSlot*)slot)->flags & 1) {
                 ((StaffState*)swipe)->anchorX = obj->anim.worldPosX;
                 ((StaffState*)swipe)->anchorY = obj->anim.worldPosY;
@@ -554,7 +554,7 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg) {
                 ((StaffSwipeSlot*)slot)->flags &= ~1;
             }
             sw = ((StaffState*)swipe)->progress;
-            m4 = *(f32*)(model2 + 4);
+            m4 = model2->framePhase;
             tmax = m4;
             if (sw > prog) {
                 ((StaffState*)swipe)->progress = m4;
@@ -575,8 +575,8 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg) {
                 frac = fla - ibase;
                 count2 = (int)((flb - fla) / 0.1f);
                 if (count2 == 0) {
-                    if (*(f32*)(model2 + 4) > prog) {
-                        ((StaffState*)swipe)->progress = *(f32*)(model2 + 4);
+                    if (model2->framePhase > prog) {
+                        ((StaffState*)swipe)->progress = model2->framePhase;
                     }
                     return;
                 }
@@ -584,7 +584,7 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg) {
                 step = 1.0f / count2;
                 first = 1;
                 while (count2 != 0) {
-                    if (*(u16*)(slot + 0xe) == 2998) {
+                    if (((StaffSwipeSlot*)slot)->endIndex == 2998) {
                         count2 = 0;
                     } else {
                         frac += 0.1f;
@@ -647,7 +647,7 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg) {
                             }
                             first = 0;
                         }
-                        vp = *(u8**)slot + *(u16*)(slot + 0xe) * 20;
+                        vp = ((StaffSwipeSlot*)slot)->vertexData + ((StaffSwipeSlot*)slot)->endIndex * 20;
                         ((SwipeVertex*)vp)[0].x = Curve_EvalBSpline(ptBx, frac, NULL);
                         ((SwipeVertex*)vp)[0].y = Curve_EvalBSpline(ptBy, frac, NULL);
                         ((SwipeVertex*)vp)[0].z = Curve_EvalBSpline(ptBz, frac, NULL);
@@ -680,7 +680,7 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg) {
                             ((SwipeVertex*)vp)[1].alpha = 255.0f - clamped;
                         }
                         ((StaffSwipeSlot*)slot)->vertexCount += 2;
-                        *(u16*)(slot + 0xe) += 2;
+                        ((StaffSwipeSlot*)slot)->endIndex += 2;
                         count2 -= 1;
                     }
                 }
@@ -689,7 +689,7 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg) {
         ((StaffState*)swipe)->anchorX = obj->anim.worldPosX;
         ((StaffState*)swipe)->anchorY = obj->anim.worldPosY;
         ((StaffState*)swipe)->anchorZ = obj->anim.worldPosZ;
-        ((StaffState*)swipe)->progress = *(f32*)(model2 + 4);
+        ((StaffState*)swipe)->progress = model2->framePhase;
     }
 }
 

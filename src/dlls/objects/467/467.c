@@ -556,10 +556,10 @@ void worldobj_init(GameObject* obj, const WorldObjSetup* setup) {
             sub = obj->anim.placementDataAddress;
             if (Obj_IsLoadingLocked() != 0) {
                 int o2 = (int)Obj_AllocObjectSetup(0x20, WORLDOBJ_SUNRAY_OBJ);
-                ((ObjPlacement*)o2)->color[0] = *(u8*)(sub + 4);
-                ((ObjPlacement*)o2)->color[2] = *(u8*)(sub + 6);
-                ((ObjPlacement*)o2)->color[1] = *(u8*)(sub + 5);
-                ((ObjPlacement*)o2)->color[3] = *(u8*)(sub + 7);
+                ((ObjPlacement*)o2)->color[0] = ((ObjPlacement*)sub)->color[0];
+                ((ObjPlacement*)o2)->color[2] = ((ObjPlacement*)sub)->color[2];
+                ((ObjPlacement*)o2)->color[1] = ((ObjPlacement*)sub)->color[1];
+                ((ObjPlacement*)o2)->color[3] = ((ObjPlacement*)sub)->color[3];
                 ((ObjPlacement*)o2)->posX = obj->anim.localPosX;
                 ((ObjPlacement*)o2)->posY = obj->anim.localPosY;
                 ((ObjPlacement*)o2)->posZ = obj->anim.localPosZ;

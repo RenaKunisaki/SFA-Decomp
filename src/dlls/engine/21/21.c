@@ -1440,11 +1440,11 @@ void curves_updateQueryBounds(GameObject* obj, CurvesCollisionState* state, f32 
     {
         if (*(void**)&obj->anim.parent != NULL)
         {
-            if ((*(void**)(obj->anim.parentAddress + 0x58) != NULL) &&
+            if ((obj->anim.parentAnim->hitboxTransformState != NULL) &&
                 (ObjHits_IsObjectEnabled((ObjAnimComponent*)obj->anim.parent) != 0))
             {
-                mtxIdx = (*(u8*)(*(int*)(obj->anim.parentAddress + 0x58) + 0x10c) + 2) * 0x10;
-                Matrix_TransformPoint((f32*)(*(int*)(obj->anim.parentAddress + 0x58)) + mtxIdx, obj->anim.localPosX,
+                mtxIdx = (obj->anim.parentAnim->hitboxTransformState->activeMatrixIndex + 2) * 0x10;
+                Matrix_TransformPoint((f32*)obj->anim.parentAnim->hitboxTransformState + mtxIdx, obj->anim.localPosX,
                                       obj->anim.localPosY, obj->anim.localPosZ, &obj->anim.worldPosX,
                                       &obj->anim.worldPosY, &obj->anim.worldPosZ);
             }

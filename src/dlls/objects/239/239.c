@@ -991,8 +991,8 @@ void pushable_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int
         }
         }
         {
-            char* activeModelSlot = (char*)obj->anim.banks[obj->anim.bankIndex];
-            *(u16*)(*(char**)activeModelSlot + 2) = *(u16*)(*(char**)activeModelSlot + 2) | 2;
+            ObjAnimBank* activeModelSlot = obj->anim.banks[obj->anim.bankIndex];
+            activeModelSlot->animDef->flags = activeModelSlot->animDef->flags | 2;
         }
         objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, PUSHABLE_UNIT_SCALE);
     }
@@ -1383,11 +1383,11 @@ void pushable_init(GameObject* obj, PushableObjectDef* setup) {
         break;
     }
     {
-        char* modelState = *(char**)&obj->anim.modelState;
+        ObjModelState* modelState = obj->anim.modelState;
         if (modelState != NULL) {
-            *(u32*)(modelState + 0x30) = *(u32*)(modelState + 0x30) | 0xA10;
-            (*(char**)&obj->anim.modelState)[0x3a] = 0x60;
-            (*(char**)&obj->anim.modelState)[0x3b] = 0x40;
+            modelState->flags = modelState->flags | 0xA10;
+            obj->anim.modelState->shadowTintA = 0x60;
+            obj->anim.modelState->shadowTintB = 0x40;
         }
     }
     state->flags = state->flags | PUSHABLE_FLAG_INITIALIZED;

@@ -854,7 +854,7 @@ void mapSetupPlayer(void)
     f32* pos;
     f32 x, y, z;
     int uiDll;
-    u8* view;
+    CameraObject* view;
     Camera* vp;
     CharSpawn spawn;
 
@@ -923,9 +923,9 @@ void mapSetupPlayer(void)
         }
         vp = Camera_GetCurrent();
         view = (*gCameraInterface)->getCamera();
-        vp->x = *(f32*)(view + 0x18);
-        vp->y = *(f32*)(view + 0x1c);
-        vp->z = *(f32*)(view + 0x20);
+        vp->x = view->anim.worldPosX;
+        vp->y = view->anim.worldPosY;
+        vp->z = view->anim.worldPosZ;
         gTitleMenuControlInterface->vtable->func07(obj);
         lbl_803DCB70 = 0;
         mapUpdateCameraPosByTransformSpace();
@@ -1011,7 +1011,7 @@ static void objFreeObjdef(u8* obj, int flag)
             {
                 Obj_FreeObject((GameObject*)defs[n]);
             }
-            mapUnloadRomListPage(*(u8*)(obj + 0x34));
+            mapUnloadRomListPage(((GameObject*)obj)->anim.hostedMapSlot);
         }
     }
     if (flag == 0 && ((GameObject*)obj)->anim.classId == 0x10)
@@ -1467,9 +1467,9 @@ void Obj_UpdateObject(GameObject* obj)
         ((ObjHitsPriorityState*)object->hitReactState)->lastHitObject = 0;
         ((ObjHitsPriorityState*)object->hitReactState)->priorityHitCount = 0;
     }
-    if (*(void**)((u8*)obj + 0x58) != NULL)
+    if (obj->anim.hitboxTransformState != NULL)
     {
-        *(u8*)(*(u8**)((u8*)obj + 0x58) + 0x10f) = 0;
+        obj->anim.hitboxTransformState->contactObjectCount = 0;
     }
 }
 
@@ -1676,7 +1676,7 @@ void modelInitBones(f32 scale, void* model)
         return;
     }
     {
-        if ((src = *(f32**)(hdr + 0x18)) != NULL && (tbl = ((ObjModel*)m)->jointWorkspace) != NULL)
+        if ((src = (f32*)((ModelFileHeader*)hdr)->unk18) != NULL && (tbl = ((ObjModel*)m)->jointWorkspace) != NULL)
         {
             **(f32**)(tbl + 4) = src[0] * sc;
             if (**(f32**)(tbl + 4) == lbl_803DE88C)
@@ -1709,7 +1709,7 @@ void modelInitBones(f32 scale, void* model)
                 {
                     *(f32*)(*(u8**)(tbl + 0xc) + off) = lbl_803DE8D8;
                 }
-                w = *(f32*)(*(u8**)(hdr + 0x1c) + off);
+                w = *(f32*)(((ModelFileHeader*)hdr)->unk1C + off);
                 if (w >= lbl_803DE890)
                 {
                     *(f32*)(*(u8**)(tbl + 0xc) + off) *= w;
@@ -1749,7 +1749,7 @@ int objGetTotalDataSize(void* tmpl, u8* def, s16* data, int flags)
         break;
     default:
         if (((GameObject*)tmpl)->anim.dll != 0 &&
-            (cb = (int (*)(void*, int)) * (int*)(*(int*)((GameObject*)tmpl)->anim.dll + 0x1c)) != 0)
+            (cb = (int (*)(void*, int))((ObjectInterface*)*((GameObject*)tmpl)->anim.dll)->getExtraSize) != 0)
         {
             extra = cb(tmpl, size);
         }
@@ -1965,9 +1965,9 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
     {
         tmpl.flags06 = tmpl.flags06 | 0x2000;
     }
-    tmpl.x = *(f32*)(data + 4);
-    tmpl.y = *(f32*)(data + 6);
-    tmpl.z = *(f32*)(data + 8);
+    tmpl.x = ((ObjPlacement*)data)->posX;
+    tmpl.y = ((ObjPlacement*)data)->posY;
+    tmpl.z = ((ObjPlacement*)data)->posZ;
     tmpl.typeId = id;
     tmpl.data = data;
     tmpl.romDefNo = seq;
@@ -2075,7 +2075,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
         {
             obj->models[idx] = (u8*)obj + base + offsets[idx];
             ObjModel_LoadAnimData(models[idx], loadFlags, (int)obj->models[idx]);
-            if (!(*(u16*)(*(u8**)obj->models[idx] + 2) & 0x8000))
+            if (!(((ObjModel*)obj->models[idx])->file->flags & 0x8000))
             {
                 ((ObjModelInstance*)obj->def)->flags &= ~0x800000LL;
             }
@@ -2105,7 +2105,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
         {
             obj->models[i] = (u8*)obj + base + offsets[i];
             ObjModel_LoadAnimData(models[i], loadFlags, (int)obj->models[i]);
-            modelFlags = *(u16*)(*(u8**)obj->models[i] + 2);
+            modelFlags = ((ObjModel*)obj->models[i])->file->flags;
             if (!(modelFlags & 0x8000) && !(modelFlags & 0x4000))
             {
                 ((ObjModelInstance*)obj->def)->flags &= ~0x800000LL;

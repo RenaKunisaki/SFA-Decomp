@@ -354,7 +354,7 @@ int objFuzzShellRenderCb(int obj, int* model, int ropIdx)
     GXSetTevSwapMode(GX_TEVSTAGE0, GX_TEV_SWAP0, GX_TEV_SWAP0);
     GXSetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_FALSE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    v = *(u8*)(obj + 0xf1);
+    v = ((GameObject*)obj)->sphereMapIntensity;
     kc.b = v;
     kc.g = v;
     kc.r = v;
@@ -2207,9 +2207,9 @@ static void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
             if (att != NULL)
             {
                 att[0xaf]--;
-                if (*(s8*)(*(char**)&((GameObject*)obj)->anim.hitReactState + 0xaf) < 0)
+                if ((s8)((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->resetHitboxMode < 0)
                 {
-                    *(u8*)(*(char**)&((GameObject*)obj)->anim.hitReactState + 0xaf) = 0;
+                    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->resetHitboxMode = 0;
                 }
             }
         }
@@ -2247,7 +2247,7 @@ static void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
         {
             _gxSetFogParams();
             Rcp_ResetTextureStageState();
-            addTexLayerStageSwizzled(textureIdxToPtr(*(int*)(*(int*)&((ModelFileHeader*)m)->renderOps + 0x24)), NULL,
+            addTexLayerStageSwizzled(textureIdxToPtr(((ModelFileHeader*)m)->renderOps->layers[0].textureIndex), NULL,
                           0, (GXColor*)color, 0, 0);
             if (isHeavyFogEnabled() != 0)
             {
@@ -2265,7 +2265,7 @@ static void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
     }
     else
     {
-        void* tex = textureIdxToPtr(*(int*)(*(int*)&((ModelFileHeader*)m)->renderOps + 0x24));
+        void* tex = textureIdxToPtr(((ModelFileHeader*)m)->renderOps->layers[0].textureIndex);
         if (gObjCachedTexture != (u32)tex)
         {
             gObjCachedTexture = (u32)tex;
@@ -2427,9 +2427,9 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
             if (att != NULL)
             {
                 att[0xaf]--;
-                if (*(s8*)(*(char**)&((GameObject*)obj)->anim.hitReactState + 0xaf) < 0)
+                if ((s8)((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->resetHitboxMode < 0)
                 {
-                    *(u8*)(*(char**)&((GameObject*)obj)->anim.hitReactState + 0xaf) = 0;
+                    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->resetHitboxMode = 0;
                 }
             }
         }
@@ -2754,9 +2754,9 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
             if (att != NULL)
             {
                 att[0xaf]--;
-                if (*(s8*)(*(char**)&((GameObject*)obj)->anim.hitReactState + 0xaf) < 0)
+                if ((s8)((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->resetHitboxMode < 0)
                 {
-                    *(u8*)(*(char**)&((GameObject*)obj)->anim.hitReactState + 0xaf) = 0;
+                    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->resetHitboxMode = 0;
                 }
             }
         }

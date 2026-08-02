@@ -199,8 +199,6 @@ StaffCollisionInterface** gBaddieStaffCollisionInterface;
 
 /* ObjPlacement offsets read by the defeat handler to fire the baddie's
  * death gamebits. */
-#define BADDIE_PLACEMENT_DEATH_GAMEBIT          0x18 /* s16: gamebit incremented on defeat */
-#define BADDIE_PLACEMENT_CLEAR_ON_DEATH_GAMEBIT 0x1a /* s16: gamebit cleared on defeat */
 
 static const u16 lbl_803E2558[4] = { 0x2C4, 0x2CD, 0x2CE, 0x2CF };
 static const u16 lbl_803E2560[2] = { 0x3CD, 0xB };
@@ -281,13 +279,13 @@ void tricky_handleDefeat(GameObject* obj, int state)
         }
         if ((((EnemyState*)state)->flags2E4 & 0x40000000) == 0)
         {
-            if (*(s16*)(setup + BADDIE_PLACEMENT_DEATH_GAMEBIT) != -1)
+            if (((EnemyPlacement*)setup)->gameBit != -1)
             {
-                gameBitIncrement(*(s16*)(setup + BADDIE_PLACEMENT_DEATH_GAMEBIT));
+                gameBitIncrement(((EnemyPlacement*)setup)->gameBit);
             }
-            if (*(s16*)(setup + BADDIE_PLACEMENT_CLEAR_ON_DEATH_GAMEBIT) != -1)
+            if (((EnemyPlacement*)setup)->gameBit2 != -1)
             {
-                mainSetBits(*(s16*)(setup + BADDIE_PLACEMENT_CLEAR_ON_DEATH_GAMEBIT), 0);
+                mainSetBits(((EnemyPlacement*)setup)->gameBit2, 0);
             }
         }
         ((EnemyState*)state)->trackedObj = NULL;
@@ -312,17 +310,17 @@ void tricky_handleDefeat(GameObject* obj, int state)
             }
             else
             {
-                spawnBits = *(s16*)(setup + 0x22) & 0xf00;
+                spawnBits = ((EnemyPlacement*)setup)->droppedItemId & 0xf00;
                 if (spawnBits != 0)
                 {
                     baddie_spawnRewardDrops(obj, state, spawnBits, 0, 1);
                 }
-                spawnBits = *(s16*)(setup + 0x22) & 0xf000;
+                spawnBits = ((EnemyPlacement*)setup)->droppedItemId & 0xf000;
                 if (spawnBits != 0)
                 {
                     baddie_spawnRewardDrops(obj, state, spawnBits, 0, 2);
                 }
-                spawnBits = *(s16*)(setup + 0x22) & 0xff;
+                spawnBits = ((EnemyPlacement*)setup)->droppedItemId & 0xff;
                 if (spawnBits != 0)
                 {
                     baddie_spawnRewardDrops(obj, state, spawnBits, 0, 3);
@@ -338,13 +336,13 @@ void tricky_handleDefeat(GameObject* obj, int state)
     {
         if ((((EnemyState*)state)->flags2E4 & 0x40000000) != 0)
         {
-            if (*(s16*)(setup + BADDIE_PLACEMENT_DEATH_GAMEBIT) != -1)
+            if (((EnemyPlacement*)setup)->gameBit != -1)
             {
-                gameBitIncrement(*(s16*)(setup + BADDIE_PLACEMENT_DEATH_GAMEBIT));
+                gameBitIncrement(((EnemyPlacement*)setup)->gameBit);
             }
-            if (*(s16*)(setup + BADDIE_PLACEMENT_CLEAR_ON_DEATH_GAMEBIT) != -1)
+            if (((EnemyPlacement*)setup)->gameBit2 != -1)
             {
-                mainSetBits(*(s16*)(setup + BADDIE_PLACEMENT_CLEAR_ON_DEATH_GAMEBIT), 0);
+                mainSetBits(((EnemyPlacement*)setup)->gameBit2, 0);
             }
         }
         ((EnemyState*)state)->particleScale = 0.0f;
@@ -358,10 +356,10 @@ void tricky_handleDefeat(GameObject* obj, int state)
         }
         else
         {
-            if (*(s16*)(setup + 0x2c) != 0)
+            if (((EnemyPlacement*)setup)->respawnEnabled != 0)
             {
                 (*gMapEventInterface)
-                    ->addTime(((ObjPlacement*)setup)->ident, 60.0f * (f32) * (s16*)(setup + 0x2c));
+                    ->addTime(((ObjPlacement*)setup)->ident, 60.0f * (f32)((EnemyPlacement*)setup)->respawnEnabled);
             }
             ((EnemyState*)state)->controlFlags = ((EnemyState*)state)->controlFlags & ~(u64)0x800;
             ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 & ~3LL;
@@ -906,9 +904,9 @@ u8 baddie_canSeeTarget(GameObject* obj, EnemyState* state, void* from, void* to)
     visible = 0;
     if (state->trackedObj != NULL)
     {
-        probe.x = *(f32*)((int)from + 0);
-        probe.y = *(f32*)((int)from + 4);
-        probe.z = *(f32*)((int)from + 8);
+        probe.x = ((Vec*)from)->x;
+        probe.y = ((Vec*)from)->y;
+        probe.z = ((Vec*)from)->z;
         keepGroundOffset = 1;
         setupId = (obj)->anim.romDefNo;
         if (((((setupId != 0x613) && (setupId != 0x642)) && (setupId != 0x3fe)) &&
@@ -919,9 +917,9 @@ u8 baddie_canSeeTarget(GameObject* obj, EnemyState* state, void* from, void* to)
             keepGroundOffset = 0;
         }
         voxmaps_worldToGrid((f32*)&probe, fromGrid);
-        probe.x = *(f32*)((int)to + 0);
-        probe.y = 20.0f + *(f32*)((int)to + 4);
-        probe.z = *(f32*)((int)to + 8);
+        probe.x = ((Vec*)to)->x;
+        probe.y = 20.0f + ((Vec*)to)->y;
+        probe.z = ((Vec*)to)->z;
         voxmaps_worldToGrid((f32*)&probe, toGrid);
         PSVECSubtract((Vec*)from, &probe, &delta);
         if (PSVECMag(&delta) < 1905.0f)
@@ -1374,7 +1372,7 @@ void enemyObjAnimUpdate(short* obj, int state)
             ObjAnim_SetCurrentMove((int)obj, moveId, 0.0f, OBJANIM_MOVE_CONTROL_SKIP_EVENT_COUNTDOWN);
             if (*(void**)(obj + 0x2a) != 0)
             {
-                *(u8*)(*(int*)&((GameObject*)obj)->anim.hitReactState + 0x70) = 0;
+                ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->suppressOutgoingHits = 0;
             }
         }
         if ((((EnemyState*)state)->controlFlags & 0x40000000) != 0)
@@ -1384,7 +1382,7 @@ void enemyObjAnimUpdate(short* obj, int state)
             ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
             if (*(void**)(obj + 0x2a) != 0)
             {
-                *(u8*)(*(int*)&((GameObject*)obj)->anim.hitReactState + 0x70) = 0;
+                ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->suppressOutgoingHits = 0;
             }
             ((EnemyState*)state)->controlFlags &= ~0x100LL;
             ((GameObject*)obj)->anim.alpha = 0xff;

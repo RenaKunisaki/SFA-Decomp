@@ -2359,14 +2359,14 @@ void* ObjSeq_FindTargetObject(GameObject* obj)
     f32 distSq;
     f32 bestDistSq;
 
-    targetId = *(int*)((u8*)obj->extra + 0x10c);
+    targetId = ((ObjSeqState*)obj->extra)->targetObjId;
     if (targetId != 0)
     {
         return ObjList_FindObjectById(targetId);
     }
 
     objects = (void**)ObjList_GetObjects(&unused, &objectCount);
-    objectType = *(s16*)((u8*)obj->anim.placementData + 0x1c) - 4;
+    objectType = ((ObjSeqPlacement*)obj->anim.placementData)->targetType - 4;
     if (objectType == 0x1f || objectType == 0)
     {
         return Obj_GetPlayerObject();
@@ -2812,7 +2812,7 @@ void ObjSeq_updateCamera(void)
     int groupObjCount;
     GameObject* obj;
     u8* model;
-    u8* camObj;
+    CameraObject* camObj;
     f32 x;
     f32 y;
     f32 z;
@@ -2869,31 +2869,31 @@ void ObjSeq_updateCamera(void)
         else
         {
             camObj = (*gCameraInterface)->getCamera();
-            *(f32*)(camObj + 0x18) = x;
-            *(f32*)(camObj + 0x1c) = y;
-            *(f32*)(camObj + 0x20) = z;
-            Obj_TransformWorldPointToLocal(*(f32*)(camObj + 0x18), *(f32*)(camObj + 0x1c), *(f32*)(camObj + 0x20),
-                                           (f32*)(camObj + 0xc), (f32*)(camObj + 0x10), (f32*)(camObj + 0x14),
-                                           (GameObject*)*(void**)(camObj + 0x30));
-            *(s16*)camObj = (s16)(0x8000 - pitch);
-            *(s16*)(camObj + 2) = (s16)-yaw;
-            *(s16*)(camObj + 4) = roll;
+            camObj->anim.worldPosX = x;
+            camObj->anim.worldPosY = y;
+            camObj->anim.worldPosZ = z;
+            Obj_TransformWorldPointToLocal(camObj->anim.worldPosX, camObj->anim.worldPosY, camObj->anim.worldPosZ,
+                                           &camObj->anim.localPosX, &camObj->anim.localPosY, &camObj->anim.localPosZ,
+                                           (GameObject*)camObj->anim.parent);
+            camObj->anim.rotX = (s16)(0x8000 - pitch);
+            camObj->anim.rotY = (s16)-yaw;
+            camObj->anim.rotZ = roll;
             if ((s8)gObjSeqFovOverrideActive != 0)
             {
-                *(f32*)(camObj + 0xb4) = gObjSeqFovOverrideValue;
+                camObj->fov = gObjSeqFovOverrideValue;
                 gObjSeqCameraFov = gObjSeqFovOverrideValue;
             }
             else
             {
-                *(f32*)(camObj + 0xb4) = gObjSeqCameraFov;
+                camObj->fov = gObjSeqCameraFov;
             }
-            gObjSeqSavedCamPosX = *(f32*)(camObj + 0x18);
-            gObjSeqSavedCamPosY = *(f32*)(camObj + 0x1c);
-            gObjSeqSavedCamPosZ = *(f32*)(camObj + 0x20);
-            gObjSeqSavedCamPitch = *(s16*)camObj;
-            gObjSeqSavedCamYaw = *(s16*)(camObj + 2);
-            gObjSeqSavedCamRoll = *(s16*)(camObj + 4);
-            gObjSeqSavedCamFov = *(f32*)(camObj + 0xb4);
+            gObjSeqSavedCamPosX = camObj->anim.worldPosX;
+            gObjSeqSavedCamPosY = camObj->anim.worldPosY;
+            gObjSeqSavedCamPosZ = camObj->anim.worldPosZ;
+            gObjSeqSavedCamPitch = camObj->anim.rotX;
+            gObjSeqSavedCamYaw = camObj->anim.rotY;
+            gObjSeqSavedCamRoll = camObj->anim.rotZ;
+            gObjSeqSavedCamFov = camObj->fov;
         }
     }
     else
@@ -3591,7 +3591,7 @@ int seqDoSubCmd0B(GameObject* obj, GameObject* sourceObj, u8* seq, u8* cmdsArg, 
                 if (found == 0 && freeSlot != -1)
                 {
                     seq[freeSlot + 0x12c] = operand;
-                    *(s16*)(seq + freeSlot * 2 + 0x118) = objSeqFindLabel(seq, top16);
+                    ((ObjSeqState*)seq)->conditionFrames[freeSlot] = objSeqFindLabel(seq, top16);
                 }
                 result = 0;
             }
@@ -4563,17 +4563,17 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         if (activeObj->anim.classId == 1)
         {
             act2 = ObjSeq_GetActiveModel(activeObj);
-            animState = *(u8**)(act2 + 0x2c);
+            animState = (u8*)((ObjAnimBank*)act2)->currentState;
             ((ObjAnimState*)animState)->lastBlendMoveIndex = -1;
             ((ObjAnimState*)animState)->eventState = 0;
             ((ObjAnimState*)animState)->prevEventState = 0;
-            st2 = *(u8**)(act2 + 0x30);
+            st2 = (u8*)((ObjAnimBank*)act2)->activeState;
             if (st2 != NULL)
             {
-                *(s16*)(st2 + 0x64) = -1;
-                *(s16*)(st2 + 0x58) = 0;
-                *(s16*)(st2 + 0x5a) = 0;
-                *(s16*)(st2 + 0x5c) = 0;
+                ((ObjAnimState*)st2)->lastBlendMoveIndex = -1;
+                ((ObjAnimState*)st2)->eventCountdown = 0;
+                ((ObjAnimState*)st2)->eventState = 0;
+                ((ObjAnimState*)st2)->prevEventState = 0;
             }
         }
         ((ObjSeqState*)seq)->fade = 1.0f;
