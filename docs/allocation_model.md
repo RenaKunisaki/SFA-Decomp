@@ -168,9 +168,37 @@ rig's threshold has no population), and spill traffic — the correct residue-ba
 produces **no partition** (`R>L>P` vs `R>P>L` within 2 points in every width stratum, nothing
 near the 60% recovery line).
 
-**Open observation, labelled not lost:** spilling functions score ~10 points higher than
-zero-spill functions under *both* orders (43.6/42.7 vs 33.5/35.3 pooled). Pressure organises the
-band without selecting between orders. Nobody has explained that.
+### The orderliness effect — the model's one open question, fenced on four sides
+
+Spilling functions score ~9 points higher than zero-spill functions under **both** stacking
+orders (pooled 34.1% vs 43.1%). Pressure organises the band without selecting between orders.
+**Four hypotheses have been tested and all four are dead** — this is a named mystery, not an
+unexamined gap. Do not re-propose any of these:
+
+| # | hypothesis | how it died |
+|---|---|---|
+| H1 | recycling suppresses ordering | refuted in the synthetic rig |
+| H2 | pressure forces an order | refuted in the synthetic rig |
+| P10 | **recycling density** is the collapsing variable | gap persists at fixed density (mean 7.0 vs pooled 8.7) |
+| P11 | **kind-mix population shift** (H3's actual claim) | gap persists at fixed kind-mix, signed +3.0/+8.0/+6.0/+16.1 |
+
+**Two structural facts any future attack must explain.**
+
+*It is not single-signed.* Stratified by recycling density the gap **reverses**: +7.7 and +8.3 in
+the low strata, **−4.9** at [0.15, 0.30) where zero-spill functions jump to 47.8%. An effect that
+flips sign across strata is not a main effect, and marginal stratification — which is all P10 and
+P11 were — cannot resolve an interaction. That reversal does **not** trace to kind-mix (the cell's
+mean memfrac is 0.366 against 0.414 elsewhere).
+
+*Kind-mix amplifies rather than absorbs it.* The gap is **largest (+16.1)** in the pure-memory-load
+stratum, where zero-spill orderliness is the corpus **worst (16.6%)**. That is the opposite
+direction from the kind gradient, which ranks memory loads the *most* orderly kind (74.9%
+pairwise). The gradient is a per-**pair** property and this is a per-**function** one; the tension
+between the two levels is unexplained and is the sharpest lead on record.
+
+**Methodological note carried with it:** report **signed** gaps per cell, never a
+mean-of-absolutes. P10's summary statistic was generous precisely because a sign flip was present;
+P11's criteria were registered on signed gaps for that reason.
 
 ---
 
