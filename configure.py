@@ -1527,7 +1527,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/361_IMIceMounta/IMIceMounta.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "dlls/objects/362_CRrockfall/CRrockfall.c", cflags=cflags_dll_noopt_noprop_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/363/363.c"),
-            Object(NonMatching, "dlls/objects/364/364.c", cflags=cflags_dll_noopt_noinline),
+            Object(MatchingFor("GSAE01"), "dlls/objects/364/364.c", cflags=cflags_dll_noopt),
             Object(MatchingFor("GSAE01"), "dlls/objects/365_IMIcePillar/IMIcePillar.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/366_IMAnimSpace/IMAnimSpace.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/367_IMSpaceThru/IMSpaceThru.c"),
