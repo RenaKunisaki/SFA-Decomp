@@ -240,6 +240,15 @@ typedef struct ObjTextureSlotDef {
   u8 materialIndex;
 } ObjTextureSlotDef;
 
+/* One entry of ObjDef.attachPoints (@0x2C): the local offset and rotation a
+ * child object is mounted at, plus the joint it is bound to in each of the
+ * object's models. */
+typedef struct ObjAttachPoint {
+  f32 pos[3];
+  s16 rot[3];
+  s8 joints[6];
+} ObjAttachPoint;
+
 typedef struct ObjTextureRuntimeSlot {
   s32 textureId;
   u8 pad04[4];
@@ -277,7 +286,8 @@ typedef struct ObjDef {
   s16 *eventMoveTable;
   ObjHitReactMoveEntry *hitReactMoveTable;
   s16 *weaponDaTable;
-  u8 pad2C[0x34 - 0x2C];
+  ObjAttachPoint *attachPoints;
+  struct MapHitLine *modLines;
   void *intersectionLines;
   u8 *intersectionSegmentRanges;
   f32 *intersectionPoints;
@@ -293,10 +303,12 @@ typedef struct ObjDef {
   s8 modelCount;
   s8 group8RegistrationCount;
   u8 unk57;
-  u8 unk58;
+  u8 attachPointCount;
   u8 textureSlotCount;
   u8 jointCount;
-  u8 pad5B[0x5E - 0x5B];
+  u8 pad5B;
+  u8 modLineCount;
+  s8 modLineIndex;
   u8 sequenceCount;
   u8 renderFlags;
   u8 hitboxStateIndex;
@@ -321,13 +333,15 @@ typedef struct ObjDef {
   u8 secondaryHitboxRadius;
   s16 mapLoadObjectId;
   u8 pad7A[0x7C - 0x7A];
-  s16 helpTextIds[8];
+  s16 helpTextIds[4];
+  u8 pad84[0x88 - 0x84];
+  f32 shadowModelScaleBase;
   u8 pad8C;
   u8 modelLightMaskIndex;
   u8 defaultModelVariant;
   u8 fallbackHitSphereRadius;
   u8 secondaryHitboxShapeFlags;
-  char name[0x94 - 0x91];
+  char name[0x9C - 0x91];
 } ObjDef;
 
 typedef ObjDef ObjModelInstance;
@@ -578,7 +592,8 @@ STATIC_ASSERT(sizeof(ObjHitVolumeRuntimeBounds) == 0x05);
 STATIC_ASSERT(sizeof(ObjTextureSlotDef) == 0x02);
 STATIC_ASSERT(sizeof(ObjTextureRuntimeSlot) == 0x10);
 
-STATIC_ASSERT(sizeof(ObjDef) == 0x94);
+STATIC_ASSERT(sizeof(ObjDef) == 0x9C);
+STATIC_ASSERT(offsetof(ObjDef, name) == 0x91);
 STATIC_ASSERT(offsetof(ObjDef, shadowScaleBase) == 0x00);
 STATIC_ASSERT(offsetof(ObjDef, rootMotionScaleBase) == 0x04);
 STATIC_ASSERT(offsetof(ObjDef, modelFileIds) == 0x08);
@@ -589,6 +604,12 @@ STATIC_ASSERT(offsetof(ObjDef, sequenceMap) == 0x1C);
 STATIC_ASSERT(offsetof(ObjDef, eventMoveTable) == 0x20);
 STATIC_ASSERT(offsetof(ObjDef, hitReactMoveTable) == 0x24);
 STATIC_ASSERT(offsetof(ObjDef, weaponDaTable) == 0x28);
+STATIC_ASSERT(offsetof(ObjDef, attachPoints) == 0x2C);
+STATIC_ASSERT(offsetof(ObjDef, attachPointCount) == 0x58);
+STATIC_ASSERT(offsetof(ObjDef, modLines) == 0x30);
+STATIC_ASSERT(offsetof(ObjDef, modLineCount) == 0x5C);
+STATIC_ASSERT(offsetof(ObjDef, modLineIndex) == 0x5D);
+STATIC_ASSERT(sizeof(ObjAttachPoint) == 0x18);
 STATIC_ASSERT(offsetof(ObjDef, hitVolumes) == 0x40);
 STATIC_ASSERT(offsetof(ObjDef, flags) == 0x44);
 STATIC_ASSERT(offsetof(ObjDef, shadowType) == 0x48);
@@ -670,6 +691,7 @@ STATIC_ASSERT(offsetof(ObjDef, effectFlags) == 0x76);
 STATIC_ASSERT(offsetof(ObjDef, secondaryHitboxRadius) == 0x77);
 STATIC_ASSERT(offsetof(ObjDef, mapLoadObjectId) == 0x78);
 STATIC_ASSERT(offsetof(ObjDef, helpTextIds) == 0x7C);
+STATIC_ASSERT(offsetof(ObjDef, shadowModelScaleBase) == 0x88);
 STATIC_ASSERT(offsetof(ObjDef, modelLightMaskIndex) == 0x8D);
 STATIC_ASSERT(offsetof(ObjDef, fallbackHitSphereRadius) == 0x8F);
 STATIC_ASSERT(offsetof(ObjDef, secondaryHitboxShapeFlags) == 0x90);

@@ -1668,7 +1668,7 @@ void mapSetup(int layerOffset, f32 x, int* outMapId, int* outMapDataFileId, f32 
     *outMapId = mapId;
     if (mapId != -1)
     {
-        *outMapDataFileId = (s32) * (s8*)((*gMapEventInterface)->getCurCharPos() + 0xe);
+        *outMapDataFileId = ((SaveGameCharacterPosition*)(*gMapEventInterface)->getCurCharPos())->mapDataFileId;
     }
 }
 
@@ -1714,7 +1714,7 @@ void beginLoadingMap(void)
     s8* a;
     s8* b;
     int currentCharacter;
-    f32* characterPosition;
+    SaveGameCharacterPosition* characterPosition;
     f32 positionX, positionY, positionZ;
     Camera* camera;
     GameObject* player;
@@ -1748,12 +1748,12 @@ void beginLoadingMap(void)
     gMapBlockCount = 0;
     gShaderRomListSlotCount = 0;
     currentCharacter = (*gMapEventInterface)->getCurChar();
-    characterPosition = (f32*)(*gMapEventInterface)->getCurCharPos();
-    gMapBlockOriginX = fastFloorf(characterPosition[0] / gMapBlockWorldSize);
-    gMapBlockOriginZ = fastFloorf(characterPosition[2] / gMapBlockWorldSize);
-    *(f32*)(base + 0x8588) = characterPosition[0];
-    *(f32*)(base + 0x858C) = characterPosition[1];
-    *(f32*)(base + 0x8590) = characterPosition[2];
+    characterPosition = (SaveGameCharacterPosition*)(*gMapEventInterface)->getCurCharPos();
+    gMapBlockOriginX = fastFloorf(characterPosition->x / gMapBlockWorldSize);
+    gMapBlockOriginZ = fastFloorf(characterPosition->z / gMapBlockWorldSize);
+    *(f32*)(base + 0x8588) = characterPosition->x;
+    *(f32*)(base + 0x858C) = characterPosition->y;
+    *(f32*)(base + 0x8590) = characterPosition->z;
     *(int*)(base + 0x8594) = 1;
     gMapBlockOriginWorldX = gMapBlockOriginX * 640;
     gMapBlockOriginWorldZ = gMapBlockOriginZ * 640;
@@ -1764,7 +1764,7 @@ void beginLoadingMap(void)
     gShaderCurMapEventId = -1;
     gShaderGameTextLoadedMapId = gShaderGameTextLoadedMapId - 1;
     gMapCurRomListSlot = -1;
-    curMapLayer = *(s8*)((char*)characterPosition + 0xd);
+    curMapLayer = characterPosition->mapLayer;
     renderFlags &= 0x82008;
     renderFlags |= 0x481F0LL;
     renderFlags |= 0x804;
@@ -1774,9 +1774,9 @@ void beginLoadingMap(void)
     gMotionBlurAmount = 0.0f;
     gHeatEffectFadeDirection = -1;
     setSaveGameLoadingFlag();
-    positionZ = characterPosition[2];
-    positionY = characterPosition[1];
-    positionX = characterPosition[0];
+    positionZ = characterPosition->z;
+    positionY = characterPosition->y;
+    positionX = characterPosition->x;
     if (!(renderFlags & 2) || (renderFlags & 0x800))
     {
         gShaderLoadCenterX = positionX;
@@ -1789,9 +1789,9 @@ void beginLoadingMap(void)
     renderFlags &= ~4LL;
     trackIntersect();
     camera = Camera_GetCurrent();
-    camera->x = characterPosition[0];
-    camera->y = characterPosition[1];
-    camera->z = characterPosition[2];
+    camera->x = characterPosition->x;
+    camera->y = characterPosition->y;
+    camera->z = characterPosition->z;
     mapSetupPlayer();
     gWarpRequested = 0;
     (*gWaterfxInterface)->onMapSetup();

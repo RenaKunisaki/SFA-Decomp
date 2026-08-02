@@ -37,16 +37,6 @@ typedef struct SaveGameTimeEntry
     f32 time;
 } SaveGameTimeEntry;
 
-typedef struct SaveGameCharacterPosition
-{
-    f32 x;
-    f32 y;
-    f32 z;
-    s8 angle;
-    s8 map;
-    u8 padE[2];
-} SaveGameCharacterPosition;
-
 typedef struct SaveGameData
 {
     u8 pad0[0x1C - 0x0];
@@ -1061,7 +1051,7 @@ void loadMapForCurrentSaveGame(void)
     resetYbutton();
     base = (char*)gSaveGameData + ((SaveGameData*)gSaveGameData)->currentCharacter * 16;
     mapLoadByCoords(((SaveGameCharacterPosition*)(base + 0x684))->x, ((SaveGameCharacterPosition*)(base + 0x684))->y,
-                    ((SaveGameCharacterPosition*)(base + 0x684))->z, ((SaveGameCharacterPosition*)(base + 0x684))->map);
+                    ((SaveGameCharacterPosition*)(base + 0x684))->z, ((SaveGameCharacterPosition*)(base + 0x684))->mapLayer);
     if (getCurUiDll() != 4)
     {
         loadUiDll(1);
@@ -1122,7 +1112,7 @@ void SaveGame_gplayRestartPoint(f32* pos, s16 angle, int b691, int flag)
     SAVEGAME_CHARACTER_POSITION((u8*)pRestartPoint)->angle = (s8)(angle >> 8);
     ((SaveGameCharacterPosition*)((u8*)pRestartPoint +
                                   SAVEGAME_CHARACTER_POSITION_OFFSET))[gSaveGameData[SAVEGAME_CURRENT_CHARACTER_OFFSET]]
-        .map = b691;
+        .mapLayer = b691;
     mainSetBits(GAMEBIT_CF_DoStandUpAnim, 0);
     if (flag != 0 && healed != 0)
     {
@@ -1140,7 +1130,7 @@ void SaveGame_gplayGotoSavegame(void)
     loadMapForCurrentSaveGame();
 }
 
-void SaveGame_gplaySavePoint(f32* pos, s16 angle, int flags, int mapByte)
+void SaveGame_gplaySavePoint(f32* pos, s16 angle, int flags, int mapLayer)
 {
     u8* base;
     if (flags & 4)
@@ -1164,7 +1154,7 @@ void SaveGame_gplaySavePoint(f32* pos, s16 angle, int flags, int mapByte)
             SAVEGAME_CHARACTER_POSITION(base)->y = pos[1];
             SAVEGAME_CHARACTER_POSITION(base)->z = pos[2];
             SAVEGAME_CHARACTER_POSITION(base)->angle = (s8)(angle >> 8);
-            SAVEGAME_CHARACTER_POSITION(base)->map = mapByte;
+            SAVEGAME_CHARACTER_POSITION(base)->mapLayer = mapLayer;
             memcpy(gSaveGameWorkBuffer, base, SAVEGAME_ACTIVE_SIZE);
             if (pRestartPoint != 0)
             {

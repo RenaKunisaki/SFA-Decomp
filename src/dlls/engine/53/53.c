@@ -23,6 +23,7 @@
 #include "main/mapEventTypes.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/dll/savegame.h"
+#include "main/dll/dll_0017_savegame_api.h"
 #include "main/dll/player_status.h"
 #include "main/dll/dll_003D_titlemenuitem.h"
 #include "string.h"
@@ -700,7 +701,7 @@ int SaveSelectScreen_run(void)
     char* data;
     SaveSelectPanel* panel;
     int btn;
-    s8* flagPtr;
+    SaveGameCharacterPosition* flagPtr;
 
     timer = gSaveSelectExitTimer;
     frames = framesThisStep;
@@ -743,8 +744,8 @@ int SaveSelectScreen_run(void)
                 {
                     gplayNewGame(sFrontendFoxName, *(u8*)&saveFileSelect_currentSlotIndex);
                     (*gMapEventInterface)->setCharacter(1);
-                    flagPtr = (s8*)(*gMapEventInterface)->getCurCharPos();
-                    flagPtr[0xe] = -1;
+                    flagPtr = (SaveGameCharacterPosition*)(*gMapEventInterface)->getCurCharPos();
+                    flagPtr->mapDataFileId = -1;
                 }
                 if (gSaveSelectChapter > 1)
                 {

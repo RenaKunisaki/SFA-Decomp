@@ -47,6 +47,7 @@
 #include "main/dll/player.h"
 #include "string.h"
 #include "main/dll/dll_0004_dummy04.h"
+#include "main/dll/dll_0017_savegame_api.h"
 
 s16 gObjPartitionPivot;
 void* lbl_803DCBC0;
@@ -674,7 +675,7 @@ GameObject* loadObjectAtObject(GameObject* src, ObjPlacement* setup)
         if (obj != NULL)
         {
             Obj_RegisterObject(obj, 5);
-            OSReport(sObjDebugStrings, *(int*)&obj->anim.modelInstance + 0x91);
+            OSReport(sObjDebugStrings, obj->anim.modelInstance->name);
         }
     }
     return obj;
@@ -853,7 +854,7 @@ void mapSetupPlayer(void)
     int playerNo;
     int mapType;
     u8* obj;
-    f32* pos;
+    SaveGameCharacterPosition* pos;
     f32 x, y, z;
     int uiDll;
     CameraObject* view;
@@ -870,10 +871,10 @@ void mapSetupPlayer(void)
     else
     {
         playerNo = (*gMapEventInterface)->getCurChar();
-        pos = (f32*)(*gMapEventInterface)->getCurCharPos();
-        x = pos[0];
-        y = pos[1];
-        z = pos[2];
+        pos = (SaveGameCharacterPosition*)(*gMapEventInterface)->getCurCharPos();
+        x = pos->x;
+        y = pos->y;
+        z = pos->z;
         obj = 0;
         if (playerNo > -1 && mapType != MAPTYPE_NO_HUD)
         {
@@ -901,14 +902,14 @@ void mapSetupPlayer(void)
                 if (obj != 0)
                 {
                     Obj_RegisterObject((GameObject*)obj, 1);
-                    OSReport((char*)(base + 0x5c), *(int*)&((GameObject*)obj)->anim.modelInstance + 0x91);
+                    OSReport((char*)(base + 0x5c), ((GameObject*)obj)->anim.modelInstance->name);
                 }
             }
         }
-        *(f32*)(base + 8) = lbl_803DE8BC * mathSinf((gObjPi * (f32)(*(s8*)((u8*)pos + 0xc) << 8)) / lbl_803DE8C4) + x;
+        *(f32*)(base + 8) = lbl_803DE8BC * mathSinf((gObjPi * (f32)(pos->angle << 8)) / lbl_803DE8C4) + x;
         *(f32*)(base + 0xc) = lbl_803DE8C8 + y;
         *(f32*)(base + 0x10) =
-            lbl_803DE8BC * mathCosf((gObjPi * (f32)(*(s8*)((u8*)pos + 0xc) << 8)) / lbl_803DE8C4) + z;
+            lbl_803DE8BC * mathCosf((gObjPi * (f32)(pos->angle << 8)) / lbl_803DE8C4) + z;
         uiDll = getCurUiDll();
         if ((u32)(uiDll - 2) <= 4 || uiDll == 7)
         {
@@ -2261,7 +2262,7 @@ GameObject* objSetupObject(ObjPlacement* data, int flags, int mapLayer, int objI
     if (obj != NULL)
     {
         Obj_RegisterObject(obj, flags);
-        OSReport(sObjDebugStrings, *(int*)&obj->anim.modelInstance + 0x91);
+        OSReport(sObjDebugStrings, obj->anim.modelInstance->name);
     }
     return obj;
 }

@@ -125,6 +125,7 @@
 #include "dlls/objects/242_iceblast.h"
 #include "main/sky.h"
 #include "main/rcp_dolphin_api.h"
+#include "main/dll/dll_0017_savegame_api.h"
 
 #undef BADDIE_MOVE_STATUS_SIGNED
 
@@ -11608,8 +11609,8 @@ int playerBuildWallTransitionProbe(GameObject* obj, char* cam, f32* out, f32* ve
         wallHit = 0;
         if (parent != NULL)
         {
-            tris = *(int*)((char*)(int)((ObjAnimComponent*)parent)->modelInstance + 0x34);
-            verts = *(int*)((char*)(int)((ObjAnimComponent*)parent)->modelInstance + 0x3c);
+            tris = (int)((ObjAnimComponent*)parent)->modelInstance->intersectionLines;
+            verts = (int)((ObjAnimComponent*)parent)->modelInstance->intersectionPoints;
         }
         else
         {
@@ -11822,8 +11823,8 @@ int playerBuildLedgeClimbProbe(int a, int b, void* c, int d, f32* e, f32 distanc
     hit = *(void**)((char*)c + 0x0);
     if (hit != NULL)
     {
-        tbl1 = *(int*)((char*)(int)((ObjAnimComponent*)hit)->modelInstance + 0x34);
-        tbl2 = *(int*)((char*)(int)((ObjAnimComponent*)hit)->modelInstance + 0x3c);
+        tbl1 = (int)((ObjAnimComponent*)hit)->modelInstance->intersectionLines;
+        tbl2 = (int)((ObjAnimComponent*)hit)->modelInstance->intersectionPoints;
     }
     else
     {
@@ -13161,7 +13162,7 @@ void playerUpdateCameraTargetLookAngles(GameObject* obj, int state, PlayerState*
 
     inner->headPitch *= powfBitEstimate(0.9f, timeDelta);
     sub = inner->cameraTargetObject;
-    if (sub != NULL && sub->anim.modelInstance->unk58 != 0)
+    if (sub != NULL && sub->anim.modelInstance->attachPointCount != 0)
     {
         ObjPath_GetPointWorldPosition((GameObject*)obj, 5, &x1, &y1, &z1, 0);
         if (objFindJointPoseVector((GameObject*)sub, 0) != 0)
@@ -15750,7 +15751,7 @@ void playerUpdateMotionState(GameObject* obj, void* inner, BaddieState* baddieSt
         ((PlayerState*)inner)->targetObjectYaw = getAngle(-dx, -dz) & 0xffff;
         ((PlayerState*)inner)->targetObjectDist = sqrtf(dx * dx + dz * dz);
         ((PlayerState*)inner)->targetObjModelType =
-            *(u8*)(*(int*)(*(int*)&((GameObject*)cam)->anim.modelInstance + 0x40) + 0x10) & 0xf;
+            ((GameObject*)cam)->anim.modelInstance->hitVolumes->flags & 0xf;
     }
     d = ((PlayerState*)inner)->targetObjectYaw - (u16)((PlayerState*)inner)->targetYaw;
     if (d > 0x8000)
@@ -18390,7 +18391,7 @@ void objLoadPlayerFromSave(int obj)
     *(u16*)&((PlayerState*)inner)->characterId = (*gMapEventInterface)->getCurChar();
     Obj_SetActiveModelIndex((GameObject*)obj, ((PlayerState*)inner)->characterId);
     me = (int)(*gMapEventInterface)->getCurCharPos();
-    ((GameObject*)obj)->anim.rotX = (s16)(*(s8*)((char*)me + 0xc) << 8);
+    ((GameObject*)obj)->anim.rotX = (s16)(((SaveGameCharacterPosition*)me)->angle << 8);
     ((PlayerState*)inner)->targetYaw = ((GameObject*)obj)->anim.rotX;
     ((PlayerState*)inner)->yaw = ((GameObject*)obj)->anim.rotX;
     ((PlayerState*)inner)->lastInputHeading = ((GameObject*)obj)->anim.rotX;

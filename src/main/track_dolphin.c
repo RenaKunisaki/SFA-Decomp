@@ -458,7 +458,7 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
         else
         {
             start = 0;
-            end = *(u8*)(*(int*)&target->anim.modelInstance + 0x5c);
+            end = target->anim.modelInstance->modLineCount;
         }
         lineIdx = 0;
         vt = (int)target->anim.modelInstance->intersectionLines;

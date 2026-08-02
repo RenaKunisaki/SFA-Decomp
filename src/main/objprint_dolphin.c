@@ -36,6 +36,7 @@
 #include "track/intersect_fog_api.h"
 #include "main/newshadows_shadow_api.h"
 #include "main/dll/player_api.h"
+#include "main/dll/dll_0017_savegame_api.h"
 #include "main/objprint_internal.h"
 #include "main/dll/partfx_interface.h"
 #include "dolphin/os/OSReport.h"
@@ -3283,11 +3284,11 @@ static void objRenderChild(int* child, int* parent, u8 isShadow)
     Obj_GetActiveModel((GameObject*)child);
     {
         int* pmodel = (int*)Obj_GetActiveModel((GameObject*)parent);
-        ChildEnt* ent;
+        ObjAttachPoint* ent;
         int j;
-        u8* tbl = *(u8**)(*(int*)&((GameObject*)parent)->anim.modelInstance + 0x2c);
+        u8* tbl = (u8*)((GameObject*)parent)->anim.modelInstance->attachPoints;
         off = (((GameObject*)child)->objectFlags & 7) * 0x18;
-        ent = (ChildEnt*)(tbl + off);
+        ent = (ObjAttachPoint*)(tbl + off);
         j = ent->joints[OBJPRINT_ACTIVE_BANK_INDEX(parent)];
         blk.x = *(f32*)(off + (char*)tbl);
         blk.y = ent->pos[1];
@@ -3323,9 +3324,9 @@ static void objRenderChild(int* child, int* parent, u8 isShadow)
     }
     else
     {
-        ChildEnt* pr;
+        ObjAttachPoint* pr;
         blk.scale = 1.0f;
-        pr = (ChildEnt*)(*(u8**)(*(int*)&((GameObject*)parent)->anim.modelInstance + 0x2c) + off);
+        pr = (ObjAttachPoint*)((u8*)((GameObject*)parent)->anim.modelInstance->attachPoints + off);
         blk.rotX = pr->rot[0];
         blk.rotY = pr->rot[1];
         blk.rotZ = pr->rot[2];
@@ -4240,8 +4241,8 @@ void mapLoadDataFiles(int mapIdx)
 {
     if (sMapFileNameAdjacencyTable[mapIdx] != -1)
     {
-        int* r = (int*)(*gMapEventInterface)->getCurCharPos();
-        *(s8*)((char*)r + 0xe) = mapIdx;
+        SaveGameCharacterPosition* r = (SaveGameCharacterPosition*)(*gMapEventInterface)->getCurCharPos();
+        r->mapDataFileId = mapIdx;
     }
     mapLoadDataFile(mapIdx, MLDF_FILEID_TEX1_BIN_A);
     mapLoadDataFile(mapIdx, MLDF_FILEID_TEX1_TAB_A);
@@ -4525,12 +4526,12 @@ int mapUnload(int mapId, int flags)
     int i;
     int s;
     int j;
-    int* st;
+    SaveGameCharacterPosition* st;
 
     tbl = (struct MldfTables*)gResourceFileTable;
     i = 0;
     needWait = 0;
-    st = (int*)(*gMapEventInterface)->getCurCharPos();
+    st = (SaveGameCharacterPosition*)(*gMapEventInterface)->getCurCharPos();
     {
         int pairs[56] = {
             0x2b, 0x1,    0x2a, 0x2,    0x2f, 0x8,    0x30, 0x4,   0x46, 0x1,   0x45, 0x2,   0x49, 0x8,
@@ -4565,22 +4566,22 @@ int mapUnload(int mapId, int flags)
             }
         }
 
-        st = (int*)(*gMapEventInterface)->getCurCharPos();
+        st = (SaveGameCharacterPosition*)(*gMapEventInterface)->getCurCharPos();
         {
-            int v = *(s8*)((char*)st + 0xe);
+            int v = st->mapDataFileId;
             if (v != gObjLevelLockSlots[0] && v != gObjLevelLockSlots[1])
             {
                 if ((flags & 0x10000000) && mapId != v)
                 {
-                    *((s8*)st + 0xe) = -1;
+                    st->mapDataFileId = -1;
                 }
-                if ((flags & 0x20000000) && mapId == *((s8*)st + 0xe))
+                if ((flags & 0x20000000) && mapId == st->mapDataFileId)
                 {
-                    *((s8*)st + 0xe) = -1;
+                    st->mapDataFileId = -1;
                 }
                 if (flags & 0x80000000)
                 {
-                    *((s8*)st + 0xe) = -1;
+                    st->mapDataFileId = -1;
                 }
             }
         }

@@ -5337,7 +5337,7 @@ void objSetColorFilter(s16 a, s16 b, s16 c) {
     gObjColorFilterEnabled = 1;
 }
 
-#define OBJPRINT_CHILD_TABLE(staff) (*(char**)(*(char**)((staff) + 0x50) + 0x2c))
+#define OBJPRINT_ATTACH_POINTS(staff) ((char*)OBJPRINT_MODEL_INSTANCE(staff)->attachPoints)
 
 void staffUpdateSegmentTransforms(int staffArg, GameObject* objArg, int modelArg, int a, int b, int c);
 void staffUpdateSegmentTransforms(int staffArg, GameObject* objArg, int modelArg, int a, int b, int c) {
@@ -5357,7 +5357,7 @@ void staffUpdateSegmentTransforms(int staffArg, GameObject* objArg, int modelArg
     obj = (int)objArg;
     model = (u8*)modelArg;
 
-    if (*(u8*)(*(char**)(staff + 0x50) + 0x58) >= 2 && ((GameObject*)staff)->anim.classId == 0x2d) {
+    if (OBJPRINT_MODEL_INSTANCE(staff)->attachPointCount >= 2 && ((GameObject*)staff)->anim.classId == 0x2d) {
         int off;
         base = (char*)((GameObject*)staff)->extra;
         i = 0;
@@ -5368,14 +5368,14 @@ void staffUpdateSegmentTransforms(int staffArg, GameObject* objArg, int modelArg
         vp = vp0;
 
         while (i < *(s16*)(base + 0xb0)) {
-            if (k < *(u8*)(*(char**)(staff + 0x50) + 0x58)) {
+            if (k < OBJPRINT_MODEL_INSTANCE(staff)->attachPointCount) {
                 MtxPtr jm;
                 int joint;
-                joint = ((ChildEnt*)(OBJPRINT_CHILD_TABLE(staff) + off))[1].joints[OBJPRINT_ACTIVE_BANK_INDEX(staff)];
+                joint = ((ObjAttachPoint*)(OBJPRINT_ATTACH_POINTS(staff) + off))[1].joints[OBJPRINT_ACTIVE_BANK_INDEX(staff)];
                 jm = (MtxPtr)ObjModel_GetJointMatrix(model, joint);
-                vp->x = ((ChildEnt*)(OBJPRINT_CHILD_TABLE(staff) + off))[1].pos[0];
-                va[1] = ((ChildEnt*)(OBJPRINT_CHILD_TABLE(staff) + off))[1].pos[1];
-                va[2] = ((ChildEnt*)(OBJPRINT_CHILD_TABLE(staff) + off))[1].pos[2];
+                vp->x = ((ObjAttachPoint*)(OBJPRINT_ATTACH_POINTS(staff) + off))[1].pos[0];
+                va[1] = ((ObjAttachPoint*)(OBJPRINT_ATTACH_POINTS(staff) + off))[1].pos[1];
+                va[2] = ((ObjAttachPoint*)(OBJPRINT_ATTACH_POINTS(staff) + off))[1].pos[2];
                 PSMTXMultVec(jm, vp, vp);
                 vp->x = vp->x + playerMapOffsetX;
                 va[2] = va[2] + playerMapOffsetZ;
@@ -5383,14 +5383,14 @@ void staffUpdateSegmentTransforms(int staffArg, GameObject* objArg, int modelArg
                 *(f32*)(q + 0x74) = va[1];
                 *(f32*)(q + 0x7c) = va[2];
             }
-            if (k < *(u8*)(*(char**)(staff + 0x50) + 0x58)) {
-                ChildEnt* row = (ChildEnt*)(OBJPRINT_CHILD_TABLE(staff) + off);
+            if (k < OBJPRINT_MODEL_INSTANCE(staff)->attachPointCount) {
+                ObjAttachPoint* row = (ObjAttachPoint*)(OBJPRINT_ATTACH_POINTS(staff) + off);
                 int idx2 = row->joints[OBJPRINT_ACTIVE_BANK_INDEX(staff)];
                 MtxPtr mtx2 =
                     (MtxPtr)(idx2 * 0x40 + *(int*)(model + ((((ObjModel*)model)->bufferFlags & 1) * 4) + 0xc));
                 vb.x = row->pos[0];
-                vb.y = ((ChildEnt*)(OBJPRINT_CHILD_TABLE(staff) + off))->pos[1];
-                vb.z = ((ChildEnt*)(OBJPRINT_CHILD_TABLE(staff) + off))->pos[2];
+                vb.y = ((ObjAttachPoint*)(OBJPRINT_ATTACH_POINTS(staff) + off))->pos[1];
+                vb.z = ((ObjAttachPoint*)(OBJPRINT_ATTACH_POINTS(staff) + off))->pos[2];
                 PSMTXMultVec(mtx2, &vb, &vb);
                 vb.x = vb.x + playerMapOffsetX;
                 vb.z = vb.z + playerMapOffsetZ;
