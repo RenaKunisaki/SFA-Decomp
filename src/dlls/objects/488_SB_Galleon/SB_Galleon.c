@@ -818,7 +818,7 @@ u8 gSbGalleonSkyColorCEnd[4] = {0x13, 0x23, 0x36, 0};
 
 const SkyVec3 gSbGalleonSkyLightVecs[4] = {
     {-1.0f, -2.0f, -1.0f}, {1.0f, -2.0f, 1.0f}, {1.0f, -2.0f, 1.0f}, {1.0f, -0.25f, 1.0f}};
-static u32 sSbGalleonUnused0;
+u32 sSbGalleonUnused0;
 u8 gSbGalleonSkyColorA[4];
 u8 gSbGalleonSkyColorB[4];
 u8 gSbGalleonSkyColorC[4];
