@@ -354,11 +354,26 @@ pool differs. Measured layout rule (this tree, GC/2.0):
 4. The only read that does not fold is an array subscript — i.e. the `SINGLE_ELEM_CONST_ARRAY`
    that `tools/banned_shapes_check.py` bans (75 baselined, regrowth is a gate failure).
 
-So where retail's pool head holds values whose only readers sit inside functions, the original
-minted them from a file-scope object that our source cannot legally re-declare, and the bytes
-are **unreachable within policy**. This is the concrete form of CLAUDE.md's standing rule:
-"If the pool ORDER genuinely differs, that is a TU-boundary artifact — leave the unit
-`NonMatching`, do not reconstruct the pool."
+**RETRACTION (same day).** The paragraph that stood here concluded that a displaced pool head is
+unreachable because the only non-folding read is the banned 1-element pin. That is wrong, and
+`015b98abbd` ("pool: recover the constants nine more units declare") had already refuted it.
+The pin is adjudicated per instance, not forbidden outright: when the retail pool proves a slot
+was a declared const, the instance is accepted into `tools/banned_shapes_baseline.txt` (75 -> 86
+entries over that commit). Its reference-count spec is the adjudication test — a literal never
+dedups into a file-scope const, so a slot's retail reference count says how many sites must
+convert, and a value appearing twice in retail's pool but once in ours means the earlier copy is
+a const and the later a literal. `679_ARWProximit`, listed below as priced, was recovered that
+way. What survives from this section is the layout model above, the classifier in 8b, and the
+three rows the const rule does not reach.
+
+A second, hack-free route exists whenever the displaced values sit in a **duplicated block**
+rather than in scattered scalars: extract that block as a `static` helper defined at the point
+the pool wants the mint (the definition-site lens — `a4656c3766`, `144c1a9855`). Measured on
+`679_ARWProximit` before the const version landed: two teardown helpers
+(`arwproximit_destroyByHit` minting `0.0f, 100.0f`, then `arwproximit_detonate` minting
+`127.0f`) placed ahead of `arwproximit_render` gave `.sdata2` 120/120 with all nine functions at
+100.0, zero `banned_shapes_check` hits, and a clean `MatchingFor` flip (DOL sha1 unchanged).
+Prefer it when the block is genuinely shared; it costs no baseline entry.
 
 Sweep result: the §7 folded-scalar tell (a named `.sdata2` object with zero relocations) has
 **17 instances tree-wide and every one is in a unit with `gap == 0`** — that lens is exhausted,
@@ -366,7 +381,7 @@ do not re-survey it.
 
 | unit | gap | mechanism | probe result |
 | --- | --- | --- | --- |
-| `679_ARWProximit` | 64 | retail mints `0.0f, 100.0f, 127.0f` ahead of `arwproximit_render`'s `1.0f`; all three are read only from inside `arwproximit_update` | 1-element-array form gives **120/120 data, all 9 functions still 100.0** — and trips `banned_shapes_check` as regrowth. PRICED 64 B |
+| `679_ARWProximit` | 64 | retail mints `0.0f, 100.0f, 127.0f` ahead of `arwproximit_render`'s `1.0f`; all three are read only from inside `arwproximit_update` | 1-element-array form gives **120/120 data, all 9 functions still 100.0** — and trips `banned_shapes_check` as regrowth. RECOVERED in `015b98abbd`; measured price before that was 64 B |
 | `engine/68` | 128 | **not** a wrong constant: retail's `120.0f` at `.sdata2+0x44` is a plain literal of `firstPersonDoControls`, minted between `15360.0f` (0x40) and `16.0f` (0x48) | plain literal makes `.sdata2` byte-identical (64/192 -> **192/192**) but drops `firstPersonDoControls` 100.0 -> 94.512; tree 99.811676 -> 99.809730. PRICED 128 B |
 | `engine/7` | 232 | one missing 4-byte mint cascades: retail mints a `1.0f` at 0x0c as a front-end literal of `lightningGetRemainingFraction`, after its `0.0f` and before its two bias doubles. Ours has only the `0.0f`, so 0x0c stays a hole, every later slot shifts 4, and a second hole opens at 0x84 | the missing `1.0f` emits no code in retail's `fn1` either — recovering it needs a phantom minter. DECLINE |
 | `237`, `704`, `model`/`modellight`, `213_Kaldachom`, `279_AppleOnTree`, `597`, `195_Player`, `intersect_render`, `main/object` | 88-784 | same class; several heads are led by a bias double, which cannot be declared at all | not probed individually — the class verdict covers them |
