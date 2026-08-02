@@ -3028,8 +3028,6 @@ int ObjSeq_EvaluateCondition(int condition, u8* seq, int obj)
             result = 1;
         }
         break;
-    case 16:
-    case 17:
     default:
         result = 1;
         break;
