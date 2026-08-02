@@ -11,11 +11,11 @@
 #include "main/object_render.h"
 #include "main/objtexture.h"
 
-extern const f32 gDll177TextureValueMaximum;
-extern const f32 gDll177TexturePulseAmplitude;
-extern const f32 gDll177UnitValue;
-extern const f32 gDll177Pi;
-extern const f32 gDll177HalfCycleUnits;
+#define DLL_177_TEXTURE_VALUE_MAXIMUM  256.0f
+#define DLL_177_TEXTURE_PULSE_AMPLITUDE 50.0f
+#define DLL_177_UNIT_VALUE              1.0f
+#define DLL_177_PI                      3.1415927f
+#define DLL_177_HALF_CYCLE_UNITS        32768.0f
 
 int dll_177_updateTextureAnimation(GameObject* obj) {
     ObjTextureRuntimeSlot* texture;
@@ -50,9 +50,9 @@ int dll_177_updateTextureAnimation(GameObject* obj) {
         if (texture != NULL) {
             phaseStep = (state->pulsePhase + framesThisStep * 800) & 0xFFFF;
             state->pulsePhase = phaseStep;
-            phase = (gDll177Pi * (f32)(u32)state->pulsePhase) / gDll177HalfCycleUnits;
-            texture->textureId = (s32) - (gDll177TexturePulseAmplitude * (gDll177UnitValue - mathCosf(phase)) -
-                                          gDll177TextureValueMaximum);
+            phase = (DLL_177_PI * (f32)(u32)state->pulsePhase) / DLL_177_HALF_CYCLE_UNITS;
+            texture->textureId = (s32)(DLL_177_TEXTURE_VALUE_MAXIMUM -
+                                       DLL_177_TEXTURE_PULSE_AMPLITUDE * (DLL_177_UNIT_VALUE - mathCosf(phase)));
         }
         break;
     }
@@ -72,7 +72,7 @@ void dll_177_free(void) {
 
 void dll_177_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     if (visible != 0) {
-        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, gDll177UnitValue);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, DLL_177_UNIT_VALUE);
     }
 }
 

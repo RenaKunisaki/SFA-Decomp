@@ -32,6 +32,7 @@
 #include "string.h"
 #include "dolphin/gx/GXCull.h"
 #include "track/intersect_depth_state_api.h"
+#include "main/shader_init_api.h"
 
 u8 gRcpDistortSlotIndex;
 u8 gRcpDistortGroup;

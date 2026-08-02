@@ -4,6 +4,7 @@
 #include "global.h"
 #include "main/objprint_character_api.h"
 #include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/objHitReact.h"
 #include "main/objseq.h"
 #include "main/dll/curve_walker.h"
@@ -22,6 +23,15 @@ typedef struct Dll28BAiState {
 STATIC_ASSERT(offsetof(Dll28BAiState, route) == 0x9B0);
 STATIC_ASSERT(offsetof(Dll28BAiState, route.posX) == 0xA18);
 STATIC_ASSERT(offsetof(Dll28BAiState, playerDistance) == 0xAB8);
+
+typedef struct EarthWalkerPlacement
+{
+    ObjPlacement base;
+    s8 spawnRot;
+    u8 encounterType;
+} EarthWalkerPlacement;
+
+STATIC_ASSERT(offsetof(EarthWalkerPlacement, spawnRot) == 0x18);
 
 typedef struct EarthWalkerState
 {

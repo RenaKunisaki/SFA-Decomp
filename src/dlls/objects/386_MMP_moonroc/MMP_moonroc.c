@@ -15,6 +15,7 @@
 #include "main/carryable_interface.h"
 #include "main/dll/objfx_api.h"
 #include "main/dll/player_api.h"
+#include "main/dll/player_state.h"
 #include "main/dll/tricky_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
@@ -33,7 +34,6 @@
 #include "sys/objects.h"
 
 #define MMP_MOON_ROCK_OBJECT_GROUP            4
-#define MMP_MOON_ROCK_SEQUENCE_ID             0x519
 #define MMP_GEYSER_VENT_SEQUENCE_ID           0x518
 #define MMP_MOON_ROCK_HIT_VOLUME_SLOT         14
 #define CARRYABLE_OBJECT_GROUP                0x10
@@ -189,11 +189,11 @@ void mmpMoonRock_throwFromPlayer(GameObject* obj) {
     MMPMoonRockState* state = obj->extra;
     MatrixTransform rotation;
     GameObject* player = Obj_GetPlayerObject();
-    u8* playerState = player->extra;
+    PlayerState* playerState = player->extra;
     f32 zeroVel = 0.0f;
     obj->anim.velocityX = zeroVel;
-    obj->anim.velocityY = 0.75f * *(f32*)((char*)playerState + 0x298) + 2.2f;
-    obj->anim.velocityZ = -0.75f * *(f32*)((char*)playerState + 0x298) + -2.2f;
+    obj->anim.velocityY = 0.75f * playerState->baddie.inputMagnitude + 2.2f;
+    obj->anim.velocityZ = -0.75f * playerState->baddie.inputMagnitude + -2.2f;
     rotation.x = zeroVel;
     rotation.y = zeroVel;
     rotation.z = zeroVel;

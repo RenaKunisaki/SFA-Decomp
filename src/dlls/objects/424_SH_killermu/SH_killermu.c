@@ -149,7 +149,7 @@ void EnemyMushroom_update(GameObject* obj) {
     GameObject* player;
     EnemyMushroomPlacement* placement;
     EnemyMushroomHitInfo hitInfo;
-    int hitObject;
+    GameObject* hitObject;
     int hitSphereIndex;
     u32 hitVolume;
     int hitType;

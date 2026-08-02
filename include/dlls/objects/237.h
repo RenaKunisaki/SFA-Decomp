@@ -169,16 +169,27 @@ STATIC_ASSERT(offsetof(CollectibleModelSetup, pickupCategory) == 0x2);
 STATIC_ASSERT(offsetof(CollectibleModelSetup, pad04) == 0x4);
 STATIC_ASSERT(offsetof(CollectibleModelSetup, pickupRadius) == 0x8);
 
-/*
- * gCollectibleObjDescriptor from slot02 onwards: the export table the crate and
- * basket objects reach through child->anim.dll to launch a dropped collectible.
- */
+/* Complete runtime interface beginning at gCollectibleObjDescriptor's slot02. */
 typedef struct CollectibleInterface {
-    void* pad00[11];
+    ObjectInterface base;
+    int (*getIsHidden)(GameObject* collectible);
+    void (*setDisabled)(GameObject* collectible, int disabled);
+    int (*getHitRegionId)(GameObject* collectible);
     void (*startBounceMotion)(GameObject* collectible, f32 velocityX, f32 velocityY, f32 velocityZ);
+    void (*setVisibilityBitClear)(GameObject* collectible, u32 clear);
+    u8 (*getVisibilityBitClear)(GameObject* collectible);
+    void (*setPosition)(GameObject* collectible, f32 x, f32 y, f32 z);
 } CollectibleInterface;
 
+STATIC_ASSERT(offsetof(CollectibleInterface, getIsHidden) == 0x20);
+STATIC_ASSERT(offsetof(CollectibleInterface, setDisabled) == 0x24);
+STATIC_ASSERT(offsetof(CollectibleInterface, getHitRegionId) == 0x28);
 STATIC_ASSERT(offsetof(CollectibleInterface, startBounceMotion) == 0x2C);
+STATIC_ASSERT(offsetof(CollectibleInterface, setVisibilityBitClear) == 0x30);
+STATIC_ASSERT(offsetof(CollectibleInterface, getVisibilityBitClear) == 0x34);
+STATIC_ASSERT(offsetof(CollectibleInterface, setPosition) == 0x38);
+
+#define COLLECTIBLE_INTERFACE(collectible) (*(CollectibleInterface**)((collectible)->anim.dll))
 
 void collectible_setPosition(GameObject* obj, f32 x, f32 y, f32 z);
 void collectible_startBounceMotion(GameObject* obj, f32 velocityX, f32 velocityY, f32 velocityZ);

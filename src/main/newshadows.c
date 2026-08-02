@@ -292,7 +292,7 @@ u8 gNewShadowHeavyFogIntensity;
 Texture* gNewShadowReflectionTexture;
 u8 gNewShadowCasterCount;
 
-u8 lbl_803DB668[8] = {0xFF, 7, 6, 5, 4, 3, 2, 1};
+u8 gShadowCastModeTable[8] = {0xFF, 7, 6, 5, 4, 3, 2, 1};
 f32 gStandardAspectRatio = 1.3333334f;
 
 #include "main/newshadows_internal.h"
@@ -338,7 +338,6 @@ extern inline float sqrtf(float x)
 }
 
 extern const f32 lbl_803DED38;
-extern const f32 lbl_803DED3C;
 extern const f32 lbl_803DED40;
 extern const f32 lbl_803DEDC0;
 extern const f32 lbl_803DEDD0;
@@ -823,7 +822,7 @@ void renderShadows(int unused0, int unused1, int unused2)
                     Texture** texturePool = shadowData->castTextures;
                     texture = texturePool + (u8)texIdx;
                     castSlot->texture = *texture;
-                    castSlot->mode = lbl_803DB668[(u8)texIdx];
+                    castSlot->mode = gShadowCastModeTable[(u8)texIdx];
                     objRenderShadowIfVisible(obj, 0, 0, 0, 0, 0);
                     if (casterPtr->flags == 2)
                     {
@@ -1316,7 +1315,7 @@ static void evalNoisePlacements(f32 px, f32 pz, f32 frame, f32* placements, int 
         if (frame < place[0])
         {
             f32 mx, mz, t, s0, tmp, p2lo, sq, ratio, frac, depth;
-            t = lbl_803DED3C + (place[0] - frame) / place[0];
+            t = 0.25f + (place[0] - frame) / place[0];
             if (t > 1.0f)
                 t = 1.0f;
             s0 = sqrtf(t);
@@ -1714,13 +1713,13 @@ static inline void fillRingTexture(void)
             off = off + (j >> 2) * 0x200 + 0x60;
             cx = ((f32)j - 64.0f) * lbl_803DEDE0;
             d2 = sqrtf(cx * cx + cy2);
-            if (d2 < lbl_803DED3C || d2 > 0.75f)
+            if (d2 < 0.25f || d2 > 0.75f)
             {
                 d2 = 0.0f;
             }
             else
             {
-                f32 t = 2.0f * (d2 - lbl_803DED3C);
+                f32 t = 2.0f * (d2 - 0.25f);
                 if (t > lbl_803DED38)
                 {
                     d2 = -(2.0f * (t - lbl_803DED38) - 1.0f);

@@ -37,6 +37,7 @@
 #include "dolphin/gx/GXBump.h"
 #include "main/newshadows_texture_api.h"
 #include "main/rcp_dolphin_render_api.h"
+#include "main/pi_dolphin_api.h"
 
 
 static int sRcpUnused0;
@@ -244,16 +245,16 @@ void selectTextureWithSecondary(Texture* texture, int mapId)
     void* base;
     if (texture == NULL)
         return;
-    base = &((u8*)texture)[32];
-    if (((u8*)texture)[72] != 0)
+    base = texture->gxTexObj;
+    if (texture->preloaded != 0)
     {
-        GXLoadTexObjPreLoaded(base, *(void**)((u8*)texture + 64), mapId);
+        GXLoadTexObjPreLoaded(base, (GXTexRegion*)texture->tmemAddr, mapId);
     }
     else
     {
         GXLoadTexObj(base, mapId);
     }
-    if (*(void**)((u8*)texture + 80) != NULL)
+    if (*(void**)&texture->imageOffset != NULL)
     {
         textureInitSecondaryGXTexObj(texture, &sSecondaryTexObj);
         GXLoadTexObj(&sSecondaryTexObj, GX_TEXMAP1);
@@ -265,10 +266,10 @@ void selectTexture(Texture* texture, int mapId)
     void* base;
     if (texture == NULL)
         return;
-    base = &((u8*)texture)[0x20];
-    if (((u8*)texture)[0x48] != 0)
+    base = texture->gxTexObj;
+    if (texture->preloaded != 0)
     {
-        GXLoadTexObjPreLoaded(base, *(void**)((u8*)texture + 0x40), mapId);
+        GXLoadTexObjPreLoaded(base, (GXTexRegion*)texture->tmemAddr, mapId);
     }
     else
     {

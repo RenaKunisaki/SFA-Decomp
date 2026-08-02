@@ -48,9 +48,9 @@ void drakormissile_free(GameObject* obj);
 void drakormissile_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void drakormissile_init(GameObject* obj, DrakorMissileSetup* setup);
 
-extern f32 lbl_803DC2B0;
-extern f32 lbl_803DC2B4;
-extern f32 lbl_803DC2B8;
+extern f32 gDrakorMissileVelocityDamping;
+extern f32 gDrakorMissileSteerGain;
+extern f32 gDrakorMissileInterceptSpeedBias;
 extern f32 gDrakorMissileProximityDetonateDist;
 
 #endif /* MAIN_DLL_DLL_0262_DRAKORMISSILE_H_ */

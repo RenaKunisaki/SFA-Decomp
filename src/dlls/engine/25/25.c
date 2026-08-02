@@ -398,7 +398,7 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
     int hit;
     int v28;
     int v24;
-    int hitId;
+    GameObject* hitObject;
     f32 posX;
     f32 posY;
     f32 posZ;
@@ -449,7 +449,7 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
     {
         return 0;
     }
-    hit = ObjHits_GetPriorityHitWithPosition(obj, &hitId, &v28, (u32*)&v24, &posX, &posY, &posZ);
+    hit = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &v28, (u32*)&v24, &posX, &posY, &posZ);
     ((GroundBaddieState*)state)->lastHitSphereIndex = v28;
     if (hit != 0)
     {
@@ -506,7 +506,7 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
             }
         }
         Sfx_StopObjectChannel(obj, 16);
-        ObjMsg_SendToObject((void*)hitId, DLL19_ADVANCE_MSG, obj, 0);
+        ObjMsg_SendToObject(hitObject, DLL19_ADVANCE_MSG, obj, 0);
     }
     return hit;
 }
@@ -1032,7 +1032,7 @@ int dll_19_updateSequenceMovement(GameObject* obj, ObjSeqState* seq, char* st, v
 
 f32 dll_19_func0B(GameObject* obj)
 {
-    return *(f32*)((char*)obj->extra + 0x3e4);
+    return ((GroundBaddieState*)obj->extra)->pathRadius;
 }
 
 u16 dll_19_func0A(GameObject* obj)
@@ -1238,7 +1238,7 @@ u8 dll_19_getClearDirectionMask(GameObject* obj, void* state, f32 dist)
         if (ok != 0)
         {
             if (trackGetLineIntersect(&obj->anim.localPosX, world, 1.0f, 0, (TrackBBoxHit*)bboxOut,
-                                   (GameObject*)obj, *(u8*)((u8*)state + 0x261), -1, 0, 0) != 0)
+                                   (GameObject*)obj, ((Dll19State*)state)->unk261, -1, 0, 0) != 0)
             {
                 ok = 0;
             }

@@ -62,7 +62,6 @@ typedef enum CfMainCrystalPylonIndex {
     CFMAINCRYSTAL_PYLON_BLUE = 2,
 } CfMainCrystalPylonIndex;
 
-extern f32 gCfMainCrystalRenderScale;
 
 GameObject* gCfMainCrystalPositionObject;
 
@@ -300,7 +299,7 @@ void cfMainCrystal_free(GameObject* obj) {
 void cfMainCrystal_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     s32 isVisible = visible;
     if (isVisible != 0) {
-        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, gCfMainCrystalRenderScale);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 

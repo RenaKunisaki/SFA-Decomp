@@ -8,6 +8,7 @@
 #include "main/audio/sfx_channel_query_api.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_stop_channel_api.h"
+#include "main/dll/VF/dll_021E_vfpblock1.h"
 
 
 typedef struct VfpBlock1State

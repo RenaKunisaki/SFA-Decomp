@@ -50,8 +50,8 @@ void sceneDrawTransparentPolys(void);
 #include "main/render_flags.h"
 #include "main/dll/player_api.h"
 #include "main/dll_000A_expgfx.h"
+#include "main/lightmap.h"
 
-extern f32 lbl_803DEBFC;
 
 extern u8 gMapBlockCount; /* count of allocated blocks */
 
@@ -387,7 +387,7 @@ void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 
     OSs16tof32(&bounds->maxZ, &maxZs);
     maxD = maxZs * gTrackPackedCoordScale + block->transform[2][3];
     OSs16tof32(&bounds->minZ, &minZs);
-    half = lbl_803DEBFC;
+    half = 0.5f;
     stk.x = half * ((minXs * gTrackPackedCoordScale + block->transform[0][3]) +
                     (maxXs * gTrackPackedCoordScale + block->transform[0][3]));
     minW = minYs * gTrackPackedCoordScale + block->transform[1][3];
@@ -432,8 +432,8 @@ void mapBlockRenderMain(MapBlockBoundsRec* bounds, MapBlockData* block, float* v
     s0 = (u8*)state[0];
     v = s0[countShifted];
     base = (int*)(state[0] + countShifted);
-    v = v | ((u32)*(u8*)((char*)base + 1) << 8);
-    v = v | ((u32)*(u8*)((char*)base + 2) << 16);
+    v = v | ((u32)((u8*)base)[1] << 8);
+    v = v | ((u32)((u8*)base)[2] << 16);
     state[4] += 4;
     nibble = (v >> (cursor & 7)) & 0xf;
     for (i = 0; i < nibble; i++)
@@ -475,8 +475,8 @@ void mapBlockRenderWater(MapBlockBoundsRec* bounds, MapBlockData* block, float* 
     s0 = (u8*)state[0];
     v = s0[countShifted];
     base = (int*)(state[0] + countShifted);
-    v = v | ((u32)*(u8*)((char*)base + 1) << 8);
-    v = v | ((u32)*(u8*)((char*)base + 2) << 16);
+    v = v | ((u32)((u8*)base)[1] << 8);
+    v = v | ((u32)((u8*)base)[2] << 16);
     state[4] += 4;
     nibble = (v >> (cursor & 7)) & 0xf;
     for (i = 0; i < nibble; i++)
@@ -512,8 +512,8 @@ void mapBlockRenderTransparent(MapBlockBoundsRec* bounds, MapBlockData* block, f
     s0 = (u8*)state[0];
     v = s0[countShifted];
     base = (int*)(state[0] + countShifted);
-    v = v | ((u32)*(u8*)((char*)base + 1) << 8);
-    v = v | ((u32)*(u8*)((char*)base + 2) << 16);
+    v = v | ((u32)((u8*)base)[1] << 8);
+    v = v | ((u32)((u8*)base)[2] << 16);
     state[4] += 4;
     nibble = (v >> (cursor & 7)) & 0xf;
     for (i = 0; i < nibble; i++)

@@ -92,7 +92,7 @@ typedef struct TrickyJumpArc
     f32 landZ;     /* 0x80: landing node z */
 } TrickyJumpArc;
 
-struct ObjfsaRomCurveDef;
+struct RomCurveDef;
 
 /*
  * TrickyState - the obj+0xB8 extra record for the Tricky sidekick handlers
@@ -245,7 +245,7 @@ typedef struct TrickyState {
     f32 renderPosZ;
     s16 modelAnchorRotY;
     u8 pad416[0x418 - 0x416];
-    struct ObjfsaRomCurveDef *routeSeedNode; /* candidate route node chosen before seeding route */
+    struct RomCurveDef *routeSeedNode; /* candidate route node chosen before seeding route */
     u8 routeSeedDir;
     u8 pad41D[0x420 - 0x41D];
     RomCurveWalker route;
@@ -278,8 +278,8 @@ typedef struct TrickyState {
         };
         f32 guardPoint[3]; /* trickyGuard: guard-post position (home pos - 15 units along facing); trickyFlame clears [0]/[1] with 0.0f on exit */
         struct {
-            struct ObjfsaRomCurveDef *flameNode0; /* trickyFlame: Objfsa_FindNearestCurveType24 result */
-            struct ObjfsaRomCurveDef *flameNode1; /* trickyFlame: getById(flameNode0->linkIds[0]) */
+            struct RomCurveDef *flameNode0; /* trickyFlame: Objfsa_FindNearestCurveType24 result */
+            struct RomCurveDef *flameNode1; /* trickyFlame: getById(flameNode0->linkIds[0]) */
         };
     };
     union {

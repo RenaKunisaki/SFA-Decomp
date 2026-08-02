@@ -127,31 +127,6 @@ typedef struct TrackHitResults
     u8 pad6F;
 } TrackHitResults;
 
-/* MapTriGroup -- 0x14-byte per-block triangle group header streamed from the
- * map block (blk+0x50 table).  Holds the first index into the block's 8-byte
- * MapTriIndex list plus s16 bounds; the list is closed by the NEXT group's
- * firstTri, so walkers read group[1].firstTri as their end bound. */
-typedef struct MapTriGroup
-{
-    u16 firstTri; /* 0x00 first MapTriIndex this group owns */
-    s16 minX;     /* 0x02 bounds in block-local units */
-    s16 maxX;     /* 0x04 */
-    s16 minY;     /* 0x06 */
-    s16 maxY;     /* 0x08 */
-    s16 minZ;     /* 0x0a */
-    s16 maxZ;     /* 0x0c */
-    u8 pad0E[2];  /* 0x0e */
-    u32 flags;    /* 0x10 surface kind/filter bits */
-} MapTriGroup;
-
-/* MapTriIndex -- 8-byte triangle: three vertex indices into the block's
- * packed s16 vertex pool plus a 16-bit x/z grid-cell coverage mask. */
-typedef struct MapTriIndex
-{
-    u16 vert[3];  /* 0x00 vertex pool indices */
-    u16 cellMask; /* 0x06 low byte = x cells, high byte = z cells */
-} MapTriIndex;
-
 struct MapDynamicSlot
 {
     GameObject* owner;
@@ -345,6 +320,11 @@ void Obj_SetParent(GameObject* obj, GameObject* newParent, int updateLocalTransf
     }
 }
 
+int trackSweepCircleAgainstPoint(f32* x, f32* z, f32 centerX, f32 centerZ, f32 radius, s8 resolveCollision);
+int trackResolveSurfacePenetration(f32* a, f32* b, f32* c, f32* p, f32 f1p, f32 y, u8 type);
+int trackSweepSphereAgainstEdge(void* tri, f32* rayOrig, f32* rayDir, f32 maxd, f32* out29, f32* outNrm, f32 maxStep, f32* outDist, f32 epsArg);
+void* trackGetBlockDescriptors(u32* outVal);
+
 int trackSweepCircleAgainstPoint(f32* x, f32* z, f32 centerX, f32 centerZ, f32 radius, s8 resolveCollision) {
     f32 startDeltaZ, startDeltaX, timeA, startDistanceSq, startX, startZ, moveX, moveZ, quadraticB, negB;
     f32 separation, sqrtDiscriminant, denominator, separationX, timeB, hitTime, hitX, hitZ;
@@ -471,18 +451,18 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
     {
         if (segment != -1)
         {
-            u8* tbl = *(u8**)(*(int*)&target->anim.modelInstance + 0x38);
+            u8* tbl = target->anim.modelInstance->intersectionSegmentRanges;
             start = tbl[segment * 2];
             end = tbl[segment * 2 + 1];
         }
         else
         {
             start = 0;
-            end = *(u8*)(*(int*)&target->anim.modelInstance + 0x5c);
+            end = target->anim.modelInstance->modLineCount;
         }
         lineIdx = 0;
-        vt = *(int*)(*(int*)&target->anim.modelInstance + 0x34);
-        vp = *(int*)(*(int*)&target->anim.modelInstance + 0x3c);
+        vt = (int)target->anim.modelInstance->intersectionLines;
+        vp = (int)target->anim.modelInstance->intersectionPoints;
         if (target->objectFlags & 0x100)
         {
             end = 0;
@@ -1658,6 +1638,15 @@ int trackGetHeightAboveGround(GameObject* obj, f32 x, f32 y, f32 z, f32* outDept
     return 0;
 }
 
+static inline f32 trackAbsF32(f32 value)
+{
+    if (value >= 0.0f)
+    {
+        return value;
+    }
+    return -value;
+}
+
 int trackGetNearestGroundOffsetAndNormal(GameObject* obj, f32 x, f32 y, f32 z, f32* outGroundOffset,
                                          f32* outNormal, int queryMask)
 {
@@ -1672,21 +1661,14 @@ int trackGetNearestGroundOffsetAndNormal(GameObject* obj, f32 x, f32 y, f32 z, f
     if (hitCount != 0)
     {
         firstDistance = hits[0]->height;
-        firstDistance = y - firstDistance;
-        if (firstDistance >= 0.0f)
-        {
-        }
-        else
-        {
-            firstDistance = -firstDistance;
-        }
+        firstDistance = trackAbsF32(y - firstDistance);
         bestDistance = firstDistance;
         nearestIndex = 0;
         for (hitIndex = 1; hitIndex < hitCount; hitIndex++)
         {
             f32 distance = hits[hitIndex]->height;
             distance = y - distance;
-            distance = distance >= 0.0f ? distance : -distance;
+            distance = trackAbsF32(distance);
             if (distance < bestDistance)
             {
                 bestDistance = distance;
@@ -1716,21 +1698,14 @@ int trackGetNearestGroundOffset(GameObject* obj, f32 x, f32 y, f32 z, f32* outGr
     if (hitCount != 0)
     {
         firstDistance = hits[0]->height;
-        firstDistance = y - firstDistance;
-        if (firstDistance >= 0.0f)
-        {
-        }
-        else
-        {
-            firstDistance = -firstDistance;
-        }
+        firstDistance = trackAbsF32(y - firstDistance);
         bestDistance = firstDistance;
         nearestIndex = 0;
         for (hitIndex = 1; hitIndex < hitCount; hitIndex++)
         {
             f32 distance = hits[hitIndex]->height;
             distance = y - distance;
-            distance = distance >= 0.0f ? distance : -distance;
+            distance = trackAbsF32(distance);
             if (distance < bestDistance)
             {
                 bestDistance = distance;
@@ -2105,9 +2080,8 @@ int trackSweepSphereAgainstEdge(void* tri, f32* rayOrig, f32* rayDir, f32 maxd, 
                         outNrm[2] = hit[2] - tmp14[2];
                         Vec3_Normalize(outNrm);
                         {
-                            f32 dh = *(f32*)((u8*)hit + 4) * outNrm[1];
-                            outNrm[3] =
-                                T[9] - (dh + *(f32*)((u8*)hit + 0) * outNrm[0] + *(f32*)((u8*)hit + 8) * outNrm[2]);
+                            f32 dh = hit[1] * outNrm[1];
+                            outNrm[3] = T[9] - (dh + hit[0] * outNrm[0] + hit[2] * outNrm[2]);
                         }
                         out29[0] = *(f32*)((u8*)hit + 0);
                         out29[1] = *(f32*)((u8*)hit + 4);

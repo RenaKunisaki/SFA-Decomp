@@ -49,6 +49,7 @@ void pathSearchAddNeighbor(PathSearch* search, PathSearchNode* previousNode, int
                            RomCurveDef* candidatePoint);
 RomCurveDef* pathSearchGetNextPoint(PathSearch* search);
 int pathSearchBuildPath(PathSearch* search);
+void pathSearchExpandNode(PathSearch* search, PathSearchNode* node, int idx);
 int pathSearchStep(PathSearch* search, u32 timeout);
 int pathSearchBegin(PathSearch* search, RomCurveDef* startPoint, f32* targetPosition, int pathId, u32 routeFlags);
 

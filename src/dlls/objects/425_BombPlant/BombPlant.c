@@ -212,7 +212,7 @@ void BombPlant_update(GameObject* obj) {
     Vec3f lightPosition;
     int hitSphereIndex;
     int hitVolume;
-    int hitObject;
+    GameObject* hitObject;
 
     (void)Obj_GetPlayerObject();
     if (objIsFrozen((u8*)obj) != 0) {

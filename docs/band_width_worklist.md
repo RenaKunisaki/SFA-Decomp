@@ -9,6 +9,13 @@ band width**, and splits the difference into:
 
 **Rank by `structB`.** That is the source-addressable part.
 
+> **The cliff now has a mechanism — see `docs/allocation_model.md`.** It is a *population*
+> property, not a compiler property: pure load bands stay perfectly declaration-keyed and
+> injective at widths 5–8, but wide real-code bands are dominated by non-load members
+> (13.4% of apparent members are phantoms, 9.8% recycled). Within-tier ordering laws hold at
+> every width and are usable; **cross-tier order above width 4 is measured unpredictable from
+> post-allocation machine code**, so a flat sweep there is a membership result, not a dead end.
+
 ## Why band width is the right axis
 
 The register-band assignment model is exact for narrow bands and falls off a cliff as the
@@ -29,8 +36,11 @@ probe over the rule there.
 Every frontier function that resisted a whole campaign is wide-band —
 `expgfx_updateActivePools` 18G/10F, `modelRenderInterpolateRootTransform` 17G,
 `mapLoadDataFile` 10G, `collectShadowTrackTriangles` 10G/2F, `allocLotsOfTextures`
-8G/16F, `blendTextures` 8G, `renderObjects` 6G. Both functions flipped to 100% in a
-single session were narrow-band: `drawFn_8006f500` (2G/2F) and `mmFreeDeferred` (2G).
+8G/16F, `blendTextures` 8G. (`renderObjects` 6G was on this list and has since
+reached 100.) The function flipped to 100% in a single session was narrow-band:
+`waterFxDraw` (2G/2F, the symbol formerly written here as `drawFn_8006f500`).
+`mmFreeDeferred` (2G) was listed alongside it as flipped and is **not** at 100 —
+it reads 99.4545 today and carries a dead-operand cap.
 Four exhaustive declaration sweeps (720 / 225 / 144 / 121 candidates) returned *zero*
 movement, and every one was a wide-band function.
 

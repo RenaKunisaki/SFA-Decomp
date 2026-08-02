@@ -32,8 +32,8 @@
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 
-f32 lbl_803DDD68;
 int lbl_803DDD6C;
+f32 lbl_803DDD68;
 f32 gLaserCannonAdvanceSpeed = 5.0f;
 s16 gLaserCannonPitchStep = 0x80;
 s16 gLaserCannonMaxAimStep = 0x400;
@@ -84,7 +84,7 @@ typedef struct DrLaserCannonState
 {
     int beamObject;
     u8 pad04[DR_LASERCANNON_STATE_LAST_HIT_OBJECT - 0x04];
-    int lastHitObject;
+    GameObject* lastHitObject;
     f32 muzzleX;
     f32 muzzleY;
     f32 muzzleZ;
@@ -319,7 +319,7 @@ void DR_LaserCannon_hitDetect(GameObject* obj)
     f32 hitPosY;
     f32 hitPosX;
     u32 hitVolume;
-    int hitObject;
+    GameObject* hitObject;
     int hit;
     int* tricky;
     if (state->flags.b0 || state->flags.b3)
@@ -329,14 +329,14 @@ void DR_LaserCannon_hitDetect(GameObject* obj)
     hit = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, 0, &hitVolume, &hitPosX, &hitPosY, &hitPosZ);
     if (state->flags.b6 != 0)
     {
-        if (hit != 0 && ((GameObject*)hitObject)->anim.romDefNo != state->hitExcludeType &&
+        if (hit != 0 && hitObject->anim.romDefNo != state->hitExcludeType &&
             state->warningObject != NULL)
         {
             Shield_setMode(state->warningObject, DR_LASERCANNON_WARNING_HIT_MODE);
         }
     }
-    else if (((u32)(hit - 0xe) <= 1 || hit == 5) && (void*)state->lastHitObject != (void*)hitObject &&
-             ((GameObject*)hitObject)->anim.romDefNo != state->hitExcludeType)
+    else if (((u32)(hit - 0xe) <= 1 || hit == 5) && state->lastHitObject != hitObject &&
+             hitObject->anim.romDefNo != state->hitExcludeType)
     {
         state->lastHitObject = hitObject;
         state->health -= hitVolume;

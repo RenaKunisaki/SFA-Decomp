@@ -23,7 +23,7 @@
 #define LINK_ITEM_SLOTS 25
 
 extern u8 linkTextures[0x30];
-s8 gTumbleweedBushInputEnabled[5];
+s8 gTumbleweedBushInputEnabled;
 s8 linkSelected;
 s8 gTumbleweedBushItemCount;
 s8 gTumbleweedBushPulseDir;
@@ -83,6 +83,23 @@ STATIC_ASSERT(offsetof(LinkMenuItem, upLink) == 0x1A);
 #define LINK_FLAG_DRAW_SLOTS        0x0004
 
 extern LinkMenuItem gTumbleweedBushItems[40];
+
+void linkInitTextures(LinkMenuItem* item);
+void Link_resetTimers(void);
+void Link_copy(u8* srcArg);
+u8 Link_getPulse(void);
+void Link_updateItems(u8* srcArg);
+void Link_setItemState(int idx, int v);
+s32 Link_getItemState(int idx);
+void Link_setOpacity(u8 v);
+void Link_setSelected(int v);
+s32 Link_getSelected(void);
+void Link_render(void);
+void Link_free(void);
+void Link_setup(LinkMenuItem* items, int count, int selected, const char* defaultMessage, int unused1, int unused2,
+                int baseRed, int baseGreen, int baseBlue, int selectedRed, int selectedGreen, int selectedBlue);
+void Link_release(void);
+void Link_initialise(void);
 
 u16 linkGetSelectedItemId(void)
 {
@@ -443,7 +460,7 @@ void Link_render(void)
                 {
                     alpha = (((int)((u32)opacity >> 31)) + opacity) >> 1;
                 }
-                *(u8*)((char*)gameTextGetBox(drawItem->boxId) + 0x1e) = alpha;
+                ((TextSlot*)gameTextGetBox(drawItem->boxId))->alpha = alpha;
 
                 if ((drawItem->flags & LINK_FLAG_DRAW_BLACK_SHADOW) != 0)
                 {
@@ -624,7 +641,7 @@ u32 Link_update(void)
         }
     }
 
-    if (gTumbleweedBushInputEnabled[0] != 0)
+    if (gTumbleweedBushInputEnabled != 0)
     {
         buttons = getButtonsJustPressed(0);
         acceptPressed = 0;
@@ -668,7 +685,7 @@ u32 Link_update(void)
         gTumbleweedBushPulseDir = (s8)(*(s8*)&gTumbleweedBushPulseDir ^ 1);
     }
 
-    gTumbleweedBushInputEnabled[0] = 1;
+    gTumbleweedBushInputEnabled = 1;
     Link_refreshOverlappingItemTimers();
     Link_scanItemVerticalBounds();
     return result;
@@ -704,7 +721,7 @@ void Link_setup(LinkMenuItem* items, int count, int selected, const char* defaul
         gTumbleweedBushPulse = 0xff;
         linkSelected = selected;
         gTumbleweedBushPulseDir = 0;
-        gTumbleweedBushInputEnabled[0] = 0;
+        gTumbleweedBushInputEnabled = 0;
 
         memcpy(gTumbleweedBushItems, items, count * sizeof(LinkMenuItem));
 

@@ -59,6 +59,8 @@ ObjectDescriptor gKaldaChompSpitObjDescriptor = {
     KaldaChompSpit_getExtraSize,
 };
 
+void kaldachompspit_burst(GameObject* obj);
+
 void kaldachompspit_burst(GameObject* obj) {
     int i;
     KaldaChompSpitState* state;

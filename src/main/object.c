@@ -47,6 +47,7 @@
 #include "main/dll/player.h"
 #include "string.h"
 #include "main/dll/dll_0004_dummy04.h"
+#include "main/dll/dll_0017_savegame_api.h"
 
 s16 gObjPartitionPivot;
 void* lbl_803DCBC0;
@@ -318,6 +319,7 @@ void Obj_ClearModelSlotIndex(GameObject* obj)
     obj->anim.mapEventSlot = -1;
 }
 
+void Obj_ClearModelColorFadeRecursive(GameObject* obj);
 void Obj_ClearModelColorFadeRecursive(GameObject* obj)
 {
     int i;
@@ -332,6 +334,7 @@ void Obj_ClearModelColorFadeRecursive(GameObject* obj)
     }
 }
 
+void Obj_TickModelColorFadeRecursive(GameObject* obj);
 void Obj_TickModelColorFadeRecursive(GameObject* obj)
 {
     f32 alpha;
@@ -672,7 +675,7 @@ GameObject* loadObjectAtObject(GameObject* src, ObjPlacement* setup)
         if (obj != NULL)
         {
             Obj_RegisterObject(obj, 5);
-            OSReport(sObjDebugStrings, *(int*)&obj->anim.modelInstance + 0x91);
+            OSReport(sObjDebugStrings, obj->anim.modelInstance->name);
         }
     }
     return obj;
@@ -837,7 +840,7 @@ GameObject* getTrickyObject(void)
 GameObject* Obj_GetPlayerObject(void)
 {
     int count;
-    GameObject** objs = (GameObject**)objGetAllOfType(0, &count);
+    GameObject** objs = objGetAllOfType(0, &count);
     if (count != 0)
     {
         return objs[0];
@@ -851,10 +854,10 @@ void mapSetupPlayer(void)
     int playerNo;
     int mapType;
     u8* obj;
-    f32* pos;
+    SaveGameCharacterPosition* pos;
     f32 x, y, z;
     int uiDll;
-    u8* view;
+    CameraObject* view;
     Camera* vp;
     CharSpawn spawn;
 
@@ -868,10 +871,10 @@ void mapSetupPlayer(void)
     else
     {
         playerNo = (*gMapEventInterface)->getCurChar();
-        pos = (f32*)(*gMapEventInterface)->getCurCharPos();
-        x = pos[0];
-        y = pos[1];
-        z = pos[2];
+        pos = (SaveGameCharacterPosition*)(*gMapEventInterface)->getCurCharPos();
+        x = pos->x;
+        y = pos->y;
+        z = pos->z;
         obj = 0;
         if (playerNo > -1 && mapType != MAPTYPE_NO_HUD)
         {
@@ -899,14 +902,14 @@ void mapSetupPlayer(void)
                 if (obj != 0)
                 {
                     Obj_RegisterObject((GameObject*)obj, 1);
-                    OSReport((char*)(base + 0x5c), *(int*)&((GameObject*)obj)->anim.modelInstance + 0x91);
+                    OSReport((char*)(base + 0x5c), ((GameObject*)obj)->anim.modelInstance->name);
                 }
             }
         }
-        *(f32*)(base + 8) = lbl_803DE8BC * mathSinf((gObjPi * (f32)(*(s8*)((u8*)pos + 0xc) << 8)) / lbl_803DE8C4) + x;
+        *(f32*)(base + 8) = lbl_803DE8BC * mathSinf((gObjPi * (f32)(pos->angle << 8)) / lbl_803DE8C4) + x;
         *(f32*)(base + 0xc) = lbl_803DE8C8 + y;
         *(f32*)(base + 0x10) =
-            lbl_803DE8BC * mathCosf((gObjPi * (f32)(*(s8*)((u8*)pos + 0xc) << 8)) / lbl_803DE8C4) + z;
+            lbl_803DE8BC * mathCosf((gObjPi * (f32)(pos->angle << 8)) / lbl_803DE8C4) + z;
         uiDll = getCurUiDll();
         if ((u32)(uiDll - 2) <= 4 || uiDll == 7)
         {
@@ -923,9 +926,9 @@ void mapSetupPlayer(void)
         }
         vp = Camera_GetCurrent();
         view = (*gCameraInterface)->getCamera();
-        vp->x = *(f32*)(view + 0x18);
-        vp->y = *(f32*)(view + 0x1c);
-        vp->z = *(f32*)(view + 0x20);
+        vp->x = view->anim.worldPosX;
+        vp->y = view->anim.worldPosY;
+        vp->z = view->anim.worldPosZ;
         gTitleMenuControlInterface->vtable->func07(obj);
         lbl_803DCB70 = 0;
         mapUpdateCameraPosByTransformSpace();
@@ -1011,7 +1014,7 @@ static void objFreeObjdef(u8* obj, int flag)
             {
                 Obj_FreeObject((GameObject*)defs[n]);
             }
-            mapUnloadRomListPage(*(u8*)(obj + 0x34));
+            mapUnloadRomListPage(((GameObject*)obj)->anim.hostedMapSlot);
         }
     }
     if (flag == 0 && ((GameObject*)obj)->anim.classId == 0x10)
@@ -1467,9 +1470,9 @@ void Obj_UpdateObject(GameObject* obj)
         ((ObjHitsPriorityState*)object->hitReactState)->lastHitObject = 0;
         ((ObjHitsPriorityState*)object->hitReactState)->priorityHitCount = 0;
     }
-    if (*(void**)((u8*)obj + 0x58) != NULL)
+    if (obj->anim.hitboxTransformState != NULL)
     {
-        *(u8*)(*(u8**)((u8*)obj + 0x58) + 0x10f) = 0;
+        obj->anim.hitboxTransformState->contactObjectCount = 0;
     }
 }
 
@@ -1652,7 +1655,7 @@ void modelInitBones(f32 scale, void* model)
     int boneOff;
     f32* sumP;
     u8* hdr;
-    u8* tbl;
+    ModelJointWork* tbl;
     int i;
     int parent;
     f32* src;
@@ -1676,16 +1679,16 @@ void modelInitBones(f32 scale, void* model)
         return;
     }
     {
-        if ((src = *(f32**)(hdr + 0x18)) != NULL && (tbl = ((ObjModel*)m)->jointWorkspace) != NULL)
+        if ((src = (f32*)((ModelFileHeader*)hdr)->unk18) != NULL && (tbl = ((ObjModel*)m)->jointWorkspace) != NULL)
         {
-            **(f32**)(tbl + 4) = src[0] * sc;
-            if (**(f32**)(tbl + 4) == lbl_803DE88C)
+            tbl->radii[0] = src[0] * sc;
+            if (tbl->radii[0] == lbl_803DE88C)
             {
-                **(f32**)(tbl + 4) = src[1] * sc;
+                tbl->radii[0] = src[1] * sc;
             }
-            **(f32**)(tbl + 8) = **(f32**)(tbl + 4) * **(f32**)(tbl + 4);
-            **(f32**)(tbl + 0xc) = lbl_803DE8D4;
-            **(f32**)(tbl + 0x10) = **(f32**)(tbl + 4);
+            tbl->radiiSq[0] = tbl->radii[0] * tbl->radii[0];
+            tbl->boneLengths[0] = lbl_803DE8D4;
+            tbl->maxReach[0] = tbl->radii[0];
             zero = lbl_803DE88C;
             sums[0] = zero;
             i = 1;
@@ -1695,36 +1698,36 @@ void modelInitBones(f32 scale, void* model)
             sumP = &sums[1];
             for (; i < ((ObjModel*)m)->file->jointCount; srcP++, off += 4, boneOff += 0x1c, sumP++, i++)
             {
-                *(f32*)(*(u8**)(tbl + 4) + off) = sc * *srcP;
-                *(f32*)(*(u8**)(tbl + 8) + off) = *(f32*)(*(u8**)(tbl + 4) + off) * *(f32*)(*(u8**)(tbl + 4) + off);
+                *(f32*)((u8*)tbl->radii + off) = sc * *srcP;
+                *(f32*)((u8*)tbl->radiiSq + off) = *(f32*)((u8*)tbl->radii + off) * *(f32*)((u8*)tbl->radii + off);
                 bone = ((ModelFileHeader*)hdr)->jointData + boneOff;
                 parent = *(s8*)bone;
                 vx = *(f32*)(bone + 4);
                 vy = *(f32*)(bone + 8);
                 vz = *(f32*)(bone + 0xc);
                 len = sqrtf(vx * vx + vy * vy + vz * vz);
-                *(f32*)(*(u8**)(tbl + 0xc) + off) = sc * len;
-                v = *(f32*)(*(u8**)(tbl + 0xc) + off);
+                *(f32*)((u8*)tbl->boneLengths + off) = sc * len;
+                v = *(f32*)((u8*)tbl->boneLengths + off);
                 if (v == zero)
                 {
-                    *(f32*)(*(u8**)(tbl + 0xc) + off) = lbl_803DE8D8;
+                    *(f32*)((u8*)tbl->boneLengths + off) = lbl_803DE8D8;
                 }
-                w = *(f32*)(*(u8**)(hdr + 0x1c) + off);
+                w = *(f32*)(((ModelFileHeader*)hdr)->unk1C + off);
                 if (w >= lbl_803DE890)
                 {
-                    *(f32*)(*(u8**)(tbl + 0xc) + off) *= w;
+                    *(f32*)((u8*)tbl->boneLengths + off) *= w;
                 }
-                *sumP = sums[parent] + *(f32*)(*(u8**)(tbl + 0xc) + off);
+                *sumP = sums[parent] + *(f32*)((u8*)tbl->boneLengths + off);
                 if (*srcP == zero)
                 {
-                    *(f32*)(*(u8**)(tbl + 0x10) + off) = *(f32*)(*(u8**)(tbl + 0x10) + parent * 4);
+                    *(f32*)((u8*)tbl->maxReach + off) = *(f32*)((u8*)tbl->maxReach + parent * 4);
                 }
                 else
                 {
-                    *(f32*)(*(u8**)(tbl + 0x10) + off) = *sumP + *(f32*)(*(u8**)(tbl + 4) + off);
-                    v = *(f32*)(*(u8**)(tbl + 0x10) + off);
-                    pv = *(f32*)(*(u8**)(tbl + 0x10) + parent * 4);
-                    *(f32*)(*(u8**)(tbl + 0x10) + off) = (v > pv) ? v : pv;
+                    *(f32*)((u8*)tbl->maxReach + off) = *sumP + *(f32*)((u8*)tbl->radii + off);
+                    v = *(f32*)((u8*)tbl->maxReach + off);
+                    pv = *(f32*)((u8*)tbl->maxReach + parent * 4);
+                    *(f32*)((u8*)tbl->maxReach + off) = (v > pv) ? v : pv;
                 }
             }
         }
@@ -1749,7 +1752,7 @@ int objGetTotalDataSize(void* tmpl, u8* def, s16* data, int flags)
         break;
     default:
         if (((GameObject*)tmpl)->anim.dll != 0 &&
-            (cb = (int (*)(void*, int)) * (int*)(*(int*)((GameObject*)tmpl)->anim.dll + 0x1c)) != 0)
+            (cb = (int (*)(void*, int))((ObjectInterface*)*((GameObject*)tmpl)->anim.dll)->getExtraSize) != 0)
         {
             extra = cb(tmpl, size);
         }
@@ -1965,9 +1968,9 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
     {
         tmpl.flags06 = tmpl.flags06 | 0x2000;
     }
-    tmpl.x = *(f32*)(data + 4);
-    tmpl.y = *(f32*)(data + 6);
-    tmpl.z = *(f32*)(data + 8);
+    tmpl.x = ((ObjPlacement*)data)->posX;
+    tmpl.y = ((ObjPlacement*)data)->posY;
+    tmpl.z = ((ObjPlacement*)data)->posZ;
     tmpl.typeId = id;
     tmpl.data = data;
     tmpl.romDefNo = seq;
@@ -2075,7 +2078,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
         {
             obj->models[idx] = (u8*)obj + base + offsets[idx];
             ObjModel_LoadAnimData(models[idx], loadFlags, (int)obj->models[idx]);
-            if (!(*(u16*)(*(u8**)obj->models[idx] + 2) & 0x8000))
+            if (!(((ObjModel*)obj->models[idx])->file->flags & 0x8000))
             {
                 ((ObjModelInstance*)obj->def)->flags &= ~0x800000LL;
             }
@@ -2105,7 +2108,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
         {
             obj->models[i] = (u8*)obj + base + offsets[i];
             ObjModel_LoadAnimData(models[i], loadFlags, (int)obj->models[i]);
-            modelFlags = *(u16*)(*(u8**)obj->models[i] + 2);
+            modelFlags = ((ObjModel*)obj->models[i])->file->flags;
             if (!(modelFlags & 0x8000) && !(modelFlags & 0x4000))
             {
                 ((ObjModelInstance*)obj->def)->flags &= ~0x800000LL;
@@ -2259,7 +2262,7 @@ GameObject* objSetupObject(ObjPlacement* data, int flags, int mapLayer, int objI
     if (obj != NULL)
     {
         Obj_RegisterObject(obj, flags);
-        OSReport(sObjDebugStrings, *(int*)&obj->anim.modelInstance + 0x91);
+        OSReport(sObjDebugStrings, obj->anim.modelInstance->name);
     }
     return obj;
 }

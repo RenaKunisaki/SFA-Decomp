@@ -215,7 +215,7 @@ static void Obj_BuildTransformMatricesForYaw(GameObject* obj, s32 yawIndex) {
         ancestorCount++;
         savedScale = obj->anim.rootMotionScale;
         if ((obj->objectFlags & 8) == 0) {
-            obj->anim.rootMotionScale = lbl_803DE5F0;
+            obj->anim.rootMotionScale = 1.0f;
         }
 
         if (isAncestor == 0) {
@@ -237,9 +237,9 @@ static void Obj_BuildTransformMatricesForYaw(GameObject* obj, s32 yawIndex) {
         inverseTransform.y = -obj->anim.localPosY;
         inverseTransform.z = -obj->anim.localPosZ;
         if ((obj->objectFlags & 8) == 0) {
-            inverseTransform.scale = lbl_803DE5F0;
+            inverseTransform.scale = 1.0f;
         } else {
-            inverseTransform.scale = lbl_803DE5F0 / obj->anim.rootMotionScale;
+            inverseTransform.scale = 1.0f / obj->anim.rootMotionScale;
         }
         inverseTransform.rotX = -obj->anim.rotX;
         inverseTransform.rotY = -obj->anim.rotY;
@@ -304,17 +304,17 @@ void Camera_UpdateShakeAndFarPlane(void) {
         camera->shakeCooldown--;
         while (camera->shakeCooldown < 0) {
             camera->shakeCooldown++;
-            camera->shakeOffsetY = gCameraShakeMagnitudeDecay * -camera->shakeOffsetY;
+            camera->shakeOffsetY = 0.9f * -camera->shakeOffsetY;
         }
     } else if (camera->shakeMode == 1) {
         expTerm = Camera_Expf(-camera->shakeDamping * (shakeTime = camera->shakeTime), 20);
 
         phaseScale = 65535.0f * camera->shakeFrequency;
-        sinePhase = (gCameraPi * (phaseScale * shakeTime)) / 32768.0f;
+        sinePhase = (3.1415927f * (phaseScale * shakeTime)) / 32768.0f;
         camera->shakeOffsetY = camera->shakeAmplitude * expTerm * mathCosf(sinePhase);
-        if ((camera->shakeOffsetY < gCameraShakeStopThreshold) &&
-            (camera->shakeOffsetY > gCameraShakeStopThresholdNeg)) {
-            camera->shakeOffsetY = lbl_803DE60C;
+        if ((camera->shakeOffsetY < 0.1f) &&
+            (camera->shakeOffsetY > -0.1f)) {
+            camera->shakeOffsetY = 0.0f;
             camera->shakeMode = -1;
         }
         camera->shakeTime += timeDelta / 60.0f;
@@ -333,7 +333,7 @@ void CameraShake_StartDampened(f32 amplitude, f32 frequency, f32 damping) {
     camera->shakeOffsetY = amplitude;
     camera->shakeAmplitude = amplitude;
     camera->shakeFrequency = frequency;
-    camera->shakeTime = lbl_803DE60C;
+    camera->shakeTime = 0.0f;
     camera->shakeDamping = damping;
     camera->shakeMode = 1;
 }
@@ -393,7 +393,7 @@ void Camera_LoadModelViewMatrix(int unusedDisplayList, int unusedMatrixList, Mat
     transform->x -= playerMapOffsetX;
     transform->z -= playerMapOffsetZ;
     setMatrixFromObjectPos(modelMatrix, transform);
-    if (lbl_803DE5F0 != yScale) {
+    if (1.0f != yScale) {
         mtx44ScaleRow1(modelMatrix, yScale);
     }
 
@@ -472,7 +472,7 @@ void Camera_ClipToScreen(f32 clipX, f32 clipY, f32 clipZ, s32* outX, s32* outY, 
     }
 
     if (outZ != NULL) {
-        *outZ = (s32)(gCameraDepth24BitMax * (lbl_803DE5F0 + clipZ));
+        *outZ = (s32)(16777215.0f * (1.0f + clipZ));
     }
 }
 
@@ -500,8 +500,8 @@ void Camera_ProjectWorldSphere(f32 x, f32 y, f32 z, f32 radius, f32* outX, f32* 
     clipW =
         gCameraProjectionMatrix[3][3] + (gCameraProjectionMatrix[3][0] * pos.x + gCameraProjectionMatrix[3][1] * pos.y +
                                          gCameraProjectionMatrix[3][2] * pos.z);
-    if (lbl_803DE60C != clipW) {
-        inverseW = lbl_803DE5F0 / clipW;
+    if (0.0f != clipW) {
+        inverseW = 1.0f / clipW;
         *outX *= inverseW;
         *outY *= inverseW;
         *outZ *= inverseW;
@@ -514,8 +514,8 @@ void Camera_ProjectWorldSphere(f32 x, f32 y, f32 z, f32 radius, f32* outX, f32* 
         clipW = gCameraProjectionMatrix[3][3] +
                 (gCameraProjectionMatrix[3][0] * pos.x + gCameraProjectionMatrix[3][1] * pos.y +
                  gCameraProjectionMatrix[3][2] * pos.z);
-        if (lbl_803DE60C != clipW) {
-            inverseW = lbl_803DE5F0 / clipW;
+        if (0.0f != clipW) {
+            inverseW = 1.0f / clipW;
             *outRadiusX = fabsf(inverseW * (radius * gCameraProjectionMatrix[0][0]));
             *outRadiusY = fabsf(inverseW * (radius * gCameraProjectionMatrix[1][1]));
             *outRadiusZ = fabsf(inverseW * (radius * gCameraProjectionMatrix[2][2]));
@@ -550,8 +550,8 @@ void Camera_ProjectWorldPointWithOffset(f32 x, f32 y, f32 z, f32 offset, f32* ou
     clipW =
         gCameraProjectionMatrix[3][3] + (gCameraProjectionMatrix[3][0] * pos.x + gCameraProjectionMatrix[3][1] * pos.y +
                                          gCameraProjectionMatrix[3][2] * pos.z);
-    if (lbl_803DE60C != clipW) {
-        inverseW = lbl_803DE5F0 / clipW;
+    if (0.0f != clipW) {
+        inverseW = 1.0f / clipW;
         *outX *= inverseW;
         *outY *= inverseW;
         *outZ *= inverseW;
@@ -582,8 +582,8 @@ void Camera_ProjectWorldPoint(f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* ou
     clipW =
         gCameraProjectionMatrix[3][3] + (gCameraProjectionMatrix[3][0] * pos.x + gCameraProjectionMatrix[3][1] * pos.y +
                                          gCameraProjectionMatrix[3][2] * pos.z);
-    if (lbl_803DE60C != clipW) {
-        inverseW = lbl_803DE5F0 / clipW;
+    if (0.0f != clipW) {
+        inverseW = 1.0f / clipW;
         *outX *= inverseW;
         *outY *= inverseW;
         *outZ *= inverseW;
@@ -755,6 +755,7 @@ void Camera_UpdateViewMatrices(void) {
     Camera* camera;
     MatrixTransform transform;
     f32 rotationMatrix[16];
+    f32 shakeOffset = 0.0f;
 
     storage = (CameraMatrixStorage*)gObjInverseYawTransformMatrices;
     cameras = storage->cameras;
@@ -765,14 +766,14 @@ void Camera_UpdateViewMatrices(void) {
     transform.rotX = camera->yaw + 0x8000;
     transform.rotY = camera->pitch;
     transform.rotZ = camera->roll;
-    transform.scale = lbl_803DE5F0;
+    transform.scale = 1.0f;
     if (pauseMenuGetState() == 0) {
         if (gCameraShakeEnabled != 0) {
             transform.y -= camera->shakeOffsetY;
         }
-        transform.x += lbl_803DE60C;
-        transform.y += lbl_803DE60C;
-        transform.z += lbl_803DE60C;
+        transform.x += shakeOffset;
+        transform.y += shakeOffset;
+        transform.z += shakeOffset;
     }
 
     mtxRotateByVec3s(rotationMatrix, &transform);
@@ -784,34 +785,34 @@ void Camera_UpdateViewMatrices(void) {
     transform.rotX = -(camera->yaw + 0x8000);
     transform.rotY = -camera->pitch;
     transform.rotZ = -camera->roll;
-    transform.scale = lbl_803DE5F0;
+    transform.scale = 1.0f;
     if (pauseMenuGetState() == 0) {
         if (gCameraShakeEnabled != 0) {
             transform.y += camera->shakeOffsetY;
         }
-        transform.x -= lbl_803DE60C;
-        transform.y -= lbl_803DE60C;
-        transform.z -= lbl_803DE60C;
+        transform.x -= shakeOffset;
+        transform.y -= shakeOffset;
+        transform.z -= shakeOffset;
     }
 
     setMatrixFromObjectPos(storage->worldMatrix, &transform);
     mtx44Transpose(storage->worldMatrix, storage->inverseViewMatrix);
     PSMTXCopy((MtxPtr)storage->viewMatrix, (MtxPtr)storage->viewRotationMatrix);
-    storage->viewRotationMatrix[11] = storage->viewRotationMatrix[7] = storage->viewRotationMatrix[3] = lbl_803DE60C;
+    storage->viewRotationMatrix[11] = storage->viewRotationMatrix[7] = storage->viewRotationMatrix[3] = 0.0f;
     PSMTXCopy((MtxPtr)storage->inverseViewMatrix, (MtxPtr)storage->inverseViewRotationMatrix);
     storage->inverseViewRotationMatrix[11] = storage->inverseViewRotationMatrix[7] =
-        storage->inverseViewRotationMatrix[3] = lbl_803DE60C;
+        storage->inverseViewRotationMatrix[3] = 0.0f;
 }
 
 void Camera_ApplyFullViewport(void) {
     GXRenderModeObj* renderMode = gRenderModeObj;
 
     if (renderMode->field_rendering != 0) {
-        GXSetViewportJitter(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, lbl_803DE60C,
-                            lbl_803DE5F0, gViewportJitterField);
+        GXSetViewportJitter(0.0f, 0.0f, renderMode->fbWidth, renderMode->xfbHeight, 0.0f,
+                            1.0f, gViewportJitterField);
     } else {
-        GXSetViewport(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, lbl_803DE60C,
-                      lbl_803DE5F0);
+        GXSetViewport(0.0f, 0.0f, renderMode->fbWidth, renderMode->xfbHeight, 0.0f,
+                      1.0f);
     }
 }
 
@@ -819,10 +820,10 @@ void Camera_ApplyEffectDepthViewport(void) {
     GXRenderModeObj* renderMode = gRenderModeObj;
 
     if (renderMode->field_rendering != 0) {
-        GXSetViewportJitter(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, (-0.075f),
-                            lbl_803DE5F0, gViewportJitterField);
+        GXSetViewportJitter(0.0f, 0.0f, renderMode->fbWidth, renderMode->xfbHeight, (-0.075f),
+                            1.0f, gViewportJitterField);
     } else {
-        GXSetViewport(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, (-0.075f),
+        GXSetViewport(0.0f, 0.0f, renderMode->fbWidth, renderMode->xfbHeight, (-0.075f),
                       gCameraEffectViewportFarZ);
     }
 }
@@ -831,10 +832,10 @@ void Camera_ApplyTransparentViewport(void) {
     GXRenderModeObj* renderMode = gRenderModeObj;
 
     if (renderMode->field_rendering != 0) {
-        GXSetViewportJitter(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, (-0.01f),
-                            lbl_803DE5F0, gViewportJitterField);
+        GXSetViewportJitter(0.0f, 0.0f, renderMode->fbWidth, renderMode->xfbHeight, (-0.01f),
+                            1.0f, gViewportJitterField);
     } else {
-        GXSetViewport(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, (-0.01f), lbl_803DE5F0);
+        GXSetViewport(0.0f, 0.0f, renderMode->fbWidth, renderMode->xfbHeight, (-0.01f), 1.0f);
     }
 }
 
@@ -842,10 +843,10 @@ void Camera_ApplyDecalViewport(void) {
     GXRenderModeObj* renderMode = gRenderModeObj;
 
     if (renderMode->field_rendering != 0) {
-        GXSetViewportJitter(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, (-0.05f),
-                            lbl_803DE5F0, gViewportJitterField);
+        GXSetViewportJitter(0.0f, 0.0f, renderMode->fbWidth, renderMode->xfbHeight, (-0.05f),
+                            1.0f, gViewportJitterField);
     } else {
-        GXSetViewport(lbl_803DE60C, lbl_803DE60C, renderMode->fbWidth, renderMode->xfbHeight, (-0.05f), lbl_803DE5F0);
+        GXSetViewport(0.0f, 0.0f, renderMode->fbWidth, renderMode->xfbHeight, (-0.05f), 1.0f);
     }
 }
 
@@ -955,13 +956,13 @@ void Camera_InitState(void) {
         camera->roll = 0;
         camera->pitch = 0;
         camera->yaw = 0x7FF8;
-        camera->x = gCameraDefaultPosition;
-        camera->y = gCameraDefaultPosition;
-        camera->z = gCameraDefaultPosition;
-        camera->velocity.x = lbl_803DE60C;
-        camera->velocity.y = lbl_803DE60C;
-        camera->velocity.z = lbl_803DE60C;
-        camera->shakeOffsetY = lbl_803DE60C;
+        camera->x = 200.0f;
+        camera->y = 200.0f;
+        camera->z = 200.0f;
+        camera->velocity.x = 0.0f;
+        camera->velocity.y = 0.0f;
+        camera->velocity.z = 0.0f;
+        camera->shakeOffsetY = 0.0f;
         camera->parentObject = NULL;
         camera->shakePitchOffset = 0;
         camera->fovY = 60.0f;
@@ -972,7 +973,7 @@ void Camera_InitState(void) {
     gObjTransformMatrixSlot = 0;
     gCameraViewportYOffset = 0;
     cameraViewportYOffset = 0;
-    gCameraFarPlane = gCameraDefaultFarPlane;
+    gCameraFarPlane = 10000.0f;
     gCameraFarPlaneTransitionFramesLeft = 0;
     gCameraFovY = 60.0f;
     gCameraProjectionMode = 0;
@@ -992,7 +993,7 @@ void Camera_InitState(void) {
     GXSetProjection(storage->projectionMatrix, gCameraProjectionMode);
 
     mtx44Perspective(storage->worldMatrix + 32, &gCameraPerspectiveNorm, gCameraFovY, gCameraAspectRatio,
-                     gCameraNearPlane, gCameraFarPlane, lbl_803DE5F0);
+                     gCameraNearPlane, gCameraFarPlane, 1.0f);
     copyMatrix44(storage->worldMatrix + 32, storage->yawTransforms[33]);
 }
 

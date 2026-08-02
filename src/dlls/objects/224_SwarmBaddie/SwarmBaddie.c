@@ -151,17 +151,17 @@ void SwarmBaddie_update(GameObject* obj) {
     f32* deltaValues = &delta.x;
     f32 volume;
     RomCurveWalker* curve;
-    int hitObject;
-    int hitPosXBits;
-    int hitPosYBits;
-    int hitPosZBits;
+    GameObject* hitObject;
+    f32 hitPosX;
+    f32 hitPosY;
+    f32 hitPosZ;
     int hitSphereIndex;
-    int hitVolume;
+    u32 hitVolume;
 
     state = obj->extra;
     curve = state->curve;
-    if (ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitSphereIndex, (u32*)&hitVolume, (f32*)&hitPosXBits,
-                                           (f32*)&hitPosYBits, (f32*)&hitPosZBits) != 0) {
+    if (ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitSphereIndex, &hitVolume, &hitPosX, &hitPosY,
+                                           &hitPosZ) != 0) {
         state->hitVolumeEnvelope = 2.0f;
     }
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, SWARMBADDIE_HIT_VOLUME_SLOT, 1, 0);

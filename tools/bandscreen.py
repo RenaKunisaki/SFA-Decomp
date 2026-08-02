@@ -90,7 +90,7 @@ def differing(t: list[str], c: list[str]) -> tuple[int, int]:
     of the structural bucket, and it behaves identically whether or not the two
     functions are the same length.
     """
-    strip = lambda x: re.sub(r'\b[0-9a-f]{4,8} <[^>]+>', '<T>', x)
+    strip = lambda x: re.sub(r'\b[0-9a-f]{1,8} <[^>]+>', '<T>', x)
     T, C = [strip(x) for x in t], [strip(x) for x in c]
     mt, mc = [x.split()[0] for x in T], [x.split()[0] for x in C]
     import difflib

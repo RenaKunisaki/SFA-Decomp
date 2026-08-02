@@ -3,6 +3,6 @@
 
 int ShopKeeper_defaultStateHandler(void);
 int ShopKeeper_state7Handler(void);
-int ShopKeeper_popQueuedState(int arg1, int arg2);
+int ShopKeeper_popQueuedState(int objHandle, struct BaddieState* baddie);
 
 #endif /* MAIN_DLL_DLL_801E66DC_H_ */

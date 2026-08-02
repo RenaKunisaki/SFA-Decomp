@@ -122,6 +122,9 @@ int dbegg_isActive(GameObject* obj)
     return inner->mode != DBEGG_MODE_RELEASED;
 }
 
+void dbegg_processMessages(GameObject* obj);
+void dbegg_computeFlocking(GameObject* obj, f32* vel);
+
 void dbegg_processMessages(GameObject* obj)
 {
     DbEggState* eggState;
@@ -404,7 +407,7 @@ void dbegg_computeFlocking(GameObject* obj, f32* vel)
             f32 dx = ((GameObject*)sibling)->anim.localPosX - obj->anim.localPosX;
             f32 dz = ((GameObject*)sibling)->anim.localPosZ - obj->anim.localPosZ;
             f32 dist = sqrtf(dx * dx + dz * dz);
-            f32 radius = 1.5f * (f32)(u32) * (u8*)(*(int*)(sibling + 0x4c) + 0x19);
+            f32 radius = 1.5f * (f32)(u32) * (u8*)(((GameObject*)sibling)->anim.placementDataAddress + 0x19);
             if (dist < radius)
             {
                 force = (radius - dist) / radius;

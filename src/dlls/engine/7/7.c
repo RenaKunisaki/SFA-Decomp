@@ -517,6 +517,7 @@ LightningEffect* lightningCreate(const Vec3f* start, const Vec3f* end, f32 radiu
     return p;
 }
 
+void snowCloudBuildBoxVerts(f32* out, f32 height, f32 scale);
 void snowCloudBuildBoxVerts(f32* out, f32 height, f32 scale)
 {
     f32 side;
@@ -562,6 +563,7 @@ void mm_free_(void* ptr)
 
 Texture* gNewCloudLayerTextures[4];
 
+void snowCloudInitFlakes(f32* buf, f32 a, f32 b, int cloudId);
 void snowCloudInitFlakes(f32* buf, f32 a, f32 b, int cloudId)
 {
     u8* p;
@@ -661,6 +663,7 @@ void snowCloudInitFlakes(f32* buf, f32 a, f32 b, int cloudId)
     ((NewCloud*)gNewClouds[i])->waveWriteIdx = ((NewCloud*)gNewClouds[i])->waveWriteIdx + 0xfa0;
 }
 
+void snowFreeSnowCloud(int cloudId);
 void snowFreeSnowCloud(int cloudId)
 {
     SaveGameEnvState* env;
@@ -704,6 +707,7 @@ void snowFreeSnowCloud(int cloudId)
 }
 NewCloud* gNewClouds[8];
 
+void dll_07_func0A_nop(void);
 void dll_07_func0A_nop(void)
 {
 }
@@ -721,6 +725,7 @@ const SnowVec3 lbl_802C1FC0 = {{0.0f, 0.0f, 0.0f}};
 
 static const SnowFlakeUVs kSnowFlakeUVs = {{-48, 0, 176, 0, 64, 256}};
 
+int snowPrintSnowCloud(int arg, int cloudId);
 int snowPrintSnowCloud(int arg, int cloudId)
 {
     u8* p;
@@ -1208,6 +1213,7 @@ static void snowReposSnowCloud(int cloudId)
 extern char sSnowKillSnowCloudInvalidCloudId[];
 
 
+void snowCloudComputeDrift(f32* out, f32* pos, f32 scale);
 void snowCloudComputeDrift(f32* out, f32* pos, f32 scale)
 {
     f32 accX;
@@ -1275,6 +1281,7 @@ u8 lbl_8030F500[160] = {255, 206, 0,   0,   255, 206, 255, 206, 0, 100, 255, 206
 
 #undef NC_CLOUD
 #define NC_CLOUD ((u8 *)gNewClouds[id])
+void newClouds(CloudSpawnParams* params, void* owner, f32 x, f32 y, f32 z);
 void newClouds(CloudSpawnParams* params, void* owner, f32 x, f32 y, f32 z)
 {
     char* strs;
@@ -1537,17 +1544,20 @@ void newClouds(CloudSpawnParams* params, void* owner, f32 x, f32 y, f32 z)
     }
 }
 
+void dll_07_func09(void);
 void dll_07_func09(void)
 {
     Camera_GetCurrent();
     randomGetRange(5, 5);
 }
 
+int newclouds_isBlizzardActive(void);
 int newclouds_isBlizzardActive(void)
 {
     return gNewCloudBlizzardActive;
 }
 
+void newclouds_renderSnowClouds(int renderPass);
 void newclouds_renderSnowClouds(int renderPass)
 {
     int i;
@@ -1570,6 +1580,7 @@ void newclouds_renderSnowClouds(int renderPass)
                         gNewCloudSnowFlashAlphaK0, gNewCloudSnowFlashAlphaK1, gNewCloudSnowFlashParallax);
     }
 }
+void newclouds_run(void);
 void newclouds_run(void)
 {
     Camera* cam;
@@ -1897,6 +1908,7 @@ void newclouds_run(void)
     }
 }
 
+void newclouds_killSnowCloud(int cloudId, int flag);
 void newclouds_killSnowCloud(int cloudId, int flag)
 {
     void* p;
@@ -1939,6 +1951,7 @@ void newclouds_killSnowCloud(int cloudId, int flag)
         -((f32)flag / (f32)((NewCloud*)gNewClouds[i])->flakeCount);
 }
 
+void newclouds_onMapSetup(void);
 void newclouds_onMapSetup(void)
 {
     int i;
@@ -1981,6 +1994,7 @@ void newclouds_onMapSetup(void)
 #define NC_CLOUD ((u8 *)gNewClouds[cfg->cloudIndex])
 extern int gNewCloudMusicIdByType[5];
 
+void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params);
 void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params)
 {
     CloudSpawnParams* cfg = (CloudSpawnParams*)params;
@@ -2214,6 +2228,7 @@ void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params)
     }
 }
 
+void newclouds_release(void);
 void newclouds_release(void)
 {
     int i;
@@ -2243,6 +2258,7 @@ void newclouds_release(void)
     gNewCloudInitialized = 0;
 }
 
+void newclouds_initialise(void);
 void newclouds_initialise(void)
 {
     gNewCloudInitialized = 0;

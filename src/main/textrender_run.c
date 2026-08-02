@@ -1049,7 +1049,7 @@ void gameTextFinalizeLoad(GameTextLoadSlot* loadSlot)
     strs = stringTable->offsets;
     for (i = 0; i < cs->entryCount; i++)
     {
-        *(int**)((u8*)cs->entries + i * 12 + 8) = strs + *(int*)((u8*)cs->entries + i * 12 + 8);
+        cs->entries[i].strings = (char**)(strs + (int)cs->entries[i].strings);
     }
     txt = (u8*)&stringTable->offsets[numStrings];
     {
@@ -1140,8 +1140,8 @@ void gameTextFinalizeLoad(GameTextLoadSlot* loadSlot)
     cs->entries = (GameTextDef*)((u8*)cs->entries + delta);
     for (i = 0; i < cs->entryCount; i++)
     {
-        int ev = *(int*)((u8*)cs->entries + i * 12 + 8);
-        *(int*)((u8*)cs->entries + i * 12 + 8) = ev + delta;
+        int ev = (int)cs->entries[i].strings;
+        cs->entries[i].strings = (char**)(ev + delta);
     }
     strs2 = (int*)((u8*)strs + delta);
     for (i = 0; i < numStrings; i++)

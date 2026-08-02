@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_0014_UNK_H_
 
 #include "main/dll/dll_0014_api.h"
-#include "main/dll/objfsa_romcurve.h"
+#include "main/dll/rom_curve_def.h"
 #include "main/dll/objfsa.h"
 #include "main/dll/rom_curve_interface.h"
 #include "game/objects/object.h"

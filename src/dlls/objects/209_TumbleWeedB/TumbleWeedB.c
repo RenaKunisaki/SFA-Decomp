@@ -225,7 +225,7 @@ void TumbleWeedBush_update(GameObject* obj) {
 
     state = obj->extra;
     player = Obj_GetPlayerObject();
-    if (ObjHits_PollPriorityHitWithCooldown(obj, &gTumbleweedBushHitCooldown, (int*)&hitObject, hitPos) != 0) {
+    if (ObjHits_PollPriorityHitWithCooldown(obj, &gTumbleweedBushHitCooldown, &hitObject, hitPos) != 0) {
         if (hitObject->anim.romDefNo != TUMBLEWEED_BUSH_SIBLING_C) {
             objfx_spawnHitEmitterAtPos(hitPos, TUMBLEWEED_BUSH_HIT_EFFECT_ID, TUMBLEWEED_BUSH_HIT_COLOR_R,
                                        TUMBLEWEED_BUSH_HIT_COLOR_G, TUMBLEWEED_BUSH_HIT_COLOR_B);

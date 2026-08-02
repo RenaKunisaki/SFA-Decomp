@@ -18,22 +18,17 @@
 #include "main/obj_query.h"
 #include "main/objseq.h"
 #include "util/carry.h"
-#include "string.h"
-#include "dolphin/os/OSCache.h"
 #include "main/mm.h"
-#include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/printf.h"
 #include "main/frame_timing.h"
 #include "main/maketex_api.h"
 #include "main/maketex_random_api.h"
 #include "main/maketex_sequence_api.h"
 #include "main/maketex_timer_api.h"
-#include "track/intersect_card_api.h"
 #include "main/textrender_api.h"
 #include "main/objseq_api.h"
 #include "main/fileio.h"
 #include "main/audio/stream_api.h"
 #include "main/audio/audio_control_api.h"
-#include "dolphin/dvd.h"
 #include "main/table_file.h"
 #include "main/dll/partfx_interface.h"
 #include "main/track_dolphin_api.h"
@@ -70,60 +65,12 @@
 #include "dolphin/os.h"
 #include "main/pi_dolphin_api.h"
 #include "main/audio/music_api.h"
-
-extern char sMemoryCardFileNameString[];
-
-volatile u32 gSaveCardState = 0xD;
-char* sMemoryCardFileName = sMemoryCardFileNameString;
-int gSaveCardBackdropColor = 0x404040FF;
-int lbl_803DB70C[1] = {0};
+#include "main/maketex.h"
 
 typedef struct SeqRunFlags
 {
     u8 useWorldSpace : 1;
 } SeqRunFlags;
-
-typedef struct
-{
-    int key;
-    int val;
-} SeqSortPair;
-
-#define CARD_RESULT_READY    0
-#define CARD_RESULT_IOERROR  -5
-
-static inline int maketex_indexOf(int* p, int n, int target)
-{
-    int i;
-    int j;
-    i = 0;
-    for (j = 0; j < n; j++)
-    {
-        if (*p++ == target)
-        {
-            return i;
-        }
-        i++;
-    }
-    return -1;
-}
-void loadMemCardImages(void);
-static inline u64 saveGame_checksum(u64* p, int count)
-{
-    u64 x[1];
-    u16 i[1];
-    u64 acc[1];
-
-    x[0] = 0;
-    acc[0] = 1;
-    for (i[0] = (int)x[0]; (int)i[0] < count; i[0]++)
-    {
-        x[0] ^= p[i[0]];
-        acc[0] += p[i[0]];
-    }
-    return x[0] ^ (acc[0] + 13);
-}
-
 
 #define MAKETEX_CAMMODE_NPCSPEAK 0x4d /* cameramode DLL dll_004D_cameramodenpcspeak */
 #define MAKETEX_CAMMODE_DEFAULT  0x42 /* default gameplay cameramode DLL */
@@ -150,761 +97,9 @@ extern int gObjSeqPreemptList[][2];
 extern void* gObjSeqCameraSourceObj;
 extern int gObjSeqPreparingStreamSlot;
 extern int gObjSeqCamOwnerSeqIndex;
-extern u32 gSaveCardChecksumHi;
-extern u32 gSaveCardChecksumLo;
-extern u8* gSaveCardImageBuffer;
-extern u32 gSaveCardSerialHi;
-extern u8 gSaveCardIdentityCheckEnabled;
 extern int gObjSeqStreamResumeOffset;
 extern f32 gObjSeqStreamRemainingTime;
 extern int gObjSeqTimedStreamSlot;
-
-int saveGameReadSlotCb(u8 idx, int unused, void* dst)
-{
-    memcpy(dst, (void*)(gSaveCardIoBuffer + idx * 1772 + 2640), 1772);
-    return 0;
-}
-
-/* Checksums the save buffer, writes it to the memory card, then reads it
- * back and verifies the checksum. */
-int saveGame_doWrite(int slot)
-{
-    u64 x[1];
-    u16 i[1];
-    u64* p;
-    u64 a[1];
-    u64 chk;
-    u64 chk2;
-    int result;
-    int offset;
-
-    p = (u64*)gSaveCardIoBuffer;
-    x[0] = 0;
-    a[0] = 1;
-    for (i[0] = (int)x[0]; (int)i[0] < 0x3ff; i[0]++)
-    {
-        x[0] = x[0] ^ p[i[0]];
-        a[0] = a[0] + p[i[0]];
-    }
-    chk = x[0] ^ (a[0] + 13);
-    ((u32*)p)[0x7ff] = (u32)chk;
-    ((u32*)p)[0x7fe] = (u32)(chk >> 32);
-    DCFlushRange((void*)gSaveCardIoBuffer, 0x2000);
-    result = CARDWrite(&gSaveCardFileInfo.fileInfo, (void*)gSaveCardIoBuffer, 0x2000, offset = (u8)slot << 13);
-    if (result == -5)
-    {
-        CARDDelete(0, sMemoryCardFileName);
-    }
-    if (result == 0)
-    {
-        DCInvalidateRange((void*)gSaveCardIoBuffer, 0x2000);
-        result = CARDRead(&gSaveCardFileInfo.fileInfo, (void*)gSaveCardIoBuffer, 0x2000, offset);
-        if (result == 0)
-        {
-            u64 x2[1];
-            u64 a2[1];
-            p = (u64*)gSaveCardIoBuffer;
-            x2[0] = 0;
-            a2[0] = 1;
-            for (i[0] = (int)x2[0]; (int)i[0] < 0x3ff; i[0]++)
-            {
-                x2[0] = x2[0] ^ p[i[0]];
-                a2[0] = a2[0] + p[i[0]];
-            }
-            chk2 = x2[0] ^ (a2[0] + 13);
-            if (chk != chk2)
-            {
-                result = -0x55;
-                gSaveCardState = 10;
-            }
-            else
-            {
-                *(u64*)&gSaveCardChecksumHi = chk2;
-            }
-        }
-    }
-    return result;
-}
-
-/* Saves the game: verifies the existing save slots' checksums, rewrites
- * stale slots and card images, then runs the caller's callback and maps the
- * result to a status code. */
-int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void* cbD, SaveGameCallback cb)
-{
-    u64 chk;
-    u64 chk2;
-    u64 c;
-    u64 t;
-    int result;
-    void* m;
-
-    m = mmAlloc(0x2000, -1, 0);
-    gSaveCardIoBuffer = (char*)m;
-    if (m == NULL)
-    {
-        gSaveCardState = 8;
-        return 0;
-    }
-    if (saveGame(writeImages) == 0)
-    {
-        mm_free((void*)gSaveCardIoBuffer);
-        gSaveCardIoBuffer = 0;
-        return 0;
-    }
-    DCInvalidateRange((void*)gSaveCardIoBuffer, 0x2000);
-    result = CARDRead(&gSaveCardFileInfo.fileInfo, (void*)gSaveCardIoBuffer, 0x2000, 0x2000);
-    if (result == CARD_RESULT_READY)
-    {
-        c = saveGame_checksum((u64*)gSaveCardIoBuffer, 0x3ff);
-        chk = c;
-        if (c != *(u64*)(gSaveCardIoBuffer + 0x1ff8))
-        {
-            DCInvalidateRange((void*)gSaveCardIoBuffer, 0x2000);
-            result = CARDRead(&gSaveCardFileInfo.fileInfo, (void*)gSaveCardIoBuffer, 0x2000, 0x4000);
-            if (result == CARD_RESULT_READY)
-            {
-                c = saveGame_checksum((u64*)gSaveCardIoBuffer, 0x3ff);
-                chk = c;
-                if (c == *(u64*)(gSaveCardIoBuffer + 0x1ff8))
-                {
-                    result = saveGame_doWrite(1);
-                }
-                else
-                {
-                    result = -0x55;
-                    gSaveCardState = 10;
-                }
-            }
-        }
-    }
-    if (result == 0)
-    {
-        if (gSaveCardIdentityCheckEnabled != 0)
-        {
-            if (*(u64*)&gSaveCardChecksumHi != 0)
-            {
-                if (chk != *(u64*)&gSaveCardChecksumHi)
-                {
-                    result = -0x55;
-                    gSaveCardState = 0xb;
-                }
-            }
-            else
-            {
-                gSaveCardChecksumLo = (u32)chk;
-                gSaveCardChecksumHi = (u32)(chk >> 32);
-            }
-        }
-        else
-        {
-            gSaveCardChecksumLo = (u32)chk;
-            gSaveCardChecksumHi = (u32)(chk >> 32);
-        }
-    }
-    if (result == 0)
-    {
-        m = gSaveCardImageBuffer = mmAlloc(0x4000, -1, 0);
-        if (m == NULL)
-        {
-            if (gSaveCardFileOpen != 0)
-            {
-                gSaveCardFileOpen = 0;
-                CARDClose(&gSaveCardFileInfo.fileInfo);
-            }
-            CARDUnmount(0);
-            mm_free(gSaveCardWorkArea);
-            gSaveCardWorkArea = NULL;
-            mm_free((void*)gSaveCardIoBuffer);
-            gSaveCardIoBuffer = 0;
-            gSaveCardState = 8;
-            return 0;
-        }
-        result = CARDRead(&gSaveCardFileInfo.fileInfo, m, 0x2000, 0);
-        if (result == CARD_RESULT_READY)
-        {
-            chk2 = saveGame_checksum((u64*)gSaveCardImageBuffer, 0x400);
-            if (chk2 != *(u64*)(gSaveCardIoBuffer + 0xa40))
-            {
-                if ((u8)writeImages != 0)
-                {
-                    result = -4;
-                    gSaveCardState = 0xc;
-                }
-                else
-                {
-                    memset(gSaveCardImageBuffer, 0, 0x4000);
-                    loadMemCardImages();
-                    result = CARDWrite(&gSaveCardFileInfo.fileInfo, gSaveCardImageBuffer, 0x2000, 0);
-                    if (result == CARD_RESULT_IOERROR)
-                    {
-                        CARDDelete(0, sMemoryCardFileName);
-                    }
-                    if (result == CARD_RESULT_READY)
-                    {
-                        t = *(u64*)(gSaveCardImageBuffer + 0x2a40);
-                        if (t != *(u64*)(gSaveCardIoBuffer + 0xa40))
-                        {
-                            int writeResult;
-                            *(u64*)(gSaveCardIoBuffer + 0xa40) = t;
-                            writeResult = saveGame_doWrite(2);
-                            if (writeResult == 0)
-                            {
-                                writeResult = saveGame_doWrite(1);
-                            }
-                            result = writeResult;
-                        }
-                    }
-                }
-            }
-        }
-        mm_free(gSaveCardImageBuffer);
-    }
-    if (result == 0 && cb != NULL)
-    {
-        result = cb(cbA, cbB, cbC, cbD);
-    }
-    if (gSaveCardFileOpen != 0)
-    {
-        gSaveCardFileOpen = 0;
-        CARDClose(&gSaveCardFileInfo.fileInfo);
-    }
-    CARDUnmount(0);
-    mm_free(gSaveCardWorkArea);
-    gSaveCardWorkArea = NULL;
-    mm_free((void*)gSaveCardIoBuffer);
-    gSaveCardIoBuffer = 0;
-    switch (result)
-    {
-    case -5:
-        gSaveCardState = 4;
-        break;
-    case 0:
-        gSaveCardState = 0xd;
-        return 1;
-    case -4:
-        break;
-    }
-    return 0;
-}
-
-/* Builds the memory card comment strings (Shift-JIS title on JP cards),
- * loads the banner/icon images from disc, and checksums both halves of the
- * card image buffer. */
-void loadMemCardImages(void)
-{
-    char* names = sMemoryCardFileNameString;
-    DVDFileInfo fi;
-    u64* p;
-    u16 i[1];
-    u64 x[1];
-    u64* q;
-    u64 a[1];
-    u64 chk;
-    u64 x2[1];
-    u64 a2[1];
-
-    a[0] = 0;
-    if (gGameTextFontIsSjis != 0)
-    {
-        gSaveCardImageBuffer[0x00] = 0x83;
-        gSaveCardImageBuffer[0x01] = 0x58;
-        gSaveCardImageBuffer[0x02] = 0x83;
-        gSaveCardImageBuffer[0x03] = 0x5e;
-        gSaveCardImageBuffer[0x04] = 0x81;
-        gSaveCardImageBuffer[0x05] = 0x5b;
-        gSaveCardImageBuffer[0x06] = 0x83;
-        gSaveCardImageBuffer[0x07] = 0x74;
-        gSaveCardImageBuffer[0x08] = 0x83;
-        gSaveCardImageBuffer[0x09] = 0x48;
-        gSaveCardImageBuffer[0x0a] = 0x83;
-        gSaveCardImageBuffer[0x0b] = 0x62;
-        gSaveCardImageBuffer[0x0c] = 0x83;
-        gSaveCardImageBuffer[0x0d] = 0x4e;
-        gSaveCardImageBuffer[0x0e] = 0x83;
-        gSaveCardImageBuffer[0x0f] = 0x58;
-        gSaveCardImageBuffer[0x10] = 0x83;
-        gSaveCardImageBuffer[0x11] = 0x41;
-        gSaveCardImageBuffer[0x12] = 0x83;
-        gSaveCardImageBuffer[0x13] = 0x68;
-        gSaveCardImageBuffer[0x14] = 0x83;
-        gSaveCardImageBuffer[0x15] = 0x78;
-        gSaveCardImageBuffer[0x16] = 0x83;
-        gSaveCardImageBuffer[0x17] = 0x93;
-        gSaveCardImageBuffer[0x18] = 0x83;
-        gSaveCardImageBuffer[0x19] = 0x60;
-        gSaveCardImageBuffer[0x1a] = 0x83;
-        gSaveCardImageBuffer[0x1b] = 0x83;
-        gSaveCardImageBuffer[0x1c] = 0x81;
-        gSaveCardImageBuffer[0x1d] = 0x5b;
-        gSaveCardImageBuffer[0x1e] = 0x00;
-        gSaveCardImageBuffer[0x1f] = 0x00;
-        sprintf((char*)(gSaveCardImageBuffer + 0x20), names + 0xa0);
-    }
-    else
-    {
-        sprintf((char*)gSaveCardImageBuffer, names);
-        sprintf((char*)(gSaveCardImageBuffer + 0x20), names + 0xb4);
-    }
-    if (DVDOpen(names + 0xc4, &fi))
-    {
-        DVDRead(&fi, gSaveCardImageBuffer + 0x40, 0x1800, 0x20);
-        DVDClose(&fi);
-    }
-    if (DVDOpen(names + 0xd0, &fi))
-    {
-        DVDRead(&fi, gSaveCardImageBuffer + 0x1840, 0x400, 0);
-        DVDClose(&fi);
-    }
-    if (DVDOpen(names + 0xe8, &fi))
-    {
-        DVDRead(&fi, gSaveCardImageBuffer + 0x1c40, 0x400, 0);
-        DVDClose(&fi);
-    }
-    if (DVDOpen(names + 0x100, &fi))
-    {
-        DVDRead(&fi, gSaveCardImageBuffer + 0x2040, 0x400, 0);
-        DVDClose(&fi);
-    }
-    if (DVDOpen(names + 0x118, &fi))
-    {
-        DVDRead(&fi, gSaveCardImageBuffer + 0x2440, 0x400, 0);
-        DVDClose(&fi);
-    }
-    if (DVDOpen(names + 0x130, &fi))
-    {
-        DVDRead(&fi, gSaveCardImageBuffer + 0x2840, 0x200, 0);
-        DVDClose(&fi);
-    }
-    p = (u64*)gSaveCardImageBuffer;
-    x[0] = 0;
-    a[0] = 1;
-    for (i[0] = (int)x[0]; (int)i[0] < 0x400; i[0]++)
-    {
-        x[0] = x[0] ^ p[i[0]];
-        a[0] = a[0] + p[i[0]];
-    }
-    chk = x[0] ^ (a[0] + 13);
-    ((u32*)p)[0xa91] = (u32)chk;
-    ((u32*)p)[0xa90] = (u32)(chk >> 32);
-    q = (u64*)gSaveCardImageBuffer;
-    p = q + 0x400;
-    x2[0] = 0;
-    a2[0] = 1;
-    for (i[0] = (int)x2[0]; (int)i[0] < 0x3ff; i[0]++)
-    {
-        x2[0] = x2[0] ^ p[i[0]];
-        a2[0] = a2[0] + p[i[0]];
-    }
-    chk = x2[0] ^ (a2[0] + 13);
-    ((u32*)q)[0xfff] = (u32)chk;
-    ((u32*)q)[0xffe] = (u32)(chk >> 32);
-    DCFlushRange(gSaveCardImageBuffer, 0x4000);
-}
-
-#define CARD_RESULT_UNLOCKED 1
-#define CARD_RESULT_NOCARD   -3
-#define CARD_RESULT_NOFILE   -4
-#define CARD_RESULT_BROKEN   -6
-#define CARD_RESULT_NOENT    -8
-#define CARD_RESULT_INSSPACE -9
-#define CARD_RESULT_ENCODING -13
-
-/* Mounts the memory card, validates its serial number, opens or creates the
- * save file (writing the card image buffer for a fresh file), and maps any
- * CARD error to a status code. */
-int saveGame(int writeImages)
-{
-    u8 created;
-    u8 fresh;
-    int result;
-    int ok;
-    int ret;
-    u64 serial;
-    CARDStat stat;
-    void* m;
-
-    created = 0;
-    fresh = 0;
-    if (cardProbe(0) == 0)
-    {
-        ok = 0;
-    }
-    else
-    {
-        if ((gSaveCardWorkArea = mmAlloc(0xa000, -1, 0)) == NULL)
-        {
-            gSaveCardState = 8;
-            ok = 0;
-        }
-        else
-        {
-            ok = 1;
-        }
-    }
-    if (ok == 0)
-    {
-        return 0;
-    }
-    gSaveCardState = 0;
-    result = CARDMount(0, gSaveCardWorkArea, (CARDCallback)cardSetStatusNoCard2);
-    if (result == CARD_RESULT_BROKEN)
-    {
-        result = CARDCheck(0);
-    }
-    if (result == CARD_RESULT_READY || result == CARD_RESULT_ENCODING)
-    {
-        int err;
-        result = CARDCheck(0);
-        err = CARDGetSerialNo(0, &serial);
-        if (err == CARD_RESULT_READY)
-        {
-            if (gSaveCardIdentityCheckEnabled != 0)
-            {
-                if (*(u64*)&gSaveCardSerialHi != 0)
-                {
-                    if (serial != *(u64*)&gSaveCardSerialHi)
-                    {
-                        result = -0x55;
-                        gSaveCardState = 0xb;
-                    }
-                }
-                else
-                {
-                    *(u64*)&gSaveCardSerialHi = serial;
-                }
-            }
-            else
-            {
-                *(u64*)&gSaveCardSerialHi = serial;
-            }
-        }
-        else
-        {
-            result = err;
-        }
-    }
-    if (result == CARD_RESULT_READY)
-    {
-        result = CARDOpen(0, sMemoryCardFileName, &gSaveCardFileInfo.fileInfo);
-        if (result == CARD_RESULT_NOFILE && (u8)writeImages == 0)
-        {
-            created = 1;
-            fresh = 1;
-        }
-        if (result == CARD_RESULT_READY)
-        {
-            gSaveCardFileOpen = 1;
-        }
-    }
-    if (result == CARD_RESULT_READY)
-    {
-        result = CARDGetStatus(0, gSaveCardFileInfo.fileInfo.fileNo, &stat);
-        if (result == CARD_RESULT_READY)
-        {
-            if (stat.iconAddr == 0xffffffff || stat.commentAddr == 0xffffffff)
-            {
-                if ((u8)writeImages != 0)
-                {
-                    result = CARD_RESULT_NOFILE;
-                }
-                else
-                {
-                    fresh = 1;
-                }
-            }
-        }
-    }
-    if (fresh != 0)
-    {
-        m = mmAlloc(0x4000, -1, 0);
-        gSaveCardImageBuffer = m;
-        if (m != NULL)
-        {
-            memset(m, 0, 0x4000);
-            loadMemCardImages();
-        }
-        else
-        {
-            gSaveCardState = 8;
-            CARDUnmount(0);
-            mm_free(gSaveCardWorkArea);
-            gSaveCardWorkArea = NULL;
-            return 0;
-        }
-    }
-    if (created != 0)
-    {
-        result = CARDCreate(0, sMemoryCardFileName, 0x6000, &gSaveCardFileInfo.fileInfo);
-    }
-    if (fresh != 0)
-    {
-        if (result == CARD_RESULT_READY)
-        {
-            result = CARDWrite(&gSaveCardFileInfo.fileInfo, gSaveCardImageBuffer, 0x4000, 0);
-            if (result == CARD_RESULT_READY)
-            {
-                result = CARDWrite(&gSaveCardFileInfo.fileInfo, gSaveCardImageBuffer + 0x2000, 0x2000, 0x4000);
-            }
-            if (result == CARD_RESULT_IOERROR)
-            {
-                CARDDelete(0, sMemoryCardFileName);
-            }
-            if (created != 0 && result == CARD_RESULT_READY)
-            {
-                result = CARDGetStatus(0, gSaveCardFileInfo.fileInfo.fileNo, &stat);
-            }
-            if (result == CARD_RESULT_READY)
-            {
-                stat.commentAddr = 0;
-                stat.bannerFormat = (stat.bannerFormat & ~0x3) | 2;
-                stat.iconAddr = 0x40;
-                stat.bannerFormat = (stat.bannerFormat & ~0x4) | 4;
-                stat.iconFormat = (stat.iconFormat & ~0x3) | 1;
-                stat.iconSpeed = (stat.iconSpeed & ~0x3) | 3;
-                stat.iconFormat = (stat.iconFormat & ~0xc) | 4;
-                stat.iconSpeed = (stat.iconSpeed & ~0xc) | 0xc;
-                stat.iconFormat = (stat.iconFormat & ~0x30) | 0x10;
-                stat.iconSpeed = (stat.iconSpeed & ~0x30) | 0x30;
-                stat.iconFormat = (stat.iconFormat & ~0xc0) | 0x40;
-                stat.iconSpeed = (stat.iconSpeed & ~0xc0) | 0xc0;
-                stat.iconSpeed = stat.iconSpeed & ~0x300;
-                result = CARDSetStatus(0, gSaveCardFileInfo.fileInfo.fileNo, &stat);
-                if (result == CARD_RESULT_READY)
-                {
-                    *(u64*)&gSaveCardChecksumHi = *(u64*)(gSaveCardImageBuffer + 0x3ff8);
-                }
-            }
-        }
-        mm_free(gSaveCardImageBuffer);
-    }
-    switch (result)
-    {
-    case CARD_RESULT_READY:
-        if (fresh != 0)
-        {
-            return 1;
-        }
-        return 2;
-    case CARD_RESULT_UNLOCKED:
-        gSaveCardState = 1;
-        ret = 0;
-        break;
-    case CARD_RESULT_NOCARD:
-        if ((int)gSaveCardState != 3)
-        {
-            gSaveCardState = 2;
-        }
-        ret = 0;
-        break;
-    case CARD_RESULT_NOFILE:
-        gSaveCardState = 0xc;
-        ret = 0;
-        break;
-    case CARD_RESULT_IOERROR:
-        gSaveCardState = 4;
-        ret = 0;
-        break;
-    case CARD_RESULT_BROKEN:
-        gSaveCardState = 5;
-        ret = 0;
-        break;
-    case CARD_RESULT_ENCODING:
-        gSaveCardState = 6;
-        ret = 0;
-        break;
-    case CARD_RESULT_NOENT:
-    case CARD_RESULT_INSSPACE:
-        gSaveCardState = 9;
-        ret = 0;
-        break;
-    case -0x55:
-        ret = 0;
-        break;
-    default:
-        ret = 0;
-        break;
-    }
-    if (gSaveCardFileOpen != 0)
-    {
-        gSaveCardFileOpen = 0;
-        CARDClose(&gSaveCardFileInfo.fileInfo);
-    }
-    CARDUnmount(0);
-    mm_free(gSaveCardWorkArea);
-    gSaveCardWorkArea = NULL;
-    return ret;
-}
-
-void cardSetStatusNoCard2(void)
-{
-    gSaveCardState = 0x3;
-}
-
-int arrayRemoveUnordered(int* array, int* count, int value)
-{
-    int i;
-    int len;
-    len = *count;
-    i = maketex_indexOf(array, len, value);
-    if (i == -1)
-        return -1;
-    array[i] = array[len - 1];
-    (*count)--;
-    return i;
-}
-
-int arrayIndexOf(int* arr, int count, int target)
-{
-    int idx = 0;
-    int i;
-    for (i = 0; i < count; i++)
-    {
-        int elem = *arr;
-        arr++;
-        if (elem == target)
-            return idx;
-        idx++;
-    }
-    return -1;
-}
-
-static inline int seqPairKey(SeqSortPair* pair)
-{
-    return pair->key;
-}
-
-static inline int seqPairVal(SeqSortPair* pair)
-{
-    return pair->val;
-}
-
-void seqPairTableSort(SeqSortPair* arr, int n)
-{
-    int key;
-    int val;
-    int limit;
-    int i;
-    int j;
-    int gap;
-
-    gap = 1;
-    limit = (n - 1) / 9;
-    while (gap <= limit)
-    {
-        gap = gap * 3 + 1;
-    }
-    for (; gap > 0; gap /= 3)
-    {
-        for (i = gap + 1; i < n; i++)
-        {
-            key = seqPairKey(&arr[i]);
-            val = seqPairVal(&arr[i]);
-            j = i;
-            while (j > gap && arr[j - gap].key > key)
-            {
-                arr[j].key = arr[j - gap].key;
-                arr[j].val = arr[j - gap].val;
-                j -= gap;
-            }
-            arr[j].key = key;
-            arr[j].val = val;
-        }
-    }
-    for (i = 1; i < n; i++)
-    {
-    }
-}
-
-int seqPairTableLookup(void* entries, int count, int key)
-{
-    int (*arr)[2] = entries;
-    int lo, mid;
-    int i;
-    if (count <= 16)
-    {
-        for (i = 0; i != count; i++)
-        {
-            if ((*arr)[0] == key)
-                return (*arr)[1];
-            arr++;
-        }
-        return 0;
-    }
-    lo = 0;
-    do
-    {
-        mid = (count + lo) >> 1;
-        if (key > arr[mid][0])
-        {
-            lo = mid;
-        }
-        else if (key == arr[mid][0])
-        {
-            return arr[mid][1];
-        }
-        else
-        {
-            count = mid;
-        }
-    } while (count <= lo);
-    return 0;
-}
-
-/* Spin-delay then sort when the pair list is large enough. */
-void seqPairTablePrepare(void* entries, int n)
-{
-    SeqSortPair* arr = entries;
-    int i;
-    int j;
-
-    for (i = 0; i < n; i++)
-    {
-        for (j = 0; j < n; j++)
-        {
-        }
-    }
-    if (n > 0x10)
-    {
-        seqPairTableSort(arr, n);
-    }
-}
-
-int randomChanceOneIn(int n)
-{
-    return randomGetRange(0, n * 60 / 60) == 0;
-}
-
-int timerIsActive(const f32* p)
-{
-    return 0.0f != *p;
-}
-
-void storeZeroToFloatParam(f32* p)
-{
-    *p = 0.0f;
-}
-
-void s16toFloat(f32* p, s16 val)
-{
-    *p = (f32)val;
-}
-
-
-int timerCountDown(f32* p)
-{
-    f32 timer = *p;
-    f32 zero = 0.0f;
-    if (timer != zero)
-    {
-        *p = timer - timeDelta;
-        if (*p <= zero)
-        {
-            *p = zero;
-            return 1;
-        }
-    }
-    return 0;
-}
 
 void seqClearTaskTexts(void)
 {
@@ -1349,16 +544,6 @@ void endObjSequence(int seq)
     gObjSeqSlotSeqIdTable[seq] = 0;
 }
 
-u8 gMemoryCardBannerAssetNames[168] = {83,  84,  65,  82,  70,  79,  88,  32,  65,  68,  86,  69,  78,  84,  85,  82,  69,  83,  0,
-                        0,   68,  105, 110, 111, 115, 97,  117, 114, 32,  80,  108, 97,  110, 101, 116, 0,   111, 112,
-                        101, 110, 105, 110, 103, 46,  98,  110, 114, 0,   99,  97,  114, 100, 47,  109, 101, 109, 99,
-                        97,  114, 100, 105, 99,  111, 110, 48,  46,  105, 109, 103, 0,   0,   0,   99,  97,  114, 100,
-                        47,  109, 101, 109, 99,  97,  114, 100, 105, 99,  111, 110, 49,  46,  105, 109, 103, 0,   0,
-                        0,   99,  97,  114, 100, 47,  109, 101, 109, 99,  97,  114, 100, 105, 99,  111, 110, 50,  46,
-                        105, 109, 103, 0,   0,   0,   99,  97,  114, 100, 47,  109, 101, 109, 99,  97,  114, 100, 105,
-                        99,  111, 110, 51,  46,  105, 109, 103, 0,   0,   0,   99,  97,  114, 100, 47,  109, 101, 109,
-                        99,  97,  114, 100, 105, 99,  111, 110, 48,  46,  112, 97,  108, 0,   0,   0};
-
 f32 gObjSeqCameraFov = 60.0f;
 int gObjSeqTaskTextId = -1;
 int gObjSeqSubtitleId = -1;
@@ -1727,7 +912,26 @@ static inline u8* ObjSeq_GetActiveModel(GameObject* obj)
     return (u8*)objAnim->banks[objAnim->bankIndex];
 }
 
-static inline int objSeqIsObjMonitored(u8* walk, GameObject* obj)
+typedef struct ObjSeqPreemptEntry
+{
+    GameObject* obj;
+    int flags;
+} ObjSeqPreemptEntry;
+
+typedef struct ObjSeqLinkedPair
+{
+    GameObject* seqObj;
+    GameObject* ownerObj;
+} ObjSeqLinkedPair;
+
+typedef struct ObjSeqCastEntry
+{
+    s32 targetObjId;
+    u16 flags;
+    u16 objId;
+} ObjSeqCastEntry;
+
+static inline int objSeqIsObjMonitored(ObjSeqPreemptEntry* walk, GameObject* obj)
 {
     int i;
     int n;
@@ -1735,54 +939,55 @@ static inline int objSeqIsObjMonitored(u8* walk, GameObject* obj)
     n = (s8)gObjSeqPreemptCount;
     for (i = 0; i < n; i++)
     {
-        if (*(GameObject**)walk == obj)
+        if (walk->obj == obj)
         {
             return 1;
         }
-        walk += 8;
+        walk++;
     }
     return 0;
 }
 
-static inline int objSeqRemoveMonitoredObj(u8* base, u8** monp, GameObject* obj)
+static inline int objSeqRemoveMonitoredObj(u8* base, ObjSeqPreemptEntry** monp, GameObject* obj)
 {
     int v;
     int j;
     int k;
     int n;
     int flags;
-    u8* p;
+    ObjSeqPreemptEntry* p;
 
     n = (s8)gObjSeqPreemptCount;
     for (j = 0; j < n; j++)
     {
-        if (*(GameObject**)*monp == obj)
+        if ((*monp)->obj == obj)
         {
             flags = *(int*)(base + j * 8 + 0x3d50);
             gObjSeqPreemptCount -= 1;
-            p = base + j * 8 + 0x3d4c;
-            v = *(int*)(p + 8);
+            p = (ObjSeqPreemptEntry*)(base + j * 8 + 0x3d4c);
+            v = (int)p[1].obj;
             for (k = j; k < (s8)gObjSeqPreemptCount; k++)
             {
-                *(int*)p = v;
-                *(int*)(p + 4) = v;
-                p += 8;
+                p->obj = (GameObject*)v;
+                p->flags = v;
+                p++;
             }
             return flags;
         }
-        *monp += 8;
+        (*monp)++;
     }
     return 0;
 }
 
+int ObjSeq_start(int seqIdx, GameObject* obj, int flags);
 int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
 {
     u8* base;
     SeqRunTables* st;
-    u8* walk2;
-    u8* walk;
+    ObjSeqCastEntry* walk2;
+    ObjSeqCastEntry* walk;
     int packed;
-    u8* mon;
+    ObjSeqPreemptEntry* mon;
     int i;
     int idx;
     int count;
@@ -1803,7 +1008,7 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
     GameObject* newObj;
     s16* slotPtr;
     u8* buf;
-    u8* blk;
+    ObjSeqLinkedPair* blk;
     u8* p;
     s16* mapTbl;
     int j;
@@ -1842,11 +1047,11 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
         {
             slot = i;
             *(s16*)p = 1;
-            blk = base + i * 0x80;
+            blk = (ObjSeqLinkedPair*)(base + i * 0x80);
             for (j = 0; j < 16; j++)
             {
-                *(u8**)blk = NULL;
-                blk += 8;
+                blk->seqObj = NULL;
+                blk++;
             }
             i = 0x56;
         }
@@ -1873,7 +1078,7 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
     gObjSeqTaskTextId = -1;
     gObjSeqSubtitleId = -1;
 
-    mon = base + 0x3d4c;
+    mon = (ObjSeqPreemptEntry*)(base + 0x3d4c);
     found = objSeqIsObjMonitored(mon, obj);
     if (found == 0)
     {
@@ -1920,13 +1125,13 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
     gObjSeqSlotValues[obj->seqIndex] = 0;
     st->handles[obj->seqIndex] = obj->anim.romDefNo;
 
-    walk = buf;
+    walk = (ObjSeqCastEntry*)buf;
     bit = 1;
     for (; i < count; i++)
     {
-        if ((flags & (bit << i)) && (*(u16*)(walk + 4) & 0x4000))
+        if ((flags & (bit << i)) && (walk->flags & 0x4000))
         {
-            objIdU = *(u16*)(walk + 6);
+            objIdU = walk->objId;
             if (objIdU == OBJSEQ_KRYSTAL_OBJ || objIdU == OBJSEQ_SABRE_OBJ)
             {
                 if (playerStatusIsPositive(Obj_GetPlayerObject()) == 0)
@@ -1935,18 +1140,18 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
                 }
             }
         }
-        walk += 8;
+        walk++;
     }
 
     idx = 0;
-    walk2 = buf;
+    walk2 = (ObjSeqCastEntry*)buf;
     packed = ((seqIdx & 0x7ff) << 4) | 0x8000;
     for (; idx < count; idx++)
     {
         if (flags & (1 << idx))
         {
             setup = (ObjSeqAnimPlacement*)Obj_AllocObjectSetup(0x28, OBJSEQ_OVERRIDE_OBJ);
-            objId = *(u16*)(walk2 + 6);
+            objId = walk2->objId;
             if (objId == OBJSEQ_KRYSTAL_OBJ || objId == OBJSEQ_SABRE_OBJ)
             {
                 GameObject* pp = Obj_GetPlayerObject();
@@ -1960,7 +1165,7 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
                 {
                     setup->targetType = objSeqObjs + 4;
                 }
-                *(u16*)(walk2 + 4) |= 0x8000;
+                walk2->flags |= 0x8000;
             }
             else if (objId == 0xfffe)
             {
@@ -1970,7 +1175,7 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
             }
             else
             {
-                if (*(u16*)(walk2 + 4) & 0x4000)
+                if (walk2->flags & 0x4000)
                 {
                     setup->base.objectId = OBJSEQ_OVERRIDE_OBJ;
                     if (objId == OBJSEQ_VARIABLE_OBJ)
@@ -1995,7 +1200,7 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
                     setup->targetType = 0;
                 }
             }
-            if (*(u16*)(walk2 + 4) & 0x8000)
+            if (walk2->flags & 0x8000)
             {
                 setup->unk20 = 0;
                 setup->unk21 = 0;
@@ -2005,7 +1210,7 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
                 setup->unk20 = 1;
                 setup->unk21 = 1;
             }
-            if (idx == 0 && (*(u16*)(walk2 + 4) & 0x1000) && player != NULL)
+            if (idx == 0 && (walk2->flags & 0x1000) && player != NULL)
             {
                 playerSetOverrideParentSlack(player);
             }
@@ -2035,7 +1240,7 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
             }
             setup->slot = slot;
             setup->startOnLoad = 1;
-            setup->unk24 = (*(u16*)(walk2 + 4) & 0xf00) >> 8;
+            setup->unk24 = (walk2->flags & 0xf00) >> 8;
             setup->base.color[0] = 2;
             setup->base.color[1] = 1;
             if (srcSeq != NULL)
@@ -2060,31 +1265,31 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
             ((ObjSeqState*)seq)->conditionOpcodes[1] = 0;
             ((ObjSeqState*)seq)->conditionOpcodes[2] = 0;
             ((ObjSeqState*)seq)->conditionOpcodes[3] = 0;
-            if (*(u16*)(walk2 + 4) & 1)
+            if (walk2->flags & 1)
             {
                 ((ObjSeqState*)seq)->flags = ((ObjSeqState*)seq)->flags & ~1;
             }
-            if (*(u16*)(walk2 + 4) & 2)
+            if (walk2->flags & 2)
             {
                 ((ObjSeqState*)seq)->flags = ((ObjSeqState*)seq)->flags & ~2;
             }
-            if (*(u16*)(walk2 + 4) & 4)
+            if (walk2->flags & 4)
             {
                 ((ObjSeqState*)seq)->heading = 0;
             }
-            if (*(u16*)(walk2 + 4) & 8)
+            if (walk2->flags & 8)
             {
                 ((ObjSeqState*)seq)->flags = ((ObjSeqState*)seq)->flags & ~0x100;
             }
-            if (*(u16*)(walk2 + 4) & 0x80)
+            if (walk2->flags & 0x80)
             {
                 ((ObjSeqState*)seq)->stateFlags = ((ObjSeqState*)seq)->stateFlags | 4;
             }
-            if (*(u16*)(walk2 + 4) & 0x40)
+            if (walk2->flags & 0x40)
             {
                 ((ObjSeqState*)seq)->stateFlags = ((ObjSeqState*)seq)->stateFlags | 2;
             }
-            if (*(u16*)(walk2 + 4) & 0x2000)
+            if (walk2->flags & 0x2000)
             {
                 if (idx == 0 && player != NULL)
                 {
@@ -2098,7 +1303,7 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
                 ((ObjSeqState*)seq)->movementState = 4;
                 if (camArg == 0)
                 {
-                    camArg = *(u16*)(walk2 + 4) & 0xf00;
+                    camArg = walk2->flags & 0xf00;
                     camArg >>= 8;
                 }
                 doCam = 1;
@@ -2111,13 +1316,13 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
             {
                 playerSetInCutscene(player);
             }
-            ((ObjSeqState*)seq)->targetObjId = *(int*)walk2;
+            ((ObjSeqState*)seq)->targetObjId = walk2->targetObjId;
             ((ObjSeqState*)seq)->savedFlags = ((ObjSeqState*)seq)->flags;
             if (idx == 0)
             {
-                *(u8*)((u8*)&st->cmdFlags[0] + obj->seqIndex) = *(u16*)(walk2 + 4);
+                *(u8*)((u8*)&st->cmdFlags[0] + obj->seqIndex) = walk2->flags;
                 *(int*)((u8*)&st->handles[0] + obj->seqIndex * 4) =
-                    *(int*)((u8*)newObj->anim.placementData + 0x14);
+                    ((ObjPlacement*)newObj->anim.placementData)->ident;
                 mapFlags = obj->anim.modelInstance->flags;
                 if ((mapFlags & OBJMODEL_FLAG_SKIP_RESET_UPDATE) && !(mapFlags & 0x8000))
                 {
@@ -2127,7 +1332,7 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
                 }
             }
         }
-        walk2 += 8;
+        walk2++;
     }
 
     st->headings[obj->seqIndex] = heading;
@@ -2185,31 +1390,37 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
 }
 
 
+void ObjSeq_func13(void);
 void ObjSeq_func13(void)
 {
 }
 
 
+int ObjSeq_func12(void);
 int ObjSeq_func12(void)
 {
     return 0;
 }
 
+int ObjSeq_func0E(void);
 int ObjSeq_func0E(void)
 {
     return 0;
 }
 
+void ObjSeq_setGlobal4(int value);
 void ObjSeq_setGlobal4(int value)
 {
     seqGlobal4 = value;
 }
 
+int ObjSeq_getGlobal4(void);
 int ObjSeq_getGlobal4(void)
 {
     return seqGlobal4;
 }
 
+int ObjSeq_func0F(void);
 int ObjSeq_func0F(void)
 {
     return 1;
@@ -2217,24 +1428,25 @@ int ObjSeq_func0F(void)
 
 static inline GameObject* objSeqFindLinkedObject(u8* seqObj, GameObject* candidate)
 {
-    u8* slotBase;
-    u8* entry;
+    ObjSeqLinkedPair* slotBase;
+    ObjSeqLinkedPair* entry;
     int j;
 
     j = 0;
-    slotBase = gObjSeqRuntimeBuffer + ((ObjSeqState*)seqObj)->slot * 0x80;
+    slotBase = (ObjSeqLinkedPair*)(gObjSeqRuntimeBuffer + ((ObjSeqState*)seqObj)->slot * 0x80);
     entry = slotBase;
     for (; j < 16; j++)
     {
-        if (*(GameObject**)entry == candidate)
+        if (entry->seqObj == candidate)
         {
-            return *(GameObject**)(slotBase + j * 8 + 4);
+            return slotBase[j].ownerObj;
         }
-        entry += 8;
+        entry++;
     }
     return NULL;
 }
 
+int ObjSeq_resolveTargetObject(GameObject* obj);
 int ObjSeq_resolveTargetObject(GameObject* obj)
 {
     int objectCount;
@@ -2359,14 +1571,14 @@ void* ObjSeq_FindTargetObject(GameObject* obj)
     f32 distSq;
     f32 bestDistSq;
 
-    targetId = *(int*)((u8*)obj->extra + 0x10c);
+    targetId = ((ObjSeqState*)obj->extra)->targetObjId;
     if (targetId != 0)
     {
         return ObjList_FindObjectById(targetId);
     }
 
     objects = (void**)ObjList_GetObjects(&unused, &objectCount);
-    objectType = *(s16*)((u8*)obj->anim.placementData + 0x1c) - 4;
+    objectType = ((ObjSeqPlacement*)obj->anim.placementData)->targetType - 4;
     if (objectType == 0x1f || objectType == 0)
     {
         return Obj_GetPlayerObject();
@@ -2401,6 +1613,7 @@ void* ObjSeq_FindTargetObject(GameObject* obj)
 
 #define ObjSeq_GetObjects(unused, count) ((GameObject**)ObjList_GetObjects((unused), (count)))
 
+void ObjSeq_runBgCmds(void);
 void ObjSeq_runBgCmds(void)
 {
     int ok;
@@ -2646,6 +1859,7 @@ void ObjSeq_seqState_init(u8* seq)
 }
 
 
+void ObjSeq_objLoadAnimdata(ObjSeqState* seq, ObjSeqAnimPlacement* placement);
 void ObjSeq_objLoadAnimdata(ObjSeqState* seq, ObjSeqAnimPlacement* placement)
 {
     ObjSeqRunBgState* runBgState = (ObjSeqRunBgState*)gObjSeqRuntimeBuffer;
@@ -2812,7 +2026,7 @@ void ObjSeq_updateCamera(void)
     int groupObjCount;
     GameObject* obj;
     u8* model;
-    u8* camObj;
+    CameraObject* camObj;
     f32 x;
     f32 y;
     f32 z;
@@ -2869,31 +2083,31 @@ void ObjSeq_updateCamera(void)
         else
         {
             camObj = (*gCameraInterface)->getCamera();
-            *(f32*)(camObj + 0x18) = x;
-            *(f32*)(camObj + 0x1c) = y;
-            *(f32*)(camObj + 0x20) = z;
-            Obj_TransformWorldPointToLocal(*(f32*)(camObj + 0x18), *(f32*)(camObj + 0x1c), *(f32*)(camObj + 0x20),
-                                           (f32*)(camObj + 0xc), (f32*)(camObj + 0x10), (f32*)(camObj + 0x14),
-                                           (GameObject*)*(void**)(camObj + 0x30));
-            *(s16*)camObj = (s16)(0x8000 - pitch);
-            *(s16*)(camObj + 2) = (s16)-yaw;
-            *(s16*)(camObj + 4) = roll;
+            camObj->anim.worldPosX = x;
+            camObj->anim.worldPosY = y;
+            camObj->anim.worldPosZ = z;
+            Obj_TransformWorldPointToLocal(camObj->anim.worldPosX, camObj->anim.worldPosY, camObj->anim.worldPosZ,
+                                           &camObj->anim.localPosX, &camObj->anim.localPosY, &camObj->anim.localPosZ,
+                                           (GameObject*)camObj->anim.parent);
+            camObj->anim.rotX = (s16)(0x8000 - pitch);
+            camObj->anim.rotY = (s16)-yaw;
+            camObj->anim.rotZ = roll;
             if ((s8)gObjSeqFovOverrideActive != 0)
             {
-                *(f32*)(camObj + 0xb4) = gObjSeqFovOverrideValue;
+                camObj->fov = gObjSeqFovOverrideValue;
                 gObjSeqCameraFov = gObjSeqFovOverrideValue;
             }
             else
             {
-                *(f32*)(camObj + 0xb4) = gObjSeqCameraFov;
+                camObj->fov = gObjSeqCameraFov;
             }
-            gObjSeqSavedCamPosX = *(f32*)(camObj + 0x18);
-            gObjSeqSavedCamPosY = *(f32*)(camObj + 0x1c);
-            gObjSeqSavedCamPosZ = *(f32*)(camObj + 0x20);
-            gObjSeqSavedCamPitch = *(s16*)camObj;
-            gObjSeqSavedCamYaw = *(s16*)(camObj + 2);
-            gObjSeqSavedCamRoll = *(s16*)(camObj + 4);
-            gObjSeqSavedCamFov = *(f32*)(camObj + 0xb4);
+            gObjSeqSavedCamPosX = camObj->anim.worldPosX;
+            gObjSeqSavedCamPosY = camObj->anim.worldPosY;
+            gObjSeqSavedCamPosZ = camObj->anim.worldPosZ;
+            gObjSeqSavedCamPitch = camObj->anim.rotX;
+            gObjSeqSavedCamYaw = camObj->anim.rotY;
+            gObjSeqSavedCamRoll = camObj->anim.rotZ;
+            gObjSeqSavedCamFov = camObj->fov;
         }
     }
     else
@@ -3503,6 +2717,7 @@ void ObjSeq_setCamVars(int camA, int camB, int camC, int camD)
     gObjSeqCamModeArgD = camD;
 }
 
+int seqDoSubCmd0B(GameObject* obj, GameObject* sourceObj, u8* seq, u8* cmdsArg, s16 xrot, s16 countArg, s8 flag1, s8 flag2);
 int seqDoSubCmd0B(GameObject* obj, GameObject* sourceObj, u8* seq, u8* cmdsArg, s16 xrot, s16 countArg, s8 flag1, s8 flag2)
 {
     u8* cmds;
@@ -3591,7 +2806,7 @@ int seqDoSubCmd0B(GameObject* obj, GameObject* sourceObj, u8* seq, u8* cmdsArg, 
                 if (found == 0 && freeSlot != -1)
                 {
                     seq[freeSlot + 0x12c] = operand;
-                    *(s16*)(seq + freeSlot * 2 + 0x118) = objSeqFindLabel(seq, top16);
+                    ((ObjSeqState*)seq)->conditionFrames[freeSlot] = objSeqFindLabel(seq, top16);
                 }
                 result = 0;
             }
@@ -4097,6 +3312,7 @@ int RomCurveInterp_EvaluateOffsetPosition(RomCurveInterpState* state, f32* offse
     return 1;
 }
 
+void ObjSeq_UpdateCurvePosition(GameObject* obj, u8* seq);
 void ObjSeq_UpdateCurvePosition(GameObject* obj, u8* seq)
 {
     GameObject* object;
@@ -4563,17 +3779,17 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         if (activeObj->anim.classId == 1)
         {
             act2 = ObjSeq_GetActiveModel(activeObj);
-            animState = *(u8**)(act2 + 0x2c);
+            animState = (u8*)((ObjAnimBank*)act2)->currentState;
             ((ObjAnimState*)animState)->lastBlendMoveIndex = -1;
             ((ObjAnimState*)animState)->eventState = 0;
             ((ObjAnimState*)animState)->prevEventState = 0;
-            st2 = *(u8**)(act2 + 0x30);
+            st2 = (u8*)((ObjAnimBank*)act2)->activeState;
             if (st2 != NULL)
             {
-                *(s16*)(st2 + 0x64) = -1;
-                *(s16*)(st2 + 0x58) = 0;
-                *(s16*)(st2 + 0x5a) = 0;
-                *(s16*)(st2 + 0x5c) = 0;
+                ((ObjAnimState*)st2)->lastBlendMoveIndex = -1;
+                ((ObjAnimState*)st2)->eventCountdown = 0;
+                ((ObjAnimState*)st2)->eventState = 0;
+                ((ObjAnimState*)st2)->prevEventState = 0;
             }
         }
         ((ObjSeqState*)seq)->fade = 1.0f;
@@ -4928,9 +4144,9 @@ void* ObjSeq_ToggleCommand3Target(GameObject* obj, u8* seq, ObjSeqPlacement* pla
 {
     void* result;
     GameObject* activeObj;
-    u8* entry;
+    ObjSeqLinkedPair* entry;
     int j;
-    u8* slotBase;
+    ObjSeqLinkedPair* slotBase;
     int slotOff;
     GameObject* seqObj;
     f32 groundY[2];
@@ -4951,18 +4167,18 @@ void* ObjSeq_ToggleCommand3Target(GameObject* obj, u8* seq, ObjSeqPlacement* pla
             activeObj = *(GameObject**)seq;
             j = 0;
             slotOff = (s8)((ObjSeqState*)seq)->slot * 0x80;
-            slotBase = gObjSeqRuntimeBuffer + slotOff;
+            slotBase = (ObjSeqLinkedPair*)(gObjSeqRuntimeBuffer + slotOff);
             entry = slotBase;
             for (; j < 16; j++)
             {
-                if (*(GameObject**)entry == NULL || *(GameObject**)entry == activeObj)
+                if (entry->seqObj == NULL || entry->seqObj == activeObj)
                 {
                     break;
                 }
-                entry += 8;
+                entry++;
             }
-            *(GameObject**)(slotBase + j * 8) = activeObj;
-            *(GameObject**)((u8*)(int)gObjSeqRuntimeBuffer + slotOff + j * 8 + 4) = obj;
+            slotBase[j].seqObj = activeObj;
+            ((ObjSeqLinkedPair*)((u8*)(int)gObjSeqRuntimeBuffer + slotOff))[j].ownerObj = obj;
         }
     }
     else
@@ -6743,3 +5959,4 @@ void ObjSeq_copyDefaultColor(GXColor* out)
     out->b = src->b;
     out->a = src->a;
 }
+

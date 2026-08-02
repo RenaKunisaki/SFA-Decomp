@@ -2,14 +2,22 @@
 #define DLLS_OBJECTS_599_DR_EARTHWAR_H_
 
 #include "dlls/object_descriptor.h"
+#include "dlls/objects/common/vehicle.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
+#include "main/byte_flags.h"
 #include "main/dll/baddie_state.h"
 #include "main/dll/dll_002E_moveLib.h"
+#include "main/dll/dll_005A_staffcollision.h"
 #include "main/model.h"
 #include "main/objprint_character_api.h"
 #include "main/objprint_sound_api.h"
 #include "main/objseq.h"
+
+typedef struct EWSpeedRange {
+    f32 minSpeed;
+    f32 maxSpeed;
+} EWSpeedRange;
 
 typedef struct DREarthWarriorPlacement {
     ObjPlacement base;
@@ -21,15 +29,15 @@ typedef struct DREarthWarriorPlacement {
 /* EarthWarrior-specific runtime data at EarthWarriorState+0xB58. */
 typedef struct EarthWarriorSub {
     u8 pad000[0x360];
-    int unk360;
+    u32 unk360;
     u8 pad364[0x8C];
-    u8 flags3F0;
-    u8 flags3F1;
-    u8 flags3F2;
+    ByteFlags flags3F0;
+    ByteFlags flags3F1;
+    ByteFlags flags3F2;
     u8 pad3F3[5];
-    int moveTable;
-    int prevMoveTable;
-    int configRow;
+    const s16* moveTable;
+    const s16* prevMoveTable;
+    const EWSpeedRange* configRow;
     f32 animSpeedMax;
     f32 targetAnimSpeed;
     u8 pad40C[4];
@@ -103,13 +111,13 @@ typedef struct EarthWarriorSub {
     u8 pad988[2];
     s16 energy;
     u16 flags98C;
-    u8 mountState;
+    u8 mountState; /* enum VehicleMountState */
     u8 pad98F;
     u8 setupVariant;
     u8 pad991;
     u8 dismountSide;
     u8 mountSide;
-    u8 flags994;
+    ByteFlags flags994;
     u8 unk995;
     u8 pad996[2];
     f32 airMeterTimer;
@@ -129,7 +137,7 @@ typedef struct EarthWarriorState {
     u8 padA10[0xB18 - 0xA10];
     Vec3f pathPoints[4];
     u8 padB48[0xB54 - 0xB48];
-    GameObject* helperObj;
+    /* b58 */ GameObject* helperObj;
     EarthWarriorSub sub;
 } EarthWarriorState;
 
@@ -139,8 +147,8 @@ typedef struct DREarthWarriorInitData {
     u8 unk3C[0x10];
     u8 unk4C[0x18];
     u8 unk64[0x20];
-    u8 configRow[0x54];
-    u8 moveTable[0x40];
+    f32 configRow[0x15];
+    s16 moveTable[0x20];
     u8 paramCurve0Data[0xA4];
     u8 paramCurve1Data[0xA4];
     u8 paramCurve2Data[4];
@@ -151,8 +159,16 @@ typedef struct EWPathRange {
 } EWPathRange;
 
 typedef struct EWColorTable {
-    u32 rows[4][4];
+    StaffCollisionColorArgs rows[4];
 } EWColorTable;
+
+typedef union EWFloatTable {
+    u32 words[12];
+    f32 values[12];
+} EWFloatTable;
+
+STATIC_ASSERT(sizeof(EWColorTable) == 0x40);
+STATIC_ASSERT(sizeof(EWFloatTable) == 0x30);
 
 STATIC_ASSERT(offsetof(DREarthWarriorPlacement, spawnYaw) == 0x18);
 STATIC_ASSERT(offsetof(DREarthWarriorPlacement, setupVariant) == 0x19);
@@ -198,9 +214,9 @@ STATIC_ASSERT(offsetof(EarthWarriorState, sub) == 0xB58);
 void DR_EarthWarrior_feed(GameObject* obj, int mode);
 int DR_EarthWarrior_updateLeap(GameObject* obj, EarthWarriorSub* warrior, BaddieState* baddie);
 int DR_EarthWarrior_defaultStateHandler(void);
-int DR_EarthWarrior_stateHandler03(GameObject* obj, int baddie);
-int DR_EarthWarrior_stateHandler02(GameObject* obj, int controllerState);
-int DR_EarthWarrior_stateHandler01(GameObject* obj, int baddie);
+int DR_EarthWarrior_stateHandler03(GameObject* obj, BaddieState* baddie);
+int DR_EarthWarrior_stateHandler02(GameObject* obj, EarthWarriorState* controllerState);
+int DR_EarthWarrior_stateHandler01(GameObject* obj, BaddieState* baddie);
 int DR_EarthWarrior_stateHandler00(GameObject* obj);
 int DR_EarthWarrior_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void DR_EarthWarrior_handleRiderScale(GameObject* obj, f32 scale);
@@ -208,7 +224,7 @@ void DR_EarthWarrior_resetToRomListPosition(void);
 int DR_EarthWarrior_getRacePosition(void);
 f32 DR_EarthWarrior_func19(GameObject* obj, f32* out);
 void DR_EarthWarrior_getPlayerAnim(GameObject* obj, f32* steeringAngle, int* leanAngle);
-void DR_EarthWarrior_setMountState(GameObject* obj, int mountState);
+void DR_EarthWarrior_setMountState(GameObject* obj, enum VehicleMountState mountState);
 int DR_EarthWarrior_getMountState(void);
 void DR_EarthWarrior_getCameraPosition(GameObject* obj, f32* x, f32* y, f32* z);
 int DR_EarthWarrior_getDismountSide(GameObject* obj);
@@ -230,9 +246,9 @@ void DR_EarthWarrior_initialise(void);
 extern f32 gEarthWarriorMatrix[16];
 extern void* gDREarthWarriorStateHandlers[4];
 extern void* gDREarthWarriorDefaultStateHandler;
-extern void* gEarthWarriorResource;
+extern StaffCollisionInterface** gEarthWarriorResource;
 extern u8 gDREarthWarriorInitData[132];
-extern int lbl_8033527C[12];
+extern EWSpeedRange lbl_8033527C[6];
 extern u8 gDREarthWarriorRowIndices[960];
 extern const EWPathRange gDREarthWarriorLookInitData1;
 extern const EWPathRange gDREarthWarriorLookInitData2;

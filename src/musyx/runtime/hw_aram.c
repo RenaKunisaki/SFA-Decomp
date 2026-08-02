@@ -3,12 +3,9 @@
 #include "musyx/aram.h"
 #include "PowerPC_EABI_Support/Runtime/runtime.h"
 
-
-extern f32 lbl_803E78E8;
-
 u32 hwExitStream(u32 value)
 {
-    return __cvt_fp2unsigned((double)((lbl_803E78E8 * (f32)value) / (f32)SYNTH_CONFIGURATION->sampleRate));
+    return __cvt_fp2unsigned((double)((4096.0f * (f32)value) / (f32)SYNTH_CONFIGURATION->sampleRate));
 }
 
 void hwInitSampleMem(u32 baseAddr, u32 length)

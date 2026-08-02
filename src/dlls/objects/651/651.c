@@ -31,7 +31,6 @@
 const Dll28BMoveBlendData gDll28BMoveBlendDataA = {{0x00050005, 0x000A000A, 0x000A000A, 0x000A000A}};
 const Dll28BMoveBlendData gDll28BMoveBlendDataB = {{0x0005000A, 0x00140014, 0x00140014, 0x00140014}};
 
-void* gDll28BStateHandlers[4];
 void* gDll28BSubstateHandlers[4];
 
 int dll_28B_getExtraSize(void)
@@ -100,6 +99,8 @@ void dll_28B_update(GameObject* obj)
 }
 
 static const f32 gDll28BCurveInitParam = 1000.0f;
+
+void* gDll28BStateHandlers[4];
 
 void dll_28B_init(GameObject* obj)
 {

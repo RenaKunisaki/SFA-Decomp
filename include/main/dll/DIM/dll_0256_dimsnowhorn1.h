@@ -26,6 +26,15 @@ typedef struct SnowHornEntry
 
 STATIC_ASSERT(sizeof(SnowHornEntry) == 0x24);
 
+typedef struct DIMSnowHorn1Placement
+{
+    ObjPlacement base;
+    s8 spawnRot;
+    u8 spawnVariant;
+} DIMSnowHorn1Placement;
+
+STATIC_ASSERT(offsetof(DIMSnowHorn1Placement, spawnRot) == 0x18);
+
 /* Per-object extra state (getExtraSize == 0xD0C); BaddieState is the prefix. */
 typedef struct DIMSnowHorn1State
 {
@@ -50,9 +59,13 @@ typedef struct DIMSnowHorn1State
     u8 queryFlagA8F;   /* 0xA8F: nonzero queried by DIMSnowHorn1_getDismountSide (set cross-DLL) */
     u8 queryFlagA90;   /* 0xA90: nonzero queried by DIMSnowHorn1_getMountSide (set cross-DLL) */
     u8 proximityPhase; /* 0xA91: 0/1/2 phase toggling linked objects by player distance (stateHandler05) */
-    u8 padA92[0xD00 - 0xA92];
+    u8 padA92[2];
+    f32 hitReactStepScale;
+    u8 padA98[0xD00 - 0xA98];
     u8 hitReactState; /* 0xD00: ObjHitReact_Update persistent state (in/out), gates characterHeadLookRelax */
-    u8 padD01[0xB];
+    u8 padD01[3];
+    f32 randomTimerD04;
+    f32 randomTimerD08;
 } DIMSnowHorn1State;
 
 STATIC_ASSERT(sizeof(DIMSnowHorn1State) == 0xD0C);
@@ -91,7 +104,7 @@ f32 DIMSnowHorn1_func19(GameObject* obj, f32* out);
 void DIMSnowHorn1_getPlayerAnim(void* unused, f32* out_f, int* out_i);
 void DIMSnowHorn1_setMountState(GameObject* obj, int value);
 int DIMSnowHorn1_getMountState(void);
-void DIMSnowHorn1_getCameraPosition(s16* packed, f32* outX, f32* outY, f32* outZ);
+void DIMSnowHorn1_getCameraPosition(GameObject* obj, f32* outX, f32* outY, f32* outZ);
 int DIMSnowHorn1_getDismountSide(GameObject* obj);
 int DIMSnowHorn1_canDismount(GameObject* obj);
 void DIMSnowHorn1_getRiderPosition(GameObject* obj, f32* out_x, f32* out_y, f32* out_z);

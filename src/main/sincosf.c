@@ -1,7 +1,6 @@
 #include "dolphin.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 
-extern const float lbl_803E7D40;
 extern const float gSinCosSinCoeff1;
 extern const float gSinCosSinCoeff3;
 extern const float gSinCosSinCoeff5;
@@ -22,24 +21,24 @@ void mathSinCosf(float x, float* outSin, float* outCos) {
 
     switch (quadrant & 6) {
         case 0:
-            sinApprox = (x >= lbl_803E7D40) ? sinApprox : -sinApprox;
+            sinApprox = (x >= 0.0f) ? sinApprox : -sinApprox;
             *outSin = sinApprox;
             *outCos = cosApprox;
             break;
         case 2:
-            cosApprox = (x >= lbl_803E7D40) ? cosApprox : -cosApprox;
+            cosApprox = (x >= 0.0f) ? cosApprox : -cosApprox;
             *outSin = cosApprox;
             *outCos = -sinApprox;
             break;
         case 4:
-            if (x >= lbl_803E7D40) {
+            if (x >= 0.0f) {
                 sinApprox = -sinApprox;
             }
             *outSin = sinApprox;
             *outCos = -cosApprox;
             break;
         default:
-            if (x >= lbl_803E7D40) {
+            if (x >= 0.0f) {
                 cosApprox = -cosApprox;
             }
             *outSin = cosApprox;
@@ -48,7 +47,6 @@ void mathSinCosf(float x, float* outSin, float* outCos) {
     }
 }
 
-const float lbl_803E7D40 = 0.0f;
 const float gSinCosSinCoeff1 = 0.78539425f;
 const float gSinCosSinCoeff3 = -0.08071397f;
 const float gSinCosSinCoeff5 = 0.0024270867f;

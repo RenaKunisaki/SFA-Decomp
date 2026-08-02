@@ -229,9 +229,9 @@ void vecRotateZXY(s16* rotation, f32* vector)
     f32 t3;
     f32 t2;
 
-    angleToVec2(*(u16*)((u8*)rotation + 0x0), &s0, &c0);
-    angleToVec2(*(u16*)((u8*)rotation + 0x2), &s1, &c1);
-    angleToVec2(*(u16*)((u8*)rotation + 0x4), &s2, &c2);
+    angleToVec2(((u16*)rotation)[0], &s0, &c0);
+    angleToVec2(((u16*)rotation)[1], &s1, &c1);
+    angleToVec2(((u16*)rotation)[2], &s2, &c2);
     t5 = vector[0] * c2 - vector[1] * s2;
     t3 = vector[1] * c2 + vector[0] * s2;
     vector[1] = t3 * c1 - vector[2] * s1;

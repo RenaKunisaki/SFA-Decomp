@@ -5,6 +5,7 @@
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 #include "main/dll/baddie_state.h"
+#include "main/dll/partfx_interface.h"
 
 typedef struct DllCEPlacement {
     ObjPlacement base;     /* 0x00 */
@@ -68,7 +69,7 @@ extern ChukChukStateHandler gChukChukMoveHandlers[8];
 extern ChukChukStateHandler gChukChukCheckHandlers[6];
 extern int gDllCEHitReactionMoves[30];
 extern u8 gDllCEHitReactionDamage[32];
-extern u8 gDllCEHitReactionScratch[0x18];
+extern PartFxSpawnParams gDllCEHitReactionScratch;
 extern ObjectDescriptor12 gDllCEObjDescriptor;
 
 #endif /* DLLS_OBJECTS_206_H_ */

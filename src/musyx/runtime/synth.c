@@ -32,6 +32,8 @@
 #include "musyx/voice_manage.h"
 #include "musyx/snd_core.h"
 #include "string.h"
+#include "musyx/synth_volume.h"
+#include "musyx/synth_control.h"
 
 
 struct SynthDelayedNode
@@ -98,6 +100,10 @@ typedef struct LAYER
 
 static u32 StartKeymap(u16 id, s16 prio, u8 maxVoices, u16 allocId, u8 key, u8 vol, u8 pan, u8 midi, u8 midiSet,
                        u8 section, u16 step, u16 trackid, u32 vidFlag, u8 vGroup, u8 studio, u32 itd);
+
+void synthSetBpm(int bpm, u8 set, u8 section);
+int synthGetTicksPerSecond(McmdVoiceState* state);
+void HandleJobQueue(SynthDelayedNode** head, SynthDelayedBucketCallback callback);
 
 void synthSetBpm(int bpm, u8 set, u8 section)
 {

@@ -455,6 +455,7 @@ void OSDumpContext(OSContext* context) {
     }
 }
 
+void OSSwitchFPUContext(__OSException exception, OSContext* context);
 asm void OSSwitchFPUContext(register __OSException exception, register OSContext* context) {
     nofralloc
     mfmsr   r5

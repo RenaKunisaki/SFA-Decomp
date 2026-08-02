@@ -98,7 +98,6 @@ extern f32 gSkyOverrideLightDirection[];
 extern const f32 gSkySecondsPerDay;
 extern const f32 lbl_803DF058;
 extern const f32 gSkySunMoonRiseScale;
-extern const f32 lbl_803DF0C0;
 STATIC_ASSERT(sizeof(SkyVec3) == 0xC);
 const SkyVec3 gSkyBaseSunDirection = {0.0f, 0.0f, 4600.0f};
 const SkyVec3 gSkyBaseMoonDirection = {0.0f, 0.0f, 4600.0f};
@@ -1444,7 +1443,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         }
         else
         {
-            moonT += lbl_803DF0C0;
+            moonT += 10800.0f;
         }
         moonTC = moonT / 28800.0f;
         if (moonTC < lbl_803DF058)
@@ -1701,7 +1700,7 @@ void skyRenderTimeOfDayBackdrop(void)
         cam = Camera_GetCurrent();
         frac = Camera_GetFovY();
         frac = frac / 2.0f;
-        texHeightF = (f32)(u32) * (u16*)(texC + 0xc);
+        texHeightF = (f32)(u32)((Texture*)texC)->height;
         sinProd = texHeightF * frac / 180.0f;
         sinProd *= 3.0f;
         sinProd *= mathCosf(3.1415927f * (f32)-cam->worldRoll / 32768.0f);

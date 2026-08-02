@@ -559,7 +559,7 @@ void SB_CloudRunner_HandlePriorityHit(GameObject* obj, SBCloudRunnerState* state
     struct WCPartfxArgs args;
     int i;
 
-    if (ObjHits_GetPriorityHitWithPosition(obj, (int*)&hitObj, 0, 0, &pos[0], &pos[1], &pos[2]) != 0)
+    if (ObjHits_GetPriorityHitWithPosition(obj, &hitObj, 0, 0, &pos[0], &pos[1], &pos[2]) != 0)
     {
         if (objGetFlagsE5_2((u8*)obj) == 0)
         {

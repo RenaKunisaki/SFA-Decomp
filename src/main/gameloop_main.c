@@ -568,10 +568,10 @@ void mapReload(void)
     gGameLoopReloadRequested = 1;
 }
 
-void mapLoadByCoords(f32 x, f32 y, f32 z, int act)
+void mapLoadByCoords(f32 x, f32 y, f32 z, int layer)
 {
     lbl_803DCA38 = 0;
-    mapSetup(act, x, &gGameLoopPendingMapId, &gGameLoopPendingMapDataFileId, y, z);
+    mapSetup(layer, x, &gGameLoopPendingMapId, &gGameLoopPendingMapDataFileId, y, z);
     gGameLoopFullMapUnloadPending = 1;
     gGameLoopMapLoadPending = 1;
     memset(gGameLoopPlayerTrailBuffer, 0, 0x3c0);

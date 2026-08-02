@@ -33,9 +33,9 @@
 #include "main/objtype.h"
 #include "sys/objects/lifecycle.h"
 
-f32 lbl_803DC2B0 = 0.9f;
-f32 lbl_803DC2B4 = 0.1f;
-f32 lbl_803DC2B8 = 0.5f;
+f32 gDrakorMissileVelocityDamping = 0.9f;
+f32 gDrakorMissileSteerGain = 0.1f;
+f32 gDrakorMissileInterceptSpeedBias = 0.5f;
 f32 gDrakorMissileProximityDetonateDist = 50.0f;
 
 #define MODEL_LIGHT_KIND_POINT 2
@@ -303,12 +303,12 @@ void drakormissile_update(int obj)
         {
             mag = PSVECMag(&player->anim.velocity);
         }
-        mag = lbl_803DC2B8 + mag;
+        mag = gDrakorMissileInterceptSpeedBias + mag;
         Obj_PredictInterceptPoint(player, mag, &o->anim.localPos, &toTarget);
         PSVECSubtract(&toTarget, &o->anim.localPos, &dir);
         PSVECNormalize(&dir, &dir);
-        PSVECScale(&dir, &dir, mag * lbl_803DC2B4);
-        PSVECScale(&o->anim.velocity, &o->anim.velocity, lbl_803DC2B0);
+        PSVECScale(&dir, &dir, mag * gDrakorMissileSteerGain);
+        PSVECScale(&o->anim.velocity, &o->anim.velocity, gDrakorMissileVelocityDamping);
         PSVECAdd(&o->anim.velocity, &dir, &o->anim.velocity);
         mag = sqrtf(o->anim.velocityX * o->anim.velocityX +
                     o->anim.velocityZ * o->anim.velocityZ);

@@ -73,7 +73,7 @@ void drgenerator_hitDetect(GameObject* obj)
     f32 hitPosY;
     f32 hitPosX;
     u32 hitVolume;
-    int hitObject;
+    GameObject* hitObject;
     void* found;
     if (state->flags.b0 || state->flags.b3)
     {

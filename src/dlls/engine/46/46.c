@@ -70,11 +70,11 @@ int dll_2E_getCurveActionTargetAimed(int idx, MoveLibTarget* out)
     curveId = (*gRomCurveInterface)->findByAction(idx);
     if (curveId > -1)
     {
-        RomCurvePlacementDef* p = (RomCurvePlacementDef*)(*gRomCurveInterface)->getById(curveId);
+        RomCurveDef* p = (RomCurveDef*)(*gRomCurveInterface)->getById(curveId);
         GameObject* q;
-        out->x = p->base.x;
-        out->y = p->base.y;
-        out->z = p->base.z;
+        out->x = p->x;
+        out->y = p->y;
+        out->z = p->z;
         q = (GameObject*)objGetNearestType(MOVELIB_TARGET_OBJGROUP, &out->x, &range);
         if (q != NULL)
         {
@@ -82,7 +82,7 @@ int dll_2E_getCurveActionTargetAimed(int idx, MoveLibTarget* out)
         }
         else
         {
-            out->angle = (s16)(p->rotZ << 8);
+            out->angle = (s16)(p->yaw << 8);
         }
         return 1;
     }
@@ -100,11 +100,11 @@ int dll_2E_getCurveActionTarget(int idx, MoveLibTarget* out)
     curveId = (*gRomCurveInterface)->findByAction(idx);
     if (curveId > -1)
     {
-        RomCurvePlacementDef* p = (RomCurvePlacementDef*)(*gRomCurveInterface)->getById(curveId);
-        out->x = p->base.x;
-        out->y = p->base.y;
-        out->z = p->base.z;
-        out->angle = (s16)(p->rotZ << 8);
+        RomCurveDef* p = (RomCurveDef*)(*gRomCurveInterface)->getById(curveId);
+        out->x = p->x;
+        out->y = p->y;
+        out->z = p->z;
+        out->angle = (s16)(p->yaw << 8);
         return 1;
     }
     return 0;

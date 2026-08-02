@@ -9,6 +9,7 @@
 #include "main/object_update_list.h"
 #include "main/objhits.h"
 #include "main/objtype.h"
+#include "main/spellstone_idle.h"
 
 int spellstone_idleCallback(void)
 {
@@ -44,6 +45,8 @@ int spellstone_getExtraSize(void)
 {
     return sizeof(SpellStoneState);
 }
+
+int spellstone_getObjectTypeId(void);
 
 int spellstone_getObjectTypeId(void)
 {

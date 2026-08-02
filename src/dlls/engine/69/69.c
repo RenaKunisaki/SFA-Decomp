@@ -12,8 +12,8 @@
 #include "main/vecmath.h"
 #include "string.h"
 
-CameraModeTalkState* gCameraModeTalkState;
 int lbl_803DD544;
+CameraModeTalkState* gCameraModeTalkState;
 
 void CameraModeTalk_copyToCurrent(const CameraModeTalkInputs* inputs) {
     gCameraModeTalkState->turnInput = inputs->turn;

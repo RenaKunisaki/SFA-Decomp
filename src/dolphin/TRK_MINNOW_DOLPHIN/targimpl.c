@@ -98,6 +98,21 @@ asm void __TRK_set_MSR(register u32 v)
 }
 #endif // clang-format on
 
+DSError TRKValidMemory32(const void* addr, size_t length, ValidMemoryOptions readWriteable);
+DSError TRKTargetAccessMemory(void* data, u32 start, size_t* length, MemoryAccessOptions accessOptions, BOOL read);
+DSError TRKTargetAccessDefault(u32 firstRegister, u32 lastRegister, MessageBuffer* b, size_t* registersLengthPtr, BOOL read);
+DSError TRKTargetAccessFP(u32 firstRegister, u32 lastRegister, MessageBuffer* b, size_t* registersLengthPtr, BOOL read);
+DSError TRKTargetAccessExtended1(u32 firstRegister, u32 lastRegister, MessageBuffer* b, size_t* registersLengthPtr, BOOL read);
+DSError TRKTargetAccessExtended2(u32 firstRegister, u32 lastRegister, MessageBuffer* b, size_t* registerStorageSize, BOOL read);
+DSError TRKTargetVersions(DSVersions* versions);
+DSError TRKTargetSupportMask(u8 mask[32]);
+DSError TRKTargetCPUType(DSCPUType* cpuType);
+DSError TRKTargetSingleStep(u32 count, BOOL stepOver);
+DSError TRKTargetStepOutOfRange(u32 rangeStart, u32 rangeEnd, BOOL stepOver);
+u32 TRKTargetGetPC(void);
+DSError TRKTargetFlushCache(u8 options, void* start, void* end);
+BOOL TRKTargetStop();
+
 DSError TRKValidMemory32(const void* addr, size_t length, ValidMemoryOptions readWriteable)
 {
 	DSError err = DS_InvalidMemory; /* assume range is invalid */

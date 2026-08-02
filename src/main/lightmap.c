@@ -312,7 +312,7 @@ int* mapRomListFindItem(int needle, int* out_idx, int* out_outer, int* out_type,
     int itemIndex;
     int pageIndex;
     int pageOffset;
-    int* item;
+    ObjPlacement* item;
     u16 pageDataSize;
     int itemSize;
 
@@ -323,35 +323,39 @@ int* mapRomListFindItem(int needle, int* out_idx, int* out_outer, int* out_type,
         if (page == NULL) continue;
 
         gCurRomListPage = page;
-        item = (int*)page->objects;
+        item = page->objects;
         itemIndex = 0;
         pageOffset = 0;
         pageDataSize = page->objectDataSize;
 
         while (pageOffset < pageDataSize)
         {
-            if (*(u32*)((char*)item + 0x14) == (u32)needle)
+            if ((u32)item->ident == (u32)needle)
             {
                 if (out_idx != NULL) *out_idx = itemIndex;
                 if (out_outer != NULL) *out_outer = pageIndex;
                 if (out_type != NULL)
                 {
-                    *out_type = (int)*(s8*)((char*)gCurRomListPage + 0x19);
+                    *out_type = (int)(s8)((MapRomListPage*)gCurRomListPage)->mapLayer;
                 }
                 if (out_lastpage != NULL)
                 {
                     *out_lastpage = (pageIndex >= 0x50) ? 1 : 0;
                 }
-                return item;
+                return (int*)item;
             }
-            itemSize = (int)*(u8*)((char*)item + 0x2) << 2;
+            itemSize = (int)item->size << 2;
             pageOffset += itemSize;
-            item = (int*)((char*)item + itemSize);
+            item = (ObjPlacement*)((char*)item + itemSize);
             itemIndex++;
         }
     }
     return NULL;
 }
+
+void sortVisibleObjectKeysDescending(u32* arr, int n);
+void getVisibleObjects(s8* opacity);
+void renderSceneGeometry(u8 renderType, s8* order);
 
 void sortVisibleObjectKeysDescending(u32* arr, int n)
 {
@@ -991,12 +995,6 @@ void updateEnvironment(int mode)
 }
 
 
-int isDrawDistanceEnabled(void) { return renderFlags & RENDERFLAG_DRAW_DISTANCE; }
-
-
-int isWidescreen(void) { return renderFlags & RENDERFLAG_WIDESCREEN; }
-u32 shouldDrawShadows(void) { return renderFlags & RENDERFLAG_DRAW_SHADOWS; }
-int shouldDrawClouds(void) { return renderFlags & RENDERFLAG_DRAW_CLOUDS; }
 
 
 void lightmapDrawQueuedObject(GameObject* obj);

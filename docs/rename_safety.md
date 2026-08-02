@@ -102,7 +102,15 @@ Renames are **not** byte-neutral and `tools/byteneutral.py` cannot gate them
 (the md5 must change). Before committing any rename:
 
 1. `python3 tools/pairing_check.py --refs <oldname>` — get the blast radius.
-2. Rename in **both** `config/GSAE01/symbols.txt` and every C occurrence.
+2. Rename in **both** `config/GSAE01/symbols.txt` and every C occurrence — **and check
+   `config/GSAE01/config.yml`**, which is a third home for a symbol name. Its `FORCEACTIVE` list
+   keeps the link from dead-stripping symbols nothing references (unreferenced `.sbss` words,
+   uncalled functions retained by the retail link). A name left behind there does **not** fail the
+   build: `mwld` prints `FORCEACTIVE symbol 'X' is either not a global symbol or doesn't exist.
+   Ignored.` and carries on. Measured live renaming `lbl_803DCFFC` → `sIntersectUnused0`
+   (`90cabeaf76`): the tree's baseline two FORCEACTIVE warnings became three, and renaming the
+   `config.yml` entry in the same commit returned it to two. Count the warnings before and after —
+   a new one is a partial rename that the gate will not otherwise catch.
 3. `tools/locked_ninja.sh` as its **own step**; read EXIT before continuing.
    ⚠️ Then rebuild **every touched object by name** —
    `tools/locked_ninja.sh build/GSAE01/src/<...>.o`. Because the re-carve is an

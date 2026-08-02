@@ -4,6 +4,8 @@
 #include "musyx/synth_config.h"
 #include "musyx/synth_voice.h"
 #include "string.h"
+#include "musyx/inp_ctrl.h"
+#include "musyx/snd_core.h"
 
 
 /* Standard MIDI controller (CC) numbers handled by the RPN setter. */

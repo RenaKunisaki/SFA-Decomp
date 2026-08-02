@@ -34,12 +34,40 @@ Run these in order. Each one can end the round without a build.
    digit: the extra tokens are inert on top of `level=1`. When two functions want different
    `-opt level` settings there is no combined profile, and step 6 decides whether a split is
    even permitted.
+   **Do not escalate a flat probe into a combination sweep** — the pair/triple `-opt` space is
+   exhausted over all 89 units carrying sub-100 functions, zero candidates; see
+   `docs/per_tu_flag_evidence.md`.
 2. **Rank by `structB`, never by missing bytes or by how close the percentage looks.**
    Missing bytes measure how much is wrong; `structB` measures how much is *reachable*.
    The near-flip band (>=99%, <100%) is **structurally empty** — six candidates triaged, all
    six with **zero instruction-count delta**, four pure register permutation plus pool
    relocations. Functions reach 99% precisely because everything source-addressable is
    already gone.
+2a. **Ask what the diverging register HOLDS. If it holds a compiler-synthesized value, the
+   source-spelling lane is closed BY MECHANISM — stop, and cap it without spending a build.**
+   A source spelling can only move a value the source can name. When the value whose register
+   home differs was invented by the compiler, no permutation, rename, hoist, chain or reorder
+   reaches it, because there is nothing in the C that refers to it. Two proven signatures:
+   - **Copy-seeded zero** — retail `li rA,0 ; mr rB,rA` where we emit `li rA,0 ; li rB,0`
+     (a solitary `structB` in an otherwise clean stream). **CLOSED**: `updateEnvironment`
+     (`lightmap.c`) settles it, because that one function zeroes the same pair twice from
+     *textually identical* source and retail emits `li;li` at one site and `li;mr` at the other
+     — the same C text sits on both sides of the split, so no spelling can select between them.
+     11 spellings across 2 functions, 0 movement. `trickyDigTunnel` is an independent witness
+     (its two inlined `trickyAdvanceNode` instances differ the same way).
+   - **int->double conversion magic** — `lis rX,17200` (`0x43300000`) paired with
+     `xoris rY,rY,32768`, stored as the high/low halves of a stack double. **CLOSED**:
+     `pathcam_buildWindowSamples` (`dlls/engine/71`) is byte-reachable under `-opt nocse`, yet
+     BOTH builds common the constant — they differ only in whether it gets a callee-saved home
+     (ours, `r14`) or a scratch home (retail, `r0`). 7 spellings, baseline optimal.
+   Generalize past these two: **any value with no source name** — spill reloads, array bases,
+   cast temps, strength-reduction temps — is in none of the allocation tiers and is unreachable
+   by every ordering knob (`CLAUDE.md` states this for the saved band; it holds for scratch too).
+   Naming such a value does not move it; MWCC coalesces the named local straight back.
+   The honest output is a cap **with the value kind named**, not another spelling list.
+   Detail: `near-miss-unit-caps-2026-08.md` (chained-zero closure) and
+   `scratch-class-completion-w147.md` (pathcam derivation).
+
 3. **Check whether the function is already worked — including prior *probe* results, not just
    prior commits.** The `structB` sweep has no memory. Two `grep`s — the memory files and
    `git log` on the file — distinguish "largest unworked entry" from "documented cap".
@@ -270,6 +298,79 @@ sift-up block with the recovered helper regressed it to **99.194**. Splitting th
 where it was otherwise inert also changed the raw object identity, so it was reverted. Require
 both lineage evidence and a measured gain at the exact call site.
 
+## The signedness axis — CLOSED BOTH-SIDED by census, and three protected shapes
+
+**Do not re-run either side as a per-function hunt.** Two independent censuses, store-side and
+load-side, both came back essentially clean, and every non-clean entry already carried a verdict.
+
+### Store side — `extsh`/`extsb` surplus and deficit
+
+A tree-wide census (ours vs retail, both directions, per sub-100 function) found **212 of 217
+functions clean**. Only five carry any delta, and all five are dispositioned:
+
+| Δextsh | Δextsb | function | verdict |
+|---|---|---|---|
+| −4 | 0 | `DR_LaserCan::drlasercannon_aimAtTarget` | probed-to-priors (three type attacks already refuted) |
+| 0 | −1 | `shader::doPendingMapLoads` | flag-closed; local-removal refuted **−3.8** |
+| +1 | 0 | `modgfx/152::dll_98_spawnEffect` | store-forwarding residual, closed at compiler level |
+| +1 | 0 | `objects/332::babyCloudRunner_turnTowardTarget` | lever fires structurally, **score-neutral**, declined |
+| +1 | 0 | `player::playerSetMoveBlendFromPlane` | caller-protected |
+
+**★ Surplus `extsh` ≠ score.** In `babyCloudRunner_turnTowardTarget` the `u16*` store lever worked
+exactly as advertised — surplus `extsh` count 4 → 3, matching retail — and the fuzzy score did not
+move at all. The surplus was real and was *not* what the diff was made of. `modelApplyBoneTransform`
+paid 3.172 → 10.784 from the same lever only because there the surplus **was** the residual. Read a
+width delta as "a discrepancy exists", never as "a width-shaped residual exists", and never land a
+cast pun that buys nothing — a zero-score justification fails the plausible-source rule.
+
+### Load side — `lha` vs `lhz`, `lbz`+`extsb` vs bare `lbz`
+
+A different instruction population and a different error class (a field declared with the wrong
+*signedness*, versus a store that truncates anyway). **213 of 216 clean**, three deltas, and
+**zero signedness type errors tree-wide**:
+
+| function | delta | verdict |
+|---|---|---|
+| `main/zlb::zlbDecompress` | +2 `lhz`, +1 plain `lbz` | ProDG toolchain wall (`configure.py --zlb-toolchain`) |
+| `shader::doPendingMapLoads` | −1 signed `lbz` | **same site** as its store-side Δ−1; already closed |
+| `modgfx/152::dll_98_spawnEffect` | −1 `lha` | **same site** as its store-side +1 `extsh`; already closed |
+
+The two non-toolchain deltas are **not signedness at all** — they are the rematerialize-vs-hold
+class surfacing in the load population (retail re-loads memory; we hold and re-extend), consistent
+with the w81 store-to-load forwarding law. See `docs/allocation_model.md` for why that does not
+decompose into per-site source verdicts.
+
+**★ Two orthogonal censuses triangulate onto the same two functions.** Store-side and load-side
+independently identify `doPendingMapLoads` and `dll_98_spawnEffect` as their only non-toolchain
+entries. Those two carry the tree's last width-adjacent residuals and both are priced to closure.
+When independent instruments converge on already-closed ground, the closures and the censuses
+corroborate each other.
+
+**Clean means DRAINED, not absent.** The fleet's load-side signedness wins were real and recent —
+`playerCheckIfClimbingOntoWall` sits at 99.988 *after* its fix. A census run earlier would have
+found that population; running it now confirms consumption. Read a clean census as "this vein is
+worked out", never as "this vein never existed".
+
+### Three protected shapes — they look like cleanup targets and are load-bearing
+
+Each carries its measurement so the next person finds the number instead of repeating the probe.
+
+1. **Embedded compound assignment as an expression.** `obj->anim.rotX += (yawStep >>= SHIFT);` —
+   splitting it into two statements costs **98.864 → 88.068**. Retail's own shape.
+2. **Block-scoped cache of a global.** `{ int cn = gShaderRomListSlotCount; for (; i < cn; i++) … }`
+   — removing the local so the global is read inline costs **98.439 → 94.618**.
+3. **The `(s16)` loop-condition cast** and the `playerSetMoveBlendFromPlane` narrowing return —
+   both caller-protected; matched callers depend on the narrowing.
+
+### And a correction to naïve hold-vs-rematerialize reading
+
+Shape 2 above is the phantom/hold site the allocation campaign predicted but never located — retail
+rematerializes the `s8` global (`lbz`+`extsb`) at the use site where we hold it in a saved register.
+The naïve reading says "our source wrongly keeps a value alive; remove the local." **Measured, that
+is wrong**: the cache is what retail's source had, and the extra `lbz`+`extsb` is *downstream* of a
+scratch-band register permutation, not its cause. Hold-vs-rematerialize is real in the object but
+**does not decompose into per-site source verdicts.** See `docs/allocation_model.md`.
+
 ## Refutations worth knowing before you spend a build
 
 **The reference corpus can refute a shape at scale — use it to prove a cap, not just to find a
@@ -498,23 +599,61 @@ transposed, the knob is the cast lever above, not the source text.
   the header were already written — the partial-rename state that scores zero with a green
   build. Use `\bname\b`.
 
-## The data axis: `matched_data` measures symbol PAIRING, not pool contents
+## The data axis: a section scores ALL-OR-NOTHING, and the trigger is DIFFERING BYTES
 
-**The axis is CLOSED and fully documented in `docs/data_axis.md` — read that before spending a
-build on a data score.** The short form:
+> ⚠️ **RETRACTION (a0374d8623, carried here 2026-08-02).** This section previously read
+> "`matched_data` measures symbol PAIRING, not pool contents" and told you to screen out any section
+> whose missing bytes equalled its size as an anonymous-`@N` pairing artifact. **That premise is
+> false and it closed a live class.** It is corrected in place below rather than deleted, because the
+> retracted version was cited from this file for weeks and anyone returning to it needs to see that
+> it moved. Canonical detail: `docs/data_axis.md`.
 
-- **First screen: is `missing bytes == a whole section's size`?** If yes it is the pairing
-  artifact and nothing else will change the verdict. objdiff pairs data symbols by name; our
-  pool constants are anonymous (`@262`, `@263`…) while retail's are named (`lbl_803DF058`…).
-- **The blindness is SECTION-granular** — a section holding *any* unpairable anonymous symbol
-  scores zero as a unit, however many of its named symbols are byte-perfect. Proof:
-  `intersect_render` `.rodata` (0 anonymous) 216/216 vs `.sdata2` (40 anonymous) 0/236, with
-  51 of those bytes byte-identical *and* name-identical on both sides.
+**The axis is OPEN for `.sdata2` emission order.** The short form, each point measured:
+
+- **Anonymity does NO work.** `audio_sfx` `.sdata2` is entirely anonymous `@N` and locals on our
+  side, retail's all named and global — retail even carries two symbols at `0x0c`/`0x0e` we never
+  emit — and it scores **matched_data 3328/3328, 100%**. Roughly 600 units have an all-`@N`
+  `.sdata2` and score 100. Never screen a section out because its symbols are anonymous.
+- **Scoring is section ALL-OR-NOTHING, and what trips it is a byte difference.** So
+  `missing == section size` is NOT evidence of an artifact — it is the *normal shape of a real
+  defect*, and the old first screen inverted the verdict. Worked measurement:
+  `195_Player/player` misses **784 bytes, exactly its `.sdata2` size**, while only **28 of those
+  784 bytes actually differ** (7 words, an emission-order permutation). The whole section zeroes on
+  those 7 words. `intersect_render` is the same shape — 236 missing, same constants in a different
+  sequence — and is the REFUTATION of the old bullet, not its proof.
+- **Therefore a sub-100 `.sdata2` is a live, source-addressable class (emission order), not a
+  closed artifact.** Diff the bytes before concluding anything; both instruments that produced the
+  old census keyed on size and anonymity and neither ever compared bytes.
 - **Two refuted gates, do not re-try:** naming (measured null — renaming to matching names moved
   nothing) and binding (the splitter emits every retail data symbol global, statics included, so
-  retail-side linkage carries zero information; de-`static`-ing chases a tool artifact).
-- **Closing the gap would require defining named `.sdata2` constants** — the banned
-  pool-reconstruction construct CLAUDE.md names as the mistake that keeps recurring. Do not.
+  retail-side linkage carries zero information; de-`static`-ing chases a tool artifact). These
+  survive the retraction: they are why anonymity is a non-issue, not why a section scores zero.
+- **The remedy is source shape, never a named constant.** Recovering emission order is a
+  source-shape question; defining named `.sdata2` constants remains the banned
+  pool-reconstruction construct, and `tools/banned_shapes_check.py` now fails the build on it.
+- **POOL-ORDER RESIDUE — one check settles it: is RETAIL's pool in RETAIL's OWN first-use order?**
+  MWCC emits `.sdata2` in first-use order, so a pool-order difference is only source-reachable if
+  *retail* obeys that law and we don't. Compute each divergent slot's first-use instruction index on
+  **both** sides (symbol table maps `.sdata2` symbol → offset; `R_PPC_EMB_SDA21` relocs name symbols,
+  **not** section offsets — parsing them as offsets silently yields zero rows).
+  - retail ordered, ours not → the reopen case; do the full first-use mapping.
+  - **retail NOT ordered → CAP immediately, no per-constant mapping.** Retail minted the slot before
+    its first surviving use, so no arrangement of our source reproduces it. **6/6 candidates have
+    landed here** (`578_DBstealerwo`, `player.c`, and the earlier 625/camTalk/226 early-mint trio).
+  Worked example — `player.c`, the largest such entry (784B `.sdata2`): **189 of 196 words are
+  byte-identical and in place**; the whole residue is 7 consecutive words at `0x70..0x88`, the same
+  seven values permuted. Ours is *perfectly* first-use ordered (602, 1429, 1439, 1447, 2098, 2152,
+  2232); retail is not (2152, 602, 2232, 1429, 1439, 1447, 2098) — it mints `10.0f` and `1.0f` early.
+  A second, independent proof of the cap: the mint windows close before insn 1429, while player.c's
+  **earliest sub-100 function starts at insn 4804** — every function in both windows is at 100.000,
+  so any movement that could re-mint the slots must edit byte-identical `.text`.
+  ⚠️ **Corrected 2026-08-02:** this entry previously concluded "the residue is nominal, not
+  reachable — the 784B was a pairing score, not the size of anything wrong." That rested on the
+  retracted premise above. The **784 bytes are REAL**: 28 of them genuinely differ and zero the
+  whole section. The cap stands, because it never depended on the pairing claim — it rests on the
+  first-use discriminator plus the 100%-function windows — but this is an unreachable **784-byte**
+  entry, not a scoring artifact worth nothing. Price it accordingly if a future technique reaches
+  emission order.
 - **The distinct-values screen still answers a different, useful question.** Run its checks in the
   order **missing distinct values → duplicate inflation → size → order**: a merged TU is always
   smaller on our side, so checking size first misclassifies it.
@@ -641,6 +780,7 @@ context, or fragment mirage. Worth knowing before anyone re-derives it:
   local behind it, at band width 6 — the >=5 regime where the model is ~0.1% predictive.
 
 - `docs/data_axis.md` — the data axis, closed: the section-granular pairing law, two refuted gates, the vein taxonomy and the screen order.
+- `docs/allocation_model.md` — the saved-register band model, closed: four tiers with confirmed within-tier keys, the rematerialization-cost axis, and the measured boundary above width 4.
 - `docs/band_width_worklist.md` — where a structural fix can stick (`structB` vs `regB`).
 - `docs/rename_safety.md` — the rename gate and the stale-object race.
 - `docs/per_tu_flag_evidence.md` — per-TU flag measurements, for whoever adjudicates them.

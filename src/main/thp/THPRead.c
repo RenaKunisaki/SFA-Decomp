@@ -6,14 +6,20 @@
 #include "dolphin/os/OSThread.h"
 #include "dolphin/thp/THPPlayer.h"
 
+void PushReadedBuffer2(OSMessage msg);
+OSMessage PopReadedBuffer2(void);
+void PushFreeReadBuffer(OSMessage msg);
+OSMessage PopReadedBuffer(void);
+void ReadThreadCancel(void);
+void ReadThreadStart(void);
+BOOL CreateReadThread(OSPriority priority);
+
 char gPicMenuReadThreadArea[0x1000];
 OSThread gPicMenuReadThread;
-OSMessageQueue gPicMenuReadedBuffer2Queue;
-OSMessageQueue gPicMenuReadedBufferQueue;
-OSMessageQueue gPicMenuFreeReadBufferQueue;
-OSMessage gPicMenuReadedBuffer2Messages[10];
-OSMessage gPicMenuReadedBufferMessages[10];
-OSMessage gPicMenuFreeReadBufferMessages[10];
+
+extern OSMessageQueue gPicMenuReadedBuffer2Queue;
+extern OSMessageQueue gPicMenuReadedBufferQueue;
+extern OSMessageQueue gPicMenuFreeReadBufferQueue;
 
 s32 gPicMenuReadThreadCreated;
 
@@ -126,3 +132,10 @@ BOOL CreateReadThread(OSPriority priority)
     gPicMenuReadThreadCreated = 1;
     return 1;
 }
+
+OSMessageQueue gPicMenuFreeReadBufferQueue;
+OSMessageQueue gPicMenuReadedBufferQueue;
+OSMessageQueue gPicMenuReadedBuffer2Queue;
+OSMessage gPicMenuFreeReadBufferMessages[10];
+OSMessage gPicMenuReadedBufferMessages[10];
+OSMessage gPicMenuReadedBuffer2Messages[10];

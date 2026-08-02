@@ -319,6 +319,9 @@ void videoBlackScreenForFrames(int frameCount)
     VIFlush();
     gVideoBlackScreenFrameCount = frames;
 }
+void logGpuHang(void);
+void gxSetGPMetricsEnabled(int enabled);
+
 void logGpuHang(void)
 {
     char* strs = (char*)gLoadingScreenTextures;

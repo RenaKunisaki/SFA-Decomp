@@ -194,6 +194,9 @@ class ProjectConfig:
         self.version: Optional[str] = None  # Version name
         self.warn_missing_config: bool = False  # Warn on missing unit configuration
         self.warn_missing_source: bool = False  # Warn on missing source file
+        self.symbol_mappings: Optional[Dict[str, Dict[str, str]]] = (
+            None  # Authoritative target-to-base mappings keyed by unit name
+        )
         self.rel_strip_partial: bool = True  # Generate PLFs with -strip_partial
         self.rel_empty_file: Optional[str] = (
             None  # Object name for generating empty RELs
@@ -1749,10 +1752,14 @@ def generate_objdiff_config(
             "symbol_mappings": None,
         }
 
-        # Preserve existing symbol mappings
-        existing_unit = existing_units.get(name)
-        if existing_unit is not None:
-            unit_config["symbol_mappings"] = existing_unit.get("symbol_mappings")
+        # Preserve hand-authored mappings unless the version config provides
+        # an authoritative mapping set (used by cross-version progress).
+        if config.symbol_mappings is not None:
+            unit_config["symbol_mappings"] = config.symbol_mappings.get(obj_name)
+        else:
+            existing_unit = existing_units.get(name)
+            if existing_unit is not None:
+                unit_config["symbol_mappings"] = existing_unit.get("symbol_mappings")
 
         obj = objects.get(obj_name)
         if obj is None:

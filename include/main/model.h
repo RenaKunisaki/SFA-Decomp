@@ -286,11 +286,23 @@ STATIC_ASSERT(sizeof(ObjModelBlendChannel) == 0x10);
  * (all buffers carved from one allocation). Double-buffered matrix/vertex
  * buffers are selected by flags bits 0/1.
  */
+typedef struct ModelJointWork {
+    u8 *unk00;
+    f32 *radii;
+    f32 *radiiSq;
+    f32 *boneLengths;
+    f32 *maxReach;
+    u8 *unk14;
+    u8 *unk18;
+} ModelJointWork;
+
+STATIC_ASSERT(sizeof(ModelJointWork) == 0x1C);
+
 typedef struct ObjModel {
     ModelFileHeader *file;
     u8 unk04[8];
     u8 *jointMatrices[2];
-    u8 *jointWorkspace; /* 0x1c header + per-joint tables */
+    ModelJointWork *jointWorkspace;
     u16 bufferFlags; /* 1 = mtx buffer select, 2 = vtx buffer select, 0x40 = textures loaded */
     u8 unk1A[2];
     u8 *vtxBuf[2];

@@ -2,6 +2,7 @@
 #define MAIN_DLL_PLAYER_DATA_H_
 
 #include "main/dll/dll_005A_staffcollision.h"
+#include "main/dll/partfx_interface.h"
 #include "game/objects/object.h"
 #include "main/lightmap_api.h"
 
@@ -43,7 +44,7 @@ extern int gPlayerDefaultStateHandler;
 extern void* gPlayerChildObject;
 extern PlayerModelChainEntry* gPlayerModelChainConfig;
 extern int gPlayerHeldObject;
-extern f32 gPlayerPartFxParams[];
+extern PartFxSpawnParams gPlayerPartFxParams;
 extern LightmapVertex gPlayerHudVtxBuf[8];
 extern s16 gPlayerStopMoves[4];
 extern u8 gPlayerSurfacePfxModeTable[];

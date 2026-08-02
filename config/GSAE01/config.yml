@@ -13,6 +13,34 @@ name: main
 # containing vidListNodes storage rather than by this symbol directly.
 force_active:
   - voicePrioritySortLinks
+  # dlls/engine/21/21.c: the retail link retained this unreferenced .sdata2
+  # zero atom at the tail of the pool; dropping it would shorten the pool and
+  # shift every later SDA2 reference.
+  - lbl_803E06C4
+  # dlls/engine/66/66.c: the retail link retained this unreferenced .sbss tail
+  # word; dropping it would shorten the section and shift every later .sbss
+  # address.
+  - lbl_803DD534
+  # dlls/engine/69/69.c: same unreferenced .sbss tail word.
+  - lbl_803DD544
+  # dlls/engine/78/78.c: same unreferenced .sbss tail word.
+  - lbl_803DD58C
+  # SB_Galleon.c: the retail link retained this unreferenced .sbss tail word.
+  - sSbGalleonUnused0
+  # DBstealerwo.c: the retail link retained the worm command-name table even
+  # though nothing references it by name; dropping it would shorten .data and
+  # shift every later .data address.
+  - gDbStealerwormCommandNames
+  # BossDrakor.c: the retail link retained this unreferenced .sdata tail atom.
+  - lbl_803DC19C
+  # DIMSnowHorn.c: the retail link retained this unreferenced .sdata2 zero atom
+  # at the tail of the pool.
+  - gDIMSnowHorn1ZeroOffset
+  # maketex.c: the retail link retained the memory-card banner asset name
+  # table and the .sdata tail atom even though nothing references them by
+  # name; dropping them would shorten .data and shift every later address.
+  - gMemoryCardBannerAssetNames
+  - lbl_803DB70C
   # dll_012B_fxemit.c: the retail link retained this unreferenced .sdata2 zero
   # atom; dropping it would shorten the pool and shift later SDA2 references.
   - lbl_803E3E44
@@ -50,6 +78,9 @@ force_active:
   # (its own switch jumptable is the only thing that names it); dropping it
   # would shorten .text and shift every later section.
   - surfaceSfxGetRecord
+  # intersect.c: the retail link retained this unreferenced .sbss word;
+  # dropping it would shorten the section and shift every later .sbss address.
+  - sIntersectUnused0
 
 # Path to the main.dol file.
 object: sys/main.dol

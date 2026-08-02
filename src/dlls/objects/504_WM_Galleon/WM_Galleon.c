@@ -12,7 +12,7 @@
 #include "main/resource.h"
 #include "main/track_dolphin_api.h"
 
-u32 lbl_803DC0F0 = 3;
+u32 gWmGalleonFrameStep = 3;
 
 #define WM_GALLEON_GAMEBIT_CLEAR_DOOR       0xD1
 #define WM_GALLEON_SEQUENCE_ATTACHED        0x188
@@ -36,7 +36,7 @@ u32 lbl_803DC0F0 = 3;
 #define WM_GALLEON_OBJECT_SLOT              0x5A
 #define WM_GALLEON_MAP_EVENT_GROUP_COUNT    5
 
-void* lbl_803DDC74;
+void* gWmGalleonResource;
 extern u32* gDll12Interface;
 s8 gWMGalleonShowScreen;
 
@@ -61,7 +61,7 @@ int WM_Galleon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     int eventIndex;
 
     (void)unused;
-    lbl_803DC0F0 = framesThisStep;
+    gWmGalleonFrameStep = framesThisStep;
     animUpdate->flags = -1;
     animUpdate->movementState = 0;
     for (eventIndex = 0; eventIndex < animUpdate->eventCount; eventIndex++) {
@@ -124,9 +124,9 @@ void WM_Galleon_free(GameObject* obj, int leavingMap) {
         if (state->mapEventsLatched != 0 && leavingMap == 0) {
             state->mapEventsLatched = 0;
         }
-        if (lbl_803DDC74 != NULL) {
-            Resource_Release(lbl_803DDC74);
-            lbl_803DDC74 = NULL;
+        if (gWmGalleonResource != NULL) {
+            Resource_Release(gWmGalleonResource);
+            gWmGalleonResource = NULL;
         }
     }
 }

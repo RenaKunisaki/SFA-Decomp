@@ -134,12 +134,12 @@ void WispBaddie_update(GameObject* obj) {
     WispBaddieState* state;
     RomCurveWalker* curve;
     int hitPriority;
-    f32 hitObjectBits;
+    GameObject* hitObject;
     f32 hitPosX;
     f32 hitPosY;
     f32 hitPosZ;
-    f32 hitSphereIndexBits;
-    f32 hitVolumeBits;
+    int hitSphereIndex;
+    u32 hitVolume;
     f32 delta[3];
     int particleMode;
     u8 flags;
@@ -147,8 +147,8 @@ void WispBaddie_update(GameObject* obj) {
 
     state = obj->extra;
     curve = state->curve;
-    hitPriority = ObjHits_GetPriorityHitWithPosition(obj, (int*)&hitObjectBits, (int*)&hitSphereIndexBits,
-                                                     (u32*)&hitVolumeBits, &hitPosX, &hitPosY, &hitPosZ);
+    hitPriority = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitSphereIndex, &hitVolume, &hitPosX, &hitPosY,
+                                                     &hitPosZ);
     if (hitPriority != 0) {
         state->hitRadius = 0.01f;
         flags = state->flags;

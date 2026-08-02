@@ -29,7 +29,7 @@ void dimlavasmash_setBlockSurfaceFlags(MapBlockData* map, int disable, int surfa
     int j;
 
     for (j = 0; j < (int)map->polyGroupCount; j++) {
-        MapPolygonGroup* polygonGroup = mapBlockGetPolygonGroup(map, j);
+        MapTriGroup* polygonGroup = mapBlockGetPolygonGroup(map, j);
         if (surfaceType == mapBlockGetPolygonGroupType(polygonGroup)) {
             if (disable != 0) {
                 polygonGroup->flags &= ~2LL;

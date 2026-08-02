@@ -1,4 +1,5 @@
 #include "dolphin/types.h"
+#include "dolphin/MSL_C/PPCEABI/bare/H/floorf.h"
 
 float floorf(float value) {
     int truncated = value;

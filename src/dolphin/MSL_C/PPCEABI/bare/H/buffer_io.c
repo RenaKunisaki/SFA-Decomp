@@ -1,4 +1,5 @@
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/ansi_files.h"
+#include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/buffer_io.h"
 
 static inline void prep_buffer(FILE* file)
 {

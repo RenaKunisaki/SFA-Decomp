@@ -133,8 +133,8 @@ int drshackle_renderAtPathPoint(GameObject* obj, int a, int b, int c, int d, int
         char* entry = *(char**)a;
         if (entry != NULL)
         {
-            ObjPath_GetPointWorldPosition(obj, p[i + 0x1b], (f32*)(entry + 0xc),
-                                          (f32*)(entry + 0x10), (f32*)(entry + 0x14), 0);
+            ObjPath_GetPointWorldPosition(obj, p[i + 0x1b], &((GameObject*)entry)->anim.localPosX,
+                                          &((GameObject*)entry)->anim.localPosY, &((GameObject*)entry)->anim.localPosZ, 0);
         }
         a += 4;
     }
@@ -168,9 +168,9 @@ void drshackle_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visi
             int* entry = ((int**)state)[i];
             if (entry != 0)
             {
-                ObjPath_GetPointWorldPosition(obj, state[i + 0x1b], (f32*)((char*)entry + 0xc),
-                                              (f32*)((char*)entry + 0x10),
-                                              (f32*)((char*)entry + 0x14), 0);
+                ObjPath_GetPointWorldPosition(obj, state[i + 0x1b], &((GameObject*)entry)->anim.localPosX,
+                                              &((GameObject*)entry)->anim.localPosY,
+                                              &((GameObject*)entry)->anim.localPosZ, 0);
             }
         }
     }
@@ -205,7 +205,7 @@ void drshackle_update(GameObject* obj)
         list = (u32*)objGetAllOfType(DFROPENODE_OBJECT_GROUP, &count);
         while (count-- != 0)
         {
-            sub = *(int*)(*list + 0x4c);
+            sub = (int)((GameObject*)*list)->anim.placementData;
             for (j = 0; j < ((DrshackleState*)state)->slotCount; j++)
             {
                 if (*(u8*)(sub + 0x18) == placement->pathObjGroupBase + j * 4)

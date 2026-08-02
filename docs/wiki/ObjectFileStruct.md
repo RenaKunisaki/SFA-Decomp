@@ -157,9 +157,9 @@ offset from the model's origin instead.
 ## In this codebase
 
 The runtime, pointer-fixed form of this exact struct is `ObjDef` (aliased `ObjModelInstance`)
-in `include/main/objanim_internal.h:206-263` — `sizeof(ObjDef) == 0x94`, i.e. it stops right
-before the wiki's 11-byte debug `name` field, which our repo hasn't modelled as a struct member
-(the loader/tools still reach it by raw offset). `ObjAnimComponent.modelInstance` (obj+0x50)
+in `include/main/objanim_internal.h` — `sizeof(ObjDef) == 0x9C`, i.e. it ends with the wiki's
+11-byte debug `name` field at 0x91; anything past 0x9C ("additional data depending on object")
+is not modelled. `ObjAnimComponent.modelInstance` (obj+0x50)
 points at a loaded instance of it, and `loadObjectFile` (`src/main/object.c:2423`) is the loader
 that performs exactly the offset-to-pointer fixups the wiki describes:
 
@@ -193,7 +193,7 @@ Offset|Wiki name|`ObjDef` field|Evidence
 0x20|pEvent|`eventMoveTable` (`s16*`)|Offset match; also the field name at the same offset (0x20) in `ObjAnimDef`.
 0x24|pHits|`hitReactMoveTable`|Offset match; also `ObjAnimDef.hitReactMoveTable` at the same 0x24.
 0x28|pWeaponDa|`weaponDaTable` (`s16*`)|Offset match; feeds `ObjWeaponDaTable`/`WEAPONDA.bin` loading (`objGetTotalDataSize`'s `OBJLOAD_FLAG_WEAPON_DA` path).
-0x2c|attachPoints|**not found** (`pad2C` gap, 0x2C-0x3F)|Never dereferenced anywhere in `src/`; `tools/orig/object_catalog.py` calls this slot `hitboxes`, not `attachPoints` — a second, independent guess for the same offset.
+0x2c|attachPoints|`attachPoints` (`ObjAttachPoint*`)|**Confirmed**: `loadObjectFile` fixes `buf+0x2c` from offset to pointer unconditionally; `objRenderChild` (`objprint_dolphin.c`) and `staffUpdateSegmentTransforms` (`objhits.c`) index it with stride **0x18**, matching the wiki's `AttachPoint` record exactly (`sizeof(ObjAttachPoint)==0x18`), and `attachPointCount` @0x58 bounds the indexing.
 0x40|aButtonInteraction|`hitVolumes` (`ObjDefHitVolume*`)|**Confirmed**: `hitVolumeCount` lives at 0x72 exactly where the wiki says the count for this field is, and `sizeof(ObjDefHitVolume)==0x18`, matching the wiki's "0x12 or 0x18 bytes per model" guess exactly.
 0x44|flags (`ObjFileStructFlags44`)|`flags` (`u32`)|Direct match. Bit 0x800000 ("Did load models, set at runtime") is confirmed live: `((ObjModelInstance*)obj->def)->flags |= 0x800000LL;` right after model loading in `loadCharacter`. Bit 0x400000 ("Has event") gates extra alloc size in `objGetTotalDataSize`. Bit 0x800 ("Use different model loading") lines up with our own `OBJDEF_FLAG_DEFERRED_RENDER` (0x800).
 0x48|shadowType|`shadowType` (`s16`)|Exact name+offset match. `== 2` (geometric shadow from model) checked in `newshadows.c:997`; `== 3` (crash/needs extra data) is literally our `OBJLOAD_FLAG_SHADOW_TYPE3` (`object.c:1135,1271`); `== 1` (big box) checked at `object.c:1586`; `!= 0` (has shadow) is `OBJLOAD_FLAG_HAS_SHADOW`.
@@ -203,7 +203,7 @@ Offset|Wiki name|`ObjDef` field|Evidence
 0x52|category (`ObjCategory`)|**not named** (raw `*(s16*)(def+0x52)`, local var `f44` in `loadCharacter`'s `LoadedObj`)|Read as `tmpl.f44 = *(s16*)(def + 0x52);`. This is the same id our own `tools/orig/object_catalog.py`/`object_class_packets.py` call `class_id` — a large space of romlist "type" ids (hundreds, not a small enum; see e.g. `WMOBJCREATOR_SPAWN_WM_WALLCRAWLER = 0x275` in `src/dlls/objects/505_WM_ObjCreat/WM_ObjCreat.c`, or the related code in `src/dlls/objects/529/529.c`).
 0x55|nModels|`modelCount` (`s8`)|Exact offset match.
 0x56|numPlayerObjs|`group8RegistrationCount` (`s8`)|**Confirmed**, and better-named than the wiki's guess: `if (...->group8RegistrationCount > 0) objFreeObjectType((u32)obj, 8);` (`object.c:1580`) is the teardown mirror of the wiki's `objAddObjectType(obj, 8)`.
-0x58|nAttachPoints (`noplacements`)|**not found** (inside `pad57` gap, 0x57-0x58)|Never read in `src/`.
+0x58|nAttachPoints (`noplacements`)|`attachPointCount` (`u8`)|**Confirmed**: `staffUpdateSegmentTransforms` (`objhits.c`) gates on `>= 2` and bounds its `attachPoints` walk with `k < attachPointCount`; `playerUpdateCameraTargetLookAngles` (`player.c`) gates joint look-at on `!= 0`.
 0x59|nTextures|`textureSlotCount` (`u8`)|**Confirmed**: `objGetTotalDataSize`/`loadCharacter` add `textureSlotCount * sizeof(ObjTextureRuntimeSlot)`, and `sizeof(ObjTextureRuntimeSlot)==0x10` — matches the wiki's "count of sth 0x10 bytes" exactly.
 0x5a|numVecs|`jointCount` (`u8`)|**Confirmed**: `size += modelDef->jointCount * 0x12;` in `objGetTotalDataSize` — matches "count of sth 0x12 bytes" exactly.
 0x5e|numSeqs|`sequenceCount` (`u8`)|Exact match.
@@ -223,13 +223,14 @@ Offset|Wiki name|`ObjDef` field|Evidence
 0x76|flags76 (`ObjectFileStructFlags76`)|`effectFlags` (`u8`)|Offset match; bit 1 gates a fade-in-alpha sequence in `object.c:344` (plausible but not confirmed identical to the wiki's "1=animated").
 0x77|hitboxSizeZ|`secondaryHitboxRadius` (`u8`)|Offset match.
 0x78|map|`mapLoadObjectId` (`s16`)|Offset match; our name suggests a different reading (object id used for map loading) than the wiki's "map id" — unverified either way here.
-0x7c|helpTexts (`GameTextId[4]`)|`helpTextIds` (`s16[8]`)|**Size discrepancy** — see "Open discrepancies" below.
+0x7c|helpTexts (`GameTextId[4]`)|`helpTextIds` (`s16[4]`)|**Resolved**: the array was oversized at `s16[8]` and overran the f32 at 0x88; corrected to `s16[4]` with `pad84[4]`.
+0x88|lagVar88|`shadowModelScaleBase` (`f32`)|**Confirmed**: `objAllocModelState` (`shadow_dolphin.c`) copies it into `ObjModelState.shadowModelScale`, which `buildShadowVolumeBox` uses as the shadow-volume scale — matching the wiki's "related to shadow".
 0x8c|nLights|**not named** (`pad8C`)|Not found.
 0x8d|lightIdx|`modelLightMaskIndex` (`u8`)|Offset match; name suggests a slightly different role (mask vs. index) — unverified.
 0x8e|colorIdx|**not named** (`pad8E`)|Not found; `1=dark,2=default,3+=corrupt` semantics not modelled yet. Elsewhere, `loadCharacter` separately reads a related color/light byte from `def+0x8e` into a local (`tmpl.ff2`), consistent with this offset being read as a small enumerated index.
 0x8f|?|`fallbackHitSphereRadius` (`u8`)|Offset match; wiki has no info here, ours has a name but no cited use found in this pass.
 0x90|hitbox_flagsB6|`secondaryHitboxShapeFlags` (`u8`)|**Confirmed chain**: `hitState->secondaryShapeFlags = obj->modelInstance->secondaryHitboxShapeFlags;` (`objlib.c`), and `ObjHitsPriorityState.secondaryShapeFlags` is at offset **0xB6** — exactly explaining "B6". The wiki's "< 0xE = invincible" note is new detail not yet in our headers.
-0x91|name|**not modelled** (past `sizeof(ObjDef)`)|**Directly confirmed** in this repo already: `src/main/dll/firecrawler.c:5` says the enemies there were "identified from the retail OBJECTS.bin (object name at def+0x91)".
+0x91|name|`name` (`char[11]`)|**Directly confirmed**: `src/main/dll/firecrawler.c:5` says the enemies there were "identified from the retail OBJECTS.bin (object name at def+0x91)", `object.c` passes it straight to `OSReport("LOADED OBJECT %s")`, and `tools/orig/object_catalog.py` reads `offset+0x91 : offset+0x9C`. `sizeof(ObjDef)` is now 0x9C.
 
 ### The `ObjHitsPriorityState` naming chain (why the wiki's "hitbox_fieldXX" names look odd)
 
@@ -273,16 +274,11 @@ Every one of these seven pairs matches exactly, independently confirming both th
   named `fixedSortDepth` in `ObjDef`. These are two different hypotheses for the same byte —
   genuinely worth double-checking against a matched function that reads it, rather than assuming
   either is right.
-- **`0x7c` help texts, 4 vs. 8 entries**: the wiki says `GameTextId[4]` (8 bytes, ending 0x84), and
-  our own `tools/orig/object_catalog.py` independently reads exactly 4 `u16`s at this offset too.
-  Every DLL call site found in this pass (`dll_a6.c:75`, `dll_0189_ccsharpclawpad.c:81`,
-  `src/dlls/objects/290_CCTestInfot/CCTestInfot.c:59`, `src/dlls/objects/433_SH_staff/SH_staff.c:408`,
-  `src/dlls/objects/289/289.c:32`) indexes
-  `helpTextIds[0..3]`-range values only. But `ObjDef.helpTextIds` in
-  `include/main/objanim_internal.h:256` is declared `s16[8]` (16 bytes, 0x7C-0x8B), which would
-  overrun into the wiki's separately-named `?`/`?`/`lagVar88` bytes at 0x84-0x8B. This looks like a
-  plausible **oversized array** in `ObjDef` that a maintainer should double check (likely should be
-  `s16 helpTextIds[4]` plus explicit padding for 0x84-0x8B) — see "Ready-to-adopt code" below.
+- **`0x30`/`0x5c`/`0x5d` mod lines**: `loadObjectFile` stores `loadModLines()`'s buffer at `buf+0x30`,
+  its record count at `buf+0x5c` (`size / 20`, and `sizeof(MapHitLine)==0x14`) and reads the
+  `MODLINES.tab` index from `(s8)buf[0x5d]` — now `modLines`/`modLineCount`/`modLineIndex` in `ObjDef`.
+  Note that `track_dolphin.c` declares `IntersectModLineObject`, a partial **duplicate** of this same
+  `ObjDef` tail (0x30/0x34/0x38/0x3c/0x5c) that `object.c` casts to; the two should probably be one type.
 
 ## Ready-to-adopt code
 

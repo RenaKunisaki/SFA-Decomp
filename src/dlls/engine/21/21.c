@@ -98,13 +98,13 @@ static inline RomCurveDef* RomCurve_FindByIdInline(u32 curveId)
     return NULL;
 }
 
-static inline int RomCurve_noUnblockedLinks(RomCurvePlacementDef* curve)
+static inline int RomCurve_noUnblockedLinks(RomCurveDef* curve)
 {
     int bit;
 
     for (bit = 0; bit < ROMCURVE_LINK_COUNT; bit++)
     {
-        if ((s32)curve->base.linkIds[bit] != -1 && (curve->base.blockedLinkMask & (1 << bit)) == 0)
+        if ((s32)curve->linkIds[bit] != -1 && (curve->blockedLinkMask & (1 << bit)) == 0)
         {
             return 0;
         }
@@ -112,13 +112,13 @@ static inline int RomCurve_noUnblockedLinks(RomCurvePlacementDef* curve)
     return 1;
 }
 
-static inline int RomCurve_noBlockedLinks(RomCurvePlacementDef* curve)
+static inline int RomCurve_noBlockedLinks(RomCurveDef* curve)
 {
     int bit;
 
     for (bit = 0; bit < ROMCURVE_LINK_COUNT; bit++)
     {
-        if ((s32)curve->base.linkIds[bit] != -1 && (curve->base.blockedLinkMask & (1 << bit)) != 0)
+        if ((s32)curve->linkIds[bit] != -1 && (curve->blockedLinkMask & (1 << bit)) != 0)
         {
             return 0;
         }
@@ -858,9 +858,9 @@ void curves_updateLocalPointTransforms(int obj, CurvesCollisionState* collision)
         iv[0] = 0;
         for (; iv[0] < (collision->pointCounts & CURVES_POINT_COUNT_LOCAL_MASK); iv[0]++)
         {
-            *(f32*)((u8*)collision + iv[0] * 12 + 276) = *(f32*)((u8*)collision + iv[0] * 12 + 228);
-            *(f32*)((u8*)collision + iv[0] * 12 + 280) = CURVES_ONE + *(f32*)((u8*)collision + iv[0] * 12 + 232);
-            *(f32*)((u8*)collision + iv[0] * 12 + 284) = *(f32*)((u8*)collision + iv[0] * 12 + 236);
+            collision->localPointTarget[iv[0]][0] = collision->localPointWorld[iv[0]][0];
+            collision->localPointTarget[iv[0]][1] = CURVES_ONE + collision->localPointWorld[iv[0]][1];
+            collision->localPointTarget[iv[0]][2] = collision->localPointWorld[iv[0]][2];
         }
         trackInvalidateDynamicSlotsForObject((GameObject*)obj);
     }
@@ -1440,11 +1440,11 @@ void curves_updateQueryBounds(GameObject* obj, CurvesCollisionState* state, f32 
     {
         if (*(void**)&obj->anim.parent != NULL)
         {
-            if ((*(void**)(obj->anim.parentAddress + 0x58) != NULL) &&
+            if ((obj->anim.parentAnim->hitboxTransformState != NULL) &&
                 (ObjHits_IsObjectEnabled((ObjAnimComponent*)obj->anim.parent) != 0))
             {
-                mtxIdx = (*(u8*)(*(int*)(obj->anim.parentAddress + 0x58) + 0x10c) + 2) * 0x10;
-                Matrix_TransformPoint((f32*)(*(int*)(obj->anim.parentAddress + 0x58)) + mtxIdx, obj->anim.localPosX,
+                mtxIdx = (obj->anim.parentAnim->hitboxTransformState->activeMatrixIndex + 2) * 0x10;
+                Matrix_TransformPoint((f32*)obj->anim.parentAnim->hitboxTransformState + mtxIdx, obj->anim.localPosX,
                                       obj->anim.localPosY, obj->anim.localPosZ, &obj->anim.worldPosX,
                                       &obj->anim.worldPosY, &obj->anim.worldPosZ);
             }

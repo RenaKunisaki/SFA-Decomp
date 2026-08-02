@@ -3,32 +3,13 @@
 
 #include "game/objects/object.h"
 #include "main/dll/rom_curve_interface.h"
+#include "main/dll/rom_curve_def.h"
 
 extern const f32 gDrakorHoverpadSpeedStep;
 extern f32 gDrakorHoverpadSteerMaxSpeed;
 extern s16 lbl_803DC2FC;
 extern f32 lbl_803DC300;
 extern f32 lbl_803DC304;
-
-/*
- * A ROM curve network node (the record returned by gRomCurveInterface->getById
- * and held in the walker's node9C / nodeA0 / nodeA4 slots by
- * drakorhoverpad_update). The leading layout matches ObjfsaRomCurveDef
- * (pos at 0x8/0xc/0x10, blockedLinkMask at 0x1b, linkIds[4] at 0x1c); this view
- * extends it with the per-node tangent record at 0x2c-0x2e that supplies the
- * hermite tangents of the segment the pad is about to enter.
- */
-typedef struct DrakorCurveNode
-{
-    u8 pad0[0x8 - 0x0];
-    f32 x; /* 0x08 */
-    f32 y; /* 0x0c */
-    f32 z; /* 0x10 */
-    u8 pad14[0x2C - 0x14];
-    s8 tangentYaw;   /* 0x2c << 8 -> yaw angle */
-    s8 tangentPitch; /* 0x2d << 8 -> pitch angle */
-    u8 tangentMag;   /* 0x2e magnitude scalar */
-} DrakorCurveNode;
 
 typedef struct DrakorHoverpadUpdateMainPlacement
 {

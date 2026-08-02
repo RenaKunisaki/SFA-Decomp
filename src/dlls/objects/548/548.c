@@ -8,7 +8,6 @@
 #include "main/gamebits_api.h"
 #include "main/objprint_render_api.h"
 
-static const f32 lbl_803E6150 = 100.0f;
 
 u32 gSpellStoneEventId;
 
@@ -25,6 +24,17 @@ typedef struct SpellStonePlacement {
     s16 completeGameBit; /* 0x1e */
     s16 requiredGameBit; /* 0x20 */
 } SpellStonePlacement;
+
+void SpellStoneUse_updateInteraction(GameObject* obj);
+int dll_224_getExtraSize_ret_6(void);
+int dll_224_getObjectTypeId(void);
+void dll_224_free_nop(void);
+void dll_224_render(int p1, int p2, int p3, int p4, int p5, s8 visible);
+void dll_224_hitDetect(GameObject* obj);
+void dll_224_update(GameObject* obj);
+void dll_224_init(GameObject* obj, void* other);
+void dll_224_release_nop(void);
+void dll_224_initialise_nop(void);
 
 void SpellStoneUse_updateInteraction(GameObject* obj) {
     SpellStoneUseState* state = obj->extra;
@@ -44,7 +54,7 @@ void SpellStoneUse_updateInteraction(GameObject* obj) {
     }
     obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
     if ((*gGameUIInterface)->isItemBeingUsed(gSpellStoneEventId) != 0) {
-        if (Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) < lbl_803E6150) {
+        if (Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX) < 100.0f) {
             mainSetBits(state->completeGameBit, 1);
             state->used = 1;
             obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;

@@ -12,6 +12,7 @@
  */
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
+#include "game/objects/object_setup.h"
 #include "main/object_render.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/audio/sfx_trigger_ids.h"
@@ -158,7 +159,7 @@ void VFP_MiniFire_update(GameObject* obj)
 void VFP_MiniFire_init(GameObject* obj, u8* init)
 {
     obj->anim.velocityY = -15.0f;
-    obj->anim.localPosY = 400.0f + *(f32*)((char*)init + 0xc);
+    obj->anim.localPosY = 400.0f + ((ObjPlacement*)init)->posY;
     obj->anim.rootMotionScale *= 2.0f;
     (*gPartfxInterface)->spawnObject(obj, VFPMINIFIRE_PERSIST_EFFECT, NULL, 2, -1, NULL);
     Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_103);

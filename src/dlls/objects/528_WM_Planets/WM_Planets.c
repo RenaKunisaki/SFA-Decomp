@@ -11,7 +11,7 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 
-const u32 lbl_802C2500[4] = {0, 0, 0, 0};
+const u32 gWmPlanetsZeroVecTemplate[4] = {0, 0, 0, 0};
 
 int WM_Planets_getExtraSize(void)
 {
@@ -52,7 +52,7 @@ void WM_Planets_update(GameObject* obj)
         {
             int w[3];
         } Vec3Words;
-        *(Vec3Words*)&vec.word[0] = *(Vec3Words*)&lbl_802C2500[0];
+        *(Vec3Words*)&vec.word[0] = *(Vec3Words*)&gWmPlanetsZeroVecTemplate[0];
     }
     vec.f[2] = state->orbitRadius;
 

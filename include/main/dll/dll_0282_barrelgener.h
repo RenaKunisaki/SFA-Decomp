@@ -14,10 +14,10 @@ struct ModelLightStruct;
 
 extern ObjectDescriptor gBarrelGenerObjDescriptor;
 extern int gBarrelGenerReleaseFrameOffset;
-extern f32 lbl_803DC3A0;
-extern f32 lbl_803DC3A4;
-extern f32 lbl_803DC3A8;
-extern u16 lbl_803DC3AC;
+extern f32 gObjLightningClusterRadiusX;
+extern f32 gObjLightningClusterRadiusY;
+extern f32 gObjLightningClusterLifetime;
+extern u16 gObjLightningClusterWidth;
 int barrelgener_getLinkId(GameObject* obj);
 void barrelgener_queueObjectRelease(GameObject* obj, GameObject* queuedObj, int releaseFrame);
 int barrelgener_getExtraSize(void);

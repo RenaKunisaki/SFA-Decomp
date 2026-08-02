@@ -435,7 +435,7 @@ void LargeCrate_update(GameObject* obj) {
     LargeCratePlacement* placement;
     LargeCrateState* state;
     PartFxSpawnParams effectParams;
-    u8 hitInfo[4];
+    GameObject* hitObject;
     int hitType;
     int hitDamage;
     f32 clockScale;
@@ -506,7 +506,7 @@ void LargeCrate_update(GameObject* obj) {
             if ((obj->anim.rotY < 10) && (-10 < obj->anim.rotY)) {
                 obj->anim.rotY = 0;
             }
-            hitKind = ObjHits_GetPriorityHitWithPosition(obj, (int*)hitInfo, &hitType, (u32*)&hitDamage,
+            hitKind = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitType, (u32*)&hitDamage,
                                                          &effectParams.posX, &effectParams.posY, &effectParams.posZ);
             if (hitKind == 0x10) {
                 Obj_StartModelFadeIn(obj, LARGECRATE_MODEL_FADE_FRAMES);

@@ -35,6 +35,7 @@
 #include "main/camera_interface.h"
 #include "main/camera.h"
 #include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/objprint_character_api.h"
 #include "sys/objects.h"
 #include "dlls/object_descriptor.h"
@@ -61,6 +62,9 @@
 #include "main/gamebits_api.h"
 #include "main/gametext_command_api.h"
 #include "main/gametext_show_api.h"
+#include "main/dll/dll_02C0_front.h"
+#include "main/dll/dll_02C0_front_api.h"
+#include "main/dll/front_game_text_box_api.h"
 
 s8 gTitleScreenPrevMenuSelection = -1;
 s8 gTitleScreenPrevMenuActive = -1;
@@ -95,6 +99,14 @@ typedef struct TitlescreenState
     u8 pad32[0x34 - 0x32];
     f32 moveProgress;
 } TitlescreenState;
+
+typedef struct TitlescreenPlacement
+{
+    ObjPlacement base;
+    s8 spawnRot;
+} TitlescreenPlacement;
+
+STATIC_ASSERT(offsetof(TitlescreenPlacement, spawnRot) == 0x18);
 
 void* gTitleScreenMainTex;
 f32 lbl_803DD9D0;
@@ -132,6 +144,8 @@ extern TitleAnimMoves gTitleScreenAnimMoves[];
 extern f32 hudMatrix[4][4];
 extern u8 framesThisStepUnclamped;
 extern f32 lbl_803E2300;
+void titleScreenPlayActorSfx(GameObject* obj, u8* arr);
+
 void titleScreenPlayActorSfx(GameObject* obj, u8* arr)
 {
     s8* sarr = (s8*)arr;
@@ -280,7 +294,7 @@ int isFrontEndUiActive(void)
 void titleScreenShowCopyright(u8 arg)
 {
     void* tb;
-    void* box;
+    TextSlot* box;
 
     if (arg != 0)
     {
@@ -305,9 +319,9 @@ void titleScreenShowCopyright(u8 arg)
         box = gameTextGetBox(*(u8*)((char*)tb + 4));
         if (gTitleScreenCopyrightBaseY == 0)
         {
-            gTitleScreenCopyrightBaseY = *(s16*)((char*)box + 0x16);
+            gTitleScreenCopyrightBaseY = box->y;
         }
-        *(s16*)((char*)box + 0x16) =
+        box->y =
             (s16)(80.0f * (1.0f - gTitleScreenCopyrightFade) + gTitleScreenCopyrightBaseY);
         gameTextSetColor(0xff, 0xff, 0xff, (s32)(255.0f * gTitleScreenCursorX));
         gameTextShow(FRONT_TEXT_COPYRIGHT);
@@ -404,7 +418,7 @@ void titleScreenDrawMenuFrame(int alpha, int hideHighlight, u32 showArrows)
     }
     if (gTitleScreenCursorY > 0.0f && (boxIndex = linkGetSelectedItemId()) != 0xFFFF)
     {
-        int t = *(s16*)((int)gameTextGetBox(boxIndex) + 0x16);
+        int t = ((TextSlot*)gameTextGetBox(boxIndex))->y;
         xb = (int)mtx[3];
         yb = t + (int)mtx[7];
         if ((hideHighlight & 0xff) == 0u)
@@ -926,7 +940,7 @@ void TitleScreen_init(GameObject* obj, u8* def)
     TitlescreenState* state = (TitlescreenState*)obj->extra;
     s16 romDefNo;
     state->animPhase = 0;
-    obj->anim.rotX = (s16)((s8)def[0x18] << 8);
+    obj->anim.rotX = (s16)(((TitlescreenPlacement*)def)->spawnRot << 8);
     romDefNo = obj->anim.romDefNo;
     if (romDefNo >= FRONT_SEQID_FOX && romDefNo < FRONT_SEQID_PILOTS)
     {

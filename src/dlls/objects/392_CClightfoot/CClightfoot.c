@@ -239,10 +239,10 @@ void ccLightfoot_update(GameObject* obj) {
                 }
                 if (targetValid != 0) {
                     distanceSquared =
-                        getXZDistance((f32*)((u32)state->playerObject + offsetof(GameObject, anim.worldPosX)),
-                                      (f32*)((u32)state->targetActorB + offsetof(GameObject, anim.worldPosX)));
-                    if (getXZDistance((f32*)((u32)state->playerObject + offsetof(GameObject, anim.worldPosX)),
-                                      (f32*)((u32)state->targetActorA + offsetof(GameObject, anim.worldPosX))) <
+                        getXZDistance(&state->playerObject->anim.worldPosX,
+                                      &state->targetActorB->anim.worldPosX);
+                    if (getXZDistance(&state->playerObject->anim.worldPosX,
+                                      &state->targetActorA->anim.worldPosX) <
                         distanceSquared) {
                         nearTarget = (u32)state->targetActorA;
                         farTarget = (u32)state->targetActorB;
@@ -251,7 +251,7 @@ void ccLightfoot_update(GameObject* obj) {
                         farTarget = (u32)state->targetActorA;
                     }
                     if ((getXZDistance(&obj->anim.worldPosX,
-                                       (f32*)((u32)state->playerObject + offsetof(GameObject, anim.worldPosX))) <
+                                       &state->playerObject->anim.worldPosX) <
                              CC_LIGHTFOOT_ALERT_DISTANCE_SQUARED ||
                          (void*)playerGetTargetObject((GameObject*)state->playerObject) == (void*)state->targetActorA ||
                          (void*)playerGetTargetObject((GameObject*)state->playerObject) == (void*)state->targetActorB) &&
@@ -307,7 +307,7 @@ void ccLightfoot_update(GameObject* obj) {
                 singleTarget = (u32)state->targetActorB;
             }
             if (singleTarget != 0) {
-                distanceSquared = getXZDistance((f32*)((u32)state->playerObject + offsetof(GameObject, anim.worldPosX)),
+                distanceSquared = getXZDistance(&state->playerObject->anim.worldPosX,
                                                 (f32*)(singleTarget + offsetof(GameObject, anim.worldPosX)));
                 if ((getXZDistance(&obj->anim.worldPosX, (f32*)(singleTarget + offsetof(GameObject, anim.worldPosX))) <
                          distanceSquared &&
@@ -505,7 +505,7 @@ void ccLightfoot_update(GameObject* obj) {
     if (phase >= CC_LIGHTFOOT_PHASE_GUARD && phase <= CC_LIGHTFOOT_PHASE_RECOVER) {
         if (ObjHits_PollPriorityHitWithCooldown(obj, &gCCLightfootHitCooldown.cooldown, 0, hitPos) != 0) {
             if (getXZDistance(&obj->anim.worldPosX,
-                              (f32*)((u32)state->playerObject + offsetof(GameObject, anim.worldPosX))) <
+                              &state->playerObject->anim.worldPosX) <
                 CC_LIGHTFOOT_HIT_EFFECT_DISTANCE_SQUARED) {
                 objfx_spawnHitEmitterAtPos(hitPos, 8, 0xff, 0xff, 0x78);
                 objDoHitParticleFx((void*)obj, CC_LIGHTFOOT_HIT_LIGHT_SCALE, hitPos, 4, 0);

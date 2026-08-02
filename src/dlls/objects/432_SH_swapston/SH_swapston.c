@@ -18,6 +18,7 @@
 #include "main/maketex_sequence_api.h"
 #include "main/mapEvent.h"
 #include "main/map_load.h"
+#include "main/model.h"
 #include "main/model_engine.h"
 #include "main/model_engine_ui_api.h"
 #include "main/object_render.h"
@@ -468,7 +469,7 @@ void warpstone_free(GameObject* obj, int mode) {
 void warpstone_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     GameObject* player;
     int* state = obj->extra;
-    int* model;
+    ObjModel* model;
     f32 z;
     f32 y;
     f32 x;
@@ -477,8 +478,8 @@ void warpstone_render(GameObject* obj, int renderArg2, int renderArg3, int rende
         objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
         player = Obj_GetPlayerObject();
         if (player != NULL && playerIsSequenceRenderSuppressed(player) != 0) {
-            model = (int*)Obj_GetActiveModel(player);
-            *(u16*)((char*)model + 24) = (u16)(*(u16*)((char*)model + 24) & ~0x8);
+            model = Obj_GetActiveModel(player);
+            model->bufferFlags = (u16)(model->bufferFlags & ~0x8);
             ObjPath_GetPointWorldPosition(obj, ((WarpStoneState*)state)->pathPointIndex, &x, &y, &z, 0);
             objSetPos(player, x, y, z);
             playerRender((int)player, renderArg2, renderArg3, renderArg4, renderArg5, -1);
@@ -488,13 +489,12 @@ void warpstone_render(GameObject* obj, int renderArg2, int renderArg3, int rende
 
 void warpstone_hitDetect(GameObject* obj) {
     int* state = (obj)->extra;
-    f32 pos[3];
-    f32 lightPos[3];
+    PartFxSpawnParams lightParams;
 
-    if (ObjHits_GetPriorityHitWithPosition(obj, 0, 0, 0, &pos[0], &pos[1], &pos[2]) != 0) {
-        pos[0] += playerMapOffsetX;
-        pos[2] += playerMapOffsetZ;
-        objDoHitParticleFx((void*)obj, 0.01f, lightPos, 1, 0);
+    if (ObjHits_GetPriorityHitWithPosition(obj, 0, 0, 0, &lightParams.posX, &lightParams.posY, &lightParams.posZ) != 0) {
+        lightParams.posX += playerMapOffsetX;
+        lightParams.posZ += playerMapOffsetZ;
+        objDoHitParticleFx((void*)obj, 0.01f, &lightParams, 1, 0);
         if (randomChanceOneIn(3) != 0) {
             Sfx_PlayFromObject((int)obj, SFXTRIG_swapstone_move_short_2bc);
         } else {

@@ -14,6 +14,19 @@ typedef struct SaveGameObjectPosition
     f32 z;
 } SaveGameObjectPosition;
 
+/* One saved character's spawn state; SaveGameData.characterPositions[] and the
+ * record SaveGame_getCurCharPos() hands out to the map/shader code. */
+typedef struct SaveGameCharacterPosition
+{
+    f32 x;
+    f32 y;
+    f32 z;
+    s8 angle;
+    s8 mapLayer;
+    s8 mapDataFileId;
+    u8 padF;
+} SaveGameCharacterPosition;
+
 extern u8 gSaveGameData[];
 /* SaveData describes the settings prefix of this persisted byte buffer. */
 extern u8 saveData[SAVE_DATA_SIZE];
@@ -25,7 +38,7 @@ int saveGame_restoreObjectPosToRomList(void* object);
 void SaveGame_initialise(void);
 void SaveGame_release(void);
 void SaveGame_func08_nop(void);
-void SaveGame_gplaySavePoint(f32* pos, s16 angle, int flags, int mapByte);
+void SaveGame_gplaySavePoint(f32* pos, s16 angle, int flags, int mapLayer);
 void SaveGame_gplayGotoSavegame(void);
 void SaveGame_gplayRestartPoint(f32* pos, s16 angle, int b691, int flag);
 void SaveGame_gplayGotoRestartPoint(void);

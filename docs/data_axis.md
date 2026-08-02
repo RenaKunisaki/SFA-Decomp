@@ -1,4 +1,38 @@
-# The data axis — CLOSED
+# The data axis — REOPENED on the pool side (see correction)
+
+> ## ⚠️ CORRECTION 2026-08 — the central premise below is WRONG, and it was measured wrong twice
+>
+> This document asserted that a sub-100 `.sdata2` is an *artifact* of anonymous `@N` symbols failing
+> to pair. **That is false. `.sdata2` is scored by BYTES, not by names.** Three measurements, any one
+> of which refutes it:
+>
+> 1. **600 units** have an entirely anonymous `@N` `.sdata2` and score **fuzzy 100.0**. `audio_sfx`
+>    is the clean exhibit: our side all `@N` and *local*, retail's all `lbl_*`/named and *global*,
+>    retail even carrying two symbols at 0x0c/0x0e that we do not emit at all — **100.0**.
+> 2. **All 48** sub-100 `.sdata2` sections have genuinely **differing bytes**. Zero are
+>    byte-identical. Anonymity is not doing any work in any of them.
+> 3. The differences are frequently **pool ORDER**, which is initialized data and therefore real.
+>    `track/intersect_render`, the worked proof in §1, holds the *same* constants in a *different
+>    sequence* — retail `3f490fdb bf000000` at 0x50 with the int→double magic at 0x60, ours
+>    `3f490fdb 4b800000` at 0x50 with the magic at 0x90.
+>
+> **Consequence: sub-100 `.sdata2` is a real, live, source-addressable class** (emission order —
+> see `sdata2-emission-order-law-w57`), not a closed artifact. It must not be screened out as
+> "anonymous-pool blindness". The banned construct remains banned: recovering pool *order* is a
+> source-shape question, and never a licence to define named `.sdata2` constants.
+>
+> **How the error survived:** the original screen used `missing == section size exactly` as its
+> signature. That test cannot distinguish "the section did not pair" from "the section's bytes
+> differ", because both zero the whole section. A later classifier of mine then hard-coded
+> `anon @N ⇒ SCORE-BLOCKED` and propagated the premise into a tree-wide census. **Neither instrument
+> ever compared the bytes.** Always diff `objdump -s -j <section>` before calling a data difference
+> an artifact.
+>
+> Retained below and still correct: the `.bss`/`.sbss` order results (§1 corollary), the
+> `gap_*` exclusion rule, the binding-carries-no-information result, the `.sbss2` and `284`
+> stop-rules, and the over-claimed-extent class.
+
+# (original) The data axis — CLOSED
 
 `matched_data` measures data-**symbol pairing**, not pool contents. Every remaining shortfall in
 the tree has been classified, and none of it is a missing constant. This file exists so the axis
@@ -47,6 +81,39 @@ constants (`0.55f`, `10800.0f`, `86400.0f`). Replacing the stand-ins with litera
 contents *exactly* match — 44 slots / 41 distinct on both sides, nothing absent either way.
 **`matched_data` did not move: 600/776 before, 600/776 after.**
 
+### Corollary — objdiff is ORDER-BLIND: the pend-cluster theorem
+
+> A **zero-filled** section (`.bss`, `.sbss`) whose only defect is symbol *order* **already scores
+> 100**, because permuting symbols across uniformly zero bytes changes nothing observable.
+> So for `.bss`/`.sbss`, "order is the last defect" and "section < 100" are mutually exclusive.
+
+⚠️ **Scope, corrected.** This holds for the **zero-filled** sections only. It was originally written
+as "objdiff pairs data symbols by name and is blind to order", generalised to all data sections —
+that mechanism claim is **wrong** (see the correction at the top of this file). In an *initialized*
+section (`.data`, `.sdata`, `.sdata2`) order changes bytes, so order is fully visible there and is a
+live defect class. The `.bss` result below stands on its own measurement.
+
+So a screen of the form *"fix the order wherever the section is fully pairable and order is the sole
+remaining difference"* enumerates an **empty set** — not in a given unit, but anywhere. Do not build
+that screen again.
+
+Confirmed empirically on `dlls/engine/7`: its `.bss` holds a genuine permutation — retail
+`gNewCloudLayerTextures@0x00 / gNewClouds@0x10`, ours exactly reversed, same names and sizes — and
+the section reads **fuzzy 100.0**.
+
+⚠️ The tree-wide run originally cited here classified 47 sections as "blocked by anonymous `@N`".
+**That classification is withdrawn** — those 47 are real byte differences, mostly pool order, and
+are the reopened class described in the correction at the top. What survives from that run is only
+its `.bss`/`.sbss` half: no zero-filled section anywhere in the tree is order-defective, and the
+two genuine non-pool defects it surfaced (`intersect` `.sbss` naming, `engine/60` `.sbss` extent)
+were both fixed — `90cabeaf76`, `6e7b713c49`.
+
+This does **not** make `.bss` emission order worthless: it is what makes a unit *link*
+byte-identical, which is the criterion for a `NonMatching → MatchingFor` flip. The point is only
+that its payoff is **linked byte-identity, never `matched_data`** — so never gate a pend fix on a
+report.json delta, and treat any data gain that appears after a pure reorder as an attribution
+error.
+
 ---
 
 ## 2. Two gates that were tried and refuted — do not re-try either
@@ -87,6 +154,8 @@ plausible. Don't.
 | class | signature | verdict |
 |---|---|---|
 | **Anonymous-pool pairing** (section-granular) | `missing == section size` exactly; section holds `@N` symbols | Artifact. Fixing it requires our source to *define named `.sdata2` constants* — the **banned pool-reconstruction construct**. Closed on principle. |
+| **Jump-table naming** (`.data` only — NOT a pool analogue) | a `.data` section whose unpaired symbols are all `switch` jump tables — retail `jumptable_8XXXXXXX`, ours `@N` — with identical sizes, identical order, and **byte-identical section contents** | Artifact. ⚠️ **Corrected**: this is *not* "the `.data` analogue of the pool class" — the pool class is not a pairing failure at all (see the correction at the top). `.data` and `.sdata2` are scored differently, and `engine/2` is the **only** unit tree-wide where `.data` holds `@N` and scores under 100; 117 other units hold `@N` in `.data` and score 100. Verified benign the only way that counts: `objdump -s -j .data` is byte-identical on both sides and relocation counts match 265/265. C cannot name a compiler-generated jump table, so nothing is actionable. Never rank it. |
+| **Over-claimed extent absorbing inter-TU padding** | `symbols.txt` claims more bytes than the source object emits, and the surplus reaches exactly to where the **next TU's** section begins | Real, correctable — trim the claim to the atom's true extent. The surplus becomes a `gap_*` filler, which objdiff skips. ⚠️ The retail carve's size is generated **from** the claim, so "the retail object says N bytes" is **circular** — decide from access width, neighbouring atom sizes, and the section range instead. Landed: `engine/60`, `6e7b713c49`. |
 | **Merged-TU duplication** | equal distinct constant counts, retail merely holding more copies; our side always *smaller* | TU-boundary artifact. `objects/202` is 421→127 slots at 119 distinct on both sides. Leave it. |
 | **Pool-order TU artifacts** | same value multiset, different offsets; size 4v8 / 8v4 shifts | TU-boundary artifact per CLAUDE.md. Leave the unit `NonMatching`; do not reconstruct the pool. |
 | **Unowned `gap_*` bytes** | splitter-emitted `gap_NN_8XXXXXXX_section` symbols marking bytes no symbol owns | Not ours to define. Exclude from every screen — counting them manufactures a phantom gap. |
@@ -99,6 +168,24 @@ overwhelmingly anonymous pool: `intersect_render` 236/236 (13 named / 40 anon), 
 (0/41), `DIMSnowHorn` 144/144 (2/33), `BossDrakor` 120/120 (0/27), `DR_LaserCan` 100/100,
 `engine/19` 96/96, `CFGuardian` 88/88, `SH_thorntai` 80/80, `DFropenode` 76/76, `engine/69` and
 `DIM_BossTon` 64/64, `engine/24` and `sincosf` 32/32.
+
+#### Worked proof — jump-table naming, `dlls/engine/2` `.data`
+
+1904 B at fuzzy **53.5865 %**. 21 of its 32 symbols pair perfectly. The 11 that do not are all
+switch jump tables — retail `jumptable_8030EF58…`, ours `@1433…` — with **identical sizes on every
+one** (80/208/204/28/44/72/28/44/64/60/48) in identical order. The arithmetic settles it:
+
+```
+named symbols  1016 bytes (21 syms)
+jump tables     880 bytes (11 syms, anonymous on our side)
+named fraction  1016/1896 = 53.5865 %
+reported .data            = 53.5865 %
+```
+
+Every named byte matches; the section loses 880 B purely because they cannot pair by name. The
+unit's whole deficit resolves to two sections — `.data` 1904 + `.sdata2` 184 = 2088, and
+16296/18384 = 88.642 % — of which only the 184 B `.sdata2` (retail 43 symbols vs our 38, with real
+size disagreements) is genuinely attackable.
 
 ### The under-claimed-size discriminator: are the bytes past the claim UNOWNED?
 

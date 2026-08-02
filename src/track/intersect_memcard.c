@@ -30,6 +30,7 @@
 #include "main/gametext_internal.h"
 #include "main/model_engine.h"
 #include "main/pi_flush_api.h"
+#include "track/intersect_api.h"
 
 typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, int ref1);
 

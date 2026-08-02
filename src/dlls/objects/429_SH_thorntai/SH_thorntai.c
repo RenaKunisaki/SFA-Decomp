@@ -1128,7 +1128,7 @@ void SHthorntail_init(GameObject* obj, const SHthorntailPlacement* placement) {
         runtime->idleTimer = (f32)(s32)randomTime;
         break;
     }
-    obj->anim.rootMotionScale = *(float*)((int)obj->anim.modelInstance + 4) * ((float)placement->scale / 1000.0f);
+    obj->anim.rootMotionScale = obj->anim.modelInstance->rootMotionScaleBase * ((float)placement->scale / 1000.0f);
     model = Obj_GetActiveModel((GameObject*)obj);
     modelInitBones(obj->anim.rootMotionScale, model);
     moveScratch = runtime->moveScratch;

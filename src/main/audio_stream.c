@@ -23,6 +23,7 @@
 #include "dolphin/os/OSRtc.h"
 #include "main/audio/music_api.h"
 #include "main/pi_flush_api.h"
+#include "main/audio/audio_control_api.h"
 
 static const f32 gAudioStreamEndPosInfinite = 9.0e9f;
 static const f32 gAudioStreamFramesPerSecond = 60.0f;
@@ -49,7 +50,6 @@ u8 gAudioStreamDvdState;
 u8 gAudioStreamPlaying;
 
 DVDCommandBlock gAudioStreamDvdBlockCurrent;
-AudioDvdStreamContext gAudioStreamDvdBlockPrepared;
 
 // AISetStreamPlayState() states
 #define AI_STREAM_STOP  0
@@ -102,6 +102,8 @@ void AudioStream_StopAll(void)
     gAudioStreamMusicFadeFlagB = 0;
     gAudioStreamMusicFadeFlagA = 0;
 }
+
+AudioDvdStreamContext gAudioStreamDvdBlockPrepared;
 
 void AudioStream_Nop(int unused)
 {

@@ -320,10 +320,10 @@ void ObjHits_AddContactObject(GameObject* obj, GameObject* contactObj);
 int ObjHits_RecordPositionHit(GameObject* obj, GameObject* hitObj, s8 priority, int hitVolume, s8 sphereIndex,
                               f32 hitPosX, f32 hitPosY, f32 hitPosZ);
 int ObjHits_RecordObjectHit(GameObject* obj, GameObject* hitObj, s8 priority, int hitVolume, s8 sphereIndex);
-int ObjHits_GetPriorityHitWithPosition(GameObject* obj, int* outHitObject, int* outSphereIndex, u32* outHitVolume,
-                                       float* outHitPosX, float* outHitPosY, float* outHitPosZ);
+int ObjHits_GetPriorityHitWithPosition(GameObject* obj, GameObject** outHitObject, int* outSphereIndex,
+                                       u32* outHitVolume, float* outHitPosX, float* outHitPosY, float* outHitPosZ);
 int ObjHits_GetPriorityHit(GameObject* obj, int* outHitObject, int* outSphereIndex, u32* outHitVolume);
-int ObjHits_PollPriorityHitWithCooldown(GameObject* obj, float* cooldown, int* outHitObject, float* outHitPos);
+int ObjHits_PollPriorityHitWithCooldown(GameObject* obj, float* cooldown, GameObject** outHitObject, float* outHitPos);
 int ObjHits_PollPriorityHitEffectWithCooldown(GameObject* obj, u32 hitFxMode, u32 colorR, u32 colorG, u32 colorB,
                                               u16 sfxId, float* cooldown);
 

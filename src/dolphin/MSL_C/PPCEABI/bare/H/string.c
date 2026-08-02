@@ -3,6 +3,14 @@
 #define K1 0x80808080
 #define K2 0xFEFEFEFF
 
+char* strchr(const char* str, int c);
+int strncmp(const char* str1, const char* str2, size_t n);
+int strcmp(const char* str1, const char* str2);
+char* strcat(char* dst, const char* src, size_t n);
+char* strncpy(char* dst, const char* src, size_t n);
+char* strcpy(char* dst, const char* src);
+size_t strlen(const char* str);
+
 char* strchr(const char* str, int c)
 {
 	const unsigned char* p = (unsigned char*)str - 1;

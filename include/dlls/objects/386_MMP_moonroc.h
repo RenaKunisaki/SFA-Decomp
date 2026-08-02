@@ -6,6 +6,8 @@
 #include "game/objects/object_setup.h"
 #include "main/dll/partfx_interface.h"
 
+#define MMP_MOON_ROCK_SEQUENCE_ID 0x519
+
 typedef struct MMPMoonRockPlacement {
     ObjPlacement base;
     u8 unknown18[2];

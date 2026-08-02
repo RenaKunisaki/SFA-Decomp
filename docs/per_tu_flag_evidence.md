@@ -16,6 +16,51 @@ That is a different kind of residual from the ones the project normally fixes, a
 actionable from a lane. The pattern is worth adjudicating as a whole rather than one function at
 a time.
 
+## ★ The flag axis is CLOSED — do not re-run a combination sweep
+
+**89 of 89 units carrying sub-100 functions have been swept across the pair and triple `-opt`
+space. Zero candidates.** A candidate meant: strictly more byte-identical functions than the
+unit's baseline, with **zero** function regressions. Nothing anywhere passed.
+
+| sweep | units | probes | distinct outputs | candidates |
+|---|---|---|---|---|
+| pairs+triples, 8 GC/2.0 tokens toggled from configured state | 82 | 7,476 | 2,361 (**68.4% absorption**) | 0 |
+| re-sweep over censused live tokens (the 7 below) | 3 | 80 | 62 | 0 |
+| units with a single live token — **combination space is empty** | 4 | — | — | n/a |
+
+This sits on top of w81's single-knob sweep (153 units × 8 tokens, 11 pure wins, exhausted) and
+`fn_flag_probe`'s nine fixed profiles. Singles, fixed pairs, and now the full pair/triple
+interaction space are all exhausted. **86 of 89 units contain combinations that flip some function
+to byte-identical — and every one costs more elsewhere than it buys**, which is the `subtitle`
+precedent (`level=1` dominance; 100.000 bought at 19.887) reproduced at tree scale.
+
+Four units close **by construction**, which is stronger than a null: with exactly one live token
+there are no pairs or triples to form. `main/trig.c` is live only for `peephole`; the whole
+GC/1.2.5n MSL group (`math_8029454c.c`, `acosf.c`, `sincosf.c`) only for `nopeephole`.
+
+`dlls/modgfx/152/152.c` was suspected of hiding a third compiler vocabulary. It does not: ordinary
+GC/2.0 at `nopeephole,noschedule`, with a **mixed-direction** live set — `nocse` live *upward*,
+`peephole`/`schedule` live *downward*. A uniform toggle direction is inert against that shape; a
+sweep must take its directions from the census, per unit.
+
+### Two harness laws, both minted by catching a live defect
+
+**1. `-opt` absolute mode is safe only when the configured `-opt` EQUALS the assumed baseline —
+never when it merely CONTAINS it.** `wants_relative()` returns False whenever `nopeephole` and
+`noschedule` are both present, but units like `main/pi_videoinit.c`
+(`nopeephole,noschedule,nocse,noloopinvariants,nolifetimes,nopropagation`) configure six more
+tokens. Replacing wholesale turns several passes back on at once — a demolition, not a probe. This
+is the same failure `fn_flag_probe` documents from the opposite direction (units with *no* `-opt`,
+where substitution appends and silently disables two passes). Same species, both directions; use
+**relative** mode for anything that is not an exact baseline match.
+
+**2. ★ `<=2 equivalence classes from a large probe set is a HARNESS ALARM, not a unit property.**
+Seven units produced 1–2 distinct outputs from 84 probes each. That reads exactly like "the flag
+axis is dead here" and was in fact the sweep demolishing or failing on every probe. It is the
+cheapest possible check and it caught the defect above. **Always print the class count; a sweep
+whose outputs do not vary has not run.** Its companion: dedupe by output hash *before* scoring —
+measured absorption was 68.4%, so two-thirds of the compute is redundant without it.
+
 ## The findings
 
 `Δfn` / `Δunit` are `fuzzy_match_percent`. "Collateral" is the point of the table: in every case

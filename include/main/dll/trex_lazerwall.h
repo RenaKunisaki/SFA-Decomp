@@ -52,7 +52,7 @@ typedef void (*TimerQueryFn)(int timer, int* elapsed, int* now, int* limit);
 
 struct GameObject;
 
-int TREX_Lazerwall_popQueuedState(struct GameObject* obj, int animState);
+int TREX_Lazerwall_popQueuedState(struct GameObject* obj, struct BaddieState* baddie);
 int TREX_Lazerwall_waitForStartBit(void);
 int TREX_Lazerwall_updateTimedChallenge(struct GameObject* obj);
 

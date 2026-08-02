@@ -1,5 +1,6 @@
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/ansi_files.h"
 #include "string.h"
+#include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/mbstring.h"
 
 int unicode_to_UTF8(char* s, wchar_t wchar);
 

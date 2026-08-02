@@ -65,9 +65,8 @@ STATIC_ASSERT(offsetof(DllCESiblingInterface, handleMessage) == DLL_CE_MESSAGE_C
 #define DLL_CE_COORDINATION_ATTACKING 0x1
 #define DLL_CE_COORDINATION_HIDDEN    0x2
 
-u8 gDllCEHitReactionScratch[0x18];
+PartFxSpawnParams gDllCEHitReactionScratch;
 ChukChukStateHandler gChukChukCheckHandlers[6];
-ChukChukStateHandler gChukChukMoveHandlers[8];
 
 int gDllCEHitReactionMoves[30] = {
     5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
@@ -565,7 +564,7 @@ void chukChuk_acquireTarget(GameObject* obj, GroundBaddieState* objectState, Gro
         int disabledSoundId = -1;
 
         (*gBaddieControlInterface)
-            ->startHitReaction(obj, state, (char*)objectState + 0x35c, objectState->gameBitB, NULL, 0, 0, 8,
+            ->startHitReaction(obj, state, &((GroundBaddieState*)objectState)->routeNav, objectState->gameBitB, NULL, 0, 0, 8,
                                disabledSoundId);
         *(int*)&state->baddie.targetObj = (int)target;
         state->baddie.hasTarget = 0;
@@ -630,9 +629,9 @@ void chukChuk_updateTargeting(GameObject* obj, int objectStateAddress, int state
 
     hitReactionUpdated =
         (*gBaddieControlInterface)
-            ->updateHitReaction(obj, (void*)stateAddress, (char*)objectStateAddress + 0x35c,
+            ->updateHitReaction(obj, (void*)stateAddress, &((GroundBaddieState*)objectStateAddress)->routeNav,
                                 ((GroundBaddieState*)objectStateAddress)->gameBitB, gDllCEHitReactionMoves,
-                                gDllCEHitReactionDamage, 1, gDllCEHitReactionScratch);
+                                gDllCEHitReactionDamage, 1, &gDllCEHitReactionScratch);
 
     if (hitReactionUpdated != 0) {
         void* playerChild = player->childObjs[0];
@@ -771,6 +770,8 @@ void dll_CE_update(GameObject* obj, int unusedA, int unusedB) {
         }
     }
 }
+
+ChukChukStateHandler gChukChukMoveHandlers[8];
 
 void dll_CE_init(GameObject* obj, DllCEPlacement* placement, int flags) {
     GroundBaddieState* state;

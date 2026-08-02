@@ -2,6 +2,7 @@
 #include "src/musyx/runtime/synth_internal.h"
 #include "musyx/synth_channel.h"
 #include "musyx/synth_queue.h"
+#include "musyx/synth_control.h"
 
 void sndSeqStop(u32 handle)
 {

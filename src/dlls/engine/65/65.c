@@ -14,10 +14,10 @@
 #include "main/dll/dll_003C_tumbleweedbush.h"
 #include "string.h"
 
-int lbl_803DBBF8 = 0x140;
+int gWarpStoneUiTextPosY = 0x140;
 int gWarpStoneUiTextureX = 0x136;
 int gWarpStoneUiTextureY = 0x10E;
-int lbl_803DBC04 = 0x140;
+int gWarpStoneUiMenuTextPosY = 0x140;
 
 #define WARPSTONEUI_TEXTURE_A 0x4FA
 #define WARPSTONEUI_TEXTURE_B 0x5E3
@@ -89,7 +89,7 @@ void WarpstoneUI_showUI(int arg) {
     case 3:
     case 5:
         gameTextSetColor(0xff, 0xff, 0xff, gWarpStoneUiFadeAlpha);
-        gameTextShowAt(0x3dd, 200, lbl_803DBBF8);
+        gameTextShowAt(0x3dd, 200, gWarpStoneUiTextPosY);
         break;
     case 1:
         drawTexture(gWarpStoneUiTexture, (f32)(int)(gWarpStoneUiTextureX - 0x1d),
@@ -101,7 +101,7 @@ void WarpstoneUI_showUI(int arg) {
         break;
     case 4:
         gameTextSetColor(0xff, 0xff, 0xff, gWarpStoneUiFadeAlpha);
-        gameTextShowAt(0x3dd, 200, lbl_803DBC04);
+        gameTextShowAt(0x3dd, 200, gWarpStoneUiMenuTextPosY);
         if (gWarpStoneUiMenuActive == 0) {
             itemCount =
                 WarpstoneUI_getMenuItems((WarpstoneMenuItem*)gWarpStoneUiMenuItemTemplates, gWarpStoneUiMenuItems,

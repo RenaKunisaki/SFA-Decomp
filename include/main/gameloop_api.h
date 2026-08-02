@@ -18,7 +18,7 @@ void requestGalleonBattleMusic(void);
 void checkReset(void);
 void setShouldResetNextFrame(int reset);
 void mapReload(void);
-void mapLoadByCoords(f32 x, f32 y, f32 z, int act);
+void mapLoadByCoords(f32 x, f32 y, f32 z, int layer);
 void setGameState(int state);
 void cutsceneExit(void);
 void cutsceneEnterExit(int entering, int affectSounds);

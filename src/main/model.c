@@ -958,17 +958,17 @@ void* modelLoad_layoutBuffers(u8* p, int b, int isType1, int c)
         pos = roundUpTo4(pos);
         *(int*)&((ObjModel*)out2)->jointWorkspace = pos;
         pos += 0x1c;
-        *(int*)(((ObjModel*)out2)->jointWorkspace + 0) = pos;
+        *(int*)&((ObjModel*)out2)->jointWorkspace->unk00 = pos;
         pos += ((ModelFileHeader*)p)->jointCount * 0xc;
-        *(int*)(((ObjModel*)out2)->jointWorkspace + 4) = pos;
+        *(int*)&((ObjModel*)out2)->jointWorkspace->radii = pos;
         pos += ((ModelFileHeader*)p)->jointCount * 4;
-        *(int*)(((ObjModel*)out2)->jointWorkspace + 8) = pos;
+        *(int*)&((ObjModel*)out2)->jointWorkspace->radiiSq = pos;
         pos += ((ModelFileHeader*)p)->jointCount * 4;
-        *(int*)(((ObjModel*)out2)->jointWorkspace + 0xc) = pos;
+        *(int*)&((ObjModel*)out2)->jointWorkspace->boneLengths = pos;
         pos += ((ModelFileHeader*)p)->jointCount * 4;
-        *(int*)(((ObjModel*)out2)->jointWorkspace + 0x10) = pos;
+        *(int*)&((ObjModel*)out2)->jointWorkspace->maxReach = pos;
         pos += ((ModelFileHeader*)p)->jointCount * 4;
-        *(int*)(((ObjModel*)out2)->jointWorkspace + 0x18) = pos;
+        *(int*)&((ObjModel*)out2)->jointWorkspace->unk18 = pos;
         pos += ((ModelFileHeader*)p)->jointCount;
     }
     else
@@ -1964,10 +1964,10 @@ void objUpdateHitSpheres(u8* hitState, u8* hdrOwner, u8* prevObj, u8* boneMtx, u
     ObjHitBufs* st;
 
     hitSample = NULL;
-    hitReact = *(u8**)(obj + 0x54);
+    hitReact = (u8*)((GameObject*)obj)->anim.hitReactState;
     if (hitReact != NULL)
     {
-        if (*(u8*)(*(u8**)(obj + 0x50) + 0x66) != 0)
+        if (((GameObject*)obj)->anim.modelInstance->hitReactStateCount != 0)
         {
             sampleCount = (int)*(s16*)(hitReact + 4) >> 2;
             if (sampleCount > 0)
@@ -1988,15 +1988,15 @@ void objUpdateHitSpheres(u8* hitState, u8* hdrOwner, u8* prevObj, u8* boneMtx, u
         }
     }
 
-    if (*(u8**)(prevObj + 0x54) != NULL)
+    if ((u8*)((GameObject*)prevObj)->anim.hitReactState != NULL)
     {
-        *(u8*)(*(u8**)(prevObj + 0x54) + 0xaf) -= 1;
-        if (*(s8*)(*(u8**)(prevObj + 0x54) + 0xaf) < 0)
+        *(u8*)((u8*)((GameObject*)prevObj)->anim.hitReactState + 0xaf) -= 1;
+        if (*(s8*)((u8*)((GameObject*)prevObj)->anim.hitReactState + 0xaf) < 0)
         {
-            *(u8*)(*(u8**)(prevObj + 0x54) + 0xaf) = 0;
+            *(u8*)((u8*)((GameObject*)prevObj)->anim.hitReactState + 0xaf) = 0;
         }
-        *(u32*)(*(u8**)(prevObj + 0x54) + 0x4c) = *(u32*)(*(u8**)(prevObj + 0x54) + 0x48);
-        *(void**)(*(u8**)(prevObj + 0x54) + 0x48) = hitSample;
+        *(u32*)((u8*)((GameObject*)prevObj)->anim.hitReactState + 0x4c) = *(u32*)((u8*)((GameObject*)prevObj)->anim.hitReactState + 0x48);
+        *(void**)((u8*)((GameObject*)prevObj)->anim.hitReactState + 0x48) = hitSample;
     }
 
     st = (ObjHitBufs*)hitState;
@@ -2556,26 +2556,28 @@ void ObjModel_RelocateAnimData(u8* m, u8* dst)
     ((ModelFileHeader*)m)->vertexAnimEntriesRaw = ((ModelFileHeader*)m)->vertexAnimEntries;
     for (i = 0; i < ((ModelFileHeader*)m)->vertexAnimCount; i++)
     {
-        ((ObjModel*)dst)->vertexAnimData[i] = *(int*)(((ModelFileHeader*)m)->vertexAnimEntries + i * 0x74 + 0x60);
-        if (*(u32*)(((ModelFileHeader*)m)->vertexAnimEntries + i * 0x74 + 0x64) < *(u32*)&((ModelFileHeader*)m)->
+        ((ObjModel*)dst)->vertexAnimData[i] = ((ModelVtxAnimChunk*)((ModelFileHeader*)m)->vertexAnimEntries)[i].
+            srcDataOffset;
+        if (((ModelVtxAnimChunk*)((ModelFileHeader*)m)->vertexAnimEntries)[i].weightStream < ((ModelFileHeader*)m)->
             vertexAnimBase)
         {
-            *(u32*)(((ModelFileHeader*)m)->vertexAnimEntries + i * 0x74 + 0x64) =
-                *(u32*)&((ModelFileHeader*)m)->vertexAnimBase + *(u32*)(((ModelFileHeader*)m)->vertexAnimEntries + i *
-                    0x74 + 0x64);
+            ((ModelVtxAnimChunk*)((ModelFileHeader*)m)->vertexAnimEntries)[i].weightStream =
+                ((ModelFileHeader*)m)->vertexAnimBase + (u32)((ModelVtxAnimChunk*)((ModelFileHeader*)m)->
+                    vertexAnimEntries)[i].weightStream;
         }
     }
     ((ModelFileHeader*)m)->blendAnimEntriesRaw = ((ModelFileHeader*)m)->blendAnimEntries;
     for (i = 0; i < ((ModelFileHeader*)m)->blendAnimCount; i++)
     {
         ((ObjModel*)dst)->blendAnimData[i] =
-            *(int*)&((ObjModel*)dst)->normalBuf + *(int*)(((ModelFileHeader*)m)->blendAnimEntries + i * 0x74 + 0x60);
-        if (*(u32*)(((ModelFileHeader*)m)->blendAnimEntries + i * 0x74 + 0x64) < *(u32*)&((ModelFileHeader*)m)->
+            *(int*)&((ObjModel*)dst)->normalBuf + ((ModelVtxAnimChunk*)((ModelFileHeader*)m)->blendAnimEntries)[i].
+            srcDataOffset;
+        if (((ModelVtxAnimChunk*)((ModelFileHeader*)m)->blendAnimEntries)[i].weightStream < ((ModelFileHeader*)m)->
             blendAnimBase)
         {
-            *(u32*)(((ModelFileHeader*)m)->blendAnimEntries + i * 0x74 + 0x64) =
-                *(u32*)&((ModelFileHeader*)m)->blendAnimBase + *(u32*)(((ModelFileHeader*)m)->blendAnimEntries + i *
-                    0x74 + 0x64);
+            ((ModelVtxAnimChunk*)((ModelFileHeader*)m)->blendAnimEntries)[i].weightStream =
+                ((ModelFileHeader*)m)->blendAnimBase + (u32)((ModelVtxAnimChunk*)((ModelFileHeader*)m)->
+                    blendAnimEntries)[i].weightStream;
         }
     }
 }

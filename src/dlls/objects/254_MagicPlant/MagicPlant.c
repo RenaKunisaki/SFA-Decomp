@@ -125,11 +125,10 @@ void magicPlantDropGem(GameObject* obj, MagicPlantPlacement* unusedPlacement, Ma
 }
 
 void MagicPlant_updateActive(GameObject* obj, MagicPlantPlacement* unusedPlacement, MagicPlantState* state) {
-    int hitObject;
-    int hitParamB;
-    int hitParamA;
-    f32 hitPos[3];
-    u8 lightPos[0x0c];
+    int hitVolume;
+    int hitSphereIndex;
+    GameObject* hitObject;
+    PartFxSpawnParams lightParams;
     int hitKind;
     int particleCount;
     int playerAddress;
@@ -140,9 +139,9 @@ void MagicPlant_updateActive(GameObject* obj, MagicPlantPlacement* unusedPlaceme
     player = (GameObject*)playerAddress;
     obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
 
-    hitKind = ObjHits_GetPriorityHitWithPosition(obj, &hitParamA, &hitParamB, (u32*)&hitObject, &hitPos[0], &hitPos[1],
-                                                 &hitPos[2]);
-    if ((hitKind != 0) && (hitObject != 0)) {
+    hitKind = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitSphereIndex, (u32*)&hitVolume, &lightParams.posX,
+                                                 &lightParams.posY, &lightParams.posZ);
+    if ((hitKind != 0) && (hitVolume != 0)) {
         switch (hitKind) {
         case MAGICPLANT_HIT_KIND_FADE_IN:
             Obj_StartModelFadeIn(obj, MAGICPLANT_MODEL_FADE_FRAMES);
@@ -163,9 +162,9 @@ void MagicPlant_updateActive(GameObject* obj, MagicPlantPlacement* unusedPlaceme
                 particleCount--;
             } while (particleCount != 0);
 
-            hitPos[0] += playerMapOffsetX;
-            hitPos[2] += playerMapOffsetZ;
-            objDoHitParticleFx((void*)obj, gMagicPlantHitLightScale, lightPos, 1, 0);
+            lightParams.posX += playerMapOffsetX;
+            lightParams.posZ += playerMapOffsetZ;
+            objDoHitParticleFx((void*)obj, gMagicPlantHitLightScale, &lightParams, 1, 0);
             Obj_SetModelColorFadeRecursive(obj, MAGICPLANT_HIT_FLASH_FRAMES, MAGICPLANT_HIT_FLASH_RED, 0, 0,
                                            MAGICPLANT_HIT_FLASH_START_AT_HALF);
             break;
@@ -284,11 +283,10 @@ void MagicPlant_update(GameObject* obj) {
     s32 alpha;
     MagicPlantPlacement* placement;
     MagicPlantState* state;
-    int hitObject;
-    int hitParamB;
-    int hitParamA;
-    f32 hitPos[3];
-    u8 lightPos[0x0c];
+    GameObject* hitObject;
+    u32 hitVolume;
+    int hitSphereIndex;
+    PartFxSpawnParams lightParams;
     int hitKind;
     f32 progress;
     f32 resetProgress;
@@ -305,12 +303,12 @@ void MagicPlant_update(GameObject* obj) {
 
     obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     if (objIsFrozen((u8*)obj) != 0) {
-        hitKind = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitParamA, (u32*)&hitParamB, &hitPos[0],
-                                                     &hitPos[1], &hitPos[2]);
+        hitKind = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitSphereIndex, &hitVolume, &lightParams.posX,
+                                                     &lightParams.posY, &lightParams.posZ);
         if ((hitKind != 0) && (hitKind != MAGICPLANT_HIT_KIND_FADE_IN)) {
-            hitPos[0] += playerMapOffsetX;
-            hitPos[2] += playerMapOffsetZ;
-            objDoHitParticleFx((void*)obj, gMagicPlantHitLightScale, lightPos, 1, 0);
+            lightParams.posX += playerMapOffsetX;
+            lightParams.posZ += playerMapOffsetZ;
+            objDoHitParticleFx((void*)obj, gMagicPlantHitLightScale, &lightParams, 1, 0);
             Sfx_PlayFromObject(obj, SFXTRIG_barrel_bounce1);
             Obj_Shatter(obj);
         }

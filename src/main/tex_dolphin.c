@@ -1236,7 +1236,7 @@ void renderGlows(void)
     Mtx sunMtx;
     Vec dir;
     Vec cam;
-    void* viewMtx;
+    MtxPtr viewMtx;
     u8 alpha;
     u8 sunAlpha;
     f32 sunDot;
@@ -1260,11 +1260,11 @@ void renderGlows(void)
     sunAlpha = skyGetSunRenderAlpha(2);
     if (sunAlpha != 0 && (renderFlags & 0x40))
     {
-        viewMtx = Camera_GetViewMatrix();
+        viewMtx = (MtxPtr)Camera_GetViewMatrix();
         skyGetSunLightDirection(0, &dir.x, &dir.y, &dir.z);
-        cam.x = *(f32*)((char*)viewMtx + 0x20);
-        cam.y = *(f32*)((char*)viewMtx + 0x24);
-        cam.z = *(f32*)((char*)viewMtx + 0x28);
+        cam.x = viewMtx[2][0];
+        cam.y = viewMtx[2][1];
+        cam.z = viewMtx[2][2];
         sunDot = PSVECDotProduct(&dir, &cam);
         if (sunDot > 0.0f)
         {
@@ -1450,6 +1450,8 @@ void trackUnpackVector(s16* in, f32* out)
 /* trackBuildModelTriangles -- gather model triangles overlapping a swept bbox into the
  * hit-detect triangle buffer at cur (0x4c-byte records); returns advanced
  * cursor. */
+u32 trackGetPackedSurfaceType(int* obj);
+
 u32 trackGetPackedSurfaceType(int* obj)
 {
     u32 v = obj[4];
@@ -1459,12 +1461,12 @@ u32 trackGetPackedSurfaceType(int* obj)
 
 int mapBlockGetPolygonGroupType(void* obj)
 {
-    return (*(u32*)&((GameObject*)obj)->anim.localPosY & 0xff000000) >> 24;
+    return (((MapTriGroup*)obj)->flags & 0xff000000) >> 24;
 }
 
 int mapBlockCountTrianglesByType(MapBlockData* block, int type)
 {
-    int entry;
+    MapTriGroup* entry;
     int offset;
     int total;
     int i;
@@ -1474,10 +1476,10 @@ int mapBlockCountTrianglesByType(MapBlockData* block, int type)
     count = block->polyGroupCount;
     for (i = 0; i < count; i++)
     {
-        entry = (int)block->polygonGroups + offset;
-        if (type == (int)((*(u32*)(entry + 0x10) & 0xff000000) >> 24))
+        entry = (MapTriGroup*)((int)block->polygonGroups + offset);
+        if (type == (int)((entry->flags & 0xff000000) >> 24))
         {
-            total += *(u16*)(entry + 0x14) - *(u16*)entry;
+            total += entry[1].firstTri - entry->firstTri;
         }
         offset += 0x14;
     }

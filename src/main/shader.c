@@ -56,7 +56,6 @@ extern char sTrackLoadBlockOverrunError[];
 #include "main/obj_list.h"
 #include "main/track_dolphin_api.h"
 #include "dolphin/os/OSCache.h"
-#include "dolphin/fake_tgmath.h"
 #include "dolphin/mtx/vec.h"
 extern char sShaderUnusedWordTable[];
 #define MAP_BLOCK_LAYER_COUNT 5
@@ -86,6 +85,7 @@ extern const f32 gMapBlockWorldSize;
 #include "main/screen_transition.h"
 #include "dolphin/gx/GXCull.h"
 #include "string.h"
+#include "main/rcp_dolphin.h"
 
 int lbl_803DB620 = -1;
 s8 gMapLayerOffsets[8] = {0, -2, -1, 1, 2, 0, 0, 0};
@@ -187,16 +187,46 @@ typedef struct ShaderRomListSlot
 } ShaderRomListSlot;
 extern int gShaderMapRomBuffers[];
 #define INIT_MAP_SLOT(slot)                                                                                 \
-    e = (char*)gShaderMapRomBuffers[1] + (slot) * 10 + ofs[0];                                              \
+    e = (MapBounds*)((char*)gShaderMapRomBuffers[1] + (slot) * 10 + ofs[0]);                                \
     *(s8*)((char*)gShaderMapRomBuffers[3] + idx + (slot)) = -128;                                          \
-    *(s16*)(e + 0) = -32768;                                                                               \
-    *(s16*)(e + 2) = -32768;                                                                               \
-    *(s16*)(e + 4) = -32768;                                                                               \
-    *(s16*)(e + 6) = -32768;                                                                               \
-    *(s8*)(e + 8) = -128;                                                                                  \
-    *(s8*)(e + 9) = -128;                                                                                  \
+    e->minX = -32768;                                                                                      \
+    e->maxX = -32768;                                                                                      \
+    e->minZ = -32768;                                                                                      \
+    e->maxZ = -32768;                                                                                      \
+    e->originX = -128;                                                                                     \
+    e->originZ = -128;                                                                                     \
     ((s16*)gShaderMapRomBuffers[2])[(idx + (slot)) << 1] = -1;                                             \
     ((s16*)gShaderMapRomBuffers[2])[((idx + (slot)) << 1) + 1] = -1
+
+typedef struct MapBounds
+{
+    s16 minX;
+    s16 maxX;
+    s16 minZ;
+    s16 maxZ;
+    s8 originX;
+    s8 originZ;
+} MapBounds;
+
+typedef struct MapsBinHeader
+{
+    s16 sizeX;
+    s16 sizeZ;
+    s16 originX;
+    s16 originZ;
+    u8 unk08[4];
+    u32* cells;
+} MapsBinHeader;
+
+typedef struct GlobalMapEntry
+{
+    s16 originX;
+    s16 originZ;
+    s16 layer;
+    s16 mapId;
+    s16 adjacentMapId1;
+    s16 adjacentMapId2;
+} GlobalMapEntry;
 
 typedef struct MapLoadRec
 {
@@ -790,6 +820,8 @@ static int objShouldLoad(ObjPlacement* placement, s8 viewSlot, int mapEventGroup
     }
     return 0;
 }
+void mapLoadUnloadObjects(int flag);
+
 void mapLoadUnloadObjects(int flag)
 {
     int grpBit;
@@ -1636,7 +1668,7 @@ void mapSetup(int layerOffset, f32 x, int* outMapId, int* outMapDataFileId, f32 
     *outMapId = mapId;
     if (mapId != -1)
     {
-        *outMapDataFileId = (s32) * (s8*)((*gMapEventInterface)->getCurCharPos() + 0xe);
+        *outMapDataFileId = ((SaveGameCharacterPosition*)(*gMapEventInterface)->getCurCharPos())->mapDataFileId;
     }
 }
 
@@ -1682,7 +1714,7 @@ void beginLoadingMap(void)
     s8* a;
     s8* b;
     int currentCharacter;
-    f32* characterPosition;
+    SaveGameCharacterPosition* characterPosition;
     f32 positionX, positionY, positionZ;
     Camera* camera;
     GameObject* player;
@@ -1716,12 +1748,12 @@ void beginLoadingMap(void)
     gMapBlockCount = 0;
     gShaderRomListSlotCount = 0;
     currentCharacter = (*gMapEventInterface)->getCurChar();
-    characterPosition = (f32*)(*gMapEventInterface)->getCurCharPos();
-    gMapBlockOriginX = fastFloorf(characterPosition[0] / gMapBlockWorldSize);
-    gMapBlockOriginZ = fastFloorf(characterPosition[2] / gMapBlockWorldSize);
-    *(f32*)(base + 0x8588) = characterPosition[0];
-    *(f32*)(base + 0x858C) = characterPosition[1];
-    *(f32*)(base + 0x8590) = characterPosition[2];
+    characterPosition = (SaveGameCharacterPosition*)(*gMapEventInterface)->getCurCharPos();
+    gMapBlockOriginX = fastFloorf(characterPosition->x / gMapBlockWorldSize);
+    gMapBlockOriginZ = fastFloorf(characterPosition->z / gMapBlockWorldSize);
+    *(f32*)(base + 0x8588) = characterPosition->x;
+    *(f32*)(base + 0x858C) = characterPosition->y;
+    *(f32*)(base + 0x8590) = characterPosition->z;
     *(int*)(base + 0x8594) = 1;
     gMapBlockOriginWorldX = gMapBlockOriginX * 640;
     gMapBlockOriginWorldZ = gMapBlockOriginZ * 640;
@@ -1732,7 +1764,7 @@ void beginLoadingMap(void)
     gShaderCurMapEventId = -1;
     gShaderGameTextLoadedMapId = gShaderGameTextLoadedMapId - 1;
     gMapCurRomListSlot = -1;
-    curMapLayer = *(s8*)((char*)characterPosition + 0xd);
+    curMapLayer = characterPosition->mapLayer;
     renderFlags &= 0x82008;
     renderFlags |= 0x481F0LL;
     renderFlags |= 0x804;
@@ -1742,9 +1774,9 @@ void beginLoadingMap(void)
     gMotionBlurAmount = 0.0f;
     gHeatEffectFadeDirection = -1;
     setSaveGameLoadingFlag();
-    positionZ = characterPosition[2];
-    positionY = characterPosition[1];
-    positionX = characterPosition[0];
+    positionZ = characterPosition->z;
+    positionY = characterPosition->y;
+    positionX = characterPosition->x;
     if (!(renderFlags & 2) || (renderFlags & 0x800))
     {
         gShaderLoadCenterX = positionX;
@@ -1757,9 +1789,9 @@ void beginLoadingMap(void)
     renderFlags &= ~4LL;
     trackIntersect();
     camera = Camera_GetCurrent();
-    camera->x = characterPosition[0];
-    camera->y = characterPosition[1];
-    camera->z = characterPosition[2];
+    camera->x = characterPosition->x;
+    camera->y = characterPosition->y;
+    camera->z = characterPosition->z;
     mapSetupPlayer();
     gWarpRequested = 0;
     (*gWaterfxInterface)->onMapSetup();
@@ -1885,7 +1917,7 @@ void beginLoadingMap(void)
 void mapGetBlockGridRects(int gridX, int gridZ, int* rectA, int* rectB, int* rectC, int* rectD, int layer, int useVisGrid, int slot)
 {
     int base;
-    s16* e2;
+    MapBounds* e2;
     int aa, bb;
     MapRomListPage* page;
     u32* tbl;
@@ -1918,9 +1950,9 @@ void mapGetBlockGridRects(int gridX, int gridZ, int* rectA, int* rectB, int* rec
         return;
     }
     base = gShaderMapRomBuffers[1];
-    e2 = (s16*)(base + gShaderRomListSlots[slot].mapId * 10);
-    aa = gridX - e2[0];
-    bb = gridZ - e2[2];
+    e2 = (MapBounds*)base + gShaderRomListSlots[slot].mapId;
+    aa = gridX - e2->minX;
+    bb = gridZ - e2->minZ;
     page = (MapRomListPage*)gShaderRomListSlots[slot].romList;
     if (slot == -1)
     {
@@ -2487,26 +2519,26 @@ void loadMapForCameraPos(float x, float y, float z)
     }
 }
 
-static void mapInitSetRects(s16* rect, u8* bitmap, int originX, int originY, int idx)
+static void mapInitSetRects(MapBounds* rect, u8* bitmap, int originX, int originZ, int idx)
 {
-    u8* self = gMapInfoBuffer;
+    MapsBinHeader* self = (MapsBinHeader*)gMapInfoBuffer;
     int tabOff = idx * 7 << 2;
     int offset0 = *(int*)(gMapsTab + tabOff);
 
     getTabEntry(self, MLDF_FILEID_MAPS_BIN, offset0, *(int*)((gMapsTab + 8) + tabOff) - offset0);
-    *(int*)(self + 0xc) = (int)self + *(int*)((gMapsTab + 4) + tabOff) - *(int*)(gMapsTab + tabOff);
-    rect[0] = originX - *(s16*)(self + 4);
-    rect[2] = originY - *(s16*)(self + 6);
-    rect[1] = rect[0] + *(s16*)(self + 0) - 1;
-    rect[3] = rect[2] + *(s16*)(self + 2) - 1;
-    *(s8*)((char*)rect + 8) = *(s16*)(self + 4);
-    *(s8*)((char*)rect + 9) = *(s16*)(self + 6);
-    for (originY = 0; (s16)originY < *(s16*)(self + 2); originY++)
+    self->cells = (u32*)((int)self + *(int*)((gMapsTab + 4) + tabOff) - *(int*)(gMapsTab + tabOff));
+    rect->minX = originX - self->originX;
+    rect->minZ = originZ - self->originZ;
+    rect->maxX = rect->minX + self->sizeX - 1;
+    rect->maxZ = rect->minZ + self->sizeZ - 1;
+    rect->originX = self->originX;
+    rect->originZ = self->originZ;
+    for (originZ = 0; (s16)originZ < self->sizeZ; originZ++)
     {
-        for (originX = 0; (s16)originX < *(s16*)(self + 0); originX++)
+        for (originX = 0; (s16)originX < self->sizeX; originX++)
         {
-            int pixelIdx = (s16)originX + (s16)originY * *(s16*)(self + 0);
-            if ((int)(*(u32*)(*(int*)(self + 0xc) + pixelIdx * 4) >> 23 & 0xff) != 0xff)
+            int pixelIdx = (s16)originX + (s16)originZ * self->sizeX;
+            if ((int)(self->cells[pixelIdx] >> 23 & 0xff) != 0xff)
             {
                 bitmap[pixelIdx >> 3] |= 1 << (pixelIdx & 7);
             }
@@ -2516,12 +2548,12 @@ static void mapInitSetRects(s16* rect, u8* bitmap, int originX, int originY, int
 
 void initMaps(void)
 {
-    void* data;
+    GlobalMapEntry* data;
     int total;
     int i;
     int ofs[1];
     int idx;
-    char* e;
+    MapBounds* e;
 
     data = 0;
     total = getDataFileSize(MLDF_FILEID_GLOBALMA_BIN);
@@ -2549,18 +2581,18 @@ void initMaps(void)
     }
     i = 0;
     total /= 12;
-    while (i < total && *(s16*)((char*)data + i * 12 + 6) > -1)
+    while (i < total && data[i].mapId > -1)
     {
-        *(s8*)((char*)gShaderMapRomBuffers[3] + *(s16*)((char*)data + i * 12 + 6)) =
-            (s8)*(s16*)((char*)data + i * 12 + 4);
-        mapInitSetRects((s16*)((char*)gShaderMapRomBuffers[1] + *(s16*)((char*)data + i * 12 + 6) * 10),
-                        (u8*)((char*)gShaderMapRomBuffers[4] + *(s16*)((char*)data + i * 12 + 6) * 64),
-                        *(s16*)((char*)data + i * 12), *(s16*)((char*)data + i * 12 + 2),
-                        *(s16*)((char*)data + i * 12 + 6));
-        ((s16*)gShaderMapRomBuffers[2])[*(s16*)((char*)data + i * 12 + 6) << 1] =
-            *(s16*)((char*)data + i * 12 + 8);
-        ((s16*)gShaderMapRomBuffers[2])[(*(s16*)((char*)data + i * 12 + 6) << 1) + 1] =
-            *(s16*)((char*)data + i * 12 + 0xa);
+        *(s8*)((char*)gShaderMapRomBuffers[3] + data[i].mapId) =
+            (s8)data[i].layer;
+        mapInitSetRects((MapBounds*)gShaderMapRomBuffers[1] + data[i].mapId,
+                        (u8*)((char*)gShaderMapRomBuffers[4] + data[i].mapId * 64),
+                        data[i].originX, data[i].originZ,
+                        data[i].mapId);
+        ((s16*)gShaderMapRomBuffers[2])[data[i].mapId << 1] =
+            data[i].adjacentMapId1;
+        ((s16*)gShaderMapRomBuffers[2])[(data[i].mapId << 1) + 1] =
+            data[i].adjacentMapId2;
         i++;
     }
     curMapType = 0;
@@ -2616,7 +2648,7 @@ void mapFillCellEntry(int gridX, int gridZ, MapCellEntry* out, int layer)
         int slot;
         int adjacentMapId1;
         s16* adjacentMapIds;
-        s16* mapBounds;
+        MapBounds* mapBounds;
         u32 cell;
 
         slot = mapFindRomListSlotByIdAndGetBase(&slots, id);
@@ -2645,9 +2677,9 @@ void mapFillCellEntry(int gridX, int gridZ, MapCellEntry* out, int layer)
                 slot = mapProcessRomList(adjacentMapId2);
             *(s8*)(activeFlags + slot * 8) = 1;
         }
-        mapBounds = (s16*)(gShaderMapRomBuffers[1] + id * 10);
-        gridX = gridX - mapBounds[0];
-        gridZ = gridZ - mapBounds[2];
+        mapBounds = (MapBounds*)gShaderMapRomBuffers[1] + id;
+        gridX = gridX - mapBounds->minX;
+        gridZ = gridZ - mapBounds->minZ;
         cell = grid->cells[gridX + gridZ * grid->sizeX];
         out->cellIndex = (cell >> 0x11) & 0x3f;
         out->romListIndex = (cell >> 0x17) & 0xff;
@@ -2839,14 +2871,14 @@ int mapCoordsToId(int x, int z, int layerIdx)
     int x0, z0;
     s8* layers;
     int x1;
-    s16* rects;
+    MapBounds* rects;
     u8* bits;
     int id;
     int layer;
     int idx;
 
     layer = curMapLayer + gMapLayerOffsets[layerIdx];
-    rects = (s16*)gShaderMapRomBuffers[1];
+    rects = (MapBounds*)gShaderMapRomBuffers[1];
     bits = (u8*)gShaderMapRomBuffers[4];
     id = 0;
     layers = (s8*)gShaderMapRomBuffers[3];
@@ -2854,14 +2886,14 @@ int mapCoordsToId(int x, int z, int layerIdx)
     {
         if (layer == layers[0])
         {
-            x0 = rects[0];
+            x0 = rects->minX;
             if (x >= x0)
             {
-                x1 = rects[1];
+                x1 = rects->maxX;
                 if (x <= x1)
                 {
-                    z0 = rects[2];
-                    if (z >= z0 && z <= rects[3])
+                    z0 = rects->minZ;
+                    if (z >= z0 && z <= rects->maxZ)
                     {
                         idx = (x - x0) + (z - z0) * ((x1 - x0) + 1);
                         if ((1 << (idx & 7)) & bits[idx >> 3])
@@ -2870,7 +2902,7 @@ int mapCoordsToId(int x, int z, int layerIdx)
                 }
             }
         }
-        rects += 5;
+        rects++;
         bits += 0x40;
         layers += 1;
     }

@@ -343,7 +343,7 @@ int Lightfoot_UpdateWanderSteering(GameObject* obj, int state, f32 fv)
     if (sub->completionCountdown == 0)
     {
         obj->anim.rotX +=
-            (s16)((f32)(s32)((u16) * (u16*)((char*)sub + 0x20) - 0x7fff) * timeDelta / 4.0f);
+            (s16)((f32)(s32)(sub->targetYawDelta - 0x7fff) * timeDelta / 4.0f);
     }
     (*gPlayerInterface)->updateAnimRootMotion(obj, (void*)state, fv, 1);
     return 0;
@@ -1006,7 +1006,7 @@ void dll437_update(GameObject* obj) {
 }
 
 void dll437_init(GameObject* obj, const Dll1B5Placement* placement, int isReload) {
-    u8* playerAnimTableBase = (u8*)&gPlayerLightfootAnimTable;
+    PlayerLightfootAnimTable* playerAnimTableBase = &gPlayerLightfootAnimTable;
     int inner = *(int*)&obj->extra;
     const Dll1B5Placement* placementData = placement;
     int control;
@@ -1074,8 +1074,8 @@ void dll437_init(GameObject* obj, const Dll1B5Placement* placement, int isReload
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x3433F:
-            ((Dll1B5ControlState*)control)->moveIds = (s16*)(playerAnimTableBase + 0x30);
-            ((Dll1B5ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x40);
+            ((Dll1B5ControlState*)control)->moveIds = playerAnimTableBase->heavyScuff.anims;
+            ((Dll1B5ControlState*)control)->moveSpeeds = playerAnimTableBase->heavyScuff.rates;
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
@@ -1083,22 +1083,22 @@ void dll437_init(GameObject* obj, const Dll1B5Placement* placement, int isReload
             if (mainGetBit(GAMEBIT_LV_ChallengeGate1Complete)) {
                 obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             }
-            ((Dll1B5ControlState*)control)->moveIds = (s16*)playerAnimTableBase;
-            ((Dll1B5ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x10);
+            ((Dll1B5ControlState*)control)->moveIds = playerAnimTableBase->lightScuff.anims;
+            ((Dll1B5ControlState*)control)->moveSpeeds = playerAnimTableBase->lightScuff.rates;
             break;
         case 0x46A55:
             if (mainGetBit(GAMEBIT_LV_ChallengeGate2Complete)) {
                 obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             }
-            ((Dll1B5ControlState*)control)->moveIds = (s16*)playerAnimTableBase;
-            ((Dll1B5ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x10);
+            ((Dll1B5ControlState*)control)->moveIds = playerAnimTableBase->lightScuff.anims;
+            ((Dll1B5ControlState*)control)->moveSpeeds = playerAnimTableBase->lightScuff.rates;
             break;
         case 0x49928:
             if (mainGetBit(GAMEBIT_SC_ChallengeGate3Complete)) {
                 obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             }
-            ((Dll1B5ControlState*)control)->moveIds = (s16*)playerAnimTableBase;
-            ((Dll1B5ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x10);
+            ((Dll1B5ControlState*)control)->moveIds = playerAnimTableBase->lightScuff.anims;
+            ((Dll1B5ControlState*)control)->moveSpeeds = playerAnimTableBase->lightScuff.rates;
             break;
         case 0x499AC:
         case 0x499AE:
@@ -1107,20 +1107,20 @@ void dll437_init(GameObject* obj, const Dll1B5Placement* placement, int isReload
         case 0x499B1:
         case 0x499B2:
             ((GroundBaddieState*)inner)->baddie.substate = 2;
-            ((Dll1B5ControlState*)control)->moveIds = (s16*)(playerAnimTableBase + 0x30);
-            ((Dll1B5ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x40);
+            ((Dll1B5ControlState*)control)->moveIds = playerAnimTableBase->heavyScuff.anims;
+            ((Dll1B5ControlState*)control)->moveSpeeds = playerAnimTableBase->heavyScuff.rates;
             ((Dll1B5ControlState*)control)->wanderTimer = (f32)(s32)randomGetRange(0x78, 0xB4);
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x499B5:
         case 0x499B6:
             obj->userData1 = 1;
-            ((Dll1B5ControlState*)control)->moveIds = (s16*)(playerAnimTableBase + 0x30);
-            ((Dll1B5ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x40);
+            ((Dll1B5ControlState*)control)->moveIds = playerAnimTableBase->heavyScuff.anims;
+            ((Dll1B5ControlState*)control)->moveSpeeds = playerAnimTableBase->heavyScuff.rates;
             break;
         default:
-            ((Dll1B5ControlState*)control)->moveIds = (s16*)playerAnimTableBase;
-            ((Dll1B5ControlState*)control)->moveSpeeds = (f32*)(playerAnimTableBase + 0x10);
+            ((Dll1B5ControlState*)control)->moveIds = playerAnimTableBase->lightScuff.anims;
+            ((Dll1B5ControlState*)control)->moveSpeeds = playerAnimTableBase->lightScuff.rates;
             break;
         }
     }

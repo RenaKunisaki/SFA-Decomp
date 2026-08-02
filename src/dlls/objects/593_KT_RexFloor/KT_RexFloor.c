@@ -111,8 +111,8 @@ void KT_RexFloorSwitch_update(GameObject* obj)
                 void* curve = (*gRomCurveInterface)->getById(curveId);
                 if (curve != NULL)
                 {
-                    (obj)->anim.localPosX = *(f32*)((char*)curve + 0x8);
-                    (obj)->anim.localPosZ = *(f32*)((char*)curve + 0x10);
+                    (obj)->anim.localPosX = ((RomCurvePathNode*)curve)->x;
+                    (obj)->anim.localPosZ = ((RomCurvePathNode*)curve)->z;
                 }
             }
         }
@@ -146,8 +146,8 @@ void KT_RexFloorSwitch_update(GameObject* obj)
                 void* curve = (*gRomCurveInterface)->getById(curveId);
                 if (curve != NULL)
                 {
-                    (obj)->anim.localPosX = *(f32*)((char*)curve + 0x8);
-                    (obj)->anim.localPosZ = *(f32*)((char*)curve + 0x10);
+                    (obj)->anim.localPosX = ((RomCurvePathNode*)curve)->x;
+                    (obj)->anim.localPosZ = ((RomCurvePathNode*)curve)->z;
                 }
             }
         }
@@ -403,8 +403,8 @@ void KT_RexFloorSwitch_init(GameObject* obj, const KtrexfloorswitchPlacement* pl
         curve = (int)(*gRomCurveInterface)->getById(curve);
         if ((u32)curve != 0)
         {
-            obj->anim.localPosX = *(f32*)(curve + 0x8);
-            obj->anim.localPosZ = *(f32*)(curve + 0x10);
+            obj->anim.localPosX = ((RomCurvePathNode*)curve)->x;
+            obj->anim.localPosZ = ((RomCurvePathNode*)curve)->z;
         }
     }
 }

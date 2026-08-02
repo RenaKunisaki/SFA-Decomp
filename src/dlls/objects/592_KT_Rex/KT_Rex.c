@@ -1,7 +1,7 @@
 /* DLL 0x0250 */
 #include "dlls/object_descriptor.h"
 #include "dolphin/mtx.h"
-#include "main/dll/objfsa_romcurve.h"
+#include "main/dll/rom_curve_def.h"
 #include "main/audio/music_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/camera_interface.h"
@@ -104,6 +104,22 @@ static inline u8 ktrex_hasLaneLerpOvershot(void)
 }
 
 int ktrex_isPlayerInLaneThreatRange(GameObject* obj);
+
+int ktrex_shouldAdvanceArenaPhase(void);
+int ktrex_stateHandlerA06(GameObject* obj, GroundBaddieState* runtime);
+int ktrex_stateHandlerA00(void);
+int ktrex_stateHandlerB00(GameObject* obj, GroundBaddieState* runtime);
+void ktrex_func0B(void);
+int ktrex_getControlMode(GameObject* obj);
+int ktrex_getExtraSize(void);
+int ktrex_getObjectTypeId(void);
+void ktrex_free(GameObject* obj);
+void ktrex_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visible);
+void ktrex_hitDetect(GameObject* obj);
+void ktrex_update(GameObject* obj);
+void ktrex_init(GameObject* obj, char* arg, int flag);
+void ktrex_release(void);
+void ktrex_initialise(void);
 
 int ktrex_shouldAdvanceArenaPhase(void)
 {
@@ -1501,10 +1517,10 @@ void ktrex_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visible)
         if (e != NULL)
         {
             lightningRender((LightningEffect*)e);
-            *(u16*)((char*)gKTRexState->lightning[i] + 0x20) =
-                (f32)(u32) * (u16*)((char*)gKTRexState->lightning[i] + 0x20) + timeDelta;
-            if (*(u16*)((char*)gKTRexState->lightning[i] + 0x20) >=
-                *(u16*)((char*)gKTRexState->lightning[i] + 0x22))
+            ((LightningEffect*)gKTRexState->lightning[i])->timer =
+                (f32)(u32)((LightningEffect*)gKTRexState->lightning[i])->timer + timeDelta;
+            if (((LightningEffect*)gKTRexState->lightning[i])->timer >=
+                ((LightningEffect*)gKTRexState->lightning[i])->lifetime)
             {
                 mm_free(gKTRexState->lightning[i]);
                 gKTRexState->lightning[i] = NULL;
@@ -1541,11 +1557,6 @@ void ktrex_hitDetect(GameObject* obj)
         modelLightStruct_setPosition(gKTRexState->light, x, y, z);
         modelLightStruct_updateGlowAlpha(gKTRexState->light);
     }
-}
-
-static void* ktrex_getStateHandler(int state)
-{
-    return gKTRexStateHandlersA[state];
 }
 
 void ktrex_update(GameObject* obj)
@@ -1657,7 +1668,7 @@ void ktrex_init(GameObject* obj, char* arg, int flag)
     int* pC;
     GroundBaddieState* rt;
     int i;
-    ObjfsaRomCurveDef* cp;
+    RomCurveDef* cp;
     u8 spawnFlags;
     s16 yaw;
     gKTRexRuntime = (obj)->extra;
@@ -1694,21 +1705,21 @@ void ktrex_init(GameObject* obj, char* arg, int flag)
     base = base + 0x5c / 4;
     for (; i < 4; i++)
     {
-        cp = (ObjfsaRomCurveDef*)(*gRomCurveInterface)->getById(*pA);
+        cp = (RomCurveDef*)(*gRomCurveInterface)->getById(*pA);
         if (cp != NULL)
         {
             *(f32*)((char*)gKTRexState + iv + 0x10) = cp->x;
             *(f32*)((char*)gKTRexState + iv + 0x20) = cp->y;
             *(f32*)((char*)gKTRexState + iv + 0x30) = cp->z;
-            cp = (ObjfsaRomCurveDef*)(*gRomCurveInterface)->getById(*pB);
+            cp = (RomCurveDef*)(*gRomCurveInterface)->getById(*pB);
             *(f32*)((char*)gKTRexState + iv + 0x40) = cp->x;
             *(f32*)((char*)gKTRexState + iv + 0x50) = cp->y;
             *(f32*)((char*)gKTRexState + iv + 0x60) = cp->z;
-            cp = (ObjfsaRomCurveDef*)(*gRomCurveInterface)->getById(*pC);
+            cp = (RomCurveDef*)(*gRomCurveInterface)->getById(*pC);
             *(f32*)((char*)gKTRexState + iv + 0x70) = cp->x;
             *(f32*)((char*)gKTRexState + iv + 0x80) = cp->y;
             *(f32*)((char*)gKTRexState + iv + 0x90) = cp->z;
-            cp = (ObjfsaRomCurveDef*)(*gRomCurveInterface)->getById(*base);
+            cp = (RomCurveDef*)(*gRomCurveInterface)->getById(*base);
             *(f32*)((char*)gKTRexState + iv + 0xa0) = cp->x;
             *(f32*)((char*)gKTRexState + iv + 0xb0) = cp->y;
             *(f32*)((char*)gKTRexState + iv + 0xc0) = cp->z;

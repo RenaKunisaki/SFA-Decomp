@@ -58,7 +58,9 @@ When running under WSL, [objdiff](#diffing) is unable to get filesystem notifica
   git clone https://github.com/my/repo.git
   ```
 
-- Copy your game's disc image to `orig/GAMEID`.
+- Copy your game's disc image to the matching version directory under `orig/`.
+  The configured versions are `GSAE01` (the default EN v1.0 target),
+  `GSAE01_rev1`, `GSAJ01`, and `GSAP01`.
   - Supported formats: ISO (GCM), RVZ, WIA, WBFS, CISO, NFS, GCZ, TGC
   - After the initial build, the disc image can be deleted to save space.
 
@@ -68,7 +70,7 @@ When running under WSL, [objdiff](#diffing) is unable to get filesystem notifica
   python configure.py
   ```
 
-  To use a version other than `GAMEID` (USA), specify it with `--version`.
+  To use a version other than EN v1.0, specify it with `--version`.
 
 - Build:
 

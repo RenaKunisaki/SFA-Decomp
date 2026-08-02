@@ -74,7 +74,8 @@ typedef struct PlayerState {
     int pendingParentObj;
     u8 pad3E4[0x3E8 - 0x3E4];
     u8 maxMagicUsed;
-    u8 pad3E9[0x3F0 - 0x3E9];
+    u8 pad3E9[0x3EC - 0x3E9];
+    f32 randomTimer3EC;
     u8 flags3F0; /* state flag byte (bits read via >>N&1 and a ByteFlags overlay): bit4/5 move-mode gates, bit6/7 etc. */
     u8 flags3F1; /* state flag byte: bit0/bit4/bit5 gate locomotion/yaw-arc paths */
     u8 unk3F2;

@@ -7,7 +7,6 @@
 #include "musyx/synth_seq_dispatch.h"
 #include "musyx/synth_seq_events.h"
 #include "musyx/synth_voice.h"
-#include "dolphin/fake_tgmath.h"
 #include "musyx/mcmd.h"
 #include "musyx/hw_init.h"
 #include "musyx/snd_synth_api.h"

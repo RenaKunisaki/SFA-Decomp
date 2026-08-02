@@ -57,6 +57,8 @@ const LightmapTriangle gDFropenodeSegmentTriangles[DFROPENODE_SEGMENT_TRIANGLE_C
  * around the Y axis and its two end caps are translated onto the link nodes.
  */
 void DFropenode_buildRopeSegmentMesh(const LightmapVertex* templateVertices, int angle, const Vec* startNode,
+                                     const Vec* endNode, LightmapVertex* out);
+void DFropenode_buildRopeSegmentMesh(const LightmapVertex* templateVertices, int angle, const Vec* startNode,
                                      const Vec* endNode, LightmapVertex* out) {
     s16 startX = 100.0f * startNode->x;
     s16 startY = 100.0f * startNode->y;
@@ -128,6 +130,7 @@ static inline void DFropenode_applyRopeSway(DFropenodeRope* rope) {
 /*
  * Integrate the spring forces attached to every unlocked rope node.
  */
+void DFropenode_integrateRopeNodes(DFropenodeRope* rope);
 void DFropenode_integrateRopeNodes(DFropenodeRope* rope) {
     DFropenodeRopeNode* part;
     int j;
@@ -229,6 +232,8 @@ void DFropenode_updateRopeSimulation(DFropenodeRope* rope) {
 }
 
 void DFropenode_attachRopeLink(DFropenodeRopeLink* linkSelf, DFropenodeRopeNode* firstNode,
+                               DFropenodeRopeNode* secondNode);
+void DFropenode_attachRopeLink(DFropenodeRopeLink* linkSelf, DFropenodeRopeNode* firstNode,
                                DFropenodeRopeNode* secondNode) {
     int firstLinkIndex;
     int secondLinkIndex;
@@ -254,6 +259,8 @@ void DFropenode_attachRopeLink(DFropenodeRopeLink* linkSelf, DFropenodeRopeNode*
  * Allocate a rope, seed evenly-spaced nodes between its endpoints, pin the
  * ends, and attach each spring link to its node pair.
  */
+DFropenodeRope* DFropenode_createRope(f32 startX, f32 startY, f32 startZ, f32 endX, f32 endY, f32 endZ, f32 length,
+                                      s32 count, f32 nodeMass);
 DFropenodeRope* DFropenode_createRope(f32 startX, f32 startY, f32 startZ, f32 endX, f32 endY, f32 endZ, f32 length,
                                       s32 count, f32 nodeMass) {
     s32 linkCount;
@@ -385,6 +392,8 @@ void DFropenode_clearLinkedObj(GameObject* obj) {
     state->linkedNode = NULL;
 }
 
+f32 DFropenode_projectPointOntoSegment(f32* x, f32* y, f32* z, f32 startX, f32 startY, f32 startZ, f32 endX, f32 endY,
+                                       f32 endZ);
 f32 DFropenode_projectPointOntoSegment(f32* x, f32* y, f32* z, f32 startX, f32 startY, f32 startZ, f32 endX, f32 endY,
                                        f32 endZ) {
     f32 dx = endX - startX;

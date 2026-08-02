@@ -4,6 +4,7 @@
 #include "main/model_engine.h"
 #include "main/rcp_dolphin_api.h"
 #include "sys/objects.h"
+#include "main/dll/dll_0039_dummy39.h"
 
 #define DUMMY39_COUNTDOWN_FRAMES 0x28
 #define DUMMY39_WARP_MAP         0x60

@@ -1,4 +1,5 @@
 #include "PowerPC_EABI_Support/MetroTRK/trk.h"
+#include "TRK_MINNOW_DOLPHIN/MetroTRK/Portable/notify.h"
 
 inline DSError TRKDoNotifyStopped_Inline(TRKBuffer* msg, MessageCommandID cmd) {
     DSError err;

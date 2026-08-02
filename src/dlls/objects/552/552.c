@@ -3,6 +3,16 @@
 #include "main/gamebits.h"
 #include "main/objprint_render_api.h"
 
+int VFP_SpellPlace_getExtraSize(void);
+int VFP_SpellPlace_getObjectTypeId(void);
+void VFP_SpellPlace_free(void);
+void VFP_SpellPlace_render(void);
+void VFP_SpellPlace_hitDetect(void);
+void VFP_SpellPlace_update(int obj);
+void VFP_SpellPlace_init(int obj, s8* def);
+void VFP_SpellPlace_release(void);
+void VFP_SpellPlace_initialise(void);
+
 int VFP_SpellPlace_getExtraSize(void)
 {
     return sizeof(LaserState);

@@ -3,6 +3,21 @@
 
 #include "game/objects/object.h"
 #include "main/objseq.h"
+#include "game/objects/object_setup.h"
+
+typedef struct DfpSeqPointPlacement
+{
+    ObjPlacement base;
+    s8 spawnRot;
+    u8 triggerMode;
+    s16 triggerRadius;
+    s16 sequenceId;
+    s16 conditionGameBit;
+    s16 disableGameBit;
+} DfpSeqPointPlacement;
+
+STATIC_ASSERT(offsetof(DfpSeqPointPlacement, spawnRot) == 0x18);
+STATIC_ASSERT(offsetof(DfpSeqPointPlacement, disableGameBit) == 0x20);
 
 int DFP_seqpoint_getExtraSize(void);
 int DFP_seqpoint_getObjectTypeId(void);

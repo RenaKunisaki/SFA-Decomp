@@ -25,6 +25,7 @@
 #include "main/shader_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/path_control_interface.h"
+#include "main/dll/partfx_interface.h"
 #include "main/track_bbox_api.h"
 #include "main/dll/landedArwing.h"
 #include "main/dll/dll_00D3_staffAction.h"
@@ -53,51 +54,42 @@
 
 #define LANDED_ARWING_SCRIPT_MODE 6
 
-/* obj+0xB8 overlay used only by TriggerLaunchTarget; the named fields line
-   up with GroundBaddieState (triggerId/gameBitA/subMode at 0x3F0/0x3F2/0x405). */
-typedef struct LandedArwingTriggerLaunchTargetState
-{
-    u8 pad0[0x3F0 - 0x0];
-    s16 launchMoveId;   /* 0x3F0 */
-    s16 triggerGameBit; /* 0x3F2 */
-    u8 pad3F4[0x405 - 0x3F4];
-    u8 subMode;         /* 0x405 */
-    u8 pad406[0x408 - 0x406];
-} LandedArwingTriggerLaunchTargetState;
-
-/* BaddieState+0x27A (moveJustStartedA): just-collided / move-just-started one-shot */
-#define LANDED_ARWING_JUST_COLLIDED 0x27A
 /* part of LANDED_ARWING_FLAG_LAUNCHING (0x02004000): mark launch active */
 #define LANDED_ARWING_FLAG_BOUNCE 0x4000
+
+int LandedArwing_ReturnZero(void);
+int LandedArwing_TriggerLaunchTarget(GameObject* obj, BaddieState* baddie);
+int LandedArwing_UpdateBounceFade(GameObject* obj, BaddieState* baddie);
+int LandedArwing_UpdateRetreatChase(GameObject* obj, BaddieState* baddie);
 
 int LandedArwing_ReturnZero(void)
 {
     return 0;
 }
 
-int LandedArwing_TriggerLaunchTarget(GameObject* obj, int target)
+int LandedArwing_TriggerLaunchTarget(GameObject* obj, BaddieState* baddie)
 {
-    LandedArwingTriggerLaunchTargetState* aux = (LandedArwingTriggerLaunchTargetState*)(obj->extra);
-    if (*(s8*)(target + LANDED_ARWING_JUST_COLLIDED) != 0)
+    GroundBaddieState* aux = (GroundBaddieState*)(obj->extra);
+    if (baddie->moveJustStartedA != 0)
     {
         (*gBaddieControlInterface)
-            ->spawnChild(obj, (int)aux->launchMoveId, -1, 0);
-        (*gPlayerInterface)->spawnPartfx(obj, (void*)target, 0x3c, 0xa, 0);
-        mainSetBits((int)aux->triggerGameBit, 1);
+            ->spawnChild(obj, (int)aux->triggerId, -1, 0);
+        (*gPlayerInterface)->spawnPartfx(obj, baddie, 0x3c, 0xa, 0);
+        mainSetBits((int)aux->gameBitA, 1);
         aux->subMode = 0;
     }
     return 0;
 }
 
-int LandedArwing_UpdateBounceFade(GameObject* obj, u32* stateWord)
+int LandedArwing_UpdateBounceFade(GameObject* obj, BaddieState* baddie)
 {
     f32 horizontalDamping;
     LandedArwingState* state;
     ObjHitsPriorityState* hitState;
 
     state = (LandedArwingState*)((GroundBaddieState*)*(int*)&obj->extra)->control;
-    ((BaddieState*)stateWord)->stateTag = 3;
-    if (*(s8*)((int)stateWord + LANDED_ARWING_JUST_COLLIDED) != 0)
+    baddie->stateTag = 3;
+    if (baddie->moveJustStartedA != 0)
     {
         ObjHits_DisableObject(obj);
         obj->anim.velocityX = -obj->anim.velocityX;
@@ -108,7 +100,7 @@ int LandedArwing_UpdateBounceFade(GameObject* obj, u32* stateWord)
     }
     hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
     hitState->objectPairHitVolume = 0;
-    *stateWord = *stateWord | LANDED_ARWING_FLAG_BOUNCE;
+    baddie->flags0 = baddie->flags0 | LANDED_ARWING_FLAG_BOUNCE;
     obj->anim.velocityX =
         obj->anim.velocityX * (horizontalDamping = 0.985f);
     obj->anim.velocityY =
@@ -159,7 +151,7 @@ int LandedArwing_UpdateBounceFade(GameObject* obj, u32* stateWord)
     return 0;
 }
 
-int LandedArwing_UpdateRetreatChase(GameObject* obj, int stateWord)
+int LandedArwing_UpdateRetreatChase(GameObject* obj, BaddieState* baddie)
 {
     f32 scale;
     GameObject* player;
@@ -172,8 +164,8 @@ int LandedArwing_UpdateRetreatChase(GameObject* obj, int stateWord)
     state = (LandedArwingState*)((GroundBaddieState*)*(int*)&(obj)->extra)->control;
     player = (GameObject*)((int)Obj_GetPlayerObject());
     playerObj = player;
-    ((BaddieState*)stateWord)->stateTag = 1;
-    if (*(s8*)(stateWord + LANDED_ARWING_JUST_COLLIDED) != 0)
+    baddie->stateTag = 1;
+    if (baddie->moveJustStartedA != 0)
     {
         state->scriptTimer = 0x3c;
         state->speed = 4.2f;
@@ -246,10 +238,6 @@ ObjectDescriptor dll_D3 = {
     dll_D3_getExtraSize_ret_1188,
 };
 
-/* raw offsets used by the landed-arwing state handlers */
-#define BADDIESTATE_HANDLER_TICK_FLAG 0x34d
-#define BADDIESTATE_JUST_LAUNCHED 0x27a
-
 #define LANDED_ARWING_OBJECT_PAIR_PRIORITY 9
 #define LANDED_ARWING_OBJECT_PAIR_HIT_VOLUME 1
 
@@ -270,7 +258,7 @@ typedef struct
     u8 bit0 : 1;
 } LandedArwingFlags;
 
-u32 LandedArwing_UpdateFlightChase(GameObject* obj, int state)
+u32 LandedArwing_UpdateFlightChase(GameObject* obj, BaddieState* state)
 {
     GameObject* playerObj;
     LandedArwingState* sub;
@@ -283,9 +271,9 @@ u32 LandedArwing_UpdateFlightChase(GameObject* obj, int state)
 
     sub = (LandedArwingState*)((GroundBaddieState*)*(int*)&obj->extra)->control;
     playerObj = Obj_GetPlayerObject();
-    *(u8*)(state + BADDIESTATE_HANDLER_TICK_FLAG) = 1;
+    state->stateTag = 1;
 
-    if (*(s8*)(state + BADDIESTATE_JUST_LAUNCHED) != 0)
+    if (state->moveJustStartedA != 0)
     {
         sub->speed = 2.6f;
         ObjHits_EnableObject(obj);
@@ -294,7 +282,7 @@ u32 LandedArwing_UpdateFlightChase(GameObject* obj, int state)
         obj->anim.velocityY = 0.0f;
         obj->anim.velocityZ =
             -sub->speed * fcos16Precise(obj->anim.rotX & 0xffff);
-        *(u32*)state |= LANDED_ARWING_FLAG_LAUNCHING;
+        state->flags0 |= LANDED_ARWING_FLAG_LAUNCHING;
         ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
         sub->animSpeed = 0.1f;
     }
@@ -304,7 +292,7 @@ u32 LandedArwing_UpdateFlightChase(GameObject* obj, int state)
     ((ObjHitsPriorityState *)obj->anim.hitReactState)->objectPairHitVolume = LANDED_ARWING_OBJECT_PAIR_HIT_VOLUME;
     ObjHits_RegisterActiveHitVolumeObject(obj);
 
-    (*gPathControlInterface)->advance(obj, (void*)(state + 4), timeDelta);
+    (*gPathControlInterface)->advance(obj, &state->flags4, timeDelta);
 
     if (sub->surfaceMode != LANDED_ARWING_SCRIPT_MODE)
     {
@@ -441,20 +429,20 @@ typedef struct LandedArwingMovementFlags
 
 void landedarwing_buildSurfaceOrientationMatrix(f32* out, f32* forward, f32* up);
 
-u32 landedarwing_updateMovementState(GameObject* obj, u32* params)
+u32 landedarwing_updateMovementState(GameObject* obj, BaddieState* baddie)
 {
     LandedArwingState* state;
 
     state = (LandedArwingState*)((GroundBaddieState*)*(int*)&obj->extra)->control;
-    *(u8*)((int)params + 0x34d) = 1;
-    if (*(s8*)((int)params + 0x27a) != 0)
+    baddie->stateTag = 1;
+    if (baddie->moveJustStartedA != 0)
     {
         state->speed = 2.6f;
         ObjHits_EnableObject(obj);
         obj->anim.velocityX = -(state->speed) * fsin16Precise(obj->anim.rotX & 0xffff);
         obj->anim.velocityY = 0.0f;
         obj->anim.velocityZ = -(state->speed) * fcos16Precise(obj->anim.rotX & 0xffff);
-        *params |= 0x2004000;
+        baddie->flags0 |= LANDED_ARWING_FLAG_LAUNCHING;
         ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
         state->animSpeed = 0.0f;
     }
@@ -462,8 +450,8 @@ u32 landedarwing_updateMovementState(GameObject* obj, u32* params)
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->objectPairPriority = 9;
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->objectPairHitVolume = 1;
     ObjHits_RegisterActiveHitVolumeObject(obj);
-    (*gPathControlInterface)->advance(obj, params + 1, timeDelta);
-    if (*(s8*)((int)params + 0x27a) != 0)
+    (*gPathControlInterface)->advance(obj, &baddie->flags4, timeDelta);
+    if (baddie->moveJustStartedA != 0)
     {
         if (state->surfaceMode == 6)
         {
@@ -1210,7 +1198,7 @@ typedef struct DllD3Placement
 } DllD3Placement;
 
 void* gLandedArwingStateHandlers[6];
-int gStaffActionHitLightParams[6];
+PartFxSpawnParams gStaffActionHitLightParams;
 void* gLandedArwingDefaultStateHandler;
 
 void dll_D3_update(GameObject* obj)
@@ -1324,15 +1312,15 @@ void dll_D3_update(GameObject* obj)
             ->updateHitReaction(obj, state, (void*)((int)state + 0x35c),
                                 ((TreasureChestState*)state)->gameBitB, gStaffActionHitReactionMoves,
                                 gStaffActionHitReactionDamage, 0,
-                                gStaffActionHitLightParams);
+                                &gStaffActionHitLightParams);
         if ((int)((TreasureChestState*)state)->hitPoints < hits)
         {
             (*(LandedArwingStaffInterface**)((GameObject*)player->childObjs[0])->anim.dll)
                 ->getSwipeTextureIndex((GameObject*)player->childObjs[0]);
-            *(f32*)((char*)gStaffActionHitLightParams + 0xc) = obj->anim.localPosX;
-            *(f32*)((char*)gStaffActionHitLightParams + 0x10) = obj->anim.localPosY;
-            *(f32*)((char*)gStaffActionHitLightParams + 0x14) = obj->anim.localPosZ;
-            objDoHitParticleFx(obj, 0.014f, gStaffActionHitLightParams, 1, 0);
+            gStaffActionHitLightParams.posX = obj->anim.localPosX;
+            gStaffActionHitLightParams.posY = obj->anim.localPosY;
+            gStaffActionHitLightParams.posZ = obj->anim.localPosZ;
+            objDoHitParticleFx(obj, 0.014f, &gStaffActionHitLightParams, 1, 0);
         }
     }
 
@@ -1352,7 +1340,7 @@ void dll_D3_update(GameObject* obj)
         hitCount = trackGetLineIntersect(&obj->anim.previousLocalPosX, &obj->anim.localPosX,
                                       6.0f, 0, (TrackBBoxHit*)hitResult, obj, -0x7c, -1, 0xff,
                                       0);
-        if (hitCount != 0 && *(s8*)((char*)hitResult + 0x50) == 13)
+        if (hitCount != 0 && ((TrackBBoxHit*)hitResult)->surfaceType == 13)
         {
             ((LandedArwingMovementFlags*)&extra->flags92)->hitSurfaceType13 = 1;
             extra->scriptTimer = (u16)(randomGetRange(10, 0xf) * 0x3c);

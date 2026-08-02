@@ -86,13 +86,13 @@ int WM_spiritplace_SeqFn(GameObject* obj, int unused, ObjSeqState* actor)
     WmSpiritPlaceState* state;
     int ident;
     u8 eventId;
-    u8 fxPos[24];
+    PartFxSpawnParams fxPos;
 
     state = obj->extra;
     if ((state->fxFlags & WMSPIRITPLACE_FX_ACTIVE) != 0)
     {
         (*gPartfxInterface)->spawnObject((void*)obj, WMSPIRITPLACE_PARTFX, NULL, 2, -1, NULL);
-        (*gPartfxInterface)->spawnObject((void*)obj, WMSPIRITPLACE_PARTFX, fxPos, 2, -1, NULL);
+        (*gPartfxInterface)->spawnObject((void*)obj, WMSPIRITPLACE_PARTFX, &fxPos, 2, -1, NULL);
     }
 
     actor->movementState = 0;

@@ -143,9 +143,9 @@ void boneParticleEffect_update(void* ctx, int renderParam, u8* obj) {
                     id = bp[0x5b4];
                 }
                 mtx = (u8*)((BoneFxJRow*)mtx + (id << 4));
-                dx = *(f32*)(mtx + 0x30) + playerMapOffsetX;
-                dy = *(f32*)(mtx + 0x34);
-                dz = *(f32*)(mtx + 0x38) + playerMapOffsetZ;
+                dx = (*(Mtx44*)mtx)[3][0] + playerMapOffsetX;
+                dy = (*(Mtx44*)mtx)[3][1];
+                dz = (*(Mtx44*)mtx)[3][2] + playerMapOffsetZ;
                 dx = dx - gobj->anim.localPosX;
                 dy = dy - gobj->anim.localPosY;
                 dz = dz - gobj->anim.localPosZ;

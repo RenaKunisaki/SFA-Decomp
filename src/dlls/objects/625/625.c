@@ -32,6 +32,7 @@
 #include "main/audio/sfx_play_api.h"
 #include "main/dll/dll_0282_barrelgener.h"
 #include "main/dll/rom_curve_interface.h"
+#include "main/dll/rom_curve_def.h"
 #include "game/objects/object.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "dlls/object_descriptor.h"
@@ -94,6 +95,13 @@ void drakorhoverpad_renderGroundMarker(GameObject* obj, f32 scale)
     objSetModelMatrixOverride(gDrakorHoverpadMtx);
 }
 
+void drakorhoverpad_func15(void);
+int drakorhoverpad_getRacePosition(void);
+void drakorhoverpad_setMountState(void);
+int drakorhoverpad_getMountState(void);
+int drakorhoverpad_getDismountSide(void);
+int drakorhoverpad_getMountSide(void);
+
 void drakorhoverpad_func15(void)
 {
 }
@@ -144,12 +152,12 @@ void drakorhoverpad_getCameraPosition(int obj, f32* ox, f32* oy, f32* oz)
     Matrix_TransformPoint(mtx, 0.0f, lbl_803DC300, lbl_803DC304, ox, oy, oz);
 }
 
-static inline f32 drakorhoverpad_nodeWobbleSin(DrakorCurveNode** slot, int angle)
+static inline f32 drakorhoverpad_nodeWobbleSin(RomCurveDef** slot, int angle)
 {
     return (*(f32*)&gDrakorHoverpadSpeedStep) * ((f32)(u32)(*slot)->tangentMag * mathSinf(3.1415927f * (f32)angle / 32768.0f));
 }
 
-static inline f32 drakorhoverpad_nodeWobbleCos(DrakorCurveNode** slot, int angle)
+static inline f32 drakorhoverpad_nodeWobbleCos(RomCurveDef** slot, int angle)
 {
     return (*(f32*)&gDrakorHoverpadSpeedStep) * ((f32)(u32)(*slot)->tangentMag * mathCosf(3.1415927f * (f32)angle / 32768.0f));
 }
@@ -191,16 +199,16 @@ static void drakorhoverpad_setupPathCurve(GameObject* obj, u8* p)
     Curve_AdvanceAlongPath((Curve*)(p + 4), 0.01f);
 }
 
-static f32 drakorhoverpad_nodeWobbleSpeed(DrakorCurveNode** slot, int angle)
+static f32 drakorhoverpad_nodeWobbleSpeed(RomCurveDef** slot, int angle)
 {
     return (*(f32*)&gDrakorHoverpadSpeedStep) * ((f32)(u32)(*slot)->tangentMag * mathSinf(3.1415927f * (f32)angle / 32768.0f));
 }
 
-int drakorhoverpad_pickMaskedNextPoint(int* pad, int exclude, int maxIndex);
+int drakorhoverpad_pickMaskedNextPoint(RomCurveDef* pad, int exclude, int maxIndex);
 
-int drakorhoverpad_pickUnmaskedNextPoint(int* pad, int exclude, int maxIndex);
+int drakorhoverpad_pickUnmaskedNextPoint(RomCurveDef* pad, int exclude, int maxIndex);
 
-int drakorhoverpad_pickMaskedNextPoint(int* pad, int exclude, int maxIndex)
+int drakorhoverpad_pickMaskedNextPoint(RomCurveDef* pad, int exclude, int maxIndex)
 {
     int collected[4];
     int pt;
@@ -212,8 +220,8 @@ int drakorhoverpad_pickMaskedNextPoint(int* pad, int exclude, int maxIndex)
     bit = 1;
     for (i = 0; i < 4; i++)
     {
-        pt = pad[7 + i];
-        if (pt > -1 && (*(s8*)((char*)pad + 0x1b) & bit) != 0 && pt != exclude)
+        pt = pad->linkIds[i];
+        if (pt > -1 && (pad->blockedLinkMask & bit) != 0 && pt != exclude)
         {
             collected[count++] = pt;
         }
@@ -234,7 +242,7 @@ int drakorhoverpad_pickMaskedNextPoint(int* pad, int exclude, int maxIndex)
     return -1;
 }
 
-int drakorhoverpad_pickUnmaskedNextPoint(int* pad, int exclude, int maxIndex)
+int drakorhoverpad_pickUnmaskedNextPoint(RomCurveDef* pad, int exclude, int maxIndex)
 {
     int collected[4];
     int pt;
@@ -246,8 +254,8 @@ int drakorhoverpad_pickUnmaskedNextPoint(int* pad, int exclude, int maxIndex)
     bit = 1;
     for (i = 0; i < 4; i++)
     {
-        pt = pad[7 + i];
-        if (pt > -1 && (*(s8*)((char*)pad + 0x1b) & bit) == 0 && pt != exclude)
+        pt = pad->linkIds[i];
+        if (pt > -1 && (pad->blockedLinkMask & bit) == 0 && pt != exclude)
         {
             collected[count++] = pt;
         }
@@ -289,20 +297,20 @@ int drakorhoverpad_update(RomCurveWalker* curve, int maxIndex)
     memcpy(curve->hermZ, curve->hermZ2, 16);
     if (curve->reverse != 0)
     {
-        result = drakorhoverpad_pickMaskedNextPoint((int*)curve->nodeA0, -1, maxIndex);
+        result = drakorhoverpad_pickMaskedNextPoint((RomCurveDef*)curve->nodeA0, -1, maxIndex);
     }
     else
     {
-        result = drakorhoverpad_pickUnmaskedNextPoint((int*)curve->nodeA0, -1, maxIndex);
+        result = drakorhoverpad_pickUnmaskedNextPoint((RomCurveDef*)curve->nodeA0, -1, maxIndex);
     }
     if (result != -1)
     {
         curve->nodeA4 = (*gRomCurveInterface)->getById(result);
         if (curve->nodeA4 != NULL)
         {
-#define CM_SLOT  ((DrakorCurveNode**)&curve->nodeA0)
-#define AMP_SLOT ((DrakorCurveNode**)&curve->node9C)
-#define TGT_SLOT ((DrakorCurveNode**)&curve->nodeA4)
+#define CM_SLOT  ((RomCurveDef**)&curve->nodeA0)
+#define AMP_SLOT ((RomCurveDef**)&curve->node9C)
+#define TGT_SLOT ((RomCurveDef**)&curve->nodeA4)
 #define CM_NODE  (*CM_SLOT)
 #define AMP_NODE (*AMP_SLOT)
 #define TGT_NODE (*TGT_SLOT)
@@ -311,42 +319,42 @@ int drakorhoverpad_update(RomCurveWalker* curve, int maxIndex)
         curve->hermX2[0] = CM_NODE->x;
         curve->hermX2[1] = AMP_NODE->x;
         curve->hermX2[2] =
-            drakorhoverpad_nodeWobbleSin(CM_SLOT, CM_NODE->tangentYaw << 8);
+            drakorhoverpad_nodeWobbleSin(CM_SLOT, CM_NODE->yaw << 8);
         curve->hermX2[3] =
-            drakorhoverpad_nodeWobbleSin(AMP_SLOT, AMP_NODE->tangentYaw << 8);
+            drakorhoverpad_nodeWobbleSin(AMP_SLOT, AMP_NODE->yaw << 8);
         curve->hermY2[0] = CM_NODE->y;
         curve->hermY2[1] = AMP_NODE->y;
         curve->hermY2[2] =
-            drakorhoverpad_nodeWobbleSin(CM_SLOT, CM_NODE->tangentPitch << 8);
+            drakorhoverpad_nodeWobbleSin(CM_SLOT, CM_NODE->pitch << 8);
         curve->hermY2[3] =
-            drakorhoverpad_nodeWobbleSin(AMP_SLOT, AMP_NODE->tangentPitch << 8);
+            drakorhoverpad_nodeWobbleSin(AMP_SLOT, AMP_NODE->pitch << 8);
         curve->hermZ2[0] = CM_NODE->z;
         curve->hermZ2[1] = AMP_NODE->z;
         curve->hermZ2[2] =
-            drakorhoverpad_nodeWobbleCos(CM_SLOT, CM_NODE->tangentYaw << 8);
+            drakorhoverpad_nodeWobbleCos(CM_SLOT, CM_NODE->yaw << 8);
         curve->hermZ2[3] =
-            drakorhoverpad_nodeWobbleCos(AMP_SLOT, AMP_NODE->tangentYaw << 8);
+            drakorhoverpad_nodeWobbleCos(AMP_SLOT, AMP_NODE->yaw << 8);
     }
     else
     {
         curve->hermX2[0] = CM_NODE->x;
         curve->hermX2[1] = TGT_NODE->x;
         curve->hermX2[2] =
-            drakorhoverpad_nodeWobbleSin(CM_SLOT, CM_NODE->tangentYaw << 8);
+            drakorhoverpad_nodeWobbleSin(CM_SLOT, CM_NODE->yaw << 8);
         curve->hermX2[3] =
-            drakorhoverpad_nodeWobbleSin(TGT_SLOT, TGT_NODE->tangentYaw << 8);
+            drakorhoverpad_nodeWobbleSin(TGT_SLOT, TGT_NODE->yaw << 8);
         curve->hermY2[0] = CM_NODE->y;
         curve->hermY2[1] = TGT_NODE->y;
         curve->hermY2[2] =
-            drakorhoverpad_nodeWobbleSin(CM_SLOT, CM_NODE->tangentPitch << 8);
+            drakorhoverpad_nodeWobbleSin(CM_SLOT, CM_NODE->pitch << 8);
         curve->hermY2[3] =
-            drakorhoverpad_nodeWobbleSin(TGT_SLOT, TGT_NODE->tangentPitch << 8);
+            drakorhoverpad_nodeWobbleSin(TGT_SLOT, TGT_NODE->pitch << 8);
         curve->hermZ2[0] = CM_NODE->z;
         curve->hermZ2[1] = TGT_NODE->z;
         curve->hermZ2[2] =
-            drakorhoverpad_nodeWobbleCos(CM_SLOT, CM_NODE->tangentYaw << 8);
+            drakorhoverpad_nodeWobbleCos(CM_SLOT, CM_NODE->yaw << 8);
         curve->hermZ2[3] =
-            drakorhoverpad_nodeWobbleCos(TGT_SLOT, TGT_NODE->tangentYaw << 8);
+            drakorhoverpad_nodeWobbleCos(TGT_SLOT, TGT_NODE->yaw << 8);
     }
 #undef CM_NODE
 #undef AMP_NODE

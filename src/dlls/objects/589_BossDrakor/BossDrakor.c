@@ -70,10 +70,10 @@
 #include "main/dll/dll_024E_drakordthornbush.h"
 #include "dlls/object_descriptor.h"
 
-f32 lbl_803DC188 = 3.0f;
-f32 lbl_803DC18C = 8.0f;
-f32 lbl_803DC190 = 1.0f;
-f32 lbl_803DC194 = 150.0f;
+f32 gBossDrakorMissileTargetScatterFactor = 3.0f;
+f32 gBossDrakorMissileInitialSpeedFactor = 8.0f;
+f32 gBossDrakorThornbushSpawnHealth = 1.0f;
+f32 gBossDrakorThornbushBaseRadius = 150.0f;
 s16 gBossDrakorMaxJawStepAngle = 0xE38;
 s16 gBossDrakorJawAnglePerTick = 0x2D8;
 int lbl_803DC19C[1] = {0};
@@ -85,8 +85,6 @@ int lbl_803DC19C[1] = {0};
 #define BOSSDRAKOR_AIRMETER_BGTEXTURE 0x63e /* HUD air-meter background texture id */
 #define DRAKORHOVERPAD_OBJGROUP 0x46 /* DLL 0x271 drakorhoverpad */
 #define BOSSDRAKOR_CHILD_OBJ_MISSILE 0x70f /* drakormissile (drakormissile_startActiveLaunch) */
-
-#define BOSSDRAKOR_DEG_TO_ANGLE (65536.0f / 360.0f)
 
 #define BOSSDRAKOR_SPELLSTONE_STATE_HELD 2
 #define BOSSDRAKOR_SPELLSTONE_STATE_IDLE 0
@@ -229,6 +227,8 @@ void bossdrakor_updateHeadTracking(GameObject* obj, BossDrakorState* drakorState
     }
 }
 
+const f32 gBossDrakorDegToAngle[1] = {65536.0f / 360.0f};
+
 int bossdrakor_chooseNextMove(GameObject* obj, f32* speedOut)
 {
     BossDrakorState* drakorState;
@@ -334,7 +334,7 @@ void bossdrakor_spawnAttackObjects(GameObject* obj, BossDrakorState* state, int 
                         missile = loadObjectAtObject(obj, setup);
                         if (missile != NULL)
                         {
-                            prod = lbl_803DC188 * Vec_distance(&(obj)->anim.worldPosX,
+                            prod = gBossDrakorMissileTargetScatterFactor * Vec_distance(&(obj)->anim.worldPosX,
                                                                &player->anim.worldPosX);
                             target.x = player->anim.localPosX +
                                         (f32)(s32)randomGetRange(lo = (int)-prod, hi = (int)prod);
@@ -353,7 +353,7 @@ void bossdrakor_spawnAttackObjects(GameObject* obj, BossDrakorState* state, int 
                             PSVECSubtract(&vecB, &vecC, &vecC);
                             PSVECNormalize(&vecC, &vecC);
                             PSVECScale(&vecC, &missile->anim.velocity,
-                                       s->missileBaseSpeed * lbl_803DC18C);
+                                       s->missileBaseSpeed * gBossDrakorMissileInitialSpeedFactor);
                             *mstate = spd;
                             drakormissile_startActiveLaunch((GameObject*)(missile));
                             storeZeroToFloatParam(&s->jawAnimTimer);
@@ -379,8 +379,8 @@ void bossdrakor_spawnAttackObjects(GameObject* obj, BossDrakorState* state, int 
                     setup->posY = s->homePosY;
                     setup->posZ = s->homePosZ;
                     ((DrakordThornbushPlacement*)setup)->regrowDelay = 0x3c;
-                    ((DrakordThornbushPlacement*)setup)->baseRadius = lbl_803DC194;
-                    ((DrakordThornbushPlacement*)setup)->spawnHealth = lbl_803DC190;
+                    ((DrakordThornbushPlacement*)setup)->baseRadius = gBossDrakorThornbushBaseRadius;
+                    ((DrakordThornbushPlacement*)setup)->spawnHealth = gBossDrakorThornbushSpawnHealth;
                     loadObjectAtObject(obj, setup);
                     Sfx_PlayFromObject(obj, SFXTRIG__UNK);
                 }
@@ -892,8 +892,8 @@ void bossdrakor_update(GameObject* obj)
         shakeScaleZ = drakorState->shakeScaleZ;
         shake = drakorState->shakeAmount;
         tblRes = objGetLookAtJointKeys();
-        shakeX = (s16)(BOSSDRAKOR_DEG_TO_ANGLE * shake);
-        shakeY = (s16)(BOSSDRAKOR_DEG_TO_ANGLE * (shake * shakeScaleZ));
+        shakeX = (s16)(gBossDrakorDegToAngle[0] * shake);
+        shakeY = (s16)(gBossDrakorDegToAngle[0] * (shake * shakeScaleZ));
         i = 0;
         tbl = tblRes;
         do
