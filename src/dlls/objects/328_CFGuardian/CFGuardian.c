@@ -259,7 +259,7 @@ int cfguardian_flyAlongPath(GameObject* obj, RomCurveWalker* walker, f32 speed, 
     int pathComplete;
     u8 curveGroup;
     int updateHeading;
-    RomCurvePlacementDef* point;
+    RomCurveDef* point;
     s16 yawDelta;
     int curveArgs[2];
     MoveLibTarget target;
@@ -273,11 +273,11 @@ int cfguardian_flyAlongPath(GameObject* obj, RomCurveWalker* walker, f32 speed, 
     }
     if (obj->userData1 == 0) {
         curveGroup = pointId;
-        point = (RomCurvePlacementDef*)cfguardian_findRomCurvePointNearObject(obj, curveGroup, 0, 2);
-        target.x = point->base.x;
-        target.y = point->base.y;
-        target.z = point->base.z;
-        target.angle = point->rotZ << 8;
+        point = (RomCurveDef*)cfguardian_findRomCurvePointNearObject(obj, curveGroup, 0, 2);
+        target.x = point->x;
+        target.y = point->y;
+        target.z = point->z;
+        target.angle = point->yaw << 8;
         if (cfguardian_steerToward(obj, &target, speed, outPhase) != 0) {
             curveArgs[0] = 0x19;
             curveArgs[1] = 0x15;
@@ -492,13 +492,13 @@ int cfguardian_updateMain(GameObject* obj) {
                     obj->userData1 = 0;
                     ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
                     {
-                        RomCurvePlacementDef* homePoint =
-                            (RomCurvePlacementDef*)cfguardian_findRomCurvePointNearObject(obj, 0, 0, 2);
+                        RomCurveDef* homePoint =
+                            (RomCurveDef*)cfguardian_findRomCurvePointNearObject(obj, 0, 0, 2);
                         f32 homeDistY;
-                        state->home.x = homePoint->base.x;
-                        state->home.y = homePoint->base.y;
-                        state->home.z = homePoint->base.z;
-                        state->home.angle = (s16)(homePoint->rotZ << 8);
+                        state->home.x = homePoint->x;
+                        state->home.y = homePoint->y;
+                        state->home.z = homePoint->z;
+                        state->home.angle = (s16)(homePoint->yaw << 8);
                         homeDistY = state->home.y - obj->anim.localPosY;
                         homeDistY = (homeDistY >= 0.0f) ? homeDistY : -homeDistY;
                         if (homeDistY < 80.0f) {

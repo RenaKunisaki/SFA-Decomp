@@ -32,16 +32,16 @@ void curve_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg
     }
 }
 
-void curve_init(GameObject* obj, CurvePlacement* placement) {
+void curve_init(GameObject* obj, RomCurveDef* placement) {
     obj->anim.rotX = (s16)(placement->yaw << 8);
     obj->anim.rotY = (s16)(placement->pitch << 8);
-    if (placement->curve.type == ROMCURVE_TYPE_SPECIAL_ANGLE_8 ||
-        placement->curve.type == ROMCURVE_TYPE_SPECIAL_ANGLE_1A) {
+    if (placement->type == ROMCURVE_TYPE_SPECIAL_ANGLE_8 ||
+        placement->type == ROMCURVE_TYPE_SPECIAL_ANGLE_1A) {
         obj->anim.rotZ = placement->roll;
     }
-    if (placement->curve.type == ROMCURVE_TYPE_SCALE_OVERRIDE_15) {
+    if (placement->type == ROMCURVE_TYPE_SCALE_OVERRIDE_15) {
         obj->anim.rootMotionScale = 1.25f;
-    } else if (placement->curve.type == ROMCURVE_TYPE_SCALE_OVERRIDE_16) {
+    } else if (placement->type == ROMCURVE_TYPE_SCALE_OVERRIDE_16) {
         obj->anim.rootMotionScale = 1.1f;
     } else {
         obj->anim.rootMotionScale = obj->anim.modelInstance->rootMotionScaleBase;

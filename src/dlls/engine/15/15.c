@@ -1,7 +1,7 @@
 #include "main/dll/partfx_interface.h"
 #include "main/dll/rom_curve_interface.h"
 #include "sys/objects.h"
-#include "main/dll/objfsa_romcurve.h"
+#include "main/dll/rom_curve_def.h"
 #include "game/objects/object.h"
 #include "main/audio/sfx.h"
 #include "main/dll/baddie_state.h"
@@ -401,7 +401,7 @@ void player_updateCurve(GameObject* obj, int* state, f32 t)
     }
     else
     {
-        ObjfsaRomCurveDef* curve = (ObjfsaRomCurveDef*)((int*)(*gRomCurveInterface)->getById(idx));
+        RomCurveDef* curve = (RomCurveDef*)((int*)(*gRomCurveInterface)->getById(idx));
         if (curve == NULL)
         {
             ((BaddieState*)state)->moveTargetDistance = PLAYER_MOVE_ZERO;

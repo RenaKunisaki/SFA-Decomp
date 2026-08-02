@@ -7,31 +7,18 @@
 #include "ghidra_import.h"
 #include "main/dll/curve_walker.h"
 #include "main/dll/dll_0015_save_settings.h"
+#include "main/dll/rom_curve_def.h"
 #include "main/dll/savegame_object_api.h"
 #include "main/dll/player_spirit_api.h"
 
 typedef struct GameObject GameObject;
 
 #define ROMCURVE_MAX_CURVES                     0x514
-#define ROMCURVE_DEF_SIZE                       0x2c
 #define ROMCURVE_POINT_SIZE                     0x18
-#define ROMCURVE_X_OFFSET                       0x08
-#define ROMCURVE_Y_OFFSET                       0x0c
-#define ROMCURVE_Z_OFFSET                       0x10
-#define ROMCURVE_ID_OFFSET                      0x14
-#define ROMCURVE_ACTION_OFFSET                  0x18
-#define ROMCURVE_TYPE_OFFSET                    0x19
-#define ROMCURVE_LINK_FLAGS_OFFSET              0x1b
-#define ROMCURVE_LINK_IDS_OFFSET                0x1c
 #define ROMCURVE_LINK_ID_STRIDE                 sizeof(u32)
-#define ROMCURVE_LINK_COUNT                     4
 #define ROMCURVE_LINK_ID_NONE                   0xffffffff
 #define ROMCURVE_LINK_SEARCH_RESULT_COUNT       ROMCURVE_LINK_COUNT
 #define ROMCURVE_LINK_SEARCH_QUEUE_CAPACITY     0x28
-#define ROMCURVE_PLACEMENT_ROT_Z_OFFSET         0x2c
-#define ROMCURVE_PLACEMENT_ROT_Y_OFFSET         0x2d
-#define ROMCURVE_PLACEMENT_ROT_X_OFFSET         0x2e
-#define ROMCURVE_PLACEMENT_EXT_SIZE             0x30
 #define ROMCURVE_TYPE_ACTION                    0x15
 #define ROMCURVE_TYPE_SPECIAL_ANGLE_8           0x08
 #define ROMCURVE_TYPE_SPECIAL_ANGLE_1A          0x1a
@@ -61,29 +48,6 @@ typedef struct GameObject GameObject;
 #define CURVES_COLLISION_SUBTYPE_NONE                 0
 #define CURVES_COLLISION_SUBTYPE_OBJECT               1
 #define CURVES_COLLISION_SUBTYPE_POINT                2
-
-typedef struct RomCurveDef
-{
-    u8 pad00[0x08];
-    f32 x;
-    f32 y;
-    f32 z;
-    u32 id;
-    s8 action;
-    s8 type;
-    u8 unk1A;
-    s8 blockedLinkMask;
-    s32 linkIds[ROMCURVE_LINK_COUNT];
-} RomCurveDef;
-
-typedef struct RomCurvePlacementDef
-{
-    RomCurveDef base;
-    s8 rotZ;
-    s8 rotY;
-    u8 rotX;
-    u8 pad2F;
-} RomCurvePlacementDef;
 
 typedef struct RomCurvePoint
 {
@@ -162,20 +126,6 @@ typedef struct CurvesCollisionState
     u8 pad265[CURVES_COLLISION_STATE_SIZE - 0x265];
 } CurvesCollisionState;
 
-STATIC_ASSERT(sizeof(RomCurveDef) == ROMCURVE_DEF_SIZE);
-STATIC_ASSERT(offsetof(RomCurveDef, x) == ROMCURVE_X_OFFSET);
-STATIC_ASSERT(offsetof(RomCurveDef, y) == ROMCURVE_Y_OFFSET);
-STATIC_ASSERT(offsetof(RomCurveDef, z) == ROMCURVE_Z_OFFSET);
-STATIC_ASSERT(offsetof(RomCurveDef, id) == ROMCURVE_ID_OFFSET);
-STATIC_ASSERT(offsetof(RomCurveDef, action) == ROMCURVE_ACTION_OFFSET);
-STATIC_ASSERT(offsetof(RomCurveDef, type) == ROMCURVE_TYPE_OFFSET);
-STATIC_ASSERT(offsetof(RomCurveDef, blockedLinkMask) == ROMCURVE_LINK_FLAGS_OFFSET);
-STATIC_ASSERT(offsetof(RomCurveDef, linkIds) == ROMCURVE_LINK_IDS_OFFSET);
-
-STATIC_ASSERT(sizeof(RomCurvePlacementDef) == ROMCURVE_PLACEMENT_EXT_SIZE);
-STATIC_ASSERT(offsetof(RomCurvePlacementDef, rotZ) == ROMCURVE_PLACEMENT_ROT_Z_OFFSET);
-STATIC_ASSERT(offsetof(RomCurvePlacementDef, rotY) == ROMCURVE_PLACEMENT_ROT_Y_OFFSET);
-STATIC_ASSERT(offsetof(RomCurvePlacementDef, rotX) == ROMCURVE_PLACEMENT_ROT_X_OFFSET);
 STATIC_ASSERT(sizeof(RomCurvePoint) == ROMCURVE_POINT_SIZE);
 STATIC_ASSERT(offsetof(RomCurvePoint, object) == 0x10);
 STATIC_ASSERT(offsetof(RomCurvePoint, surfaceType) == 0x14);
@@ -229,7 +179,7 @@ f32 curves_distXZ(f32 x, f32 z, u32 curveId);
 f32 curves_distToObj(GameObject* obj, u32 curveId);
 f32 curves_find(int type, int action, f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* outZ);
 RomCurveDef* RomCurve_findByIdWithIndex(u32 curveId, int* outIndex);
-int RomCurve_buildRandomPoints(RomCurvePlacementDef* curve, f32* outX, f32* outY, f32* outZ, s8* outTypes);
+int RomCurve_buildRandomPoints(RomCurveDef* curve, f32* outX, f32* outY, f32* outZ, s8* outTypes);
 int RomCurve_countRandomPoints(RomCurveDef* curve);
 int RomCurve_buildAdjacentWindowPoints(u32* curveIds, float* outX, float* outY, float* outZ);
 void RomCurve_getAdjacentWindow(RomCurveDef* curve, int* outIds);

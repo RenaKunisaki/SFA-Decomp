@@ -108,23 +108,27 @@ Cross-references verified by reading the source at the paths below.
   `0x80171300` through `curve_render` at `0x80171320`, and `gCurveObjDescriptor` at
   `0x80320AC0`. `curve_init` reads the placement's rotation bytes into `obj->rotX/rotY/rotZ`
   and picks a root-motion scale — this is the "rot: defines rotation" behaviour the wiki notes.
-- Objdef layout for a single RomCurve point, matched **exactly** offset-for-offset against the
-  wiki's table, is `RomCurvePlacementDef` in `include/main/dll/dll_0015_curves.h`:
-  - `RomCurveDef` (the `base` member) covers 0x18-0x2B: `action` (0x18), `type` (0x19), `pad1A`
-    (0x1A), `blockedLinkMask` (0x1B, = wiki's "Flags"), `linkIds[4]` (0x1C/0x20/0x24/0x28, =
-    next1..next4) — all `STATIC_ASSERT`-verified.
-  - `RomCurvePlacementDef` adds `rotZ`/`rotY`/`rotX`/`pad2F` at exactly 0x2C/0x2D/0x2E/0x2F,
-    matching the wiki's rotZ/rotY/rotX/padding row-for-row (`STATIC_ASSERT`-verified in the
-    same header).
-  - Enable/Disable GameBit16 fields (wiki 0x30/0x32) correspond to `requiredBit`/`forbiddenBit`
-    (`s16`, offsets 0x30/0x32) in the AI-pathing overlay `ObjfsaRomCurveDef`
-    (`include/main/dll/objfsa_romcurve.h`) — see below for why there are two overlay structs.
-  - A second, lighter overlay of the same 0x18+ layout, `ObjfsaRomCurveDef`
-    (`include/main/dll/objfsa_romcurve.h`), is used by the pathing/AI DLL (0x14) instead of
-    `RomCurvePlacementDef`; it collapses the rotZ/rotY/rotX triplet into a single `s8 angle` +
-    `u8 pad2D[3]`, which is imprecise — see "Ready-to-adopt code" below.
-- `RomCurveDef`/`RomCurvePoint`/`CurvesCollisionState` and all the `ROMCURVE_*` layout
-  `#define`s live in `include/main/dll/dll_0015_curves.h`.
+- Objdef layout for a single RomCurve point is `RomCurveDef` in
+  `include/main/dll/rom_curve_def.h`, matched **exactly** offset-for-offset against the wiki's
+  table. It is one record, not a family of overlays:
+  - Shared romlist placement head: `objectId` (0x00, always 110 for curves), `size` (0x02, entry
+    length in 4-byte words) — both read by `mapBuildRomListIndex` in `src/main/shader.c`.
+  - Curve head: `walkGroup` (0x03) and `linkWalkGroups[4]` (0x04), the per-link walk/patch group
+    ids that parallel `linkIds[4]`; position `x`/`y`/`z` (0x08/0x0C/0x10) and `id` (0x14).
+  - 0x18-0x2B: `action` (0x18), `type` (0x19), `unk1A` (0x1A), `blockedLinkMask` (0x1B, =
+    wiki's "Flags"), `linkIds[4]` (0x1C/0x20/0x24/0x28, = next1..next4).
+  - `yaw`/`pitch`/`tangentMag`/`pad2F` at 0x2C/0x2D/0x2E/0x2F, matching the wiki's
+    rotZ/rotY/rotX/padding row-for-row. `yaw` drives `sin` for X and `cos` for Z, `pitch` drives
+    `sin` for Y and `tangentMag` scales the resulting hermite tangent, in both
+    `Hcurves_romcurve.c` and DLL 625's hoverpad walker.
+  - Enable/Disable GameBit16 fields (wiki 0x30/0x32) are `requiredBit`/`forbiddenBit` (`s16`).
+  - `unk34` (0x34) and `roll` (0x38); `roll` is read only for types 0x08/0x1A, which are exactly
+    the types that ship a 15-word record.
+- `RomCurvePoint`/`CurvesCollisionState` and the remaining `ROMCURVE_*` layout `#define`s live in
+  `include/main/dll/dll_0015_curves.h`.
+- Type 0x26 (walk-patch) records reinterpret 0x04-0x07, 0x18, 0x1A, 0x2C-0x33 and the 17-word
+  tail as an outline description; that per-type view is `ObjfsaWalkCurveDef` in
+  `include/main/dll/objfsa_internal.h` and is deliberately kept separate.
 
 ### Next-point selection algorithm
 
@@ -149,7 +153,7 @@ Cross-references verified by reading the source at the paths below.
 | 0x16 | "Something important... the DLL has a method that looks specifically for this type" | Confirmed exactly: `curves_findNearestOfType16` (`src/main/dll/dll_0014_unk.c`) hardcodes `curve->type == 0x16`. |
 | 0x23 | CurveFish | Confirmed exactly: `gCurveFishCurveQueryKey = 0x23` in `src/dlls/objects/259_CurveFish/CurveFish.c` (DLL 0x103, `curvefish` object). |
 | 0x24 | Used by Tricky | Confirmed exactly: `Objfsa_FindNearestCurveType24` / `Objfsa_FindNearestEnabledCurveType24` (`src/main/dll/dll_0014_unk.c`) hardcode `type == 0x24`; called from `src/dlls/objects/196_Tricky/tricky.c`. |
-| 0x2A | DrakorHoverPad | `src/dlls/objects/625/625.c` (DLL 625, resource ID 0x271) follows a "ROM spline/curve network"; its local `DrakorCurveNode` overlay reuses the placement's rotZ/rotY/rotX bytes (0x2C/0x2D/0x2E) as `tangentYaw`/`tangentPitch`/`tangentMag` to derive bob/banking velocity — direct confirmation of the wiki's "rot: ... can influence how some objects follow the path." No literal `== 0x2A` type check found (likely passed in via a caller-side type filter, not visible in this TU). |
+| 0x2A | DrakorHoverPad | `src/dlls/objects/625/625.c` (DLL 625, resource ID 0x271) follows a "ROM spline/curve network"; it reads the placement's `yaw`/`pitch`/`tangentMag` bytes (0x2C/0x2D/0x2E) to derive bob/banking velocity — direct confirmation of the wiki's "rot: ... can influence how some objects follow the path." No literal `== 0x2A` type check found (likely passed in via a caller-side type filter, not visible in this TU). |
 | 0x01, 0x02, 0x19, 0x1F | Dragon Rock Bottom / WB / DIM barrel grabbers / crawl tunnels | Not found. These types are presumably passed as filter arguments from each object's own DLL when it calls the curve-find interface, rather than hardcoded in the shared curve DLL; the specific DLLs for "WB" and Dragon Rock Bottom's objects were not identified by name in this pass. |
 | 0x17 | *(not on the wiki)* | `curves_findEnclosingLoopOfType17` (`src/main/dll/dll_0014_unk.c`) hardcodes `type == 0x17` — a special-cased type the wiki's "Known types" list doesn't mention. Worth flagging upstream. |
 
@@ -197,8 +201,9 @@ Cross-references verified by reading the source at the paths below.
 
 The RomCurve records ship inside the per-map `.romlist.zlb` object streams (objType 110), not in
 `ANIMCURV.bin` (which is the AnimCurv sequence data above). A survey of **every** type-110 record
-across all 124 rev1 romlists (5480 records) settles the on-disk shape of the
-`RomCurveDef`(0x2C)/`RomCurvePlacementDef`(0x30)/`ObjfsaRomCurveDef`(0x34) prefix family:
+across all 124 rev1 romlists (5480 records) settles the on-disk shape of the record, and is why
+the former `RomCurveDef`(0x2C)/`RomCurvePlacementDef`(0x30)/`ObjfsaRomCurveDef`(0x34) prefix
+family is now a single `RomCurveDef`:
 
 - **Every shipped record carries the full 0x34-byte base** — record lengths are 13/14/15/17 words
   (0x34/0x38/0x3C/0x44 bytes); no 11- or 12-word record exists. The 0x2C and 0x30 structs are
@@ -224,27 +229,9 @@ across all 124 rev1 romlists (5480 records) settles the on-disk shape of the
 
 ## Ready-to-adopt code
 
-Two write-ups the wiki backs with concrete values that this codebase doesn't yet centralize:
+One write-up the wiki backs with concrete values that this codebase doesn't yet centralize:
 
-1. `ObjfsaRomCurveDef`'s tail (`include/main/dll/objfsa_romcurve.h`) currently reads:
-   ```c
-   s8 angle;
-   u8 pad2D[3];
-   ```
-   at offsets 0x2C-0x2F. Both the wiki's objdef table and this codebase's own
-   `RomCurvePlacementDef` (`dll_0015_curves.h`, offsets 0x2C/0x2D/0x2E/0x2F) and
-   `DrakorCurveNode` (`src/dlls/objects/625/625.c`, same offsets named
-   `tangentYaw`/`tangentPitch`/`tangentMag`) show this is really three separate one-byte fields,
-   not one byte of "angle" plus 3 bytes of padding. A maintainer touching this header could
-   tighten it to match the sibling structs:
-   ```c
-   s8 rotZ;   /* 0x2C, aka tangentYaw in DrakorCurveNode's per-node overlay */
-   s8 rotY;   /* 0x2D, aka tangentPitch */
-   u8 rotX;   /* 0x2E, aka tangentMag */
-   u8 pad2F;
-   ```
-
-2. The wiki's "Known types" table has no equivalent named constant set in this codebase — every
+1. The wiki's "Known types" table has no equivalent named constant set in this codebase — every
    consumer above spells the type out as a bare hex literal (`0x16`, `0x17`, `0x23`, `0x24`,
    `0x15`, ...). A maintainer could centralize the *verified* subset (only the ones this pass
    confirmed against live code) alongside the existing `ROMCURVE_TYPE_*` constants in

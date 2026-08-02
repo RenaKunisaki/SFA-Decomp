@@ -30,7 +30,7 @@
 #include "main/track_dolphin_api.h"
 #include "main/audio/sfx_channel_query_api.h"
 #include "main/audio/sfx_play_api.h"
-#include "main/dll/objfsa_romcurve.h"
+#include "main/dll/rom_curve_def.h"
 #include "main/lightmap_api.h"
 #include "main/pi_dolphin_api.h"
 #include "main/dll/path_control_interface.h"
@@ -1336,10 +1336,10 @@ static inline void* skeetla_validateRouteEntry(void* entry)
     {
         return NULL;
     }
-    if (((((ObjfsaRomCurveDef*)entry)->requiredBit == -1) ||
-         (mainGetBit(((ObjfsaRomCurveDef*)entry)->requiredBit) != 0)) &&
-        ((((ObjfsaRomCurveDef*)entry)->forbiddenBit == -1) ||
-         (mainGetBit(((ObjfsaRomCurveDef*)entry)->forbiddenBit) == 0)))
+    if (((((RomCurveDef*)entry)->requiredBit == -1) ||
+         (mainGetBit(((RomCurveDef*)entry)->requiredBit) != 0)) &&
+        ((((RomCurveDef*)entry)->forbiddenBit == -1) ||
+         (mainGetBit(((RomCurveDef*)entry)->forbiddenBit) == 0)))
     {
         return entry;
     }
@@ -1367,22 +1367,22 @@ void* trickyFindNearestLinkedRouteEntry(u8* context, u8* routeDef, int linkSelec
     mask = 1;
     while (i < 4)
     {
-        curveId = ((ObjfsaRomCurveDef*)routeDef)->linkIds[i];
-        if ((curveId > -1) && (((((ObjfsaRomCurveDef*)routeDef)->blockedLinkMask & mask) ^ routeFlagValue) == 0))
+        curveId = ((RomCurveDef*)routeDef)->linkIds[i];
+        if ((curveId > -1) && (((((RomCurveDef*)routeDef)->blockedLinkMask & mask) ^ routeFlagValue) == 0))
         {
             candidates[count] = (*gRomCurveInterface)->getById(curveId);
             if (candidates[count] != NULL)
             {
                 entry = candidates[count];
-                if ((linkSelector == 0) || (((ObjfsaRomCurveDef*)routeDef)->linkSelectors[count] == linkSelector))
+                if ((linkSelector == 0) || (((RomCurveDef*)routeDef)->linkWalkGroups[count] == linkSelector))
                 {
-                    requiredBit = ((ObjfsaRomCurveDef*)entry)->requiredBit;
+                    requiredBit = ((RomCurveDef*)entry)->requiredBit;
                     if ((requiredBit == -1) || (mainGetBit(requiredBit) != 0))
                     {
-                        forbiddenBit = ((ObjfsaRomCurveDef*)entry)->forbiddenBit;
+                        forbiddenBit = ((RomCurveDef*)entry)->forbiddenBit;
                         if ((forbiddenBit == -1) || (mainGetBit(forbiddenBit) == 0))
                         {
-                            if ((((ObjfsaRomCurveDef*)routeDef)->unk1A != 9) || (((ObjfsaRomCurveDef*)entry)->unk1A != 8))
+                            if ((((RomCurveDef*)routeDef)->unk1A != 9) || (((RomCurveDef*)entry)->unk1A != 8))
                             {
                                 count++;
                             }
@@ -1625,23 +1625,23 @@ void trickyRankLinkedRouteCandidates(GameObject* obj, u8* outRouteFlags, s16 lin
     for (curveIdx = 0, cp = curves; curveIdx < count; cp++, curveIdx++)
     {
         curve = *cp;
-        if ((((ObjfsaRomCurveDef*)curve)->type != 0x24) || (*(u8*)((u8*)curve + 3) != 0))
+        if ((((RomCurveDef*)curve)->type != 0x24) || (((RomCurveDef*)curve)->walkGroup != 0))
         {
             continue;
         }
-        if (((((ObjfsaRomCurveDef*)curve)->requiredBit != -1) &&
-             (mainGetBit(((ObjfsaRomCurveDef*)curve)->requiredBit) == 0)) ||
-            ((((ObjfsaRomCurveDef*)curve)->forbiddenBit != -1) &&
-             (mainGetBit(((ObjfsaRomCurveDef*)curve)->forbiddenBit) != 0)))
+        if (((((RomCurveDef*)curve)->requiredBit != -1) &&
+             (mainGetBit(((RomCurveDef*)curve)->requiredBit) == 0)) ||
+            ((((RomCurveDef*)curve)->forbiddenBit != -1) &&
+             (mainGetBit(((RomCurveDef*)curve)->forbiddenBit) != 0)))
         {
             continue;
         }
 
-        curveZ = ((ObjfsaRomCurveDef*)curve)->z;
+        curveZ = ((RomCurveDef*)curve)->z;
         p = state->targetPosPtr;
         {
             targetZDistanceSquared = (p[2] - curveZ) * (p[2] - curveZ);
-            curveX = ((ObjfsaRomCurveDef*)curve)->x;
+            curveX = ((RomCurveDef*)curve)->x;
             targetXDistanceSquared = (p[0] - curveX) * (p[0] - curveX);
             {
                 f32 objectXDistanceSquared =
@@ -1656,19 +1656,19 @@ void trickyRankLinkedRouteCandidates(GameObject* obj, u8* outRouteFlags, s16 lin
         {
             for (j = 0; j < 4; j++)
             {
-                linkCurveId = ((ObjfsaRomCurveDef*)curve)->linkIds[j];
-                if ((linkCurveId > -1) && (((ObjfsaRomCurveDef*)curve)->linkSelectors[j] == linkSelector))
+                linkCurveId = ((RomCurveDef*)curve)->linkIds[j];
+                if ((linkCurveId > -1) && (((RomCurveDef*)curve)->linkWalkGroups[j] == linkSelector))
                 {
-                    if (((ObjfsaRomCurveDef*)curve)->unk1A == 8)
+                    if (((RomCurveDef*)curve)->unk1A == 8)
                     {
                         linkedCurve = (*gRomCurveInterface)->getById(linkCurveId);
-                        if ((linkedCurve != NULL) && (((ObjfsaRomCurveDef*)linkedCurve)->unk1A == 9))
+                        if ((linkedCurve != NULL) && (((RomCurveDef*)linkedCurve)->unk1A == 9))
                         {
                             continue;
                         }
                     }
 
-                    routeFlags = (u8)(((ObjfsaRomCurveDef*)curve)->blockedLinkMask >> (u8)j);
+                    routeFlags = (u8)(((RomCurveDef*)curve)->blockedLinkMask >> (u8)j);
                     break;
                 }
             }
@@ -2359,7 +2359,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
     trickyDebugPrint(strs + 0x404, state->movementState);
     switch (state->movementState)
     {
-    ObjfsaRomCurveDef* node;
+    RomCurveDef* node;
     case TRICKY_MOVE_WALK_WAIT:
         trickyDebugPrint(strs + 0x41c);
         v = -0.15f * timeDelta + velBefore;
@@ -2493,7 +2493,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                             trickyRequestMove((int)obj, 0x18, 0.00975f, 0x40000c0);
                         }
                         state->verticalDelta =
-                            (((ObjfsaRomCurveDef*)state->route.nodeA0)->y - obj->anim.worldPosY) /
+                            (((RomCurveDef*)state->route.nodeA0)->y - obj->anim.worldPosY) /
                             32.865f;
                         state->movementState = TRICKY_MOVE_JUMPUP;
                         if (state->route.reverse != 0)
@@ -2526,7 +2526,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                         }
                         trickyRequestMove((int)obj, 0x19, 0.0125f, 0x40000c0);
                         state->verticalDelta =
-                            (obj->anim.worldPosY - ((ObjfsaRomCurveDef*)state->route.nodeA0)->y) /
+                            (obj->anim.worldPosY - ((RomCurveDef*)state->route.nodeA0)->y) /
                             33.114f;
                         state->movementState = TRICKY_MOVE_JUMPDOWN;
                         if (state->route.reverse != 0)
@@ -2561,12 +2561,12 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             {
                 node = NULL;
             }
-            else if (((((ObjfsaRomCurveDef*)prevNode)->requiredBit == -1) ||
-                      (mainGetBit(((ObjfsaRomCurveDef*)prevNode)->requiredBit) != 0)) &&
-                     ((((ObjfsaRomCurveDef*)prevNode)->forbiddenBit == -1) ||
-                      (mainGetBit(((ObjfsaRomCurveDef*)prevNode)->forbiddenBit) == 0)))
+            else if (((((RomCurveDef*)prevNode)->requiredBit == -1) ||
+                      (mainGetBit(((RomCurveDef*)prevNode)->requiredBit) != 0)) &&
+                     ((((RomCurveDef*)prevNode)->forbiddenBit == -1) ||
+                      (mainGetBit(((RomCurveDef*)prevNode)->forbiddenBit) == 0)))
             {
-                node = (ObjfsaRomCurveDef*)prevNode;
+                node = (RomCurveDef*)prevNode;
             }
             else
             {
@@ -2609,7 +2609,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             state->speed = (v < 0.0f) ? 0.0f : v;
         }
         node = state->route.nodeA0;
-        if ((((ObjfsaRomCurveDef*)state->route.node9C)->unk1A != 9) && (node->unk1A != 9))
+        if ((((RomCurveDef*)state->route.node9C)->unk1A != 9) && (node->unk1A != 9))
         {
             f32* tpos = state->targetPosPtr;
             delta[0] = tpos[0] - obj->anim.worldPosX;
@@ -2623,7 +2623,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             {
                 for (step = 0; step < 4; step++)
                 {
-                    u8 grp = node->linkSelectors[step];
+                    u8 grp = node->linkWalkGroups[step];
                     if (grp == state->walkGroup)
                     {
                         break;
@@ -2677,7 +2677,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             if (node != 0)
             {
                 RomCurve_advanceToNextSegment(&state->route, node);
-                type = ((ObjfsaRomCurveDef*)state->route.node9C)->unk1A;
+                type = ((RomCurveDef*)state->route.node9C)->unk1A;
                 switch (type)
                 {
                 case 2:
@@ -2748,7 +2748,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
         }
         trickyAdvanceRouteTargetAhead(obj, &state->route, state->speed);
         moved = moveTricky(obj, &state->route.posX);
-        type = ((ObjfsaRomCurveDef*)state->route.nodeA0)->unk1A;
+        type = ((RomCurveDef*)state->route.nodeA0)->unk1A;
         switch (type)
         {
         case 1:
@@ -2896,7 +2896,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
         {
             f32 dx;
             TrickyJumpArc* arc = &state->jumpArc;
-            ObjfsaRomCurveDef* landNode = state->route.nodeA0;
+            RomCurveDef* landNode = state->route.nodeA0;
             dx = landNode->x - obj->anim.worldPosX;
             sqx = dx * dx;
             dx = landNode->z - obj->anim.worldPosZ;
@@ -2940,7 +2940,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
         arc->time = arc->time + timeDelta;
         if (arc->time >= arc->duration)
         {
-            obj->anim.localPosY = ((ObjfsaRomCurveDef*)state->route.nodeA0)->y;
+            obj->anim.localPosY = ((RomCurveDef*)state->route.nodeA0)->y;
             state->arcMoveProgress = 1.0f;
             state->movementState = TRICKY_MOVE_WALK_NODES;
         }
@@ -3056,7 +3056,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                     trickyRequestMove((int)obj, 0x18, 0.00975f, 0x40000c0);
                 }
                 state->verticalDelta =
-                    (((ObjfsaRomCurveDef*)state->route.nodeA0)->y - obj->anim.worldPosY) /
+                    (((RomCurveDef*)state->route.nodeA0)->y - obj->anim.worldPosY) /
                     32.865f;
                 state->movementState = TRICKY_MOVE_JUMPUP;
                 if (state->route.reverse != 0)
@@ -3170,7 +3170,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                 }
                 trickyRequestMove((int)obj, 0x19, 0.0125f, 0x40000c0);
                 state->verticalDelta =
-                    (obj->anim.worldPosY - ((ObjfsaRomCurveDef*)state->route.nodeA0)->y) /
+                    (obj->anim.worldPosY - ((RomCurveDef*)state->route.nodeA0)->y) /
                     33.114f;
                 state->movementState = TRICKY_MOVE_JUMPDOWN;
                 if (state->route.reverse != 0)
@@ -5387,7 +5387,7 @@ void trickyFlame(GameObject* obj, TrickyState* trickyState)
         }
         else
         {
-            (trickyState)->flameNode1 = (struct ObjfsaRomCurveDef*)(*gRomCurveInterface)
+            (trickyState)->flameNode1 = (struct RomCurveDef*)(*gRomCurveInterface)
                     ->getById((trickyState)->flameNode0->linkIds[0]);
             newTarget = (int)&(trickyState)->flameNode1->x;
             if ((u32)(trickyState)->targetPosPtr != newTarget)
@@ -5436,7 +5436,7 @@ void trickyFlame(GameObject* obj, TrickyState* trickyState)
     case 7:
         trickyDebugPrint(strBase + 0x744);
         {
-            s16 srcAng = (s16)((trickyState)->flameNode0->rotZ << 8);
+            s16 srcAng = (s16)((trickyState)->flameNode0->yaw << 8);
             s16 delta = (s16)(srcAng - (u16) * (s16*)obj);
             int absDelta;
             if (delta > 0x8000)
@@ -5681,7 +5681,7 @@ void tricky_updateBallRoll(int obj, TrickyState* ball)
     int toNode;
     u8 nodeCount;
     int node;
-    ObjfsaRomCurveDef* nodeSet;
+    RomCurveDef* nodeSet;
     s32* link;
     u32 mask;
     int bit;
@@ -5705,7 +5705,7 @@ void tricky_updateBallRoll(int obj, TrickyState* ball)
         {
             if (ts->route.atSegmentEnd != 0)
             {
-                nodeSet = (ObjfsaRomCurveDef*)ts->route.nodeA4;
+                nodeSet = (RomCurveDef*)ts->route.nodeA4;
                 mask = 1;
                 link = nodeSet->linkIds;
                 for (bit = 0; bit < 4; bit++)
@@ -5722,10 +5722,10 @@ void tricky_updateBallRoll(int obj, TrickyState* ball)
         else if (ts->route.atSegmentEnd == 0)
         {
             int node2;
-            ObjfsaRomCurveDef* nodeSet2;
+            RomCurveDef* nodeSet2;
             s32* link2;
             u32 mask2;
-            nodeSet2 = (ObjfsaRomCurveDef*)ts->route.nodeA4;
+            nodeSet2 = (RomCurveDef*)ts->route.nodeA4;
             mask2 = 1;
             link2 = nodeSet2->linkIds;
             for (bit = 0; bit < 4; bit++)
@@ -5918,7 +5918,7 @@ static inline void trickyAdvanceNode(u8* state)
     for (k = 4; k != 0; k--)
     {
         linkId = *(int*)((u8*)((TrickyState*)state)->scratch704.ptr + off + 0x1c);
-        if (linkId > -1 && linkId != ((ObjfsaRomCurveDef*)((TrickyState*)state)->scratch700.ptr)->id)
+        if (linkId > -1 && linkId != ((RomCurveDef*)((TrickyState*)state)->scratch700.ptr)->id)
         {
             ((TrickyState*)state)->scratch700.ptr = ((TrickyState*)state)->scratch704.ptr;
             ((TrickyState*)state)->scratch704.ptr =
@@ -5958,10 +5958,10 @@ void trickyDigTunnel(u8* obj, u8* state)
     {
     case 0:
         pc = Objfsa_FindNearestCurveType24(((TrickyState*)state)->targetPosPtr, -1, 2);
-        ((TrickyState*)state)->scratch708.ptr = (u8*)(*gRomCurveInterface)->getById(((ObjfsaRomCurveDef*)pc)->linkIds[0]);
+        ((TrickyState*)state)->scratch708.ptr = (u8*)(*gRomCurveInterface)->getById(((RomCurveDef*)pc)->linkIds[0]);
         ((TrickyState*)state)->scratch700.ptr = pc;
-        ((TrickyState*)state)->scratch704.ptr = (u8*)(*gRomCurveInterface)->getById(((ObjfsaRomCurveDef*)pc)->linkIds[1]);
-        if (((ObjfsaRomCurveDef*)((TrickyState*)state)->scratch704.ptr)->walkGroup != 0)
+        ((TrickyState*)state)->scratch704.ptr = (u8*)(*gRomCurveInterface)->getById(((RomCurveDef*)pc)->linkIds[1]);
+        if (((RomCurveDef*)((TrickyState*)state)->scratch704.ptr)->walkGroup != 0)
         {
             *(u32*)&((TrickyState*)state)->scratch704.ptr =
                 ((TrickyState*)state)->scratch704.u ^ ((TrickyState*)state)->scratch708.u;
@@ -5970,7 +5970,7 @@ void trickyDigTunnel(u8* obj, u8* state)
             *(u32*)&((TrickyState*)state)->scratch704.ptr =
                 ((TrickyState*)state)->scratch704.u ^ ((TrickyState*)state)->scratch708.u;
         }
-        ptr = (u8*)&((ObjfsaRomCurveDef*)((TrickyState*)state)->scratch708.ptr)->x;
+        ptr = (u8*)&((RomCurveDef*)((TrickyState*)state)->scratch708.ptr)->x;
         if (((TrickyState*)state)->targetPosPtr != (f32*)ptr)
         {
             ((TrickyState*)state)->targetPosPtr = (f32*)ptr;
@@ -5987,7 +5987,7 @@ void trickyDigTunnel(u8* obj, u8* state)
         trickyDebugPrint((char*)(base + 0x7b8));
         trickyUpdateMovementState((GameObject*)obj, 5.0f, (TrickyState*)state);
         gidx = Objfsa_GetWalkGroupIndexAtPoint((f32*)(obj + 0x18), NULL);
-        if (((ObjfsaRomCurveDef*)((TrickyState*)state)->scratch708.ptr)->walkGroup == gidx)
+        if (((RomCurveDef*)((TrickyState*)state)->scratch708.ptr)->walkGroup == gidx)
         {
             state[0x9] = 1;
             state[0xa] = 2;
@@ -5995,7 +5995,7 @@ void trickyDigTunnel(u8* obj, u8* state)
         break;
     case 2:
         trickyDebugPrint((char*)(base + 0x7cc));
-        pos = (u8*)&((ObjfsaRomCurveDef*)((TrickyState*)state)->scratch700.ptr)->x;
+        pos = (u8*)&((RomCurveDef*)((TrickyState*)state)->scratch700.ptr)->x;
         trickyUpdateApproachSpeed((GameObject*)obj, 5.0f, (TrickyState*)state, (f32*)pos, 1);
         if (moveTricky((GameObject*)obj, (f32*)pos) == 0)
         {
@@ -6013,9 +6013,9 @@ void trickyDigTunnel(u8* obj, u8* state)
     case 3:
         trickyRequestMove((int)obj, 0xe, 0.033f, 0x4000000);
         ((TrickyState*)state)->dirX =
-            ((ObjfsaRomCurveDef*)((TrickyState*)state)->scratch704.ptr)->x - ((ObjfsaRomCurveDef*)((TrickyState*)state)->scratch700.ptr)->x;
+            ((RomCurveDef*)((TrickyState*)state)->scratch704.ptr)->x - ((RomCurveDef*)((TrickyState*)state)->scratch700.ptr)->x;
         ((TrickyState*)state)->dirZ =
-            ((ObjfsaRomCurveDef*)((TrickyState*)state)->scratch704.ptr)->z - ((ObjfsaRomCurveDef*)((TrickyState*)state)->scratch700.ptr)->z;
+            ((RomCurveDef*)((TrickyState*)state)->scratch704.ptr)->z - ((RomCurveDef*)((TrickyState*)state)->scratch700.ptr)->z;
         Sfx_AddLoopedObjectSound((u32)obj, SFXTRIG_trwhin1);
         ((TrickyState*)state)->scratch70C.f = (f32)(int)randomGetRange(0x14, 0xb4);
         state[0xa] = 4;
@@ -6037,9 +6037,9 @@ void trickyDigTunnel(u8* obj, u8* state)
         spd = ((f32(**)(u8*, u8*))(**(u8***)((u8*)((TrickyState*)state)->followObj + 0x68)))[8](
             (u8*)((TrickyState*)state)->followObj, obj);
         ((GameObject*)obj)->anim.localPosX =
-            ((TrickyState*)state)->dirX * spd + ((ObjfsaRomCurveDef*)((TrickyState*)state)->scratch700.ptr)->x;
+            ((TrickyState*)state)->dirX * spd + ((RomCurveDef*)((TrickyState*)state)->scratch700.ptr)->x;
         ((GameObject*)obj)->anim.localPosZ =
-            ((TrickyState*)state)->dirZ * spd + ((ObjfsaRomCurveDef*)((TrickyState*)state)->scratch700.ptr)->z;
+            ((TrickyState*)state)->dirZ * spd + ((RomCurveDef*)((TrickyState*)state)->scratch700.ptr)->z;
         vx = *(f32*)(*(u8**)&((GameObject*)obj)->extra + 0x2c);
         vxx = vx * vx;
         vz = *(f32*)(*(u8**)&((GameObject*)obj)->extra + 0x30);
@@ -6062,7 +6062,7 @@ void trickyDigTunnel(u8* obj, u8* state)
                 off = 0;
                 for (k = 4; k != 0; k--) {
                     linkId = *(int*)((u8*)((TrickyState*)state)->scratch704.ptr + off + 0x1c);
-                    if (linkId > -1 && linkId != ((ObjfsaRomCurveDef*)((TrickyState*)state)->scratch700.ptr)->id) {
+                    if (linkId > -1 && linkId != ((RomCurveDef*)((TrickyState*)state)->scratch700.ptr)->id) {
                         ((TrickyState*)state)->scratch700.ptr = ((TrickyState*)state)->scratch704.ptr;
                         ((TrickyState*)state)->scratch704.ptr =
                             (u8*)(*gRomCurveInterface)
@@ -6089,8 +6089,8 @@ void trickyDigTunnel(u8* obj, u8* state)
     case 5:
         trickyDebugPrint((char*)(base + 0x7f8),
                          Vec_xzDistance(&((GameObject*)obj)->anim.worldPosX,
-                                        &((ObjfsaRomCurveDef*)((TrickyState*)state)->scratch704.ptr)->x));
-        pos = (u8*)&((ObjfsaRomCurveDef*)((TrickyState*)state)->scratch704.ptr)->x;
+                                        &((RomCurveDef*)((TrickyState*)state)->scratch704.ptr)->x));
+        pos = (u8*)&((RomCurveDef*)((TrickyState*)state)->scratch704.ptr)->x;
         trickyUpdateApproachSpeed((GameObject*)obj, 5.0f, (TrickyState*)state, (f32*)pos, 1);
         if (moveTricky((GameObject*)obj, (f32*)pos) == 0)
         {
@@ -6100,7 +6100,7 @@ void trickyDigTunnel(u8* obj, u8* state)
         break;
     case 6:
         trickyDebugPrint((char*)(base + 0x810));
-        pos = (u8*)&((ObjfsaRomCurveDef*)((TrickyState*)state)->scratch704.ptr)->x;
+        pos = (u8*)&((RomCurveDef*)((TrickyState*)state)->scratch704.ptr)->x;
         trickyUpdateApproachSpeed((GameObject*)obj, 5.0f, (TrickyState*)state, (f32*)pos, 1);
         if (moveTricky((GameObject*)obj, (f32*)pos) == 0)
         {
@@ -6179,7 +6179,7 @@ void tricky_stateFindSecretDig(u8* obj, u8* state)
             Objfsa_FindNearestEnabledCurveType24(&((TrickyState*)state)->followObj->anim.worldPosX, -1, 2);
         if (((TrickyState*)state)->scratch70C.ptr != NULL &&
             getXZDistance(&((TrickyState*)state)->followObj->anim.worldPosX,
-                          &((ObjfsaRomCurveDef*)((TrickyState*)state)->scratch70C.ptr)->x) > 10000.0f)
+                          &((RomCurveDef*)((TrickyState*)state)->scratch70C.ptr)->x) > 10000.0f)
         {
             ((TrickyState*)state)->scratch70C.ptr = NULL;
         }
@@ -6191,7 +6191,7 @@ void tricky_stateFindSecretDig(u8* obj, u8* state)
             if (((TrickyState*)state)->scratch70C.ptr != NULL)
             {
                 state[0xa] = 2;
-                ptr = (u8*)&((ObjfsaRomCurveDef*)((TrickyState*)state)->scratch70C.ptr)->x;
+                ptr = (u8*)&((RomCurveDef*)((TrickyState*)state)->scratch70C.ptr)->x;
                 if (((TrickyState*)state)->targetPosPtr != (f32*)ptr)
                 {
                     ((TrickyState*)state)->targetPosPtr = (f32*)ptr;
@@ -6254,8 +6254,8 @@ void tricky_stateFindSecretDig(u8* obj, u8* state)
             if (ptr != NULL)
             {
                 pc = (u8*)((TrickyState*)state)->followObj;
-                ((TrickyState*)state)->dirX = ((ObjfsaRomCurveDef*)ptr)->x - ((GameObject*)pc)->anim.worldPosX;
-                ((TrickyState*)state)->dirZ = ((ObjfsaRomCurveDef*)ptr)->z - ((GameObject*)pc)->anim.worldPosZ;
+                ((TrickyState*)state)->dirX = ((RomCurveDef*)ptr)->x - ((GameObject*)pc)->anim.worldPosX;
+                ((TrickyState*)state)->dirZ = ((RomCurveDef*)ptr)->z - ((GameObject*)pc)->anim.worldPosZ;
                 dist = sqrtf(((TrickyState*)state)->dirX * ((TrickyState*)state)->dirX +
                           ((TrickyState*)state)->dirZ * ((TrickyState*)state)->dirZ);
                 if (0.0f != dist)

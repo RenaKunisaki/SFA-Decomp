@@ -8,6 +8,7 @@
 
 #include "dlls/objects/471_DIM2SnowBal.h"
 #include "main/dll/rom_curve_interface.h"
+#include "main/dll/rom_curve_def.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
 #include "sys/objects.h"
@@ -19,14 +20,6 @@
 #define DIM2_PATH_GENERATOR_CURVE_GROUP    21
 #define DIM2_PATH_GENERATOR_CURVE_ACTION   10
 #define DIM2_PATH_GENERATOR_SNOWBALL_GROUP 47
-
-/* RomCurve definition record (subset) returned by gRomCurveInterface->getById. */
-typedef struct Dim2PathRomCurveDef {
-    u8 pad0[0x8 - 0x0];
-    f32 originX;
-    f32 originY;
-    f32 originZ;
-} Dim2PathRomCurveDef;
 
 u8 DIM2PathGenerator_getCurveVals(GameObject* obj, int** outPathX, int** outPathY, int** outPathZ,
                                   int** outPathNodeData) {
@@ -83,16 +76,16 @@ void DIM2PathGenerator_update(GameObject* obj) {
                         ->find(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ, &curveGroup, 1,
                                DIM2_PATH_GENERATOR_CURVE_ACTION);
             if (found != -1) {
-                Dim2PathRomCurveDef* curve = (Dim2PathRomCurveDef*)(*gRomCurveInterface)->getById(found);
+                RomCurveDef* curve = (RomCurveDef*)(*gRomCurveInterface)->getById(found);
 
-                (*gRomCurveInterface)->countRandomPoints((RomCurveDef*)curve);
+                (*gRomCurveInterface)->countRandomPoints(curve);
                 state->pointCount = (*gRomCurveInterface)
-                                        ->buildRandomPoints((RomCurvePlacementDef*)curve, state->pathX, state->pathY,
+                                        ->buildRandomPoints(curve, state->pathX, state->pathY,
                                                             state->pathZ, state->pathNodeData);
                 state->flags |= DIM2_PATH_GENERATOR_FLAG_CURVE_BUILT;
-                state->originX = curve->originX;
-                state->originY = curve->originY;
-                state->originZ = curve->originZ;
+                state->originX = curve->x;
+                state->originY = curve->y;
+                state->originZ = curve->z;
             }
         }
     } else {

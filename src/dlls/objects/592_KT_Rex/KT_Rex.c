@@ -1,7 +1,7 @@
 /* DLL 0x0250 */
 #include "dlls/object_descriptor.h"
 #include "dolphin/mtx.h"
-#include "main/dll/objfsa_romcurve.h"
+#include "main/dll/rom_curve_def.h"
 #include "main/audio/music_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/camera_interface.h"
@@ -1668,7 +1668,7 @@ void ktrex_init(GameObject* obj, char* arg, int flag)
     int* pC;
     GroundBaddieState* rt;
     int i;
-    ObjfsaRomCurveDef* cp;
+    RomCurveDef* cp;
     u8 spawnFlags;
     s16 yaw;
     gKTRexRuntime = (obj)->extra;
@@ -1705,21 +1705,21 @@ void ktrex_init(GameObject* obj, char* arg, int flag)
     base = base + 0x5c / 4;
     for (; i < 4; i++)
     {
-        cp = (ObjfsaRomCurveDef*)(*gRomCurveInterface)->getById(*pA);
+        cp = (RomCurveDef*)(*gRomCurveInterface)->getById(*pA);
         if (cp != NULL)
         {
             *(f32*)((char*)gKTRexState + iv + 0x10) = cp->x;
             *(f32*)((char*)gKTRexState + iv + 0x20) = cp->y;
             *(f32*)((char*)gKTRexState + iv + 0x30) = cp->z;
-            cp = (ObjfsaRomCurveDef*)(*gRomCurveInterface)->getById(*pB);
+            cp = (RomCurveDef*)(*gRomCurveInterface)->getById(*pB);
             *(f32*)((char*)gKTRexState + iv + 0x40) = cp->x;
             *(f32*)((char*)gKTRexState + iv + 0x50) = cp->y;
             *(f32*)((char*)gKTRexState + iv + 0x60) = cp->z;
-            cp = (ObjfsaRomCurveDef*)(*gRomCurveInterface)->getById(*pC);
+            cp = (RomCurveDef*)(*gRomCurveInterface)->getById(*pC);
             *(f32*)((char*)gKTRexState + iv + 0x70) = cp->x;
             *(f32*)((char*)gKTRexState + iv + 0x80) = cp->y;
             *(f32*)((char*)gKTRexState + iv + 0x90) = cp->z;
-            cp = (ObjfsaRomCurveDef*)(*gRomCurveInterface)->getById(*base);
+            cp = (RomCurveDef*)(*gRomCurveInterface)->getById(*base);
             *(f32*)((char*)gKTRexState + iv + 0xa0) = cp->x;
             *(f32*)((char*)gKTRexState + iv + 0xb0) = cp->y;
             *(f32*)((char*)gKTRexState + iv + 0xc0) = cp->z;

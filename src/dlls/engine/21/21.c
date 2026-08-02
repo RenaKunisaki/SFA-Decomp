@@ -98,13 +98,13 @@ static inline RomCurveDef* RomCurve_FindByIdInline(u32 curveId)
     return NULL;
 }
 
-static inline int RomCurve_noUnblockedLinks(RomCurvePlacementDef* curve)
+static inline int RomCurve_noUnblockedLinks(RomCurveDef* curve)
 {
     int bit;
 
     for (bit = 0; bit < ROMCURVE_LINK_COUNT; bit++)
     {
-        if ((s32)curve->base.linkIds[bit] != -1 && (curve->base.blockedLinkMask & (1 << bit)) == 0)
+        if ((s32)curve->linkIds[bit] != -1 && (curve->blockedLinkMask & (1 << bit)) == 0)
         {
             return 0;
         }
@@ -112,13 +112,13 @@ static inline int RomCurve_noUnblockedLinks(RomCurvePlacementDef* curve)
     return 1;
 }
 
-static inline int RomCurve_noBlockedLinks(RomCurvePlacementDef* curve)
+static inline int RomCurve_noBlockedLinks(RomCurveDef* curve)
 {
     int bit;
 
     for (bit = 0; bit < ROMCURVE_LINK_COUNT; bit++)
     {
-        if ((s32)curve->base.linkIds[bit] != -1 && (curve->base.blockedLinkMask & (1 << bit)) != 0)
+        if ((s32)curve->linkIds[bit] != -1 && (curve->blockedLinkMask & (1 << bit)) != 0)
         {
             return 0;
         }

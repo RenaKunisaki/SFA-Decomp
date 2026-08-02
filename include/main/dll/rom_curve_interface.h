@@ -4,7 +4,6 @@
 #include "global.h"
 
 typedef struct RomCurveDef RomCurveDef;
-typedef struct RomCurvePlacementDef RomCurvePlacementDef;
 typedef struct RomCurveWalker RomCurveWalker;
 typedef struct RomCurveInterface RomCurveInterface;
 struct GameObject;
@@ -55,7 +54,7 @@ typedef int (*RomCurveFindShortestPathLinkFn)(RomCurveDef *startCurve,int unused
                                               int *previousCurveId);
 typedef int (*RomCurveIsPointInsideLoopFn)(int curveId,f32 x,f32 y,f32 z,f32 *outDistance);
 typedef int (*RomCurveCountRandomPointsFn)(RomCurveDef *curve);
-typedef int (*RomCurveBuildRandomPointsFn)(RomCurvePlacementDef *curve,f32 *outX,f32 *outY,f32 *outZ,s8 *outTypes);
+typedef int (*RomCurveBuildRandomPointsFn)(RomCurveDef *curve,f32 *outX,f32 *outY,f32 *outZ,s8 *outTypes);
 typedef int (*RomCurveInitFromCurveIdFn)(RomCurveWalker *walker,struct GameObject *obj,int startCurveId,
                                          RomCurveInterface *interface);
 typedef u8 (*RomCurveInitWalkerFn)(void *walker,void *obj,f32 scale,int *curveParam,int arg);

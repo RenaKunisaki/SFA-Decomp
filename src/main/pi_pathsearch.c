@@ -2,7 +2,7 @@
 #include "dolphin/mtx.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/dll/dll_0015_curves.h"
-#include "main/dll/objfsa_romcurve.h"
+#include "main/dll/rom_curve_def.h"
 #include "main/gamebits.h"
 #include "main/pi_dolphin.h"
 #include "main/mm.h"
@@ -40,10 +40,10 @@ extern void* lbl_803DCD10;
 extern char* lbl_803DCD08;
 
 static int pathSearchNodeMatchesTarget(PathSearch* search, PathSearchNode* node) {
-    ObjfsaRomCurveDef* point;
+    RomCurveDef* point;
     int target;
     target = search->pathId;
-    point = (ObjfsaRomCurveDef*)node->point;
+    point = (RomCurveDef*)node->point;
     switch (point->type) {
     case ROMCURVE_TYPE_TRICKY: {
         u8 idx = node->parentIndex;
@@ -51,9 +51,9 @@ static int pathSearchNodeMatchesTarget(PathSearch* search, PathSearchNode* node)
             if (point->walkGroup != 0) {
                 return target == point->walkGroup;
             } else {
-                ObjfsaRomCurveDef* parent;
+                RomCurveDef* parent;
                 int i;
-                parent = (ObjfsaRomCurveDef*)search->nodes[idx].point;
+                parent = (RomCurveDef*)search->nodes[idx].point;
                 for (i = 0; i < 4; i++) {
                     if (point->id == (u32)parent->linkIds[i]) {
                         return target == ((u8*)parent)[i + 4];
@@ -244,11 +244,11 @@ void pathSearchAddNeighbor(PathSearch* search, PathSearchNode* previousNode, int
 void pathSearchExpandNode(PathSearch* search, PathSearchNode* node, int idx) {
     u8 mask;
     char* link;
-    ObjfsaRomCurveDef* point;
-    ObjfsaRomCurveDef* linked;
+    RomCurveDef* point;
+    RomCurveDef* linked;
     int bit;
     int t;
-    point = (ObjfsaRomCurveDef*)node->point;
+    point = (RomCurveDef*)node->point;
     if (search->routeFlags != 0) {
         t = point->blockedLinkMask;
     } else {
@@ -260,7 +260,7 @@ void pathSearchExpandNode(PathSearch* search, PathSearchNode* node, int idx) {
     for (; bit < 4; bit++) {
         int linkId = *(int*)(link + 0x1c);
         if (linkId > -1 && (mask & (1 << bit)) != 0) {
-            linked = (ObjfsaRomCurveDef*)(*gRomCurveInterface)->getById(linkId);
+            linked = (RomCurveDef*)(*gRomCurveInterface)->getById(linkId);
             if (linked != NULL) {
                 switch (linked->type) {
                 case ROMCURVE_TYPE_TRICKY: {
