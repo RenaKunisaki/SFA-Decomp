@@ -43,6 +43,31 @@ Run these in order. Each one can end the round without a build.
    six with **zero instruction-count delta**, four pure register permutation plus pool
    relocations. Functions reach 99% precisely because everything source-addressable is
    already gone.
+2a. **Ask what the diverging register HOLDS. If it holds a compiler-synthesized value, the
+   source-spelling lane is closed BY MECHANISM — stop, and cap it without spending a build.**
+   A source spelling can only move a value the source can name. When the value whose register
+   home differs was invented by the compiler, no permutation, rename, hoist, chain or reorder
+   reaches it, because there is nothing in the C that refers to it. Two proven signatures:
+   - **Copy-seeded zero** — retail `li rA,0 ; mr rB,rA` where we emit `li rA,0 ; li rB,0`
+     (a solitary `structB` in an otherwise clean stream). **CLOSED**: `updateEnvironment`
+     (`lightmap.c`) settles it, because that one function zeroes the same pair twice from
+     *textually identical* source and retail emits `li;li` at one site and `li;mr` at the other
+     — the same C text sits on both sides of the split, so no spelling can select between them.
+     11 spellings across 2 functions, 0 movement. `trickyDigTunnel` is an independent witness
+     (its two inlined `trickyAdvanceNode` instances differ the same way).
+   - **int->double conversion magic** — `lis rX,17200` (`0x43300000`) paired with
+     `xoris rY,rY,32768`, stored as the high/low halves of a stack double. **CLOSED**:
+     `pathcam_buildWindowSamples` (`dlls/engine/71`) is byte-reachable under `-opt nocse`, yet
+     BOTH builds common the constant — they differ only in whether it gets a callee-saved home
+     (ours, `r14`) or a scratch home (retail, `r0`). 7 spellings, baseline optimal.
+   Generalize past these two: **any value with no source name** — spill reloads, array bases,
+   cast temps, strength-reduction temps — is in none of the allocation tiers and is unreachable
+   by every ordering knob (`CLAUDE.md` states this for the saved band; it holds for scratch too).
+   Naming such a value does not move it; MWCC coalesces the named local straight back.
+   The honest output is a cap **with the value kind named**, not another spelling list.
+   Detail: `near-miss-unit-caps-2026-08.md` (chained-zero closure) and
+   `scratch-class-completion-w147.md` (pathcam derivation).
+
 3. **Check whether the function is already worked — including prior *probe* results, not just
    prior commits.** The `structB` sweep has no memory. Two `grep`s — the memory files and
    `git log` on the file — distinguish "largest unworked entry" from "documented cap".
@@ -591,6 +616,23 @@ build on a data score.** The short form:
   retail-side linkage carries zero information; de-`static`-ing chases a tool artifact).
 - **Closing the gap would require defining named `.sdata2` constants** — the banned
   pool-reconstruction construct CLAUDE.md names as the mistake that keeps recurring. Do not.
+- **POOL-ORDER RESIDUE — one check settles it: is RETAIL's pool in RETAIL's OWN first-use order?**
+  MWCC emits `.sdata2` in first-use order, so a pool-order difference is only source-reachable if
+  *retail* obeys that law and we don't. Compute each divergent slot's first-use instruction index on
+  **both** sides (symbol table maps `.sdata2` symbol → offset; `R_PPC_EMB_SDA21` relocs name symbols,
+  **not** section offsets — parsing them as offsets silently yields zero rows).
+  - retail ordered, ours not → the reopen case; do the full first-use mapping.
+  - **retail NOT ordered → CAP immediately, no per-constant mapping.** Retail minted the slot before
+    its first surviving use, so no arrangement of our source reproduces it. **6/6 candidates have
+    landed here** (`578_DBstealerwo`, `player.c`, and the earlier 625/camTalk/226 early-mint trio).
+  Worked example — `player.c`, the largest such entry (784B `.sdata2`): **189 of 196 words are
+  byte-identical and in place**; the whole residue is 7 consecutive words at `0x70..0x88`, the same
+  seven values permuted. Ours is *perfectly* first-use ordered (602, 1429, 1439, 1447, 2098, 2152,
+  2232); retail is not (2152, 602, 2232, 1429, 1439, 1447, 2098) — it mints `10.0f` and `1.0f` early.
+  A second, independent proof of the cap: the mint windows close before insn 1429, while player.c's
+  **earliest sub-100 function starts at insn 4804** — every function in both windows is at 100.000,
+  so any movement that could re-mint the slots must edit byte-identical `.text`. The residue is
+  **nominal, not reachable**; do not spend a build on it.
 - **The distinct-values screen still answers a different, useful question.** Run its checks in the
   order **missing distinct values → duplicate inflation → size → order**: a merged TU is always
   smaller on our side, so checking size first misclassifies it.
