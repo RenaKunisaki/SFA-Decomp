@@ -1575,7 +1575,7 @@ void SnowBike_UpdateLiftSway(int obj, int state)
         ((DRPickupState*)state)->localOffsetX = fz;
         ((DRPickupState*)state)->localOffsetY = fz;
     }
-    ((DRPickupState*)state)->localOffsetZ = (*(f32*)(state + 0x430) + target) * timeDelta;
+    ((DRPickupState*)state)->localOffsetZ = (((DRPickupState*)state)->liftZVel + target) * timeDelta;
 
     Matrix_TransformPoint((f32*)(state + 0x6c), ((DRPickupState*)state)->localOffsetX,
                           ((DRPickupState*)state)->localOffsetY, ((DRPickupState*)state)->localOffsetZ, &out[0],
@@ -1598,11 +1598,11 @@ void SnowBike_UpdateLiftSway(int obj, int state)
     }
 
     {
-        f32 newF = (f32)(s32) * (s16*)(state + 0x40e) + ((DRPickupState*)state)->angVel414 * timeDelta;
+        f32 newF = (f32)(s32)((DRPickupState*)state)->angle40E + ((DRPickupState*)state)->angVel414 * timeDelta;
         s32 delta;
         ((DRPickupState*)state)->angle40E = newF;
         delta = (s32)(((DRPickupState*)state)->angVel414 * ((DRPickupState*)state)->angleScale);
-        delta -= (s32)(u16) * (u32*)(state + 0x410);
+        delta -= (s32)(u16)((DRPickupState*)state)->angAccum410;
         if (delta > 0x8000)
         {
             delta = delta - 0xFFFF;
@@ -1615,7 +1615,7 @@ void SnowBike_UpdateLiftSway(int obj, int state)
             (u32)(s32)((f32)delta * ((DRPickupState*)state)->angAccumGain + (f32)(s32) * (u32*)((int)state + 0x410));
     }
     {
-        s32 delta = (s32) * (s16*)(state + 0x40e) - (s32)(u16) * (s16*)(state + 0x40c);
+        s32 delta = (s32)((DRPickupState*)state)->angle40E - (s32)(u16)((DRPickupState*)state)->angle40C;
         if (delta > 0x8000)
         {
             delta = delta - 0xFFFF;

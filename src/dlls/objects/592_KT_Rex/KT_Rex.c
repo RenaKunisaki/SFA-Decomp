@@ -1501,10 +1501,10 @@ void ktrex_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visible)
         if (e != NULL)
         {
             lightningRender((LightningEffect*)e);
-            *(u16*)((char*)gKTRexState->lightning[i] + 0x20) =
-                (f32)(u32) * (u16*)((char*)gKTRexState->lightning[i] + 0x20) + timeDelta;
-            if (*(u16*)((char*)gKTRexState->lightning[i] + 0x20) >=
-                *(u16*)((char*)gKTRexState->lightning[i] + 0x22))
+            ((LightningEffect*)gKTRexState->lightning[i])->timer =
+                (f32)(u32)((LightningEffect*)gKTRexState->lightning[i])->timer + timeDelta;
+            if (((LightningEffect*)gKTRexState->lightning[i])->timer >=
+                ((LightningEffect*)gKTRexState->lightning[i])->lifetime)
             {
                 mm_free(gKTRexState->lightning[i]);
                 gKTRexState->lightning[i] = NULL;

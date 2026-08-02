@@ -2556,26 +2556,28 @@ void ObjModel_RelocateAnimData(u8* m, u8* dst)
     ((ModelFileHeader*)m)->vertexAnimEntriesRaw = ((ModelFileHeader*)m)->vertexAnimEntries;
     for (i = 0; i < ((ModelFileHeader*)m)->vertexAnimCount; i++)
     {
-        ((ObjModel*)dst)->vertexAnimData[i] = *(int*)(((ModelFileHeader*)m)->vertexAnimEntries + i * 0x74 + 0x60);
-        if (*(u32*)(((ModelFileHeader*)m)->vertexAnimEntries + i * 0x74 + 0x64) < *(u32*)&((ModelFileHeader*)m)->
+        ((ObjModel*)dst)->vertexAnimData[i] = ((ModelVtxAnimChunk*)((ModelFileHeader*)m)->vertexAnimEntries)[i].
+            srcDataOffset;
+        if (((ModelVtxAnimChunk*)((ModelFileHeader*)m)->vertexAnimEntries)[i].weightStream < ((ModelFileHeader*)m)->
             vertexAnimBase)
         {
-            *(u32*)(((ModelFileHeader*)m)->vertexAnimEntries + i * 0x74 + 0x64) =
-                *(u32*)&((ModelFileHeader*)m)->vertexAnimBase + *(u32*)(((ModelFileHeader*)m)->vertexAnimEntries + i *
-                    0x74 + 0x64);
+            ((ModelVtxAnimChunk*)((ModelFileHeader*)m)->vertexAnimEntries)[i].weightStream =
+                ((ModelFileHeader*)m)->vertexAnimBase + (u32)((ModelVtxAnimChunk*)((ModelFileHeader*)m)->
+                    vertexAnimEntries)[i].weightStream;
         }
     }
     ((ModelFileHeader*)m)->blendAnimEntriesRaw = ((ModelFileHeader*)m)->blendAnimEntries;
     for (i = 0; i < ((ModelFileHeader*)m)->blendAnimCount; i++)
     {
         ((ObjModel*)dst)->blendAnimData[i] =
-            *(int*)&((ObjModel*)dst)->normalBuf + *(int*)(((ModelFileHeader*)m)->blendAnimEntries + i * 0x74 + 0x60);
-        if (*(u32*)(((ModelFileHeader*)m)->blendAnimEntries + i * 0x74 + 0x64) < *(u32*)&((ModelFileHeader*)m)->
+            *(int*)&((ObjModel*)dst)->normalBuf + ((ModelVtxAnimChunk*)((ModelFileHeader*)m)->blendAnimEntries)[i].
+            srcDataOffset;
+        if (((ModelVtxAnimChunk*)((ModelFileHeader*)m)->blendAnimEntries)[i].weightStream < ((ModelFileHeader*)m)->
             blendAnimBase)
         {
-            *(u32*)(((ModelFileHeader*)m)->blendAnimEntries + i * 0x74 + 0x64) =
-                *(u32*)&((ModelFileHeader*)m)->blendAnimBase + *(u32*)(((ModelFileHeader*)m)->blendAnimEntries + i *
-                    0x74 + 0x64);
+            ((ModelVtxAnimChunk*)((ModelFileHeader*)m)->blendAnimEntries)[i].weightStream =
+                ((ModelFileHeader*)m)->blendAnimBase + (u32)((ModelVtxAnimChunk*)((ModelFileHeader*)m)->
+                    blendAnimEntries)[i].weightStream;
         }
     }
 }

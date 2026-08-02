@@ -707,7 +707,8 @@ u8 sharpClawHandleHitMessage(GameObject* obj, u8* state, GameObject* attacker, i
             }
             ObjAnim_SetMoveProgress(
                 &obj->anim,
-                *(f32*)(gBaddieMoveProgressTable + rowsB[rowsB[((EnemyState*)state)->phaseAngle * 16 + 0xb] * 16 + 8] * 4));
+                *(f32*)(gBaddieMoveProgressTable +
+                        rowsB[rowsB[((EnemyState*)state)->phaseAngle * 16 + 0xb] * 16 + 8] * 4));
         }
         else
         {
@@ -848,13 +849,13 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
         {
             f32 diff = 64.0f - dist;
             f32 spd = diff / 64.0f;
-            *(f32*)(state + 0x310) = spd * ((EnemyState*)state)->pathStep;
+            ((EnemyState*)state)->pathSpeed = spd * ((EnemyState*)state)->pathStep;
         }
-        if (*(f32*)(state + 0x310) < 0.25f)
+        if (((EnemyState*)state)->pathSpeed < 0.25f)
         {
-            *(f32*)(state + 0x310) = 0.25f;
+            ((EnemyState*)state)->pathSpeed = 0.25f;
         }
-        if (Curve_AdvanceAlongPath(&path->curve, *(f32*)(state + 0x310)) != 0 || path->atSegmentEnd != 0)
+        if (Curve_AdvanceAlongPath(&path->curve, ((EnemyState*)state)->pathSpeed) != 0 || path->atSegmentEnd != 0)
         {
             if ((*gRomCurveInterface)->goNextPoint(path) != 0)
             {
@@ -871,7 +872,7 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
             delta = 65535.0f + delta;
         }
         ((EnemyState*)state)->animPlaySpeed =
-            (((EnemyState*)state)->pathStep - *(f32*)(state + 0x310)) / 60.0f *
+            (((EnemyState*)state)->pathStep - ((EnemyState*)state)->pathSpeed) / 60.0f *
             (1.0f - ((delta >= 0.0f) ? delta : -delta) / 65535.0f);
         if (*(f32*)(state + 0x308) < 0.005f)
         {
@@ -890,12 +891,12 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
                     *(f32*)(gBaddieMoveProgressTable + tbl1c[((EnemyState*)state)->phaseAngle * 16 + 8] * 4));
                 ((EnemyState*)state)->phaseAngle = tbl1c[((EnemyState*)state)->phaseAngle * 16 + 9];
             }
-            else if (*(f32*)(state + 0x310) > 0.0001f)
+            else if (((EnemyState*)state)->pathSpeed > 0.0001f)
             {
                 ((EnemyState*)state)->curveIndex = 0;
                 ((EnemyState*)state)->curveParamA = 0;
                 ((EnemyState*)state)->curveParamB = 0;
-                if (*(f32*)(state + 0x310) > 1.2f)
+                if (((EnemyState*)state)->pathSpeed > 1.2f)
                 {
                     ((EnemyState*)state)->rootMotionFlags = 1;
                     ObjAnim_SetCurrentMove((int)obj, tbl0[0x20], 0.0f, 0);
@@ -914,7 +915,7 @@ void sharpClawUpdateIdle(GameObject* obj, u8* state)
                 ((EnemyState*)state)->rootMotionFlags = 1;
                 *(f32*)(state + 0x308) = 0.01f;
                 ObjAnim_SetCurrentMove((int)obj, tbl0[8], 0.0f, 0);
-                *(f32*)(state + 0x310) = 0.0f;
+                ((EnemyState*)state)->pathSpeed = 0.0f;
             }
         }
         baddieTurnTowardPoint(obj, (int)state, path->posX, path->posZ, 0xf, 0);
@@ -1406,10 +1407,10 @@ void sharpClawInit(int obj, u8* state)
         ((EnemyState*)state)->moveSpeedScale1 = 1.25f;
         ((EnemyState*)state)->moveId2 = z;
         ((EnemyState*)state)->moveSpeedScale2 = fz2;
-        *(int*)(state + 0x36c) = (int)ObjModelChain_Alloc(&gGroundBaddieModelChainDesc, 1);
-        ObjModelChain_SetOrigin((ObjModelChain*)*(int*)(state + 0x36c), 0.15f, 0.75f, -0.05f);
+        ((EnemyState*)state)->tailSimHandle = ObjModelChain_Alloc(&gGroundBaddieModelChainDesc, 1);
+        ObjModelChain_SetOrigin(((EnemyState*)state)->tailSimHandle, 0.15f, 0.75f, -0.05f);
         ((GameObject*)obj)->afterBonesCallback = baddieAfterUpdateBonesCb;
-        ObjModelChain_SetEnabled((ObjModelChain*)*(int*)(state + 0x36c), 1);
+        ObjModelChain_SetEnabled(((EnemyState*)state)->tailSimHandle, 1);
         break;
     }
     if (setup->sequenceId != -1)
@@ -1431,7 +1432,7 @@ void groundBaddieHandlePaidTrigger(int obj, u8* state)
         {
             playerAddMoney(player, -25);
             mainSetBits(setup->gameBitD, 1);
-            *(u16*)(state + 0x338) = gGroundBaddieTriggerResponseSeq[2];
+            ((EnemyState*)state)->phaseAngle = gGroundBaddieTriggerResponseSeq[2];
             ((GameObject*)obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             setHudForceShowMask(2);
             (*gObjectTriggerInterface)->runSequence(2, (void*)obj, -1);
@@ -1439,14 +1440,14 @@ void groundBaddieHandlePaidTrigger(int obj, u8* state)
         else
         {
             setHudForceShowMask(2);
-            *(u16*)(state + 0x338) = gGroundBaddieTriggerResponseSeq[1];
+            ((EnemyState*)state)->phaseAngle = gGroundBaddieTriggerResponseSeq[1];
             (*gObjectTriggerInterface)->runSequence(1, (void*)obj, -1);
         }
     }
     else
     {
         setHudForceShowMask(2);
-        *(u16*)(state + 0x338) = gGroundBaddieTriggerResponseSeq[0];
+        ((EnemyState*)state)->phaseAngle = gGroundBaddieTriggerResponseSeq[0];
         (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
     }
 }

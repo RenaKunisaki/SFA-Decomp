@@ -328,7 +328,7 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
                         aimDelta = aimDelta / lbl_803DBF04;
                     }
                 }
-                *(s16*)((int)modelRotation + 0x2) = (s16)(*(s16*)((int)modelRotation + 0x2) + aimDelta);
+                modelRotation[1] = (s16)(modelRotation[1] + aimDelta);
                 Sfx_KeepAliveLoopedObjectSound((u32)obj, SFXTRIG_gal_sailflap2);
             } else {
                 if (state->previousAimDelta != 0) {
@@ -405,7 +405,7 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
         s16* modelRotation;
         obj->anim.flags = (s16)(obj->anim.flags & ~OBJANIM_FLAG_HIDDEN);
         modelRotation = objFindJointPoseVector(obj, 0);
-        *(s16*)((char*)modelRotation + 0x2) = (s16)(obj->anim.rotX - (placement->rotationXByte << 8));
+        modelRotation[1] = (s16)(obj->anim.rotX - (placement->rotationXByte << 8));
         obj->anim.rotX = (s16)(placement->rotationXByte << 8);
         state->mode = DIM_CANNON_MODE_ARMED;
     }

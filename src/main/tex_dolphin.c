@@ -1236,7 +1236,7 @@ void renderGlows(void)
     Mtx sunMtx;
     Vec dir;
     Vec cam;
-    void* viewMtx;
+    MtxPtr viewMtx;
     u8 alpha;
     u8 sunAlpha;
     f32 sunDot;
@@ -1260,11 +1260,11 @@ void renderGlows(void)
     sunAlpha = skyGetSunRenderAlpha(2);
     if (sunAlpha != 0 && (renderFlags & 0x40))
     {
-        viewMtx = Camera_GetViewMatrix();
+        viewMtx = (MtxPtr)Camera_GetViewMatrix();
         skyGetSunLightDirection(0, &dir.x, &dir.y, &dir.z);
-        cam.x = *(f32*)((char*)viewMtx + 0x20);
-        cam.y = *(f32*)((char*)viewMtx + 0x24);
-        cam.z = *(f32*)((char*)viewMtx + 0x28);
+        cam.x = viewMtx[2][0];
+        cam.y = viewMtx[2][1];
+        cam.z = viewMtx[2][2];
         sunDot = PSVECDotProduct(&dir, &cam);
         if (sunDot > 0.0f)
         {

@@ -5976,7 +5976,7 @@ void pauseMenuUpdate(void)
             }
             if (i != 0x2d)
             {
-                int code = *(u16*)((u8*)&tbl->cellMap[0].code + i * 4);
+                int code = tbl->cellMap[i].code;
                 gPauseMenuPlayerMapCell = code;
                 mainSetBits(code + 0xf10, 1);
             }

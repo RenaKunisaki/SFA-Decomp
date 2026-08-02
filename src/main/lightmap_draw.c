@@ -432,8 +432,8 @@ void mapBlockRenderMain(MapBlockBoundsRec* bounds, MapBlockData* block, float* v
     s0 = (u8*)state[0];
     v = s0[countShifted];
     base = (int*)(state[0] + countShifted);
-    v = v | ((u32)*(u8*)((char*)base + 1) << 8);
-    v = v | ((u32)*(u8*)((char*)base + 2) << 16);
+    v = v | ((u32)((u8*)base)[1] << 8);
+    v = v | ((u32)((u8*)base)[2] << 16);
     state[4] += 4;
     nibble = (v >> (cursor & 7)) & 0xf;
     for (i = 0; i < nibble; i++)
@@ -475,8 +475,8 @@ void mapBlockRenderWater(MapBlockBoundsRec* bounds, MapBlockData* block, float* 
     s0 = (u8*)state[0];
     v = s0[countShifted];
     base = (int*)(state[0] + countShifted);
-    v = v | ((u32)*(u8*)((char*)base + 1) << 8);
-    v = v | ((u32)*(u8*)((char*)base + 2) << 16);
+    v = v | ((u32)((u8*)base)[1] << 8);
+    v = v | ((u32)((u8*)base)[2] << 16);
     state[4] += 4;
     nibble = (v >> (cursor & 7)) & 0xf;
     for (i = 0; i < nibble; i++)
@@ -512,8 +512,8 @@ void mapBlockRenderTransparent(MapBlockBoundsRec* bounds, MapBlockData* block, f
     s0 = (u8*)state[0];
     v = s0[countShifted];
     base = (int*)(state[0] + countShifted);
-    v = v | ((u32)*(u8*)((char*)base + 1) << 8);
-    v = v | ((u32)*(u8*)((char*)base + 2) << 16);
+    v = v | ((u32)((u8*)base)[1] << 8);
+    v = v | ((u32)((u8*)base)[2] << 16);
     state[4] += 4;
     nibble = (v >> (cursor & 7)) & 0xf;
     for (i = 0; i < nibble; i++)
