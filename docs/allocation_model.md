@@ -1,0 +1,203 @@
+# The allocation model — saved-register band assignment
+
+What decides which value lives in `r31`, `r30`, … `f31`, `f30`, …, how much of it is
+predictable, and where prediction provably stops.
+
+**Status: closed at a named boundary.** The within-tier laws are confirmed on held-out real
+code and are usable. Cross-tier order above band width 4 is **not** predictable from
+post-allocation machine code — that is a measured result, not an untried axis, and it replaces
+the older "wide bands are unsteerable chaos" doctrine with a mechanism.
+
+---
+
+## 1. The confirmed model
+
+The band is populated by four distinct classes. The class of a value, not its position in the
+source, is the primitive.
+
+| class | definition | within-tier key | held-out accuracy |
+|---|---|---|---|
+| **R** return copy | copied from `r3`–`r10` **after** the first `bl` | first-definition order | **62–75%** at widths 5–10 (67.1% pooled) |
+| **L** load | materialized by a load, computation or constant | declaration order | not object-side scorable (see below) |
+| **P** param copy | copied from `r3`–`r10` **before** the first `bl` | ABI source register | **50–68%** at widths 5–10 (73.7% pooled) |
+| **sqrtf** | produced by an inlined helper returning via a `volatile` stack slot | assignment order | rare: **0.2%** of functions |
+
+At width 2 the within-tier keys are near-exact (R 100%, P 91.8%). **They do not decay with
+width** — this is the single most useful result in the file, because it means the wide-band
+regime is not orderless, it is orderless only *across* tiers.
+
+**State the direction explicitly.** Reading the band **bottom-up** (lowest home first), both
+copy tiers run *ascending* in their key. Read top-down (`r31` first) they run *descending*.
+An earlier scoring got 9.8% and 11.0% purely from reading the enumeration the other way, and
+61.6% / 77.8% once corrected. The law is worthless without its direction attached.
+
+**A copy is not always `mr`.** MWCC also emits `addi rX,rY,0` as a register move. Classifying
+that as a load inverts the partition and manufactures results; it was caught by hand-checking
+three functions against disassembly, on the third.
+
+### Membership: most of what looks like a band member is not one
+
+A value is a **member** only if it is *held across a call*. Measured over the retail image
+(28,066 candidate registers):
+
+- **13.4% are phantoms** — `li` constants, `(int)&global` addresses and cheap param
+  computations that are **rematerialized after calls, never held**. They are not band members
+  at all. An extractor that counts them scores a value that does not exist.
+- **9.8% are recycled** — the register holds two values with disjoint live ranges. **45.8% of
+  those are cross-class** (a load early, a return copy late), which under first-write
+  attribution reads as "load above return" and invents inversions.
+
+Nearly **a quarter** of naive band members are one of these. Both must be excluded, and pair
+comparisons are meaningful only between values that are **simultaneously live** — order is
+undefined for values that never coexist.
+
+### The rematerialization-cost axis
+
+The "load class" is not one population. Pairwise (load, param), chance 50%, over matched code:
+
+| load kind | n | above the param |
+|---|---|---|
+| memory load (`lwz/lbz/lfs/…`) | 1470 | **74.9%** |
+| constant (`li/lis`) | 633 | 60.7% |
+| computed (`add/or/slwi/…`) | 604 | 57.0% |
+| **address** (`addi rX,rY,sym@lo`) | 274 | **52.6% — chance** |
+
+Under pressure the allocator protects values that are *expensive to free*: a param copy must be
+spilled, a load can be rematerialized, so loads demote first — and the cheaper a value is to
+rematerialize, the more readily it demotes. The gradient is that cost ordering.
+
+The `addr` row lands exactly on CLAUDE.md's independently-derived class: *"a value with no named
+local behind it — a compiler temp, a spill reload, an **array base** — is unreachable from
+source."* Two derivations, one boundary, and now a number: **address materializations are not
+hard to predict, they are unmodeled.**
+
+### The arrival principle
+
+A parameter reloaded after a call **leaves the param tier** — class follows how the value
+*arrives* in the register, not what it originally was.
+
+---
+
+## 2. The boundary, stated as law
+
+> **Cross-tier band order above width 4 is not predictable from post-allocation machine code.**
+
+Scored on the retail image (an independent corpus, disjoint from the derivation set), pairwise
+on co-live modelled pairs:
+
+| w | fns | pairwise | per-function | old recorded rule |
+|---|---|---|---|---|
+| 2 | 2001 | 83.9% | 83.9% | 97.7 |
+| 3 | 1665 | 73.3% | 62.8% | 99.3 |
+| 4 | 822 | 55.1% | 31.1% | 98.8 |
+| 5 | 510 | **42.0%** | 13.4% | 1.4 |
+| 6 | 309 | **35.7%** | 12.0% | 0.1 |
+| 7 | 141 | 34.0% | 2.3% | — |
+
+Above width 4 it is not weak, it is **anti-predictive** — below the 50% chance line. The model
+beats the old rule 10–120× at widths 5–6 and is substantially worse at 2–4; it replaces nothing.
+
+**What the falsification survived**, in order: an independent corpus; three attribution
+corrections (phantoms, recycling, cross-class recycling); restriction to co-live pairs; a
+five-way population split (game 38.5%, audio 49.2%, SDK 49.2%, matched 36.4%, unmatched 47.8% —
+all at or below chance, and *matched functions are no better than unmatched*, ruling out
+tuned-on-the-outcome bias); an extractor bug fix that moved no digit; and a pressure-conditional
+model tested on two independently-constructed proxies, stratified by width against the size
+confound. The reversal is not in the compiler — the rig refuted that four ways.
+
+### The pressure mechanism — rig-confirmed, object-side unrecoverable
+
+Holding the band fixed at width 6 and varying only simultaneously-live scratch temporaries,
+Lane B's probes show a sharp threshold: **K≤6 gives `R>L>P`; K=7 transitions; K≥8 gives
+`R>P>L`** — params promoted above loads. Confirmed against an independent pressure source and
+an indexed variant; a back-edge/loop explanation came back null.
+
+**This is true of the compiler and unusable for prediction.** Pressure is a property of the
+*pre-allocation* IR. Post-allocation code shows the allocator's **solution**, not its input —
+and high pressure is discharged *precisely by moving values into the saved band*, the structure
+we are trying to predict. Two proxies confirm it is unrecoverable: scratch-liveness at
+definition points is degenerate (92% of wide-band functions at K∈{0,1}, **none at K≥8**, so the
+rig's threshold has no population), and spill traffic — the correct residue-based proxy —
+produces **no partition** (`R>L>P` vs `R>P>L` within 2 points in every width stratum, nothing
+near the 60% recovery line).
+
+**Open observation, labelled not lost:** spilling functions score ~10 points higher than
+zero-spill functions under *both* orders (43.6/42.7 vs 33.5/35.3 pooled). Pressure organises the
+band without selecting between orders. Nobody has explained that.
+
+---
+
+## 3. What this means for matching work
+
+- **The parameter-order lever is usable now.** The P tier is keyed on ABI source register, and a
+  callee's parameter list determines which ABI register each parameter arrives in — and
+  CLAUDE.md already records that reordering a parameter list is ABI-neutral. That makes
+  parameter order a genuine steering knob for saved homes in param-heavy functions. It is the
+  campaign's one actionable product; A/B it, never assume it.
+- **Within-tier reasoning only.** Any tool or argument that needs *cross-tier* order at width ≥5
+  is unsupported. Scope verdicts to within-tier, and emit `unmodeled` — not `diagnostic` — for
+  the rest. At width ≥5, **20–42% of pairs involve an unmodeled `addr` member** and are
+  excluded by construction, so even a repaired cross-tier law would leave a large residue.
+- **A flat declaration sweep is a membership measurement, not a dead end.** Pure load bands are
+  perfectly declaration-keyed and fully injective at widths 5–8 in the rig (120 permutations →
+  120 distinct outcomes). If a real sweep is flat, the band is *not* pure-load: the values you
+  permuted are phantoms, recycled, or in another tier. The cliff is a **population** property —
+  wide real-code bands are dominated by non-load members — not a compiler property.
+- **"Wide-band, closed" dispositions stand, and their reasons upgrade.** They were closed for
+  "band too wide to model"; they are now closed for a stated mechanism, which means a future
+  attack knows exactly what it must beat.
+
+---
+
+## 4. Method appendix
+
+This campaign is the project's worked example for an allocator-shaped question. The discipline
+is the transferable part.
+
+- **Pre-register with falsification conditions before each run.** Every claim (P1–P8) was written
+  down with what would refute it *before* the measurement. P2 refuted its author's own unifier;
+  P6, P7 and P8 all returned nulls that stuck because their thresholds were fixed in advance.
+- **Reserve a holdout, declare the split before a predictor exists, score once.** Deterministic
+  hash split, derivation on TRAIN only, one scoring pass on TEST. When a "free" holdout was
+  proposed from newly-matched functions it was **zero rows**, and would have been invalid anyway
+  — selected on the dependent variable, since source tuned until bytes match measures lane
+  convergence, not law generality. The **retail objects** are the right holdout: large, disjoint,
+  and immune to that bias.
+- **Validate the instrument against ground truth before any number counts.** Retail-side
+  extraction was required to reproduce source-side extraction function-for-function: **9276/9276,
+  100.00%**. Three separate defects were caught by hand-checking a handful of cases —
+  `addi rX,rY,0` misclassification, substring register counting (`ops.count("r3")` matching
+  `r30`), and a whole-repo scan where only `src/` was intended. Each looked correct until checked.
+- **The degeneracy trap — a variable definitionally consumed by the thing being measured.**
+  Two instances: *live-across-call* (558/561 — true of saved-band members by definition) and
+  *scratch-liveness at definition points* (92% in {0,1}, because pressure is discharged into the
+  band). Generalized: **a pressure proxy must observe the regime's residue (spills), not the
+  allocator's answer to it.** Check that a candidate variable *can vary* before spending a run.
+- **Amend a proxy blind, and escalate rather than decide.** When the registered proxy proved
+  degenerate, the swap was made after seeing **only its distribution**, with zero accuracy
+  computed against any candidate, and was approved before use. Swapping after seeing outcome data
+  is fitting; swapping after seeing distribution is protocol repair.
+- **Two designs, no peeking.** Observational corpus mining and synthetic probes ran without
+  seeing each other; agreement crowned a law, disagreement localized a missing variable. The
+  kind gradient and the rig's swap turned out to be one mechanism from two directions.
+- **Rate is not count.** The composition dominating a miss census may do so by being the largest
+  population, not the worst rate. Conflating them targets the wrong fix.
+
+---
+
+## Attribution
+
+Observational corpus mining, held-out scoring, membership/liveness machinery, kind gradient,
+degeneracy findings, retail confirmation and the P8 null: this lane. Synthetic probe families,
+the phantom/recycling/cross-class mechanisms, the arrival principle, the K-threshold pressure
+inversion and the pure-load injectivity result: Lane B. Convergence protocol and adjudication:
+coordinator.
+
+## See also
+
+- `CLAUDE.md` "A few MWCC facts" — the saved-band summary this file supersedes for widths ≥5.
+- `docs/band_width_worklist.md` — where a structural fix can stick; its width screen is the
+  entry point to this model.
+- `docs/source_shape_levers.md` — the source-shape axis, including `fn_flag_probe` as screen
+  step 1.
+- `docs/data_axis.md` — the data axis, closed; same documentation shape.

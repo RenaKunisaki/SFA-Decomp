@@ -9,6 +9,13 @@ band width**, and splits the difference into:
 
 **Rank by `structB`.** That is the source-addressable part.
 
+> **The cliff now has a mechanism — see `docs/allocation_model.md`.** It is a *population*
+> property, not a compiler property: pure load bands stay perfectly declaration-keyed and
+> injective at widths 5–8, but wide real-code bands are dominated by non-load members
+> (13.4% of apparent members are phantoms, 9.8% recycled). Within-tier ordering laws hold at
+> every width and are usable; **cross-tier order above width 4 is measured unpredictable from
+> post-allocation machine code**, so a flat sweep there is a membership result, not a dead end.
+
 ## Why band width is the right axis
 
 The register-band assignment model is exact for narrow bands and falls off a cliff as the

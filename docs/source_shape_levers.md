@@ -641,6 +641,7 @@ context, or fragment mirage. Worth knowing before anyone re-derives it:
   local behind it, at band width 6 — the >=5 regime where the model is ~0.1% predictive.
 
 - `docs/data_axis.md` — the data axis, closed: the section-granular pairing law, two refuted gates, the vein taxonomy and the screen order.
+- `docs/allocation_model.md` — the saved-register band model, closed: four tiers with confirmed within-tier keys, the rematerialization-cost axis, and the measured boundary above width 4.
 - `docs/band_width_worklist.md` — where a structural fix can stick (`structB` vs `regB`).
 - `docs/rename_safety.md` — the rename gate and the stale-object race.
 - `docs/per_tu_flag_evidence.md` — per-TU flag measurements, for whoever adjudicates them.
