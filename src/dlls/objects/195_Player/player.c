@@ -293,9 +293,8 @@ int playerBuildWallTransitionProbe(GameObject* obj, char* cam, f32* out, f32* ve
 int player_probeClimbable(GameObject* obj, int p4, void* src, int dst, int flag);
 int playerStateClimbLedge(int obj, int state, f32 fv);
 int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag);
-s16 playerSetMoveBlendFromPlane(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int* blendPlane,
-                f32 samplePhase, f32 moveStepScale, int axis, int flags);
-
+int playerSetMoveBlendFromPlane(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int* blendPlane,
+                                f32 samplePhase, f32 moveStepScale, int axis, int flags);
 
 static inline int staffCanContinueSpin(void* state)
 {
@@ -5690,10 +5689,8 @@ void playerStagedRestoreCameraAndSyncPosition(GameObject* obj, int* stateFlags)
     ObjHits_SyncObjectPositionIfDirty(obj);
 }
 
-
-s16 playerSetMoveBlendFromPlane(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int* blendPlane,
-                f32 samplePhase, f32 moveStepScale, int axis, int flags);
-
+int playerSetMoveBlendFromPlane(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int* blendPlane,
+                                f32 samplePhase, f32 moveStepScale, int axis, int flags);
 
 PlayerModelChainEntry gPlayerModelChainDefault = {lbl_80332EC0, 5};
 PlayerModelChainEntry* gPlayerModelChainConfig = &gPlayerModelChainDefault;
@@ -10732,12 +10729,11 @@ int playerState00(int obj, int state)
     return 2;
 }
 
-s16 playerSetMoveBlendFromPlane(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int* blendPlane,
-                f32 samplePhase, f32 moveStepScale, int axis, int flags)
-{
+int playerSetMoveBlendFromPlane(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int* blendPlane,
+                                f32 samplePhase, f32 moveStepScale, int axis, int flags) {
     ObjModel* model;
     int controlFlags;
-    int moveFlags;
+    u8 moveFlags;
     int axisOffset;
     int blendWeight;
     f32 baseDistance, blendDistance, blendFactor;
@@ -10746,93 +10742,70 @@ s16 playerSetMoveBlendFromPlane(int obj, int baseMoveId, int blendMoveId, int* b
     model = Player_GetActiveModel(obj);
     moveFlags = 0;
     controlFlags = (u8)flags;
-    if (controlFlags & 0x2)
-    {
+    if (controlFlags & 0x2) {
         moveFlags |= 0x2;
-        moveFlags &= 0xff;
     }
-    if (controlFlags & 0x40)
-    {
-        moveFlags = (moveFlags | 0x4) & 0xff;
+    if (controlFlags & 0x40) {
+        moveFlags |= 0x4;
     }
-    if (controlFlags & 0x10)
-    {
-        moveFlags = (moveFlags | 0x8) & 0xff;
+    if (controlFlags & 0x10) {
+        moveFlags |= 0x8;
     }
-    if (controlFlags & 0x20)
-    {
-        moveFlags = (moveFlags | 0x1) & 0xff;
+    if (controlFlags & 0x20) {
+        moveFlags |= 0x1;
     }
-    if (controlFlags & 0x4)
-    {
+    if (controlFlags & 0x4) {
         ObjAnim_SetCurrentMove(obj, baseMoveId, 0.0f, moveFlags);
         ObjAnim_AdvanceCurrentMove((int)obj, moveStepScale, 0.0f, NULL);
-        ObjModel_SampleJointTransform(model, 0, 0, samplePhase, ((GameObject*)obj)->anim.rootMotionScale,
-                                      jointPosition, jointRotation);
-    }
-    else
-    {
+        ObjModel_SampleJointTransform(model, 0, 0, samplePhase, ((GameObject*)obj)->anim.rootMotionScale, jointPosition,
+                                      jointRotation);
+    } else {
         Object_ObjAnimSetMove(obj, baseMoveId, 0.0f, moveFlags);
         Object_ObjAnimAdvanceMove(obj, moveStepScale, 0.0f, NULL);
-        ObjModel_SampleJointTransform(model, 1, 0, samplePhase, ((GameObject*)obj)->anim.rootMotionScale,
-                                      jointPosition, jointRotation);
+        ObjModel_SampleJointTransform(model, 1, 0, samplePhase, ((GameObject*)obj)->anim.rootMotionScale, jointPosition,
+                                      jointRotation);
     }
     axisOffset = (u8)axis << 2;
     baseDistance = *(f32*)((char*)jointPosition + axisOffset);
-    if (baseDistance < 0.0f)
-    {
+    if (baseDistance < 0.0f) {
         baseDistance = -baseDistance;
     }
-    if (controlFlags & 0x4)
-    {
+    if (controlFlags & 0x4) {
         Object_ObjAnimSetSecondaryBlendMove((ObjAnimComponent*)obj, blendMoveId, 0);
-        ObjModel_SampleJointTransform(model, 0, 2, samplePhase, ((GameObject*)obj)->anim.rootMotionScale,
-                                      jointPosition, jointRotation);
-    }
-    else
-    {
+        ObjModel_SampleJointTransform(model, 0, 2, samplePhase, ((GameObject*)obj)->anim.rootMotionScale, jointPosition,
+                                      jointRotation);
+    } else {
         Object_ObjAnimSetPrimaryBlendMove((ObjAnimComponent*)obj, blendMoveId, 0);
-        ObjModel_SampleJointTransform(model, 1, 2, samplePhase, ((GameObject*)obj)->anim.rootMotionScale,
-                                      jointPosition, jointRotation);
+        ObjModel_SampleJointTransform(model, 1, 2, samplePhase, ((GameObject*)obj)->anim.rootMotionScale, jointPosition,
+                                      jointRotation);
     }
     blendDistance = *(f32*)((char*)jointPosition + axisOffset);
-    if (blendDistance < 0.0f)
-    {
+    if (blendDistance < 0.0f) {
         blendDistance = -blendDistance;
     }
-    blendFactor = *(f32*)((char*)blendPlane + 0xc) +
-        (*(f32*)((char*)blendAnchor + 0x0) * *(f32*)((char*)blendPlane + 0x0) +
-         *(f32*)((char*)blendAnchor + 0x8) * *(f32*)((char*)blendPlane + 0x8));
-    if (blendFactor < 0.0f)
-    {
+    blendFactor =
+        *(f32*)((char*)blendPlane + 0xc) + (*(f32*)((char*)blendAnchor + 0x0) * *(f32*)((char*)blendPlane + 0x0) +
+                                            *(f32*)((char*)blendAnchor + 0x8) * *(f32*)((char*)blendPlane + 0x8));
+    if (blendFactor < 0.0f) {
         blendFactor = -blendFactor;
     }
     blendFactor = (blendFactor - baseDistance) / (blendDistance - baseDistance);
-    if (controlFlags & 0x1)
-    {
-        if (blendFactor < 0.0f)
-        {
+    if (controlFlags & 0x1) {
+        if (blendFactor < 0.0f) {
             blendFactor = 0.0f;
         }
-    }
-    else
-    {
-        if (blendFactor < 0.0f)
-        {
+    } else {
+        if (blendFactor < 0.0f) {
             blendFactor = -blendFactor;
         }
     }
-    if (blendFactor > 1.0f)
-    {
+    if (blendFactor > 1.0f) {
         blendFactor = 1.0f;
     }
     blendWeight = (int)(16384.0f * blendFactor);
-    if (controlFlags & 0x4)
-    {
+    if (controlFlags & 0x4) {
         Object_ObjAnimSetSecondaryBlendMove((ObjAnimComponent*)obj, blendMoveId, (s16)blendWeight);
-    }
-    else
-    {
+    } else {
         Object_ObjAnimSetPrimaryBlendMove((ObjAnimComponent*)obj, blendMoveId, (s16)blendWeight);
     }
     return blendWeight;

@@ -2438,7 +2438,7 @@ void baddieTurnTowardPoint(GameObject* node, int state, f32 targetX, f32 targetZ
     node->anim.rotX = newVal;
 }
 
-void baddieSetMove(GameObject* obj, int state, u8 moveId, f32 rateScale, int moveControlFlags, u8 stateByte)
+void baddieSetMove(GameObject* obj, int state, u8 moveId, f32 rateScale, u8 moveControlFlags, u8 stateByte)
 {
     ObjHitsPriorityState* hitState;
 

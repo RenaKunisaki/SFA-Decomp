@@ -297,7 +297,7 @@ int Object_ObjAnimSetMoveProgress(ObjAnimComponent* objAnim, f32 moveProgress)
 }
 
 int
-Object_ObjAnimSetMove(int objAnimHandle, int moveId, f32 moveProgress, int moveControlFlags)
+Object_ObjAnimSetMove(int objAnimHandle, int moveId, f32 moveProgress, u8 moveControlFlags)
 {
     ObjAnimComponent* objAnim;
     ObjAnimBank* bank;
@@ -1024,7 +1024,7 @@ int ObjAnim_SetMoveProgress(ObjAnimComponent* objAnim, f32 moveProgress)
     return 0;
 }
 
-int ObjAnim_SetCurrentMove(int objAnimHandle, int moveId, f32 moveProgress, int moveControlFlags)
+int ObjAnim_SetCurrentMove(int objAnimHandle, int moveId, f32 moveProgress, u8 moveControlFlags)
 {
     ObjAnimComponent* objAnim;
     ObjAnimBank* bank;
