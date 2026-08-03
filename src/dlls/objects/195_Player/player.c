@@ -5038,7 +5038,7 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
         }
     }
     if ((*(u8*)((inner->moveSlots + 0x88) + (u32)inner->moveSlotIndex * 0xb0) & 2) != 0 &&
-        *(void**)&inner->lastHitObject != NULL)
+        (void*)inner->lastHitObject != NULL)
     {
         if (inner->hitCount < inner->hitCountMax)
         {
@@ -16494,7 +16494,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
         Shield_setMode(gPlayerStaffObject, 0);
     }
     playerStaffInit((GameObject*)obj, inner);
-    if (*(void**)&gPlayerEggObject == NULL && Obj_IsLoadingLocked() != 0)
+    if ((void*)gPlayerEggObject == NULL && Obj_IsLoadingLocked() != 0)
     {
         ObjLink_AttachChild((GameObject*)obj,
                             (GameObject*)(gPlayerEggObject =
@@ -16502,7 +16502,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                                                      ((GameObject*)obj)->anim.parent)),
                             3);
     }
-    if (*(void**)&gPlayerEggObject != NULL)
+    if ((void*)gPlayerEggObject != NULL)
     {
         ((GameObject*)gPlayerEggObject)->anim.parent = (void*)((GameObject*)obj)->anim.parent;
         if (((PlayerState*)inner)->characterId == 0)

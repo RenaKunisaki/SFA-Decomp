@@ -204,7 +204,7 @@ int dbstealerworm_stateHandlerB06(GameObject* obj, BaddieState* baddie)
             }
             break;
         }
-        if (sub->msgSlotIndex == -1 && (ptr = *(char**)&sub->savedTargetObj) != NULL)
+        if (sub->msgSlotIndex == -1 && (ptr = (char*)sub->savedTargetObj) != NULL)
         {
             if (DB_STEALERWORM_INTERFACE(ptr)->getControlMode((GameObject*)ptr) == 0)
             {
@@ -2239,7 +2239,7 @@ void dbstealerworm_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vi
             {
                 objDoParticleFx(obj, 1.0f, 3, state->glowAlpha, 0);
             }
-            path = *(char**)&sub->linkedObj;
+            path = (char*)sub->linkedObj;
             if (path != NULL && ((GameObject*)path)->anim.modelInstance != NULL)
             {
                 ObjPath_GetPointWorldPosition(obj, 3, &((GameObject*)path)->anim.localPosX, &((GameObject*)path)->anim.localPosY,

@@ -840,14 +840,14 @@ int pushable_push(GameObject* obj, GameObject* target, int active, f32 pushX, f3
             localPoint = (f32*)state;
             delta = deltas;
             for (; pointIndex < state->pointCount; pointIndex++) {
-                Obj_TransformLocalPointToWorld(*(f32*)((char*)localPoint + 0x18), *(f32*)((char*)localPoint + 0x1c),
-                                               *(f32*)((char*)localPoint + 0x20), worldPoint, worldPoint + 1,
+                Obj_TransformLocalPointToWorld(localPoint[6], localPoint[7],
+                                               localPoint[8], worldPoint, worldPoint + 1,
                                                worldPoint + 2, obj);
                 delta[0] = obj->anim.localPosX - worldPoint[0];
                 delta[1] = obj->anim.localPosY - worldPoint[1];
                 delta[2] = obj->anim.localPosZ - worldPoint[2];
                 worldPoint += 3;
-                localPoint = (f32*)((char*)localPoint + 0xc);
+                localPoint += 3;
                 delta += 3;
             }
         }
@@ -899,10 +899,10 @@ int pushable_push(GameObject* obj, GameObject* target, int active, f32 pushX, f3
         pointIndex = 0;
         localPoint = (f32*)state;
         for (; pointIndex < state->pointCount; pointIndex++) {
-            Matrix_TransformPoint(modelMtx, *(f32*)((char*)localPoint + 0x18), *(f32*)((char*)localPoint + 0x1c),
-                                  *(f32*)((char*)localPoint + 0x20), (f32*)((char*)localPoint + 0x78),
-                                  (f32*)((char*)localPoint + 0x7c), (f32*)((char*)localPoint + 0x80));
-            localPoint = (f32*)((char*)localPoint + 0xc);
+            Matrix_TransformPoint(modelMtx, localPoint[6], localPoint[7],
+                                  localPoint[8], &localPoint[30],
+                                  &localPoint[31], &localPoint[32]);
+            localPoint += 3;
         }
     }
     {

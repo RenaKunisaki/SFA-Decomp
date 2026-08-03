@@ -941,7 +941,7 @@ void gameUiSetupTexturedQuadTev(void* this, u8 a, s16 b, int c)
     GXSetTevSwapMode(GX_TEVSTAGE0, GX_TEV_SWAP0, GX_TEV_SWAP0);
     GXSetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    if (*(void**)&((Texture*)this)->imageOffset != NULL)
+    if ((void*)((Texture*)this)->imageOffset != NULL)
     {
         GXSetTevDirect(GX_TEVSTAGE1);
         GXSetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD0, GX_TEXMAP1, GX_COLOR_NULL);

@@ -165,7 +165,7 @@ void dim2snowball_update(GameObject* obj) {
             return;
         }
 
-        if (*(u8*)((char*)*(int**)&state->pathNodeData + (state->path.idx >> 2)) == 32) {
+        if (*(u8*)((char*)(int*)state->pathNodeData + (state->path.idx >> 2)) == 32) {
             if (mainGetBit(DIM2_SNOWBALL_LAUNCH_GAME_BIT) != 0) {
                 int hitCount;
 

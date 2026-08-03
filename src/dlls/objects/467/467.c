@@ -386,7 +386,7 @@ void worldobj_update(GameObject* obj) {
                 obj->userData2 = 1;
             }
         }
-        if (obj->userData1 != 0 && *(void**)&state->lookAtTargetRef != NULL) {
+        if (obj->userData1 != 0 && (void*)state->lookAtTargetRef != NULL) {
             view = Camera_GetCurrent();
             dx = view->x - obj->anim.localPosX;
             dy = view->y - obj->anim.localPosY;

@@ -806,7 +806,7 @@ void player_setState(void* ctx, void* p, int new_state)
                 *(void**)&((BaddieState*)p)->stateExitFn = 0;
             }
         }
-        *(void**)&((BaddieState*)p)->stateExitFn = *(void**)&((BaddieState*)p)->nextStateExitFn;
+        *(void**)&((BaddieState*)p)->stateExitFn = (void*)((BaddieState*)p)->nextStateExitFn;
     }
     ((BaddieState*)p)->controlTimer = 0;
     ((BaddieState*)p)->moveJustStartedA = 1;

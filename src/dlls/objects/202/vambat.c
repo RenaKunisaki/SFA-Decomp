@@ -228,7 +228,7 @@ void vambat_updateEngaged(GameObject* obj, int state)
     vec[2] = trackedObj->anim.localPosZ - (obj)->anim.localPosZ;
     PSVECMag((Vec*)vec);
     ((EnemyState*)state)->vambat.engagedTimer = ((EnemyState*)state)->vambat.engagedTimer + timeDelta;
-    if (*(void**)&((EnemyState*)state)->lastHitObject != NULL || ((EnemyState*)state)->vambat.engagedTimer > 3.6e+02f)
+    if ((void*)((EnemyState*)state)->lastHitObject != NULL || ((EnemyState*)state)->vambat.engagedTimer > 3.6e+02f)
     {
         bs->flags2E4 = bs->flags2E4 | 0x10000LL;
         ((EnemyState*)state)->vambat.idleTimer = gVambatZero[0];

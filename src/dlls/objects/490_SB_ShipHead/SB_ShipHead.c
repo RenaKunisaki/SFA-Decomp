@@ -137,7 +137,7 @@ void SB_ShipHead_update(GameObject* obj) {
     }
     galleonPhase = ((GameObject*)galleon)->userData1;
     state = object->extra;
-    if (*(void**)&state->target == 0) {
+    if ((void*)state->target == 0) {
         int* objects = ObjList_GetObjects(&objectStart, &objectEnd);
         for (objectIndex = objectStart; objectIndex < objectEnd; objectIndex++) {
             if (((GameObject*)objects[objectIndex])->anim.romDefNo == SB_SHIP_HEAD_TARGET_SEQUENCE_ID) {

@@ -171,7 +171,7 @@ void InvHit_update(GameObject* obj) {
         int groundHitIndex;
 
         obj->userData2 -= framesThisStep;
-        if (*(void**)&hitState->lastHitObject != NULL) {
+        if ((void*)hitState->lastHitObject != NULL) {
             hitState->flags = 0;
         }
         target = *(GameObject**)&obj->userData1;

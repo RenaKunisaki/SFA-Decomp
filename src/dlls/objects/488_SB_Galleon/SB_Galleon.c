@@ -1204,7 +1204,7 @@ void SB_Galleon_hitDetect(GameObject* obj) {
         f32 c;
         f32 d;
     } stk;
-    if (state->sprayActive != 0 && *(void**)&state->linkedActor != NULL) {
+    if (state->sprayActive != 0 && (void*)state->linkedActor != NULL) {
         stk.a = 1.5f;
         stk.mode = 0xc0a;
         stk.b = 0.0f;

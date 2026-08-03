@@ -49,13 +49,12 @@ void spitembeam_update(GameObject* obj)
     ObjTextureRuntimeSlot* tex;
     f32 searchRadius;
 
-    shop = *(int**)&obj->userData1;
+    shop = (int*)obj->userData1;
     def = (u8*)obj->anim.placementData;
     searchRadius = 10000.0f;
     if (shop == NULL)
     {
-        *(int**)&obj->userData1 =
-            (int*)objGetNearestTypeTo(SPITEMBEAM_TARGET_OBJGROUP, obj, &searchRadius);
+        obj->userData1 = (int)(int*)objGetNearestTypeTo(SPITEMBEAM_TARGET_OBJGROUP, obj, &searchRadius);
     }
     else
     {

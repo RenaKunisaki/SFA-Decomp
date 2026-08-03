@@ -101,7 +101,7 @@ void drakord_thornbush_hitDetect(GameObject* obj)
         if (hit != 0)
         {
             if (hitObj->anim.romDefNo != 0x35f &&
-                *(void**)&inner->lastHitObj != (void*)hitObj &&
+                (void*)inner->lastHitObj != (void*)hitObj &&
                 arrayIndexOf(inner->hitTable, 2, hit) != -1)
             {
                 inner->lastHitObj = (int)hitObj;
