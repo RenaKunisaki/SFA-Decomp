@@ -2,6 +2,7 @@
 #define MAIN_TEXTRENDER_INTERNAL_H_
 
 #include "dolphin/dvd.h"
+#include "dolphin/gx/GXStruct.h"
 #include "main/gametext_box_api.h"
 #include "main/gametext_internal.h"
 #include "main/textrender_api.h"
@@ -201,6 +202,6 @@ extern u16 gGameTextSjisGlyphTable[];
 extern char sGameTextMapPathFormat[];
 extern int gGameTextFontTexRowPitch;
 extern TextFont gGameTextCharsets[];
-extern struct _GXColor gGameTextClearColor;
+extern GXColor gGameTextClearColor;
 
 #endif /* MAIN_TEXTRENDER_INTERNAL_H_ */
