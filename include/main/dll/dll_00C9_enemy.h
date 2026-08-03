@@ -149,6 +149,12 @@ typedef struct EnemyState {
         struct {
             f32 idleTimer; /* pinPon_updateIdle: += timeDelta, wraps at 360 clearing flags2E4 0x10000 (same idiom as vambat.idleTimer) */
         } pinPon;
+        struct {
+            f32 orbitCenterX; /* centre of the hover circle, seeded from the spawn position */
+            f32 homeY; /* spawn height; the descend/ascend phases bracket it */
+            f32 orbitCenterZ;
+            f32 loopSfxTimer; /* countdown reset to 60, plays SFXTRIG_id_24a on expiry */
+        } mikaladon;
     };
     f32 intervalTimer;
     u16 phaseAngle;

@@ -125,12 +125,12 @@ void mikaladon_updateWhileFrozen(int obj, u8* state, GameObject* attacker, int m
     ((EnemyState*)state)->flags2E8 |= 0x8;
 }
 
-static void mikaladonRearmAmbientSfx(GameObject* obj, MikaladonState* state)
+static void mikaladonRearmAmbientSfx(GameObject* obj, EnemyState* state)
 {
-    state->actor.ambientSfxTimer -= timeDelta;
-    if (state->actor.ambientSfxTimer <= gMikaladonZero[0])
+    state->intervalTimer -= timeDelta;
+    if (state->intervalTimer <= gMikaladonZero[0])
     {
-        state->actor.ambientSfxTimer =
+        state->intervalTimer =
             (f32)(int)randomGetRange(MIKALADON_AMBIENT_SFX_MIN_DELAY, MIKALADON_AMBIENT_SFX_MAX_DELAY);
         Sfx_PlayFromObject(obj, SFXTRIG_id_31);
     }
@@ -157,47 +157,47 @@ static void mikaladonDropPayload(GameObject* obj)
     }
 }
 
-void mikaladon_update(GameObject* obj, MikaladonState* state)
+void mikaladon_update(GameObject* obj, EnemyState* state)
 {
     f32 y;
     f32 sinOut;
     f32 cosOut;
 
-    state->actor.orbitAngle =
-        MIKALADON_ORBIT_ANGLE_SPEED * timeDelta + (f32)(u32)state->actor.orbitAngle;
-    angleToVec2Precise(state->actor.orbitAngle, &sinOut, &cosOut);
-    sinOut = sinOut * ((EnemyState*)state)->aggroRange + state->actor.orbitCenterX;
-    cosOut = cosOut * ((EnemyState*)state)->aggroRange + state->actor.orbitCenterZ;
-    if (state->actor.verticalPhase == MIKALADON_PHASE_ORBIT)
+    state->phaseAngle =
+        MIKALADON_ORBIT_ANGLE_SPEED * timeDelta + (f32)(u32)state->phaseAngle;
+    angleToVec2Precise(state->phaseAngle, &sinOut, &cosOut);
+    sinOut = sinOut * state->aggroRange + state->mikaladon.orbitCenterX;
+    cosOut = cosOut * state->aggroRange + state->mikaladon.orbitCenterZ;
+    if (state->userData1 == MIKALADON_PHASE_ORBIT)
     {
         f32 dx;
         f32 dz;
 
         y = obj->anim.localPosY;
-        dx = state->actor.orbitCenterX -
-             ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosX;
-        dz = state->actor.orbitCenterZ -
-             ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosZ;
-        if (sqrtf(dx * dx + dz * dz) <= MIKALADON_TRIGGER_RADIUS_SCALE * ((EnemyState*)state)->aggroRange)
+        dx = state->mikaladon.orbitCenterX -
+             ((GameObject*)state->trackedObj)->anim.localPosX;
+        dz = state->mikaladon.orbitCenterZ -
+             ((GameObject*)state->trackedObj)->anim.localPosZ;
+        if (sqrtf(dx * dx + dz * dz) <= MIKALADON_TRIGGER_RADIUS_SCALE * state->aggroRange)
         {
-            state->actor.verticalPhase = MIKALADON_PHASE_DESCEND;
-            state->actor.dropTimer = 0;
+            state->userData1 = MIKALADON_PHASE_DESCEND;
+            state->userData2 = 0;
         }
     }
-    else if (state->actor.verticalPhase == MIKALADON_PHASE_DESCEND)
+    else if (state->userData1 == MIKALADON_PHASE_DESCEND)
     {
         y = obj->anim.localPosY - MIKALADON_DESCENT_SPEED * timeDelta;
-        if (y <= state->actor.homeY - MIKALADON_DESCENT_DISTANCE)
+        if (y <= state->mikaladon.homeY - MIKALADON_DESCENT_DISTANCE)
         {
-            state->actor.verticalPhase = MIKALADON_PHASE_ASCEND;
+            state->userData1 = MIKALADON_PHASE_ASCEND;
         }
         else
         {
-            state->actor.dropTimer =
-                (f32)(u32)state->actor.dropTimer + timeDelta;
-            if (state->actor.dropTimer > MIKALADON_DROP_INTERVAL)
+            state->userData2 =
+                (f32)(u32)state->userData2 + timeDelta;
+            if (state->userData2 > MIKALADON_DROP_INTERVAL)
             {
-                state->actor.dropTimer = 0;
+                state->userData2 = 0;
                 if (Obj_IsLoadingLocked() != 0)
                 {
                     mikaladonDropPayload(obj);
@@ -208,9 +208,9 @@ void mikaladon_update(GameObject* obj, MikaladonState* state)
     else
     {
         y = MIKALADON_ASCENT_SPEED * timeDelta + obj->anim.localPosY;
-        if (y >= state->actor.homeY)
+        if (y >= state->mikaladon.homeY)
         {
-            state->actor.verticalPhase = MIKALADON_PHASE_ORBIT;
+            state->userData1 = MIKALADON_PHASE_ORBIT;
         }
     }
     obj->anim.velocityX = oneOverTimeDelta * (sinOut - obj->anim.localPosX);
@@ -218,46 +218,46 @@ void mikaladon_update(GameObject* obj, MikaladonState* state)
     obj->anim.velocityZ = oneOverTimeDelta * (cosOut - obj->anim.localPosZ);
     baddieTurnTowardLookDir(obj, state, 0xf, 7.5f, 1.0f, 0);
     mikaladonRearmAmbientSfx(obj, state);
-    state->actor.loopSfxTimer -= timeDelta;
-    if (state->actor.loopSfxTimer <= gMikaladonZero[0])
+    state->mikaladon.loopSfxTimer -= timeDelta;
+    if (state->mikaladon.loopSfxTimer <= gMikaladonZero[0])
     {
-        state->actor.loopSfxTimer = gMikaladonDefaultPeriod[0];
+        state->mikaladon.loopSfxTimer = gMikaladonDefaultPeriod[0];
         Sfx_PlayFromObject(obj, SFXTRIG_id_24a);
     }
 }
 
-void mikaladon_init(GameObject* obj, MikaladonState* state)
+void mikaladon_init(GameObject* obj, EnemyState* state)
 {
     f32 zero;
     f32 lblA;
     f32 a, b;
 
     zero = gMikaladonDefaultPeriod[0];
-    ((EnemyState*)state)->sightRange = zero;
-    ((EnemyState*)state)->flags2E4 = 1;
-    ((EnemyState*)state)->animPlaySpeed = 0.01f;
-    ((EnemyState*)state)->gravity = 0.006f;
+    state->sightRange = zero;
+    state->flags2E4 = 1;
+    state->animPlaySpeed = 0.01f;
+    state->gravity = 0.006f;
     lblA = 1.0f;
-    ((EnemyState*)state)->drag = lblA;
-    ((EnemyState*)state)->moveId0 = 1;
-    ((EnemyState*)state)->moveSpeedScale0 = lblA;
-    ((EnemyState*)state)->moveId1 = 3;
-    ((EnemyState*)state)->moveSpeedScale1 = lblA;
-    ((EnemyState*)state)->moveId2 = 1;
-    ((EnemyState*)state)->moveSpeedScale2 = lblA;
-    state->actor.orbitCenterX = obj->anim.localPosX;
-    state->actor.homeY = obj->anim.localPosY;
-    state->actor.orbitCenterZ = obj->anim.localPosZ;
-    state->actor.verticalPhase = MIKALADON_PHASE_ORBIT;
-    state->actor.dropTimer = 0;
-    state->actor.orbitAngle = 0;
-    state->actor.loopSfxTimer = zero;
-    state->actor.ambientSfxTimer = zero;
-    ((EnemyState*)state)->pathStep = 8.0f;
+    state->drag = lblA;
+    state->moveId0 = 1;
+    state->moveSpeedScale0 = lblA;
+    state->moveId1 = 3;
+    state->moveSpeedScale1 = lblA;
+    state->moveId2 = 1;
+    state->moveSpeedScale2 = lblA;
+    state->mikaladon.orbitCenterX = obj->anim.localPosX;
+    state->mikaladon.homeY = obj->anim.localPosY;
+    state->mikaladon.orbitCenterZ = obj->anim.localPosZ;
+    state->userData1 = MIKALADON_PHASE_ORBIT;
+    state->userData2 = 0;
+    state->phaseAngle = 0;
+    state->mikaladon.loopSfxTimer = zero;
+    state->intervalTimer = zero;
+    state->pathStep = 8.0f;
 
-    angleToVec2Precise(state->actor.orbitAngle, &a, &b);
+    angleToVec2Precise(state->phaseAngle, &a, &b);
     obj->anim.localPosX =
-        a * ((EnemyState*)state)->aggroRange + state->actor.orbitCenterX;
+        a * state->aggroRange + state->mikaladon.orbitCenterX;
     obj->anim.localPosZ =
-        b * ((EnemyState*)state)->aggroRange + state->actor.orbitCenterZ;
+        b * state->aggroRange + state->mikaladon.orbitCenterZ;
 }
