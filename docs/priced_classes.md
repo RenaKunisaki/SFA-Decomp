@@ -2251,3 +2251,94 @@ and a forwarded store (a vanished `lwz`) both change the multiset without changi
 neither is reachable from the source text. What survives that filter — a different addressing mode, a
 different literal width, an extra store, a folded stride — is the part of the bucket that is really
 asking the source a question.
+
+## 24. The source-shaped opcode-family sweep, run to exhaustion (measured 2026-08-03, A84)
+
+Lane A83 proved the method on ONE family — align retail's and our mnemonic streams per
+function and flag every hunk that trades a single-precision opcode for its double twin —
+and it paid one hit in 210 (`drawViewFinderHud`, worth 99.18072 -> 99.34538). This section
+runs **every other family whose difference maps to a documented source-level fact**, and
+reports the honest yield including the zeros.
+
+**Harness.** `/private/tmp/A84_cache.py` builds one aligned-hunk mnemonic cache over all
+sub-100 functions (SequenceMatcher over the normalised mnemonic streams, relocations
+stripped), so a family query is a read over the cache rather than a re-scan. Population
+**209 sub-100 functions in 87 paired units**; only **78** have any mnemonic-stream
+difference at all, and the other 131 are pure register permutations.
+
+**Yield per family, aligned-hunk pairing.** Every cure named in CLAUDE.md was swept:
+
+| family | rows / 209 | verdict |
+|---|---|---|
+| `cmpwi` vs `cmplwi` (both directions) | **0** | the declared-width lever has NO live site |
+| `andi` vs `rlwinm` (both directions) | **0** | the single-bit-clear lever has NO live site |
+| `li`+`rlwimi` vs `ori`/`or`/`andc` (bitfield) | **0** | the bitfield lever has NO live site |
+| `fcmpo` vs `fcmpu` (both directions) | **0** | the FP-operator lever has NO live site |
+| `fmadds` vs `fmuls`+`fadds` (both directions) | **0** outside the PS islands | association lever has no live site |
+| `neg`/`subf`, `srawi`/`srwi`, `mulli`/shift, `divw`/shift | **0** | no live site |
+| narrow load/store WIDTH (`lwz`/`lhz`/`lbz`, `stw`/`sth`/`stb`) | **0** | the 3 apparent rows are `lwzx`-vs-`lwz`+`add` addressing, not width |
+| surplus `extsb` | 3, all islands or already priced | closed |
+| surplus/missing `extsh` | 4 | all four already banked (§4b, A83) |
+| `bl` vs inlined body | 3 | 2 are never-touch islands; 1 is §24b below |
+
+**The result is the finding.** Eight of the ten families are EMPTY at this frontier — not
+"unsolved", *absent*. The levers CLAUDE.md names are real, and the project has already spent
+them; what remains carries no instance of them. A83's one-hit-in-210 was not a low yield, it
+was the ceiling. Whole-function mnemonic-multiset triage (shift-invariant, so it catches a
+family that migrates across hunks) leaves **9 non-island functions** carrying any interesting
+multiset delta at all, and every one is either already priced or declined below.
+
+### 24b. Three rows worked and declined, mechanism named
+
+**`playerCacheMoveRootHeights`** (195_Player, 97.045, NEW). Retail builds the loop's output
+pointer as `li r0,12; slwi r0,r0,2; add r29,r4,r0` — the subscript scaled but **not folded**,
+with the value const-propagated into the `li` by a later pass. We emit `addi r29,r4,48`. The
+asymmetry inside retail's own preheader is the tell: the sibling walker `&lbl_80332F48[17]`
+IS folded (`addi r30,r3,34`) because its subscript is a literal, while
+`&gPlayerMoveRootHeights[moveIndex]` is not because its subscript is a variable. Our front
+end copy-propagates the literal into the variable subscript and folds it; retail's did not.
+**Nine spellings measured, all folded or worse**: `&a[i]` (baseline 97.045), `a + i`,
+`&a[(int)i]`, `a + (int)i`, `p = a; p += i`, `p = &a[0]; p += i`, the pointer init moved into
+the `for`-init, both arrays indexed in the loop body (97.023), and output indexed with the
+other walker kept (92.955). `&lbl_80332F48[moveIndex + 5]` folds to retail's `+34` exactly,
+proving the fold is unconditional in this unit. Pass-order artifact, not reachable.
+
+**`textureLoad` 98.882 + `loadTextureFiles` 97.248** (main/texture.c, NEW, one mechanism).
+Both are short exactly **three `b`** and nothing else, and both inline `loadTextureBank`
+twice. Retail carries, per inline expansion, an orphan duplicate loop-preheader block
+(`b <that copy's loop test>`) laid out at the FUNCTION TAIL, plus one `b` to skip over the
+pair — 3 dead instructions before the epilogue, unreachable from anywhere. Each inline site
+already carries its own inline copy of that preheader, which we match; retail simply has a
+second, orphaned one. **Eight callee spellings measured**: positive-`if`-wraps-loop (95.138 /
+98.416), `for` with early return (93.248 / 97.803), `for` inside positive `if` (identical),
+`static` without `inline` (65.817 / 90.942 — not inlined at all), `do/while`+`break` (83.697 /
+95.834), and three that are EXACTLY byte-identical to baseline (explicit trailing `return;`,
+`!ptr` test, `*p` instead of `p[0]`). Inliner block-layout bookkeeping; the baseline is the
+best reachable shape.
+
+**`dll_0B_spawnEffect`** (engine/11, 98.982, NEW). Two hunks: one allocator-forged
+(`mr r9,r6` vs `li r10,0` — retail copies a register that already holds zero), and one CSE
+shape. Retail computes the same `*(int*)(base + off + 16)` two ways inside one loop —
+`lwz; addi 16; lwzx` at the head from a cached offset, `lwz 16(r10)` at the tail from the
+loop-invariant `r10 = base + off` — and we CSE both onto the second form. Same class as
+`mapLoadUnloadObjects` (A83): a CSE asymmetry the source text has to state twice, not a
+spelling. Banked.
+
+### 24c. The operation bucket re-partitioned at this tip
+
+A71's partition over the 209: **COLOURING 131 / ORDER 11 / OPERATION 67**. A83's
+allocator-forged screen (the row's entire T-only/C-only delta inside
+`{mr, li, fmr, addi, lis} u {lwz, lbz, lha, lfs, lfd, lwzx, lbzx, lhz, stw, extsb}`) removes
+**35 of 67**; **18** more are never-touch islands (the PS bodies, `zlbDecompress`,
+`pi_videoinit`, `setGQR6/7`, `modelApplyBoneTransform`/`_next`, `fn_80007F78`) — leaving
+**14 real rows**, of which **11 were already banked** (152 §4b, `ObjSeq_onMapSetup`,
+`ObjSeq_runBgCmds`, `subtitleUpdateAndDraw`, `voxmaps_updateActiveMap`, the `acosf` trio,
+`removeButtonObject`, 332 §4b) and the 3 above are now banked too. **The operation bucket
+is closed at this tip.**
+
+**Warning for the next lane that re-partitions it.** `dll_0B_spawnEffect` reached the
+OPERATION bucket only because a register permutation changed a register *reuse* pattern:
+retail's `lwzx r8,r6,r3` writes a fresh register while ours writes `lwzx r5,r6,r5` over its
+own index, and that shifts what the aligner pairs. Screen the bucket on the whole-function
+mnemonic multiset AND read the ndiff before believing a row is an operation row — 44 of its
+46 regions are plain #108 register permutations.
