@@ -32,6 +32,7 @@ here that the target section already says.
 | **The toolchain caps and the never-touch islands.** Bank on sight; do not re-probe. | §5 | Per-class detail in the memory topic files. |
 | **Every sub-100 code row is one of three kinds, and the kinds are decidable without reading any source.** Same opcode sequence, different registers = colouring. Same opcode multiset, different sequence = order. Different multiset = a different operation, which only the source text chooses. | §14 | `tools/a71_mnhist_scan.py` + the partition in §14 over all 213 sub-100 rows at `97746b6bd3`: **136 colouring / 10 order / 67 operation**, no fourth kind and no reloc-only row. |
 | **The order bucket is not a third kind.** Every "order" row is one (at most two) instructions out of place inside a register permutation, so open one only when the slid instruction is the one the source text names. | §15 | All 10 order rows of §14 worked one at a time: mnemonic-sequence delta is 1 for eight of them and 2 for the other two. One paid (`renderShadows` 99.69954 -> 99.71494, the two squares of a magnitude named in retail's order); the nine that did not slid a parameter home, a rematerialised constant, a LICM hoist or a scheduler's delay-slot filler. |
+| **The carve's symbol table is an oracle no score reads.** `.bss` order is free evidence of the source's use order (§11), and a name that contradicts the carve at the same offset is a naming defect that every gate is blind to. | §16 | `tools/bss_order_scan.py` over all 1013 source objects: **21** `.bss` sections ordered differently than the carve and **109** name divergences. Exactly ONE object says `lbl_` where the carve has a recovered name — `597.c`'s `lbl_803E5AE0`, already `sSnowBikePathPointParams` in `config/GSAE01/symbols.txt`: renaming it is byte-identical across all five sections, deleting it costs `matched_data` −396 and `matched_code` −1364. |
 | **The sign-in-the-constant class is EMPTY outside `trig`.** The `A + -C` recovery does not generalise; nothing else in the tree holds a value at retail's opposite sign. | §14 | `tools/a71_signscan.py` over all 1050 units: **0** units hold a mirror-signed float, and the opcode partition finds **0** `fnmsubs`/`fnmadds`/`fsubs`-for-`fmadds` rows outside the three never-touch PS islands. |
 
 ## 1. Target-unmerged dot-compare (purge-priced)
@@ -1451,3 +1452,59 @@ a LICM hoist or a scheduler's load-delay filler — none of which any source tex
 which paid. A dead-initialiser move stays inert (§14), a canonicalised address expression stays
 canonical, and a constant that retail rematerialises where we colour is a colouring row wearing
 order's clothes.
+
+## 16. The symbol-identity oracle: what the carve's symbol table says that no score reads (measured 2026-08-02)
+
+§11 measures that `.bss` layout is set by first-use order and that declaration order is
+completely inert. That makes the retail carve's `.bss` order a free oracle for the source
+text's use order — and nothing in the tree was reading it. `.bss` has no bytes, so objdiff's
+data score cannot see a permutation; md5-of-every-`.o` cannot see one either when the unit is
+not linked, which the carve-linked units are not. `tools/bss_order_scan.py` reads it, on both
+axes, over all 1013 source objects against their carve.
+
+**Order.** 21 sections place their shared symbols in an order the carve does not. Every one is
+`.bss`. Each row is a claim that our TU touches those objects in the wrong order: a missing use,
+a use spelled against the wrong object, or a wrong TU boundary. The specimen worked here is
+`main/tex_dolphin`: ours is `gViewFrustumPlanes, gPlayerRelativeFrustumPlanes, gRcpPendingWarpDest`
+and the carve is `gPlayerRelativeFrustumPlanes, gViewFrustumPlanes, gRcpPendingWarpDest`.
+Swapping the two declarations is inert exactly as §11 predicts, and both frustum relocations in
+`tex_dolphin.o` already agree with the carve's — mnemonic, register and symbol — so the source
+text is missing whatever makes the player-relative array first. The carve's naming is not the
+suspect: retail's own `buildPlayerRelativeFrustumPlanes` materialises `0x803878D8` (`lis r3,0x8038;
+addi r31,r3,0x78d8` at `0x8005aadc`, read out of `main.dol`), which is the carve's offset 0, so
+the address-to-role assignment in `config/GSAE01/symbols.txt` is right and the ordering defect
+is ours.
+
+**Identity.** 109 symbols carry a different name than the carve gives the same
+section/offset/size. Two kinds, and only one of them is debt:
+
+* *naming debt in the map* — ours is a recovered name, the carve's is still `lbl_`/`gap_`. 76 of
+  the 89 same-size rows. Score-free either way; it means a rename landed one-sided.
+* *a contradiction* — both sides carry a real name and they disagree. `main/tex_dolphin` and
+  `main/subtitle` each transpose a pair (`gSubtitleLineTimes` <-> `gSubtitleLineTable`);
+  `main/model`'s `.sbss` is shifted one slot by a leading static; `dolphin/os/OS.o` calls
+  `__OSInIPL` `AreWeInitialized`.
+
+**The `lbl_` direction is itself an oracle.** Of 1013 objects exactly ONE has the divergence the
+other way — our source saying `lbl_` where the carve has a recovered name — and it is the whole
+of the `LBL_CONST_DEF` question: `src/dlls/objects/597/597.c`'s `const GXColor lbl_803E5AE0 =
+{5, 5, 5, 5};` is the object `config/GSAE01/symbols.txt` already calls
+`sSnowBikePathPointParams` at `0x803E5AE0`. The name is stale source from a half-landed rename,
+not a pool-forcing const, and the two readings price as follows:
+
+| Reading | Tree | 597 unit | `.sdata2` word 0 |
+|---|---|---|---|
+| baseline | 99.81598 / 2515196 / 1203321 | 99.90702, data 896/896 | `05050505` |
+| rename to `sSnowBikePathPointParams` | 99.81598 / 2515196 / 1203321 | 99.90702, data 896/896 | `05050505` |
+| delete, spelling it `GXColor pathParam = {5,5,5,5};` at the use | 99.81542 / 2513832 / **1202925** | **99.81951**, data **500**/896 | **gone** |
+
+All five section digests of `597.o` are byte-identical across the rename; only the symbol string
+moves. Deleting it costs the unit's entire 396-byte `.sdata2` — the pool slides down four bytes —
+plus 1364 bytes of matched code, because `05050505` is an aggregate no float literal mints and
+only a file-scope definition can place. It is read (`SnowBike_init` copies it into the `GXColor`
+it hands to the path interface's `setup`), it is 100% of the carve, and it is a struct, which
+`banned_shapes_check`'s own docstring already exempts — `RE_LBL_SCALAR` catches it only because
+the regex excludes `union` and `[` and nothing else. Three of the other five `LBL_CONST_DEF`
+baseline rows are the same misclassification (`engine/7`'s three `const SnowVec3`, each read into
+a different destination, each a distinct 12-byte `.rodata` object); only `engine/21`'s and
+`Baddie`'s `const f32 lbl_... = 0.0f;` are the scalar shape the ban was written for.
