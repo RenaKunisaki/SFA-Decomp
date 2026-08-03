@@ -144,7 +144,6 @@ void firstPersonExit(CameraObject* camera) {
     }
     curvesMove(&gCameraModeViewfinderState->transitionCurve);
 }
-const f32 gCameraModeViewfinderStickScale[1] = {120.0f};
 void firstPersonDoControls(CameraObject* camera) {
     s16 pitchDelta;
     s8 stickX;
@@ -168,9 +167,10 @@ void firstPersonDoControls(CameraObject* camera) {
     if ((gCameraModeViewfinderState->yawSpeed > -5.0f) && (gCameraModeViewfinderState->yawSpeed < 5.0f)) {
         gCameraModeViewfinderState->yawSpeed = 0.0f;
     }
-    spinI = (int)(15360.0f * ((f32)stickY / gCameraModeViewfinderStickScale[0]));
+    spinI = (int)(15360.0f * ((f32)stickY / 120.0f));
     camera->anim.rotX = gCameraModeViewfinderState->yawSpeed * timeDelta + (f32)camera->anim.rotX;
-    pitchDelta = spinI - (camera->anim.rotY & 0xffffU);
+    spinI = spinI - (camera->anim.rotY & 0xffffU);
+    pitchDelta = spinI;
     if (0x8000 < pitchDelta) {
         pitchDelta = pitchDelta - 0xffff;
     }
