@@ -1,6 +1,5 @@
 #include "sys/objects.h"
 #include "main/mapEvent.h"
-#include "main/dll/TrickyCurve.h"
 #include "main/dll/sfxplayer.h"
 #include "main/dll/dll_02B1_cmbsrc.h"
 #include "main/gamebits.h"
@@ -61,7 +60,7 @@ static const CmbSrcColorIndexPair sDFPRotatePColorIndices = {0x00040005, 0x00060
         }                                                                                                              \
     } while (0)
 
-void TrickyCurve_updateEffectHandleRing(GameObject* obj)
+void sfxplayer_updateEffectHandleRing(GameObject* obj)
 {
     struct
     {
@@ -183,7 +182,7 @@ int sfxplayer_ensureEffectHandlePair(GameObject* obj, u8 ringIndex)
     return 1;
 }
 
-int TrickyCurve_activateEffectHandleRing(GameObject* obj, int unused, ObjSeqState* animUpdate)
+int sfxplayer_activateEffectHandleRing(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     SfxplayerState* state = (SfxplayerState*)obj->extra;
     int i;
@@ -208,7 +207,7 @@ int TrickyCurve_activateEffectHandleRing(GameObject* obj, int unused, ObjSeqStat
         }
     }
 
-    TrickyCurve_updateEffectHandleRing(obj);
+    sfxplayer_updateEffectHandleRing(obj);
     return 0;
 }
 
@@ -327,7 +326,7 @@ void sfxplayer_update(GameObject* obj)
                 flags->bit10 = 0;
                 mainSetBits(SFXPLAYER_GAMEBIT_RING_ACTIVE, 0);
             }
-            TrickyCurve_updateEffectHandleRing(obj);
+            sfxplayer_updateEffectHandleRing(obj);
             handles = (u32*)gSfxplayerEffectHandles;
             for (i = 0; i < SFXPLAYER_EFFECT_RING_COUNT; i++)
             {
@@ -368,7 +367,7 @@ void sfxplayer_init(GameObject* obj, int config)
 
     state = (SfxplayerState*)obj->extra;
     obj->anim.rotX = (s16)((s8) * (u8*)(config + SFXPLAYER_CONFIG_MAP_ID_OFFSET) << 8);
-    obj->animEventCallback = (void*)TrickyCurve_activateEffectHandleRing;
+    obj->animEventCallback = (void*)sfxplayer_activateEffectHandleRing;
     state->config19 = *(u8*)(config + SFXPLAYER_CONFIG_MODE_OFFSET);
     state->eventId = *(s16*)(config + SFXPLAYER_CONFIG_EVENT_ID_OFFSET);
     state->config20 = *(s16*)(config + SFXPLAYER_CONFIG_FIELD20_OFFSET);

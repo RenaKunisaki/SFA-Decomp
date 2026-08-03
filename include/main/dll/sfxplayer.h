@@ -3,6 +3,7 @@
 
 #include "ghidra_import.h"
 #include "game/objects/object.h"
+#include "main/objseq.h"
 
 typedef struct SfxplayerStateFlags {
   u8 bit80 : 1;
@@ -51,5 +52,8 @@ void sfxplayer_init(GameObject* obj,int config);
 void sfxplayer_free(u32 obj, int arg1);
 void sfxplayer_release(void);
 void sfxplayer_initialise(void);
+void sfxplayer_updateEffectHandleRing(GameObject* obj);
+int sfxplayer_ensureEffectHandlePair(GameObject* obj, u8 ringIndex);
+int sfxplayer_activateEffectHandleRing(GameObject* obj, int unused, ObjSeqState* animUpdate);
 
 #endif /* MAIN_DLL_SFXPLAYER_H_ */

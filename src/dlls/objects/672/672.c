@@ -30,7 +30,6 @@
 #include "main/gamebits_api.h"
 #include "main/gameloop_gamebit_api.h"
 #include "main/objhits.h"
-#include "main/dll/ARW/dll_029F_arwbombcoll.h"
 
 #define RING_SEQID_ARW_ARWING 0x601 /* "ARWArwing" (DLL 0x29A) */
 #define RING_OBJ_ARW_GOLD   0x060b
@@ -89,7 +88,7 @@ ObjectDescriptor gRingObjDescriptor = {
     ring_getExtraSize,
 };
 
-void arwbombcoll_updateMovingAxis(GameObject* obj, RingState* state)
+void ring_updateMovingAxis(GameObject* obj, RingState* state)
 {
     u8 mode = state->route;
     if (mode == 1 || mode == 3)
@@ -138,7 +137,7 @@ void arwbombcoll_updateMovingAxis(GameObject* obj, RingState* state)
     }
 }
 
-void Ring_onCollect(GameObject* obj, RingState* state, GameObject* arwing)
+void ring_onCollect(GameObject* obj, RingState* state, GameObject* arwing)
 {
     GameObject* arwingObj = arwing;
     RingPlacement* setup = (RingPlacement*)obj->anim.placementData;
@@ -193,7 +192,7 @@ void Ring_onCollect(GameObject* obj, RingState* state, GameObject* arwing)
     state->phase = RING_PHASE_PULL_TO_ARWING;
 }
 
-int arwbombcoll_checkArwingCollision(GameObject* obj, RingState* state, int arwing)
+int ring_checkArwingCollision(GameObject* obj, RingState* state, int arwing)
 {
     ObjAnimComponent* objAnim = &obj->anim;
     ObjAnimComponent* arwingAnim = &((GameObject*)arwing)->anim;
@@ -347,7 +346,7 @@ void ring_update(GameObject* obj)
                     state->light = NULL;
                 }
             }
-            arwbombcoll_updateMovingAxis(obj, state);
+            ring_updateMovingAxis(obj, state);
             break;
         case RING_ROUTE_STATIONARY_SHOT:
             if (ObjHits_GetPriorityHit(obj, &hitB, 0, 0) != 0 && (void*)(hit = hitB) != NULL &&
@@ -368,15 +367,15 @@ void ring_update(GameObject* obj)
             break;
         case RING_ROUTE_MOVING_AXIS_B:
         case RING_ROUTE_MOVING_AXIS_A:
-            arwbombcoll_updateMovingAxis(obj, state);
+            ring_updateMovingAxis(obj, state);
             break;
         }
         if (state->flags.bit80 != 0)
         {
             if (arwarwing_isDead(arwing) == 0 && arwarwing_isExplodingOrWarping(arwing) == 0 &&
-                arwbombcoll_checkArwingCollision(obj, state, (int)arwing) != 0)
+                ring_checkArwingCollision(obj, state, (int)arwing) != 0)
             {
-        Ring_onCollect(obj, state, arwing);
+        ring_onCollect(obj, state, arwing);
             }
         }
         obj->anim.rotX = (f32)(int)obj->anim.rotX + 1000.0f * timeDelta;
