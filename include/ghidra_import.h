@@ -17,8 +17,4 @@ typedef u16 wchar_t;
 #endif
 #endif
 
-#ifndef NAN
-#define NAN 0.0f
-#endif
-
 #endif

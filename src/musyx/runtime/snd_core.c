@@ -3,7 +3,6 @@
 #include "musyx/hw_init.h"
 #include "musyx/synth_control.h"
 #include "musyx/synth_config.h"
-#undef NAN
 #include "dolphin/math.h"
 #include "musyx/snd3d.h"
 

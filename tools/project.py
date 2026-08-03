@@ -235,6 +235,7 @@ class ProjectConfig:
 
         # Progress output and report.json config
         self.progress = True  # Enable report.json generation and CLI progress output
+        self.progress_requires_link: bool = True
         self.progress_modules: bool = True  # Include combined "modules" category
         self.progress_each_module: bool = (
             False  # Include individual modules, disable for large numbers of modules
@@ -1443,7 +1444,7 @@ def generate_build_ninja(
             outputs="progress",
             rule="progress",
             implicit=[
-                ok_path,
+                *([ok_path] if config.progress_requires_link else []),
                 configure_script,
                 python_lib,
                 report_path,
