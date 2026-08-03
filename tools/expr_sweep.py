@@ -415,7 +415,8 @@ def sweep(unit, symbol, version, args):
     dtext = decl_text_of(src, body, symbol)
     oracle = sem.TypeOracle(dtext)
     known_ids = frozenset(oracle.kind) | frozenset(
-        re.findall(r"\b([a-z]\w*)\s*(?:=[^=]|\+\+|--|\[)", dtext))
+        re.findall(r"\b([a-z]\w*)\s*(?:=[^=]|\+\+|--|\[)", dtext)) | \
+        cexpr.project_macros()
 
     ktypes = cexpr.project_typedefs()
     regions = expression_regions(src, body[0], body[1])

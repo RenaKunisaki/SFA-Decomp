@@ -204,11 +204,25 @@ class Parser:
         """Do the tokens starting at j spell a type-name followed by `)`?"""
         k = j
         saw = False
-        while self.t[k].kind == "id" and (
-                self.t[k].text in BASE_TYPE_WORDS or
-                (not saw and self.t[k].text not in self.known_ids and
-                 (self.t[k].text in self.known_types or
-                  _TYPEISH.match(self.t[k].text)))):
+        saw_name = False
+        after_tag_kw = False
+        while self.t[k].kind == "id":
+            tx = self.t[k].text
+            if tx in BASE_TYPE_WORDS:
+                # `struct`/`union`/`enum` licenses the very next identifier as a
+                # tag even when it is a known object name -- `(struct x*)` can
+                # only ever be a type.
+                after_tag_kw = tx in ("struct", "union", "enum")
+            elif not saw_name and (
+                    after_tag_kw or
+                    (tx not in self.known_ids and
+                     (tx in self.known_types or _TYPEISH.match(tx)))):
+                # At most ONE typedef name or tag, but it may follow qualifiers
+                # and `struct`/`union`/`enum`: `const Vec3f*`, `struct Mldf*`.
+                saw_name = True
+                after_tag_kw = False
+            else:
+                break
             saw = True
             k += 1
         if not saw:
@@ -217,7 +231,8 @@ class Parser:
             k += 1
         if self.t[k].kind == "punct" and self.t[k].text == "[":
             return False
-        # a function-pointer type name: `void (*)(f32, f32)`, `int (*)(int)`
+        # a function-pointer type name: `void (*)(f32, f32)`, `int (*)(int)`,
+        # or a pointer-to-array type name: `f32 (*)[4]`, `u8 (*)[2]`
         if self.t[k].kind == "punct" and self.t[k].text == "(":
             k = self._skip_group(k)
             if k < 0:
@@ -226,7 +241,28 @@ class Parser:
                 k = self._skip_group(k)
                 if k < 0:
                     return False
+            else:
+                while self.t[k].kind == "punct" and self.t[k].text == "[":
+                    k = self._skip_brackets(k)
+                    if k < 0:
+                        return False
         return self.t[k].kind == "punct" and self.t[k].text == ")"
+
+    def _skip_brackets(self, k: int) -> int:
+        """Index just past the `]` matching the `[` at k, or -1."""
+        depth = 0
+        while k < len(self.t):
+            tk = self.t[k]
+            if tk.kind == "punct" and tk.text == "[":
+                depth += 1
+            elif tk.kind == "punct" and tk.text == "]":
+                depth -= 1
+                if depth == 0:
+                    return k + 1
+            elif tk.kind == "eof":
+                return -1
+            k += 1
+        return -1
 
     def _skip_group(self, k: int) -> int:
         """Index just past the `)` matching the `(` at k, or -1."""
@@ -402,6 +438,48 @@ class Parser:
 
 
 _TYPEDEF_CACHE: Optional[frozenset] = None
+_MACRO_CACHE: Optional[frozenset] = None
+
+
+def project_macros(root=None) -> frozenset:
+    """Every OBJECT-like macro name defined under include/ and src/.
+
+    `_TYPEISH` calls anything capitalised type-shaped, so an ALL-CAPS macro
+    constant is indistinguishable from a typedef name -- and that is not
+    merely a refusal, it is a WRONG PARSE that succeeds:
+
+        (SHIELD_SFX_VOLUME_MAX * (a / b)) + c
+
+    reads as a CAST of `+c` to the type `SHIELD_SFX_VOLUME_MAX * (a / b)`
+    rather than as a multiply.  Both spellings of a rewrite go through this
+    same parser, so the semantic gate cannot catch it -- the only cure is to
+    tell the parser these names are OBJECTS.  Function-like macros are
+    excluded: `#define F(x)` is followed immediately by `(`, and a name used
+    as `F(...)` parses as a call either way.
+    """
+    global _MACRO_CACHE
+    if _MACRO_CACHE is not None:
+        return _MACRO_CACHE
+    import pathlib
+    root = pathlib.Path(root or pathlib.Path(__file__).resolve().parent.parent)
+    pat = re.compile(r"^[ \t]*#[ \t]*define[ \t]+([A-Za-z_]\w*)(?![\w(])",
+                     re.MULTILINE)
+    names = set()
+    for sub in ("include", "src"):
+        d = root / sub
+        if not d.is_dir():
+            continue
+        for ext in ("*.h", "*.c"):
+            for f in d.rglob(ext):
+                try:
+                    names |= set(pat.findall(
+                        f.read_bytes().decode("latin-1")))
+                except OSError:
+                    continue
+    # A name that is genuinely a typedef must stay a type even if some header
+    # also #defines it; the type reading is the one that can appear in a cast.
+    _MACRO_CACHE = frozenset(names - set(project_typedefs(root)))
+    return _MACRO_CACHE
 
 
 def project_typedefs(root=None) -> frozenset:
@@ -497,3 +575,68 @@ def is_pure(n: Node) -> bool:
 def normal_text(n: Node, s: str) -> str:
     """Whitespace/comment-free spelling, used to key identical leaves."""
     return "".join(t.text for t in tokenize(n.src(s)) if t.kind != "eof")
+
+
+# ------------------------------------------------------------- self-test
+# The type-name grammar is the parser's sharpest edge: every widening makes
+# more expressions reachable, and every widening risks reading an ordinary
+# parenthesised expression as a cast.  A wrong tree here is INVISIBLE to
+# tools/semantic_equivalence.py, because both spellings of a rewrite are
+# parsed by THIS code -- a systematic mis-parse agrees with itself.  So the
+# negative controls below matter more than the positive ones.
+
+_SELFTEST_IDS = frozenset({
+    "obj", "fm", "p", "n", "sTab", "gMtx", "y", "x", "state", "c",
+    "count", "arr", "i", "cache", "idx",
+})
+
+
+def _self_test() -> int:
+    kt = project_typedefs()
+    mac = project_macros()
+    ids = _SELFTEST_IDS | mac
+    ok = fail = 0
+
+    def check(src, want_kind, why):
+        nonlocal ok, fail
+        try:
+            got = parse_expression(src, ids, kt, 0, len(src)).kind
+        except (ParseError, Ambiguous) as e:
+            got = "%s: %s" % (type(e).__name__, e)
+        if got == want_kind:
+            ok += 1
+            print("  PASS  %-52s %s" % (src, why))
+        else:
+            fail += 1
+            print("  FAIL  %-52s want %s got %s" % (src, want_kind, got))
+
+    print("--- POSITIVE: type-names that must parse as casts ---")
+    check("(const Vec3f*)&obj->x", "cast", "qualifier before a typedef name")
+    check("(struct MldfNames*)sTab", "cast", "struct tag")
+    check("(const f32 (*)[4])fm", "cast", "pointer-to-array, qualified")
+    check("(u8(*)[2])((u8*)p + n)", "cast", "pointer-to-array, no space")
+    check("(f32 (*)[4])gMtx", "cast", "pointer-to-array")
+
+    print("--- NEGATIVE: expressions that must NOT become casts ---")
+    check("(count) * x", "bin", "a known object is not a type")
+    check("(count) - x", "bin", "a known object is not a type")
+    check("(arr)[i]", "index", "a subscript is not a cast")
+    check("(p) + 1", "bin", "a known object is not a type")
+    # The macro hazard: _TYPEISH calls anything capitalised type-shaped, so
+    # without project_macros() this reads as a CAST of `+ c` to the type
+    # `SHIELD_SFX_VOLUME_MAX * (state->a / state->b)` -- silently, and with a
+    # completely wrong tree that still parses.
+    check("(SHIELD_SFX_VOLUME_MAX * (state->a / state->b)) + c", "bin",
+          "an object-like macro is an OBJECT, not a type")
+    check("(SHIELD_SFX_VOLUME_MAX * (state->a / state->b))", "paren",
+          "same, standalone")
+
+    print("\n%d/%d controls hold" % (ok, ok + fail))
+    return 1 if fail else 0
+
+
+if __name__ == "__main__":
+    import sys as _sys
+    if "--self-test" in _sys.argv:
+        _sys.exit(_self_test())
+    print("cexpr: a C-expression parser. Run --self-test for the controls.")
