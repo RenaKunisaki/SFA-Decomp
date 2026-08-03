@@ -142,7 +142,6 @@ extern u8 gTitleScreenSfxFlagGrid[0x48];
 extern u8 gTitleScreenMtx[0x34];
 extern TitleAnimMoves gTitleScreenAnimMoves[];
 extern f32 hudMatrix[4][4];
-extern f32 lbl_803E2300;
 
 void titleScreenPlayActorSfx(GameObject* obj, u8* arr)
 {
@@ -404,7 +403,7 @@ void titleScreenDrawMenuFrame(int alpha, int hideHighlight, u32 showArrows)
         int yb = (int)mtx[7];
         i = 0;
         texs = (Texture**)gTitleScreenTextures;
-        sc3 = lbl_803E2300;
+        sc3 = 268.0f;
         do
         {
             tex = texs[4];
