@@ -321,7 +321,7 @@ void MmpGyservent_setup(GameObject* obj, MMPTriggerGeyserPlacement* placement) {
     xf.y = -obj->anim.worldPosY;
     xf.z = -obj->anim.worldPosZ;
     mtxRotateByVec3s(rotMtx, &xf);
-    mtx44Transpose(rotMtx, (f32*)((char*)state + 0x38));
+    mtx44Transpose(rotMtx, &state->mtx[0][0]);
 
     state->reach = 100.0f * obj->anim.rootMotionScale;
     state->nearRadiusSq = (145.0f * obj->anim.rootMotionScale) * (145.0f * obj->anim.rootMotionScale);
@@ -1092,12 +1092,12 @@ void Trigger_hitDetect(GameObject* obj) {
                         }
                         i++;
                     }
-                    if (ok && ((TriggerFlags8A*)(state + 0x8a))->bit7 == 0) {
-                        ((TriggerFlags8A*)(state + 0x8a))->bit7 = 1;
+                    if (ok && ((TriggerState*)state)->flags8A.bit7 == 0) {
+                        ((TriggerState*)state)->flags8A.bit7 = 1;
                         objInterpretSeq(obj, triggerObj, 1, 0);
                     }
                     if (!ok) {
-                        ((TriggerFlags8A*)(state + 0x8a))->bit7 = 0;
+                        ((TriggerState*)state)->flags8A.bit7 = 0;
                     }
                     break;
                 case 0xf4:
@@ -1147,7 +1147,7 @@ void Trigger_init(GameObject* obj, u8* params) {
         ((TriggerState*)state)->gateBits[1] = ((TriggerPlacement*)params)->gateBitSrc[1];
         ((TriggerState*)state)->gateBits[2] = ((TriggerPlacement*)params)->gateBitSrc[2];
         ((TriggerState*)state)->gateBits[3] = ((TriggerPlacement*)params)->gateBitSrc[3];
-        ((TriggerFlags8A*)(state + 0x8a))->bit7 = 0;
+        ((TriggerState*)state)->flags8A.bit7 = 0;
         break;
     case 0x4e:
     case 0x4f:

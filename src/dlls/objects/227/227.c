@@ -209,11 +209,10 @@ void Fireball_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int
     savedF8 = obj->anim.rootMotionScale;
     obj->anim.rootMotionScale = 0.9f;
     for (i = 0; i < FIREBALL_ROTATION_COUNT; i++) {
-        FireballState* fs = (FireballState*)((u8*)state + i * 2);
-        fs->rotZBase[0] += fs->rotZDelta[0];
-        fs->rotYBase[0] += fs->rotYDelta[0];
-        obj->anim.rotZ = (s16)fs->rotZBase[0];
-        obj->anim.rotY = (s16)fs->rotYBase[0];
+        state->rotZBase[i] += state->rotZDelta[i];
+        state->rotYBase[i] += state->rotYDelta[i];
+        obj->anim.rotZ = (s16)state->rotZBase[i];
+        obj->anim.rotY = (s16)state->rotYBase[i];
         model->bufferFlags &= ~0x8;
         objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);
     }
@@ -412,7 +411,6 @@ void Fireball_init(GameObject* obj) {
     if (placement->startDisabled != 0) {
         state->stateFlags |= FIREBALL_FLAG_DISABLED;
     } else {
-        FireballState* fs;
         int i;
         state->unk40 = (s16)randomGetRange(600, 900);
         state->unk42 = (s16)randomGetRange(-600, 600);
@@ -444,12 +442,11 @@ void Fireball_init(GameObject* obj) {
             }
         }
         obj->anim.alpha = 200;
-        for (i = 0, fs = state; i < FIREBALL_ROTATION_COUNT; i++) {
-            fs->rotZBase[0] = (u16)randomGetRange(-32767, 32767);
-            fs->rotZDelta[0] = (u16)randomGetRange(-1024, 1024);
-            fs->rotYBase[0] = (u16)randomGetRange(-32767, 32767);
-            fs->rotYDelta[0] = (u16)randomGetRange(-1024, 1024);
-            fs = (FireballState*)((char*)fs + 2);
+        for (i = 0; i < FIREBALL_ROTATION_COUNT; i++) {
+            state->rotZBase[i] = (u16)randomGetRange(-32767, 32767);
+            state->rotZDelta[i] = (u16)randomGetRange(-1024, 1024);
+            state->rotYBase[i] = (u16)randomGetRange(-32767, 32767);
+            state->rotYDelta[i] = (u16)randomGetRange(-1024, 1024);
         }
         obj->animEventCallback = Fireball_SeqFn;
         objAddObjectType((int)obj, FIREBALL_OBJECT_GROUP);

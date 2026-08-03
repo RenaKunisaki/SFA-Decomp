@@ -942,10 +942,11 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
 
     playerRunStateMachine((GameObject*)pos, (BaddieState*)state, dt, (PlayerStateFn*)stateFns);
 
-    *(s16*)(state + 0x338) = (s16)((f32) * (s16*)(state + 0x338) + dt);
-    if ((f32) * (s16*)(state + 0x338) > PLAYER_MOVE_COUNTER_MAX)
+    ((BaddieState*)state)->controlTimer =
+        (s16)((f32)((BaddieState*)state)->controlTimer + dt);
+    if ((f32)((BaddieState*)state)->controlTimer > PLAYER_MOVE_COUNTER_MAX)
     {
-        *(s16*)(state + 0x338) = 10000;
+        ((BaddieState*)state)->controlTimer = 10000;
     }
 
     gPlayerMoveOverridePosX = ((GameObject*)pos)->anim.localPosX;

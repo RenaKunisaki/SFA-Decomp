@@ -83,7 +83,7 @@ typedef struct WindSource
 #define NEWCLOUD_WIND_SOURCE_COUNT 6
 extern NewCloud* gNewClouds[8];
 
-#define NC_CLOUD ((u8 *)gNewClouds[*(u16 *)(params + 0x26)])
+#define NC_CLOUD ((u8 *)gNewClouds[((CloudSpawnParams *)params)->cloudIndex])
 #define D7_CLOUD (*cloudSlot)
 extern char sSnowPrintSnowCloudInvalidCloudId[];
 

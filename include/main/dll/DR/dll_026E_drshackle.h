@@ -4,6 +4,7 @@
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "global.h"
+#include "main/dll/DR/dr_types.h"
 #include "main/objseq.h"
 
 typedef struct DrshacklePlacement
@@ -31,12 +32,13 @@ typedef struct DrshackleState
     s32 slotCount;    /* 0x14: number of path slots (1 or 2) */
     u8 pad18[0x19 - 0x18];
     s8 unk19;              /* 0x19 */
-    u8 pad1A[0x1B - 0x1A]; /* 0x1A: BitFlags8 active flag */
+    BitFlags8 flags1A;     /* 0x1A: b0 = chain active (visible) */
     u8 pathPointA;         /* 0x1B: path-point index of slot 0 */
     u8 pathPointB;         /* 0x1C: path-point index of slot 1 */
     u8 pad1D[0x20 - 0x1D];
 } DrshackleState;
 
+STATIC_ASSERT(offsetof(DrshackleState, flags1A) == 0x1A);
 STATIC_ASSERT(offsetof(DrshacklePlacement, startPathPoint) == 0x18);
 STATIC_ASSERT(offsetof(DrshacklePlacement, attachSlot) == 0x19);
 STATIC_ASSERT(offsetof(DrshacklePlacement, pathObjGroupBase) == 0x1A);

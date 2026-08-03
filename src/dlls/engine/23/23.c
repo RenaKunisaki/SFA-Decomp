@@ -954,7 +954,7 @@ f32 SaveGame_gplayGetTimeRemaining(int id)
     count = ((SaveGameData*)p)->timeEntryCount;
     for (; i < count; i++)
     {
-        if (((SaveGameTimeEntry*)(p + 0x6f0))->objId == id)
+        if (((SaveGameData*)p)->timeEntries[0].objId == id)
         {
             p = gSaveGameData;
             return ((SaveGameTimeEntry*)(p + 0x6f0))[i].time - ((SaveGameData*)p)->playTime;
@@ -975,7 +975,7 @@ int SaveGame_gplayDidTimeExpire(int id)
     count = ((SaveGameData*)p)->timeEntryCount;
     for (i = 0; i < count; i++)
     {
-        if (((SaveGameTimeEntry*)(p + 0x6f0))->objId == id)
+        if (((SaveGameData*)p)->timeEntries[0].objId == id)
             return 0;
         p += 8;
     }
@@ -1001,7 +1001,7 @@ void SaveGame_gplayAddTime(int id, f32 time)
     p = base;
     for (; i < count; i++)
     {
-        if (((SaveGameTimeEntry*)(p + 0x6f0))->objId == id)
+        if (((SaveGameData*)p)->timeEntries[0].objId == id)
             break;
         p += 8;
     }
@@ -1021,7 +1021,7 @@ void* SaveGame_getSidekickStats(void)
 void* SaveGame_getCurCharPos(void)
 {
     int idx = ((SaveGameData*)gSaveGameData)->currentCharacter;
-    return gSaveGameData + idx * 16 + 0x684;
+    return &((SaveGameData*)gSaveGameData)->characterPositions[idx];
 }
 
 void* SaveGame_getPlayerStats(void)
@@ -1054,8 +1054,8 @@ void loadMapForCurrentSaveGame(void)
     stopRumble2();
     resetYbutton();
     base = (char*)gSaveGameData + ((SaveGameData*)gSaveGameData)->currentCharacter * 16;
-    mapLoadByCoords(((SaveGameCharacterPosition*)(base + 0x684))->x, ((SaveGameCharacterPosition*)(base + 0x684))->y,
-                    ((SaveGameCharacterPosition*)(base + 0x684))->z, ((SaveGameCharacterPosition*)(base + 0x684))->mapLayer);
+    mapLoadByCoords(((SaveGameData*)base)->characterPositions[0].x, ((SaveGameData*)base)->characterPositions[0].y,
+                    ((SaveGameData*)base)->characterPositions[0].z, ((SaveGameData*)base)->characterPositions[0].mapLayer);
     if (getCurUiDll() != 4)
     {
         loadUiDll(1);

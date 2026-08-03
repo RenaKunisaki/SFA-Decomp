@@ -737,7 +737,7 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
         }
         return 0;
     }
-    if (dll_2E_updateSequenceTurn(obj, seq, (MoveLibState*)(state + 0x35C), 0, 0) != 0)
+    if (dll_2E_updateSequenceTurn(obj, seq, &((ShopkeeperState*)state)->moveLib, 0, 0) != 0)
     {
         return 1;
     }
@@ -991,7 +991,7 @@ void ShopKeeper_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visib
     if (((ShopkeeperState*)state)->baddie.controlMode != 7 && visible != 0)
     {
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
-        dll_2E_setTargetFromPathPoint(obj, (MoveLibState*)(state + 0x35c), 0);
+        dll_2E_setTargetFromPathPoint(obj, &((ShopkeeperState*)state)->moveLib, 0);
     }
     if ((((ShopkeeperState*)state)->flags9D4 & SHOPKEEPER_FLAG_TICK) != 0)
     {
@@ -1048,7 +1048,7 @@ void ShopKeeper_init(GameObject* obj)
     ((ShopkeeperState*)state)->msgStack = Queue_Alloc(4, 4);
     ((ShopkeeperState*)state)->opacity = 0xFF;
     ((ShopkeeperState*)state)->textTimer = 300.0f;
-    dll_2E_initState(obj, (MoveLibState*)(state + 0x35C), -0x1C71, 0x3555, 2);
+    dll_2E_initState(obj, &((ShopkeeperState*)state)->moveLib, -0x1C71, 0x3555, 2);
     ((ShopkeeperState*)state)->moveLib.modeBits |= 0x12;
 }
 

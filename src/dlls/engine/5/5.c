@@ -467,9 +467,9 @@ void skySetLightIndex(int mode, f32 brightness)
         {
             setDrawCloudsAndLights(cloudMode - 1);
         }
-        ((SkyBlendStateFlags*)(gSkyState + 0x209))->unused80 =
+        ((SkyState*)gSkyState)->lights[2].flags.unused80 =
             ((SkyBlendStateFlags*)(gSkyState + idx + 0xc1))->unused80;
-        ((SkyBlendStateFlags*)(gSkyState + 0x209))->visibility =
+        ((SkyState*)gSkyState)->lights[2].flags.visibility =
             ((SkyBlendStateFlags*)(gSkyState + idx + 0xc1))->visibility;
         env2 = saveGameGetEnvState();
         if (getSaveGameLoadStatus() == 0)

@@ -410,8 +410,8 @@ void freeAndNull(void** p) {
 
 void pathSearchInit(PathSearch* search) {
     search->nodes = (PathSearchNode*)mmAlloc(0x1960, 0x10, 0);
-    search->heap = (PathHeapEntry*)((u8*)search->nodes + 0xfe0);
-    search->path = (RomCurveDef**)((u8*)search->heap + 0x7f0);
+    search->heap = (PathHeapEntry*)&search->nodes[0xfe];
+    search->path = (RomCurveDef**)&search->heap[0xfe];
 }
 
 void allocSomething32bytes(void) {

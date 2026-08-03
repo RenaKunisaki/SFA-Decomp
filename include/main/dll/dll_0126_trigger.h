@@ -6,6 +6,13 @@
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
 
+/* flag byte at TriggerState + 0x8A; bit7 = the 0x54 once-only latch */
+typedef struct
+{
+    u8 bit7 : 1;
+    u8 lo : 7;
+} TriggerFlags8A;
+
 typedef struct TriggerPlacement
 {
     s16 typeId; /* 0x0: object-sequence type id dispatched by Trigger_init */
@@ -45,16 +52,11 @@ typedef struct TriggerState
     u8 pad34[0x80 - 0x34];
     s16 gameBit;
     s16 gateBits[4];
-    u8 pad8A[0xAC - 0x8A];
+    TriggerFlags8A flags8A;
+    u8 pad8B[0xAC - 0x8B];
 } TriggerState;
 
-/* flag byte at TriggerState + 0x8A; bit7 = the 0x54 once-only latch */
-typedef struct
-{
-    u8 bit7 : 1;
-    u8 lo : 7;
-} TriggerFlags8A;
-
+STATIC_ASSERT(offsetof(TriggerState, flags8A) == 0x8A);
 STATIC_ASSERT(offsetof(TriggerPlacement, typeId) == 0x0);
 STATIC_ASSERT(offsetof(TriggerPlacement, triggerId) == 0x38);
 STATIC_ASSERT(offsetof(TriggerPlacement, size) == 0x3A);

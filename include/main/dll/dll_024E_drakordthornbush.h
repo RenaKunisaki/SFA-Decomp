@@ -33,7 +33,9 @@ typedef struct DrakordThornbushState
     void* hitTable;                   /* 0x6C: hit-reaction table pointer */
     f32 baseScale;                    /* 0x70: per-variant init scale constant */
     s32 radius;                       /* 0x74 */
-    u8 tail78[0x7c - 0x78];           /* 0x78: holds ByteFlags byte at 0x79 */
+    u8 pad78;
+    ByteFlags flags79;                /* 0x79: bit 0x80 = spawned/regrown */
+    u8 pad7A[0x7c - 0x7a];
 } DrakordThornbushState;
 
 STATIC_ASSERT(offsetof(DrakordThornbushPlacement, spawnHealth) == 0x19);
@@ -46,6 +48,7 @@ STATIC_ASSERT(offsetof(DrakordThornbushState, lightScale) == 0x68);
 STATIC_ASSERT(offsetof(DrakordThornbushState, hitTable) == 0x6C);
 STATIC_ASSERT(offsetof(DrakordThornbushState, baseScale) == 0x70);
 STATIC_ASSERT(offsetof(DrakordThornbushState, radius) == 0x74);
+STATIC_ASSERT(offsetof(DrakordThornbushState, flags79) == 0x79);
 STATIC_ASSERT(sizeof(DrakordThornbushState) == 0x7c);
 
 extern int gThornBushLightningHitTable[2];

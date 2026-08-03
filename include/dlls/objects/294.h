@@ -35,6 +35,7 @@ typedef struct MmpGyserventState {
     f32 reachBY;      /* 0x2C */
     f32 reachBZ;      /* 0x30 */
     f32 reach;        /* 0x34: eruption reach distance */
+    f32 mtx[3][4];    /* 0x38: world->vent-local transform */
 } MmpGyserventState;
 
 STATIC_ASSERT(offsetof(MmpGyserventState, nearRadiusSq) == 0x04);
@@ -43,6 +44,7 @@ STATIC_ASSERT(offsetof(MmpGyserventState, planeOffset) == 0x18);
 STATIC_ASSERT(offsetof(MmpGyserventState, reachAX) == 0x1C);
 STATIC_ASSERT(offsetof(MmpGyserventState, reachBX) == 0x28);
 STATIC_ASSERT(offsetof(MmpGyserventState, reach) == 0x34);
+STATIC_ASSERT(offsetof(MmpGyserventState, mtx) == 0x38);
 
 void MmpGyservent_setup(GameObject* obj, MMPTriggerGeyserPlacement* placement);
 void triggerEvalEndpointCylinders(GameObject* obj, GameObject* seqObj);

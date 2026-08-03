@@ -736,7 +736,7 @@ void addWavyCausticTevStage(void)
     id = gRcpNextTexMap + 1;
     if (tex != NULL)
     {
-        GXTexObj* obj = (GXTexObj*)((char*)tex + 0x20);
+        GXTexObj* obj = (GXTexObj*)((Texture*)tex)->gxTexObj;
         if (((Texture*)tex)->preloaded != 0)
         {
             GXLoadTexObjPreLoaded(obj, (GXTexRegion*)((Texture*)tex)->tmemAddr, id);
@@ -2219,7 +2219,7 @@ void addTexLayerStagesLit(void* p1, void* mtx)
         int id = gRcpNextTexMap;
         if (p1 != 0)
         {
-            GXTexObj* obj = (GXTexObj*)((char*)p1 + 0x20);
+            GXTexObj* obj = (GXTexObj*)((Texture*)p1)->gxTexObj;
             if (((Texture*)p1)->preloaded != 0)
             {
                 GXLoadTexObjPreLoaded(obj, (GXTexRegion*)((Texture*)p1)->tmemAddr, id);

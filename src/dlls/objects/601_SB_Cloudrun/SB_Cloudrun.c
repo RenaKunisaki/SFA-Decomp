@@ -322,12 +322,6 @@ struct SBCloudRunnerState
     u8 pad80 : 7;
 };
 
-/* Overlay for the A-held bit at state+0x80. */
-typedef struct
-{
-    u8 held : 1;
-} WCButtonFlag;
-
 typedef struct
 {
     u8 pad[0x1b];
@@ -483,11 +477,11 @@ void SB_CloudRunner_UpdateSteer(GameObject* obj, SBCloudRunnerState* state)
     }
 
     doSpawn = 0;
-    if (((WCButtonFlag*)((u8*)state + 0x80))->held)
+    if (state->aButtonHeld)
     {
         if ((getButtonsHeld(0) & A_BUTTON_MASK) == 0)
         {
-            ((WCButtonFlag*)((u8*)state + 0x80))->held = 0;
+            state->aButtonHeld = 0;
         }
         else if (state->burstCooldown == 0)
         {
@@ -499,7 +493,7 @@ void SB_CloudRunner_UpdateSteer(GameObject* obj, SBCloudRunnerState* state)
     {
         if ((getButtonsHeld(0) & A_BUTTON_MASK) != 0)
         {
-            ((WCButtonFlag*)((u8*)state + 0x80))->held = 1;
+            state->aButtonHeld = 1;
             if (state->burstCooldown < A_BURST_READY_THRESHOLD)
             {
                 doSpawn = 1;

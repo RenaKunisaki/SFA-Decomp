@@ -54,10 +54,10 @@ int drshackle_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
         switch (animUpdate->eventIds[i])
         {
         case 1:
-            ((BitFlags8*)(state + 0x1a))->b0 = 0;
+            ((DrshackleState*)state)->flags1A.b0 = 0;
             break;
         case 2:
-            ((BitFlags8*)(state + 0x1a))->b0 = 1;
+            ((DrshackleState*)state)->flags1A.b0 = 1;
             break;
         }
     }
@@ -81,7 +81,7 @@ int drshackle_renderAtPathPoint(GameObject* obj, int a, int b, int c, int d, int
     f32 parentPos[3];
     char* mdPtr;
     int i;
-    BitFlags8* bf = (BitFlags8*)(p + 0x1a);
+    BitFlags8* bf = &((DrshackleState*)p)->flags1A;
     DrshacklePlacement* placement;
     ObjAnimComponent* objAnim = &obj->anim;
 
@@ -160,7 +160,7 @@ void drshackle_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visi
 {
     u8* state = obj->extra;
     int i;
-    if (((BitFlags8*)(state + 0x1a))->b0 == 0 && visible != 0)
+    if (((DrshackleState*)state)->flags1A.b0 == 0 && visible != 0)
     {
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
         for (i = 0; i < ((DrshackleState*)state)->slotCount; i++)
@@ -179,7 +179,7 @@ void drshackle_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visi
 void drshackle_hitDetect(GameObject* obj)
 {
     char* state = obj->extra;
-    if (Sfx_IsPlayingFromObjectChannel(obj, 1) == 0 && ((BitFlags8*)(state + 0x1a))->b0 != 0)
+    if (Sfx_IsPlayingFromObjectChannel(obj, 1) == 0 && ((DrshackleState*)state)->flags1A.b0 != 0)
     {
         Vec vec;
         int n;
@@ -217,9 +217,9 @@ void drshackle_update(GameObject* obj)
             list++;
         }
     }
-    if (((BitFlags8*)(state + 0x1a))->b0 != 0)
+    if (((DrshackleState*)state)->flags1A.b0 != 0)
     {
-        ((BitFlags8*)(state + 0x1a))->b0 = (mainGetBit(placement->activeGameBit) == 0);
+        ((DrshackleState*)state)->flags1A.b0 = (mainGetBit(placement->activeGameBit) == 0);
     }
 }
 
@@ -227,7 +227,7 @@ void drshackle_init(GameObject* obj, char* arg)
 {
     char* state = (obj)->extra;
     objAddObjectType((int)obj, DRSHACKLE_OBJGROUP);
-    ((BitFlags8*)(state + 0x1a))->b0 = (mainGetBit(((DrshacklePlacement*)arg)->activeGameBit) == 0);
+    ((DrshackleState*)state)->flags1A.b0 = (mainGetBit(((DrshacklePlacement*)arg)->activeGameBit) == 0);
     ((DrshackleState*)state)->pathPointA = ((DrshacklePlacement*)arg)->startPathPoint % 2;
     (obj)->animEventCallback = drshackle_SeqFn;
     if (((DrshacklePlacement*)arg)->quarterTurns == 1)
