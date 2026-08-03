@@ -29,6 +29,7 @@ here that the target section already says.
 | **Price the opaque-extern crutch PER SYMBOL, not per unit**, and use the oracle before assuming one: a never-defined extern is a crutch only if retail's own split object defines the symbol; a carve-blob symbol is faithful. | §9, §9b, §10b | The `nm` oracle over retail's split objects. `engine/5` used to be the specimen here ("+176 data costs `renderSunAndMoon` 99.476 -> 98.214, a net tree loss") and is now the counter-example: 99.476 was bought by an extern nothing defined, and §18's cure takes the same +176 at 96.828 -> **98.840**. |
 | **A crutch that blocks a sink is a CODE row wearing a pool row's clothes**, and the cure is to delete the single-def/single-use temp, not to hide the constant from it. A price is only valid against the baseline it was measured at. | §18 | `engine/5` `renderSunAndMoon` 96.828 -> 98.840 with `.sdata2` 100.0 (`5bf6287066`); `engine/68` `firstPersonDoControls` stays 100.0 with `.sdata2` byte-identical, +128 data (`ab2a7a3016`), a row §8 had priced at 128 B. `tools/fwdsub_scan.py` (35 sites, every curable one already at 100), `tools/crutch_sink_scan.py` (45 pins, 40 load-bearing, 5 not), `tools/ledger_baseline_audit.py`. |
 | **The defining TU proposes, the reading TU disposes**, and a declaration can only move into a header that can NAME the type - type visibility, not the include, is the constraint. Extern arrays stay UNSIZED. | §13 | See §13; every rule there was established md5-identical over all 1013 source objects. |
+| **A new `#include` costs nothing unless the header emits an object into an allocated section.** The only construct that does so unreferenced is a `static const` aggregate — the same shape §12 calls the only mover. `@NNN` renumbering and `.comment` growth are the two visible effects and neither is allocated. | §22 | 51 include-additions across 8 targets x 8 headers: 47 EQUAL, 4 RENUMBERED, **0 hard differences**. Eight synthetic probe headers isolate the boundary: only the `static const` array moves an allocated byte (`.sdata2` 80 -> 88, 64 of 426 `.text` relocations retarget). Nine header rows landed at 0 differ. |
 | **The gate blind spots, and why md5-of-every-`.o` dominates.** Demotion blinds the DOL gate; `matched_code`/`matched_functions` are threshold counters; a pool rotation inside an already-NonMatching unit is free on every score axis. | `docs/purge_campaign_audit.md`, "Three sensor blind spots"; the docstring of `tools/score_delta_gate.py` | `4461d0aa45` moved neither counter and still took a function 99.981 -> 94.212; `5d467157cb`/`f5fe00213f`/`620b69dc2d` lost 144/60/16 B at `dfuzzy +0.000000`, zero regressions, zero demotions. The pool word-diff catches the third class; md5 of every `.o` catches all four *and* the score-neutral ones (class #70 renumbering), which no score can see. |
 | **The toolchain caps and the never-touch islands.** Bank on sight; do not re-probe. | §5 | Per-class detail in the memory topic files. |
 | **Every sub-100 code row is one of three kinds, and the kinds are decidable without reading any source.** Same opcode sequence, different registers = colouring. Same opcode multiset, different sequence = order. Different multiset = a different operation, which only the source text chooses. | §14 | `tools/a71_mnhist_scan.py` + the partition in §14 over all 213 sub-100 rows at `97746b6bd3`: **136 colouring / 10 order / 67 operation**, no fourth kind and no reloc-only row. |
@@ -1257,17 +1258,19 @@ Gaining that visibility is a *per-object* question, and the answer is not unifor
   `gAttractMovieAudioPrevDmaCallback`. Also free: adding the *owning* include to a `.c`
   (`mm.c`, `engine/52`, `engine/0`, `shader.c`, `MWTrace.c`, `dll_80136a40.c`), each measured on
   its own object first.
-- **Was "priced by class #70", now FREE (section 21):** `shader_api.h += main/model_light.h`
-  rewrites **33 DLL objects**. Every section's *content* is byte-identical and no score moves; the
-  local literal-pool symbols renumber — `@103 -> @105` at the same address, in the same section,
-  with the same size. That renumbering was declined for want of evidence it was harmless; the
-  evidence exists now — with all 33 renumbered the forced link produces a byte-identical
-  `main.dol`. Same for `textrender_internal.h += GXStruct.h` (`subtitle.o`, renumbering only) and
-  `shader_api.h += camera.h` (4 DLL objects, `.comment` only — never a renumbering at all).
+- **Was "priced by class #70", LANDED FREE (sections 21 and 22):** `shader_api.h +=
+  main/model_light.h` rewrites **33 DLL objects**. Every section's *content* is byte-identical and
+  no score moves; the local literal-pool symbols renumber — `@103 -> @105` at the same address, in
+  the same section, with the same size. That renumbering was declined for want of evidence it was
+  harmless; the evidence exists now — with all 33 renumbered the forced link produces a
+  byte-identical `main.dol`. Same for `textrender_internal.h += GXStruct.h` (`subtitle.o`,
+  renumbering only) and `shader_api.h += camera.h` (4 DLL objects, `.comment` only — never a
+  renumbering at all). All three are in the tree.
 
 So the rule is: propose the include, then **measure the object, not the tree** — a score-flat,
 content-identical rewrite of 33 objects is exactly the shape that a score gate reports as zero
-and that md5-of-every-`.o` reports as 33.
+and that md5-of-every-`.o` reports as 33. **A new `#include` is not priced by default**; section
+22 measures the whole axis and finds the only priced construct is a header that emits an object.
 
 ### An extern array stays UNSIZED — and so, sometimes, does the definition
 
@@ -2045,3 +2048,94 @@ at `850208fbd4`: `configure.py` contains no `GC/1.1`, and the generated `build.n
 (1) and nothing else. The two surviving mentions are not requirements: `tools/project.py`'s
 `COMPILER_MAP` is decomp-toolkit's own table of every known version, and `tools/flag_sweep.py`
 lists it as a probe target. **Nothing remains to retire.**
+
+## 22. What a new `#include` actually costs, measured across the kinds (2026-08-03, A81)
+
+Section 21 refuted the ledger's "priced by class #70" verdict on three declaration homes and
+handed them off as free. This section lands them, and answers the question that refutation
+raises: section 13 still says "a new `#include` is priced by default", and C70's record says the
+same with a count ("7 of 9 measured adds were FREE"). A default with a counter-example in it is
+not a law. So measure the whole axis instead of sampling it.
+
+### The three handed-off rows are landed
+
+`shader_api.h += main/camera.h, main/model_light.h` and `textrender_internal.h +=
+dolphin/gx/GXStruct.h`, with the four `struct Camera` / `struct ModelLightStruct` / `struct
+_GXColor` stubs they existed to support replaced by the typedefs. Over all 1013 source objects:
+**0 differ / 33 renumbered**, four objects differing in `.comment` at unchanged size, forced link
+`main.dol: OK` at md5 `7b955850ea4bd7ce`, every measure flat.
+
+### The sweep: 51 include-additions, zero hard differences
+
+Eight `.c` files spanning `src/main`, `src/track` and two DLLs, crossed with eight headers of
+different content kinds, one added header per build, each object compared with `obj_equal`:
+**47 EQUAL, 4 RENUMBERED, 0 hard differences**, plus two that failed to compile (a header that
+needs another one first — a constraint, not a price). Not one relocation moved anywhere.
+
+### The boundary, from synthetic probe headers
+
+One target (`main/objhits.o`), one probe header, one construct at a time:
+
+| the header holds | verdict |
+| --- | --- |
+| an `extern` object declaration | EQUAL |
+| a `struct`/`typedef` | EQUAL |
+| a prototype | EQUAL |
+| a macro | EQUAL |
+| a `static const` **scalar** | EQUAL — MWCC drops an unreferenced one entirely |
+| an `enum` | renumbering only |
+| an unused `static inline` function | renumbering only |
+| a `static const` **array** | **PRICED**: `.sdata2` 80 -> 88 bytes and **64 of 426 `.text` relocations** retarget, `@NNN` at `.sdata2+0` becoming `@NNN` at `+8` |
+
+So: **a new `#include` costs nothing unless the header emits an object into an allocated section,
+and the only construct that does so unreferenced is a `static const` aggregate** — the same shape
+section 12 identifies as the only mover, and the one the purge already bans. `@NNN` renumbering
+and `.comment` growth are the two visible effects and neither is allocated or linked. The
+"priced by default" wording in section 13 is replaced by this.
+
+What this does **not** overturn, because none of it was ever an include price:
+
+- **A SIZED extern array is still priced.** `extern char gAttractMovieAudioDmaBuffer[0x50C];`
+  completes a type; that is a semantic change that happens to travel in a header.
+- **The `modelEngine.c` descriptor block stays.** C71 declined its 27 externs on plausibility —
+  27 new `#include`s in one file — not on price, and a free include does not make that plausible.
+- **The 14 SDK/MSL/musyx file-local externs stay.** The oracle there is retail's own `nm`: it
+  defines each symbol in exactly the object our source names, so the file-local `extern` is the
+  original idiom.
+- **The 10 pinned cross-TU type conflicts stay pinned.**
+
+### Rows opened by the law, and the two screens that found them
+
+**A hand-written `extern` a header already declares.** Probe: delete each of the 714 file-scope
+object `extern`s in `src/**/*.c` and gate on ninja's exit code. **17 are unnecessary**; 14 are the
+const lane's `lbl_<hex>` declarations and three are not — `objhits.c` restating its own header
+twelve lines after including it, `mm.c` forward-declaring `gMmRegionTable` twice with two
+different spellings of the same extent, and `expgfx.c` forward-declaring two `.bss` ints 1840
+lines ahead of definitions that nothing uses before. All three deleted at **0 differ / 0
+renumbered**: not one object changed, which is what a redundant declaration is.
+
+**A header that reached for a forward tag because an include was believed priced.** All 66
+file-scope forward tags in `include/` compile away, but that proves nothing on its own — a
+`struct X*` inside a prototype self-declares the tag. A stub is a defect only when the tree's own
+spelling is the typedef, and five are:
+
+| header | the stub | tree spelling |
+| --- | --- | --- |
+| `pi_dolphin.h` | `extern struct RingBufferQueue gVideoFlipQueue;` — a by-value extern of an incomplete type | `RingBufferQueue`, `main/model_engine.h` |
+| `rcp_dolphin_api.h` | `struct _GXColor*` in six prototypes | `GXColor` |
+| `rcp_dolphin_render_api.h` | `struct _GXTexObj*`, `struct Texture*` | `GXTexObj`, `Texture` |
+| `texture.h` | two inline accessors returning `struct _GXTexObj*` / `struct _GXTexRegion*`, which pushed the raw tag into six locals in `newshadows.c` | `GXTexObj` 107 sites vs `struct _GXTexObj` 9, all nine reachable from this header |
+| `379_DFSH_LaserB.h`, `508.h`, `dll_0035_saveselectscreen.h` | `struct Dll81Interface`, `struct Texture`, `struct FrontendSaveSlot` | the three typedefs |
+
+Landed in two commits at **0 differ / 76 renumbered** and **0 differ / 0 renumbered**, with
+`hudMatrix` (`Mtx44` in `pi_videoinit.c` against `f32[4][4]` everywhere else) settled into
+`track/intersect_hud_api.h` in the second. `zlb.h`'s `unsigned char` declarations look like the
+same defect and are not one: `zlb.c` opens by typedef-ing its own `u8`/`u16` instead of including
+`types.h`, which is what a self-contained zlib port does.
+
+### The instrument note that generalises
+
+Every verdict above was taken with `obj_equal --tree` plus the forced link, and every one of them
+is invisible to `fuzzy_match_percent`, to `matched_data` and to the DOL sha1. That is the whole
+reason the axis was mispriced for three sections: **a score gate reports a score-flat rewrite of
+33 objects as zero, and so does `objdump -s` when the only thing that moved is a relocation.**
