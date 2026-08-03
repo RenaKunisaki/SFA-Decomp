@@ -32,6 +32,8 @@ here that the target section already says.
 | **A new `#include` costs nothing unless the header emits an object into an allocated section.** The only construct that does so unreferenced is a `static const` aggregate — the same shape §12 calls the only mover. `@NNN` renumbering and `.comment` growth are the two visible effects and neither is allocated. | §22 | 51 include-additions across 8 targets x 8 headers: 47 EQUAL, 4 RENUMBERED, **0 hard differences**. Eight synthetic probe headers isolate the boundary: only the `static const` array moves an allocated byte (`.sdata2` 80 -> 88, 64 of 426 `.text` relocations retarget). Nine header rows landed at 0 differ. |
 | **The gate blind spots, and why md5-of-every-`.o` dominates.** Demotion blinds the DOL gate; `matched_code`/`matched_functions` are threshold counters; a pool rotation inside an already-NonMatching unit is free on every score axis. | `docs/purge_campaign_audit.md`, "Three sensor blind spots"; the docstring of `tools/score_delta_gate.py` | `4461d0aa45` moved neither counter and still took a function 99.981 -> 94.212; `5d467157cb`/`f5fe00213f`/`620b69dc2d` lost 144/60/16 B at `dfuzzy +0.000000`, zero regressions, zero demotions. The pool word-diff catches the third class; md5 of every `.o` catches all four *and* the score-neutral ones (class #70 renumbering), which no score can see. |
 | **The toolchain caps and the never-touch islands.** Bank on sight; do not re-probe. | §5 | Per-class detail in the memory topic files. |
+| **A 100.0-everywhere unit that still will not flip fails at the LINK, not at the sha1, and the undefined-symbol list names the sibling TU it belongs to.** Read it before assuming a layout bug. | §23a | The census re-run from scratch at 920 `complete_units`: six members, four link and fail sha1 (one dead-strip, three `.sdata2`), two fail to link — `gametext` on a compiler-minted int->double pair the carve exports as `lbl_803DE6F0/F8`, `voice` on three `static`s that `vid_init.h`/`voice_conv.h` declare `extern`. `shader_dolphin` cured with two `force_active` arms: 920 -> 921. |
+| **A multiset delta made entirely of `li` against `mr` is rematerialisation — an allocator decision wearing an operation's clothes.** Subtract it before working §14's operation bucket. | §23b | 17 of the 67 operation rows. `curves_advanceCollision` writes one preamble five times and our own build emits `mr` at four sites and `li` at the fifth, at retail's own register assignment. 45 lab compiles (9 spellings x 5 `-opt` settings) and 5 in-tree spellings of `Scarab_update` are all `li`. The only construct that defeats the fold is the banned 4-byte-aggregate respelling. Operation bucket worth opening: **50, not 67**. |
 | **Every sub-100 code row is one of three kinds, and the kinds are decidable without reading any source.** Same opcode sequence, different registers = colouring. Same opcode multiset, different sequence = order. Different multiset = a different operation, which only the source text chooses. | §14 | `tools/a71_mnhist_scan.py` + the partition in §14 over all 213 sub-100 rows at `97746b6bd3`: **136 colouring / 10 order / 67 operation**, no fourth kind and no reloc-only row. |
 | **The order bucket is not a third kind.** Every "order" row is one (at most two) instructions out of place inside a register permutation, so open one only when the slid instruction is the one the source text names. | §15 | All 10 order rows of §14 worked one at a time: mnemonic-sequence delta is 1 for eight of them and 2 for the other two. One paid (`renderShadows` 99.69954 -> 99.71494, the two squares of a magnitude named in retail's order); the nine that did not slid a parameter home, a rematerialised constant, a LICM hoist or a scheduler's delay-slot filler. |
 | **The carve's symbol table is an oracle no score reads.** `.bss` order is free evidence of the source's use order (§11), and a name that contradicts the carve at the same offset is a naming defect that every gate is blind to. | §16 | `tools/bss_order_scan.py` over all 1013 source objects: **21** `.bss` sections ordered differently than the carve and **109** name divergences. Exactly ONE object says `lbl_` where the carve has a recovered name — `597.c`'s `lbl_803E5AE0`, already `sSnowBikePathPointParams` in `config/GSAE01/symbols.txt`: renaming it is byte-identical across all five sections, deleting it costs `matched_data` −396 and `matched_code` −1364. |
@@ -2139,3 +2141,85 @@ Every verdict above was taken with `obj_equal --tree` plus the forced link, and 
 is invisible to `fuzzy_match_percent`, to `matched_data` and to the DOL sha1. That is the whole
 reason the axis was mispriced for three sections: **a score gate reports a score-flat rewrite of
 33 objects as zero, and so does `objdump -s` when the only thing that moved is a relocation.**
+
+## 23. The `complete_units` census, and the `li`/`mr` quarter of the operation bucket (measured 2026-08-03, A82)
+
+Two independent results. The first re-runs A75's census of units that read 100.0 everywhere and are
+still `NonMatching`; the second takes §14's operation bucket at its word and finds that a quarter of
+it is not an operation difference at all.
+
+### 23a. The census, re-run from scratch
+
+A75 closed this census at twelve members with the tree at 915 `complete_units`. At 920 it has **six**,
+and only three of the six are blocked by anything a source edit could reach. The oracle is the one
+§17 names: flip to `Object(Matching, …)`, force the link, read the sha1.
+
+| Unit | Report says | Forced link says | Blocker |
+|---|---|---|---|
+| `main/shader_dolphin` | all 48 functions and all 7 sections 100.0 | links, sha1 FAILS | **dead-strip.** Nothing references `sWarpedRingRotAxes` (0x30) or `sWarpedRingIndMtx` (0x18); `mwldeppc` strips per symbol, `.rodata` loses 0x48, `gTexIndMtxTable` slides 0x802C1E40 -> 0x802C1DF8 and every section after 11 moves. **CURED** by arming both in `force_active`. |
+| `main/gametext` | all 8 functions and all 4 sections 100.0 | **link fails** | **cross-TU pool anchor.** Its `.sdata2` is the 16-byte MWCC int->double conversion pair (`43300000 00000000`, `43300000 80000000`) at 0x803DE6F0/F8, which the carve exports as `lbl_803DE6F0`/`lbl_803DE6F8` and `gametext_tail.o` and `textrender.o` reference. Those two carves are 99.506 and 99.834, so the anchor cannot be retired until both reach 100.0 and flip with it. The pair is compiler-minted, so no source text names it. |
+| `main/musyx/runtime/voice` | all 10 functions and all 5 sections 100.0 | **link fails** | **split-TU statics.** `vid_init.o` wants `vidList`, `voice_conv.o` wants `synth_last_started`/`synth_last_fxstarted`; `voice.c` defines all three `static` while `vid_init.h`/`voice_conv.h` declare them `extern` — a contradiction only the carve hides. Dropping `static` links and flips, and **costs 816 `matched_code`**: the three move from the file-local `.bss` block into the global group (§11's mixed rule), every displacement off the block base shifts by 2240, one `addi` disappears and `synthInitAllocationAids` goes 100.0 -> 99.480, tree 99.815420 -> 99.815270. **DECLINED.** The five units `vid_init`/`vid_get`/`voice_id`/`voice`/`voice_conv` are contiguous in `.text` (0x80278F0C..0x8027A4E0) and in `.sbss`, and retail's block displacements are the all-static layout, so they are one retail TU — which is exactly the merge A78 refuted on compiler invocation. Merging them would also cost a net `complete_unit`, since two of the five are already complete. |
+| `main/rcp_dolphin` | `.sdata2` 14.634 | links, sha1 fails | `.sdata2` mint order only. No dead-strip, no undefined symbol, no section-size change: the DOL differs from 0x803DEB49 inside its own pool and nowhere else. §12's row, owned by the const lane. |
+| `main/track/intersect_render` | `.sdata2` 91.525 | links, sha1 fails | `.sdata2` word rotation only — 63 bytes in the pool and 53 in `.text`, all SDA2 displacements. |
+| `main/dlls/objects/701/701` | `.sdata2` 95.652 | links, sha1 fails | `.sdata2`, one word: retail mints `0.0f` where we mint `1.0f` first — the same shape §20 declined in `vecmath`. 12 pool bytes, 21 `.text` bytes. |
+
+**Landed:** the `shader_dolphin` flip, `complete_units` 920 -> **921 of 1050**, every other measure flat,
+`obj_equal --tree` 1013/0 differ, forced link `main.dol: OK`.
+
+**Standing rule this adds.** The census does go stale, but not in the direction A75's framing suggests:
+of six members, three are `.sdata2` rows the report already prices and one is a paid dead-strip. The
+two that the report cannot see at all — `gametext` and `voice` — both fail at *link* rather than at
+sha1, and both fail because **our TU boundary is not retail's**. A unit whose report is 100.0 across
+the board and whose flip fails to link is a split-TU claim, not a layout bug: read the undefined
+symbol list first, because it names the sibling that has to come with it.
+
+### 23b. A quarter of the operation bucket is rematerialisation, not operation
+
+§14 partitions every sub-100 code row by mnemonic histogram: same sequence = colouring, same multiset
+= order, different multiset = operation, "which only the source text chooses". Re-derived at
+`45e62d0c0e` the partition is **132 colouring / 11 order / 67 operation** over 210 rows. But **17 of
+the 67 operation rows differ only by `li` against `mr`** — 15 where retail copies a live zero and we
+materialise it (`Scarab_update`, `curves_advanceCollision`, `intersectModLineBuild`, `Shield_setMode`,
+`textRenderStr`, `mapScreenDrawHud`, `trickyBallMove`, `trackIntersect`, `objDrawShadowCasterMesh`,
+`updateEnvironment`, `hudDrawButtons`, `renderSunAndMoon`, `headDisplayDraw`, `unloadMap`,
+`gameTextInitBoxTextures`) and 2 the other way (`boneParticleEffect_update`, `StaffCollision_spawn`).
+Rematerialising a constant changes the opcode without changing the operation, so the histogram
+mis-files the whole family.
+
+**The decisive control is in-tree and needs no probe.** `curves_advanceCollision` has one four-line
+preamble written five times, character for character:
+
+```
+pointIndices[0] = 0;
+pointIndices[1] = pointIndices[0];
+outputCursor[0] = (u8*)collision;
+sourceOffset    = pointIndices[0];
+```
+
+Retail emits `mr` for the fourth line at all five sites. **Our build emits `mr` at four of them and
+`li` at the fifth** — and at that fifth site our register assignment is already identical to retail's
+(`li r29,0; mr r28,r29; mr r27,r31`), so it is not even a colouring difference. One source text, two
+code generations, in one function, under one compile. Nothing the source says can select between them.
+
+**The probes, for the record.** `Scarab_update` is the cleanest specimen in the family: the *only*
+instruction that differs in the whole function is `mr r30,r31` against `li r30,0` for
+`collisionDetected = bestGroundHitIndex;`, with `li r31,0` and the `stw r31` of `groundHits = NULL`
+already byte-identical — MWCC's shared-constant register is demonstrably working, it just does not
+reach the second variable. Five in-tree spellings (chained `a = b = 0` at the top and at the
+statement's own position, reversed roles, both-literal, `+ 0`) all leave it at 99.93095, and two of
+them regress the function to 99.76. A standalone lab reproducing the shape under the unit's exact
+command line adds nine spellings (plain copy, reversed roles, chain, both-literal, copy-via-third,
+ternary identity, comma operator, moved statement, pointer-typed source) crossed with five `-opt`
+settings (`nopeephole,noschedule` / `peephole,noschedule` / `nopeephole,schedule` / `peephole,schedule`
+/ `level=4`): **45 compiles, every one `li`**. MWCC's front end folds a scalar-to-scalar copy of a
+compile-time constant unconditionally; the `mr` is chosen downstream.
+
+The one construct that does defeat the fold is an *aggregate* source — `pointIndices[1] =
+pointIndices[0]` gets `mr` because the operand is an array element — and that is precisely the
+4-byte-aggregate respelling `docs/HACK_AUDIT.md` bans by shape. So the family has no legal lever.
+
+**PRICED, and it is a re-classification, not a new class.** These 17 rows belong with #108/#110, not
+with the operation bucket. The rule §14 should be read with: **a multiset delta made entirely of `li`
+against `mr` (either direction) is rematerialisation, and rematerialisation is an allocator decision
+wearing an operation's clothes** — the mirror of §15's closing sentence. Partition first, then subtract
+this family, and the operation bucket that is actually worth opening is **50 rows, not 67**.
