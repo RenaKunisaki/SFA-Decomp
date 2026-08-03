@@ -6412,9 +6412,14 @@ void tricky_attachToWalkGroup(GameObject* obj, int state) {
     ((TrickyState*)state)->statusFlag7 = 1;
 }
 
+static inline int trickyGetState(GameObject* obj) {
+    return *(int*)&obj->extra;
+}
+
 int tricky_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
+    int state;
+    ObjSeqState* sequence = animUpdate;
     int i;
-    TrickyState* state = obj->extra;
     u8* childSlot;
     int secondChildIndex;
     int childIndex;
@@ -6422,12 +6427,13 @@ int tricky_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     ObjPlacement* setup;
     u8 blockFlags[120];
 
-    if ((state->stateFlags & 0x200) == 0) {
+    state = trickyGetState(obj);
+    if ((((TrickyState*)state)->stateFlags & 0x200) == 0) {
         ObjHits_DisableObject(obj);
         Sfx_StopObjectChannel(obj, 0x7f);
-        if ((state->stateFlags & TRICKY_STATE_FLAG_CHILDREN_ACTIVE) != 0) {
-            state->stateFlags &= ~(u64)TRICKY_STATE_FLAG_CHILDREN_ACTIVE;
-            state->stateFlags |= TRICKY_STATE_FLAG_CHILDREN_CLEANUP;
+        if ((((TrickyState*)state)->stateFlags & TRICKY_STATE_FLAG_CHILDREN_ACTIVE) != 0) {
+            ((TrickyState*)state)->stateFlags &= ~(u64)TRICKY_STATE_FLAG_CHILDREN_ACTIVE;
+            ((TrickyState*)state)->stateFlags |= TRICKY_STATE_FLAG_CHILDREN_CLEANUP;
             for (childIndex = 0, childSlot = (u8*)state; childIndex < CHILD_OBJECT_COUNT;
                  childSlot += sizeof(GameObject*), childIndex++) {
                 objSetAnimSpeedTo1(*(GameObject**)(childSlot + offsetof(TrickyState, flameChildren)));
@@ -6441,22 +6447,22 @@ int tricky_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
             }
         }
         Sfx_RemoveLoopedObjectSound((u32)obj, SFXTRIG_trwhin1);
-        state->stateFlags |= 0x200;
-        if ((animUpdate->flags & 3) == 0) {
-            state->stateFlags |= 0x4000;
+        ((TrickyState*)state)->stateFlags |= 0x200;
+        if ((sequence->flags & 3) == 0) {
+            ((TrickyState*)state)->stateFlags |= 0x4000;
         }
-        if (state->flag82EBit5 == 0) {
+        if (((TrickyState*)state)->flag82EBit5 == 0) {
             ObjModel_ClearBlendChannels(Obj_GetActiveModel(obj));
-            state->blendActive = 0;
+            ((TrickyState*)state)->blendActive = 0;
         }
     }
 
-    for (i = 0; i < animUpdate->eventCount; i++) {
-        switch (animUpdate->eventIds[i]) {
+    for (i = 0; i < sequence->eventCount; i++) {
+        switch (sequence->eventIds[i]) {
         case TRICKY_SEQUENCE_EVENT_TOGGLE_FLAME_CHILDREN:
-            if ((state->stateFlags & TRICKY_STATE_FLAG_CHILDREN_ACTIVE) != 0) {
-                state->stateFlags &= ~(u64)TRICKY_STATE_FLAG_CHILDREN_ACTIVE;
-                state->stateFlags |= TRICKY_STATE_FLAG_CHILDREN_CLEANUP;
+            if ((((TrickyState*)state)->stateFlags & TRICKY_STATE_FLAG_CHILDREN_ACTIVE) != 0) {
+                ((TrickyState*)state)->stateFlags &= ~(u64)TRICKY_STATE_FLAG_CHILDREN_ACTIVE;
+                ((TrickyState*)state)->stateFlags |= TRICKY_STATE_FLAG_CHILDREN_CLEANUP;
                 for (secondChildIndex = 0, childSlot = (u8*)state; secondChildIndex < CHILD_OBJECT_COUNT;
                      childSlot += sizeof(GameObject*), secondChildIndex++) {
                     objSetAnimSpeedTo1(*(GameObject**)(childSlot + offsetof(TrickyState, flameChildren)));
@@ -6469,7 +6475,7 @@ int tricky_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
                     objSoundStartTimed(obj, &((TrickyState*)childSlot)->soundState, 0x29d, 0, -1, 0);
                 }
             } else if (Obj_IsLoadingLocked()) {
-                state->stateFlags |= TRICKY_STATE_FLAG_CHILDREN_ACTIVE;
+                ((TrickyState*)state)->stateFlags |= TRICKY_STATE_FLAG_CHILDREN_ACTIVE;
                 for (childIndex = 0, spawnSlot = (u8*)state; childIndex < CHILD_OBJECT_COUNT;
                      spawnSlot += sizeof(GameObject*), childIndex++) {
                     setup = Obj_AllocObjectSetup(sizeof(FlameblastPlacement), TRICKY_CHILD_OBJ_FLAMEBLAST);
@@ -6485,19 +6491,20 @@ int tricky_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
             break;
         case TRICKY_SEQUENCE_EVENT_SPAWN_BADGE:
             mainSetBits(GAMEBIT_Tricky_LoadBadge, 1);
-            if (mainGetBit(GAMEBIT_Tricky_LoadBadge) != 0 && state->spawnedChild == NULL && Obj_IsLoadingLocked()) {
+            if (mainGetBit(GAMEBIT_Tricky_LoadBadge) != 0 && ((TrickyState*)state)->spawnedChild == NULL &&
+                Obj_IsLoadingLocked()) {
                 mapGetLoadedMapFlags(blockFlags);
                 if (blockFlags[0xd] != 0) {
                     setup = Obj_AllocObjectSetup(0x20, TRICKY_CHILD_OBJ_BADGE_A);
                 } else {
                     setup = Obj_AllocObjectSetup(0x20, TRICKY_CHILD_OBJ_BADGE_B);
                 }
-                state->spawnedChild = objSetupObject(setup, 4, -1, -1, obj->anim.parent);
-                ObjLink_AttachChild(obj, state->spawnedChild, 3);
+                ((TrickyState*)state)->spawnedChild = objSetupObject(setup, 4, -1, -1, obj->anim.parent);
+                ObjLink_AttachChild(obj, ((TrickyState*)state)->spawnedChild, 3);
             }
             break;
         case TRICKY_SEQUENCE_EVENT_STORE_PROGRESS:
-            *state->progressPtr = state->progressValue;
+            *((TrickyState*)state)->progressPtr = ((TrickyState*)state)->progressValue;
             break;
         case TRICKY_SEQUENCE_EVENT_HIDE_SHADOW:
             obj->anim.modelState->flags &= ~(u64)OBJ_MODEL_STATE_SHADOW_VISIBLE;
@@ -6508,17 +6515,17 @@ int tricky_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
         }
     }
 
-    objAnimFreeChildren(obj, state, &state->childA);
-    objAnimFreeChildren(obj, state, &state->childB);
-    objAnimFreeChildren(obj, state, &state->child);
-    tricky_updateModelVariantFade(obj, state);
-    Tricky_updateBlendChannelWeight(obj, state);
-    objAudioDispatchAnimEvents(obj, &animUpdate->animEvents, 1, state->footPoints, &state->pathControlFlags, 1.0f,
-                               1.0f);
-    if ((state->stateFlags & 1) != 0) {
-        animUpdate->flags &= ~0x40;
-        characterDoEyeAnims(obj, &state->eyeAnimState);
-        return (*gObjectTriggerInterface)->func20(obj, animUpdate, 1, 0xf, 0x1e, 0, 0);
+    objAnimFreeChildren(obj, (TrickyState*)state, &((TrickyState*)state)->childA);
+    objAnimFreeChildren(obj, (TrickyState*)state, &((TrickyState*)state)->childB);
+    objAnimFreeChildren(obj, (TrickyState*)state, &((TrickyState*)state)->child);
+    tricky_updateModelVariantFade(obj, (TrickyState*)state);
+    Tricky_updateBlendChannelWeight(obj, (TrickyState*)state);
+    objAudioDispatchAnimEvents(obj, &sequence->animEvents, 1, ((TrickyState*)state)->footPoints,
+                               &((TrickyState*)state)->pathControlFlags, 1.0f, 1.0f);
+    if ((((TrickyState*)state)->stateFlags & 1) != 0) {
+        sequence->flags &= ~0x40;
+        characterDoEyeAnims(obj, &((TrickyState*)state)->eyeAnimState);
+        return (*gObjectTriggerInterface)->func20(obj, sequence, 1, 0xf, 0x1e, 0, 0);
     }
     return 0;
 }
