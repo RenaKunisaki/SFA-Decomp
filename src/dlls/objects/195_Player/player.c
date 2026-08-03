@@ -5083,7 +5083,7 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
                 if ((s8)Player_GetObjHitsState(obj)->suppressOutgoingHits == 0)
                 {
                     int bits;
-                    switch (((PlayerMoveSlot*)inner->moveSlots + (u32)inner->moveSlotIndex)->hitWindowType[i])
+                    switch (((PlayerMoveSlot*)(inner->moveSlots + (u32)inner->moveSlotIndex * 0xb0))->hitWindowType[i])
                     {
                     case -1:
                         bits = 0;
