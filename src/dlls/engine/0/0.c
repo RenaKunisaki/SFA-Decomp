@@ -1755,7 +1755,7 @@ void drawViewFinderHud(void)
             gridSpacing = lbl_803E1EC4;
             angleDivisor = gGameUiAngleDivisor;
             waveBaseOffset = 479.5;
-            for (; gridX < (f64)640.0f; gridX += gridSpacing)
+            for (; gridX < 640.0f; gridX += gridSpacing)
             {
                 {
                     f32 cosine;
