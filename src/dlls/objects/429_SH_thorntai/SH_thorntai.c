@@ -261,7 +261,7 @@ u32 SHthorntail_chooseNextState(GameObject* object, SHthorntailState* state, SHt
 
     if (placement->leashRadius != '\0') {
         value = (int)Obj_GetPlayerObject();
-        dist = getXZDistance(&object->anim.worldPosX, (f32*)(value + PLAYER_POS_OFFSET));
+        dist = getXZDistanceSquared(&object->anim.worldPosX, (f32*)(value + PLAYER_POS_OFFSET));
         if (dist < SHTHORNTAIL_CLOSE_ATTACK_DISTANCE) {
             behaviorState = state->behaviorState;
             if ((SHTHORNTAIL_STATE_MOVE_2 <= behaviorState) && (behaviorState <= SHTHORNTAIL_STATE_MOVE_5)) {
@@ -271,7 +271,7 @@ u32 SHthorntail_chooseNextState(GameObject* object, SHthorntailState* state, SHt
             }
             return nextState;
         }
-        dist = getXZDistance(&object->anim.worldPosX, (f32*)&placement->homePosition);
+        dist = getXZDistanceSquared(&object->anim.worldPosX, (f32*)&placement->homePosition);
         if (dist > (float)(s32)(placement->leashRadius * placement->leashRadius)) {
             value = (s16)getAngle(object->anim.localPosX - placement->homePosition.x,
                                   object->anim.localPosZ - placement->homePosition.z);
@@ -708,7 +708,7 @@ void SHthorntail_updateLevelControlMode1(u32 objectId, SHthorntailState* runtime
     runtime->impactSfxTable = gSHthorntailLevelControlMode1ImpactSfxTable;
     playerObj = (int)Obj_GetPlayerObject();
     {
-        int cmp = getXZDistance(&((GameObject*)objectId)->anim.worldPosX, &((GameObject*)playerObj)->anim.worldPosX) <
+        int cmp = getXZDistanceSquared(&((GameObject*)objectId)->anim.worldPosX, &((GameObject*)playerObj)->anim.worldPosX) <
                   SHTHORNTAIL_CLOSE_ATTACK_DISTANCE;
         closeToPlayer = cmp;
     }
@@ -1056,7 +1056,7 @@ void SHthorntail_update(int obj) {
             (*gObjectTriggerInterface)->runSequence(*(u8*)(runtime->impactSfxTable + uval), (void*)obj, -1);
         }
         if (config->leashRadius != '\0') {
-            leashDistance = getXZDistance(&((GameObject*)obj)->anim.worldPosX, (float*)&config->homePosition);
+            leashDistance = getXZDistanceSquared(&((GameObject*)obj)->anim.worldPosX, (float*)&config->homePosition);
             if ((leashDistance > (f32)(s32)((u32)config->leashRadius * (u32)config->leashRadius)) &&
                 (ref = ViewFrustum_IsSphereVisible((f32*)(obj + 0xC), ((GameObject*)obj)->anim.hitboxScale *
                                                                           ((GameObject*)obj)->anim.rootMotionScale),

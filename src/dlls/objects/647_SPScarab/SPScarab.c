@@ -124,7 +124,7 @@ void SPScarab_update(GameObject* obj)
         obj->anim.rotX = angle;
     }
 
-    if (getXZDistance(&Obj_GetPlayerObject()->anim.worldPosX,
+    if (getXZDistanceSquared(&Obj_GetPlayerObject()->anim.worldPosX,
                       &obj->anim.worldPosX) <
         100.0f)
     {

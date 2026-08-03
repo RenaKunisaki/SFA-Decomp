@@ -400,7 +400,7 @@ void sh_staff_update(GameObject* obj) {
     ShStaffState* state = obj->extra;
     ShStaffPlacement* placement = (ShStaffPlacement*)obj->anim.placementData;
     GameObject* player = Obj_GetPlayerObject();
-    f32 distanceSq = getXZDistance(&obj->anim.worldPosX, &player->anim.worldPosX);
+    f32 distanceSq = getXZDistanceSquared(&obj->anim.worldPosX, &player->anim.worldPosX);
     u8 currentPhase = state->phase;
 
     if (currentPhase == SHSTAFF_PHASE_IDLE) {

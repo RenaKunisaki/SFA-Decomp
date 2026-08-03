@@ -100,7 +100,7 @@ void mtx44Transpose(f32* src, f32* dst)
     dst[7] = src[13];
     dst[11] = src[14];
 }
-f32 getXZDistance(f32* a, f32* b)
+f32 getXZDistanceSquared(f32* a, f32* b)
 {
     f32 dx = a[0] - b[0];
     f32 dz = a[2] - b[2];

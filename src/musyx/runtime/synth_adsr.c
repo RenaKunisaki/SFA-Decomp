@@ -7,7 +7,7 @@
 #include "musyx/voice_conv.h"
 
 
-u32 voiceConvertDbToLinear(u32 timeCents)
+u32 voiceConvertTimeCentsToMs(u32 timeCents)
 {
     return __cvt_fp2unsigned(1000.0f *
                              powf(2.0f, 1.2715658e-08f * (f32)(s32)timeCents));

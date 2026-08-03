@@ -206,7 +206,7 @@ void FuelCell_update(GameObject* obj) {
                 }
                 dy = obj->anim.localPosY - player->anim.localPosY;
                 if (dy > -5.0f && dy < 40.0f && mainGetBit(GAMEBIT_ITEM_FuelCell_CantGet) == 0 &&
-                    getXZDistance(&obj->anim.worldPosX, &player->anim.worldPosX) < 81.0f) {
+                    getXZDistanceSquared(&obj->anim.worldPosX, &player->anim.worldPosX) < 81.0f) {
                     state->triggerGameBit = GAMEBIT_SawFuelCell;
                     ObjMsg_SendToObject(player, FUEL_CELL_MESSAGE_IN_RANGE, obj, (u32)&state->triggerGameBit);
                     state->flags.pickupPending = 1;

@@ -826,7 +826,7 @@ void SmallBasket_update(GameObject* obj) {
         }
         state->ambientSfxTimer -= framesThisStep;
         if (state->carryState != SMALLBASKET_CARRY_IDLE) {
-            if (getXZDistance(&obj->anim.worldPosX, &placement->base.posX) >=
+            if (getXZDistanceSquared(&obj->anim.worldPosX, &placement->base.posX) >=
                 (f32)(state->leashRange * state->leashRange)) {
                 zero = 0.0f;
                 obj->anim.velocityX = zero;

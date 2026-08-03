@@ -1338,7 +1338,7 @@ void DIMSnowHorn1_update(GameObject* obj)
         nearDist = 300.0f;
         found = objGetNearestTypeTo(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &nearDist);
         if (((DIMSnowHorn1State*)data)->mountMode == 0 && ((DIMSnowHorn1State*)data)->baddie.controlMode == 7 &&
-            getXZDistance(&player->anim.worldPosX, &(obj)->anim.worldPosX) < 10000.0f)
+            getXZDistanceSquared(&player->anim.worldPosX, &(obj)->anim.worldPosX) < 10000.0f)
         {
             if (found != NULL && ((found)->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE))
             {

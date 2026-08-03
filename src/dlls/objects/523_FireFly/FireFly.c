@@ -278,7 +278,7 @@ void firefly_activeTick(GameObject* obj)
         {
             if (dy < 35.0f && dy > 0.0f)
             {
-                if (getXZDistance(&(obj)->anim.worldPosX, (f32*)(player + 0x18)) < 225.0f)
+                if (getXZDistanceSquared(&(obj)->anim.worldPosX, (f32*)(player + 0x18)) < 225.0f)
                 {
                     state->flags = (u8)(state->flags | FIREFLY_FLAG_PLAYER_TOUCHED);
                     if (mainGetBit(FIREFLY_FIRST_TOUCH_BIT) == 0)

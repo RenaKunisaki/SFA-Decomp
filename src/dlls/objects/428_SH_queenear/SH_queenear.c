@@ -158,7 +158,7 @@ void sh_queenearthwalker_updatePortal(GameObject* obj, QueenEarthWalkerState* st
     } else if (mainGetBit(GAMEBIT_STAFF_ABILITY_OPEN_PORTAL) != 0) {
         obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         if (playerHasSpell(player, QUEEN_EARTH_WALKER_PORTAL_SPELL_ID) != 0 &&
-            getXZDistance(&player->anim.worldPosX, &obj->anim.worldPosX) < QUEEN_EARTH_WALKER_PORTAL_SPELL_DISTANCE) {
+            getXZDistanceSquared(&player->anim.worldPosX, &obj->anim.worldPosX) < QUEEN_EARTH_WALKER_PORTAL_SPELL_DISTANCE) {
             mainSetBits(0x23b, 1);
         }
     } else if (mainGetBit(GAMEBIT_SH_RescuedEggs) != 0) {
@@ -193,7 +193,7 @@ void sh_queenearthwalker_updateFeeding(GameObject* obj, QueenEarthWalkerState* s
         if (cMenuGetSelectedItem() == -1) {
             if (getYButtonItem(&triggerId) == 0 || triggerId != GAMEBIT_ITEM_WhiteShroom_Count) {
                 tricky = getTrickyObject();
-                if (tricky != NULL && getXZDistance(&tricky->anim.worldPosX, &obj->anim.worldPosX) <
+                if (tricky != NULL && getXZDistanceSquared(&tricky->anim.worldPosX, &obj->anim.worldPosX) <
                                           QUEEN_EARTH_WALKER_TRICKY_FEED_DISTANCE) {
                     Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 2);
                 } else {

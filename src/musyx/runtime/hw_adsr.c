@@ -42,8 +42,8 @@ void hwSetADSR(int slot, u32* adsr, u8 mode)
 
         if (mode == 1)
         {
-            dspVoice[slot].adsr.aTime = voiceConvertDbToLinear(adsr[0]) & 0xffff;
-            dspVoice[slot].adsr.dTime = voiceConvertDbToLinear(adsr[1]) & 0xffff;
+            dspVoice[slot].adsr.aTime = voiceConvertTimeCentsToMs(adsr[0]) & 0xffff;
+            dspVoice[slot].adsr.dTime = voiceConvertTimeCentsToMs(adsr[1]) & 0xffff;
 
             value = envelope->decayTime >> 2;
             if (value > 0x3ff)

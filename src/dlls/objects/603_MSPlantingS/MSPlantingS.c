@@ -257,7 +257,7 @@ void MoonSeedPlantingSpot_update(GameObject* obj)
             }
             player = Obj_GetPlayerObject();
             if (player != NULL &&
-                getXZDistance(&player->anim.worldPosX, &obj->anim.worldPosX) <= 10000.0f)
+                getXZDistanceSquared(&player->anim.worldPosX, &obj->anim.worldPosX) <= 10000.0f)
             {
                 objfx_spawnDirectionalBurst((void*)obj, 5, 1.0f, 5, 1, 0x28, 7.0f, NULL, 0);
                 TRICKY_INTERFACE(tricky)->sideCommandEnable((GameObject*)tricky, obj, MSPLANTING_TRICKY_COMMAND_KIND,
@@ -281,7 +281,7 @@ void MoonSeedPlantingSpot_update(GameObject* obj)
         GameObject* tricky = getTrickyObject();
         obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         obj->anim.localPosY = setup->posY;
-        if (getXZDistance(&tricky->anim.worldPosX, &obj->anim.worldPosX) <= 10000.0f)
+        if (getXZDistanceSquared(&tricky->anim.worldPosX, &obj->anim.worldPosX) <= 10000.0f)
         {
             objfx_spawnDirectionalBurst((void*)obj, 5, 1.0f, 5, 1, 0x28, 7.0f, NULL, 0);
         }

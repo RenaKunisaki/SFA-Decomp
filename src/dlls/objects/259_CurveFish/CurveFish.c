@@ -128,7 +128,7 @@ void CurveFish_update(GameObject* obj) {
         if (ObjHits_GetPriorityHit(obj, 0, 0, 0) != 0) {
             state->speed = CURVEFISH_HIT_SPEED_MULTIPLIER * state->maxSpeed;
         } else if (playerGetFlags3F0Bit5(player) != 0 &&
-                   getXZDistance(&player->anim.localPosX, &obj->anim.localPosX) <
+                   getXZDistanceSquared(&player->anim.localPosX, &obj->anim.localPosX) <
                        (f32)(u32)placement->playerRadius * (f32)(u32)placement->playerRadius) {
             speedDelta = CURVEFISH_HIT_SPEED_MULTIPLIER * (f32)(u32)placementReloaded->speedChange;
             state->speed += (speedDelta * timeDelta) / CURVEFISH_SPEED_SCALE;
@@ -172,11 +172,11 @@ void CurveFish_update(GameObject* obj) {
         if (0.0f != state->speed) {
             travelDistanceSq = state->speed * timeDelta;
             travelDistanceSq *= travelDistanceSq;
-            distanceSq = getXZDistance(&state->route.posX, &obj->anim.localPosX);
+            distanceSq = getXZDistanceSquared(&state->route.posX, &obj->anim.localPosX);
             pathAdvanceCount = 0;
             while (travelDistanceSq > distanceSq && pathAdvanceCount < CURVEFISH_PATH_ADVANCE_LIMIT) {
                 Curve_AdvanceAlongPath(&state->route.curve, CURVEFISH_PATH_ADVANCE_STEP);
-                distanceSq = getXZDistance(&state->route.posX, &obj->anim.localPosX);
+                distanceSq = getXZDistanceSquared(&state->route.posX, &obj->anim.localPosX);
                 pathAdvanceCount++;
             }
 

@@ -535,7 +535,7 @@ int trickySelectQueuedCommandTarget(TrickyState* state, int commandType)
     {
         if (*(s8*)(ref + 0x74d) == commandType)
         {
-            f32 dist = getXZDistance(&state->playerObj->anim.worldPosX,
+            f32 dist = getXZDistanceSquared(&state->playerObj->anim.worldPosX,
                                      &((GameObject*)*(int*)(ref + 0x748))->anim.worldPosX);
 
             if (*(s8*)(ref + 0x74c) == 1)
@@ -934,7 +934,7 @@ int trickyAdvanceRouteTargetAhead(GameObject* obj, RomCurveWalker* route, f32 sp
     result = 0;
     maxDist = 1.5f * (speed * timeDelta);
     maxSq = maxDist * maxDist;
-    dist = getXZDistance(&route->posX, &obj->anim.worldPosX);
+    dist = getXZDistanceSquared(&route->posX, &obj->anim.worldPosX);
     if (route->reverse != 0)
     {
         step = -2.0f;
@@ -953,7 +953,7 @@ int trickyAdvanceRouteTargetAhead(GameObject* obj, RomCurveWalker* route, f32 sp
         }
         result = 1;
         RomCurve_stepClamped(route, step);
-        dist = getXZDistance(&route->posX, &obj->anim.worldPosX);
+        dist = getXZDistanceSquared(&route->posX, &obj->anim.worldPosX);
     }
     return 1;
 }
@@ -1452,12 +1452,12 @@ void* trickyFindNearestLinkedRouteEntry(u8* context, u8* routeDef, int linkSelec
 
     if (count != 0)
     {
-        bestDistance = getXZDistance(&((TrickyState*)context)->playerObj->anim.worldPosX,
+        bestDistance = getXZDistanceSquared(&((TrickyState*)context)->playerObj->anim.worldPosX,
                                      &((RomCurveDef*)candidates[0])->x);
         bestIndex = 0;
         for (i = 1; i < count; i++)
         {
-            distance = getXZDistance(&((TrickyState*)context)->playerObj->anim.worldPosX,
+            distance = getXZDistanceSquared(&((TrickyState*)context)->playerObj->anim.worldPosX,
                                      &((RomCurveDef*)candidates[i])->x);
             if (distance < bestDistance)
             {
@@ -1823,8 +1823,8 @@ void trickyAdjustStepAroundPoint(f32* start, f32* end, f32* guardPoint, f32* cen
     int useBlendedDistance;
 
     useBlendedDistance = 0;
-    centerToStart = getXZDistance(center, start);
-    centerToEnd = getXZDistance(center, end);
+    centerToStart = getXZDistanceSquared(center, start);
+    centerToEnd = getXZDistanceSquared(center, end);
     minDistanceSq = minDistance * minDistance;
     limitDistanceSq = moveDistance * moveDistance;
 
@@ -1832,13 +1832,13 @@ void trickyAdjustStepAroundPoint(f32* start, f32* end, f32* guardPoint, f32* cen
         return;
     }
 
-    guardDistance = getXZDistance(guardPoint, center);
+    guardDistance = getXZDistanceSquared(guardPoint, center);
     if (guardDistance < minDistanceSq) {
         return;
     }
 
-    startGuardDistance = getXZDistance(start, guardPoint);
-    if (getXZDistance(start, center) > startGuardDistance) {
+    startGuardDistance = getXZDistanceSquared(start, guardPoint);
+    if (getXZDistanceSquared(start, center) > startGuardDistance) {
         return;
     }
 
@@ -1857,7 +1857,7 @@ void trickyAdjustStepAroundPoint(f32* start, f32* end, f32* guardPoint, f32* cen
     projection[0] = ((center[2] - (perpSlope * center[0])) - intercept) / (slope[0] - perpSlope);
     projection[2] = (slope[0] * projection[0]) + intercept;
 
-    if (!(getXZDistance(center, projection) < minDistanceSq)) {
+    if (!(getXZDistanceSquared(center, projection) < minDistanceSq)) {
         return;
     }
 
@@ -2451,8 +2451,8 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
         break;
     case TRICKY_MOVE_WALK_TO_NODE:
         trickyDebugPrint(strs + 0x46c, 10,
-                         (int)getXZDistance(&state->routeSeedNode->x, &obj->anim.worldPosX));
-        dist = getXZDistance(&state->routeSeedNode->x, &obj->anim.worldPosX);
+                         (int)getXZDistanceSquared(&state->routeSeedNode->x, &obj->anim.worldPosX));
+        dist = getXZDistanceSquared(&state->routeSeedNode->x, &obj->anim.worldPosX);
         if (10.0f > dist)
         {
             state->route.reverse = state->routeSeedDir;
@@ -3316,7 +3316,7 @@ void trickyUpdateApproachSpeed(GameObject* obj, f32 baseRadius, TrickyState* sta
     thresh = baseRadius + sum;
     distSq = thresh;
     distSq = distSq * thresh;
-    dist = getXZDistance(targetPos, &obj->anim.worldPosX);
+    dist = getXZDistanceSquared(targetPos, &obj->anim.worldPosX);
     if (dist < distSq)
     {
         candidate = state->speed;
@@ -3456,10 +3456,10 @@ void tricky_stateGoToWarpPoint(u8* self, u8* state)
     rejectDist = 2500.0f;
     for (; i < count; i++)
     {
-        dist = getXZDistance(&((TrickyState*)state)->playerObj->anim.worldPosX, &((GameObject*)*objs)->anim.worldPosX);
+        dist = getXZDistanceSquared(&((TrickyState*)state)->playerObj->anim.worldPosX, &((GameObject*)*objs)->anim.worldPosX);
         if (dist > rejectDist)
         {
-            dist = getXZDistance((f32*)(self + 0x18), (f32*)(*objs + 0x18));
+            dist = getXZDistanceSquared((f32*)(self + 0x18), (f32*)(*objs + 0x18));
             if (dist < minDist)
             {
                 best = *objs;
@@ -3947,7 +3947,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
                 TRICKY_RESET((u8*)t);
                 break;
             }
-            if (getXZDistance(&gobj->anim.worldPosX, &t->followObj->anim.worldPosX) <
+            if (getXZDistanceSquared(&gobj->anim.worldPosX, &t->followObj->anim.worldPosX) <
                 3600.0f)
             {
                 int b;
@@ -4097,7 +4097,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
                     break;
                 }
             }
-            if (getXZDistance(&gobj->anim.worldPosX, &t->followObj->anim.worldPosX) >
+            if (getXZDistanceSquared(&gobj->anim.worldPosX, &t->followObj->anim.worldPosX) >
                 5625.0f)
             {
                 t->substate = ANIMOBJD2_SUBSTATE_ACQUIRE;
@@ -5315,7 +5315,7 @@ void trickyGuard(ObjAnimComponent* obj, TrickyState* trickyState)
         }
         trickyState->guardTimer = trickyState->guardTimer + timeDelta;
         if ((trickyState->guardTimer >= 150.0f &&
-             getXZDistance(trickyState->targetPosPtr, &obj->worldPosX) >= 2500.0f) ||
+             getXZDistanceSquared(trickyState->targetPosPtr, &obj->worldPosX) >= 2500.0f) ||
             trickyGuardIsBaddieTargetValid(trickyState) == 0)
         {
             trickyRequestMove((int)obj, 0x32, -0.01f, 0x4000000);
@@ -5364,7 +5364,7 @@ int trickyGuardFindBaddieTarget(TrickyState* trickyState)
     list = groupObjects;
     for (; (s16)i < count; i++)
     {
-        d = getXZDistance(&((GameObject*)*list)->anim.worldPosX, trickyState->guardPoint);
+        d = getXZDistanceSquared(&((GameObject*)*list)->anim.worldPosX, trickyState->guardPoint);
         if (best == 0)
         {
             if (trickyState->guardWalkGroup == Objfsa_GetWalkGroupIndexAtPoint(&((GameObject*)*list)->anim.worldPosX, 0x0))
@@ -5796,12 +5796,12 @@ void tricky_updateBallRoll(int obj, TrickyState* ball)
         if (nodeCount != 0)
         {
             targetNode = (int)(*gRomCurveInterface)->getById(nodeIds[0]);
-            bestDistance = getXZDistance(&ts->followObj->anim.worldPosX, &((RomCurveDef*)targetNode)->x);
+            bestDistance = getXZDistanceSquared(&ts->followObj->anim.worldPosX, &((RomCurveDef*)targetNode)->x);
 
             for (i = 1, link = &nodeIds[1]; i < nodeCount; i++)
             {
                 candidateNode = (int)(*gRomCurveInterface)->getById(*link);
-                distance = getXZDistance(&ts->followObj->anim.worldPosX, &((RomCurveDef*)candidateNode)->x);
+                distance = getXZDistanceSquared(&ts->followObj->anim.worldPosX, &((RomCurveDef*)candidateNode)->x);
                 if (distance < bestDistance)
                 {
                     targetNode = candidateNode;
@@ -5880,8 +5880,8 @@ void tricky_updateBallRoll(int obj, TrickyState* ball)
             nextNode = (*gRomCurveInterface)->getRandomBlockedLink((RomCurveDef*)curve, 0);
             toNode = (int)(*gRomCurveInterface)->getById(nextNode);
 
-            bestDistance = getXZDistance(&ts->playerObj->anim.worldPosX, &((RomCurveDef*)fromNode)->x);
-            distance = getXZDistance(&ts->playerObj->anim.worldPosX, &((RomCurveDef*)toNode)->x);
+            bestDistance = getXZDistanceSquared(&ts->playerObj->anim.worldPosX, &((RomCurveDef*)fromNode)->x);
+            distance = getXZDistanceSquared(&ts->playerObj->anim.worldPosX, &((RomCurveDef*)toNode)->x);
 
             curveArg = (void*)curve;
             if (bestDistance > distance)
@@ -6232,7 +6232,7 @@ void tricky_stateFindSecretDig(u8* obj, u8* state)
         ((TrickyState*)state)->scratch70C.ptr =
             Objfsa_FindNearestEnabledCurveType24(&((TrickyState*)state)->followObj->anim.worldPosX, -1, 2);
         if (((TrickyState*)state)->scratch70C.ptr != NULL &&
-            getXZDistance(&((TrickyState*)state)->followObj->anim.worldPosX,
+            getXZDistanceSquared(&((TrickyState*)state)->followObj->anim.worldPosX,
                           &((RomCurveDef*)((TrickyState*)state)->scratch70C.ptr)->x) > 10000.0f)
         {
             ((TrickyState*)state)->scratch70C.ptr = NULL;
@@ -6563,7 +6563,7 @@ int tricky_substateApproachThorntail(int obj, int state)
     float pos[3];
 
     objGetJointWorldPosition(((TrickyState*)state)->followObj, 0, pos);
-    if (getXZDistance(pos, (float*)(state + 0x72c)) > 100.0f)
+    if (getXZDistanceSquared(pos, (float*)(state + 0x72c)) > 100.0f)
     {
         ((TrickyState*)state)->wanderTargetX = pos[0];
         ((TrickyState*)state)->wanderTargetY = pos[1];
@@ -7860,7 +7860,7 @@ u8* Tricky_findNearestGroup4BObject(u8* obj, TrickyState* state)
 
     result = 0;
     objs = (int*)objGetAllOfType(TRICKYWARP_OBJ_GROUP, count);
-    d = getXZDistance(&state->playerObj->anim.worldPosX, &((GameObject*)obj)->anim.worldPosX);
+    d = getXZDistanceSquared(&state->playerObj->anim.worldPosX, &((GameObject*)obj)->anim.worldPosX);
     if ((d >= 360000.0f) || (state->cooldownA > 0.0f))
     {
         if (ViewFrustum_IsSphereVisible(&((GameObject*)obj)->anim.localPosX, 19.0f) == 0)
@@ -7868,7 +7868,7 @@ u8* Tricky_findNearestGroup4BObject(u8* obj, TrickyState* state)
             bestD = 340282346638528859811704183484516925440.0f;
             for (i = 0; i < count[0]; i++)
             {
-                f32 cd = getXZDistance(&state->playerObj->anim.worldPosX, &((GameObject*)*objs)->anim.worldPosX);
+                f32 cd = getXZDistanceSquared(&state->playerObj->anim.worldPosX, &((GameObject*)*objs)->anim.worldPosX);
                 if (cd < d && cd < bestD)
                 {
                     bestD = cd;
@@ -8718,7 +8718,7 @@ void Tricky_hitDetect(GameObject* obj)
     else
     {
         firepipeObj = ObjList_FindObjectById(TRICKY_HEIGHT_TRACK_FIREPIPE_OBJECT_ID);
-        if ((firepipeObj != 0) && (getXZDistance(&obj->anim.worldPosX, &((GameObject*)firepipeObj)->anim.worldPosX) < 841.0f))
+        if ((firepipeObj != 0) && (getXZDistanceSquared(&obj->anim.worldPosX, &((GameObject*)firepipeObj)->anim.worldPosX) < 841.0f))
         {
             ((TrickyState*)state)->heightTracking = 1;
             ((TrickyState*)state)->heightTrackObjId = TRICKY_HEIGHT_TRACK_FIREPIPE_OBJECT_ID;
@@ -9489,7 +9489,7 @@ void Tricky_update(int obj)
             }
         }
     }
-    if (getXZDistance(&((GameObject*)obj)->anim.worldPosX,
+    if (getXZDistanceSquared(&((GameObject*)obj)->anim.worldPosX,
                       &trickyState->playerObj->anim.worldPosX) >= 360000.0f &&
         mainGetBit(GAMEBIT_Tricky_Usable) != 0)
     {

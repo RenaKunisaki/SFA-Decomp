@@ -394,7 +394,7 @@ void windLift107_update(GameObject* obj) {
     obj->anim.worldPosZ = obj->anim.localPosZ;
     state->timer -= framesThisStep;
     if (state->carryState != WINDLIFT107_CARRY_IDLE) {
-        if (getXZDistance(&obj->anim.worldPosX, &placement->base.posX) >=
+        if (getXZDistanceSquared(&obj->anim.worldPosX, &placement->base.posX) >=
             (f32)(state->leashRange * state->leashRange)) {
             f32 zero = 0.0f;
             obj->anim.velocityX = zero;

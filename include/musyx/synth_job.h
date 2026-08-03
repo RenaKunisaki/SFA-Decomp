@@ -33,8 +33,8 @@ typedef struct SynthJob {
     u8 volume;
     u8 pan;
     u8 surroundPan;
-    u8 leftVolume;
-    u8 rightVolume;
+    u8 auxAVolume;
+    u8 auxBVolume;
     u8 savedPan;
     u8 savedSurroundPan;
     u8 studio;

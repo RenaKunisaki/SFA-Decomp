@@ -362,7 +362,7 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
             if (state->trackedObject == NULL) {
                 short* setup = obj->anim.placementData;
                 if (tw2 != NULL && tw2->anim.romDefNo == 0x3fb) {
-                    if (getXZDistance(&obj->anim.worldPosX, &tw2->anim.worldPosX) <
+                    if (getXZDistanceSquared(&obj->anim.worldPosX, &tw2->anim.worldPosX) <
                         (f32)(s32)(setup[0xC] * setup[0xC])) {
                         if (Sfx_IsPlayingFromObjectChannel(obj, 0x10) == 0) {
                             Sfx_PlayFromObject(obj, SFXTRIG_mammoth_snowstep);
@@ -384,7 +384,7 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
         break;
     }
     case 0xe:
-        if (getXZDistance(&state->spawnPosX, &state->trackedObject->anim.worldPosX) < 6.25f) {
+        if (getXZDistanceSquared(&state->spawnPosX, &state->trackedObject->anim.worldPosX) < 6.25f) {
             Sfx_PlayFromObject(obj, SFXTRIG_mammoth_annoyed);
             tumbleweedbush_activatePiece(state->trackedObject);
             state->stateIndex = 0xf;

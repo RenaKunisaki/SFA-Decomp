@@ -184,7 +184,7 @@ void MagicDust_update(GameObject* obj) {
     }
     if ((state->flags & MAGICGEM_FLAG_AMBIENT_FX) == 0) {
         if (((state->flags & MAGICGEM_FLAG_COLLECT_LATCH) == 0) &&
-            (getXZDistance(&obj->anim.worldPosX, &player->anim.worldPosX) < MAGICGEM_ACTIVATE_DIST_SQ)) {
+            (getXZDistanceSquared(&obj->anim.worldPosX, &player->anim.worldPosX) < MAGICGEM_ACTIVATE_DIST_SQ)) {
             state->flags |= MAGICGEM_FLAG_AMBIENT_FX;
             fxVariant = '\0';
             (*gPartfxInterface)
@@ -199,7 +199,7 @@ void MagicDust_update(GameObject* obj) {
                 ->spawnObject((void*)obj, state->ambientEffectId, NULL, MAGICGEM_AMBIENT_FX_MODE,
                               MAGICGEM_PARTFX_MODEL_NONE, &fxVariant);
         }
-    } else if (getXZDistance(&obj->anim.worldPosX, &player->anim.worldPosX) >= MAGICGEM_ACTIVATE_DIST_SQ) {
+    } else if (getXZDistanceSquared(&obj->anim.worldPosX, &player->anim.worldPosX) >= MAGICGEM_ACTIVATE_DIST_SQ) {
         state->flags &= ~MAGICGEM_FLAG_AMBIENT_FX;
         (*gExpgfxInterface)->freeSource2((u32)obj);
     }
@@ -310,7 +310,7 @@ void MagicDust_update(GameObject* obj) {
                 scalar = -scalar;
             }
             if (scalar < MAGICGEM_PICKUP_Y_RANGE) {
-                distanceSquared = getXZDistance(&obj->anim.worldPosX, &player->anim.worldPosX);
+                distanceSquared = getXZDistanceSquared(&obj->anim.worldPosX, &player->anim.worldPosX);
                 scalar = MAGICGEM_PICKUP_RADIUS_BASE + state->collectRadius;
                 if ((distanceSquared < scalar * scalar) && (Obj_IsParentSlackClear(player) != 0)) {
                     value = mainGetBit(MAGICGEM_GAMEBIT_CLAIMED);

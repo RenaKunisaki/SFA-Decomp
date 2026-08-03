@@ -405,8 +405,8 @@ void mcmdSetPitchADSR(McmdVoiceState* svoice, McmdCommandArgs* cstep)
 
     svoice->pitchADSR.mode = 1;
     svoice->pitchADSR.aMode = 0;
-    svoice->pitchADSR.aTime = voiceConvertDbToLinear(adsr.dls.atime);
-    svoice->pitchADSR.dTime = voiceConvertDbToLinear(adsr.dls.dtime);
+    svoice->pitchADSR.aTime = voiceConvertTimeCentsToMs(adsr.dls.atime);
+    svoice->pitchADSR.dTime = voiceConvertTimeCentsToMs(adsr.dls.dtime);
     if ((sl = adsr.dls.slevel >> 2) > 0x3ff)
     {
         sl = 0x3ff;
