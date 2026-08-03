@@ -349,6 +349,41 @@ path header before hashing — comparing a saved `.o` against a rebuilt one at a
 path makes an identical object read as different, which is how a free removal in
 `Baddie.c` first looked load-bearing.
 
+### 8c. The body rank run over the whole tree, and what it leaves
+
+§8b ranked the `<Dll>*` families. Running the same expansion over **every** `typedef
+struct`/`typedef union` in `src/` and `include/` — 2316 types — gives **84 duplicate-body
+classes covering 297 types**. 40 of the classes are entirely `<Dll>`/`Proj*`/`CameraMode*`
+names and 8 more are mixed with one: those are §8b's closed class and stay. The remaining
+36 are the interesting ones, and almost all of them are two or three unrelated modules that
+happen to agree on a tiny shape (`u8 phase;`, `s16 values[5]`, `f32 x; f32 z;`). Shape
+alone names nothing — decline them, as `IVec3`/`Vec3Blob`/`WLPVec3` were declined.
+
+Two questions settle the rest, and they are cheap:
+
+**Was the shared name already in scope where the local copy was written?** That is what
+makes a duplicate indefensible rather than merely redundant. `objprint_dolphin.c` declares
+four `GXColor` constants and passes them to `GXSetTevKColor` in the same function that
+writes `gObjFuzzKColor`, which was typed by a private one-struct header restating
+`GXColor`. `sky.h` includes `dolphin/mtx/vec_types.h` five lines above its own `SkyVec3`.
+`Baddie.c` uses `Vec` for eighteen locals and `TrickyVec3` for a nineteenth. All three
+collapsed byte-identically.
+
+**Does the name belong to a vocabulary the module holds consistently?** If it does, the
+duplicate is the module's own type and the agreement is coincidence. `voxmaps.h` never
+brings `Vec3s` into scope and spells `VoxPos` beside `VoxMapFile`, `VoxMaps` and
+`VoxMapSlotOrigin`; `main.c` and `main_gdev.c` prefix `DdhRecvCB`/`GdevRecvCB` exactly as
+they already prefix `DDH_BUF_SIZE`/`GDEV_BUF_SIZE` and `ddh_cc_write_*`/`gdev_cc_write_*`.
+Both kept.
+
+**A duplicated type can be a codegen contract, not a name.** `expgfx.c` declares its own
+`ExpgfxWGPipe` with the same body as `GXLegacy.h`'s `PPCWGPipe2` — but it reaches the pipe
+through `#define GXWGFifo (*(volatile ExpgfxWGPipe*)0xCC008000)`, and `GXLegacy.h` declares
+a *non-volatile* object at that address instead. Unifying them costs `expgfx` 99.69043 →
+99.37140 and the tree −2984 `matched_code`. The three spellings of the write-gather pipe
+(`PPCWGPipe` with `u64`/`s64` in `GXVert.h`, `PPCWGPipe2`, `ExpgfxWGPipe`) are load-bearing;
+leave them.
+
 ### 9. Move codegen pragmas out of the file into `configure.py`
 
 In-file `#pragma peephole/scheduling/opt_common_subs off` are really **per-TU compiler
