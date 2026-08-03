@@ -834,10 +834,6 @@ musyx/runtime/synth_job_init.c
 musyx/runtime/synth_jobs.c
 musyx/runtime/synth_seq_events.c
 musyx/runtime/synth_vsamples.c
-musyx/runtime/vid_get.c
-musyx/runtime/vid_init.c
 musyx/runtime/voice.c
-musyx/runtime/voice_conv.c
-musyx/runtime/voice_id.c
 track/intersect_mtx44.c
 track/intersect_screenmath.c

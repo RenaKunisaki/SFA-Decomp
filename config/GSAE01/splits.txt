@@ -4719,27 +4719,12 @@ musyx/runtime/pitch_data.c:
 musyx/runtime/adsr_data.c:
 	.data       start:0x8032F618 end:0x8032FDA0
 
-musyx/runtime/vid_init.c:
-	.text       start:0x80278F0C end:0x80279004
-	.sbss       start:0x803DE2F0 end:0x803DE2FC
-
-musyx/runtime/vid_get.c:
-	.text       start:0x80279004 end:0x80279038
-
-musyx/runtime/voice_id.c:
-	extab       start:0x80005958 end:0x80005960
-	extabindex  start:0x80006194 end:0x800061A0
-	.text       start:0x80279038 end:0x802795CC
-
 musyx/runtime/voice.c:
-	extab       start:0x80005960 end:0x80005988
-	extabindex  start:0x800061A0 end:0x800061DC
-	.text       start:0x802795CC end:0x8027A330
+	extab       start:0x80005958 end:0x80005988
+	extabindex  start:0x80006194 end:0x800061DC
+	.text       start:0x80278F0C end:0x8027A4E0
 	.bss        start:0x803CA2D0 end:0x803CB290
-	.sbss       start:0x803DE2FC end:0x803DE308
-
-musyx/runtime/voice_conv.c:
-	.text       start:0x8027A330 end:0x8027A4E0
+	.sbss       start:0x803DE2F0 end:0x803DE308
 
 musyx/runtime/synth_ac.c:
 	extab       start:0x80005988 end:0x80005990
