@@ -1,7 +1,7 @@
 #include "dolphin.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_8029312c.h"
+#include "main/math_8029312c.h"
 
 extern float lbl_803E7AB8;
 extern double lbl_803E7AC0;

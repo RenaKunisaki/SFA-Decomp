@@ -30,7 +30,7 @@
 #include "main/frame_timing.h"
 #include "main/render_mode_api.h"
 #include "main/dll/objfx.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.h"
+#include "main/trig_float_helpers.h"
 #include "main/dll/viewfinder.h"
 #include "track/intersect_api.h"
 #include "main/lightmap.h"

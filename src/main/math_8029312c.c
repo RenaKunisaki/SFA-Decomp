@@ -2,7 +2,7 @@
 #include "main/trig.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/math_8029312c.h"
+#include "main/math_8029312c.h"
 
 float sqrtfHighPrecision(float value) {
     float reciprocalSqrt;

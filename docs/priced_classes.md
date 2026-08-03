@@ -1766,7 +1766,7 @@ reaches the DOL.
 | --- | --- | --- | --- |
 | `dlls/objects/437/437.c` | GC/1.3 | GC/2.0 | inert (`.comment` only) |
 | `dolphin/MSL_C/PPCEABI/bare/H/common_float_tables.c` | GC/1.3 | GC/1.2.5n | inert (`.comment` only) |
-| `dolphin/MSL_C/PPCEABI/bare/H/rand.c` | GC/1.1 | GC/1.2.5n | inert (whole file byte-identical) |
+| `main/rand.c` | GC/1.1 | GC/1.2.5n | inert (whole file byte-identical) |
 | `dolphin/MSL_C/PPCEABI/bare/H/exponentialsf.c` | GC/1.1 | GC/1.2.5n | inert (whole file byte-identical) |
 | `dolphin/TRK_MINNOW_DOLPHIN/mainloop.c` | GC/1.3.2 | GC/1.3 | inert (whole file byte-identical) |
 | `dolphin/TRK_MINNOW_DOLPHIN/dispatch.c` | GC/1.3.2 | GC/1.3 | inert (whole file byte-identical) |

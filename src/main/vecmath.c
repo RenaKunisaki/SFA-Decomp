@@ -1,5 +1,5 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.h"
+#include "main/trig_float_helpers.h"
 #include "dolphin/mtx/vec.h"
 #include "main/acosf.h"
 #include "main/frame_timing.h"

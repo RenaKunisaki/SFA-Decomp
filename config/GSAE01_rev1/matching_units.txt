@@ -645,7 +645,7 @@ dolphin/MSL_C/PPCEABI/bare/H/math_802927a4.c
 dolphin/MSL_C/PPCEABI/bare/H/file_io.c
 dolphin/MSL_C/PPCEABI/bare/H/floorf.c
 dolphin/MSL_C/PPCEABI/bare/H/hyperbolicsf.c
-dolphin/MSL_C/PPCEABI/bare/H/math_8029312c.c
+main/math_8029312c.c
 dolphin/MSL_C/PPCEABI/bare/H/math_80293da4.c
 dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.c
 dolphin/MSL_C/PPCEABI/bare/H/mbstring.c
@@ -653,14 +653,14 @@ dolphin/MSL_C/PPCEABI/bare/H/mem.c
 dolphin/MSL_C/PPCEABI/bare/H/mem_funcs.c
 dolphin/MSL_C/PPCEABI/bare/H/misc_io.c
 dolphin/MSL_C/PPCEABI/bare/H/printf.c
-dolphin/MSL_C/PPCEABI/bare/H/rand.c
+main/rand.c
 dolphin/MSL_C/PPCEABI/bare/H/s_copysign.c
 dolphin/MSL_C/PPCEABI/bare/H/s_frexp.c
 dolphin/MSL_C/PPCEABI/bare/H/s_ldexp.c
 dolphin/MSL_C/PPCEABI/bare/H/s_modf.c
-dolphin/MSL_C/PPCEABI/bare/H/math_80292d3c.c
+main/math_80292d3c.c
 dolphin/MSL_C/PPCEABI/bare/H/string.c
-dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.c
+main/trig_float_helpers.c
 dolphin/MSL_C/PPCEABI/bare/H/trigf.c
 dolphin/MSL_C/PPCEABI/bare/H/uart_console_io_gcn.c
 dolphin/MSL_C/PPCEABI/bare/H/wchar_io.c

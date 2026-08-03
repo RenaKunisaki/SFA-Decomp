@@ -1,6 +1,6 @@
 #include "dolphin.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.h"
+#include "main/trig_float_helpers.h"
 
 extern float lbl_803E7C20;
 extern float lbl_803E7C24;
