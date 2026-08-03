@@ -13,6 +13,7 @@
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 
+#include "main/frame_timing.h"
 #define SC_CLOUDRUNNER_A_EVENT_CREATE_CHILD      0
 #define SC_CLOUDRUNNER_A_EVENT_DEACTIVATE_CHILD  1
 #define SC_CLOUDRUNNER_A_EVENT_REMOVE_CHILD      2
@@ -33,7 +34,6 @@
 #define SC_CLOUDRUNNER_A_SHADOW_TINT_A           0x64
 #define SC_CLOUDRUNNER_A_SHADOW_TINT_B           0x96
 
-extern u8 framesThisStepUnclamped;
 
 int sc_cloudrunnera_getExtraSize(void) {
     return sizeof(ScCloudrunnerAState);

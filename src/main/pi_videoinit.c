@@ -236,7 +236,6 @@ void setDisplayCopyFilter(void)
     }
 }
 
-extern u8 framesThisStepUnclamped;
 
 #include "main/dll/ppcwgpipe_struct.h"
 extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
