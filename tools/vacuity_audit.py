@@ -591,6 +591,63 @@ def family_build(unit_object, verbose):
     bad += not ok
     print("  [%s] unitfuzzy agrees with report.json on %d/%d sub-100 "
           "functions" % ("held" if ok else "DIVERGES", agreed, checked))
+
+    # THE SAME TRAP, EVERYWHERE ELSE IT WAS PASTED.  `fuzzy_measure` was fixed
+    # where the defect was noticed; `stmt_sweep`, `permsweep` and
+    # `probe_spelling` each carried their own copy of the identical unguarded
+    # read and none of them was touched.  A fix applied at one call site is not
+    # a fix, so the rule is checked over every tool that RANKS a probe: either
+    # the file never subscripts the key, or it tests for the key first (the
+    # `score_delta_gate` / `flag_probe` shape).
+    import ast
+
+    def unguarded(text):
+        try:
+            tree = ast.parse(text)
+        except SyntaxError:
+            return False
+        subs = [n for n in ast.walk(tree)
+                if isinstance(n, ast.Subscript)
+                and isinstance(getattr(n, "slice", None), ast.Constant)
+                and n.slice.value == "fuzzy_match_percent"]
+        if not subs:
+            return False
+        return '"fuzzy_match_percent" in ' not in text and \
+               '"fuzzy_match_percent" not in ' not in text
+
+    RANKERS = ("brute_match.py", "decl_split_sweep.py", "stmt_sweep.py",
+               "expr_sweep.py", "perm_solve.py", "deep_decl.py",
+               "slot_oracle.py", "permsweep.py", "probe_spelling.py",
+               "flag_probe.py", "batch_brute.py", "operand_sweep.py",
+               "score_delta_gate.py", "unitfuzzy.py")
+    offenders = []
+    checked_files = 0
+    for tool in RANKERS:
+        path = os.path.join(REPO, "tools", tool)
+        if not os.path.exists(path):
+            continue
+        checked_files += 1
+        if unguarded(open(path).read()):
+            offenders.append(tool)
+    ok = not offenders and checked_files >= 10
+    bad += not ok
+    print("  [%s] no ranking tool reads fuzzy_match_percent unguarded "
+          "(%d files checked)%s"
+          % ("held" if ok else "UNGUARDED", checked_files,
+             "" if not offenders else "  *** " + ", ".join(offenders)))
+
+    # ABLATION: the scan must SEE one.  A checker that finds nothing because it
+    # is looking in the wrong place is indistinguishable from a clean tree.
+    saw = unguarded("def f(r):\n    return float(r['fuzzy_match_percent'])\n")
+    quiet = unguarded("def f(r):\n    return float(r.get('fuzzy_match_percent') or 0)\n")
+    guarded_ok = unguarded('def f(r):\n'
+                           '    if "fuzzy_match_percent" in r:\n'
+                           '        return float(r["fuzzy_match_percent"])\n')
+    ok = saw and not quiet and not guarded_ok
+    bad += not ok
+    print("  [%s] ...and the scan catches an injected unguarded read, passes "
+          "`.get`, and passes an `in`-guarded subscript (%s/%s/%s)"
+          % ("held" if ok else "BLIND", saw, quiet, guarded_ok))
     return bad
 
 
@@ -787,6 +844,65 @@ def family_parser(verbose):
     print("  [%s] ablating the guard makes the parser accept all %d stores "
           "again (%d)" % ("held" if ok else "VACUOUS", len(must_refuse),
                           len(revived)))
+
+    # THE SAME HAZARD, ONE STEP PAST THE PARSER.  Everything above asks "is
+    # this a declaration".  What the sweeps actually depend on is "is this
+    # permutation semantics-preserving", and for a declaration whose
+    # INITIALISER calls something the two come apart: it is a declaration by
+    # every test the parser applies, and swapping two of them changes the
+    # computation exactly the way a swapped pair of stores would.  So the
+    # detector that guards the apply gate gets its own subjects.
+    must_flag = [
+        "s32 rnd1 = randomGetRange(0, 0x1e) * 2;",
+        "s32 rnd2 = randomGetRange(0, 0x1e) * 2;",
+    ]
+    must_not_flag = [
+        "int i;",
+        "u64 x = (u32)(p);",
+        "int n = a->count;",
+        "f32 v = base[i] * 0.5f;",
+    ]
+    got = [B.side_effect_reorders(must_flag, [1, 0]),
+           B.side_effect_reorders(must_flag, [0, 1])]
+    ok = got[0] == [(0, 1)] and got[1] == []
+    bad += not ok
+    print("  [%s] swapping two PRNG-draw initialisers is flagged, and the "
+          "identity is not  (%s)" % ("held" if ok else "BLIND", got))
+    quiet = [t for t in must_not_flag if B.initialiser_calls(t)]
+    ok = not quiet
+    bad += not ok
+    print("  [%s] a plain declaration, a cast and a field read carry no call "
+          "(%d/%d quiet)" % ("held" if not quiet else "FALSE POSITIVE",
+                             len(must_not_flag) - len(quiet), len(must_not_flag)))
+    for t in quiet:
+        print("        *** flagged: %s" % t)
+
+    # ABLATION: a detector that never finds a call reports nothing at all and
+    # looks exactly like a clean tree, so blind the call scanner and require
+    # the flag to disappear.
+    saved_re = B.CALL_TOKEN_RE
+    try:
+        B.CALL_TOKEN_RE = re.compile(r"(?!x)x")
+        blinded = B.side_effect_reorders(must_flag, [1, 0])
+    finally:
+        B.CALL_TOKEN_RE = saved_re
+    ok = blinded == []
+    bad += not ok
+    print("  [%s] blinding the call scanner makes the flag vanish, so the "
+          "flag comes from the CALL (%s)"
+          % ("held" if ok else "VACUOUS", blinded))
+
+    # And the gate must be wired into both sweepers, not merely defined.
+    wired = 0
+    for tool in ("brute_match.py", "decl_split_sweep.py"):
+        txt = open(os.path.join(REPO, "tools", tool)).read()
+        if "report_side_effect_reorders" in txt and \
+           "allow_side_effect_reorder" in txt:
+            wired += 1
+    ok = wired == 2
+    bad += not ok
+    print("  [%s] the apply gate is wired into both sweepers (%d/2)"
+          % ("held" if ok else "DEFINED BUT UNUSED", wired))
 
     # And the ablation must be VISIBLE where it matters: a block whose stores
     # are order-dependent.  `slot->scaleCurrent = v; slot->scaleTarget =
