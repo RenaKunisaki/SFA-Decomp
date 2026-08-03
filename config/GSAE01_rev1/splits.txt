@@ -17,7 +17,7 @@ main/render.c:
 	.text       start:0x800066E0 end:0x80008DF4
 	.rodata     start:0x802C2040 end:0x802C21E8
 	.data       start:0x802C34E0 end:0x802C5688
-	.sdata2     start:0x803DF188 end:0x803DF1C8
+	.sdata2     start:0x803DF1C4 end:0x803DF1C8
 
 main/audio.c:
 	.text       start:0x80008DF4 end:0x8000B4F0
@@ -121,6 +121,13 @@ main/subtitle.c:
 	.bss        start:0x8033BEA0 end:0x8033CAA0
 	.sdata2     start:0x803DF3A0 end:0x803DF3C0
 
+main/textrender_drawbox.c:
+	.text       start:0x8001BC2C end:0x8001C858
+	.data       start:0x802CAA68 end:0x802CAFC0
+	.bss        start:0x8033CAA0 end:0x8033CAC0
+	.sbss       start:0x803DD670 end:0x803DD6A0
+	.sdata2     start:0x803DF3C0 end:0x803DF3D0
+
 main/textrender_boxtex.c:
 	.text       start:0x8001C858 end:0x8001CC00
 	.sbss       start:0x803DD6A0 end:0x803DD6B0
@@ -132,6 +139,13 @@ main/modellight.c:
 	.sdata      start:0x803DC068 end:0x803DC070
 	.sbss       start:0x803DD6B0 end:0x803DD6B8
 	.sdata2     start:0x803DF3D0 end:0x803DF428
+
+main/gameloop.c:
+	.text       start:0x8001F610 end:0x8001FE4C
+	.data       start:0x802CAFC0 end:0x802CB09C
+	.bss        start:0x8033CBE8 end:0x8033CC18
+	.sdata      start:0x803DC070 end:0x803DC090
+	.sbss       start:0x803DD6B8 end:0x803DD788
 
 main/gameloop_buttonobj.c:
 	.text       start:0x8001FE4C end:0x8001FF38
@@ -1447,7 +1461,7 @@ dlls/engine/58/58.c:
 
 dlls/engine/0/0.c:
 	.text       start:0x8011DBFC end:0x80130224
-	.rodata     start:0x802C2920 end:0x802C2944
+	.rodata     start:0x802C2920 end:0x802C2948
 	.data       start:0x8031BA70 end:0x8031CDB8
 	.bss        start:0x803A9450 end:0x803AA0B8
 	.sdata      start:0x803DC698 end:0x803DC818
@@ -1516,11 +1530,27 @@ dlls/objects/704/704.c:
 
 main/dll_80136a40.c:
 	.text       start:0x80136DC8 end:0x80138C90
-	.data       start:0x8031DBF0 end:0x8031DF34
+	.data       start:0x8031DBF0 end:0x8031DF38
 	.bss        start:0x803AAC78 end:0x803AD088
 	.sdata      start:0x803DC878 end:0x803DC8A8
 	.sbss       start:0x803DE658 end:0x803DE6C8
-	.sdata2     start:0x803E3020 end:0x803E304C
+	.sdata2     start:0x803E3020 end:0x803E3050
+
+dlls/objects/196_Tricky/tricky.c:
+	.text       start:0x80138C90 end:0x80149040
+	.rodata     start:0x802C2948 end:0x802C2970
+	.data       start:0x8031DF38 end:0x8031E828
+	.sdata      start:0x803DC8A8 end:0x803DC8C0
+	.sbss       start:0x803DE6C8 end:0x803DE6D0
+	.sdata2     start:0x803E3050 end:0x803E31E8
+
+dlls/objects/201_Baddie/Baddie.c:
+	.text       start:0x80149040 end:0x8014E670
+	.rodata     start:0x802C2970 end:0x802C2990
+	.data       start:0x8031E828 end:0x8031E8D8
+	.sdata      start:0x803DC8C0 end:0x803DC8D8
+	.sbss       start:0x803DE6D0 end:0x803DE6D8
+	.sdata2     start:0x803E31E8 end:0x803E32A0
 
 dlls/objects/223_Hagabon/Hagabon.c:
 	.text       start:0x8014E670 end:0x8014F320
@@ -2971,7 +3001,16 @@ dlls/objects/420/420.c:
 dlls/objects/421_NW_levcontr/NW_levcontr.c:
 	.text       start:0x801D0338 end:0x801D0C6C
 	.data       start:0x80327638 end:0x803277D8
-	.sdata2     start:0x803E5F10 end:0x803E5F1C
+	.sdata2     start:0x803E5F10 end:0x803E5F20
+
+dlls/objects/422_SH_tricky/SH_tricky.c:
+	.text       start:0x801D0C6C end:0x801D0E18
+	.data       start:0x803277D8 end:0x80327810
+
+dlls/objects/423/423.c:
+	.text       start:0x801D0E18 end:0x801D21EC
+	.data       start:0x80327810 end:0x803278B8
+	.sdata2     start:0x803E5F20 end:0x803E5F90
 
 dlls/objects/424_SH_killermu/SH_killermu.c:
 	.text       start:0x801D21EC end:0x801D2E5C
@@ -3643,6 +3682,18 @@ dlls/objects/586/586.c:
 dlls/objects/587/587.c:
 	.data       start:0x8032ABA0 end:0x8032ABD0
 
+dlls/objects/589_BossDrakor/BossDrakor.c:
+	.text       start:0x8020A800 end:0x8020C12C
+	.data       start:0x8032ABD0 end:0x8032AD30
+	.sdata      start:0x803DCDF0 end:0x803DCE08
+	.sdata2     start:0x803E71A8 end:0x803E7220
+
+dlls/objects/590/590.c:
+	.text       start:0x8020C12C end:0x8020C8F0
+	.data       start:0x8032AD30 end:0x8032AD68
+	.sdata      start:0x803DCE08 end:0x803DCE20
+	.sdata2     start:0x803E7220 end:0x803E7264
+
 dlls/objects/588_BossDrakor_/BossDrakor_.c:
 	.data       start:0x8032AD68 end:0x8032AD98
 
@@ -3749,6 +3800,18 @@ dlls/objects/610/610.c:
 dlls/objects/612/612.c:
 	.sdata      start:0x803DCF28 end:0x803DCF30
 
+dlls/objects/611_GM_MazeWell/GM_MazeWell.c:
+	.text       start:0x8021919C end:0x80219560
+	.data       start:0x8032B388 end:0x8032B418
+	.sdata2     start:0x803E7610 end:0x803E7618
+
+dlls/objects/614_KytesMum/KytesMum.c:
+	.text       start:0x80219560 end:0x8021A100
+	.rodata     start:0x802C2CF8 end:0x802C2D10
+	.data       start:0x8032B418 end:0x8032B4D0
+	.sdata      start:0x803DCF30 end:0x803DCF40
+	.sdata2     start:0x803E7618 end:0x803E7640
+
 dlls/objects/615/615.c:
 	.sdata      start:0x803DCF40 end:0x803DCF48
 
@@ -3758,10 +3821,10 @@ dlls/objects/618_DR_Geezer/DR_Geezer.c:
 dlls/objects/621_DR_Vines/DR_Vines.c:
 	.sdata      start:0x803DCF50 end:0x803DCF58
 
-dlls/objects/611_GM_MazeWell/GM_MazeWell.c:
-	.text       start:0x8021919C end:0x80219560
-	.data       start:0x8032B388 end:0x8032B418
-	.sdata2     start:0x803E7610 end:0x803E7614
+dlls/objects/613_DR_Creator/DR_Creator.c:
+	.text       start:0x8021A100 end:0x8021A6B0
+	.data       start:0x8032B4D0 end:0x8032B518
+	.sdata2     start:0x803E7640 end:0x803E7668
 
 dlls/objects/617_ExplodePlan/ExplodePlan.c:
 	.text       start:0x8021A6B0 end:0x8021A7E4
@@ -4945,6 +5008,15 @@ dolphin/TRK_MINNOW_DOLPHIN/flush_cache.c:
 
 dolphin/TRK_MINNOW_DOLPHIN/mem_TRK.c:
 	.text       start:0x8028B780 end:0x8028B83C
+
+dolphin/TRK_MINNOW_DOLPHIN/targimpl.c:
+	.text       start:0x8028B83C end:0x8028D0D0
+	.rodata     start:0x802C30F8 end:0x802C3180
+	.data       start:0x80332F50 end:0x80332F80
+	.bss        start:0x803D8F58 end:0x803D94D8
+
+dolphin/TRK_MINNOW_DOLPHIN/targsupp.s:
+	.text       start:0x8028D0D0 end:0x8028D0F0
 
 Runtime.PPCEABI.H/__start.c:
 	.init       start:0x80003100 end:0x800033A8

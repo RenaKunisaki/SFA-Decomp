@@ -340,6 +340,7 @@ dlls/objects/418_NW_tricky/NW_tricky.c
 dlls/objects/419/419.c
 dlls/objects/420/420.c
 dlls/objects/421_NW_levcontr/NW_levcontr.c
+dlls/objects/423/423.c
 dlls/objects/424_SH_killermu/SH_killermu.c
 dlls/objects/425_BombPlant/BombPlant.c
 dlls/objects/426_BombPlantSp/BombPlantSp.c
@@ -494,6 +495,7 @@ dlls/objects/585/585.c
 dlls/objects/586/586.c
 dlls/objects/587/587.c
 dlls/objects/588_BossDrakor_/BossDrakor_.c
+dlls/objects/590/590.c
 dlls/objects/591_KT_RexLevel/KT_RexLevel.c
 dlls/objects/592_KT_Rex/KT_Rex.c
 dlls/objects/593_KT_RexFloor/KT_RexFloor.c
@@ -745,6 +747,7 @@ dolphin/os/OSSync.c
 dolphin/os/OSTime.c
 dolphin/os/__ppc_eabi_init.c
 dolphin/pad/Pad.c
+dolphin/pad/Padclamp.c
 dolphin/thp/THPAudio.c
 dolphin/thp/THPDec.c
 main/audio_sfx.c

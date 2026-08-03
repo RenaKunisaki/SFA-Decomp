@@ -353,6 +353,7 @@ dlls/objects/418_NW_tricky/NW_tricky.c
 dlls/objects/419/419.c
 dlls/objects/420/420.c
 dlls/objects/421_NW_levcontr/NW_levcontr.c
+dlls/objects/423/423.c
 dlls/objects/424_SH_killermu/SH_killermu.c
 dlls/objects/425_BombPlant/BombPlant.c
 dlls/objects/426_BombPlantSp/BombPlantSp.c
@@ -508,6 +509,7 @@ dlls/objects/585/585.c
 dlls/objects/586/586.c
 dlls/objects/587/587.c
 dlls/objects/588_BossDrakor_/BossDrakor_.c
+dlls/objects/590/590.c
 dlls/objects/591_KT_RexLevel/KT_RexLevel.c
 dlls/objects/592_KT_Rex/KT_Rex.c
 dlls/objects/593_KT_RexFloor/KT_RexFloor.c
@@ -685,6 +687,8 @@ dolphin/TRK_MINNOW_DOLPHIN/serpoll.c
 dolphin/TRK_MINNOW_DOLPHIN/support.c
 dolphin/TRK_MINNOW_DOLPHIN/targcont.c
 dolphin/TRK_MINNOW_DOLPHIN/target_options.c
+dolphin/TRK_MINNOW_DOLPHIN/targimpl.c
+dolphin/TRK_MINNOW_DOLPHIN/targsupp.s
 dolphin/TRK_MINNOW_DOLPHIN/usr_put.c
 dolphin/ai/ai.c
 dolphin/amcstubs/AmcExi2Stubs.c

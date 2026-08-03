@@ -537,6 +537,41 @@ def weak_symbol_name(name: str) -> bool:
     )
 
 
+def direct_text_xrefs_into_range(dol: DolFile, start: int, end: int) -> set[int]:
+    """Return text addresses that directly materialize a pointer into a range."""
+
+    xrefs: set[int] = set()
+    for section in dol.text_sections:
+        words = [
+            struct.unpack_from(">I", dol.data, section.offset + offset)[0]
+            for offset in range(0, section.size, 4)
+        ]
+        for index, first_word in enumerate(words):
+            if first_word >> 26 != 15 or (first_word >> 16) & 31:
+                continue
+            register = (first_word >> 21) & 31
+            high = first_word & 0xFFFF
+            for next_index in range(index + 1, min(index + 6, len(words))):
+                second_word = words[next_index]
+                opcode = second_word >> 26
+                base = (second_word >> 16) & 31
+                target: int | None = None
+                if opcode == 14 and base == register:
+                    signed_high = high - 0x10000 if high & 0x8000 else high
+                    low = second_word & 0xFFFF
+                    signed_low = low - 0x10000 if low & 0x8000 else low
+                    target = ((signed_high << 16) + signed_low) & 0xFFFFFFFF
+                elif (
+                    opcode == 24
+                    and base == register
+                    and (second_word >> 21) & 31 == register
+                ):
+                    target = ((high << 16) | (second_word & 0xFFFF)) & 0xFFFFFFFF
+                if target is not None and start <= target < end:
+                    xrefs.add(section.address + index * 4)
+    return xrefs
+
+
 def snap_symbol_boundaries(
     source_splits: list[SplitRange],
     boundary_maps: dict[str, dict[int, int]],
@@ -554,12 +589,49 @@ def snap_symbol_boundaries(
         splits_by_boundary[(split.section, split.start)].append(split)
         splits_by_boundary[(split.section, split.end)].append(split)
 
+    target_text_ranges_by_unit: dict[str, list[tuple[int, int]]] = defaultdict(list)
+    for split in source_splits:
+        if split.section not in CODE_SECTIONS or split.start == split.end:
+            continue
+        section_map = boundary_maps.get(split.section, {})
+        target_start = section_map.get(split.start)
+        target_end = section_map.get(split.end)
+        if target_start is not None and target_end is not None:
+            target_text_ranges_by_unit[split.unit].append((target_start, target_end))
+
     proposals: dict[tuple[str, int], int] = {}
     for section, section_map in boundary_maps.items():
-        if section in CODE_SECTIONS:
-            continue
         section_source_spans = source_spans.get(section, ())
         section_target_spans = target_spans.get(section, ())
+        source_chain_signatures: list[bytes] = []
+        target_chain_signatures: list[bytes] = []
+        target_chains: dict[int, dict[tuple[tuple[int, bytes], ...], list[int]]] = {}
+        if section in CODE_SECTIONS or section == "data":
+            source_chain_signatures = [
+                normalized_span_signature(source_dol, span)
+                for span in section_source_spans
+            ]
+            target_chain_signatures = [
+                normalized_span_signature(target_dol, span)
+                for span in section_target_spans
+            ]
+            for length in range(2, 7):
+                chain_index: dict[
+                    tuple[tuple[int, bytes], ...], list[int]
+                ] = defaultdict(list)
+                for start in range(len(section_target_spans) - length + 1):
+                    chain = section_target_spans[start : start + length]
+                    if any(
+                        before.end != after.start
+                        for before, after in zip(chain, chain[1:])
+                    ):
+                        continue
+                    key = tuple(
+                        (span.size, target_chain_signatures[start + offset])
+                        for offset, span in enumerate(chain)
+                    )
+                    chain_index[key].append(start)
+                target_chains[length] = chain_index
         for source_boundary, target_boundary in section_map.items():
             touching = splits_by_boundary.get((section, source_boundary), [])
             currently_rejected = False
@@ -579,6 +651,125 @@ def snap_symbol_boundaries(
                     break
             if not currently_rejected:
                 continue
+
+            if section in CODE_SECTIONS or section == "data":
+                chain_candidates: list[tuple[str, int, int, int]] = []
+                for side in ("before", "after"):
+                    anchors = [
+                        index
+                        for index, span in enumerate(section_source_spans)
+                        if (
+                            span.end == source_boundary
+                            if side == "before"
+                            else span.start == source_boundary
+                        )
+                    ]
+                    if len(anchors) != 1:
+                        continue
+                    anchor = anchors[0]
+                    for length in range(2, 7):
+                        start = anchor - length + 1 if side == "before" else anchor
+                        if start < 0 or start + length > len(section_source_spans):
+                            continue
+                        chain = section_source_spans[start : start + length]
+                        if any(
+                            before.end != after.start
+                            for before, after in zip(chain, chain[1:])
+                        ):
+                            continue
+                        total_size = sum(span.size for span in chain)
+                        if total_size < 32:
+                            continue
+                        key = tuple(
+                            (span.size, source_chain_signatures[start + offset])
+                            for offset, span in enumerate(chain)
+                        )
+                        matches = target_chains[length].get(key, [])
+                        if len(matches) != 1:
+                            continue
+                        target_start = matches[0]
+                        candidate = (
+                            section_target_spans[target_start + length - 1].end
+                            if side == "before"
+                            else section_target_spans[target_start].start
+                        )
+                        chain_candidates.append((side, length, total_size, candidate))
+                if chain_candidates:
+                    side_candidates: dict[str, int] = {}
+                    for side in ("before", "after"):
+                        candidates = [
+                            (length, total_size, candidate)
+                            for (
+                                candidate_side,
+                                length,
+                                total_size,
+                                candidate,
+                            ) in chain_candidates
+                            if candidate_side == side
+                        ]
+                        if not candidates:
+                            continue
+                        best_strength = max(
+                            (length, total_size) for length, total_size, _ in candidates
+                        )
+                        best_candidates = {
+                            candidate
+                            for length, total_size, candidate in candidates
+                            if (length, total_size) == best_strength
+                        }
+                        if len(best_candidates) == 1:
+                            side_candidates[side] = best_candidates.pop()
+                    if len(set(side_candidates.values())) == 1:
+                        proposals[(section, source_boundary)] = next(
+                            iter(side_candidates.values())
+                        )
+                        continue
+                    # A later binary may insert TU-owned initialized data at a
+                    # boundary while leaving exact symbol chains on both
+                    # sides.  Attach that corridor to the preceding TU only
+                    # when all direct code references into it originate from
+                    # that TU's projected text.  Otherwise preserve the
+                    # disagreement and leave both units unclaimed.
+                    if (
+                        section == "data"
+                        and set(side_candidates) == {"before", "after"}
+                        and side_candidates["before"] < side_candidates["after"]
+                    ):
+                        preceding_units = {
+                            split.unit
+                            for split in touching
+                            if split.end == source_boundary and split.start < split.end
+                        }
+                        following_units = {
+                            split.unit
+                            for split in touching
+                            if split.start == source_boundary
+                            and split.start < split.end
+                        }
+                        if (
+                            len(preceding_units) == 1
+                            and len(following_units) == 1
+                            and preceding_units != following_units
+                        ):
+                            preceding_unit = next(iter(preceding_units))
+                            xrefs = direct_text_xrefs_into_range(
+                                target_dol,
+                                side_candidates["before"],
+                                side_candidates["after"],
+                            )
+                            text_ranges = target_text_ranges_by_unit.get(
+                                preceding_unit, []
+                            )
+                            if xrefs and all(
+                                any(start <= xref < end for start, end in text_ranges)
+                                for xref in xrefs
+                            ):
+                                proposals[(section, source_boundary)] = side_candidates[
+                                    "after"
+                                ]
+                                continue
+                if section in CODE_SECTIONS:
+                    continue
 
             crossing = [
                 span

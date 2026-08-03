@@ -1,76 +1,8 @@
 {
-  "dlls/engine/15/15.c": {
-    "fn_800D838C": "player_moveTowardPoint",
-    "fn_800D84D8": "player_followCurve",
-    "fn_800D8614": "player_applyVelocityStep",
-    "fn_800D8780": "player_steerFromInput",
-    "fn_800D8910": "player_updateParticles",
-    "fn_800D8A18": "player_doProjGfx",
-    "fn_800D8B24": "player_updateSecondaryBlend",
-    "fn_800D8CC8": "player_setAnimIds",
-    "fn_800D8CD4": "player_clearXZvel",
-    "fn_800D8CF0": "dll_0F_func13",
-    "fn_800D8F1C": "dll_0F_func19_nop",
-    "fn_800D8F20": "player_updateCurve",
-    "fn_800D8FC8": "player_findCurve",
-    "fn_800D9028": "player_playSoundFn10",
-    "fn_800D9074": "player_playSoundFn0F",
-    "fn_800D90C0": "player_rotateTowardEnemy",
-    "fn_800D91E8": "player_render2",
-    "fn_800D9240": "player_modelMtxFn",
-    "fn_800D92A0": "dll_0F_func0B",
-    "fn_800D92FC": "player_advanceMove",
-    "fn_800D94C8": "player_runSubstateMachine",
-    "fn_800D963C": "playerRunStateMachine",
-    "fn_800D9934": "player_setState",
-    "fn_800D99D4": "player_setOverride",
-    "fn_800D99DC": "player_updateVel",
-    "fn_800D9B78": "player_update",
-    "fn_800DA0A8": "player_init",
-    "fn_800DA130": "player_release",
-    "fn_800DA134": "player_initialise"
-  },
-  "dlls/engine/16/16.c": {
-    "fn_800DA138": "UIController_render",
-    "fn_800DA1B8": "UIController_frameEnd",
-    "fn_800DA1E8": "UIController_frameStart",
-    "fn_800DA218": "UIController_release",
-    "fn_800DA21C": "UIController_initialise"
-  },
-  "dlls/engine/18/18.c": {
-    "fn_800DA220": "dll_12_func0A_nop",
-    "fn_800DA224": "dll_12_func09",
-    "fn_800DA230": "dll_12_func08_nop",
-    "fn_800DA234": "dll_12_func07_nop",
-    "fn_800DA238": "dll_12_func06_ret_0",
-    "fn_800DA240": "dll_12_func04_nop",
-    "fn_800DA244": "dll_12_func03_nop",
-    "fn_800DA248": "dll_12_func05_nop",
-    "fn_800DA24C": "Dummy12_release",
-    "fn_800DA250": "Dummy12_initialise"
-  },
   "dolphin/card/CARDBios.c": {
     "fn_8025F8EC": "OnReset"
   },
   "dolphin/si/SIBios.c": {
     "fn_80253260": "AlarmHandler"
-  },
-  "main/fileio.c": {
-    "fn_80015650": "dvdCheckError",
-    "fn_80015888": "DVDRead",
-    "fn_8001598C": "DvdRead_Callback",
-    "fn_80015994": "setFileInfo",
-    "fn_8001599C": "loadFileByPathAsync",
-    "fn_80015AEC": "loadFileByPath"
-  },
-  "main/textrender.c": {
-    "fn_8001746C": "gameTextSetWindow",
-    "fn_80017508": "textRenderStr",
-    "fn_80018510": "translateToDinoLanguage",
-    "fn_80018644": "GameText_CountPrintableChars",
-    "fn_80018728": "gameTextMeasureString",
-    "fn_80018BFC": "subtitleParseControlCmds",
-    "fn_80018F0C": "GameText_FindControlCodeArgs",
-    "fn_800191A4": "getControlCharLen"
   }
 }
