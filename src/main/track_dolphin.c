@@ -3366,12 +3366,12 @@ u8 doEdges;
 
 void trackIntersectBroadphase(GameObject* obj, TrackQueryBounds* ranges, u32 queryMask, int b)
 {
-    f32 f31 = (f32)(ranges->minX - 5);
-    f32 f30 = (f32)(ranges->maxX + 5);
-    f32 f29 = (f32)(ranges->minY - 5);
-    f32 f28 = (f32)(ranges->maxY + 5);
-    f32 f27 = (f32)(ranges->minZ - 5);
-    f32 f26 = (f32)(ranges->maxZ + 5);
+    f32 x0 = (f32)(ranges->minX - 5);
+    f32 x1 = (f32)(ranges->maxX + 5);
+    f32 y0 = (f32)(ranges->minY - 5);
+    f32 y1 = (f32)(ranges->maxY + 5);
+    f32 z0 = (f32)(ranges->minZ - 5);
+    f32 z1 = (f32)(ranges->maxZ + 5);
     ObjAnimComponent** resetObjects;
     int flag80;
     s16 i;
@@ -3398,7 +3398,7 @@ void trackIntersectBroadphase(GameObject* obj, TrackQueryBounds* ranges, u32 que
         }
         else
         {
-            cur = trackBuildBlockTriangles((int)gTrackTriangleBuffer, f31, f29, f27, f30, f28, f26, queryMask, b);
+            cur = trackBuildBlockTriangles((int)gTrackTriangleBuffer, x0, y0, z0, x1, y1, z1, queryMask, b);
         }
         if ((u32)cur < gTrackTriangleBufferEnd && (masked & 1) && obj != NULL)
         {
@@ -3434,19 +3434,19 @@ void trackIntersectBroadphase(GameObject* obj, TrackQueryBounds* ranges, u32 que
                     continue;
                 r = (f32)(u32)modelFileHeaderGetCullDistance((ModelFileHeader*)hdr);
                 c = resetObj->worldPosX;
-                if (f30 < c - r)
+                if (x1 < c - r)
                     continue;
-                if (f31 > c + r)
+                if (x0 > c + r)
                     continue;
                 c = resetObj->worldPosY;
-                if (f28 < c - r)
+                if (y1 < c - r)
                     continue;
-                if (f29 > c + r)
+                if (y0 > c + r)
                     continue;
                 c = resetObj->worldPosZ;
-                if (f26 < c - r)
+                if (z1 < c - r)
                     continue;
-                if (f27 > c + r)
+                if (z0 > c + r)
                     continue;
 
                 desc->currentCollisionMatrix = (f32*)resetObj->hitboxTransformState->matrices +
@@ -3461,7 +3461,7 @@ void trackIntersectBroadphase(GameObject* obj, TrackQueryBounds* ranges, u32 que
 
                 desc->firstTriangle = (s16)((cur - (int)gTrackTriangleBuffer) / 0x4c);
                 desc->object = resetObj;
-                cur = trackBuildModelTriangles(cur, desc, (int)model, 1.0f, f31, f29, f27, f30, f28, f26, queryMask);
+                cur = trackBuildModelTriangles(cur, desc, (int)model, 1.0f, x0, y0, z0, x1, y1, z1, queryMask);
                 desc++;
                 if ((u32)cur >= gTrackTriangleBufferEnd)
                     break;

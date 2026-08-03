@@ -575,9 +575,9 @@ int trickySelectQueuedCommandTarget(TrickyState* state, int commandType)
             state->targetPosPtr = targetPos;
             {
                 u32 m;
-                u32 f2 = state->stateFlags;
+                u32 flags = state->stateFlags;
                 m = ~TRICKY_STATE_FLAG_PATH_PATCHES_VALID;
-                state->stateFlags = f2 & m;
+                state->stateFlags = flags & m;
             }
             state->linkedWalkGroup = 0;
         }
@@ -2061,9 +2061,9 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
         state->activeWalkGroup = wg;
         {
             u32 m;
-            u32 f2 = state->stateFlags;
+            u32 flags = state->stateFlags;
             m = ~0x400;
-            state->stateFlags = f2 & m;
+            state->stateFlags = flags & m;
         }
         state->patch[0] = 0;
         state->patch[1] = 0;
@@ -2190,9 +2190,9 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                 state->activeWalkGroup = ulink;
                 {
                     u32 m;
-                    u32 f2 = state->stateFlags;
+                    u32 flags = state->stateFlags;
                     m = ~0x400;
-                    state->stateFlags = f2 & m;
+                    state->stateFlags = flags & m;
                 }
                 state->patch[0] = 0;
                 state->patch[1] = 0;
@@ -3479,9 +3479,9 @@ void tricky_stateGoToWarpPoint(u8* self, u8* state)
             ((TrickyState*)state)->targetPosPtr = (f32*)(nearest + 0x18);
             {
                 u32 m;
-                u32 f2 = ((TrickyState*)state)->stateFlags;
+                u32 flags = ((TrickyState*)state)->stateFlags;
                 m = ~0x400;
-                ((TrickyState*)state)->stateFlags = f2 & m;
+                ((TrickyState*)state)->stateFlags = flags & m;
             }
             ((TrickyState*)state)->linkedWalkGroup = 0;
         }
@@ -3857,9 +3857,9 @@ void* trickyFindCirclingTarget(GameObject* obj, void* state);
             *(u32*)((st) + 0x28) = px;                                                                                 \
             {                                                                                                          \
                 u32 m;                                                                                                 \
-                u32 f2 = *(u32*)((st) + TRICKY_STATE_FLAGS_OFFSET);                                                    \
+                u32 flags = *(u32*)((st) + TRICKY_STATE_FLAGS_OFFSET);                                                    \
                 m = ~TRICKY_STATE_TARGET_DIRTY_FLAG;                                                                   \
-                *(u32*)((st) + TRICKY_STATE_FLAGS_OFFSET) = f2 & m;                                                    \
+                *(u32*)((st) + TRICKY_STATE_FLAGS_OFFSET) = flags & m;                                                    \
             }                                                                                                          \
             *(s16*)((st) + 0xd2) = 0;                                                                                  \
         }                                                                                                              \
@@ -4194,9 +4194,9 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t)
             TRICKY_BARK((int*)gobj, 0x29d, 0, finishCfg);
             {
                 u32 m;
-                u32 f2 = t->stateFlags;
+                u32 flags = t->stateFlags;
                 m = ~TRICKY_STATE_RESET_FLAG_10;
-                t->stateFlags = f2 & m;
+                t->stateFlags = flags & m;
             }
             t->substate = ANIMOBJD2_SUBSTATE_ACQUIRE;
         }
@@ -4681,9 +4681,9 @@ void tricky_fetchBall(GameObject* obj, register int state)
             }
             {
                 u32 m;
-                u32 f2 = ((TrickyState*)state)->stateFlags;
+                u32 flags = ((TrickyState*)state)->stateFlags;
                 m = ~TRICKY_STATE_RESET_FLAG_10;
-                ((TrickyState*)state)->stateFlags = f2 & m;
+                ((TrickyState*)state)->stateFlags = flags & m;
             }
             ((TrickyState*)state)->substate = 7;
             targetPos = &((TrickyState*)state)->followObj->anim.worldPosX;
@@ -4692,9 +4692,9 @@ void tricky_fetchBall(GameObject* obj, register int state)
                 ((TrickyState*)state)->targetPosPtr = targetPos;
                 {
                     u32 m;
-                    u32 f2 = ((TrickyState*)state)->stateFlags;
+                    u32 flags = ((TrickyState*)state)->stateFlags;
                     m = ~TRICKY_STATE_TARGET_DIRTY_FLAG;
-                    ((TrickyState*)state)->stateFlags = f2 & m;
+                    ((TrickyState*)state)->stateFlags = flags & m;
                 }
                 ((TrickyState*)state)->linkedWalkGroup = 0;
             }
@@ -4755,9 +4755,9 @@ void tricky_fetchBall(GameObject* obj, register int state)
                 ((TrickyState*)state)->targetPosPtr = targetPos;
                 {
                     u32 m;
-                    u32 f2 = ((TrickyState*)state)->stateFlags;
+                    u32 flags = ((TrickyState*)state)->stateFlags;
                     m = ~TRICKY_STATE_TARGET_DIRTY_FLAG;
-                    ((TrickyState*)state)->stateFlags = f2 & m;
+                    ((TrickyState*)state)->stateFlags = flags & m;
                 }
                 ((TrickyState*)state)->linkedWalkGroup = 0;
             }
@@ -4915,9 +4915,9 @@ void tricky_trackTumbleweed(GameObject* obj, register int state)
                 ((TrickyState*)state)->targetPosPtr = (f32*)(state + 0x704);
                 {
                     u32 m;
-                    u32 f2 = ((TrickyState*)state)->stateFlags;
+                    u32 flags = ((TrickyState*)state)->stateFlags;
                     m = ~TRICKY_STATE_TARGET_DIRTY_FLAG;
-                    ((TrickyState*)state)->stateFlags = f2 & m;
+                    ((TrickyState*)state)->stateFlags = flags & m;
                 }
                 ((TrickyState*)state)->linkedWalkGroup = 0;
             }
@@ -5032,9 +5032,9 @@ void tricky_moveToFollowTarget(int obj, TrickyState* state)
 #define TRICKY_CLEAR_FLAG(st, flag)                                                                                    \
     {                                                                                                                  \
         u32 m;                                                                                                         \
-        u32 f2 = TRICKY_STATE(st)->stateFlags;                                                                            \
+        u32 flags = TRICKY_STATE(st)->stateFlags;                                                                            \
         m = ~(flag);                                                                                                   \
-        TRICKY_STATE(st)->stateFlags = f2 & m;                                                                            \
+        TRICKY_STATE(st)->stateFlags = flags & m;                                                                            \
     }
 
 #define TRICKY_CLEAR_TARGET_DIRTY(st) TRICKY_CLEAR_FLAG(st, TRICKY_STATE_TARGET_DIRTY_FLAG)
@@ -6031,9 +6031,9 @@ void trickyDigTunnel(u8* obj, u8* state)
             ((TrickyState*)state)->targetPosPtr = (f32*)ptr;
             {
                 u32 m;
-                u32 f2 = ((TrickyState*)state)->stateFlags;
+                u32 flags = ((TrickyState*)state)->stateFlags;
                 m = ~0x400;
-                ((TrickyState*)state)->stateFlags = f2 & m;
+                ((TrickyState*)state)->stateFlags = flags & m;
             }
             ((TrickyState*)state)->linkedWalkGroup = 0;
         }
@@ -6251,9 +6251,9 @@ void tricky_stateFindSecretDig(u8* obj, u8* state)
                     ((TrickyState*)state)->targetPosPtr = (f32*)ptr;
                     {
                         u32 m;
-                        u32 f2 = ((TrickyState*)state)->stateFlags;
+                        u32 flags = ((TrickyState*)state)->stateFlags;
                         m = ~0x400;
-                        ((TrickyState*)state)->stateFlags = f2 & m;
+                        ((TrickyState*)state)->stateFlags = flags & m;
                     }
                     ((TrickyState*)state)->linkedWalkGroup = 0;
                 }
@@ -6393,9 +6393,9 @@ void tricky_stateFollowPlayer(u8* obj, u8* state)
                             ((TrickyState*)other)->targetPosPtr = &target->anim.worldPosX;
                             {
                                 u32 m;
-                                u32 f2 = ((TrickyState*)other)->stateFlags;
+                                u32 flags = ((TrickyState*)other)->stateFlags;
                                 m = ~0x400;
-                                ((TrickyState*)other)->stateFlags = f2 & m;
+                                ((TrickyState*)other)->stateFlags = flags & m;
                             }
                             ((TrickyState*)other)->linkedWalkGroup = 0;
                         }
@@ -6671,9 +6671,9 @@ int tricky_substateBegForFood(GameObject* obj, int state)
         ((TrickyState*)state)->cooldownB.f = 0.0f;
         {
             u32 m;
-            u32 f2 = ((TrickyState*)state)->stateFlags;
+            u32 flags = ((TrickyState*)state)->stateFlags;
             m = ~0x10;
-            ((TrickyState*)state)->stateFlags = f2 & m;
+            ((TrickyState*)state)->stateFlags = flags & m;
         }
         ((TrickyState*)state)->substate = 0;
         return 1;
@@ -6704,9 +6704,9 @@ int tricky_substateBegForFood(GameObject* obj, int state)
     {
         {
             u32 m;
-            u32 f2 = ((TrickyState*)state)->stateFlags;
+            u32 flags = ((TrickyState*)state)->stateFlags;
             m = ~0x10;
-            ((TrickyState*)state)->stateFlags = f2 & m;
+            ((TrickyState*)state)->stateFlags = flags & m;
         }
         ((TrickyState*)state)->substate = 0;
     }
@@ -6786,9 +6786,9 @@ int tricky_substateDigForFood(GameObject* obj, int state)
             }
             {
                 u32 m;
-                u32 f2 = ((TrickyState*)state)->stateFlags;
+                u32 flags = ((TrickyState*)state)->stateFlags;
                 m = ~0x10;
-                ((TrickyState*)state)->stateFlags = f2 & m;
+                ((TrickyState*)state)->stateFlags = flags & m;
             }
             ((TrickyState*)state)->substate = 0;
         }
@@ -7040,9 +7040,9 @@ int tricky_substateHowlCall(GameObject* obj, int* trickyState)
             }
             {
                 u32 m;
-                u32 f2 = ((TrickyState*)trickyState)->stateFlags;
+                u32 flags = ((TrickyState*)trickyState)->stateFlags;
                 m = ~0x10;
-                ((TrickyState*)trickyState)->stateFlags = f2 & m;
+                ((TrickyState*)trickyState)->stateFlags = flags & m;
             }
             ((TrickyState*)trickyState)->substate = 0;
         }
@@ -7203,9 +7203,9 @@ int tricky_substateFollowIdle(GameObject* obj, int state)
         *(int*)&((TrickyState*)state)->targetPosPtr = followBase;
         {
             u32 m;
-            u32 f2 = ((TrickyState*)state)->stateFlags;
+            u32 flags = ((TrickyState*)state)->stateFlags;
             m = ~0x400;
-            ((TrickyState*)state)->stateFlags = f2 & m;
+            ((TrickyState*)state)->stateFlags = flags & m;
         }
         ((TrickyState*)state)->linkedWalkGroup = 0;
     }
@@ -7425,9 +7425,9 @@ void tricky_pickAmbientActivity(u8* obj, u8* state)
             ((TrickyState*)state)->targetPosPtr = (f32*)(state + 0x72c);
             {
                 u32 m;
-                u32 f2 = ((TrickyState*)state)->stateFlags;
+                u32 flags = ((TrickyState*)state)->stateFlags;
                 m = ~0x400;
-                ((TrickyState*)state)->stateFlags = f2 & m;
+                ((TrickyState*)state)->stateFlags = flags & m;
             }
             ((TrickyState*)state)->linkedWalkGroup = 0;
         }
@@ -7448,9 +7448,9 @@ void tricky_pickAmbientActivity(u8* obj, u8* state)
             ((TrickyState*)state)->targetPosPtr = (f32*)(state + 0x72c);
             {
                 u32 m;
-                u32 f2 = ((TrickyState*)state)->stateFlags;
+                u32 flags = ((TrickyState*)state)->stateFlags;
                 m = ~0x400;
-                ((TrickyState*)state)->stateFlags = f2 & m;
+                ((TrickyState*)state)->stateFlags = flags & m;
             }
             ((TrickyState*)state)->linkedWalkGroup = 0;
         }
@@ -8186,9 +8186,9 @@ int Tricky_requestMoveToObject(int* obj, int targetObj)
             state->targetPosPtr = (f32*)(target + 0x18);
             {
                 u32 m;
-                u32 f2 = state->stateFlags;
+                u32 flags = state->stateFlags;
                 m = ~TRICKY_STATE_TARGET_DIRTY_FLAG;
-                state->stateFlags = f2 & m;
+                state->stateFlags = flags & m;
             }
             state->linkedWalkGroup = 0;
         }
@@ -8235,9 +8235,9 @@ void Tricky_commandPlayBall(int* obj, int commandEnabled, int targetObj)
                 state->targetPosPtr = (f32*)nextTarget;
                 {
                     u32 m;
-                    u32 f2 = state->stateFlags;
+                    u32 flags = state->stateFlags;
                     m = ~TRICKY_STATE_TARGET_DIRTY_FLAG;
-                    state->stateFlags = f2 & m;
+                    state->stateFlags = flags & m;
                 }
                 state->linkedWalkGroup = 0;
             }
@@ -9248,9 +9248,9 @@ void Tricky_update(int obj)
                             trickyState->targetPosPtr = target;
                             {
                                 u32 m;
-                                u32 f2 = trickyState->stateFlags;
+                                u32 flags = trickyState->stateFlags;
                                 m = ~TRICKY_STATE_TARGET_DIRTY_FLAG;
-                                trickyState->stateFlags = f2 & m;
+                                trickyState->stateFlags = flags & m;
                             }
                             trickyState->linkedWalkGroup = 0;
                         }
@@ -9271,9 +9271,9 @@ void Tricky_update(int obj)
                                 trickyState->targetPosPtr = &step->anim.worldPosX;
                                 {
                                     u32 m;
-                                    u32 f2 = trickyState->stateFlags;
+                                    u32 flags = trickyState->stateFlags;
                                     m = ~TRICKY_STATE_TARGET_DIRTY_FLAG;
-                                    trickyState->stateFlags = f2 & m;
+                                    trickyState->stateFlags = flags & m;
                                 }
                                 trickyState->linkedWalkGroup = 0;
                             }
@@ -9314,9 +9314,9 @@ void Tricky_update(int obj)
             trickyState->idleSfxTimer = (f32)(int)randomGetRange(0x1f4, 0x2ee);
             {
                 u32 m;
-                u32 f2 = trickyState->stateFlags;
+                u32 flags = trickyState->stateFlags;
                 m = ~TRICKY_STATE_RESET_FLAG_40000;
-                trickyState->stateFlags = f2 & m;
+                trickyState->stateFlags = flags & m;
             }
             trickyState->commandPhase = 3;
             if (trickyState->targetPosPtr != &trickyState->wanderTargetX)
@@ -9324,9 +9324,9 @@ void Tricky_update(int obj)
                 trickyState->targetPosPtr = &trickyState->wanderTargetX;
                 {
                     u32 m;
-                    u32 f2 = trickyState->stateFlags;
+                    u32 flags = trickyState->stateFlags;
                     m = ~TRICKY_STATE_TARGET_DIRTY_FLAG;
-                    trickyState->stateFlags = f2 & m;
+                    trickyState->stateFlags = flags & m;
                 }
                 trickyState->linkedWalkGroup = 0;
             }
