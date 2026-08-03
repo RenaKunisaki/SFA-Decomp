@@ -56,14 +56,6 @@ STATIC_ASSERT(offsetof(TrickyCompanionInterface, getCurrentCommandType) == 0x48)
 void trickyReportError(const char* fmt, ...);
 void trickyDebugPrint(const char* fmt, ...);
 u8* Tricky_findNearestGroup4BObject(u8* obj, TrickyState* state);
-void FUN_80145230(u64 param_1, u64 param_2, double param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
-                  u64 param_8, int param_9, int* param_10, int param_11, u32 param_12, u8 param_13, u32 param_14,
-                  u32 param_15, u32 param_16);
-void FUN_801455e8(u64 param_1, double param_2, double param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
-                  u64 param_8, int param_9, int param_10);
-void FUN_801457a4(u64 param_1, double param_2, double param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
-                  u64 param_8, u32 param_9, u32 param_10, int param_11, u32 param_12, u32 param_13, u32 param_14,
-                  u32 param_15, u32 param_16);
 void tricky_attachToWalkGroup(GameObject* obj, int state);
 void tricky_stateIdleWander(GameObject* obj, int state);
 int Tricky_requestMoveToObject(int* obj, int targetObj);
@@ -76,25 +68,6 @@ int tricky_SeqFn(int obj, int unused, ObjSeqState* animUpdate);
 void Tricky_update(int obj);
 void Tricky_render(GameObject* obj, int param_2, int param_3, int param_4, int param_5, char doRender);
 void Tricky_hitDetect(GameObject* obj);
-void FUN_80146f94(u64 param_1, double param_2, double param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
-                  u64 param_8);
-void FUN_80146fa4(u64 param_1, double param_2, double param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
-                  u64 param_8, u32 param_9, int param_10, u32 param_11, u32 param_12, u32 param_13, u32 param_14,
-                  u32 param_15, u32 param_16);
-void FUN_80147218(u64 param_1, u64 param_2, double param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
-                  u64 param_8, u32 param_9, int param_10, u32 param_11, u32 param_12, u32 param_13, u32 param_14,
-                  u32 param_15, u32 param_16);
-void FUN_8014721c(u64 param_1, u64 param_2, double param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
-                  u64 param_8, u32 param_9, u32 param_10, u32 param_11);
-void FUN_80147314(u64 param_1, double param_2, double param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
-                  u64 param_8, u32 param_9, u32 param_10, u32 param_11, u32 param_12, u32 param_13, u32 param_14,
-                  u32 param_15, u32 param_16);
-void FUN_801476cc(u64 param_1, double param_2, double param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
-                  u64 param_8, int param_9, int param_10);
-void FUN_80147884(u64 param_1, u64 param_2, u64 param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
-                  u64 param_8, u32 param_9, u32 param_10, float* param_11, float* param_12);
-void FUN_80147a70(u64 param_1, u64 param_2, u64 param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
-                  u64 param_8);
 int Tricky_getExtraSize(void);
 u8 Tricky_getEnergyMax(int* obj);
 u8 Tricky_getEnergy(int* obj);
