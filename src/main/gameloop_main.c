@@ -325,7 +325,6 @@ void setFrameCountdown(s8 count)
     frameCountdown = count;
 }
 
-#define AI_STREAM_STOP 0
 char sGameBitSetDuringSaveLoadWarning[204] =
     "WARNING in mainSetBits: Bit %d can't be set to %d while a savegame is "
     "loading\n\000\000GAME_STATE_RESETPRESSED\n\000\000\000\000GAME_STATE_RESETNOW\n\000\000\000\000audioQuit "

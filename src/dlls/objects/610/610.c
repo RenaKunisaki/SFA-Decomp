@@ -38,7 +38,6 @@ f32 gDrakorMissileSteerGain = 0.1f;
 f32 gDrakorMissileInterceptSpeedBias = 0.5f;
 f32 gDrakorMissileProximityDetonateDist = 50.0f;
 
-#define MODEL_LIGHT_KIND_POINT 2
 
 #define DRAKORMISSILE_EXTRA_SIZE     0x38
 #define DRAKORMISSILE_OBJECT_TYPE_ID 0x2

@@ -40,12 +40,7 @@ static u8 lbl_803CD710[0x50];
 
 #define S3D_MAX_GROUPS                   0x40
 #define S3D_MAX_ACTIVE_NODES             0x40
-#define S3D_EMITTER_FLAG_RESTART_ON_STOP 0x00000002
-#define S3D_EMITTER_FLAG_USE_AUX_STUDIO  0x00000010
 #define S3D_EMITTER_FLAG_SKIP_FADE_IN    0x00000020
-#define S3D_EMITTER_FLAG_PLAYING         0x00020000
-#define S3D_EMITTER_FLAG_REMOVE          0x00040000
-#define S3D_EMITTER_FLAG_AGE_OUT         0x00100000
 #define S3D_CTRL_VOLUME                  0x07
 #define S3D_CTRL_PAN                     0x0a
 #define S3D_CTRL_PITCH_BEND              0x80
@@ -53,7 +48,6 @@ static u8 lbl_803CD710[0x50];
 #define S3D_CTRL_SPATIAL_PITCH           0x84
 #define S3D_CTRL_14BIT_LIMIT             0x3fff
 #define S3D_GROUP_KEY_STEREO_LIMIT       0x80000000
-#define S3D_INVALID_FX_HANDLE            0xffffffff
 
 extern inline f32 sqrtf(f32 x)
 {

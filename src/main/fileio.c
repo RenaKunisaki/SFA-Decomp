@@ -15,11 +15,6 @@
 #include "main/textrender_api.h"
 
 // DVDGetDriveStatus() drive-status codes
-#define DVD_STATE_FATAL_ERROR -1
-#define DVD_STATE_NO_DISK     4
-#define DVD_STATE_COVER_OPEN  5
-#define DVD_STATE_WRONG_DISK  6
-#define DVD_STATE_RETRY       11
 
 int gDvdLastDriveStatus;
 u32 gAudioStreamPlayAddrCallbackResult;

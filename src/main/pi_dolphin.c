@@ -145,10 +145,6 @@ u8 gDispCopyFilterWeights[8] = {7, 7, 0xC, 0xC, 0xC, 7, 7, 0};
 char sProgramCounterFormat[] = "PC: %x";
 int lbl_803DB5E4 = 0;
 
-#define GX_CULL_NONE  0
-#define GX_CULL_FRONT 1
-#define GX_CULL_BACK  2
-#define GX_LEQUAL     3
 #define PAD_BUTTON_A  0x100
 #define PAD_BUTTON_B  0x200
 extern u8 gResourceFileTable[]; /* resource file table -- see struct MldfTables */

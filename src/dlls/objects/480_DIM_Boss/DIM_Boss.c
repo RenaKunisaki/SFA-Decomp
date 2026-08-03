@@ -303,7 +303,6 @@ int DIMbossAnim_updateBossHitReaction(int obj, int statePtr) {
 int lbl_803DBF30[2] = {0x17F, 0x180};
 s16 gDim2LiftFarFlankMoveChoices[4] = {3, 8, 0, 0};
 
-#define MODEL_LIGHT_KIND_POINT      2
 #define DIM2LIFT_HIT_VOLUME_SLOT_10 10
 #define DIM2LIFT_HIT_VOLUME_SLOT_9  9
 

@@ -40,13 +40,6 @@ u32* gModelAnimDataOffsetTable;
 f32 gModelChainJitterScale;
 
 u16 gModelCopyChunkWordLimit = 0x2A0;
-#define GX_BM_BLEND 1
-#define GX_BL_ONE 1
-#define GX_BL_SRCALPHA 4
-#define GX_LO_NOOP 5
-#define GX_AOP_AND 0
-#define GX_LEQUAL 3
-#define GX_ALWAYS 7
 #define MODEL_BONEXFORM_HAS_X 0x2000
 #define MODEL_BONEXFORM_HAS_Y 0x4000
 #define MODEL_BONEXFORM_HAS_Z 0x8000

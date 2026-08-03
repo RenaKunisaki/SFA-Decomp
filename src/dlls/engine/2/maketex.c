@@ -24,8 +24,6 @@ typedef struct
     int val;
 } SeqSortPair;
 
-#define CARD_RESULT_READY    0
-#define CARD_RESULT_IOERROR  -5
 
 static inline int maketex_indexOf(int* p, int n, int target)
 {
@@ -401,13 +399,6 @@ void loadMemCardImages(void)
     DCFlushRange(gSaveCardImageBuffer, 0x4000);
 }
 
-#define CARD_RESULT_UNLOCKED 1
-#define CARD_RESULT_NOCARD   -3
-#define CARD_RESULT_NOFILE   -4
-#define CARD_RESULT_BROKEN   -6
-#define CARD_RESULT_NOENT    -8
-#define CARD_RESULT_INSSPACE -9
-#define CARD_RESULT_ENCODING -13
 
 /* Mounts the memory card, validates its serial number, opens or creates the
  * save file (writing the card image buffer for a fresh file), and maps any

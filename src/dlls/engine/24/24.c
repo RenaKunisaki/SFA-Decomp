@@ -41,7 +41,6 @@ f32 gBoneParticleDriftVelocity[2] = {10.0f, 0.0f};
 #define BONE_PARTICLE_TEXTURE_A_ID 0x16b
 #define BONE_PARTICLE_TEXTURE_B_ID 0x201
 
-#define GX_CULL_NONE 0
 
 
 void boneParticleEffect_func08_nop(void) {

@@ -212,8 +212,6 @@ void dll_0B_beginSequence(int source, u8 mode, u8 flagByte, int word40, int word
     gModgfxSpawnContext.textureFrameTimer = 0;
 }
 
-#define GX_CULL_NONE  0
-#define GX_CULL_FRONT 1
 
 /* Per-bone particle vertex update + draw. */
 

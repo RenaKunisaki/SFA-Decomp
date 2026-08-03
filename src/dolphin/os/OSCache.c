@@ -8,8 +8,6 @@
 #define __GEKKO__
 #endif
 
-#define HID2 920
-#define OS_CACHED_REGION_PREFIX 0x8000
 
 // prototypes
 void DMAErrorHandler(OSError error, OSContext* context, ...);

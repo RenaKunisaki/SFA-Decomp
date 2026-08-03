@@ -84,30 +84,6 @@ typedef struct ExpgfxBillboardAngles
     s16 yaw;
 } ExpgfxBillboardAngles;
 
-#define GX_BM_NONE        0
-#define GX_BM_BLEND       1
-#define GX_BL_ZERO        0
-#define GX_BL_ONE         1
-#define GX_BL_SRCALPHA    4
-#define GX_BL_INVSRCALPHA 5
-#define GX_LO_NOOP        5
-#define GX_GREATER        4
-#define GX_ALWAYS         7
-#define GX_AOP_AND        0
-#define GX_CULL_NONE      0
-#define GX_VA_POS         9
-#define GX_VA_CLR0        11
-#define GX_VA_TEX0        13
-#define GX_DIRECT         1
-#define GX_QUADS          0x80
-#define GX_VTXFMT4        4
-#define GX_PNMTX0         0
-#define GX_COLOR0         0
-#define GX_ALPHA0         2
-#define GX_SRC_REG        0
-#define GX_SRC_VTX        1
-#define GX_DF_NONE        0
-#define GX_AF_NONE        2
 
 #define GXWGFifo (*(volatile ExpgfxWGPipe*)0xCC008000)
 

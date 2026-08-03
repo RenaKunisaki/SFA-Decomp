@@ -52,8 +52,6 @@ u8 gAudioStreamPlaying;
 DVDCommandBlock gAudioStreamDvdBlockCurrent;
 
 // AISetStreamPlayState() states
-#define AI_STREAM_STOP  0
-#define AI_STREAM_START 1
 
 static void AudioStream_CancelCallback(s32 result, DVDCommandBlock* block);
 static void AudioStream_CancelPreparedCallback(s32 result, DVDCommandBlock* block);

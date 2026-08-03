@@ -3508,19 +3508,6 @@ void initLoadFileReadCb(s32 result, DVDFileInfo* fileInfo)
 
 
 // DVDGetCommandBlockStatus() command-block states (DVD_STATE_*)
-#define DVD_STATE_FATAL_ERROR   -1
-#define DVD_STATE_END           0
-#define DVD_STATE_BUSY          1
-#define DVD_STATE_WAITING       2
-#define DVD_STATE_COVER_CLOSED  3
-#define DVD_STATE_NO_DISK       4
-#define DVD_STATE_COVER_OPEN    5
-#define DVD_STATE_WRONG_DISK    6
-#define DVD_STATE_MOTOR_STOPPED 7
-#define DVD_STATE_PAUSING       8
-#define DVD_STATE_IGNORED       9
-#define DVD_STATE_CANCELED      10
-#define DVD_STATE_RETRY         11
 
 s32 ObjLoad_GetDvdCommandBlockStatus(DVDCommandBlock* block)
 {

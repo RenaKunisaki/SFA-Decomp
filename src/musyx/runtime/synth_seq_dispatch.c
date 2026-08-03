@@ -39,9 +39,6 @@ typedef struct
 } SeqNoteData;   // size 0x6
 
 /* Standard MIDI controller (CC) numbers dispatched by the sequencer. */
-#define MCMD_CTRL_MODULATION 0x01
-#define MCMD_CTRL_VOLUME     0x07
-#define MCMD_CTRL_PITCH_BEND 0x80
 
 /* Sequencer meta-command sub-codes (carried in the high nibble of a note event). */
 #define SEQ_META_KEY_OFF       0x82

@@ -113,20 +113,6 @@ char sSnowBikeVelDebugFmt[] = "vel %f\n";
 
 /* Trail renderer used by the SnowBike effects below. */
 
-#define GX_BM_BLEND       1
-#define GX_BL_SRCALPHA    4
-#define GX_BL_INVSRCALPHA 5
-#define GX_LO_NOOP        5
-#define GX_LEQUAL         3
-#define GX_ALWAYS         7
-#define GX_AOP_AND        0
-#define GX_CULL_NONE      0
-#define GX_VA_POS         9
-#define GX_VA_CLR0        11
-#define GX_VA_TEX0        13
-#define GX_DIRECT         1
-#define GX_QUADS          0x80
-#define GX_VTXFMT2        2
 
 f32 gDrCloudCageWindVolume;
 Texture* sSnowBikeTrailTexture;
