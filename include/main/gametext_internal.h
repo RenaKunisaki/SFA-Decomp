@@ -65,7 +65,7 @@ typedef struct LanguageName {
 
 typedef struct FontMetrics {
     u16 glyphCount;
-    u8 pad02[2];
+    u8 unk02[2];
     u8 unk04;
     u8 unk05;
     u8 unk06;

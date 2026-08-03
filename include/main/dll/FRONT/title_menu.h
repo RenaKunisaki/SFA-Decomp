@@ -7,9 +7,9 @@
 
 typedef struct TitleMenuTextEntry {
   u16 textId;
-  u8 pad02[0x0E];
+  u8 unk02[0x0E];
   s32 actionParam;
-  u8 pad14[2];
+  u8 unk14[2];
   u16 flags;
   s8 pad18[0x24];
 } TitleMenuTextEntry;

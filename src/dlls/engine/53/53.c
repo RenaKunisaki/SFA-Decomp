@@ -240,7 +240,7 @@ typedef struct SaveSelectPanel
     u8 pad5;
     u16 textIdA;
     u16 textIdB;
-    u8 padA[2];
+    u8 unkA[2];
 } SaveSelectPanel;
 
 #define SAVE_SELECT_TEXT_BUFFER_COUNT 10

@@ -19,7 +19,7 @@ extern const TrickyItemIdList gTrickyFoodItemIds;
 #include "main/objseq.h"
 #include "dlls/object_descriptor.h"
 
-extern ObjectDescriptor20WithPadding gTrickyObjDescriptor;
+extern ObjectDescriptor21 gTrickyObjDescriptor;
 
 /* gTrickyObjDescriptor from slot02 onwards: the export table other objects reach through
    obj->anim.dll. */

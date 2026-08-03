@@ -31,19 +31,26 @@ u8 gWeirdMenuPhase;
 s8 gWeirdMenuSaveTimer;
 s16 gWeirdMenuScrollOffset;
 
-WeirdMenuWork gWeirdMenuWidgetWork = {
-    {0x00, 0x00, 0x00, 0xa1, 0x00, 0x56, 0x00, 0x00, 0x00, 0xa1, 0x00, 0x56,
-     0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x80},
-    0x0000,
-    {0x00, 0xff, 0x01, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-     0x00, 0x01, 0x00, 0xa1, 0x00, 0x6d, 0x00, 0x00, 0x00, 0xa1, 0x00, 0x56,
-     0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x80},
-    0x0000,
-    {0x00, 0x00, 0xff, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}};
+TitleMenuTextEntry gWeirdMenuWidgetWork[2] = {
+    {
+        0x0000,
+        {0x00, 0xA1, 0x00, 0x56, 0x00, 0x00, 0x00, 0xA1, 0x00, 0x56, 0xFF, 0xFF, 0x00, 0x00},
+        0,
+        {0x03, 0x80},
+        0x0000,
+        {0, -1, 1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    },
+    {
+        0x0001,
+        {0x00, 0xA1, 0x00, 0x6D, 0x00, 0x00, 0x00, 0xA1, 0x00, 0x56, 0xFF, 0xFF, 0x00, 0x00},
+        0,
+        {0x03, 0x80},
+        0x0000,
+        {0, 0, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+    },
+};
 
 u32 gWeirdMenuWidgetLayout[3] = {0x000000f9, 0xffffffff, 0x00000102};
 
@@ -83,9 +90,9 @@ int WeirdUnusedMenu_run(void)
                 Sfx_PlayFromObject(0, SFXTRIG_dn_boar1_c_104);
                 gWeirdMenuSaveTimer = 0;
                 gWeirdMenuPhase = 1;
-                gWeirdMenuWidgetWork.widgetFlagsA = (u16)(gWeirdMenuWidgetWork.widgetFlagsA | WIDGET_FLAG_SAVING);
-                gWeirdMenuWidgetWork.widgetFlagsB = (u16)(gWeirdMenuWidgetWork.widgetFlagsB | WIDGET_FLAG_SAVING);
-                gTitleMenuLinkInterface->vtable->copyItems(&gWeirdMenuWidgetWork);
+                gWeirdMenuWidgetWork[0].flags = (u16)(gWeirdMenuWidgetWork[0].flags | WIDGET_FLAG_SAVING);
+                gWeirdMenuWidgetWork[1].flags = (u16)(gWeirdMenuWidgetWork[1].flags | WIDGET_FLAG_SAVING);
+                gTitleMenuLinkInterface->vtable->copyItems(gWeirdMenuWidgetWork);
             }
         }
         else if (action == 0)
@@ -105,9 +112,9 @@ int WeirdUnusedMenu_run(void)
         if ((f32)(gWeirdMenuSaveTimer = ((f32)gWeirdMenuSaveTimer + timeDelta)) >= 120.0f)
         {
             gWeirdMenuPhase = 0;
-            gWeirdMenuWidgetWork.widgetFlagsA = (u16)(gWeirdMenuWidgetWork.widgetFlagsA & ~WIDGET_FLAG_SAVING);
-            gWeirdMenuWidgetWork.widgetFlagsB = (u16)(gWeirdMenuWidgetWork.widgetFlagsB & ~WIDGET_FLAG_SAVING);
-            gTitleMenuLinkInterface->vtable->copyItems(&gWeirdMenuWidgetWork);
+            gWeirdMenuWidgetWork[0].flags = (u16)(gWeirdMenuWidgetWork[0].flags & ~WIDGET_FLAG_SAVING);
+            gWeirdMenuWidgetWork[1].flags = (u16)(gWeirdMenuWidgetWork[1].flags & ~WIDGET_FLAG_SAVING);
+            gTitleMenuLinkInterface->vtable->copyItems(gWeirdMenuWidgetWork);
             gTitleMenuLinkInterface->vtable->setSelected(0);
         }
     }
@@ -135,7 +142,7 @@ void WeirdUnusedMenu_initialise(void)
     gWeirdMenuTextureB = textureLoadAsset(WEIRDMENU_TEXTURE_B_ID);
     gWeirdMenuTextureC = textureLoadAsset(WEIRDMENU_TEXTURE_C_ID);
     gWeirdMenuTextHandle[0] = gameTextGet(0);
-    gTitleMenuLinkInterface->vtable->setup(&gWeirdMenuWidgetWork, 2, 0, gWeirdMenuWidgetLayout, 0, 0, 0x5b, 0x45,
+    gTitleMenuLinkInterface->vtable->setup(gWeirdMenuWidgetWork, 2, 0, gWeirdMenuWidgetLayout, 0, 0, 0x5b, 0x45,
                                           0x30, 0xff, 0xd7, 0x3d);
     gWeirdMenuScrollOffset = 0;
     gWeirdMenuPhase = 0;

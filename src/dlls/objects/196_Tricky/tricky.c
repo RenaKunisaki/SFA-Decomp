@@ -675,7 +675,7 @@ TrickyStateHandler gTrickyStateHandlers[] = {
     (TrickyStateHandler)tricky_substateApproachThorntail,
 };
 
-ObjectDescriptor20WithPadding gTrickyObjDescriptor = {
+ObjectDescriptor21 gTrickyObjDescriptor = {
     {
         0,
         0,
@@ -702,7 +702,7 @@ ObjectDescriptor20WithPadding gTrickyObjDescriptor = {
         (ObjectDescriptorCallback)Tricky_isPlayingBall,
         (ObjectDescriptorCallback)Tricky_isGuarding,
     },
-    (u32)Tricky_getCurrentCommandType,
+    (ObjectDescriptorCallback)Tricky_getCurrentCommandType,
 };
 
 void trickyUpdateCollisionAndPathState(u8* obj)
