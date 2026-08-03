@@ -31,6 +31,8 @@ here that the target section already says.
 | **The defining TU proposes, the reading TU disposes**, and a declaration can only move into a header that can NAME the type - type visibility, not the include, is the constraint. Extern arrays stay UNSIZED. | §13 | See §13; every rule there was established md5-identical over all 1013 source objects. |
 | **A new `#include` costs nothing unless the header emits an object into an allocated section.** The only construct that does so unreferenced is a `static const` aggregate — the same shape §12 calls the only mover. `@NNN` renumbering and `.comment` growth are the two visible effects and neither is allocated. | §22 | 51 include-additions across 8 targets x 8 headers: 47 EQUAL, 4 RENUMBERED, **0 hard differences**. Eight synthetic probe headers isolate the boundary: only the `static const` array moves an allocated byte (`.sdata2` 80 -> 88, 64 of 426 `.text` relocations retarget). Nine header rows landed at 0 differ. |
 | **The gate blind spots, and why md5-of-every-`.o` dominates.** Demotion blinds the DOL gate; `matched_code`/`matched_functions` are threshold counters; a pool rotation inside an already-NonMatching unit is free on every score axis. | `docs/purge_campaign_audit.md`, "Three sensor blind spots"; the docstring of `tools/score_delta_gate.py` | `4461d0aa45` moved neither counter and still took a function 99.981 -> 94.212; `5d467157cb`/`f5fe00213f`/`620b69dc2d` lost 144/60/16 B at `dfuzzy +0.000000`, zero regressions, zero demotions. The pool word-diff catches the third class; md5 of every `.o` catches all four *and* the score-neutral ones (class #70 renumbering), which no score can see. |
+| **A window where `matched_code` rises and `matched_data` falls is not automatically a partial pool fix.** Bisect it: the two halves can be one commit, and the data half can be the priced cost of retiring a banned shape. | §25 | `3d9406bfe8` alone: `+1900` code / `−408` data / `+0.00043` fuzzy, reproduced to the digit by reverting its seven files and its `nodead` cflag. The `−408` is `tricky` `.sdata2` going 100.0 -> 88.67 (all-or-nothing) because five `UNCALLED_STATIC_FN` baseline rows were deleted; the two pools hold the same 408 bytes and the same 96-slot value sequence, permuted from offset `0x50`. |
+| **The colouring cap is thin, not solid — and it has TWO keys, not one.** Declaration order sets the second-phase saved-GPR homes; assignment-statement order sets the first-phase (reverse first-definition) ones. Sweep both, and never prune a colouring row on equal length. | §26 | **34 100 orderings** built and scored over all 128 attackable colouring rows (25 335 decl + 8 236 stmt + 529 by hand): **8 hits**, disjoint between the two axes, tree 99.81612 -> 99.816765 with `matched_code`/`matched_data`/`complete_units` unchanged. `tools/direct_build.py` took a probe from 83 s to 1.9 s by dropping ninja's global mutex. A K&R-style definition is invisible to both sweepers and was the eighth hit — **count a sweep's errors before believing its zero**. |
 | **The toolchain caps and the never-touch islands.** Bank on sight; do not re-probe. | §5 | Per-class detail in the memory topic files. |
 | **A 100.0-everywhere unit that still will not flip fails at the LINK, not at the sha1, and the undefined-symbol list names the sibling TU it belongs to.** Read it before assuming a layout bug. | §23a | The census re-run from scratch at 920 `complete_units`: six members, four link and fail sha1 (one dead-strip, three `.sdata2`), two fail to link — `gametext` on a compiler-minted int->double pair the carve exports as `lbl_803DE6F0/F8`, `voice` on three `static`s that `vid_init.h`/`voice_conv.h` declare `extern`. `shader_dolphin` cured with two `force_active` arms: 920 -> 921. |
 | **A multiset delta made entirely of `li` against `mr` is rematerialisation — an allocator decision wearing an operation's clothes.** Subtract it before working §14's operation bucket. | §23b | 17 of the 67 operation rows. `curves_advanceCollision` writes one preamble five times and our own build emits `mr` at four sites and `li` at the fifth, at retail's own register assignment. 45 lab compiles (9 spellings x 5 `-opt` settings) and 5 in-tree spellings of `Scarab_update` are all `li`. The only construct that defeats the fold is the banned 4-byte-aggregate respelling. Operation bucket worth opening: **50, not 67**. |
@@ -2342,3 +2344,119 @@ retail's `lwzx r8,r6,r3` writes a fresh register while ours writes `lwzx r5,r6,r
 own index, and that shifts what the aligner pairs. Screen the bucket on the whole-function
 mnemonic multiset AND read the ndiff before believing a row is an operation row — 44 of its
 46 regions are plain #108 register permutations.
+
+## 25. What the tricky `.sdata2` trade actually bought (measured 2026-08-03, A85)
+
+A window in which `matched_code` rises and `matched_data` falls looks like a partial pool fix,
+and a partial `.sdata2` fix is worth strictly less than zero (§6b). This one is not that. Both
+halves of the move come from **one commit**, `3d9406bfe8` "Tricky: recover readable near-matching
+source", and the data half is the priced cost of a **banned-shape removal**, not a regression.
+
+**The measurement.** Reverting that commit's seven source/header files and its one `cflags`
+line (it dropped `nodead` from `196_Tricky` in favour of the shared
+`cflags_dll_noopt_noprop_noautoinline`) reproduces the earlier tree to the digit, so the commit
+is the whole delta and nothing else in the window contributes:
+
+| | tree fuzzy | `matched_code` | `matched_data` | `complete_units` | `tricky` `.text` | `tricky` `.sdata2` |
+|---|---|---|---|---|---|---|
+| `3d9406bfe8^` | 99.81569 | 2517640 | 1204625 | 921 | 99.937874 | **100.0** (408 B) |
+| `3d9406bfe8` | 99.81612 | **2519540** | **1204217** | 921 | 99.956276 | **88.66995** (408 B) |
+
+`+1900` code, `−408` data, `+0.00043` fuzzy, `complete_units` flat. The `−408` is the section's
+**whole** contribution: `.sdata2` scores all-or-nothing, so an 88.67 % section pays zero, and
+`tricky`'s unit `matched_data` is exactly `2768 − 408`.
+
+**The mechanism, and why it is not recoverable as clean C.** `tools/banned_shapes_check.py`
+names it without being asked: five baseline rows are "no longer present", and all five are
+`UNCALLED_STATIC_FN` in `tricky.c` — `trickyEventTimeExpired`, `trickyApproachSpeedStep`,
+`trickyRouteTurnRate`, `trickyRouteStep` and `trickyBinAngleToRadians`, none of which had a
+call site. They were the only thing interning `-100000.0f`, `8.0f`, `-0.15f`, `0.05f`, `0.02f`,
+`600.0f`, `0.005f`, `-2.0f`, `3.1415927f` and `32768.0f` at retail's source-text positions.
+The two pools are the **same 408 bytes and the same value multiset**, identical through offset
+`0x4c` and permuted from `0x50` on: a pure §10 mint-order rotation.
+
+Per-function first-use order settles what a source edit can reach here. The two objects' pool
+**value sequences agree at every one of the 96 distinct slots** — our code asks for the same
+constants in the same order retail's does — while retail's *layout* puts `-100000.0f` and
+`8.0f` at `0x50`/`0x54`, ahead of an `FLT_MAX` whose first live loader
+(`trickySelectQueuedCommandTarget`) is an *earlier* function than their own
+(`trickyUpdateCollisionAndPathState`). A slot that sits ahead of the first live function to
+load it has exactly one possible minter, and §7 already named it: code that ran earlier and
+that mwld stripped. So retail's layout is only reachable by putting uncalled bodies back —
+the shape the checker bans and the shape this commit deleted.
+
+**Verdict: DELIBERATE, priced, not recovered.** The trade is net positive on its own terms
+(+1900 code, +0.00043 fuzzy, five banned rows retired) and the deleted bodies are five of the
+`UNCALLED_STATIC_FN` reconstructions §7 adjudicated as faithful. Whether 408 data bytes are
+worth five uncalled statics is the owner's decision, not a lane's; it is recorded here at
+**408 `matched_data`** so the next window that sees the dip does not re-bisect it, and so that
+nobody "recovers" it by re-fabricating dead code. The seven stale baseline rows the check now
+reports are the visible residue and are shrunk in this lane's commit.
+
+## 26. Brute-forcing the colouring cap: 33 571 orderings over all 131 rows (measured 2026-08-03, A85)
+
+§14 partitions the sub-100 code frontier into **131 colouring / 11 order / 67 operation**, and
+§24 closed the operation bucket, which leaves the colouring mass as the whole board. This
+section runs the two source-level levers that reach a register assignment over **every** row of
+it and reports the yield.
+
+**The pruning rule in the standing brief is wrong, and it would have cost every hit here.**
+"T == C length ⇒ WELDED, declaration order is inert" prunes 100 % of the colouring bucket by
+construction — a pure register permutation has equal length by definition. The project's own
+record already refutes it: `trickyUpdateMovementState` (99.92241, `LEN=`, colouring) is where
+B31's five-round chain paid. Do not prune a colouring row on length.
+
+**The two levers are different levers, and both are live.** The saved-GPR band is filled in two
+phases — webs that never reach a loop header first, in *reverse first-definition* order, then
+everything else in *declaration* order. `brute_match.py` moves the second key, `stmt_sweep.py`
+the first. Neither subsumes the other: the two hit sets below are disjoint.
+
+| axis | rows attempted | rows with anything to permute | orderings built | hits |
+|---|---|---|---|---|
+| declaration order (`brute_match --strategy moves`, every block, nested scopes included) | 128 | 126 | **25 335** | 3 |
+| assignment-statement order (`stmt_sweep --strategy moves`, every run, every scope) | 128 | 90 | **8 236** | 4 |
+| one K&R-style definition both parsers reject, swept by hand (`permsweep --mode moves`) | 1 | 1 | **529** | 1 |
+
+Population 131 minus the three never-touch/OWNER-HOT rows = 128 attempted. **34 100 orderings
+built and scored, 8 hits — a yield of one row in sixteen.**
+
+| function | unit | axis | fuzzy |
+|---|---|---|---|
+| `playerState08` | `195_Player/player` | decl: `int* list` before `int i` | 99.5279 -> **99.9615** |
+| `debugPrintDrawRecord` | `main/dll_80136a40` | stmt: `x0` before `y0` (x3 sites), `x1*sc` before `x0*sc` | 99.6491 -> **99.7917** |
+| `trackGetIntersect2` | `main/track_dolphin` | decl: `u8 found` down 30 declarations | 99.6682 -> **99.7623** |
+| `mapFillCellEntry` | `main/shader` | stmt: the `gridZ` subtraction before the `gridX` one | 99.2819 -> **99.3245** |
+| `gameTextWrapLines` | `main/gametext_tail` | decl: `int charPos` to the head of the run | 98.8889 -> **98.9325** |
+| `mtxRotateByVec3s` | `main/vecmath` | stmt: `z = xf->z` ahead of `x`/`y` | 98.7500 -> **98.7850** |
+| `trackBuildBlockTriangles` | `main/track_dolphin` | decl (K&R): `int count, layer` down 7 | 98.3464 -> **98.3726** |
+| `gameTextBuildSystemFontAtlas` | `main/textrender_run` | stmt: `ty` before `tx` | 99.0000 -> **99.0109** |
+
+Every hit is one item moved inside one run — no construct added, no shape, no semantics
+changed (`stmt_sweep` proves each permutation against the RAW/WAR/WAW relation before it is
+written). Cross-axis round 2 over the eight winners converged: the axis that did not pay first
+does not pay second either.
+
+**Two things the sweep found that are not scores.**
+
+*A K&R definition is invisible to both sweepers.* `trackBuildBlockTriangles` is written
+`int f(cur, x0, ...)` with the parameter declarations below the parenthesis, and
+`find_function_body` cannot see it: the driver reported it as the run's single error rather than
+as a swept-and-inert row. It was then the eighth hit. **A row a tool cannot parse reads exactly
+like a row a tool has cleared** — count the errors in any sweep before believing its zero.
+
+*The sweep harness was lock-bound, not compute-bound.* Every probe of every concurrent sweep
+serialised on `tools/locked_ninja.sh`'s global directory mutex, which held a ten-worker fleet at
+a load average of 3.9 on a ten-core box. A probe does not need ninja: `ninja -t commands` yields
+the unit's compile line once, and running it directly is byte-identical and needs no lock
+(`tools/direct_build.py`, now the default path in `brute_match.rebuild`, with
+`SFA_BRUTE_LOCKED_NINJA=1` to force the old one). Measured on one row: **83 s -> 1.9 s**, and
+the fleet went to a load average of 15. The whole 34 100-ordering sweep would not have been
+affordable otherwise, and any earlier "swept and inert" verdict taken under a time budget was
+measured with 90 % of its budget spent asleep.
+
+**Verdict.** The colouring cap is not solid, but it is thin: eight rows in 131 move, all by one
+statement or one declaration, and none of them crosses 100. `matched_code`, `matched_data` and
+`complete_units` are unchanged by all eight — the whole payment is fuzzy, **99.81612 ->
+99.816765**. What the sweep does establish is a floor: after 34 100 orderings, the other 120
+rows have no reachable ordering at all on either key, and the next lever for them is not an
+ordering.
