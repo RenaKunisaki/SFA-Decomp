@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 """Scan game code for the CLAUDE.md banned constructs, so the ban self-enforces.
 
-Scope is GAME CODE ONLY -- src/main/, src/track/, src/dlls/. src/dolphin/ is the
-SDK and is exempt by policy; it legitimately carries pragmas, gotos, __declspec
-and lbl_ constants, so scanning it would produce nothing but false positives.
+Scope is GAME CODE ONLY -- src/main/, src/track/, src/dlls/. The third-party
+library trees are exempt by policy; they legitimately carry pragmas, gotos,
+__declspec and lbl_ constants, so scanning them would produce nothing but false
+positives: src/dolphin/ (the SDK), src/musyx/ (Factor 5's audio runtime) and
+src/Runtime.PPCEABI.H/ (the Metrowerks MSL runtime).
+
+Every directory under src/ is either scanned or exempt, and the self-test
+asserts it, so a newly added library tree cannot slip through unaudited and
+unlabelled.
 
 Nine pattern classes, each carrying its citation:
 
@@ -98,7 +104,7 @@ import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SCAN_ROOTS = ["src/main", "src/track", "src/dlls"]
-EXEMPT_ROOTS = ["src/dolphin"]
+EXEMPT_ROOTS = ["src/dolphin", "src/musyx", "src/Runtime.PPCEABI.H"]
 BASELINE = "tools/banned_shapes_baseline.txt"
 SYMBOLS = "config/GSAE01/symbols.txt"
 
@@ -552,6 +558,15 @@ def self_test():
         bool(_listed) or not _syms, "(%d visible)" % len(_listed))
 
     chk("empty scope yields empty result", collect(roots=["src/does_not_exist"]) == [])
+
+    covered = [os.path.normpath(r) for r in SCAN_ROOTS + EXEMPT_ROOTS]
+    src = os.path.join(REPO, "src")
+    unlabelled = [d for d in sorted(os.listdir(src))
+                  if os.path.isdir(os.path.join(src, d))
+                  and os.path.join("src", d) not in covered
+                  and any(True for _ in walk([os.path.join("src", d)]))]
+    chk("every C source directory under src/ is scanned or exempt",
+        not unlabelled, ", ".join(unlabelled))
     return ok
 
 
