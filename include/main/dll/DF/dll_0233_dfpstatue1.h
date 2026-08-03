@@ -33,19 +33,7 @@ STATIC_ASSERT(offsetof(DfpStatue1MapData, loopSfxId) == 0x20);
 u32 dfpstatue1_SeqFn(int obj, u32 unused, ObjSeqState *animUpdate);
 void dfpstatue1_updateState(GameObject *obj);
 
-extern char sDfperchwitchInitNoLongerSupported[];
 extern ObjectDescriptor gDfpstatue1ObjDescriptor;
-extern ObjectDescriptor gDfperchwitchObjDescriptor;
-
-int DFP_PerchWitch_getExtraSize(void);
-int DFP_PerchWitch_getObjectTypeId(void);
-void DFP_PerchWitch_free(void);
-void DFP_PerchWitch_render(void);
-void DFP_PerchWitch_hitDetect(void);
-void DFP_PerchWitch_update(void);
-void DFP_PerchWitch_init(void);
-void DFP_PerchWitch_release(void);
-void DFP_PerchWitch_initialise(void);
 
 int DFP_Statue1_getExtraSize(void);
 int DFP_Statue1_getObjectTypeId(void);

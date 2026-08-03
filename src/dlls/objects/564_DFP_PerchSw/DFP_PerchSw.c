@@ -2,7 +2,7 @@
  * DragonRock Palace perch switch. This legacy object is no longer
  * supported; its init and update callbacks only report that fact.
  */
-#include "main/dll/DF/dll_0233_dfpstatue1.h"
+#include "main/dll/DF/dll_0234_dfperchwitch.h"
 #include "dolphin/os/OSReport.h"
 
 int DFP_PerchWitch_getExtraSize(void)
