@@ -4511,16 +4511,10 @@ dolphin/gx/GXPixel.c:
 	.data       start:0x80330408 end:0x80330428
 	.sdata2     start:0x803E90F8 end:0x803E9128
 
-dolphin/gx/GXDrawTorusRadius.c:
-	.sdata2     start:0x803E9128 end:0x803E9130
-
 dolphin/gx/GXDraw.c:
 	.text       start:0x8025D38C end:0x8025D6A8
 	.bss        start:0x803B0398 end:0x803B0620
-	.sdata2     start:0x803E9130 end:0x803E9140
-
-dolphin/gx/GXDrawTorusAngle.c:
-	.sdata2     start:0x803E9140 end:0x803E9148
+	.sdata2     start:0x803E9128 end:0x803E9148
 
 dolphin/gx/GXStubs.c:
 	.text       start:0x8025D6A8 end:0x8025D6AC

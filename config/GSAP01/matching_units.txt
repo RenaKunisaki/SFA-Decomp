@@ -712,8 +712,6 @@ dolphin/gx/GXAttr.c
 dolphin/gx/GXBump.c
 dolphin/gx/GXDisplayList.c
 dolphin/gx/GXDraw.c
-dolphin/gx/GXDrawTorusAngle.c
-dolphin/gx/GXDrawTorusRadius.c
 dolphin/gx/GXFifo.c
 dolphin/gx/GXGeometry.c
 dolphin/gx/GXInit.c

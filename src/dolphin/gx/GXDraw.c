@@ -2,7 +2,6 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "dolphin/gx/GXDraw.h"
 
-extern const f32 lbl_803E7730;
 extern const f32 GXDrawTwoPi;
 
 static GXVtxDescList vcd[27];
@@ -37,7 +36,7 @@ void GXDrawTorus(f32 rc, u8 numc, u8 numt) {
     f32 twopi = GXDrawTwoPi;
     f32 rt;
 
-    rt = lbl_803E7730 - rc;
+    rt = 1.0f - rc;
     GXGetVtxDesc(GX_VA_TEX0, &ttype);
     GetVertState();
     if (ttype != GX_NONE) {
@@ -67,3 +66,5 @@ void GXDrawTorus(f32 rc, u8 numc, u8 numt) {
     }
     RestoreVertState();
 }
+
+const f32 GXDrawTwoPi = 6.2831855f;
