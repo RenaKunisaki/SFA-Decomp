@@ -1,3 +1,4 @@
+#include "dlls/object_descriptor.h"
 #include "dolphin/os/OSReport.h"
 #include "dolphin/TRK_MINNOW_DOLPHIN/MWTrace.h"
 #include "main/dll/dll_003C_tumbleweedbush.h"
@@ -837,32 +838,49 @@ u8 linkTextures[0x30] = {
 
 struct LinkObjDescriptor
 {
-    int unk00[3];
-    int unk0C;
-    void* fns[16];
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    void* initialise;
+    void* release;
+    void* slot02;
+    void* setup;
+    void* free;
+    void* update;
+    void* render;
+    void* getSelected;
+    void* setSelected;
+    void* getItemState;
+    void* setItemState;
+    void* updateItems;
+    void* getPulse;
+    void* copy;
+    void* setOpacity;
+    void* resetTimers;
 };
 
 struct LinkObjDescriptor Link_funcs = {
-    {0, 0, 0},
-    0x000F0000,
-    {
-        Link_initialise,
-        Link_release,
-        NULL,
-        Link_setup,
-        Link_free,
-        Link_update,
-        Link_render,
-        Link_getSelected,
-        Link_setSelected,
-        Link_getItemState,
-        Link_setItemState,
-        Link_updateItems,
-        Link_getPulse,
-        Link_copy,
-        Link_setOpacity,
-        Link_resetTimers,
-    },
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_16_SLOTS,
+    Link_initialise,
+    Link_release,
+    NULL,
+    Link_setup,
+    Link_free,
+    Link_update,
+    Link_render,
+    Link_getSelected,
+    Link_setSelected,
+    Link_getItemState,
+    Link_setItemState,
+    Link_updateItems,
+    Link_getPulse,
+    Link_copy,
+    Link_setOpacity,
+    Link_resetTimers,
 };
 
 char sLinkSlotOverflowErr[] = {

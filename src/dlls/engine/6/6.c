@@ -1055,7 +1055,31 @@ void sky2_initialise(void)
 
 u8 gSkyConfigFieldIndices[] = {0, 0, 1, 2, 3, 4, 5, 6, 7, 0, 0, 0};
 
-ObjectDescriptor17 sky2_funcs = {
+typedef struct Sky2DllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback update;
+    ObjectDescriptorCallback onMapSetup;
+    ObjectDescriptorCallback run;
+    ObjectDescriptorCallback applyFog;
+    ObjectDescriptorCallback slot07;
+    ObjectDescriptorCallback applyTextColor;
+    ObjectDescriptorCallback blendTowardTargetColor;
+    ObjectDescriptorCallback getTargetColor;
+    ObjectDescriptorCallback getFogRange;
+    ObjectDescriptorCallback slot0C;
+    ObjectDescriptorCallback setDrawMode2;
+    ObjectDescriptorCallback setDrawMode1;
+    ObjectDescriptorCallback getFogFadeAlpha;
+    u32 padding;
+} Sky2DllInterface;
+
+Sky2DllInterface sky2_funcs = {
     0,
     0,
     0,
@@ -1069,13 +1093,14 @@ ObjectDescriptor17 sky2_funcs = {
     (ObjectDescriptorCallback)sky2ApplyFog,
     (ObjectDescriptorCallback)dll_06_func07_ret_0,
     (ObjectDescriptorCallback)sky2ApplyTextColor,
-    (ObjectDescriptorExtraSizeCallback)sky2BlendTowardTargetColor,
+    (ObjectDescriptorCallback)sky2BlendTowardTargetColor,
     (ObjectDescriptorCallback)sky2GetTargetColor,
     (ObjectDescriptorCallback)sky2GetFogRange,
     (ObjectDescriptorCallback)dll_06_func0C_nop,
     (ObjectDescriptorCallback)sky2SetDrawMode2,
     (ObjectDescriptorCallback)sky2SetDrawMode1,
     (ObjectDescriptorCallback)sky2GetFogFadeAlpha,
+    0,
 };
 
 f32 lbl_8039A7B8[0x18];

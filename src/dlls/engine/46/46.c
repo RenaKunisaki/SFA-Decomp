@@ -836,28 +836,50 @@ void dll_2E_initialise_nop(void)
 u8 gMoveLibDefaultMoveData[20] = {0x00, 0x23, 0x00, 0x23, 0x00, 0x23, 0x00, 0x23, 0x00, 0x23,
                                   0x00, 0x23, 0x00, 0x23, 0x00, 0x23, 0x00, 0x23, 0x00, 0x23};
 
-ObjectDescriptor16WithPadding dll_2E = {
-    {
-        0,
-        0,
-        0,
-        OBJECT_DESCRIPTOR_FLAGS_16_SLOTS,
-        (ObjectDescriptorCallback)dll_2E_initialise_nop,
-        (ObjectDescriptorCallback)dll_2E_release_nop,
-        0,
-        (ObjectDescriptorCallback)dll_2E_updateLookAt,
-        (ObjectDescriptorCallback)dll_2E_setLockTarget,
-        (ObjectDescriptorCallback)dll_2E_initState,
-        (ObjectDescriptorCallback)dll_2E_setTargetFromPathPoint,
-        (ObjectDescriptorCallback)dll_2E_updateSequenceTurn,
-        (ObjectDescriptorCallback)dll_2E_setReattackDelay,
-        (ObjectDescriptorExtraSizeCallback)dll_2E_setMoveTables,
-        (ObjectDescriptorCallback)dll_2E_getCurveActionTarget,
-        (ObjectDescriptorCallback)dll_2E_getDistanceToCurveAction,
-        (ObjectDescriptorCallback)dll_2E_getCurveActionTargetAimed,
-        (ObjectDescriptorCallback)dll_2E_moveToTarget,
-        (ObjectDescriptorCallback)dll_2E_advanceAlongRoute,
-        (ObjectDescriptorCallback)dll_2E_func0F_ret_0,
-    },
+typedef struct Dll2EDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback updateLookAt;
+    ObjectDescriptorCallback setLockTarget;
+    ObjectDescriptorCallback initState;
+    ObjectDescriptorCallback setTargetFromPathPoint;
+    ObjectDescriptorCallback updateSequenceTurn;
+    ObjectDescriptorCallback setReattackDelay;
+    ObjectDescriptorCallback setMoveTables;
+    ObjectDescriptorCallback getCurveActionTarget;
+    ObjectDescriptorCallback getDistanceToCurveAction;
+    ObjectDescriptorCallback getCurveActionTargetAimed;
+    ObjectDescriptorCallback moveToTarget;
+    ObjectDescriptorCallback advanceAlongRoute;
+    ObjectDescriptorCallback slot0F;
+    u32 padding;
+} Dll2EDllInterface;
+
+Dll2EDllInterface dll_2E = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_16_SLOTS,
+    (ObjectDescriptorCallback)dll_2E_initialise_nop,
+    (ObjectDescriptorCallback)dll_2E_release_nop,
+    0,
+    (ObjectDescriptorCallback)dll_2E_updateLookAt,
+    (ObjectDescriptorCallback)dll_2E_setLockTarget,
+    (ObjectDescriptorCallback)dll_2E_initState,
+    (ObjectDescriptorCallback)dll_2E_setTargetFromPathPoint,
+    (ObjectDescriptorCallback)dll_2E_updateSequenceTurn,
+    (ObjectDescriptorCallback)dll_2E_setReattackDelay,
+    (ObjectDescriptorCallback)dll_2E_setMoveTables,
+    (ObjectDescriptorCallback)dll_2E_getCurveActionTarget,
+    (ObjectDescriptorCallback)dll_2E_getDistanceToCurveAction,
+    (ObjectDescriptorCallback)dll_2E_getCurveActionTargetAimed,
+    (ObjectDescriptorCallback)dll_2E_moveToTarget,
+    (ObjectDescriptorCallback)dll_2E_advanceAlongRoute,
+    (ObjectDescriptorCallback)dll_2E_func0F_ret_0,
     0,
 };

@@ -1767,7 +1767,26 @@ int pushable_savePos(GameObject* obj)
 
 const f32 lbl_803E06C4 = 0.0f;
 
-ObjectDescriptor12 dll_15_funcs = {
+typedef struct CurvesDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback clear;
+    ObjectDescriptorCallback setLocalPointCollision;
+    ObjectDescriptorCallback setSegmentCollision;
+    ObjectDescriptorCallback updateQueryBounds;
+    ObjectDescriptorCallback gatherTrackTriangles;
+    ObjectDescriptorCallback advanceCollision;
+    ObjectDescriptorCallback getCurves;
+    ObjectDescriptorCallback reset;
+    ObjectDescriptorCallback sampleHeight;
+} CurvesDllInterface;
+
+CurvesDllInterface dll_15_funcs = {
     0,
     0,
     0,
@@ -1781,7 +1800,7 @@ ObjectDescriptor12 dll_15_funcs = {
     (ObjectDescriptorCallback)curves_updateQueryBounds,
     (ObjectDescriptorCallback)curves_gatherTrackTriangles,
     (ObjectDescriptorCallback)curves_advanceCollision,
-    (ObjectDescriptorExtraSizeCallback)curves_getCurves,
+    (ObjectDescriptorCallback)curves_getCurves,
     (ObjectDescriptorCallback)curves_reset,
     (ObjectDescriptorCallback)curves_sampleHeight,
 };
