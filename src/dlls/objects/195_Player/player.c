@@ -15551,8 +15551,7 @@ void playerDoEyeAnims(GameObject* obj, int state)
     }
 }
 
-void playerUpdateMotionState(GameObject* obj, void* inner, BaddieState* baddieState)
-{
+void playerUpdateMotionState(GameObject* obj, void* inner, BaddieState* baddieState) {
     int d;
     char* cam;
     f32 dx;
@@ -15561,11 +15560,12 @@ void playerUpdateMotionState(GameObject* obj, void* inner, BaddieState* baddieSt
     f32 t;
     f32 u;
     int idx;
+    int leanRate;
+    int leanCurve;
     f32 one;
     f32 v;
 
-    if ((((PlayerState*)inner)->flags360 & 0x800000) != 0)
-    {
+    if ((((PlayerState*)inner)->flags360 & 0x800000) != 0) {
         s16 a = *(s16*)obj;
         ((PlayerState*)inner)->yaw = a;
         ((PlayerState*)inner)->targetYaw = a;
@@ -15797,15 +15797,12 @@ void playerUpdateMotionState(GameObject* obj, void* inner, BaddieState* baddieSt
                         1.0f);
         }
     }
-    if ((void*)((PlayerState*)inner)->leanCurve != NULL)
-    {
-        int n = ((PlayerState*)inner)->targetYawRateSigned;
+    leanCurve = ((PlayerState*)inner)->leanCurve;
+    if ((void*)leanCurve != NULL) {
+        leanRate = ((PlayerState*)inner)->targetYawRateSigned;
         ((PlayerState*)inner)->leanCurveScale =
-            Curve_EvalCatmullRom((void*)(((PlayerState*)inner)->leanCurve + (n / 5 + 1) * 4),
-                                 (f32)(n % 5) / 5.0f, 0);
-    }
-    else
-    {
+            Curve_EvalCatmullRom((void*)(leanCurve + (leanRate / 5 + 1) * 4), (f32)(leanRate % 5) / 5.0f, 0);
+    } else {
         ((PlayerState*)inner)->leanCurveScale = 1.0f;
     }
     one = 1.0f;
