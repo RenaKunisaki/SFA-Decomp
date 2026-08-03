@@ -5,21 +5,6 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 
-typedef struct Dll9DEffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} Dll9DEffectVertex;
-
-STATIC_ASSERT(offsetof(Dll9DEffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(Dll9DEffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(Dll9DEffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(Dll9DEffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(Dll9DEffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(Dll9DEffectVertex) == 0x0A);
-
 typedef struct Dll9DSevenIndexList {
     s16 indices[7];
     s16 opaqueTail;
@@ -30,7 +15,7 @@ STATIC_ASSERT(offsetof(Dll9DSevenIndexList, opaqueTail) == 0x0E);
 STATIC_ASSERT(sizeof(Dll9DSevenIndexList) == 0x10);
 
 typedef struct Dll9DEffectResourceView {
-    Dll9DEffectVertex vertices[21];
+    ModgfxEffectVertex vertices[21];
     u8 opaqueD2[2];
     s16 triangles[24][3];
     Dll9DSevenIndexList sevenVertexIndexLists[3];

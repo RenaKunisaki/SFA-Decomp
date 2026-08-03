@@ -3,21 +3,7 @@
  */
 #include "main/dll/dll_00AA_modgfx.h"
 #include "main/dll/modgfx_interface.h"
-
-typedef struct DllAAEffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} DllAAEffectVertex;
-
-STATIC_ASSERT(offsetof(DllAAEffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(DllAAEffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(DllAAEffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(DllAAEffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(DllAAEffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(DllAAEffectVertex) == 0x0A);
+#include "main/dll/modgfx_types.h"
 
 typedef struct DllAASevenIndexList {
     s16 indices[7];
@@ -29,7 +15,7 @@ STATIC_ASSERT(offsetof(DllAASevenIndexList, opaqueTail) == 0x0E);
 STATIC_ASSERT(sizeof(DllAASevenIndexList) == 0x10);
 
 typedef struct DllAASequenceResourceView {
-    DllAAEffectVertex vertices[21];
+    ModgfxEffectVertex vertices[21];
     u8 opaqueD2[2];
     s16 triangles[24][3];
     u8 opaqueIndexData164[0x10];

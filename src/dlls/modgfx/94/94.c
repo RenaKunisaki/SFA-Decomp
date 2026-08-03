@@ -3,24 +3,10 @@
  */
 #include "main/dll/dll_005E_modgfx.h"
 #include "main/dll/modgfx_interface.h"
-
-typedef struct Dll5EEffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} Dll5EEffectVertex;
-
-STATIC_ASSERT(offsetof(Dll5EEffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(Dll5EEffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(Dll5EEffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(Dll5EEffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(Dll5EEffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(Dll5EEffectVertex) == 0x0A);
+#include "main/dll/modgfx_types.h"
 
 typedef struct Dll5ESequenceResourceView {
-    Dll5EEffectVertex vertices[36];
+    ModgfxEffectVertex vertices[36];
     s16 colors[16][3];
     s16 nineVertexIndices[4][10];
     u8 opaque218[0x48];

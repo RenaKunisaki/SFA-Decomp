@@ -10,23 +10,8 @@
 #include "main/dll/partfx_interface.h"
 #include "main/vecmath.h"
 
-typedef struct Dll63EffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} Dll63EffectVertex;
-
-STATIC_ASSERT(offsetof(Dll63EffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(Dll63EffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(Dll63EffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(Dll63EffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(Dll63EffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(Dll63EffectVertex) == 0x0A);
-
 typedef struct Dll63EffectResourceView {
-    Dll63EffectVertex vertices[14];
+    ModgfxEffectVertex vertices[14];
     s16 colors[12][3];
     s16 allVertexIndices[14];
     s16 firstGroupIndices[8];
@@ -59,7 +44,7 @@ s16 dll_63_spawnEffect(GameObject* sourceObj, int variant, void* spawnParams, u3
     ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)gDll63EffectResourceData;
     Dll63EffectResourceView* resource = (Dll63EffectResourceView*)resourceData;
-    Dll63EffectVertex* vertex;
+    ModgfxEffectVertex* vertex;
     int i;
     u32 effectScaleTenths;
     GfxCmd* commandCursor;
@@ -70,7 +55,7 @@ s16 dll_63_spawnEffect(GameObject* sourceObj, int variant, void* spawnParams, u3
     }
     effectScaleTenths = ((u8*)sourceObj->anim.placementData)[0x1a];
     if (variant == 2) {
-        for (i = 0, vertex = (Dll63EffectVertex*)resourceData; i < 14; i++) {
+        for (i = 0, vertex = (ModgfxEffectVertex*)resourceData; i < 14; i++) {
             if (vertex->positionX > 0) {
                 vertex->positionX += randomGetRange(0, 800);
             } else if (vertex->positionX < 0) {

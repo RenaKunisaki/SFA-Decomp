@@ -10,23 +10,8 @@
 #include "main/rcp_dolphin_api.h"
 #include "main/vecmath.h"
 
-typedef struct Dll5BEffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} Dll5BEffectVertex;
-
-STATIC_ASSERT(offsetof(Dll5BEffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(Dll5BEffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(Dll5BEffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(Dll5BEffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(Dll5BEffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(Dll5BEffectVertex) == 0x0A);
-
 typedef struct Dll5BEffectResourceView {
-    Dll5BEffectVertex vertices[4];
+    ModgfxEffectVertex vertices[4];
     s16 colors[4][3];
     s16 sequenceParams[7];
     u8 pad4E[2];

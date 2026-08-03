@@ -5,23 +5,8 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 
-typedef struct Dll72EffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} Dll72EffectVertex;
-
-STATIC_ASSERT(offsetof(Dll72EffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(Dll72EffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(Dll72EffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(Dll72EffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(Dll72EffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(Dll72EffectVertex) == 0x0A);
-
 typedef struct Dll72EffectResourceView {
-    Dll72EffectVertex vertices[21];
+    ModgfxEffectVertex vertices[21];
     u8 padD2[2];
     s16 triangles[24][3];
     s16 firstSevenVertexIndices[8];

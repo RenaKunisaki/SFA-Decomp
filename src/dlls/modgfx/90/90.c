@@ -7,25 +7,10 @@
 #include "main/dll/modgfx_types.h"
 #include "main/vecmath.h"
 
-typedef struct StaffCollisionEffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} StaffCollisionEffectVertex;
-
-STATIC_ASSERT(offsetof(StaffCollisionEffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(StaffCollisionEffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(StaffCollisionEffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(StaffCollisionEffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(StaffCollisionEffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(StaffCollisionEffectVertex) == 0x0A);
-
 typedef struct StaffCollisionEffectResourceView {
-    StaffCollisionEffectVertex defaultVertices[3];
+    ModgfxEffectVertex defaultVertices[3];
     u8 pad1E[2];
-    StaffCollisionEffectVertex alternateVertices[4];
+    ModgfxEffectVertex alternateVertices[4];
     s16 alternateColors[6];
     s16 sequenceParams[7];
     u8 pad62[2];

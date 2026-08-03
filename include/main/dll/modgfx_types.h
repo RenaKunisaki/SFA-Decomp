@@ -137,6 +137,22 @@ STATIC_ASSERT(offsetof(ModgfxSpawnPacket, commandCount) == 0x5D);
 STATIC_ASSERT(offsetof(ModgfxSpawnPacket, entries) == 0x60);
 STATIC_ASSERT(sizeof(ModgfxSpawnPacket) == 0x360);
 
+typedef struct ModgfxEffectVertex
+{
+    s16 positionX;
+    s16 positionY;
+    s16 positionZ;
+    s16 texCoordS;
+    s16 texCoordT;
+} ModgfxEffectVertex;
+
+STATIC_ASSERT(offsetof(ModgfxEffectVertex, positionX) == 0x00);
+STATIC_ASSERT(offsetof(ModgfxEffectVertex, positionY) == 0x02);
+STATIC_ASSERT(offsetof(ModgfxEffectVertex, positionZ) == 0x04);
+STATIC_ASSERT(offsetof(ModgfxEffectVertex, texCoordS) == 0x06);
+STATIC_ASSERT(offsetof(ModgfxEffectVertex, texCoordT) == 0x08);
+STATIC_ASSERT(sizeof(ModgfxEffectVertex) == 0x0A);
+
 typedef struct ModgfxVertexData
 {
     s16 posX;

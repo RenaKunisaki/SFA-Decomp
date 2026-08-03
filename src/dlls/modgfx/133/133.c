@@ -10,23 +10,8 @@ typedef enum Dll85Variant {
     DLL85_VARIANT_BURST = 4,
 } Dll85Variant;
 
-typedef struct Dll85EffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} Dll85EffectVertex;
-
-STATIC_ASSERT(offsetof(Dll85EffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(Dll85EffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(Dll85EffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(Dll85EffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(Dll85EffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(Dll85EffectVertex) == 0x0A);
-
 typedef struct Dll85EffectResourceView {
-    Dll85EffectVertex vertices[4];
+    ModgfxEffectVertex vertices[4];
     s16 triangles[2][3];
     s16 sequenceParams[7];
     s16 opaqueTail;

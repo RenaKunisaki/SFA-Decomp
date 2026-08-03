@@ -9,23 +9,8 @@
 #include "main/dll/modgfx_types.h"
 #include "main/dll/partfx_interface.h"
 
-typedef struct Dll67EffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} Dll67EffectVertex;
-
-STATIC_ASSERT(offsetof(Dll67EffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(Dll67EffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(Dll67EffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(Dll67EffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(Dll67EffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(Dll67EffectVertex) == 0x0A);
-
 typedef struct Dll67EffectResourceView {
-    Dll67EffectVertex vertices[21];
+    ModgfxEffectVertex vertices[21];
     u8 padD2[2];
     s16 colors[24][3];
     s16 firstGroupIndices[8];
