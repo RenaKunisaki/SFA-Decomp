@@ -1427,7 +1427,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/257_TrickyGuard/TrickyGuard.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/258_StayPoint/StayPoint.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/259_CurveFish/CurveFish.c"),
-            Object(NonMatching, "dlls/objects/260_SmallBasket/SmallBasket.c", cflags=cflags_dll_noopt_noprop),
+            Object(MatchingFor("GSAE01"), "dlls/objects/260_SmallBasket/SmallBasket.c", cflags=cflags_dll_noopt_noprop),
             Object(MatchingFor("GSAE01"), "dlls/objects/261_LargeCrate/LargeCrate.c"),
             Object(NonMatching, "dlls/objects/262/262.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/263/263.c", cflags=cflags_dll_noopt_nocse_noinline),
@@ -1927,7 +1927,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "track/intersect.c", cflags=cflags_dll_noopt_nocse_noautoinline, section_alignments={".data": 4}),
             Object(MatchingFor("GSAE01"), "track/intersect_screenmath.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "track/intersect_mtx44.c", cflags=cflags_dll_noopt_noautoinline),
-            Object(NonMatching, "track/intersect_render.c", cflags=cflags_dll_noopt_noautoinline),
+            Object(NonMatching, "track/intersect_render.c", cflags=cflags_dll_noopt),
             Object(Matching, "track/intersect_memcard.c", cflags=cflags_dll_noopt_noautoinline),
             Object(Matching, "n_attractmode.c"),
 

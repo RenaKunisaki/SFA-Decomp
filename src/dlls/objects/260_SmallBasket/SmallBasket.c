@@ -103,6 +103,11 @@ f32 gSmallBasketChainHitHeight = 30.0f;
 f32 gSmallBasketHitVelocity[4];
 SmallBasketResource** gSmallBasketResource;
 
+static int SmallBasket_isPlayerClear(GameObject* obj) {
+    return Vec_distance(&obj->anim.worldPosX, &((GameObject*)Obj_GetPlayerObject())->anim.worldPosX) >
+           SMALLBASKET_RESPAWN_MIN_DISTANCE;
+}
+
 /* Handles SmallBasket hit effects, nearby-object damage, and content drops. */
 void SmallBasket_handleHit(GameObject* obj, GameObject* player, SmallBasketState* state) {
     struct {
@@ -635,9 +640,7 @@ void SmallBasket_update(GameObject* obj) {
         obj->anim.alpha = nextState[0];
         state->hiddenTimer -= (s16)(int)(timeDelta * clockScale);
         if (state->hiddenTimer <= 0) {
-            if ((Vec_distance(&obj->anim.worldPosX, &((GameObject*)Obj_GetPlayerObject())->anim.worldPosX) >
-                 SMALLBASKET_RESPAWN_MIN_DISTANCE) &&
-                (state->enableGameBit == -1)) {
+            if (SmallBasket_isPlayerClear(obj) && (state->enableGameBit == -1)) {
                 nextState[0] = 1;
             }
             if (nextState[0] == 0) {
