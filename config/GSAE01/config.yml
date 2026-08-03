@@ -85,6 +85,12 @@ force_active:
   # intersect.c: the retail link retained this unreferenced .sbss word;
   # dropping it would shorten the section and shift every later .sbss address.
   - sIntersectUnused0
+  # audio.c: the retail link retained the unreferenced .sdata atom and the two
+  # .sbss words that no relocation names; dropping them would shorten those
+  # sections and shift every later .sdata/.sbss address.
+  - lbl_803DB1EC
+  - sAudioUnused0
+  - sAudioUnused1
 
 # Path to the main.dol file.
 object: sys/main.dol

@@ -47,7 +47,7 @@ char sMusicTrackNameKpwin[] = "kpwin";
 char sMusicTrackNameSlope[] = "slope";
 char sMusicTrackNameTrex2a[] = "trex_2a";
 
-static u32 sAudioUnused1;
+u32 sAudioUnused1;
 void* gMidiWadFileData;
 int gMidiWadArenaSize;
 int gMidiWadPayloadSize;
@@ -59,7 +59,7 @@ int gMidiWadLoadedSize;
 u8 gMidiWadLoadStarted;
 int gMusicTriggersCount;
 MusicTrigger* gMusicTriggersData;
-static u32 sAudioUnused0;
+u32 sAudioUnused0;
 u32 gAudioPendingLoadFlags;
 volatile u32 gAudioCompletedLoadFlags;
 void* gAudioStarfoxMPoolDataHandle;
