@@ -2985,6 +2985,7 @@ u8 doEdges;
     int gx0, gz0, gx1, gz1;
     u32 offB;
     MapBlockData **cellp, **cw;
+    int gx, gz;
     int count, layer;
     int *descp, *dw;
     u32 offC;
@@ -2996,7 +2997,6 @@ u8 doEdges;
     u32 bb;
     u32 dmaflip;
     f32* vertp;
-    int gx, gz;
     MapBlockData** p1;
     int* q1;
     MapBlockData** p2;
@@ -3082,11 +3082,11 @@ u8 doEdges;
     {
         MapBlockData* blk;
         int vb;
-        int dxoff, dzoff;
+        u8* tri;
         s16 mask;
         s16 bit;
         int pos;
-        u8* tri;
+        int dxoff, dzoff;
         u8* tri0;
 
         bb = offA;
@@ -3196,10 +3196,10 @@ u8 doEdges;
             {
                 u8* vo;
                 s16* vp;
-                int minX, maxX, minY, maxY, minZ, maxZ;
+                f32* vf;
                 u8 maxYi, minYi;
                 u16* tw;
-                f32* vf;
+                int minX, maxX, minY, maxY, minZ, maxZ;
                 int j;
                 f32 mag;
 

@@ -2415,9 +2415,9 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     f32 workB; /* player dist-sq; reused as cross-product lane in the trail block */
     f32 workA; /* tricky dist-sq; reused as cross-product lane in the trail block */
     f32 ambientScale;
-    f32 playerRange;
-    f32 trickyRange;
     f32 attractRatio; /* attract speed ratio; reused as cross-product Z lane and trail inv-scale */
+    f32 trickyRange;
+    f32 playerRange;
     f32 dirX;
     f32 dirY;
     f32 dirZ;
