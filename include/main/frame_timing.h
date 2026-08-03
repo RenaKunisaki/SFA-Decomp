@@ -12,6 +12,7 @@
 extern f32 timeDelta;
 extern f32 oneOverTimeDelta;
 extern u8 framesThisStep;
+extern u8 framesThisStepUnclamped;
 
 void setFrameCountdown(s8 count);
 

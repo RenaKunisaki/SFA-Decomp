@@ -23,6 +23,7 @@
 #include "main/map_load.h"
 #include "main/model_engine.h"
 #include "main/dll/FRONT/dll_3B.h"
+#include "main/dll/dll_0037_optionsscreen.h"
 
 u8 gTitleMenuPanelOpen;
 s8 gTitleMenuLoadDelay;
@@ -54,7 +55,6 @@ s32 gAttractMovieState;
 
 extern TitleMenuTextEntry gTitleMenuEntries[4];
 extern TitleMenuTextEntry sNAttractModeStringBlock[1];
-extern u8 gOptionsRequestedPanel;
 
 
 void TitleMenu_render(int obj)

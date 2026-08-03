@@ -12,6 +12,7 @@
 #include "main/object_render.h"
 #include "sys/objects/lifecycle.h"
 
+#include "main/frame_timing.h"
 #define DLL1F5_OBJECT_TYPE_ID           0xB
 #define DLL1F5_FIRE_SEQ_ID              0x171
 #define DLL1F5_SEQ_INDEX_PENDING        -2
@@ -20,7 +21,6 @@
 #define DLL1F5_TRAIL_EFFECT_ID          389
 #define DLL1F5_TRAIL_EFFECT_PARAM       5
 
-extern u8 framesThisStepUnclamped;
 
 typedef struct Dll1F5TrackedState {
     f32 value;

@@ -9,6 +9,9 @@
 #define OBJFSA_ACTIVE_WALKGROUPS_OFFSET 0x4C48
 #define OBJFSA_WALKGROUP_COUNT          0xB5
 
+extern int gObjfsaPatchCount;
+extern u8 gObjfsaWalkGroupActive[];
+
 typedef struct ObjfsaPatchPlane
 {
     s16 normalX;

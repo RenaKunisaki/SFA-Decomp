@@ -8,7 +8,6 @@
 extern const f32 axfx_reverb_std_handle_f32_0p3;
 extern const f32 axfx_reverb_std_handle_f32_0p6;
 extern const double axfx_reverb_std_handle_i2f_magic;
-extern const s32 sReverbStdDelayLengths[4];
 
 static const f32 axfx_reverb_std_f32_0 = 0.0f;
 static const f32 axfx_reverb_std_f32_0p01 = 0.01f;

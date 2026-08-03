@@ -75,15 +75,8 @@ extern u32 renderFlags;
 #define RENDERFLAG_HIDE_STARS      0x80000
 
 extern f32 gLightmapDegToBamScale;
-extern FrustumPlane gViewFrustumPlanes[];
 
 extern u8 gMapBlockCount; /* count of allocated blocks */
-extern s8 gMapBlockDrawOrderFrontToBack[];
-extern s8 gMapBlockDrawOrderBackToFront[];
-extern int gMapBlockCellStateTables[];
-extern s32 gMapCurRomListSlot;
-extern EnvironmentUpdateInterface** lbl_803DCAB0;
-extern s32 gHeatEffectFadeDirection;
 
 
 volatile PPCWGPipe GXWGFifo : (0xCC008000);
@@ -217,7 +210,6 @@ void* RomList_GetLoadedPages(void)
 u32 gVisibleObjectSortKeys[0x400];
 
 
-extern s16* gMapBlockCellEntryTables[];
 
 int coordsToMapCell(f32 x, f32 z)
 {
@@ -862,7 +854,6 @@ void sceneDraw(void)
     shadowVolumesSetDirty(0);
 }
 
-extern int gSceneCamera;
 
 void sceneRender(int wpad0, int wpad1, int wpad2, int wpad3, int wpad4, int wpad5)
 {
@@ -878,7 +869,7 @@ void sceneRender(int wpad0, int wpad1, int wpad2, int wpad3, int wpad4, int wpad
     Camera_UpdateViewMatrices();
     Camera_RebuildProjectionMatrix();
     updateLights();
-    gSceneCamera = (int)Camera_GetCurrent();
+    gSceneCamera = Camera_GetCurrent();
     sceneDraw();
     Camera_SetupFullscreenViewport(NULL);
     renderFlags &= ~2LL;
@@ -937,9 +928,9 @@ void updateEnvironment(int mode)
         }
 
         loadNextMap();
-        if (lbl_803DCAB0 != NULL)
+        if (gEnvironmentUpdateInterface != NULL)
         {
-            (*lbl_803DCAB0)->update();
+            (*gEnvironmentUpdateInterface)->update();
         }
         gMinimapInterface->vtable->frameStart();
 

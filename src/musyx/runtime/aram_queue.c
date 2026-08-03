@@ -3,7 +3,6 @@
 
 
 AramTransferQueue aramNormalPriorityQueue;
-extern AramTransferQueue aramHighPriorityQueue;
 
 /*
  * ARQ DMA completion callback dispatcher: walks the 16-slot ring

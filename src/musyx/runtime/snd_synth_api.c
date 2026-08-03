@@ -25,7 +25,6 @@
 #define SND_OUTPUTMODE_STEREO   1 /* plain stereo */
 #define SND_OUTPUTMODE_SURROUND 2 /* Dolby Pro Logic surround */
 
-extern u32 synthFlags;
 
 /*
  * MusyX sequence volume API, wrapping the underlying synth volume helper.

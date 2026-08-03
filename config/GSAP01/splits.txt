@@ -17,7 +17,7 @@ main/render.c:
 	.text       start:0x800066E0 end:0x80008DF4
 	.rodata     start:0x802C2240 end:0x802C23E8
 	.data       start:0x802C36E0 end:0x802C5888
-	.sdata2     start:0x803DFEC8 end:0x803DFF08
+	.sdata2     start:0x803DFF04 end:0x803DFF08
 
 main/audio.c:
 	.text       start:0x80008DF4 end:0x8000B4F0
@@ -80,7 +80,19 @@ main/pad.c:
 	.bss        start:0x8033B210 end:0x8033B2B0
 	.sdata      start:0x803DCC08 end:0x803DCC10
 	.sbss       start:0x803DE2C8 end:0x803DE310
-	.sdata2     start:0x803E00A8 end:0x803E00AC
+	.sdata2     start:0x803E00A8 end:0x803E00B0
+
+main/fileio.c:
+	.text       start:0x80015650 end:0x80015C00
+	.data       start:0x802C77E0 end:0x802C7818
+	.bss        start:0x8033B2B0 end:0x8033B2E0
+	.sbss       start:0x803DE310 end:0x803DE328
+
+main/gametext.c:
+	.text       start:0x80015C00 end:0x800162C4
+	.data       start:0x802C7818 end:0x802C96C0
+	.sdata      start:0x803DCC10 end:0x803DCCD8
+	.sdata2     start:0x803E00B0 end:0x803E00C0
 
 main/gametext_measurebyid.c:
 	.text       start:0x800162C4 end:0x800163FC
@@ -90,6 +102,12 @@ main/gametext_tail.c:
 
 dolphin/TRK_MINNOW_DOLPHIN/MWTrace.c:
 	.text       start:0x8001741C end:0x8001746C
+
+main/textrender.c:
+	.text       start:0x8001746C end:0x800191FC
+	.data       start:0x802C96C0 end:0x802CB6A0
+	.bss        start:0x8033B2E0 end:0x8033CBA0
+	.sdata      start:0x803DCCD8 end:0x803DCDC0
 
 main/textrender_gettext.c:
 	.text       start:0x800191FC end:0x800199A8
@@ -103,6 +121,13 @@ main/subtitle.c:
 	.bss        start:0x8033CBA0 end:0x8033D7A0
 	.sdata2     start:0x803E00E0 end:0x803E0100
 
+main/textrender_drawbox.c:
+	.text       start:0x8001BCDC end:0x8001C908
+	.data       start:0x802CB6A0 end:0x802CBBF8
+	.bss        start:0x8033D7A0 end:0x8033D7C0
+	.sbss       start:0x803DE3B0 end:0x803DE3E0
+	.sdata2     start:0x803E0100 end:0x803E0110
+
 main/textrender_boxtex.c:
 	.text       start:0x8001C908 end:0x8001CCB0
 	.sbss       start:0x803DE3E0 end:0x803DE3F0
@@ -114,6 +139,13 @@ main/modellight.c:
 	.sdata      start:0x803DCDC0 end:0x803DCDC8
 	.sbss       start:0x803DE3F0 end:0x803DE3F8
 	.sdata2     start:0x803E0110 end:0x803E0170
+
+main/gameloop.c:
+	.text       start:0x8001F6C0 end:0x8001FF88
+	.data       start:0x802CBBF8 end:0x802CBCD4
+	.bss        start:0x8033D8E8 end:0x8033D918
+	.sdata      start:0x803DCDC8 end:0x803DCDE0
+	.sbss       start:0x803DE3F8 end:0x803DE4C8
 
 main/gameloop_buttonobj.c:
 	.text       start:0x8001FF88 end:0x80020074
@@ -585,6 +617,21 @@ dlls/engine/22/22.c:
 dlls/engine/4/4.c:
 	.text       start:0x800D82C8 end:0x800D838C
 	.data       start:0x80312B48 end:0x80312C08
+
+dlls/engine/15/15.c:
+	.text       start:0x800D838C end:0x800DA138
+	.data       start:0x80312C08 end:0x80312C80
+	.sbss       start:0x803DEDF0 end:0x803DEE18
+	.sdata2     start:0x803E1F38 end:0x803E1F90
+
+dlls/engine/16/16.c:
+	.text       start:0x800DA138 end:0x800DA220
+	.data       start:0x80312C80 end:0x80312CA8
+
+dlls/engine/18/18.c:
+	.text       start:0x800DA220 end:0x800DA254
+	.data       start:0x80312CA8 end:0x80312CE8
+	.sbss       start:0x803DEE18 end:0x803DEE20
 
 dlls/engine/20_Hcurves/Hcurves.c:
 	.text       start:0x800DA254 end:0x800DD9AC
@@ -1414,7 +1461,7 @@ dlls/engine/58/58.c:
 
 dlls/engine/0/0.c:
 	.text       start:0x8011DE54 end:0x8013047C
-	.rodata     start:0x802C2B20 end:0x802C2B44
+	.rodata     start:0x802C2B20 end:0x802C2B48
 	.data       start:0x8031C7B0 end:0x8031DAF8
 	.bss        start:0x803AA150 end:0x803AADB8
 	.sdata      start:0x803DD3F0 end:0x803DD570
@@ -1483,11 +1530,27 @@ dlls/objects/704/704.c:
 
 main/dll_80136a40.c:
 	.text       start:0x80137008 end:0x80138ED0
-	.data       start:0x8031E930 end:0x8031EC74
+	.data       start:0x8031E930 end:0x8031EC78
 	.bss        start:0x803AB978 end:0x803ADD88
 	.sdata      start:0x803DD5D0 end:0x803DD600
 	.sbss       start:0x803DF398 end:0x803DF408
-	.sdata2     start:0x803E3D68 end:0x803E3D94
+	.sdata2     start:0x803E3D68 end:0x803E3D98
+
+dlls/objects/196_Tricky/tricky.c:
+	.text       start:0x80138ED0 end:0x80149280
+	.rodata     start:0x802C2B48 end:0x802C2B70
+	.data       start:0x8031EC78 end:0x8031F568
+	.sdata      start:0x803DD600 end:0x803DD618
+	.sbss       start:0x803DF408 end:0x803DF410
+	.sdata2     start:0x803E3D98 end:0x803E3F30
+
+dlls/objects/201_Baddie/Baddie.c:
+	.text       start:0x80149280 end:0x8014E8B0
+	.rodata     start:0x802C2B70 end:0x802C2B90
+	.data       start:0x8031F568 end:0x8031F618
+	.sdata      start:0x803DD618 end:0x803DD630
+	.sbss       start:0x803DF410 end:0x803DF418
+	.sdata2     start:0x803E3F30 end:0x803E3FE8
 
 dlls/objects/223_Hagabon/Hagabon.c:
 	.text       start:0x8014E8B0 end:0x8014F560
@@ -2938,7 +3001,16 @@ dlls/objects/420/420.c:
 dlls/objects/421_NW_levcontr/NW_levcontr.c:
 	.text       start:0x801D0588 end:0x801D0EBC
 	.data       start:0x80328378 end:0x80328518
-	.sdata2     start:0x803E6C58 end:0x803E6C64
+	.sdata2     start:0x803E6C58 end:0x803E6C68
+
+dlls/objects/422_SH_tricky/SH_tricky.c:
+	.text       start:0x801D0EBC end:0x801D1068
+	.data       start:0x80328518 end:0x80328550
+
+dlls/objects/423/423.c:
+	.text       start:0x801D1068 end:0x801D243C
+	.data       start:0x80328550 end:0x803285F8
+	.sdata2     start:0x803E6C68 end:0x803E6CD8
 
 dlls/objects/424_SH_killermu/SH_killermu.c:
 	.text       start:0x801D243C end:0x801D30AC
@@ -3610,6 +3682,18 @@ dlls/objects/586/586.c:
 dlls/objects/587/587.c:
 	.data       start:0x8032B8E0 end:0x8032B910
 
+dlls/objects/589_BossDrakor/BossDrakor.c:
+	.text       start:0x8020AA44 end:0x8020C394
+	.data       start:0x8032B910 end:0x8032BA70
+	.sdata      start:0x803DDB48 end:0x803DDB60
+	.sdata2     start:0x803E7EF0 end:0x803E7F70
+
+dlls/objects/590/590.c:
+	.text       start:0x8020C394 end:0x8020CB58
+	.data       start:0x8032BA70 end:0x8032BAA8
+	.sdata      start:0x803DDB60 end:0x803DDB78
+	.sdata2     start:0x803E7F70 end:0x803E7FB4
+
 dlls/objects/588_BossDrakor_/BossDrakor_.c:
 	.data       start:0x8032BAA8 end:0x8032BAD8
 
@@ -3716,6 +3800,18 @@ dlls/objects/610/610.c:
 dlls/objects/612/612.c:
 	.sdata      start:0x803DDC80 end:0x803DDC88
 
+dlls/objects/611_GM_MazeWell/GM_MazeWell.c:
+	.text       start:0x80219404 end:0x80219754
+	.data       start:0x8032C0C8 end:0x8032C158
+	.sdata2     start:0x803E8360 end:0x803E8368
+
+dlls/objects/614_KytesMum/KytesMum.c:
+	.text       start:0x80219754 end:0x8021A2F4
+	.rodata     start:0x802C2EF8 end:0x802C2F10
+	.data       start:0x8032C158 end:0x8032C210
+	.sdata      start:0x803DDC88 end:0x803DDC98
+	.sdata2     start:0x803E8368 end:0x803E8390
+
 dlls/objects/615/615.c:
 	.sdata      start:0x803DDC98 end:0x803DDCA0
 
@@ -3725,10 +3821,10 @@ dlls/objects/618_DR_Geezer/DR_Geezer.c:
 dlls/objects/621_DR_Vines/DR_Vines.c:
 	.sdata      start:0x803DDCA8 end:0x803DDCB0
 
-dlls/objects/611_GM_MazeWell/GM_MazeWell.c:
-	.text       start:0x80219404 end:0x80219754
-	.data       start:0x8032C0C8 end:0x8032C158
-	.sdata2     start:0x803E8360 end:0x803E8364
+dlls/objects/613_DR_Creator/DR_Creator.c:
+	.text       start:0x8021A2F4 end:0x8021A8A4
+	.data       start:0x8032C210 end:0x8032C258
+	.sdata2     start:0x803E8390 end:0x803E83B8
 
 dlls/objects/617_ExplodePlan/ExplodePlan.c:
 	.text       start:0x8021A8A4 end:0x8021A9D8
@@ -4305,6 +4401,16 @@ dolphin/dvd/fstload.c:
 	.bss        start:0x803AF958 end:0x803AF9C8
 	.sdata      start:0x803DDF30 end:0x803DDF40
 	.sbss       start:0x803DF910 end:0x803DF920
+
+dolphin/vi/vi.c:
+	.text       start:0x8024C8EC end:0x8024E328
+	.data       start:0x8032F788 end:0x8032FA50
+	.bss        start:0x803AF9C8 end:0x803AFB10
+	.sbss       start:0x803DF920 end:0x803DF970
+
+dolphin/pad/Padclamp.c:
+	.text       start:0x8024E328 end:0x8024E560
+	.sdata      start:0x803DDF40 end:0x803DDF48
 
 dolphin/pad/Pad.c:
 	.text       start:0x8024E560 end:0x80250028
@@ -4904,15 +5010,25 @@ dolphin/TRK_MINNOW_DOLPHIN/mem_TRK.c:
 	.text       start:0x8028B98C end:0x8028BA48
 
 dolphin/TRK_MINNOW_DOLPHIN/targimpl.c:
-	.init       start:0x80003100 end:0x800033A8
-	.init       start:0x800033A8 end:0x800034E4
-	.init       start:0x800034E4 end:0x80003538
-	.init       start:0x80003538 end:0x8000546C
 	.text       start:0x8028BA48 end:0x8028D2E0
-	.text       start:0x8028D2E0 end:0x8028D300
 	.rodata     start:0x802C32F8 end:0x802C3380
 	.data       start:0x80333C50 end:0x80333C80
 	.bss        start:0x803D9C58 end:0x803DA1D8
+
+dolphin/TRK_MINNOW_DOLPHIN/targsupp.s:
+	.text       start:0x8028D2E0 end:0x8028D300
+
+Runtime.PPCEABI.H/__start.c:
+	.init       start:0x80003100 end:0x800033A8
+
+Runtime.PPCEABI.H/__mem.c:
+	.init       start:0x800033A8 end:0x800034E4
+
+Runtime.PPCEABI.H/mem_TRK.c:
+	.init       start:0x800034E4 end:0x80003538
+
+dolphin/TRK_MINNOW_DOLPHIN/__exception.s:
+	.init       start:0x80003538 end:0x8000546C
 
 dolphin/TRK_MINNOW_DOLPHIN/dolphin_trk.c:
 	.init       start:0x8000546C end:0x80005570

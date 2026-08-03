@@ -42,5 +42,6 @@ extern u32 gSaveCardChecksumLo;
 extern u8* gSaveCardImageBuffer;
 extern u32 gSaveCardSerialHi;
 extern u8 gSaveCardIdentityCheckEnabled;
+extern volatile s32 gSaveCardState;
 
 #endif /* MAIN_MAKETEX_API_H_ */

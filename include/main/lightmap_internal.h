@@ -11,6 +11,8 @@ typedef struct EnvironmentUpdateInterface
     void (*update)(void);
 } EnvironmentUpdateInterface;
 
+extern EnvironmentUpdateInterface** gEnvironmentUpdateInterface;
+
 typedef struct
 {
     u32 a;

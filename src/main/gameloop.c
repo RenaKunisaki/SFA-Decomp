@@ -45,6 +45,7 @@ int gAskProgressiveScanNoX = 0x16A;
 #include "main/gameloop_internal.h"
 #include "main/pi_dolphin.h"
 #include "main/frame_timing.h"
+#include "main/lightmap_internal.h"
 #include "main/fileio.h"
 #include "main/textrender_api.h"
 #include "main/dll/dll_0011_screens.h"
@@ -86,7 +87,7 @@ CarryableInterface** gCarryableInterface;
 MinimapInterface* gMinimapInterface;
 BaddieControlInterface** gBaddieControlInterface;
 BoneParticleEffectInterface** gBoneParticleEffectInterface;
-void* lbl_803DCAB0;
+EnvironmentUpdateInterface** gEnvironmentUpdateInterface;
 MapEventInterface** gMapEventInterface;
 PathControlInterface** gPathControlInterface;
 TitleMenuItemInterface* gTitleMenuItemInterface;

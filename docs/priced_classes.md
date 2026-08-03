@@ -847,3 +847,172 @@ fixes it - does not generalise. The 36 priced rows split cleanly:
   Swapping the two statements in the source, and splitting the division into its own temp, both
   reproduce **the identical 94.512** - the scheduler is deciding, not the text. No source move
   reaches these; they are as priced as section 9 says.
+
+## 11. The front-end storage-order laws, and which text-axis rows they reach (measured 2026-08-03)
+
+Sections 8, 8b and 10 model the `.sdata2` slot order and conclude that it is a fossil of the
+source text. This section is the constructive half: what every file-scope construct actually
+emits and where, which sub-100 rows that reaches, and a second oracle - `.bss` - that asks the
+same question for free.
+
+### What each construct emits, and where
+
+Measured with single-TU probes under both live flag sets (`-O4,p -opt nopeephole,noschedule
+-inline noauto` for `src/main`, `-O4,p -opt nopeephole,noschedule,nopropagation -inline auto`
+for the DLLs); both sets agree.
+
+| construct | what lands in `.sdata2` | what the read compiles to |
+| --- | --- | --- |
+| plain literal in an expression | a word where the expression is lowered | that word |
+| `static const f32 X = V;` | **nothing** - folded, then dead-stripped | a duplicate literal at first use |
+| `const f32 X = V;` (external linkage) | a word **at the declaration point** | a duplicate literal at first use; the object itself is never referenced |
+| `static const` aggregate (struct or `[2]`), size <= 8 | a word at the declaration point | a real SDA21 load - no fold, no duplicate |
+| any aggregate larger than 8 bytes | `.rodata`, never `.sdata2` | - |
+| `static __inline` fn defined above the users | its literals intern **at the use site** | - |
+| plain `static` fn defined above the users | its literals intern at the **definition**, but MWCC also emits the body into `.text` | - |
+
+Two consequences. First, the only construct that places a word at a chosen position while
+emitting zero instructions is the external-linkage scalar `const`: it is a pure **insertion**,
+able to add a word between any two mint points and unable to move an existing one. Second, the
+`static` function is not a usable phantom minter - the body is emitted, and
+`banned_shapes_check.py` scans uncalled statics anyway.
+
+Because nothing references an inserted const, `mwld` dead-strips it and the pool shortens again,
+shifting every later SDA2 reference and breaking the DOL. The symbol must be listed in
+`config/GSAE01/config.yml` `force_active`; the entries already there
+(`lbl_803E06C4`, `gGcRobotPatrolZero`, `gDIMSnowHorn1ZeroOffset`, `lbl_803E3E44`, ...) are the
+same class, and the tree already carries six of these consts in game code
+(`gMikaBombZero`, `gDll76Zero`, `gDll77Zero`, ...).
+
+### The insertion classifier, run over the whole frontier
+
+`tools/pool_value_sequence.py --all` says which sections are open only on the text axis. A second
+pass says which of those the const lever can actually close: diff the two slot sequences (size,
+bytes) with an LCS and ask whether every opcode is `equal` or `insert`, and whether each inserted
+word is referenced on retail's side. Over all 33 sub-100 data sections at `590dce7361`:
+
+| row | verdict |
+| --- | --- |
+| `main/objlib` | one **unreferenced** zero word at slot 1. CLOSED - `.sdata2` 91.667 -> 100.0, +48 `matched_data` |
+| `300_Transporter` | not a pool row at all - see below. RETIRE |
+| `engine/5`, `engine/68` | INSERT-ONLY, but the inserted word is **referenced**, so it needs a real minter; these are exactly the priced crutch rows of section 9 |
+| `main/render` | the insertion is the 60-byte `pad_11_803DE508_sdata2` blob - a splits-ownership question, not a text-axis one |
+| the other 28 | need words **moved**; no file-scope construct moves a literal |
+
+### `300_Transporter` is a carve-attribution artifact, not a gap
+
+Both `.sdata2` sections carry `2**3` alignment (each holds a bias double). Our object's section is
+0x4c bytes and `302`'s starts 8-aligned at `0x803E3EE8`, so `mwld` inserts four bytes of padding
+that `splits.txt` attributes to Transporter's range; objdiff compares 76 bytes against 80 forever.
+The DOL is byte-identical either way. The row should leave the frontier rather than be "fixed"
+with a fabricated tail object.
+
+### `.bss` order is a second, free oracle for the same question
+
+Declaration order is **completely inert** - a 36-cell declaration x use matrix (all six
+declaration permutations of three `.bss` arrays against all six use permutations) gives results
+that depend only on the use order. The law is **first-use order**, where "use" is the front end's
+and not the code generator's:
+
+- uses in separate statements, or in separate functions: layout == first-use order exactly;
+- three uses inside one expression `A[i] + B[i] + C[i]`: layout `C A B`, the shallowest
+  sub-expression first. That is section 10's increasing-tree-depth rule, now confirmed on a
+  second kind of storage.
+
+So `.bss` asks the source-text question for the price of one `objdump -t`, and on a mover row it
+corroborates the pool. `main/objlib` is the specimen: retail's `.bss` is `gObjectTypeList,
+gObjectTypeIndices, gObjContactCallbacks`, ours is `gObjectTypeIndices, gObjectTypeList,
+gObjContactCallbacks`, and the two spellings that do fix the order (`entry = gObjectTypeList;`
+hoisted, and `entry = gObjectTypeList + (index = gObjectTypeIndices.offsets[group]);`) both lift
+the list base's `lis`/`addi` above the `limit` load and break `objIsObjectType`. `.text`,
+`.bss` and `.sdata2` therefore disagree about the source order of the same file - which is the
+sharpest statement yet of what section 10 found, and it is why `main/objlib` stays `NonMatching`
+even with a byte-identical `.sdata2`: flipping it links our `.bss` order and moves 33 DOL words.
+
+### Phantom minters: the negative results
+
+None of these interns anything (single-TU probes): a dead local initialiser `f32 t = 100.0f;`,
+a dead store `t = x * 200.0f; t = 0.0f;`, an unused `(f32)n` conversion (no bias double), a
+function-local `const f32 t = 300.0f;`, and `x * 500.0f * 0.0f` (folded). The one shape that does
+mint a word it never loads is a dead **comparison** - `(x > 400.0f) ? x : x` emits `400.0f` - so
+the front end interns when it lowers a compare, not when it folds arithmetic. It is not plausible
+C and is recorded only to close the search.
+
+## 12. The mover: which construct can put a pool word ahead of its first live loader (measured 2026-08-02)
+
+Sections 10 and 11 established that `.sdata2` order is the source text's order, and that no
+file-scope insertion can reorder two words that a function body already minted. This section
+closes the remaining question: when retail's pool holds a word **ahead of the first function that
+loads it**, what did the source do? Twenty-eight sub-100 data sections need exactly that.
+
+### The survey
+
+Of the 32 sub-100 data sections at `98445c52ec`, the value multisets already agree on 12
+(`PURE-ORDER`); of the rest, most of the "missing" words are `00000000` at an offset that is the
+alignment hole in front of an eight-byte double, so the bytes are already identical and only the
+symbol granularity differs. The residue is genuinely an ordering problem, and in every case the
+words that have to move are ones whose only loads are in a *later* function.
+
+### The construct table, re-measured on `main/rcp_dolphin`
+
+`Rcp_InitDistortionEffects` is the last function in the unit and its three constants are the
+first three pool words; the section scores 14.63%. Four spellings, each one build:
+
+| spelling | where the word lands | how it is loaded |
+| --- | --- | --- |
+| plain literal | at the use | direct SDA21 |
+| `static const f32 x = V;` | at the use (folded, re-minted) | direct SDA21 |
+| `const f32 x = V;` (external) | at the declaration **and** at the use | the *duplicate* is loaded |
+| `static const` aggregate <= 8 B | at the declaration | direct SDA21, no duplicate |
+
+Only the last one moves a word. A twelve-byte aggregate goes to `.rodata` instead, and a member
+at a non-zero offset costs a base-register materialisation (`addi rN,r2,sym` + `lfs f,4(rN)`)
+where retail has one `lfs`, so each word has to be its own symbol at offset zero. With three
+such declarations placed before the first function, `main/rcp_dolphin`'s `.sdata2` goes
+14.63% -> 100% and **every function stays byte-identical**; the same lever takes
+`279_AppleOnTree` 90.62% -> 100% (three words: `1.0f` and the two halves of the fall-scale
+blend) and `701` 95.65% -> 100% (one word: the zero `AndrossHand_update` and `AndrossHand_init`
+share, declared between `AndrossHand_free` and `AndrossHand_render`). Measured together:
+`matched_data` 1203317 -> 1203617, `complete_units` 906 -> 909, `fuzzy_match_percent` unchanged,
+`main.dol` OK, and md5 of every `.o` identical outside the three units.
+
+**That spelling is `const T name[1] = {V}`, which `tools/banned_shapes_check.py` gates as
+`SINGLE_ELEM_CONST_ARRAY`.** So the lever exists, it is exact, and it is the banned one. Landing
+these three rows is a decision for whoever owns that baseline; the measurement is recorded here so
+the decision can be made on numbers.
+
+### Why there is no third option
+
+The two candidate origins for a word ahead of its first live loader are a file-scope constant and
+a dead static that `mwld` stripped (`UNCALLED_STATIC_FN`, and see that check's own rationale).
+Both are gated. Nothing else reaches: a declared constant is **never** interned against the
+literal pool - declaring `static const f32 sCrTestOne[1] = {1.0f}` in `362_CRrockfall` while a
+`1.0f` literal survives elsewhere in the unit emits **two** words, at `0x0008` and `0x000c`.
+
+### What statement order inside a function can and cannot do
+
+Section 11's text-axis model predicts that a literal moves with the statement that uses it. It
+does, but only when the *use* moves - the front end interns at the use, not at an assignment the
+optimiser will propagate away:
+
+- `dlls/engine/24` wants `boneParticleEffect_update`'s `0.0f` first. Hoisting `zero = 0.0f;` from
+  the loop preamble to the top of the function changes **nothing** - not one pool byte, not one
+  `.text` byte - because the assignment is propagated and the load is re-materialised at the
+  three `vtx.x = zero;` uses.
+- `main/vecmath` wants `interpolate`'s `0.0f` ahead of its `1.0f`, with retail's code an exact
+  match for the `if (t <= 1.0f) { ... } return 0.0f;` shape we already have. `f32 result = 0.0f;`
+  plus a single exit reaches the pool order but costs the function 100 -> 87.08; `f32 result =
+  0.0f;` keeping the early return is inert, confirming section 11's dead-initialiser result.
+
+So an intra-function mover needs a genuinely different *use* order, which is a semantic
+rewrite, not a reordering - and on these rows retail's own code shape rules it out.
+
+### Rows that the lever cannot reach at all
+
+`328_CFGuardian` and `362_CRrockfall` each need a compiler-generated **bias double** moved ahead
+of an earlier function's literals (`CFGuardian`: `4330000080000000` before `cfguardian_flyAlongPath`'s
+`200.0f`, whose code is byte-identical to retail; `CRrockfall`: `4330000000000000` ahead of
+`crrockfall_findFloorY`, the unit's *first* function). A bias is minted by the code generator, so
+no declaration can place it; these are dead-static rows or nothing. `main/shader_dolphin` needs
+`0.0f` hoisted, and the file has 181 `0.0f` literals - every one would have to be rewritten for
+the pool to hold a single word, which is not plausible source at any price.

@@ -90,7 +90,6 @@ extern WarpVec gCameraPosByTransformSpace[];
 int lbl_803DB620 = -1;
 s8 gMapLayerOffsets[8] = {0, -2, -1, 1, 2, 0, 0, 0};
 f32 gMotionBlurAmount = 0.5f;
-extern int gMapBlockCellEntryTables[5];
 
 f32 gMapSavedPlayerOffsetX;
 f32 gMapSavedPlayerOffsetZ;
@@ -365,7 +364,6 @@ typedef struct WarpDestination
     s16 angle;
 } WarpDestination;
 
-extern u8 gRcpPendingWarpDest[];
 
 void loadNextMap(void)
 {
@@ -2938,11 +2936,11 @@ int gSunOcclusionSampleOffsets[10] = {
 /* Map-cell visit order for the opaque scene pass: outward from the two
    centre rows, i.e. front to back from a camera over the middle of the
    16x16 map-block grid. */
-u8 gMapBlockDrawOrderFrontToBack[16] = {7, 6, 5, 4, 3, 2, 1, 0, 8, 9, 10, 11, 12, 13, 14, 15};
+s8 gMapBlockDrawOrderFrontToBack[16] = {7, 6, 5, 4, 3, 2, 1, 0, 8, 9, 10, 11, 12, 13, 14, 15};
 
 /* Map-cell visit order for the two blended scene passes: inward from both
    edges, i.e. back to front. */
-u8 gMapBlockDrawOrderBackToFront[16] = {0, 15, 1, 14, 2, 13, 3, 12, 4, 11, 5, 10, 6, 9, 8, 7};
+s8 gMapBlockDrawOrderBackToFront[16] = {0, 15, 1, 14, 2, 13, 3, 12, 4, 11, 5, 10, 6, 9, 8, 7};
 
 struct
 {
@@ -3109,7 +3107,6 @@ int mapGetRomListAndOffsets(int p1, int flag)
     return (int)gCurRomListPage;
 }
 
-extern FrustumPlane gViewFrustumPlanes[];
 
 int ViewFrustum_IsSphereVisible(float* center, float radius)
 {
@@ -3432,7 +3429,6 @@ void frustumPlanes_updateAabbCornerIndices(FrustumPlane* planes, int count)
     }
 }
 
-extern FrustumPlane gPlayerRelativeFrustumPlanes[];
 void buildPlayerRelativeFrustumPlanes(void)
 {
     Vec tmp;
@@ -3482,10 +3478,10 @@ MapRomListPage* gLoadedRomListPages[ROM_LIST_PAGE_COUNT];
 MapRomListIndex gMapRomListIndexes[120];
 s8* gMapBlockLayerTables[MAP_BLOCK_LAYER_COUNT];
 int gMapBlockCellEntryTables[5];
-u8 gMapBlockCellStateTables[0x14];
+int gMapBlockCellStateTables[5];
 BlockEntry gShaderRomListSlots[8];
 int gShaderMapRomBuffers[0x5];
 f32 distortionFilterVector[0x1c];
-u8 gGlowLightList[0x190];
+ModelLightStruct* gGlowLightList[100];
 u8 gCloudLayerTexMatrix[0x30];
 char gLightmapDrawQueue[0x3F48];

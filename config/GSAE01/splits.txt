@@ -17,7 +17,7 @@ main/render.c:
 	.text       start:0x800066E0 end:0x80008DF4
 	.rodata     start:0x802C18C0 end:0x802C1A68
 	.data       start:0x802C2D60 end:0x802C4F08
-	.sdata2     start:0x803DE508 end:0x803DE548
+	.sdata2     start:0x803DE544 end:0x803DE548
 
 main/audio.c:
 	.text       start:0x80008DF4 end:0x8000B4D0

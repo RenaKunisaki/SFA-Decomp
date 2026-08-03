@@ -7,7 +7,6 @@
 #include "main/object_render.h"
 #include "sys/objects.h"
 
-extern u8 framesThisStepUnclamped;
 
 #define SPIRIT_PRIZE_DISABLED_MAP_ID       0x4CA62
 #define SPIRIT_PRIZE_BOUND_LIGHT_SEQ_ID    0x1D9

@@ -24,6 +24,8 @@ extern SynthITDInfo synthITDDefault[8];
 
 extern SynthInfo synthInfo;
 
+extern u32 synthFlags;
+
 #define SYNTH_CONFIGURATION (&synthInfo)
 
 #endif /* MUSYX_SYNTH_CONFIG_H_ */

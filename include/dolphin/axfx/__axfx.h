@@ -10,6 +10,8 @@ extern "C" {
 #define __AXFXAlloc(size) OSAlloc(size)
 #define __AXFXFree(ptr)   OSFree(ptr)
 
+extern s32 sReverbStdDelayLengths[];
+
 #ifdef __cplusplus
 }
 #endif

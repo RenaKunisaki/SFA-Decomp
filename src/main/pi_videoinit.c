@@ -67,9 +67,6 @@
 #include "dolphin/os/OSThread.h"
 #include "dolphin/vi/vifuncs.h"
 
-extern GXFifoObj* gGxFifoObj;
-extern u8 gLoadingScreenTextures[];
-extern RingBufferQueue gVideoFlipQueue;
 
 void videoSwapFrameBuffers(u32 retraceCount);
 void gpuErrorHandler(u32 retraceCount);
@@ -237,9 +234,6 @@ void setDisplayCopyFilter(void)
     }
 }
 
-extern OSThread* gVideoWaitThread;
-extern OSStopwatch gFrameStopwatch;
-extern u8 framesThisStepUnclamped;
 
 #include "main/dll/ppcwgpipe_struct.h"
 extern volatile PPCWGPipe GXWGFifo : (0xCC008000);

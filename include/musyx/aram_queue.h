@@ -38,6 +38,8 @@ typedef struct AramTransferQueues
 STATIC_ASSERT(offsetof(AramTransferQueues, highPriority) == 0x284);
 STATIC_ASSERT(sizeof(AramTransferQueues) == 0x508);
 
+extern AramTransferQueue aramHighPriorityQueue;
+
 void aramUploadData(void *src, u32 dst, u32 size, u32 mode,
                     void (*callback)(u32), u32 callbackArg);
 void aramSyncTransferQueue(void);

@@ -10,6 +10,7 @@
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 
+#include "main/frame_timing.h"
 #define MMSH_SCALES_OBJECT_TYPE_ID          0xB
 #define MMSH_SCALES_CLASS_ID                0x10
 #define MMSH_SCALES_CHILD_SETUP_FLAGS       5
@@ -27,7 +28,6 @@
 #define MMSH_SCALES_NO_MAP_LAYER            -1
 #define MMSH_SCALES_NO_OBJECT_INDEX         -1
 
-extern u8 framesThisStepUnclamped;
 
 int mmshScales_getExtraSize(void) {
     return sizeof(MMSHScalesState);

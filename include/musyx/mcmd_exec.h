@@ -4,6 +4,8 @@
 #include "ghidra_import.h"
 #include "musyx/mcmd.h"
 
+extern u64 macRealTime;
+
 void mcmdRandomKey(McmdVoiceState *state, McmdCommandArgs *args);
 void SelectSource(McmdVoiceState *svoice, McmdInputSlot *dest, McmdCommandArgs *cstep,
                   u64 tstflag, u32 dirtyFlag);

@@ -27,8 +27,6 @@ enum
     THP_COMPONENT_AUDIO = 1
 };
 
-extern AIDCallback gAttractMovieAudioPrevDmaCallback;
-
 BOOL movieLoad(const char* fileName, void* onMemory)
 {
     u32 readOff;

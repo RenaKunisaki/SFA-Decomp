@@ -3,7 +3,12 @@
 
 #include "ghidra_import.h"
 #include "dolphin/gx/GXStruct.h"
+#include "dolphin/gx/GXFifo.h"
+#include "dolphin/os/OSThread.h"
+#include "dolphin/os/OSStopwatch.h"
 #include "main/pi_dolphin_api.h"
+
+struct RingBufferQueue;
 
 void piRomLoadSection(int param_1,int param_2,int param_3);
 
@@ -62,5 +67,13 @@ extern volatile int gGpuStallRetraceCount;
 extern u8 gGxBreakPtEnabled;
 extern u8 gVideoBlackScreenFrameCount;
 extern u16 gGxDrawSyncToken;
+extern u32 gRomListLoadInFlight;
+extern int gForceLoadImmediately;
+extern int sMapFileNameIndexRemapTable[];
+extern GXFifoObj* gGxFifoObj;
+extern OSThread* gVideoWaitThread;
+extern OSStopwatch gFrameStopwatch;
+extern struct RingBufferQueue gVideoFlipQueue;
+extern u8 gLoadingScreenTextures[];
 
 #endif /* MAIN_PI_DOLPHIN_H_ */

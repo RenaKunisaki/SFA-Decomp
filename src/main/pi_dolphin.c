@@ -152,7 +152,6 @@ int lbl_803DB5E4 = 0;
 #define PAD_BUTTON_A  0x100
 #define PAD_BUTTON_B  0x200
 extern u8 gResourceFileTable[]; /* resource file table -- see struct MldfTables */
-extern int gForceLoadImmediately;
 
 #include "main/objprint_load_api.h"
 #include "dolphin/os/OSAlloc.h"
@@ -542,7 +541,7 @@ char* sMapFileNameByMapIdTable[] = {
     sMapFileNameLinki,
 };
 
-u32 sMapFileNameIndexRemapTable[] = {
+int sMapFileNameIndexRemapTable[] = {
     13, 5,  4,  5,  7,  5,  5,  12, 19, 9,  14, 15, 18, 20, 21, 22, 24, 5,  25, 26, 5,  28, 5,  30, 31,
     32, 5,  34, 35, 47, 37, 39, 40, 41, 42, 48, 5,  5,  3,  43, 44, 45, 5,  50, 51, 5,  5,  5,  53, 5,
     6,  16, 10, 5,  38, 55, 54, 5,  56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72,
@@ -737,8 +736,6 @@ char sMapAssetPathFormats[0x78] =
     "%s/animcurv.bin\0%s/animcurv.tab\0%s/voxmap.bin\0\0\0warlock/voxmap.bin\0\0%s/voxmap.tab\0\0"
     "\0%s/mod%d.zlb.bin\0\0\0\0%s/mod%d.tab";
 void gxSetGPMetricsEnabled(int);
-extern u8 gLoadingScreenTextures[];
-extern RingBufferQueue gVideoFlipQueue;
 
 
 void* mapLoadDataFile(int mapId, int fileId)
@@ -3304,7 +3301,6 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
 }
 
 extern int gMapRomListBuffers[];
-extern int gRomListLoadInFlight;
 
 
 int mapGetDirIdx(int idx)
@@ -3985,7 +3981,6 @@ void tvInit(void)
 
 extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
 
-extern u8 enableDebugText;
 
 void gpuErrorHandler(u32 retraceCount);
 void videoSwapFrameBuffers(u32 retraceCount);

@@ -39,7 +39,6 @@
 #include "dolphin/os/OSFastCast.h"
 
 extern f32 widescreenAspect_803DEC1C;
-extern f32 gStandardAspectRatio;
 
 void sceneDraw(void);
 void sceneDrawTransparentPolys(void);

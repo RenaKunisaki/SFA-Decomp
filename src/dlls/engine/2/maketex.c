@@ -13,7 +13,7 @@
 #include "string.h"
 #include "track/intersect_card_api.h"
 
-volatile u32 gSaveCardState = 0xD;
+volatile s32 gSaveCardState = 0xD;
 char* sMemoryCardFileName = sMemoryCardFileNameString;
 int gSaveCardBackdropColor = 0x404040FF;
 int lbl_803DB70C[1] = {0};

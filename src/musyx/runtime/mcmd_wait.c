@@ -14,7 +14,6 @@
 #define MAC_START_TIME(sv) (*(u64*)&(sv)->macStartTimeHi)
 #define MAC_WAIT_TIME(sv)  (*(u64*)&(sv)->waitTimeHi)
 
-extern u64 macRealTime;
 /*
  * Delay/schedule a voice command, optionally randomizing the delay and
  * inserting the voice into the global time queue.

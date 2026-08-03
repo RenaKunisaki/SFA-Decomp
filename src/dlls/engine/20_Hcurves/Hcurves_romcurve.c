@@ -18,7 +18,6 @@ int nRomCurves;
 RomCurveDef* gRomCurveLastFindStart;
 RomCurveDef* gRomCurveLastFindEnd;
 
-extern int gObjfsaPatchCount;
 
 #include "main/dll/objfsa_internal.h"
 
@@ -53,7 +52,6 @@ int RomCurve_segmentIntersectsOriginRayXZ(f32 x, f32 unusedY, f32 z, RomCurveDef
 RomCurveDef* romCurves[ROMCURVE_MAX_CURVES];
 extern ObjfsaPatch gObjfsaPatches[0x3000 / sizeof(ObjfsaPatch)];
 extern ObjfsaWalkGroup gObjfsaWalkGroups[0x1C48 / sizeof(ObjfsaWalkGroup)];
-extern u8 gObjfsaWalkGroupActive[0xB8];
 
 #define OBJFSA_CORNER(BASE, OFF, POSOFF) (f32)((f32) * (s8*)(OFF) * scale + *(f32*)((BASE) + (POSOFF)))
 #define OBJFSA_SET_PLANE(P, K, XA, ZA)                                                                                 \

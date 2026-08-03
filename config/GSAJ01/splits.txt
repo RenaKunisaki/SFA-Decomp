@@ -17,7 +17,7 @@ main/render.c:
 	.text       start:0x800066E0 end:0x80008DF4
 	.rodata     start:0x802C19C0 end:0x802C1B68
 	.data       start:0x802C2E60 end:0x802C5008
-	.sdata2     start:0x803DE628 end:0x803DE668
+	.sdata2     start:0x803DE664 end:0x803DE668
 
 main/audio.c:
 	.text       start:0x80008DF4 end:0x8000B4D0
@@ -596,10 +596,17 @@ dlls/engine/44/44.c:
 
 dlls/engine/45/45.c:
 	.text       start:0x800CD450 end:0x800D5550
-	.data       start:0x80311220 end:0x80311404
+	.data       start:0x80311220 end:0x80311408
 	.sdata      start:0x803DB9A0 end:0x803DB9B0
 	.sbss       start:0x803DD520 end:0x803DD530
 	.sdata2     start:0x803E0430 end:0x803E05F8
+
+dlls/engine/3/3.c:
+	.text       start:0x800D5550 end:0x800D7588
+	.data       start:0x80311408 end:0x80311460
+	.bss        start:0x8039C578 end:0x8039CC08
+	.sbss       start:0x803DD530 end:0x803DD540
+	.sdata2     start:0x803E05F8 end:0x803E0660
 
 dlls/engine/22/22.c:
 	.text       start:0x800D7588 end:0x800D7F7C
@@ -5003,15 +5010,25 @@ dolphin/TRK_MINNOW_DOLPHIN/mem_TRK.c:
 	.text       start:0x8028B10C end:0x8028B1C8
 
 dolphin/TRK_MINNOW_DOLPHIN/targimpl.c:
-	.init       start:0x80003100 end:0x800033A8
-	.init       start:0x800033A8 end:0x800034E4
-	.init       start:0x800034E4 end:0x80003538
-	.init       start:0x80003538 end:0x8000546C
 	.text       start:0x8028B1C8 end:0x8028CA60
-	.text       start:0x8028CA60 end:0x8028CA80
 	.rodata     start:0x802C2A78 end:0x802C2B00
 	.data       start:0x80332410 end:0x80332440
 	.bss        start:0x803D8418 end:0x803D8998
+
+dolphin/TRK_MINNOW_DOLPHIN/targsupp.s:
+	.text       start:0x8028CA60 end:0x8028CA80
+
+Runtime.PPCEABI.H/__start.c:
+	.init       start:0x80003100 end:0x800033A8
+
+Runtime.PPCEABI.H/__mem.c:
+	.init       start:0x800033A8 end:0x800034E4
+
+Runtime.PPCEABI.H/mem_TRK.c:
+	.init       start:0x800034E4 end:0x80003538
+
+dolphin/TRK_MINNOW_DOLPHIN/__exception.s:
+	.init       start:0x80003538 end:0x8000546C
 
 dolphin/TRK_MINNOW_DOLPHIN/dolphin_trk.c:
 	.init       start:0x8000546C end:0x80005570
