@@ -1063,3 +1063,104 @@ Two housekeeping items ride along and are easy to miss: all four
 `config/<version>/splits.txt` carry the unit key and must move together,
 and `tools/banned_shapes_baseline.txt` is keyed by path, so a rename
 that skips it shows up as regrowth.
+
+## The `.sdata2` interning oracle, swept tree-wide
+
+The oracle in the previous section was used once, on DLL 0x0D1/0x0D2.
+Running it over every unit turns it into a mechanical TU-boundary
+detector, so it is worth recording what a full sweep costs and what it
+finds.
+
+### Two corrections to the method
+
+`@N` names are **section-local and renumbered per TU**, so the same
+`@69` is a different object in every unit.  Resolving relocation targets
+through a name-keyed symbol map collapses them and manufactures
+cross-unit "sharing" out of nothing: the first pass of this sweep
+reported 33 shared addresses, of which 15 were `@N` collisions between
+units as unrelated as `OSCache.c` and `GXLight.c`.  Resolve only
+`lbl_<addr>` names (the address is in the name) and globals that are
+unique tree-wide.
+
+A four-byte comparison is not enough to separate two pools.  `43300000`
+is the high word of **both** int-to-double bias doubles
+(`4330000000000000` for unsigned, `4330000080000000` for signed), so a
+word-wise duplicate test reports a collision between two units that hold
+*different* constants.  Compare doubles as eight bytes at eight-byte
+alignment.
+
+### The control: MWCC does not fold, and the linker does not either
+
+Counted across the whole `.sdata2` (10169 words), `0.0f` occupies
+**1394** separate slots, `1.0f` 553, `0.5f` 154, `255.0f` 127,
+`100.0f` 145, `0.01f` 130, `120.0f` 44, `640.0f` 13; the two bias
+doubles occupy 210 and 390.  Every TU that needs a constant gets its own
+copy.  That is what makes a *shared address* evidence at all, and it
+also gives the oracle a second, stronger form:
+
+> **Separation proof.** If two candidate halves each hold the same value
+> at a *different* address, they are two TUs — one TU would have
+> interned it once.
+
+The union form (one address read from both halves) and the separation
+form disagree only when a carve boundary is misplaced, which is itself
+worth knowing.
+
+### Yield
+
+8690 distinct `.sdata2` addresses are referenced from `.text`; **18** are
+referenced from more than one object, forming **four** candidate groups,
+each of which is a *contiguous* run in `.text` order.  All four were
+screened for a shared compiler invocation, because a retail TU had one.
+None survived:
+
+| candidate one-TU group | evidence | verdict |
+|---|---|---|
+| `gametext` + `gametext_measurebyid` + `gametext_tail` + `MWTrace` + `textrender` + `textrender_gettext` + `textrender_run` | 5 shared words incl. both bias doubles | no shared invocation: `textrender_gettext`'s `nopropagation` is load-bearing for `gameTextGet` alone (100.0 -> 97.455, −660) |
+| `shader` + `lightmap` + `lightmap_initmapblocks` + `lightmap_draw` + `tex_dolphin` | 11 shared words in the uncarved block 0x803DEBB0–0x803DEC58; `texture` reads only below it and `shadow_dolphin` only above it, so the pool's edges are the TU's edges | no shared invocation over 12 flag sets; best is `nopeephole,noschedule` + `-inline noauto` at −3336, and the only set that keeps `lightmap_initmapblocks` at 100.0 costs −18932 |
+| `Landed_Arwi` (0x11B) + `284` (0x11C) | 2 shared words, and both already compile under one flag set at 100.0 | **refuted by the separation proof**: `20.0f` is interned twice, at 0x803E3BA0 and 0x803E3BF0 |
+| `650` + `651` | 1 shared word, no duplicate values | no shared invocation: `650` at 100.0 needs propagation, `651` at 100.0 needs `nocse,nopropagation`; best −188 |
+
+`-inline noauto` is inert on the textrender group and worth 4120 bytes
+on the shader/lightmap group, where the default `-inline auto` takes
+`lightmap_draw` to 81.5 — a merged unit really does need a flag its
+halves did not, but needing one is not the same as having one.
+
+### `.data` emission order is strict source order
+
+Established while testing the `objprint_dolphin` + `pi_dolphin` merge,
+and reusable anywhere a merged or reordered TU has to reproduce a `.data`
+carve: MWCC GC/2.0 emits `.data` objects in the order the *source text*
+produces them — a file-scope initialised array at its **declaration**,
+and a jumptable or string literal at the **function that owns it**.
+Nothing is grouped or sorted.  Reading a target `.data` layout therefore
+reads back the original declaration order directly.
+
+For that pair the retail order is: the three `objprint` arrays, then all
+of `pi_dolphin`'s tables, then the five jumptables of the last
+`objprint` functions, with `"ERROR: asset index overflow "` between the
+third and fourth because the function that prints it sits between
+`defragMemory` and `mapUnload`.  Hoisting the declarations to match, and
+returning that string to a literal at its use site, makes the merged
+`.data` byte-exact over all 0x17d0 bytes.
+
+### `objprint_dolphin.c` + `pi_dolphin.c` is one TU, and the merge is blocked on one row
+
+Three independent oracles agree: five jumptables carved to
+`pi_dolphin`'s `.data` are owned by `objprint_dolphin` functions
+(`ObjLoad_GetDvdCommandBlockStatus`, `defragMemory`, `mapUnload`); both
+halves define their own ABI-identical `struct MldfTables`; and the
+merged `.data` is byte-exact.  Every section is contiguous across the
+boundary.  The merge builds, links, and reproduces 88 of 89 functions —
+`objRenderModel` even improves, 99.804 -> 99.935.
+
+It is not landed because there is no shared invocation.  Our
+`objprint_dolphin` carries `nolifetimes` and `pi_dolphin` does not, and
+the flag is not free either way: with it, `initLoadFiles` and
+`loadAndDecompressDataFile` fall off 100.0 (−8172); without it,
+`mergeTableFiles` does (−1708).  Thirteen flag sets were tried and none
+holds both.  With the merged unit on `pi_dolphin`'s flags the sole
+residual in `mergeTableFiles` is a scratch-GPR permutation — `w1` in r6
+against r11 and `v` in r9 against r6 — after a decl-order sweep already
+recovered `dst` (99.157 -> 99.403).  One `#108` row stands between this
+merge and a clean landing.
