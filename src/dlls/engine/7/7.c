@@ -563,7 +563,6 @@ void mm_free_(void* ptr)
 
 Texture* gNewCloudLayerTextures[4];
 
-void snowCloudInitFlakes(f32* buf, f32 a, f32 b, int cloudId);
 void snowCloudInitFlakes(f32* buf, f32 a, f32 b, int cloudId)
 {
     u8* p;
@@ -707,7 +706,6 @@ void snowFreeSnowCloud(int cloudId)
 }
 NewCloud* gNewClouds[8];
 
-void dll_07_func0A_nop(void);
 void dll_07_func0A_nop(void)
 {
 }
@@ -725,7 +723,6 @@ const SnowVec3 lbl_802C1FC0 = {{0.0f, 0.0f, 0.0f}};
 
 static const SnowFlakeUVs kSnowFlakeUVs = {{-48, 0, 176, 0, 64, 256}};
 
-int snowPrintSnowCloud(int arg, int cloudId);
 int snowPrintSnowCloud(int arg, int cloudId)
 {
     u8* p;
@@ -969,7 +966,6 @@ f32 lbl_8039A8F0[4];
 
 extern char sSnowCloudErrorMessageBlock[];
 
-void snowCloudUpdateFlakes(u8* snow);
 
 void snowCloudUpdateFlakes(u8* snow)
 {
@@ -1213,7 +1209,6 @@ static void snowReposSnowCloud(int cloudId)
 extern char sSnowKillSnowCloudInvalidCloudId[];
 
 
-void snowCloudComputeDrift(f32* out, f32* pos, f32 scale);
 void snowCloudComputeDrift(f32* out, f32* pos, f32 scale)
 {
     f32 accX;
@@ -1281,7 +1276,6 @@ u8 lbl_8030F500[160] = {255, 206, 0,   0,   255, 206, 255, 206, 0, 100, 255, 206
 
 #undef NC_CLOUD
 #define NC_CLOUD ((u8 *)gNewClouds[id])
-void newClouds(CloudSpawnParams* params, void* owner, f32 x, f32 y, f32 z);
 void newClouds(CloudSpawnParams* params, void* owner, f32 x, f32 y, f32 z)
 {
     char* strs;
@@ -1994,7 +1988,6 @@ void newclouds_onMapSetup(void)
 #define NC_CLOUD ((u8 *)gNewClouds[cfg->cloudIndex])
 extern int gNewCloudMusicIdByType[5];
 
-void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params);
 void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params)
 {
     CloudSpawnParams* cfg = (CloudSpawnParams*)params;

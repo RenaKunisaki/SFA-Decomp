@@ -3,7 +3,6 @@
 #include "string.h"
 
 // prototypes
-static void CreateCallbackFat(s32 chan, s32 result);
 
 static void CreateCallbackFat(s32 chan, s32 result) {
     CARDControl* card;

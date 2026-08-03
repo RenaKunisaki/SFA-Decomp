@@ -215,7 +215,6 @@ typedef struct
 } TrickyVec3;
 
 
-void Tricky_resumeAfterCommand(GameObject* obj, int state);
 void Tricky_resumeAfterCommand(GameObject* obj, int state)
 {
     ObjHitsPriorityState* hitState;

@@ -1,5 +1,4 @@
 #include "track/intersect_hud_api.h"
-#define GAMETEXT_COLOR_U8
 #include "main/gametext_shared_internal.h"
 #include "main/mm.h"
 #include "main/texture.h"

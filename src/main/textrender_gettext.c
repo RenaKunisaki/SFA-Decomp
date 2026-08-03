@@ -1,5 +1,4 @@
 #include "main/gametext_api.h"
-#define GAMETEXT_COLOR_U8
 #include "main/gametext_shared_internal.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/printf.h"
 #include "main/frame_timing.h"

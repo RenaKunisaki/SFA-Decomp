@@ -14,7 +14,6 @@ static float __four_over_pi_m1[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 
 __declspec(section ".ctors") static void* const __sinit_trigf_c_reference = __sinit_trigf_c;
 
-float tanf(float angle);
 
 float tanf(float angle)
 {

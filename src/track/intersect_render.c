@@ -3514,7 +3514,6 @@ void gxTevResetStages(void)
     gTevTexMapCursor = 0;
 }
 
-void _gxSetTevColor2(u8 r, u8 g, u8 b, u8 a);
 void _gxSetTevColor2(u8 r, u8 g, u8 b, u8 a)
 {
     GXColor c;
@@ -3525,7 +3524,6 @@ void _gxSetTevColor2(u8 r, u8 g, u8 b, u8 a)
     GXSetTevColor(GX_TEVREG1, c);
 }
 
-void _gxSetTevColor1(u8 r, u8 g, u8 b, u8 a);
 void _gxSetTevColor1(u8 r, u8 g, u8 b, u8 a)
 {
     GXColor c;

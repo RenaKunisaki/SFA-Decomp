@@ -57,8 +57,6 @@ const LightmapTriangle gDFropenodeSegmentTriangles[DFROPENODE_SEGMENT_TRIANGLE_C
  * around the Y axis and its two end caps are translated onto the link nodes.
  */
 void DFropenode_buildRopeSegmentMesh(const LightmapVertex* templateVertices, int angle, const Vec* startNode,
-                                     const Vec* endNode, LightmapVertex* out);
-void DFropenode_buildRopeSegmentMesh(const LightmapVertex* templateVertices, int angle, const Vec* startNode,
                                      const Vec* endNode, LightmapVertex* out) {
     s16 startX = 100.0f * startNode->x;
     s16 startY = 100.0f * startNode->y;

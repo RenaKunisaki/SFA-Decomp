@@ -2210,7 +2210,6 @@ char sObjHitReactResetString[7] = "reset\n";
 
 const StaffCollisionColorArgs gObjHitReactEffectColorArgs = {8, 0xB4, 0xF0, 0xFF};
 
-u32 ObjHitReact_Update(int obj, ObjHitReactEntry* reactionEntryTable, u32 reactionEntryCount, u32 reactionState, float* reactionStepScale);
 u32 ObjHitReact_Update(int obj, ObjHitReactEntry* reactionEntryTable, u32 reactionEntryCount, u32 reactionState,
                        float* reactionStepScale) {
     ObjAnimDef* animDef;

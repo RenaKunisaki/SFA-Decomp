@@ -1,5 +1,4 @@
 #include "main/gametext_api.h"
-#define GAMETEXT_COLOR_U8
 #include "main/gametext_color_api.h"
 #include "main/gametext_charset_api.h"
 #include "main/gametext_show_str_api.h"

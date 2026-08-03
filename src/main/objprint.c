@@ -369,7 +369,6 @@ void objSoundStartTimed(GameObject* obj, ObjSoundState* state, u16 sfx, int pitc
 
 int gObjLookAtJointKeys[10] = {0, 0xb, 0xc, 0xd, 0xe, 0xf, 0x10, 0x11, 0x12, 0x13};
 
-int* objGetLookAtJointKeys(void);
 int* objGetLookAtJointKeys(void) {
     return gObjLookAtJointKeys;
 }
@@ -970,7 +969,6 @@ void objJointTracksSetAngles(u8* channelData, int count, s16 yaw, s16 pitch) {
 
 void characterDoEyeMovements(GameObject* obj, CharacterEyeAnimState* state, f32 unused);
 
-void objModelClearJointVectors(GameObject* obj);
 void objModelClearJointVectors(GameObject* obj) {
     s16* found;
     int slot;

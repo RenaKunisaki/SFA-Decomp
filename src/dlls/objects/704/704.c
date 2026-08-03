@@ -143,7 +143,6 @@ extern u8 gTitleScreenMtx[0x34];
 extern TitleAnimMoves gTitleScreenAnimMoves[];
 extern f32 hudMatrix[4][4];
 extern f32 lbl_803E2300;
-void titleScreenPlayActorSfx(GameObject* obj, u8* arr);
 
 void titleScreenPlayActorSfx(GameObject* obj, u8* arr)
 {

@@ -4,7 +4,6 @@
 #include "main/hud_visibility_api.h"
 #include "main/audio/sfx.h"
 #include "main/gametext_api.h"
-#define GAMETEXT_COLOR_U8
 #include "main/gametext_color_api.h"
 #include "main/gameloop_api.h"
 #include "main/gametext_charset_api.h"

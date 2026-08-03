@@ -10,7 +10,6 @@ static DVDBB2* bb2;
 static DVDDiskID* idTmp;
 
 // prototypes
-static void cb(s32 result, DVDCommandBlock* block);
 
 static void cb(s32 result, DVDCommandBlock* block) {
     if (result > 0) {

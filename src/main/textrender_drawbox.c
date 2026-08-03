@@ -1,7 +1,6 @@
 #define INTERSECT_HUD_RECT_COLOR_POINTER
 #include "track/intersect_hud_api.h"
 #undef INTERSECT_HUD_RECT_COLOR_POINTER
-#define GAMETEXT_COLOR_U8
 #include "main/gametext_shared_internal.h"
 #include "main/gametext_api.h"
 #include "main/gametext_task_api.h"

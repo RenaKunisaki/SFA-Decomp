@@ -1,6 +1,5 @@
 #include "global.h"
 
-void mtx44Identity(f32* mat);
 
 /* 4x4 identity fill. */
 void mtx44Identity(f32* mat)
