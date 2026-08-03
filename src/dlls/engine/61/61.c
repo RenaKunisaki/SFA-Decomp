@@ -17,7 +17,7 @@
 #define TITLE_MENU_FLAG_MOVED_LEFT       0x04
 #define TITLE_MENU_FLAG_MOVED_RIGHT      0x08
 #define TITLE_MENU_FLAG_CHANGED          0x10
-#define TITLE_MENU_FLAG_A_TOGGLE_PENDING 0x20
+#define TITLE_MENU_FLAG_A_TOGGLE_DISABLED 0x20
 #define TITLE_MENU_FLAG_VOLUME_PREVIEW   0x40
 #define TITLE_MENU_FLAG_MUSIC_PREVIEW    0x80
 
@@ -33,15 +33,15 @@ s16 gTitleMenuSliderVelocity;
 void* gTitleMenuItemTextures[TITLE_MENU_ITEM_TEXTURE_COUNT];
 s16 gTitleMenuItemTextureIds[TITLE_MENU_ITEM_TEXTURE_COUNT] = {1558, 1557, 777, 778, 779, 780};
 
-void TitleMenuItem_setAButtonToggle(TitleMenuItem* item, int flag)
+void TitleMenuItem_setAButtonToggle(TitleMenuItem* item, int enabled)
 {
-    if (flag != 0)
+    if (enabled != 0)
     {
-        item->flags = (u8)(item->flags & ~TITLE_MENU_FLAG_A_TOGGLE_PENDING);
+        item->flags = (u8)(item->flags & ~TITLE_MENU_FLAG_A_TOGGLE_DISABLED);
     }
     else
     {
-        item->flags = (u8)(item->flags | TITLE_MENU_FLAG_A_TOGGLE_PENDING);
+        item->flags = (u8)(item->flags | TITLE_MENU_FLAG_A_TOGGLE_DISABLED);
     }
 }
 
@@ -123,7 +123,7 @@ void TitleMenuItem_render(TitleMenuItem* item, int unused, int alpha)
             textureIndex = 5;
         }
 
-        if ((item->flags & TITLE_MENU_FLAG_A_TOGGLE_PENDING) != 0)
+        if ((item->flags & TITLE_MENU_FLAG_A_TOGGLE_DISABLED) != 0)
         {
             drawAlpha = (u8)alpha >> 1;
         }
@@ -236,7 +236,7 @@ void TitleMenuItem_update(TitleMenuItem* item)
         }
         break;
     default:
-        if (((item->flags & TITLE_MENU_FLAG_A_TOGGLE_PENDING) == 0) && ((getButtonsJustPressed(0) & PAD_BUTTON_A) != 0))
+        if (((item->flags & TITLE_MENU_FLAG_A_TOGGLE_DISABLED) == 0) && ((getButtonsJustPressed(0) & PAD_BUTTON_A) != 0))
         {
             Sfx_PlayFromObject(0, SFXTRIG_sc_lockedon22_f4);
             item->value = (s16)(item->value ^ 1);
