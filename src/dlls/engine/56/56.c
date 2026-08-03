@@ -1,3 +1,4 @@
+#include "dlls/object_descriptor.h"
 #include "main/texture.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/gameloop_api.h"
@@ -79,11 +80,33 @@ TitleMenuTextEntry gWeirdMenuWidgetWork[2] = {
 };
 
 u32 gWeirdMenuWidgetLayout[3] = {0x000000f9, 0xffffffff, 0x00000102};
+typedef struct WeirdUnusedMenuDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback run;
+    ObjectDescriptorCallback frameEnd;
+    ObjectDescriptorCallback render;
+    ObjectDescriptorCallback slot06;
+} WeirdUnusedMenuDllInterface;
 
-u32 WeirdUnusedMenu_funcs[11] = {0x00000000, 0x00000000, 0x00000000, 0x00050000,
-        (u32)WeirdUnusedMenu_initialise, (u32)WeirdUnusedMenu_release,
-        0x00000000, (u32)WeirdUnusedMenu_run, (u32)WeirdUnusedMenu_frameEnd,
-        (u32)WeirdUnusedMenu_render, 0x00000000};
+WeirdUnusedMenuDllInterface WeirdUnusedMenu_funcs = {
+    0,
+    0,
+    0,
+    0x00050000,
+    (ObjectDescriptorCallback)WeirdUnusedMenu_initialise,
+    (ObjectDescriptorCallback)WeirdUnusedMenu_release,
+    0,
+    (ObjectDescriptorCallback)WeirdUnusedMenu_run,
+    (ObjectDescriptorCallback)WeirdUnusedMenu_frameEnd,
+    (ObjectDescriptorCallback)WeirdUnusedMenu_render,
+    0,
+};
 
 void WeirdUnusedMenu_render(void)
 {

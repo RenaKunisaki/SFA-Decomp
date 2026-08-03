@@ -1,3 +1,4 @@
+#include "dlls/object_descriptor.h"
 #include "main/dll/partfx_interface.h"
 #include "main/camera.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
@@ -175,17 +176,31 @@ void playerShadow_setMode(u8 v)
         gPlayerShadowMode = v;
     }
 }
+typedef struct PlayerShadowDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback slot03;
+    ObjectDescriptorCallback renderObject;
+    ObjectDescriptorCallback setMode;
+} PlayerShadowDllInterface;
 
-void* playerShadow_funcs[10] = {(void*)0x00000000,
-                                (void*)0x00000000,
-                                (void*)0x00000000,
-                                (void*)0x00050000,
-                                playerShadow_initialise,
-                                playerShadow_release,
-                                (void*)0x00000000,
-                                playerShadow_func03_nop,
-                                playerShadow_renderObject,
-                                playerShadow_setMode};
+PlayerShadowDllInterface playerShadow_funcs = {
+    0,
+    0,
+    0,
+    0x00050000,
+    (ObjectDescriptorCallback)playerShadow_initialise,
+    (ObjectDescriptorCallback)playerShadow_release,
+    0,
+    (ObjectDescriptorCallback)playerShadow_func03_nop,
+    (ObjectDescriptorCallback)playerShadow_renderObject,
+    (ObjectDescriptorCallback)playerShadow_setMode,
+};
 
 void playerShadow_renderObject(GameObject* obj)
 {

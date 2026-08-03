@@ -1,3 +1,4 @@
+#include "dlls/object_descriptor.h"
 #include "main/dll/partfx_interface.h"
 #include "main/shader_api.h"
 #include "sys/objects.h"
@@ -420,18 +421,36 @@ void boneParticleEffect_initialise(void) {
         }
     }
 }
+typedef struct BoneParticleEffectDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback slot03;
+    ObjectDescriptorCallback slot04;
+    ObjectDescriptorCallback spawnAtBones;
+    ObjectDescriptorCallback slot06;
+    ObjectDescriptorCallback update;
+    ObjectDescriptorCallback slot08;
+    ObjectDescriptorCallback slot09;
+} BoneParticleEffectDllInterface;
 
-void* boneParticleEffect_funcs[14] = {(void*)0x00000000,
-                                      (void*)0x00000000,
-                                      (void*)0x00000000,
-                                      (void*)0x00080000,
-                                      boneParticleEffect_initialise,
-                                      boneParticleEffect_release,
-                                      (void*)0x00000000,
-                                      boneParticleEffect_func03_nop,
-                                      boneParticleEffect_func04_nop,
-                                      boneParticleEffect_spawnAtBones,
-                                      boneParticleEffect_func06_nop,
-                                      boneParticleEffect_update,
-                                      boneParticleEffect_func08_nop,
-                                      (void*)0x00000000};
+BoneParticleEffectDllInterface boneParticleEffect_funcs = {
+    0,
+    0,
+    0,
+    0x00080000,
+    (ObjectDescriptorCallback)boneParticleEffect_initialise,
+    (ObjectDescriptorCallback)boneParticleEffect_release,
+    0,
+    (ObjectDescriptorCallback)boneParticleEffect_func03_nop,
+    (ObjectDescriptorCallback)boneParticleEffect_func04_nop,
+    (ObjectDescriptorCallback)boneParticleEffect_spawnAtBones,
+    (ObjectDescriptorCallback)boneParticleEffect_func06_nop,
+    (ObjectDescriptorCallback)boneParticleEffect_update,
+    (ObjectDescriptorCallback)boneParticleEffect_func08_nop,
+    0,
+};

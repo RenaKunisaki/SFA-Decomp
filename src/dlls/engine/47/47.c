@@ -1,3 +1,4 @@
+#include "dlls/object_descriptor.h"
 #include "sys/objects.h"
 #include "main/dll/player_objects.h"
 #include "main/pad.h"
@@ -300,24 +301,48 @@ void Carryable_release(void)
 void Carryable_initialise(void)
 {
 }
+typedef struct CarryableDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback init;
+    ObjectDescriptorCallback updateHeld;
+    ObjectDescriptorCallback updateRenderState;
+    ObjectDescriptorCallback free;
+    ObjectDescriptorCallback getCarryState;
+    ObjectDescriptorCallback wasJustGrabbed;
+    ObjectDescriptorCallback getSurfaceType;
+    ObjectDescriptorCallback setGravityEnabled;
+    ObjectDescriptorCallback setDropDisabled;
+    ObjectDescriptorCallback getDropDisabled;
+    ObjectDescriptorCallback setSuppressPositionSave;
+    ObjectDescriptorCallback stopCarrying;
+    ObjectDescriptorCallback slot0F;
+} CarryableDllInterface;
 
-void* Carryable_funcs[20] = {(void*)0x00000000,
-                             (void*)0x00000000,
-                             (void*)0x00000000,
-                             (void*)0x000E0000,
-                             Carryable_initialise,
-                             Carryable_release,
-                             (void*)0x00000000,
-                             Carryable_init,
-                             Carryable_updateHeld,
-                             Carryable_updateRenderState,
-                             Carryable_free,
-                             Carryable_getCarryState,
-                             Carryable_wasJustGrabbed,
-                             Carryable_getSurfaceType,
-                             Carryable_setGravityEnabled,
-                             Carryable_setDropDisabled,
-                             Carryable_getDropDisabled,
-                             Carryable_setSuppressPositionSave,
-                             Carryable_stopCarrying,
-                             (void*)0x00000000};
+CarryableDllInterface Carryable_funcs = {
+    0,
+    0,
+    0,
+    0x000E0000,
+    (ObjectDescriptorCallback)Carryable_initialise,
+    (ObjectDescriptorCallback)Carryable_release,
+    0,
+    (ObjectDescriptorCallback)Carryable_init,
+    (ObjectDescriptorCallback)Carryable_updateHeld,
+    (ObjectDescriptorCallback)Carryable_updateRenderState,
+    (ObjectDescriptorCallback)Carryable_free,
+    (ObjectDescriptorCallback)Carryable_getCarryState,
+    (ObjectDescriptorCallback)Carryable_wasJustGrabbed,
+    (ObjectDescriptorCallback)Carryable_getSurfaceType,
+    (ObjectDescriptorCallback)Carryable_setGravityEnabled,
+    (ObjectDescriptorCallback)Carryable_setDropDisabled,
+    (ObjectDescriptorCallback)Carryable_getDropDisabled,
+    (ObjectDescriptorCallback)Carryable_setSuppressPositionSave,
+    (ObjectDescriptorCallback)Carryable_stopCarrying,
+    0,
+};

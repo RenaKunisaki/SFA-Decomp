@@ -1,3 +1,4 @@
+#include "dlls/object_descriptor.h"
 #include "main/newclouds_state.h"
 #include "main/newclouds.h"
 #include "main/newshadows.h"
@@ -2217,8 +2218,41 @@ void newclouds_initialise(void)
     gNewCloudInitialized = 0;
 }
 int gNewCloudMusicIdByType[5] = {43, 0, 0, 0, 0};
+typedef struct NewCloudsDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback updateEnvfxAct;
+    ObjectDescriptorCallback onMapSetup;
+    ObjectDescriptorCallback killSnowCloud;
+    ObjectDescriptorCallback run;
+    ObjectDescriptorCallback renderSnowClouds;
+    ObjectDescriptorCallback isBlizzardActive;
+    ObjectDescriptorCallback slot09;
+    ObjectDescriptorCallback slot0A;
+} NewCloudsDllInterface;
 
-u32 newclouds_funcs[15] = { 0x00000000, 0x00000000, 0x00000000, 0x000a0000, (u32)newclouds_initialise, (u32)newclouds_release, 0x00000000, (u32)newclouds_updateEnvfxAct, (u32)newclouds_onMapSetup, (u32)newclouds_killSnowCloud, (u32)newclouds_run, (u32)newclouds_renderSnowClouds, (u32)newclouds_isBlizzardActive, (u32)dll_07_func09, (u32)dll_07_func0A_nop };
+NewCloudsDllInterface newclouds_funcs = {
+    0,
+    0,
+    0,
+    0x000a0000,
+    (ObjectDescriptorCallback)newclouds_initialise,
+    (ObjectDescriptorCallback)newclouds_release,
+    0,
+    (ObjectDescriptorCallback)newclouds_updateEnvfxAct,
+    (ObjectDescriptorCallback)newclouds_onMapSetup,
+    (ObjectDescriptorCallback)newclouds_killSnowCloud,
+    (ObjectDescriptorCallback)newclouds_run,
+    (ObjectDescriptorCallback)newclouds_renderSnowClouds,
+    (ObjectDescriptorCallback)newclouds_isBlizzardActive,
+    (ObjectDescriptorCallback)dll_07_func09,
+    (ObjectDescriptorCallback)dll_07_func0A_nop,
+};
 
 char sSnowFreeSnowCloudInvalidCloudId[] = "!!! Error non-existant cloud id - %i - in snowFreeSnowCloud\n";
 char sSnowPrintSnowCloudInvalidCloudId[] = "!!! Error non-existant cloud id - %i - in snowPrintSnowCloud\n";

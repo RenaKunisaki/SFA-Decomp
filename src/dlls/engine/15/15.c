@@ -1,3 +1,4 @@
+#include "dlls/object_descriptor.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/rom_curve_interface.h"
 #include "sys/objects.h"
@@ -1052,14 +1053,68 @@ void player_release(void)
 void player_initialise(void)
 {
 }
+typedef struct PlayerDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback init;
+    ObjectDescriptorCallback update;
+    ObjectDescriptorCallback updateVel;
+    ObjectDescriptorCallback setOverride;
+    ObjectDescriptorCallback setState;
+    ObjectDescriptorCallback followCurve;
+    ObjectDescriptorCallback moveTowardPoint;
+    ObjectDescriptorCallback advanceMove;
+    ObjectDescriptorCallback slot0B;
+    ObjectDescriptorCallback modelMtxFn;
+    ObjectDescriptorCallback render2;
+    ObjectDescriptorCallback rotateTowardEnemy;
+    ObjectDescriptorCallback playSoundFn0F;
+    ObjectDescriptorCallback playSoundFn10;
+    ObjectDescriptorCallback findCurve;
+    ObjectDescriptorCallback updateCurve;
+    ObjectDescriptorCallback slot13;
+    ObjectDescriptorCallback clearXZvel;
+    ObjectDescriptorCallback setAnimIds;
+    ObjectDescriptorCallback updateSecondaryBlend;
+    ObjectDescriptorCallback doProjGfx;
+    ObjectDescriptorCallback updateParticles;
+    ObjectDescriptorCallback slot19;
+} PlayerDllInterface;
 
-u32 player_funcs[30] = {
-    0, 0, 0, 0x00190000,
-    (u32)player_initialise, (u32)player_release, 0, (u32)player_init,
-    (u32)player_update, (u32)player_updateVel, (u32)player_setOverride, (u32)player_setState,
-    (u32)player_followCurve, (u32)player_moveTowardPoint, (u32)player_advanceMove, (u32)dll_0F_func0B,
-    (u32)player_modelMtxFn, (u32)player_render2, (u32)player_rotateTowardEnemy, (u32)player_playSoundFn0F,
-    (u32)player_playSoundFn10, (u32)player_findCurve, (u32)player_updateCurve, (u32)dll_0F_func13,
-    (u32)player_clearXZvel, (u32)player_setAnimIds, (u32)player_updateSecondaryBlend, (u32)player_doProjGfx,
-    (u32)player_updateParticles, (u32)dll_0F_func19_nop,
+PlayerDllInterface player_funcs = {
+    0,
+    0,
+    0,
+    0x00190000,
+    (ObjectDescriptorCallback)player_initialise,
+    (ObjectDescriptorCallback)player_release,
+    0,
+    (ObjectDescriptorCallback)player_init,
+    (ObjectDescriptorCallback)player_update,
+    (ObjectDescriptorCallback)player_updateVel,
+    (ObjectDescriptorCallback)player_setOverride,
+    (ObjectDescriptorCallback)player_setState,
+    (ObjectDescriptorCallback)player_followCurve,
+    (ObjectDescriptorCallback)player_moveTowardPoint,
+    (ObjectDescriptorCallback)player_advanceMove,
+    (ObjectDescriptorCallback)dll_0F_func0B,
+    (ObjectDescriptorCallback)player_modelMtxFn,
+    (ObjectDescriptorCallback)player_render2,
+    (ObjectDescriptorCallback)player_rotateTowardEnemy,
+    (ObjectDescriptorCallback)player_playSoundFn0F,
+    (ObjectDescriptorCallback)player_playSoundFn10,
+    (ObjectDescriptorCallback)player_findCurve,
+    (ObjectDescriptorCallback)player_updateCurve,
+    (ObjectDescriptorCallback)dll_0F_func13,
+    (ObjectDescriptorCallback)player_clearXZvel,
+    (ObjectDescriptorCallback)player_setAnimIds,
+    (ObjectDescriptorCallback)player_updateSecondaryBlend,
+    (ObjectDescriptorCallback)player_doProjGfx,
+    (ObjectDescriptorCallback)player_updateParticles,
+    (ObjectDescriptorCallback)dll_0F_func19_nop,
 };

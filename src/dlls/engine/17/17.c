@@ -1,3 +1,4 @@
+#include "dlls/object_descriptor.h"
 #include "main/pi_dolphin.h"
 #include "main/mapEventTypes.h"
 #include "main/dll/dll_0015_curves.h"
@@ -260,7 +261,28 @@ s16 gTaskHintMapData[256] = {
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0,
 };
+typedef struct ScreensDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback show;
+    ObjectDescriptorCallback remove;
+    ObjectDescriptorCallback run;
+} ScreensDllInterface;
 
-void* screens_funcs[10] = {(void*)0x00000000,  (void*)0x00000000, (void*)0x00000000, (void*)0x00050000,
-                          screens_initialise, screens_release,   (void*)0x00000000, screens_show,
-                          screens_remove,     screens_run};
+ScreensDllInterface screens_funcs = {
+    0,
+    0,
+    0,
+    0x00050000,
+    (ObjectDescriptorCallback)screens_initialise,
+    (ObjectDescriptorCallback)screens_release,
+    0,
+    (ObjectDescriptorCallback)screens_show,
+    (ObjectDescriptorCallback)screens_remove,
+    (ObjectDescriptorCallback)screens_run,
+};

@@ -1,5 +1,6 @@
 #define OBJFSA_PATCH_EXIT_U16
 #define TRACK_BBOX_FLAGS_S8
+#include "dlls/object_descriptor.h"
 #include "dolphin/os/OSReport.h"
 #include "main/dll/rom_curve_def.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
@@ -2959,54 +2960,107 @@ void RomCurve_release(void)
 void RomCurve_initialise(void)
 {
 }
+typedef struct RomCurveDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback slot03;
+    ObjectDescriptorCallback add;
+    ObjectDescriptorCallback remove;
+    ObjectDescriptorCallback getCurves;
+    ObjectDescriptorCallback find;
+    ObjectDescriptorCallback findNearObj;
+    ObjectDescriptorCallback getById;
+    ObjectDescriptorCallback slot0A;
+    ObjectDescriptorCallback distToObj;
+    ObjectDescriptorCallback distXZ;
+    ObjectDescriptorCallback getLastFindSegment;
+    ObjectDescriptorCallback isPoint;
+    ObjectDescriptorCallback isNotPoint;
+    ObjectDescriptorCallback getRandomLinkedOfTypes;
+    ObjectDescriptorCallback findLinkTowardNearestOfType;
+    ObjectDescriptorCallback findByAction;
+    ObjectDescriptorCallback slot13;
+    ObjectDescriptorCallback findNearestOfType16;
+    ObjectDescriptorCallback isPointInsideLoop;
+    ObjectDescriptorCallback findEnclosingLoopOfType17;
+    ObjectDescriptorCallback getRandomUnblockedLink;
+    ObjectDescriptorCallback getLinkIds;
+    ObjectDescriptorCallback getFarthestAdjacentLink;
+    ObjectDescriptorCallback getRandomBlockedLink;
+    ObjectDescriptorCallback getNearestAdjacentLink;
+    ObjectDescriptorCallback findShortestPathLink;
+    ObjectDescriptorCallback getAdjacentWindow;
+    ObjectDescriptorCallback buildAdjacentWindowPoints;
+    ObjectDescriptorCallback countRandomPoints;
+    ObjectDescriptorCallback buildRandomPoints;
+    ObjectDescriptorCallback projectPointToAdjacentWindow;
+    ObjectDescriptorCallback findProjectedCurveFromStart;
+    ObjectDescriptorCallback getPos;
+    ObjectDescriptorCallback getPathLength;
+    ObjectDescriptorCallback initCurve;
+    ObjectDescriptorCallback goNextPoint;
+    ObjectDescriptorCallback setClosed;
+    ObjectDescriptorCallback setNextNode;
+    ObjectDescriptorCallback goNextPointIndexed;
+    ObjectDescriptorCallback getUnblockedControlPointId;
+    ObjectDescriptorCallback getControlPointId;
+    ObjectDescriptorCallback initFromCurveId;
+} RomCurveDllInterface;
 
-void* RomCurve_funcs[49] = {(void*)0,
-                          (void*)0,
-                          (void*)0,
-                          (void*)0x2C0000,
-                          (void*)RomCurve_initialise,
-                          (void*)RomCurve_release,
-                          (void*)0,
-                          (void*)curves_initialise,
-                          (void*)RomCurve_add,
-                          (void*)RomCurve_remove,
-                          (void*)RomCurve_getCurves,
-                          (void*)RomCurve_find,
-                          (void*)curves_findNearObj,
-                          (void*)RomCurve_getById,
-                          (void*)curves_find,
-                          (void*)curves_distToObj,
-                          (void*)curves_distXZ,
-                          (void*)RomCurve_getLastFindSegment,
-                          (void*)curves_isPoint,
-                          (void*)curves_isNotPoint,
-                          (void*)RomCurve_getRandomLinkedOfTypes,
-                          (void*)RomCurve_findLinkTowardNearestOfType,
-                          (void*)curves_findByAction,
-                          (void*)RomCurve_func13,
-                          (void*)curves_findNearestOfType16,
-                          (void*)curves_isPointInsideLoop,
-                          (void*)curves_findEnclosingLoopOfType17,
-                          (void*)RomCurve_getRandomUnblockedLink,
-                          (void*)RomCurve_getLinkIds,
-                          (void*)RomCurve_getFarthestAdjacentLink,
-                          (void*)RomCurve_getRandomBlockedLink,
-                          (void*)Objfsa_GetNearestAdjacentLink,
-                          (void*)RomCurve_findShortestPathLink,
-                          (void*)RomCurve_getAdjacentWindow,
-                          (void*)RomCurve_buildAdjacentWindowPoints,
-                          (void*)RomCurve_countRandomPoints,
-                          (void*)RomCurve_buildRandomPoints,
-                          (void*)RomCurve_projectPointToAdjacentWindow,
-                          (void*)RomCurve_findProjectedCurveFromStart,
-                          (void*)curves_getPos,
-                          (void*)curves_getPathLength,
-                          (void*)RomCurve_initCurve,
-                          (void*)RomCurve_goNextPoint,
-                          (void*)RomCurve_setClosed,
-                          (void*)RomCurve_setNextNode,
-                          (void*)RomCurve_goNextPointIndexed,
-                          (void*)RomCurve_getUnblockedControlPointId,
-                          (void*)RomCurve_getControlPointId,
-                          (void*)RomCurve_initFromCurveId};
+RomCurveDllInterface RomCurve_funcs = {
+    0,
+    0,
+    0,
+    0x2C0000,
+    (ObjectDescriptorCallback)RomCurve_initialise,
+    (ObjectDescriptorCallback)RomCurve_release,
+    0,
+    (ObjectDescriptorCallback)curves_initialise,
+    (ObjectDescriptorCallback)RomCurve_add,
+    (ObjectDescriptorCallback)RomCurve_remove,
+    (ObjectDescriptorCallback)RomCurve_getCurves,
+    (ObjectDescriptorCallback)RomCurve_find,
+    (ObjectDescriptorCallback)curves_findNearObj,
+    (ObjectDescriptorCallback)RomCurve_getById,
+    (ObjectDescriptorCallback)curves_find,
+    (ObjectDescriptorCallback)curves_distToObj,
+    (ObjectDescriptorCallback)curves_distXZ,
+    (ObjectDescriptorCallback)RomCurve_getLastFindSegment,
+    (ObjectDescriptorCallback)curves_isPoint,
+    (ObjectDescriptorCallback)curves_isNotPoint,
+    (ObjectDescriptorCallback)RomCurve_getRandomLinkedOfTypes,
+    (ObjectDescriptorCallback)RomCurve_findLinkTowardNearestOfType,
+    (ObjectDescriptorCallback)curves_findByAction,
+    (ObjectDescriptorCallback)RomCurve_func13,
+    (ObjectDescriptorCallback)curves_findNearestOfType16,
+    (ObjectDescriptorCallback)curves_isPointInsideLoop,
+    (ObjectDescriptorCallback)curves_findEnclosingLoopOfType17,
+    (ObjectDescriptorCallback)RomCurve_getRandomUnblockedLink,
+    (ObjectDescriptorCallback)RomCurve_getLinkIds,
+    (ObjectDescriptorCallback)RomCurve_getFarthestAdjacentLink,
+    (ObjectDescriptorCallback)RomCurve_getRandomBlockedLink,
+    (ObjectDescriptorCallback)Objfsa_GetNearestAdjacentLink,
+    (ObjectDescriptorCallback)RomCurve_findShortestPathLink,
+    (ObjectDescriptorCallback)RomCurve_getAdjacentWindow,
+    (ObjectDescriptorCallback)RomCurve_buildAdjacentWindowPoints,
+    (ObjectDescriptorCallback)RomCurve_countRandomPoints,
+    (ObjectDescriptorCallback)RomCurve_buildRandomPoints,
+    (ObjectDescriptorCallback)RomCurve_projectPointToAdjacentWindow,
+    (ObjectDescriptorCallback)RomCurve_findProjectedCurveFromStart,
+    (ObjectDescriptorCallback)curves_getPos,
+    (ObjectDescriptorCallback)curves_getPathLength,
+    (ObjectDescriptorCallback)RomCurve_initCurve,
+    (ObjectDescriptorCallback)RomCurve_goNextPoint,
+    (ObjectDescriptorCallback)RomCurve_setClosed,
+    (ObjectDescriptorCallback)RomCurve_setNextNode,
+    (ObjectDescriptorCallback)RomCurve_goNextPointIndexed,
+    (ObjectDescriptorCallback)RomCurve_getUnblockedControlPointId,
+    (ObjectDescriptorCallback)RomCurve_getControlPointId,
+    (ObjectDescriptorCallback)RomCurve_initFromCurveId,
+};
 char sCurvesMaxRomCurvesExceeded[36] = "curves.c: MAX_ROMCURVES exceeded!!\n\000";

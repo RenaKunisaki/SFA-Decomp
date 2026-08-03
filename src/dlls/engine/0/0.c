@@ -1,3 +1,4 @@
+#include "dlls/object_descriptor.h"
 #include "main/dll/ppcwgpipe_struct.h"
 #include "dolphin/mtx.h"
 #include "dolphin/TRK_MINNOW_DOLPHIN/MWTrace.h"
@@ -2672,39 +2673,77 @@ struct PauseMenuPanelAnimTable gPauseMenuPanelAnims = {
     {0, 0, 0, 0x2715, 0, 0x2730, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 5, 0, 5, 0, 0, 0, 0, 0, 0},
 };
-u32 GameUI_funcs[33] = {0x00000000,
-                        0x00000000,
-                        0x00000000,
-                        0x001c0000,
-                        (u32)GameUI_initialise,
-                        (u32)GameUI_release,
-                        0x00000000,
-                        (u32)GameUI_frameStart,
-                        (u32)GameUI_frameEnd,
-                        (u32)GameUI_hudDraw,
-                        (u32)GameUI_unselectAllItems,
-                        (u32)GameUI_requestPlayerStatsSnapshot,
-                        0x00000000,
-                        (u32)GameUI_isAnyItemBeingUsed,
-                        (u32)GameUI_isItemBeingUsed,
-                        (u32)GameUI_isOneOfItemsBeingUsed,
-                        (u32)CMenu_GetState,
-                        (u32)GameUI_getSubpageGamebit,
-                        (u32)GameUI_func0E,
-                        (u32)GameUI_showMinimapInfoText,
-                        (u32)GameUI_gameTextShowNpcDialogue,
-                        (u32)GameUI_finishNpcDialogue,
-                        (u32)CMenu_SetShouldClose,
-                        (u32)GameUI_setInputOverride,
-                        (u32)GameUI_showItemInfoPopup,
-                        (u32)GameUI_showItemInfoPopupByTexture,
-                        (u32)GameUI_setUnusedHudSetting,
-                        (u32)GameUI_airMeterInitType0,
-                        (u32)GameUI_initAirMeter,
-                        (u32)GameUI_airMeterRun,
-                        (u32)GameUI_airMeterShutdown,
-                        (u32)GameUI_airMeterSetShutdown,
-                        (u32)GameUI_airMeterSetField24};
+typedef struct GameUIDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback frameStart;
+    ObjectDescriptorCallback frameEnd;
+    ObjectDescriptorCallback hudDraw;
+    ObjectDescriptorCallback unselectAllItems;
+    ObjectDescriptorCallback requestPlayerStatsSnapshot;
+    ObjectDescriptorCallback slot08;
+    ObjectDescriptorCallback isAnyItemBeingUsed;
+    ObjectDescriptorCallback isItemBeingUsed;
+    ObjectDescriptorCallback isOneOfItemsBeingUsed;
+    ObjectDescriptorCallback getState;
+    ObjectDescriptorCallback getSubpageGamebit;
+    ObjectDescriptorCallback slot0E;
+    ObjectDescriptorCallback showMinimapInfoText;
+    ObjectDescriptorCallback gameTextShowNpcDialogue;
+    ObjectDescriptorCallback finishNpcDialogue;
+    ObjectDescriptorCallback setShouldClose;
+    ObjectDescriptorCallback setInputOverride;
+    ObjectDescriptorCallback showItemInfoPopup;
+    ObjectDescriptorCallback showItemInfoPopupByTexture;
+    ObjectDescriptorCallback setUnusedHudSetting;
+    ObjectDescriptorCallback airMeterInitType0;
+    ObjectDescriptorCallback initAirMeter;
+    ObjectDescriptorCallback airMeterRun;
+    ObjectDescriptorCallback airMeterShutdown;
+    ObjectDescriptorCallback airMeterSetShutdown;
+    ObjectDescriptorCallback airMeterSetField24;
+} GameUIDllInterface;
+
+GameUIDllInterface GameUI_funcs = {
+    0,
+    0,
+    0,
+    0x001c0000,
+    (ObjectDescriptorCallback)GameUI_initialise,
+    (ObjectDescriptorCallback)GameUI_release,
+    0,
+    (ObjectDescriptorCallback)GameUI_frameStart,
+    (ObjectDescriptorCallback)GameUI_frameEnd,
+    (ObjectDescriptorCallback)GameUI_hudDraw,
+    (ObjectDescriptorCallback)GameUI_unselectAllItems,
+    (ObjectDescriptorCallback)GameUI_requestPlayerStatsSnapshot,
+    0,
+    (ObjectDescriptorCallback)GameUI_isAnyItemBeingUsed,
+    (ObjectDescriptorCallback)GameUI_isItemBeingUsed,
+    (ObjectDescriptorCallback)GameUI_isOneOfItemsBeingUsed,
+    (ObjectDescriptorCallback)CMenu_GetState,
+    (ObjectDescriptorCallback)GameUI_getSubpageGamebit,
+    (ObjectDescriptorCallback)GameUI_func0E,
+    (ObjectDescriptorCallback)GameUI_showMinimapInfoText,
+    (ObjectDescriptorCallback)GameUI_gameTextShowNpcDialogue,
+    (ObjectDescriptorCallback)GameUI_finishNpcDialogue,
+    (ObjectDescriptorCallback)CMenu_SetShouldClose,
+    (ObjectDescriptorCallback)GameUI_setInputOverride,
+    (ObjectDescriptorCallback)GameUI_showItemInfoPopup,
+    (ObjectDescriptorCallback)GameUI_showItemInfoPopupByTexture,
+    (ObjectDescriptorCallback)GameUI_setUnusedHudSetting,
+    (ObjectDescriptorCallback)GameUI_airMeterInitType0,
+    (ObjectDescriptorCallback)GameUI_initAirMeter,
+    (ObjectDescriptorCallback)GameUI_airMeterRun,
+    (ObjectDescriptorCallback)GameUI_airMeterShutdown,
+    (ObjectDescriptorCallback)GameUI_airMeterSetShutdown,
+    (ObjectDescriptorCallback)GameUI_airMeterSetField24,
+};
 char sTrickyDebugXCoordFormat[] = " x %.2f\n";
 char sTemplateProgressCounterFormat[] = "%02d/%02d";
 

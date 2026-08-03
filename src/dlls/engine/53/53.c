@@ -1,3 +1,4 @@
+#include "dlls/object_descriptor.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/FRONT/frontend_control.h"
 #include "main/dll/dll_0035_saveselectscreen.h"
@@ -1242,10 +1243,31 @@ u8 lbl_8031A7F8[12] = {0, 0, 5, 213, 0, 0, 5, 214, 0, 0, 5, 212};
 void* lbl_8031A804[4] = {(void*)0x00000000, (void*)0x00000000, (void*)0x00000000, (void*)0x00000000};
 u16 saveFileSelect_debugCheatSequence[6] = {0x4000, 0x8000, 0x4000, 0x8000, 4, 0};
 u16 saveFileSelect_slotCheatSequence[6] = {0x400, 0x800, 0x8000, 0x8000, 2, 0};
-void* SaveSelectScreen_funcs[10] = {(void*)0x00000000,      (void*)0x00000000,           (void*)0x00000000,
-                          (void*)0x00050000,      SaveSelectScreen_initialise, SaveSelectScreen_release,
-                          (void*)0x00000000,      SaveSelectScreen_run,        SaveSelectScreen_frameEnd_nop,
-                          SaveSelectScreen_render};
+typedef struct SaveSelectScreenDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback run;
+    ObjectDescriptorCallback frameEnd_nop;
+    ObjectDescriptorCallback render;
+} SaveSelectScreenDllInterface;
+
+SaveSelectScreenDllInterface SaveSelectScreen_funcs = {
+    0,
+    0,
+    0,
+    0x00050000,
+    (ObjectDescriptorCallback)SaveSelectScreen_initialise,
+    (ObjectDescriptorCallback)SaveSelectScreen_release,
+    0,
+    (ObjectDescriptorCallback)SaveSelectScreen_run,
+    (ObjectDescriptorCallback)SaveSelectScreen_frameEnd_nop,
+    (ObjectDescriptorCallback)SaveSelectScreen_render,
+};
 char sFrontendTimeFormat[14] = "%3d:%02d:%02d";
 char sSaveGameBinPathFormat[] = "/savegame/save%d.bin";
 

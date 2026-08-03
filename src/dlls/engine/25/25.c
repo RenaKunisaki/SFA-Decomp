@@ -1,3 +1,4 @@
+#include "dlls/object_descriptor.h"
 #include "main/dll/player_api.h"
 #include "main/track_bbox_api.h"
 #include "main/frame_timing.h"
@@ -1254,38 +1255,72 @@ void dll_19_func04_nop(void)
 void dll_19_func03_nop(void)
 {
 }
+typedef struct Dll19Interface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback slot03;
+    ObjectDescriptorCallback slot04;
+    ObjectDescriptorCallback slot05;
+    ObjectDescriptorCallback updateMovementBlend;
+    ObjectDescriptorCallback getTargetGeometry;
+    ObjectDescriptorCallback getClearDirectionMask;
+    ObjectDescriptorCallback slot09;
+    ObjectDescriptorCallback slot0A;
+    ObjectDescriptorCallback slot0B;
+    ObjectDescriptorCallback startHitReaction;
+    ObjectDescriptorCallback updateGravity;
+    ObjectDescriptorCallback isObjectValid;
+    ObjectDescriptorCallback updateSequenceMovement;
+    ObjectDescriptorCallback slot10;
+    ObjectDescriptorCallback pollCameraTarget;
+    ObjectDescriptorCallback releaseState;
+    ObjectDescriptorCallback shouldDropTarget;
+    ObjectDescriptorCallback findAggroTarget;
+    ObjectDescriptorCallback dropCollectable;
+    ObjectDescriptorCallback updateHitReaction;
+    ObjectDescriptorCallback processMessages;
+    ObjectDescriptorCallback initGroundBaddie;
+    ObjectDescriptorCallback changeWeapon;
+    ObjectDescriptorCallback getHealthFraction;
+    ObjectDescriptorCallback slot1B;
+} Dll19Interface;
 
-u32 dll_19[32] = {
+Dll19Interface dll_19 = {
     0,
     0,
     0,
     0x001a0000,
-    (u32)dll_19_func03_nop,
-    (u32)dll_19_func04_nop,
+    (ObjectDescriptorCallback)dll_19_func03_nop,
+    (ObjectDescriptorCallback)dll_19_func04_nop,
     0,
-    (u32)dll_19_func03_nop,
-    (u32)dll_19_func04_nop,
-    (u32)dll_19_func05,
-    (u32)dll_19_updateMovementBlend,
-    (u32)dll_19_getTargetGeometry,
-    (u32)dll_19_getClearDirectionMask,
-    (u32)dll_19_func09_ret_0,
-    (u32)dll_19_func0A,
-    (u32)dll_19_func0B,
-    (u32)dll_19_startHitReaction,
-    (u32)dll_19_updateGravity,
-    (u32)dll_19_isObjectValid,
-    (u32)dll_19_updateSequenceMovement,
-    (u32)dll_19_func10,
-    (u32)dll_19_pollCameraTarget,
-    (u32)dll_19_releaseState,
-    (u32)dll_19_shouldDropTarget,
-    (u32)dll_19_findAggroTarget,
-    (u32)dll_19_dropCollectable,
-    (u32)dll_19_updateHitReaction,
-    (u32)dll_19_processMessages,
-    (u32)dll_19_initGroundBaddie,
-    (u32)dll_19_changeWeapon,
-    (u32)dll_19_getHealthFraction,
+    (ObjectDescriptorCallback)dll_19_func03_nop,
+    (ObjectDescriptorCallback)dll_19_func04_nop,
+    (ObjectDescriptorCallback)dll_19_func05,
+    (ObjectDescriptorCallback)dll_19_updateMovementBlend,
+    (ObjectDescriptorCallback)dll_19_getTargetGeometry,
+    (ObjectDescriptorCallback)dll_19_getClearDirectionMask,
+    (ObjectDescriptorCallback)dll_19_func09_ret_0,
+    (ObjectDescriptorCallback)dll_19_func0A,
+    (ObjectDescriptorCallback)dll_19_func0B,
+    (ObjectDescriptorCallback)dll_19_startHitReaction,
+    (ObjectDescriptorCallback)dll_19_updateGravity,
+    (ObjectDescriptorCallback)dll_19_isObjectValid,
+    (ObjectDescriptorCallback)dll_19_updateSequenceMovement,
+    (ObjectDescriptorCallback)dll_19_func10,
+    (ObjectDescriptorCallback)dll_19_pollCameraTarget,
+    (ObjectDescriptorCallback)dll_19_releaseState,
+    (ObjectDescriptorCallback)dll_19_shouldDropTarget,
+    (ObjectDescriptorCallback)dll_19_findAggroTarget,
+    (ObjectDescriptorCallback)dll_19_dropCollectable,
+    (ObjectDescriptorCallback)dll_19_updateHitReaction,
+    (ObjectDescriptorCallback)dll_19_processMessages,
+    (ObjectDescriptorCallback)dll_19_initGroundBaddie,
+    (ObjectDescriptorCallback)dll_19_changeWeapon,
+    (ObjectDescriptorCallback)dll_19_getHealthFraction,
     0,
 };

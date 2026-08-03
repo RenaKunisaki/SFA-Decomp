@@ -1,3 +1,4 @@
+#include "dlls/object_descriptor.h"
 #include "game/objects/object.h"
 #include "main/screen_transition.h"
 #include "main/gx_scissor_api.h"
@@ -328,11 +329,36 @@ void screenTransition_update(int p1, int p2, int p3)
         break;
     }
 }
+typedef struct ScreenTransitionDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback update;
+    ObjectDescriptorCallback fadeOut;
+    ObjectDescriptorCallback fadeIn;
+    ObjectDescriptorCallback fadeFrom;
+    ObjectDescriptorCallback isDone;
+    ObjectDescriptorCallback getAlpha;
+    ObjectDescriptorCallback slot09;
+} ScreenTransitionDllInterface;
 
-
-u32 screenTransition_funcs[14] = {
-    0, 0, 0, 0x00080000,
-    0, 0, 0, (u32)screenTransition_update,
-    (u32)screenTransition_fadeOut, (u32)screenTransition_fadeIn, (u32)screenTransition_fadeFrom, (u32)screenTransition_isDone,
-    (u32)screenTransition_getAlpha, 0,
+ScreenTransitionDllInterface screenTransition_funcs = {
+    0,
+    0,
+    0,
+    0x00080000,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)screenTransition_update,
+    (ObjectDescriptorCallback)screenTransition_fadeOut,
+    (ObjectDescriptorCallback)screenTransition_fadeIn,
+    (ObjectDescriptorCallback)screenTransition_fadeFrom,
+    (ObjectDescriptorCallback)screenTransition_isDone,
+    (ObjectDescriptorCallback)screenTransition_getAlpha,
+    0,
 };

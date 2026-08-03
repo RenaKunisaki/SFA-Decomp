@@ -1,3 +1,4 @@
+#include "dlls/object_descriptor.h"
 #include "main/camera_interface.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/dll_0044_cameramodeviewfinder.h"
@@ -1966,47 +1967,91 @@ int gObjSeqMsgIds[] = {
 };
 
 s8 gObjSeqMsgSendModes[24] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 0, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 0};
+typedef struct ObjSeqDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback onMapSetup;
+    ObjectDescriptorCallback addBgCmd;
+    ObjectDescriptorCallback setBool;
+    ObjectDescriptorCallback getBool;
+    ObjectDescriptorCallback update;
+    ObjectDescriptorCallback updateCamera;
+    ObjectDescriptorCallback objLoadAnimdata;
+    ObjectDescriptorCallback seqState_init;
+    ObjectDescriptorCallback seqState_free;
+    ObjectDescriptorCallback runBgCmds;
+    ObjectDescriptorCallback resolveTargetObject;
+    ObjectDescriptorCallback slot0E;
+    ObjectDescriptorCallback slot0F;
+    ObjectDescriptorCallback getGlobal4;
+    ObjectDescriptorCallback setGlobal4;
+    ObjectDescriptorCallback slot12;
+    ObjectDescriptorCallback slot13;
+    ObjectDescriptorCallback start;
+    ObjectDescriptorCallback endObjSequence;
+    ObjectDescriptorCallback setCamVars;
+    ObjectDescriptorCallback preempt;
+    ObjectDescriptorCallback yield;
+    ObjectDescriptorCallback getGlobal3;
+    ObjectDescriptorCallback setGlobal3;
+    ObjectDescriptorCallback getGlobal1;
+    ObjectDescriptorCallback setGlobal1;
+    ObjectDescriptorCallback getGlobal2;
+    ObjectDescriptorCallback setGlobal2;
+    ObjectDescriptorCallback setXrot;
+    ObjectDescriptorCallback turnToFacePlayer;
+    ObjectDescriptorCallback setObjs;
+    ObjectDescriptorCallback setOverridePos;
+    ObjectDescriptorCallback setCoordinateSpace;
+} ObjSeqDllInterface;
 
-void* ObjSeq_funcs[40] = {(void*)0,
-                          (void*)0,
-                          (void*)0,
-                          (void*)0x230000,
-                          (void*)ObjSeq_initialise,
-                          (void*)ObjSeq_release,
-                          (void*)0,
-                          (void*)ObjSeq_onMapSetup,
-                          (void*)ObjSeq_addBgCmd,
-                          (void*)ObjSeq_setBool,
-                          (void*)ObjSeq_getBool,
-                          (void*)ObjSeq_update,
-                          (void*)ObjSeq_updateCamera,
-                          (void*)ObjSeq_objLoadAnimdata,
-                          (void*)ObjSeq_seqState_init,
-                          (void*)ObjSeq_seqState_free,
-                          (void*)ObjSeq_runBgCmds,
-                          (void*)ObjSeq_resolveTargetObject,
-                          (void*)ObjSeq_func0E,
-                          (void*)ObjSeq_func0F,
-                          (void*)ObjSeq_getGlobal4,
-                          (void*)ObjSeq_setGlobal4,
-                          (void*)ObjSeq_func12,
-                          (void*)ObjSeq_func13,
-                          (void*)ObjSeq_start,
-                          (void*)endObjSequence,
-                          (void*)ObjSeq_setCamVars,
-                          (void*)ObjSeq_preempt,
-                          (void*)ObjSeq_yield,
-                          (void*)ObjSeq_getGlobal3,
-                          (void*)ObjSeq_setGlobal3,
-                          (void*)ObjSeq_getGlobal1,
-                          (void*)ObjSeq_setGlobal1,
-                          (void*)ObjSeq_getGlobal2,
-                          (void*)ObjSeq_setGlobal2,
-                          (void*)ObjSeq_setXrot,
-                          (void*)ObjSeq_TurnToFacePlayer,
-                          (void*)ObjSeq_SetObjs,
-                          (void*)ObjSeq_setOverridePos,
-                          (void*)ObjSeq_SetCoordinateSpace};
+ObjSeqDllInterface ObjSeq_funcs = {
+    0,
+    0,
+    0,
+    0x230000,
+    (ObjectDescriptorCallback)ObjSeq_initialise,
+    (ObjectDescriptorCallback)ObjSeq_release,
+    0,
+    (ObjectDescriptorCallback)ObjSeq_onMapSetup,
+    (ObjectDescriptorCallback)ObjSeq_addBgCmd,
+    (ObjectDescriptorCallback)ObjSeq_setBool,
+    (ObjectDescriptorCallback)ObjSeq_getBool,
+    (ObjectDescriptorCallback)ObjSeq_update,
+    (ObjectDescriptorCallback)ObjSeq_updateCamera,
+    (ObjectDescriptorCallback)ObjSeq_objLoadAnimdata,
+    (ObjectDescriptorCallback)ObjSeq_seqState_init,
+    (ObjectDescriptorCallback)ObjSeq_seqState_free,
+    (ObjectDescriptorCallback)ObjSeq_runBgCmds,
+    (ObjectDescriptorCallback)ObjSeq_resolveTargetObject,
+    (ObjectDescriptorCallback)ObjSeq_func0E,
+    (ObjectDescriptorCallback)ObjSeq_func0F,
+    (ObjectDescriptorCallback)ObjSeq_getGlobal4,
+    (ObjectDescriptorCallback)ObjSeq_setGlobal4,
+    (ObjectDescriptorCallback)ObjSeq_func12,
+    (ObjectDescriptorCallback)ObjSeq_func13,
+    (ObjectDescriptorCallback)ObjSeq_start,
+    (ObjectDescriptorCallback)endObjSequence,
+    (ObjectDescriptorCallback)ObjSeq_setCamVars,
+    (ObjectDescriptorCallback)ObjSeq_preempt,
+    (ObjectDescriptorCallback)ObjSeq_yield,
+    (ObjectDescriptorCallback)ObjSeq_getGlobal3,
+    (ObjectDescriptorCallback)ObjSeq_setGlobal3,
+    (ObjectDescriptorCallback)ObjSeq_getGlobal1,
+    (ObjectDescriptorCallback)ObjSeq_setGlobal1,
+    (ObjectDescriptorCallback)ObjSeq_getGlobal2,
+    (ObjectDescriptorCallback)ObjSeq_setGlobal2,
+    (ObjectDescriptorCallback)ObjSeq_setXrot,
+    (ObjectDescriptorCallback)ObjSeq_TurnToFacePlayer,
+    (ObjectDescriptorCallback)ObjSeq_SetObjs,
+    (ObjectDescriptorCallback)ObjSeq_setOverridePos,
+    (ObjectDescriptorCallback)ObjSeq_SetCoordinateSpace,
+};
 
 char sEndObjSequenceMaxFreesError[41] = "endObjSequence: max number of obj frees\n\000";
 char sObjSequenceMissingObjectFormat[38] = " SEQUENCE: Could not Find Object %i \n\000";
