@@ -12357,11 +12357,14 @@ void playerFireCloudRunnerProjectile(GameObject* obj, int state, f32 aimInputZ, 
 
 void playerSpawnRapidFireLaser(int unusedObj, int unusedState, f32 unusedAimInput, f32 randomOffset) {
     ObjPlacement* setup;
-    int linkEffect;
+    enum {
+        PLAYER_LINK_EFFECT_DISABLED,
+        PLAYER_LINK_EFFECT_ENABLED
+    } linkEffect;
     f32 x1, y1, z1, x0, y0, z0;
     f32 dx, dy, dz, len;
 
-    linkEffect = 1;
+    linkEffect = PLAYER_LINK_EFFECT_ENABLED;
     Camera_GetCurrent();
     if (Obj_IsLoadingLocked() != 0) {
         Sfx_PlayFromObject(0, SFXTRIG_staff_rocket_hitdirt);
@@ -12390,11 +12393,9 @@ void playerSpawnRapidFireLaser(int unusedObj, int unusedState, f32 unusedAimInpu
             setup->posX *= 6.0f;
             arwprojectile_placeForward((GameObject*)setup, 10.0f);
             arwprojectile_setLifetime((GameObject*)setup, 0x32);
-        } else {
-            linkEffect = 0;
-        }
-        if (linkEffect == 1) {
-            arwprojectile_createLinkedEffect((GameObject*)setup, 1);
+            if (linkEffect == PLAYER_LINK_EFFECT_ENABLED) {
+                arwprojectile_createLinkedEffect((GameObject*)setup, 1);
+            }
         }
     }
 }
