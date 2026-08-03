@@ -1053,7 +1053,7 @@ void SHthorntail_update(int obj) {
         if (((runtime->behaviorFlags & 4) == 0) && (val = ObjTrigger_IsSet(obj), val != 0)) {
             uval = randomGetRange(1, (u32)*runtime->impactSfxTable);
             runtime->behaviorFlags = runtime->behaviorFlags | SHTHORNTAIL_FLAG_IMPACT_PENDING;
-            (*gObjectTriggerInterface)->runSequence(*(u8*)(runtime->impactSfxTable + uval), (void*)obj, -1);
+            (*gObjectTriggerInterface)->runSequence(runtime->impactSfxTable[uval], (void*)obj, -1);
         }
         if (config->leashRadius != '\0') {
             leashDistance = getXZDistanceSquared(&((GameObject*)obj)->anim.worldPosX, (float*)&config->homePosition);

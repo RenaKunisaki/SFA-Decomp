@@ -23,7 +23,7 @@ typedef struct WCPushBlockSetup
 {
     ObjPlacement base;
     u8 unk18;
-    u8 modelIndex;
+    s8 modelIndex;
     s16 initialTile;
     u8 pad1C[0x24 - 0x1C];
 } WCPushBlockSetup;

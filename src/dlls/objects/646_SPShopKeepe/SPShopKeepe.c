@@ -179,7 +179,7 @@ int TREX_Lazerwall_popQueuedState(GameObject* obj, BaddieState* baddie)
                 (obj)->anim.localPosX = ((LazerwallCurveNode*)node)->x;
                 (obj)->anim.localPosY = 6.0f + ((LazerwallCurveNode*)node)->y;
                 (obj)->anim.localPosZ = ((LazerwallCurveNode*)node)->z;
-                *(s16*)(int)obj = (s16)((s32)((LazerwallCurveNode*)node)->rotZ << 8);
+                obj->anim.rotX = (s16)((s32)((LazerwallCurveNode*)node)->rotZ << 8);
                 state->nodeTargetY = 6.0f + ((LazerwallCurveNode*)node)->y;
                 state->unk9CA = 0;
                 state->curveNodeTag = ((LazerwallCurveNode*)node)->type;

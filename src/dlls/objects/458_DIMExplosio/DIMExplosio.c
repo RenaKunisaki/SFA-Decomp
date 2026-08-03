@@ -216,7 +216,7 @@ int explosion_getExtraSize(void) {
 
 int explosion_getObjectTypeId(GameObject* obj) {
     ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
-    int modelKind = (int)*(short*)(obj->anim.placementDataAddress + offsetof(DimExplosionPlacement, configFlags)) &
+    int modelKind = (int)((DimExplosionPlacement*)obj->anim.placementData)->configFlags &
                     DIM_EXPLOSION_MODEL_KIND_MASK;
     if (modelKind >= objAnim->modelInstance->modelCount) {
         modelKind = 0;

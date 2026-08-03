@@ -1723,24 +1723,24 @@ void spawnDimExplosion(u8* src, f32 x, f32 y, f32 z, f32 scale, u8 kind, u8 flag
         setup->base.posY = y;
         setup->base.posZ = z;
         setup->sfxKind = kind;
-        *(s16*)((char*)setup + offsetof(DimExplosionPlacement, scaleParam)) = (s16)(256.0f * scale);
-        *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) = f1cinit;
+        setup->scaleParam = (s16)(256.0f * scale);
+        setup->configFlags = f1cinit;
         if (flag4 != 0)
         {
-            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |= DIM_EXPLOSION_CONFIG_HAS_GRAVITY;
+            setup->configFlags |= DIM_EXPLOSION_CONFIG_HAS_GRAVITY;
         }
         if (flag8 != 0)
         {
-            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |= DIM_EXPLOSION_CONFIG_HAS_RAYS;
+            setup->configFlags |= DIM_EXPLOSION_CONFIG_HAS_RAYS;
         }
         if (flag10 != 0)
         {
-            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |=
+            setup->configFlags |=
                 DIM_EXPLOSION_CONFIG_SPAWNS_DEBRIS;
         }
         if (flag20 != 0)
         {
-            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |= DIM_EXPLOSION_CONFIG_HAS_LIGHT;
+            setup->configFlags |= DIM_EXPLOSION_CONFIG_HAS_LIGHT;
         }
         if (doShake != 0)
         {
@@ -1775,24 +1775,24 @@ void spawnExplosion(GameObject* src, f32 scale, u8 kind, u8 flag4, u8 flag8, u8 
         setup->base.posY = src->anim.worldPosY;
         setup->base.posZ = src->anim.worldPosZ;
         setup->sfxKind = kind;
-        *(s16*)((char*)setup + offsetof(DimExplosionPlacement, scaleParam)) = (s16)(256.0f * scale);
-        *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) = f1cinit;
+        setup->scaleParam = (s16)(256.0f * scale);
+        setup->configFlags = f1cinit;
         if (flag4 != 0)
         {
-            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |= DIM_EXPLOSION_CONFIG_HAS_GRAVITY;
+            setup->configFlags |= DIM_EXPLOSION_CONFIG_HAS_GRAVITY;
         }
         if (flag8 != 0)
         {
-            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |= DIM_EXPLOSION_CONFIG_HAS_RAYS;
+            setup->configFlags |= DIM_EXPLOSION_CONFIG_HAS_RAYS;
         }
         if (flag10 != 0)
         {
-            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |=
+            setup->configFlags |=
                 DIM_EXPLOSION_CONFIG_SPAWNS_DEBRIS;
         }
         if (flag20 != 0)
         {
-            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |= DIM_EXPLOSION_CONFIG_HAS_LIGHT;
+            setup->configFlags |= DIM_EXPLOSION_CONFIG_HAS_LIGHT;
         }
         if (doShake != 0)
         {

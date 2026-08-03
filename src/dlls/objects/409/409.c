@@ -186,7 +186,6 @@ void dll409_hitDetect(void) {
 void dll409_update(GameObject* obj) {
     Dll199State* state;
     GameObject* player;
-    int stateAddress;
     GameObject* found;
     f32 dist;
     u32 flags;
@@ -195,6 +194,7 @@ void dll409_update(GameObject* obj) {
     f32 dz;
     u32 brightness;
     int delta;
+    Dll199State* msgState;
 
     state = obj->extra;
     player = Obj_GetPlayerObject();
@@ -202,15 +202,15 @@ void dll409_update(GameObject* obj) {
     obj->anim.worldPosX = obj->anim.localPosX;
     obj->anim.worldPosY = obj->anim.localPosY;
     obj->anim.worldPosZ = obj->anim.localPosZ;
-    stateAddress = *(int*)&obj->extra;
+    msgState = obj->extra;
     flags = 0;
     while (ObjMsg_Pop(obj, &msg, &param, &flags) != 0) {
         switch (msg) {
         case DLL199_MESSAGE_DECREASE_CHANNEL_2:
-            *(s16*)(stateAddress + offsetof(Dll199State, channel2BrightnessDelta)) = -3;
+            msgState->channel2BrightnessDelta = -3;
             break;
         case DLL199_MESSAGE_INCREASE_CHANNEL_2:
-            *(s16*)(stateAddress + offsetof(Dll199State, channel2BrightnessDelta)) = 0x10;
+            msgState->channel2BrightnessDelta = 0x10;
             break;
         }
     }

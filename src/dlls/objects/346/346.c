@@ -97,7 +97,7 @@ void explodable_buildFragments(GameObject* obj, int placementAddress, int skipCe
         modelBankOffset = 0;
         childSlotAddress = stateAddress;
         for (; fragmentIndex < state->fragmentCount; fragmentIndex++) {
-            *(u8*)(stateAddress + fragmentIndex + offsetof(ExplodableState, spawnedFlags)) = 1;
+            state->spawnedFlags[fragmentIndex] = 1;
             chunk->spinScale = spinScale;
             if (skipCentroid == 0) {
                 zero = 0.0f;

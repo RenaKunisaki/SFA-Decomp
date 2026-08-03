@@ -99,7 +99,7 @@ void lightning_update(GameObject* obj) {
             start = (f32*)((u8*)obj + offsetof(GameObject, anim.localPosX));
             targetSlot = &objects[objectIndex];
             effect = lightningCreate((const Vec3f*)start,
-                                     (const Vec3f*)(*targetSlot + offsetof(GameObject, anim.localPos)), state->radiusX,
+                                     (const Vec3f*)&((GameObject*)*targetSlot)->anim.localPos, state->radiusX,
                                      state->radiusY, lifetime, state->width, (state->flags.alternateStyle ? 1 : 0));
             state->effect = effect;
             state->ageTimer = 0.0f;
@@ -107,7 +107,7 @@ void lightning_update(GameObject* obj) {
                 objfx_spawnHitEffectBurst(obj, state->hitRadius, LIGHTNING_HIT_EFFECT_ID, LIGHTNING_HIT_EFFECT_VARIANT,
                                           LIGHTNING_HIT_EFFECT_COUNT, NULL);
             }
-            objectData = *(u8**)(*targetSlot + offsetof(GameObject, extra));
+            objectData = ((GameObject*)*targetSlot)->extra;
             if ((((LightningState*)objectData)->modeBits.mode & LIGHTNING_MODE_HIT_EFFECT) != 0) {
                 objfx_spawnHitEffectBurst((GameObject*)*targetSlot, ((LightningState*)objectData)->hitRadius,
                                           LIGHTNING_HIT_EFFECT_ID, LIGHTNING_HIT_EFFECT_VARIANT,

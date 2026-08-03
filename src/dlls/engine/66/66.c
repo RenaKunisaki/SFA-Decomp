@@ -57,10 +57,10 @@ int camcontrol_traceMove(f32* fromPos, f32* toPos, f32* outPos, u8* traceWork, c
     *outPos = *toPos;
     outPos[1] = toPos[1];
     outPos[2] = toPos[2];
-    *(f32*)(traceWork + offsetof(CamcontrolTraceWork, radius)) = radius;
-    *(s8*)(traceWork + offsetof(CamcontrolTraceWork, bboxHit)) = -1;
-    *(s8*)(traceWork + offsetof(CamcontrolTraceWork, mode)) = traceMode;
-    *(s16*)(traceWork + offsetof(CamcontrolTraceWork, hitCount)) = 0;
+    ((CamcontrolTraceWork*)traceWork)->radius = radius;
+    ((CamcontrolTraceWork*)traceWork)->bboxHit = -1;
+    ((CamcontrolTraceWork*)traceWork)->mode = traceMode;
+    ((CamcontrolTraceWork*)traceWork)->hitCount = 0;
     blocked = 0;
     if (runBbox != 0) {
         blocked = trackGetLineIntersect(fromPos, outPos, radius, 1, NULL, NULL, 0x10, 0xffffffff, 0xff, 0);
@@ -75,7 +75,7 @@ int camcontrol_traceMove(f32* fromPos, f32* toPos, f32* outPos, u8* traceWork, c
     }
     trackGetIntersect(NULL, fromPos, outPos, 1, traceWork, 0);
     clear = 0;
-    if ((gCamcontrolTraceBboxBlocked == 0) && (*(s16*)(traceWork + offsetof(CamcontrolTraceWork, hitCount)) == 0)) {
+    if ((gCamcontrolTraceBboxBlocked == 0) && (((CamcontrolTraceWork*)traceWork)->hitCount == 0)) {
         clear = 1;
     }
     return clear;

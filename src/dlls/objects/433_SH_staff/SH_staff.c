@@ -95,7 +95,7 @@ int sh_staff_getExtraSize(void) {
 }
 
 void sh_staff_free(GameObject* obj, int freeArg) {
-    int* state = obj->extra;
+    ShStaffState* state = obj->extra;
     int* child;
     int i;
 
@@ -105,7 +105,7 @@ void sh_staff_free(GameObject* obj, int freeArg) {
 
     i = 0;
     for (; i < SHSTAFF_HAZE_CHILD_COUNT; i++) {
-        child = *(int**)((char*)state + i * 4 + offsetof(ShStaffState, hazeChildren));
+        child = (int*)state->hazeChildren[i];
         if (child != NULL) {
             ((GameObject*)child)->anim.flags = (s16)(((GameObject*)child)->anim.flags | OBJANIM_FLAG_HIDDEN);
         }
@@ -385,10 +385,10 @@ void sh_staff_deactivate(GameObject* obj, ShStaffState* state, int clearChildren
         staffToggle((GameObject*)player, 1);
         playerPutAwayStaff((GameObject*)player, 1);
         for (i = 0; i < SHSTAFF_HAZE_CHILD_COUNT; i++) {
-            child = *(void**)((char*)state + i * 4 + offsetof(ShStaffState, hazeChildren));
+            child = (void*)state->hazeChildren[i];
             if (child != NULL) {
                 ((GameObject*)child)->anim.flags = (s16)(((GameObject*)child)->anim.flags | OBJANIM_FLAG_HIDDEN);
-                *(int*)((char*)state + i * 4 + offsetof(ShStaffState, hazeChildren)) = 0;
+                state->hazeChildren[i] = 0;
             }
         }
     }

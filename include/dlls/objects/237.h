@@ -202,7 +202,7 @@ void collectible_applyPickup(GameObject* obj);
 void collectible_updateLooseMotion(GameObject* obj);
 void collectible_updateIdleMotion(GameObject* obj);
 int collectible_SeqFn(GameObject* obj, int unused, struct ObjSeqState* animUpdate);
-void collectible_checkProximityPickup(GameObject* obj, u8* state);
+void collectible_checkProximityPickup(GameObject* obj, CollectibleState* state);
 int collectible_getExtraSize(void);
 int collectible_getObjectTypeId(void);
 void collectible_free(GameObject* obj);

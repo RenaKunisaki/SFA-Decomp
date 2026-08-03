@@ -146,13 +146,13 @@ void InvHit_update(GameObject* obj) {
     case INVHIT_MODE_SELF_FREE: {
         ObjHitsPriorityState* hitState = *(ObjHitsPriorityState**)&obj->anim.hitReactState;
         char* ownerHitSlot;
-        char* ownerHitState = (char*)((GameObject*)obj->userData1)->anim.hitReactState;
+        ObjHitsPriorityState* ownerHitState = (ObjHitsPriorityState*)((GameObject*)obj->userData1)->anim.hitReactState;
         int ownerHitIndex;
 
         ownerHitIndex = 0;
-        ownerHitSlot = ownerHitState;
-        for (; ownerHitIndex < *(s8*)(ownerHitState + 0x71); ownerHitIndex++) {
-            if (*(GameObject**)(ownerHitSlot + 0x7c) == obj) {
+        ownerHitSlot = (char*)ownerHitState;
+        for (; ownerHitIndex < ownerHitState->priorityHitCount; ownerHitIndex++) {
+            if (*(GameObject**)(ownerHitSlot + offsetof(ObjHitsPriorityState, hitObjects)) == obj) {
                 hitState->flags = hitState->flags & ~OBJHITS_PRIORITY_STATE_ENABLED;
                 Obj_FreeObject(obj);
             }
