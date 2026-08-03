@@ -14,7 +14,7 @@ STATIC_ASSERT(sizeof(TrickyItemIdList) == 0x14);
 
 extern const TrickyItemIdList gTrickyCmdQueryInit;
 extern const TrickyItemIdList gTrickyFoodItemIds;
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/dll/tricky_state.h"
 #include "main/objseq.h"
 #include "dlls/object_descriptor.h"

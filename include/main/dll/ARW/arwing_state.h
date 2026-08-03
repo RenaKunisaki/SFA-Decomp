@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_ARW_ARWING_STATE_H_
 #define MAIN_DLL_ARW_ARWING_STATE_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "global.h"
 
 /* Per-object extra state for the playable Arwing

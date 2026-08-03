@@ -1,7 +1,7 @@
 #ifndef MAIN_NEWSHADOWS_H_
 #define MAIN_NEWSHADOWS_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/texture.h"
 
 void updateReflectionTextures(void);

@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DR_DRPICKUP_H_
 #define MAIN_DLL_DR_DRPICKUP_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "global.h"
 
 /* Bitfield: PowerPC big-endian: bit 0 = 0x80, bit 7 = 0x01 */

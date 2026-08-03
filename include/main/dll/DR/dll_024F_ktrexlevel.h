@@ -3,7 +3,7 @@
 
 #include "game/objects/object.h"
 #include "global.h"
-#include "ghidra_import.h"
+#include "types.h"
 
 extern int gKTRexPhaseCounter;
 

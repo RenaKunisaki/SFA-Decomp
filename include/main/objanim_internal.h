@@ -4,7 +4,7 @@
 #include "game/objects/object_interface.h"
 #include "global.h"
 #include "main/vec_types.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/objanim.h"
 #include "main/objhits_types.h"
 

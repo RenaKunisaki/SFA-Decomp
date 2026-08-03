@@ -1,7 +1,7 @@
 #ifndef MAIN_ASSET_LOAD_H_
 #define MAIN_ASSET_LOAD_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 struct ObjAnimDef;
 

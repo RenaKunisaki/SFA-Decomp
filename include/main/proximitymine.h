@@ -1,7 +1,7 @@
 #ifndef MAIN_PROXIMITYMINE_H_
 #define MAIN_PROXIMITYMINE_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/model_light.h"
 #include "game/objects/object_setup.h"
 #include "dlls/object_descriptor.h"

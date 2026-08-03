@@ -2,7 +2,7 @@
 #define MAIN_EXPGFX_INTERNAL_H_
 
 #include "global.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/objanim_internal.h"
 
 #define EXPGFX_POOL_COUNT 0x50

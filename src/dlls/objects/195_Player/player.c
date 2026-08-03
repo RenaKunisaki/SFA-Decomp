@@ -69,7 +69,7 @@
 #include "main/objfx.h"
 #include "main/screen_transition.h"
 #include "main/object_transform.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/objseq_api.h"
 #include "main/shader_api.h"

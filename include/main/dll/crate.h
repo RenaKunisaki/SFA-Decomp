@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_CRATE_H_
 #define MAIN_DLL_CRATE_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/dll/sfxplayer.h"
 #include "main/objseq.h"
 

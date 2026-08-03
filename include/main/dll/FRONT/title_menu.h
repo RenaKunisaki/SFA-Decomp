@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_FRONT_TITLE_MENU_H_
 #define MAIN_DLL_FRONT_TITLE_MENU_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/gameloop_api.h"
 #include "main/dll/dll_003C_tumbleweedbush.h"
 

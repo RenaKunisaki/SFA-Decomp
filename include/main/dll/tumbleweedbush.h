@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_D1_H_
 #define MAIN_DLL_DLL_D1_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 void trickyGrowl(void *obj, void *trickyState);
 

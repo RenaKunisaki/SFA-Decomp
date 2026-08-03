@@ -1,4 +1,4 @@
-#include "ghidra_import.h"
+#include "types.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/floorf.h"
 #include "musyx/inp_midi.h"
 #include "musyx/synth_callback.h"

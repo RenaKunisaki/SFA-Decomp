@@ -1,7 +1,7 @@
 #ifndef MUSYX_SYNTH_JOB_H_
 #define MUSYX_SYNTH_JOB_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 #define SYNTH_JOB_STRIDE 0x64
 

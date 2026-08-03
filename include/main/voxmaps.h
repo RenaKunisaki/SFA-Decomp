@@ -1,7 +1,7 @@
 #ifndef MAIN_VOXMAPS_H_
 #define MAIN_VOXMAPS_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 struct CurveHeapNode;
 typedef struct Texture Texture;

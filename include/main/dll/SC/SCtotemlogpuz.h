@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_SC_SCTOTEMLOGPUZ_H_
 #define MAIN_DLL_SC_SCTOTEMLOGPUZ_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/mapEventTypes.h"
 
 typedef struct SCTotemLogPuzzleRuntime {

@@ -1,7 +1,7 @@
 #ifndef MUSYX_SND_SYNTH_API_H_
 #define MUSYX_SND_SYNTH_API_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "musyx/synth_control.h"
 #include "musyx/snd_types.h"
 

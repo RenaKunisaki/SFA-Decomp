@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DR_DRLASERTURRET_H_
 #define MAIN_DLL_DR_DRLASERTURRET_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/objanim_internal.h"
 
 #define DR_LASERTURRET_FLAG_ACTION_ACTIVE 0x08

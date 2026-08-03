@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DEBUG_PROF_H_
 #define MAIN_DLL_DEBUG_PROF_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 void optionsMenu_openAudioPanel(void);
 void optionsMenu_openGeneralPanel(void);

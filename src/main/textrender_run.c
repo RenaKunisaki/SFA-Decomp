@@ -1,4 +1,4 @@
-#include "ghidra_import.h"
+#include "types.h"
 #include "track/intersect_hud_api.h"
 #include "track/intersect_render_setup_api.h"
 #include "main/hud_visibility_api.h"

@@ -3,7 +3,7 @@
 
 #include "main/dll/baddie_state.h"
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "global.h"
 
 /* treasurechest_state_GENERATED

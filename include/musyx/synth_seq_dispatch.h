@@ -1,7 +1,7 @@
 #ifndef MUSYX_SYNTH_SEQ_DISPATCH_H_
 #define MUSYX_SYNTH_SEQ_DISPATCH_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 typedef struct SynthSequenceEvent SynthSequenceEvent;
 

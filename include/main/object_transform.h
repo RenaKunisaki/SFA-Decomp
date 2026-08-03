@@ -1,7 +1,7 @@
 #ifndef MAIN_OBJECT_TRANSFORM_H_
 #define MAIN_OBJECT_TRANSFORM_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/vecmath.h"
 
 typedef struct GameObject GameObject;

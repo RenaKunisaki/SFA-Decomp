@@ -1,7 +1,7 @@
 #ifndef MUSYX_SND_SERVICE_H_
 #define MUSYX_SND_SERVICE_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "musyx/mcmd.h"
 
 u16 sndRand(void);

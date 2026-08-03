@@ -1,7 +1,7 @@
 #ifndef MUSYX_SAL_DSP_H_
 #define MUSYX_SAL_DSP_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 extern u16 dspCmdFirstSize;
 extern u16* dspCmdList;

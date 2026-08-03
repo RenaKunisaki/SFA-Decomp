@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_FRONT_ATTRACT_MOVIE_H_
 #define MAIN_DLL_FRONT_ATTRACT_MOVIE_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "dolphin/dvd.h"
 #include "dolphin/thp/THPFile.h"
 #include "dolphin/thp/THPInfo.h"

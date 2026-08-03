@@ -3,7 +3,7 @@
 
 struct GameObject;
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/curve.h"
 #include "main/dll/curve_walker.h"
 #include "main/dll/objfsa_query_api.h"

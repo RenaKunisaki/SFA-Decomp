@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_0255_SNOWBIKE_H_
 #define MAIN_DLL_DLL_0255_SNOWBIKE_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "global.h"
 
 #include "game/objects/object.h"

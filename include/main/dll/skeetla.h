@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_SKEETLA_H_
 #define MAIN_DLL_SKEETLA_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/dll/skeetla_anim_api.h"
 #include "main/dll/skeetla_route_api.h"

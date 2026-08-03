@@ -1,7 +1,7 @@
 #ifndef MAIN_RCP_DOLPHIN_H_
 #define MAIN_RCP_DOLPHIN_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/rcp_dolphin_api.h"
 
 /* TEX0.tab/TEX1.tab/TEXPRE.tab entry (bankWord): high bits select source map, */

@@ -2,7 +2,7 @@
 #define MAIN_DLL_WC_DLL_0297_WCTEMPLEBRI_H_
 
 #include "game/objects/object.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/objseq.h"
 #include "game/objects/object_setup.h"
 

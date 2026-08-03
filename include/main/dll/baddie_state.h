@@ -2,7 +2,7 @@
 #define MAIN_DLL_BADDIE_STATE_H_
 
 #include "game/objects/object_setup.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "global.h"
 #include "main/objprint_character_api.h"
 #include "main/voxmaps.h"

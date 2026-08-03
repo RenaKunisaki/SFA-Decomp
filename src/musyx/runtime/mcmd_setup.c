@@ -1,4 +1,4 @@
-#include "ghidra_import.h"
+#include "types.h"
 #include "musyx/mcmd.h"
 #include "musyx/mcmd_exec.h"
 #include "musyx/snd_service.h"

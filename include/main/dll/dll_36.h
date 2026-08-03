@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_36_H_
 #define MAIN_DLL_DLL_36_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 void EnterSaveNameScreen_render(void);
 void EnterSaveNameScreen_frameEnd(void);

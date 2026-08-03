@@ -1,7 +1,7 @@
 #ifndef MUSYX_SYNTH_VIRTUAL_SAMPLE_H_
 #define MUSYX_SYNTH_VIRTUAL_SAMPLE_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 #define SYNTH_VIRTUAL_SAMPLE_ENTRY_SIZE 0x24
 #define SYNTH_VIRTUAL_SAMPLE_MAX_VOICES 64

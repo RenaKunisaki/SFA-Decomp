@@ -1,7 +1,7 @@
 #ifndef MUSYX_INP_CTRL_H_
 #define MUSYX_INP_CTRL_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "musyx/mcmd.h"
 
 u16 inpGetVolume(McmdVoiceState *state);

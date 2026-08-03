@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_00C9_ENEMY_H_
 
 #include "game/objects/object.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "global.h"
 #include "main/dll/duster_api.h"
 #include "main/objprint_character_api.h"

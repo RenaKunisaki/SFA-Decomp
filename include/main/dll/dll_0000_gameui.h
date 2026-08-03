@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_0000_GAMEUI_H_
 #define MAIN_DLL_DLL_0000_GAMEUI_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/texture.h"
 

@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_VF_DLL_021D_VFPLIFT_H_
 #define MAIN_DLL_VF_DLL_021D_VFPLIFT_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "game/objects/object.h"
 #include "global.h"
 #include "game/objects/object_setup.h"

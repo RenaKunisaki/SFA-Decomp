@@ -1,7 +1,7 @@
 #ifndef MUSYX_SYNTH_DELAY_H_
 #define MUSYX_SYNTH_DELAY_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "musyx/mcmd.h"
 
 u32 synthFXSetCtrl(u32 handle, u8 controller, u8 value);

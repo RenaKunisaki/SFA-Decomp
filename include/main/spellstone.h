@@ -1,7 +1,7 @@
 #ifndef MAIN_SPELLSTONE_H_
 #define MAIN_SPELLSTONE_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "game/objects/object.h"
 #include "dlls/object_descriptor.h"
 

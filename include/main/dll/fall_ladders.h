@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_10A_H_
 #define MAIN_DLL_DLL_10A_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/dll/dll_00C9_enemy.h"
 #include "game/objects/object.h"
 

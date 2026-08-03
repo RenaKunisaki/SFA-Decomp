@@ -1,7 +1,7 @@
 #ifndef MAIN_EXPGFX_H_
 #define MAIN_EXPGFX_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/dll/expgfx_interface.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll/expgfx_resource_api.h"

@@ -3,7 +3,7 @@
 
 #include "global.h"
 #include "game/objects/object.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/objhits_types.h"
 
 #define OBJHITS_ACTIVE_HIT_VOLUME_OBJECT_COUNT       5

@@ -1,7 +1,7 @@
 #ifndef MAIN_PI_DOLPHIN_H_
 #define MAIN_PI_DOLPHIN_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "dolphin/gx/GXStruct.h"
 #include "dolphin/gx/GXFifo.h"
 #include "dolphin/os/OSThread.h"

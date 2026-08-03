@@ -1,4 +1,4 @@
-#include "ghidra_import.h"
+#include "types.h"
 
 #include "musyx/mcmd.h"
 #include "musyx/data_tables.h"

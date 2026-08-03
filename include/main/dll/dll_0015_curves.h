@@ -4,7 +4,7 @@
 #include "game/objects/object.h"
 #include "main/track_dolphin_api.h"
 #include "global.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/dll/curve_walker.h"
 #include "main/dll/dll_0015_save_settings.h"
 #include "main/dll/rom_curve_def.h"

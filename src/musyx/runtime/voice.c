@@ -1,5 +1,5 @@
 #include "global.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "musyx/mcmd.h"
 #include "musyx/hw_init.h"
 #include "musyx/synth_jobs.h"

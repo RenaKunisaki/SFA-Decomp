@@ -1,7 +1,7 @@
 #ifndef MUSYX_VID_INIT_H_
 #define MUSYX_VID_INIT_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "musyx/mcmd.h"
 
 extern VID_LIST vidList[128];

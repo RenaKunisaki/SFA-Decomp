@@ -1,7 +1,7 @@
 #ifndef MUSYX_DATA_TABLES_H_
 #define MUSYX_DATA_TABLES_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "musyx/data_ref.h"
 #include "musyx/dsp_voice.h"
 

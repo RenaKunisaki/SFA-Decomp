@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_CRATE2_H_
 #define MAIN_DLL_CRATE2_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/objseq.h"
 #include "game/objects/object_setup.h"
 #include "dlls/object_descriptor.h"

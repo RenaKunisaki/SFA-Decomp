@@ -2,7 +2,7 @@
 #define MAIN_DLL_FIREFLYLANTERN_H_
 
 #include "game/objects/object.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/dll/duster_api.h"
 
 void pinPon_updateEngaged(GameObject* obj, int* state);

@@ -3,7 +3,7 @@
 
 #include "game/objects/object.h"
 #include "global.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/dll/baddie_state.h"
 #include "main/dll/dll_002E_moveLib.h"
 #include "main/objseq.h"

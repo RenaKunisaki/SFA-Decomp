@@ -1,7 +1,7 @@
 #ifndef MAIN_CRFUELTANK_H_
 #define MAIN_CRFUELTANK_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "dlls/object_descriptor.h"

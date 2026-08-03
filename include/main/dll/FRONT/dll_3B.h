@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_FRONT_DLL_3B_H_
 #define MAIN_DLL_FRONT_DLL_3B_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "dolphin/os.h"
 #include "main/dll/FRONT/attract_movie.h"
 #include "main/dll/FRONT/title_menu.h"

@@ -1,7 +1,7 @@
 #ifndef MUSYX_HW_VOICE_PARAMS_H_
 #define MUSYX_HW_VOICE_PARAMS_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 void hwSetPitch(u32 voice, u16 pitch);
 void hwSetSRCType(u32 slot, u8 value);

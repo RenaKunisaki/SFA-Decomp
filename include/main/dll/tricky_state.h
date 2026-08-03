@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_TRICKY_STATE_H_
 #define MAIN_DLL_TRICKY_STATE_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "global.h"
 #include "main/objprint_character_api.h"
 #include "main/dll/curve_walker.h"

@@ -1,7 +1,7 @@
 #ifndef MAIN_TRACK_DOLPHIN_H_
 #define MAIN_TRACK_DOLPHIN_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "game/objects/object.h"
 
 typedef struct TrackBlockDescriptor

@@ -1,7 +1,7 @@
 #ifndef MUSYX_VOICE_CONV_H_
 #define MUSYX_VOICE_CONV_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "musyx/voice_manage.h"
 
 extern u8 synth_last_started[SYNTH_VOICE_MIDI_CHANNEL_COUNT][SYNTH_VOICE_MIDI_KEY_COUNT];

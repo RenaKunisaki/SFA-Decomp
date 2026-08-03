@@ -1,7 +1,7 @@
 #ifndef MUSYX_SND3D_H_
 #define MUSYX_SND3D_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "musyx/snd_types.h"
 
 #define S3D_EMITTER_FLAG_POSITIONAL 0x00000001

@@ -2,7 +2,7 @@
 #define MAIN_DLL_STAFFACTION_H_
 
 #include "game/objects/object.h"
-#include "ghidra_import.h"
+#include "types.h"
 
 void dll_D3_initialise(void);
 void dll_D3_release_nop(void);

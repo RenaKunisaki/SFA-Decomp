@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_SAVEGAME_H_
 #define MAIN_DLL_SAVEGAME_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/dll/savegame_env_api.h"
 #include "main/dll/savegame_load_api.h"
 #include "main/dll/savegame_object_api.h"

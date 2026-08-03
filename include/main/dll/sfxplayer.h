@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_SFXPLAYER_H_
 #define MAIN_DLL_SFXPLAYER_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "game/objects/object.h"
 #include "main/objseq.h"
 

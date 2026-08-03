@@ -1,7 +1,7 @@
 #ifndef MUSYX_HW_SAMPLE_H_
 #define MUSYX_HW_SAMPLE_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 void hwSetVirtualSampleLoopBuffer(int slot, u32 valueA, u32 valueB);
 u32 hwGetVirtualSampleState(u32 voice);

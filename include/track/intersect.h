@@ -10,7 +10,7 @@
 #include "track/intersect_screen_api.h"
 #include "track/intersect_whirlpool_api.h"
 #include "main/projected_shadow.h"
-#include "ghidra_import.h"
+#include "types.h"
 
 void* surfaceSfxGetRecord(u32 i);
 void waterFxUpdate(f32 step);

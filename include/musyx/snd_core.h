@@ -1,7 +1,7 @@
 #ifndef MUSYX_SND_CORE_H_
 #define MUSYX_SND_CORE_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 extern u8 sndActive;
 extern u8 synthIdleWaitActive;

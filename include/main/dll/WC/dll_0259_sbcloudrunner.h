@@ -2,7 +2,7 @@
 #define MAIN_DLL_WC_WCLEVCONTROL_H_
 
 #include "game/objects/object.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/objseq.h"
 
 typedef struct SBCloudRunnerState SBCloudRunnerState;

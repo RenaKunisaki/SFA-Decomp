@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_FRONT_N_RAREWARE_H_
 #define MAIN_DLL_FRONT_N_RAREWARE_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 void runLoadingScreens(void);
 void initLoadingScreenTextures(void);

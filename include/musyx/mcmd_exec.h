@@ -1,7 +1,7 @@
 #ifndef MUSYX_MCMD_EXEC_H_
 #define MUSYX_MCMD_EXEC_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "musyx/mcmd.h"
 
 extern u64 macRealTime;

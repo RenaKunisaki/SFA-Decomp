@@ -64,7 +64,7 @@
 #include "main/dll/hud_textures.h"
 #include "main/gametext_box_api.h"
 #include "main/gametext_command_api.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/audio/sfx_ids.h"
 #include "main/dll/savegame.h"
 #include "main/dll/pausemenu.h"
