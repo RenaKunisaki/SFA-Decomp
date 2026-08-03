@@ -1,5 +1,14 @@
-#include "dolphin/types.h"
+#include "dlls/object_descriptor.h"
 
-u32 Dummy08_funcs[10] = {
-    0, 0, 0, 0x00050000, 0, 0, 0, 0, 0, 0,
+ObjectDescriptor6 Dummy08_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_6_SLOTS,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
 };

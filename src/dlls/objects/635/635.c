@@ -1,7 +1,3 @@
-/* DLL 0x027B */
-#include "main/resource.h"
+#include "global.h"
 
-ResourceDescriptorCallbacks8 gDll27BNullResourceDescriptor = {
-    {-1, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-};
+u32 gDll27BNullResourceDescriptor[12] = {0xFFFFFFFF};

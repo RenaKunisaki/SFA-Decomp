@@ -1,5 +1,3 @@
-/* Empty secondary CFForceField resource slot. */
+#include "global.h"
 
-#include "dlls/objects/348_CFForceFiel.h"
-
-u32 gCFForceField15CNullResourceDescriptor[CFFORCEFIELD15C_NULL_DESCRIPTOR_WORD_COUNT] = {0};
+u32 gCFForceField15CNullResourceDescriptor[2] = {0};

@@ -36,7 +36,7 @@ which now carries prose evidence notes, so they have been dropped.
 | name-conflicts (disambiguated) | 0 |
 | naming contradictions (appendix) | 18 |
 | naming contradictions arbitrated and renamed (appendix) | 7 |
-| unit-owned headers recorded (appendix) | 113 |
+| unit-owned headers recorded (appendix) | 109 |
 
 Expansion status over the 705 rows: NO-RETAIL-NAME 287, COMPLETE 263, CONFIRMED 81, RAW 62, GUESSED 7, DOL-RECOVERED 5
 
@@ -970,13 +970,9 @@ more as they are recovered.
 | 0x1FF | dlls/objects/511/511.c | include/dlls/objects/511.h |
 | 0x200 | dlls/objects/512/512.c | include/dlls/objects/512.h |
 | 0x201 | dlls/objects/513_WM_colrise/WM_colrise.c | include/dlls/objects/513_WM_colrise.h |
-| 0x202 | dlls/objects/514/514.c | include/dlls/objects/514.h |
-| 0x203 | dlls/objects/515/515.c | include/dlls/objects/515.h |
 | 0x204 | dlls/objects/516_WM_Torch/WM_Torch.c | include/dlls/objects/516_WM_Torch.h |
-| 0x205 | dlls/objects/517_WM_Vein/WM_Vein.c | include/dlls/objects/517_WM_Vein.h |
 | 0x206 | dlls/objects/518_LightSource/LightSource.c | include/dlls/objects/518_LightSource.h |
 | 0x207 | dlls/objects/519_WM_Worm/WM_Worm.c | include/dlls/objects/519_WM_Worm.h |
-| 0x208 | dlls/objects/520_WM_Wallpowe/WM_Wallpowe.c | include/dlls/objects/520_WM_Wallpowe.h |
 | 0x209 | dlls/objects/521_WM_LevelCon/WM_LevelCon.c | include/dlls/objects/521_WM_LevelCon.h |
 | 0x20A | dlls/objects/522_WM_GeneralS/WM_GeneralS.c | include/dlls/objects/522_WM_GeneralS.h |
 | 0x22F | dlls/objects/559_DFP_floorba/DFP_floorba.c | include/main/dll/baddie/dll_022F_dfpfloorbar.h |

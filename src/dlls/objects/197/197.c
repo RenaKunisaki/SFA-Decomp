@@ -1,6 +1,3 @@
-#include "main/resource.h"
+#include "global.h"
 
-ResourceDescriptorCallbacks8 gDllC5NullResourceDescriptor = {
-    {-1, 0, 0, 0},
-    {0, 0, 0, 0, 0, 0, 0, 0},
-};
+u32 gDllC5NullResourceDescriptor[12] = {0xFFFFFFFF};

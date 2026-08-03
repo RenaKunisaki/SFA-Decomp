@@ -121,41 +121,27 @@
 #include "dlls/objects/323_FEseqobject.h"
 #include "dlls/objects/324.h"
 #include "dlls/objects/325_CloudPrison.h"
-#include "dlls/objects/326_CloudShipCo.h"
-#include "dlls/objects/327.h"
 #include "dlls/objects/328_CFGuardian.h"
 #include "dlls/objects/329.h"
 #include "dlls/objects/330_CFPowerBase.h"
 #include "dlls/objects/331_CFMainCryst.h"
 #include "dlls/objects/332.h"
-#include "dlls/objects/333_LaserBeam.h"
 #include "dlls/objects/334_CFPrisonGua.h"
 #include "dlls/objects/335_CFPrisonUnc.h"
 #include "dlls/objects/336_GCRobotLigh.h"
-#include "dlls/objects/337_CFScalesGal.h"
-#include "dlls/objects/338_CF_ObjCreat.h"
 #include "dlls/objects/339_CFPerch.h"
 #include "dlls/objects/340.h"
-#include "dlls/objects/341.h"
-#include "dlls/objects/342.h"
 #include "dlls/objects/343_SpiritDoorS.h"
 #include "dlls/objects/344.h"
 #include "dlls/objects/345.h"
 #include "dlls/objects/346.h"
 #include "dlls/objects/347_CFForceFiel.h"
-#include "dlls/objects/348_CFForceFiel.h"
 #include "dlls/objects/349.h"
-#include "dlls/objects/350.h"
 #include "dlls/objects/351.h"
-#include "dlls/objects/352.h"
-#include "dlls/objects/353_CFTreasRobo.h"
 #include "dlls/objects/354_CFMagicWall.h"
-#include "dlls/objects/355.h"
 #include "dlls/objects/356_CFLevelCont.h"
-#include "dlls/objects/357_CFRemovalSh.h"
 #include "dlls/objects/358.h"
 #include "dlls/objects/359_SpiritDoorL.h"
-#include "dlls/objects/360_HoloPoint.h"
 #include "dlls/objects/361_IMIceMounta.h"
 #include "dlls/objects/362_CRrockfall.h"
 #include "dlls/objects/363.h"
@@ -169,13 +155,11 @@
 #include "dlls/objects/371_LINK_levcon.h"
 #include "dlls/objects/372_CCriverflow.h"
 #include "dlls/objects/373_DFropenode.h"
-#include "dlls/objects/374_DFSH_Door1S.h"
 #include "dlls/objects/375.h"
 #include "dlls/objects/376_DFSH_Shrine.h"
 #include "dlls/objects/377_DFSH_ObjCre.h"
 #include "dlls/objects/378_SpiritPrize.h"
 #include "dlls/objects/379_DFSH_LaserB.h"
-#include "dlls/objects/380_GCRobotPatr.h"
 #include "dlls/objects/381.h"
 #include "dlls/objects/382_MMP_levelco.h"
 #include "dlls/objects/383.h"
@@ -308,13 +292,9 @@
 #include "dlls/objects/511.h"
 #include "dlls/objects/512.h"
 #include "dlls/objects/513_WM_colrise.h"
-#include "dlls/objects/514.h"
-#include "dlls/objects/515.h"
 #include "dlls/objects/516_WM_Torch.h"
-#include "dlls/objects/517_WM_Vein.h"
 #include "dlls/objects/518_LightSource.h"
 #include "dlls/objects/519_WM_Worm.h"
-#include "dlls/objects/520_WM_Wallpowe.h"
 #include "dlls/objects/521_WM_LevelCon.h"
 #include "dlls/objects/522_WM_GeneralS.h"
 #include "dlls/objects/599_DR_EarthWar.h"
@@ -603,7 +583,6 @@ extern ResourceDescriptor TitleScreenInit_funcs, n_rareware_funcs, n_attractmode
 extern ResourceDescriptor Dummy3A_funcs, GameUI_funcs, Menu_funcs, Link_funcs, TitleMenuItem_funcs, Dummy3E_funcs,
     Minimap_funcs, dll_3F_funcs;
 extern ResourceDescriptor gCreditsDescriptor, gWarpStoneUiDescriptor;
-extern ResourceDescriptorCallbacks8 gDllC5NullResourceDescriptor;
 extern ResourceDescriptor gWM_VConsoleNullResourceDescriptor, gGCRobotBlastObjDescriptor;
 extern ResourceDescriptor gDll22CObjDescriptor, Dummy245, Dummy246, Dummy244, Dummy247, Dummy248, Dummy24A, Dummy24B;
 extern ResourceDescriptor Dummy24C_funcs, gDll27BNullResourceDescriptor, gDll27DNullResourceDescriptor,
@@ -616,6 +595,15 @@ extern ResourceDescriptor gDll23ENullResourceDescriptor, gDll264NullResourceDesc
 extern ResourceDescriptor gDll276NullResourceDescriptor, gCFWindLiftLNullResourceDescriptor,
     gDll278NullResourceDescriptor, gDR_CollapseNullResourceDescriptor, gDll27FNullResourceDescriptor,
     gDll249NullResourceDescriptor, playerShadow_funcs, projgfx_funcs;
+extern ResourceDescriptor gDllC5NullResourceDescriptor, gCloudShipControlNullResourceDescriptor,
+    gDll147NullResourceDescriptor, gLaserBeamNullResourceDescriptor, gCFScalesGalNullResourceDescriptor,
+    gCFObjCreatNullResourceDescriptor, gDll155NullResourceDescriptor, gDll156NullResourceDescriptor;
+extern ResourceDescriptor gCFForceField15CNullResourceDescriptor, gDll15ENullResourceDescriptor,
+    gDll160NullResourceDescriptor, gCFTreasRoboNullResourceDescriptor, gDll163NullResourceDescriptor,
+    gCFRemovalShNullResourceDescriptor, gHoloPointNullResourceDescriptor;
+extern ResourceDescriptor gDFSH_Door1SNullResourceDescriptor, gGCRobotPatrNullResourceDescriptor,
+    gDll202NullResourceDescriptor, gDll203NullResourceDescriptor, gWMVeinNullResourceDescriptor,
+    gWM_WallpoweNullResourceDescriptor;
 
 void* gResourceLoadedHandles[0x2C1];
 u16 gResourceRefCounts[0x2C2];
@@ -1422,7 +1410,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gProjdfp1rResourceDescriptor,
     NULL,
     &gTrickyObjDescriptor,
-    (ResourceDescriptor*)&gDllC5NullResourceDescriptor,
+    &gDllC5NullResourceDescriptor,
     (ResourceDescriptor*)&gAnimatedObjDescriptor,
     (ResourceDescriptor*)&gDIM2RoofRubObjDescriptor,
     (ResourceDescriptor*)&gDepthOfFieldPointObjDescriptor,
@@ -1551,41 +1539,41 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gFEseqobjectObjDescriptor,
     (ResourceDescriptor*)&gDll144ObjDescriptor,
     (ResourceDescriptor*)&gCloudPrisonControlObjDescriptor,
-    (ResourceDescriptor*)&gCloudShipControlNullResourceDescriptor,
-    (ResourceDescriptor*)&gDll147NullResourceDescriptor,
+    &gCloudShipControlNullResourceDescriptor,
+    &gDll147NullResourceDescriptor,
     (ResourceDescriptor*)&gCFGuardianObjDescriptor,
     (ResourceDescriptor*)&gWindLiftObjDescriptor,
     (ResourceDescriptor*)&gCFPowerBaseObjDescriptor,
     (ResourceDescriptor*)&gCFMainCrystalObjDescriptor,
     (ResourceDescriptor*)&gBabyCloudRunnerObjDescriptor,
-    (ResourceDescriptor*)&gLaserBeamNullResourceDescriptor,
+    &gLaserBeamNullResourceDescriptor,
     (ResourceDescriptor*)&gCFPrisonGuardObjDescriptor,
     (ResourceDescriptor*)&gCFPrisonUncleObjDescriptor,
     (ResourceDescriptor*)&gGCRobotLightBeamObjDescriptor,
-    (ResourceDescriptor*)&gCFScalesGalNullResourceDescriptor,
-    (ResourceDescriptor*)&gCFObjCreatNullResourceDescriptor,
+    &gCFScalesGalNullResourceDescriptor,
+    &gCFObjCreatNullResourceDescriptor,
     (ResourceDescriptor*)&gCFPerchObjDescriptor,
     (ResourceDescriptor*)&gCFPrisonCageObjDescriptor,
-    (ResourceDescriptor*)&gDll155NullResourceDescriptor,
-    (ResourceDescriptor*)&gDll156NullResourceDescriptor,
+    &gDll155NullResourceDescriptor,
+    &gDll156NullResourceDescriptor,
     (ResourceDescriptor*)&gSpiritDoorSpiritObjDescriptor,
     (ResourceDescriptor*)&gGunpowderBarrelObjDescriptor,
     (ResourceDescriptor*)&gBlastedObjDescriptor,
     (ResourceDescriptor*)&gExplodableObjDescriptor,
     (ResourceDescriptor*)&gCFForceFieldObjDescriptor,
-    (ResourceDescriptor*)&gCFForceField15CNullResourceDescriptor,
+    &gCFForceField15CNullResourceDescriptor,
     (ResourceDescriptor*)&gSlidingDoorObjDescriptor,
-    (ResourceDescriptor*)&gDll15ENullResourceDescriptor,
+    &gDll15ENullResourceDescriptor,
     (ResourceDescriptor*)&gAttractorObjDescriptor,
-    (ResourceDescriptor*)&gDll160NullResourceDescriptor,
-    (ResourceDescriptor*)&gCFTreasRoboNullResourceDescriptor,
+    &gDll160NullResourceDescriptor,
+    &gCFTreasRoboNullResourceDescriptor,
     (ResourceDescriptor*)&gCFMagicWallObjDescriptor,
-    (ResourceDescriptor*)&gDll163NullResourceDescriptor,
+    &gDll163NullResourceDescriptor,
     (ResourceDescriptor*)&gCFLevelControlObjDescriptor,
-    (ResourceDescriptor*)&gCFRemovalShNullResourceDescriptor,
+    &gCFRemovalShNullResourceDescriptor,
     (ResourceDescriptor*)&gExplodedObjDescriptor,
     (ResourceDescriptor*)&gSpiritDoorLockObjDescriptor,
-    (ResourceDescriptor*)&gHoloPointNullResourceDescriptor,
+    &gHoloPointNullResourceDescriptor,
     (ResourceDescriptor*)&gIMIceMountainObjDescriptor,
     (ResourceDescriptor*)&gCRrockfallObjDescriptor,
     (ResourceDescriptor*)&gMagicLightObjDescriptor,
@@ -1599,13 +1587,13 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gLINKLevelControlObjDescriptor,
     (ResourceDescriptor*)&gCCRiverFlowObjDescriptor,
     (ResourceDescriptor*)&gDFropenodeObjDescriptor,
-    (ResourceDescriptor*)&gDFSH_Door1SNullResourceDescriptor,
+    &gDFSH_Door1SNullResourceDescriptor,
     (ResourceDescriptor*)&gDll177ObjDescriptor,
     (ResourceDescriptor*)&gDFSHShrineObjDescriptor,
     (ResourceDescriptor*)&gDFSHObjCreatorObjDescriptor,
     (ResourceDescriptor*)&gSpiritPrizeObjDescriptor,
     (ResourceDescriptor*)&gDFSHLaserBeamObjDescriptor,
-    (ResourceDescriptor*)&gGCRobotPatrNullResourceDescriptor,
+    &gGCRobotPatrNullResourceDescriptor,
     (ResourceDescriptor*)&gRollingBarrelObjDescriptor,
     (ResourceDescriptor*)&gMMPLevelControlObjDescriptor,
     (ResourceDescriptor*)&gMoonSeedBushObjDescriptor,
@@ -1739,13 +1727,13 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gDll1FFObjDescriptor,
     (ResourceDescriptor*)&gDll200ObjDescriptor,
     (ResourceDescriptor*)&gWM_colriseObjDescriptor,
-    (ResourceDescriptor*)&gDll202NullResourceDescriptor,
-    (ResourceDescriptor*)&gDll203NullResourceDescriptor,
+    &gDll202NullResourceDescriptor,
+    &gDll203NullResourceDescriptor,
     (ResourceDescriptor*)&gWM_TorchObjDescriptor,
-    (ResourceDescriptor*)&gWMVeinNullResourceDescriptor,
+    &gWMVeinNullResourceDescriptor,
     (ResourceDescriptor*)&gLightSourceObjDescriptor,
     (ResourceDescriptor*)&gWM_WormObjDescriptor,
-    (ResourceDescriptor*)&gWM_WallpoweNullResourceDescriptor,
+    &gWM_WallpoweNullResourceDescriptor,
     (ResourceDescriptor*)&gWM_LevelControlObjDescriptor,
     (ResourceDescriptor*)&gWM_GeneralScalesObjDescriptor,
     &gFireFlyObjDescriptor,

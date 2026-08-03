@@ -1,3 +1,3 @@
-#include "dlls/objects/333_LaserBeam.h"
+#include "global.h"
 
-u32 gLaserBeamNullResourceDescriptor[LASERBEAM_NULL_DESCRIPTOR_WORD_COUNT] = {0};
+u32 gLaserBeamNullResourceDescriptor[2] = {0};

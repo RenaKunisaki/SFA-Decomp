@@ -1,5 +1,3 @@
-/* Empty HoloPoint resource slot. */
+#include "global.h"
 
-#include "dlls/objects/360_HoloPoint.h"
-
-u32 gHoloPointNullResourceDescriptor[HOLOPOINT_NULL_DESCRIPTOR_WORD_COUNT] = {0};
+u32 gHoloPointNullResourceDescriptor[2] = {0};
