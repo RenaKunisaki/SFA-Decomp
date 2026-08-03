@@ -2584,6 +2584,7 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
     u32* refs;
     int done;
     f32 fade;
+    f32 sc2;
     f32 sc;
 
     gObjRenderSetupDone = 0;
@@ -2785,7 +2786,7 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
     {
         if (fuzzPass || fuzzShadowPass || (passMaskCopy & 8))
         {
-            f32 sc2 = 1.0f + (1.5f * ((f32)(gObjFuzzLayerIndex + 1) * fade)) / *(f32*)(m + 0x50);
+            sc2 = 1.0f + (1.5f * ((f32)(gObjFuzzLayerIndex + 1) * fade)) / *(f32*)(m + 0x50);
             PSMTXTrans((MtxPtr)tm, -*(f32*)(m + 0x44), -*(f32*)(m + 0x48), -*(f32*)(m + 0x4c));
             PSMTXScale((MtxPtr)sm, sc2, sc2, sc2);
             PSMTXConcat((MtxPtr)sm, (MtxPtr)tm, (MtxPtr)sm);
