@@ -51,6 +51,13 @@ f32 gSnowClawMoveStepScaleBase = 0.006f;
 #define SNOWCLAW_DROP_OBJ_SCWEAPON_T1 0x33 /* "SCweaponT1" */
 #define SNOWCLAW_DROP_OBJ_ICEBALL     0x64 /* "IceBall" (DLL 0xCD) */
 
+typedef struct SnowclawPlacement
+{
+    ObjPlacement base;     /* 0x00 */
+    u8 pad18[0x27 - 0x18]; /* 0x18 */
+    s8 dropIndex;          /* 0x27 */
+} SnowclawPlacement;
+
 typedef struct SnowclawState
 {
     u8 pad0[0x4 - 0x0];
@@ -146,7 +153,7 @@ int snowclaw_getObjectTypeId(void);
 void snowclaw_release(void);
 void snowclaw_initialise(void);
 void snowclaw_free(GameObject* obj);
-void snowclaw_init(GameObject* obj, s8* init);
+void snowclaw_init(GameObject* obj, SnowclawPlacement* placement);
 void snowclaw_spawnDropBomb(GameObject* obj, GameObject* owner, int launchMode, int userData1Value);
 void snowclaw_updateMountAttack(GameObject* obj, GameObject* mount);
 void snowclaw_syncMountTransform(GameObject* obj, GameObject* mount, int p2, int p3, int p4, int p5, int opacity,
@@ -804,7 +811,7 @@ void snowclaw_update(GameObject* obj)
     }
 }
 
-void snowclaw_init(GameObject* obj, s8* init)
+void snowclaw_init(GameObject* obj, SnowclawPlacement* placement)
 {
     u8* table;
     SnowclawState* inner;
@@ -819,7 +826,7 @@ void snowclaw_init(GameObject* obj, s8* init)
     }
     inner = (obj)->extra;
     *(int*)inner = 0;
-    inner->dropIndex = init[0x27];
+    inner->dropIndex = placement->dropIndex;
     inner->health = 4;
     inner->hitCooldown = -1;
     switch ((obj)->anim.romDefNo)

@@ -3,7 +3,17 @@
 
 #include "types.h"
 #include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "main/objseq.h"
+
+typedef struct DFPRotatePPlacement {
+  ObjPlacement base;     /* 0x00 */
+  s8 rotXByte;           /* 0x18 */
+  u8 unknown19;          /* 0x19 */
+  u8 pad1A[0x1E - 0x1A]; /* 0x1A */
+  s16 eventGameBit;      /* 0x1E */
+  s16 activationGameBit; /* 0x20 */
+} DFPRotatePPlacement;
 
 typedef struct DFPRotatePStateFlags {
   u8 bit80 : 1;
@@ -28,6 +38,11 @@ typedef struct DFPRotatePState {
   DFPRotatePStateFlags flags;
 } DFPRotatePState;
 
+STATIC_ASSERT(offsetof(DFPRotatePPlacement, rotXByte) == 0x18);
+STATIC_ASSERT(offsetof(DFPRotatePPlacement, unknown19) == 0x19);
+STATIC_ASSERT(offsetof(DFPRotatePPlacement, eventGameBit) == 0x1E);
+STATIC_ASSERT(offsetof(DFPRotatePPlacement, activationGameBit) == 0x20);
+
 extern int gDFP_RotatePEffectHandles[8];
 
 int DFP_RotateP_getExtraSize(void);
@@ -35,7 +50,7 @@ int DFP_RotateP_getObjectTypeId(void);
 void DFP_RotateP_render(void);
 void DFP_RotateP_hitDetect(void);
 void DFP_RotateP_update(GameObject* obj);
-void DFP_RotateP_init(GameObject* obj,int config);
+void DFP_RotateP_init(GameObject* obj, DFPRotatePPlacement* placement);
 void DFP_RotateP_free(u32 obj, int arg1);
 void DFP_RotateP_release(void);
 void DFP_RotateP_initialise(void);

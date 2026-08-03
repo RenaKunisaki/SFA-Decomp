@@ -83,8 +83,8 @@ void lightning_update(GameObject* obj) {
             objects = (u32*)objGetAllOfType(LIGHTNING_OBJECT_GROUP, &objectCount);
             objectIndex = 0;
             while (objectIndex < objectCount) {
-                u32 linkedMapId = ((GameObject*)objects[objectIndex])->anim.placement->ident;
-                if (linkedMapId == state->linkedMapId) {
+                u32 linkedIdent = ((GameObject*)objects[objectIndex])->anim.placement->ident;
+                if (linkedIdent == state->linkedIdent) {
                     break;
                 }
                 objectIndex++;
@@ -153,7 +153,7 @@ void lightning_init(GameObject* obj, LightningPlacement* placement) {
     state->radiusY = (f32)(u32)placement->radiusY;
     state->lifetimeBase = placement->lifetimeBase;
     state->width = placement->width;
-    state->linkedMapId = placement->linkedMapId;
+    state->linkedIdent = placement->linkedIdent;
 
     state->flags.enabled = (placement->flags & LIGHTNING_PLACEMENT_ENABLED) ? 1 : 0;
     state->flags.alternateStyle = (placement->flags & LIGHTNING_PLACEMENT_ALTERNATE_STYLE) ? 1 : 0;

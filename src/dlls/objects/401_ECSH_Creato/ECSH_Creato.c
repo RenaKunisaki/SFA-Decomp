@@ -108,7 +108,7 @@ void ecshCreator_update(GameObject* obj) {
         spawnSetup->aggroRangeByte = ECSH_CREATOR_SHARPCLAW_AGGRO_RANGE_BYTE;
         spawnSetup->triggerSequenceId = ECSH_CREATOR_SHARPCLAW_NO_TRIGGER_SEQUENCE;
         spawnSetup->unk24 = 0;
-        spawnSetup->respawnEnabled = 0;
+        spawnSetup->respawnDelay = 0;
         spawnSetup->unk34 = 0xFFFF;
         spawnSetup->gameBit2 = 0;
         spawnSetup->hitPoints = state->sharpClawHitPoints;

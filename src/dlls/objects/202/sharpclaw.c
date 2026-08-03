@@ -1351,7 +1351,7 @@ void sharpClawInit(int obj, u8* state)
     switch (((GameObject*)obj)->anim.romDefNo)
     {
     case 314:
-        if ((s8)setup->unk27 != 0)
+        if ((s8)setup->initialWeaponId != 0)
         {
             ((EnemyState*)state)->weaponRomDefNo = 51;
         }
@@ -1360,7 +1360,7 @@ void sharpClawInit(int obj, u8* state)
         ((EnemyState*)state)->userData2 = 0;
         break;
     case 17:
-        if ((s8)setup->unk27 != 0)
+        if ((s8)setup->initialWeaponId != 0)
         {
             ((EnemyState*)state)->weaponRomDefNo = 51;
         }
@@ -1369,7 +1369,7 @@ void sharpClawInit(int obj, u8* state)
         ((EnemyState*)state)->userData2 = 1;
         break;
     case 1505:
-        if ((s8)setup->unk27 != 0)
+        if ((s8)setup->initialWeaponId != 0)
         {
             ((EnemyState*)state)->weaponRomDefNo = 1529;
         }
@@ -1378,7 +1378,7 @@ void sharpClawInit(int obj, u8* state)
         ((EnemyState*)state)->userData2 = 2;
         break;
     case 1463:
-        if ((s8)setup->unk27 != 0)
+        if ((s8)setup->initialWeaponId != 0)
         {
             ((EnemyState*)state)->weaponRomDefNo = 1530;
         }
@@ -1387,7 +1387,7 @@ void sharpClawInit(int obj, u8* state)
         ((EnemyState*)state)->userData2 = 3;
         break;
     case 1464:
-        if ((s8)setup->unk27 != 0)
+        if ((s8)setup->initialWeaponId != 0)
         {
             ((EnemyState*)state)->weaponRomDefNo = 1534;
         }
@@ -1396,7 +1396,7 @@ void sharpClawInit(int obj, u8* state)
         ((EnemyState*)state)->userData2 = 4;
         break;
     case 1465:
-        if ((s8)setup->unk27 != 0)
+        if ((s8)setup->initialWeaponId != 0)
         {
             ((EnemyState*)state)->weaponRomDefNo = 51;
         }
@@ -1405,7 +1405,7 @@ void sharpClawInit(int obj, u8* state)
         ((EnemyState*)state)->userData2 = 1;
         break;
     case 1958:
-        if ((s8)setup->unk27 != 0)
+        if ((s8)setup->initialWeaponId != 0)
         {
             ((EnemyState*)state)->weaponRomDefNo = 1957;
         }

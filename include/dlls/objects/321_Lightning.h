@@ -27,7 +27,7 @@ typedef enum LightningModeFlag {
  */
 typedef struct LightningPlacement {
     ObjPlacement base; /* 0x00 */
-    u32 linkedMapId;   /* 0x18 */
+    s32 linkedIdent;   /* 0x18 */
     u8 radiusX;        /* 0x1C */
     u8 radiusY;        /* 0x1D */
     u8 lifetimeBase;   /* 0x1E */
@@ -63,14 +63,14 @@ typedef struct LightningState {
     u8 lifetimeBase;            /* 0x1C */
     u8 width;                   /* 0x1D */
     u8 pad1E[2];                /* 0x1E */
-    u32 linkedMapId;            /* 0x20 */
+    s32 linkedIdent;            /* 0x20 */
     LightningModeBits modeBits; /* 0x24 */
     LightningStateFlags flags;  /* 0x25 */
     u8 pad26[2];                /* 0x26 */
 } LightningState;
 
 STATIC_ASSERT(offsetof(LightningPlacement, base) == 0x00);
-STATIC_ASSERT(offsetof(LightningPlacement, linkedMapId) == 0x18);
+STATIC_ASSERT(offsetof(LightningPlacement, linkedIdent) == 0x18);
 STATIC_ASSERT(offsetof(LightningPlacement, radiusX) == 0x1C);
 STATIC_ASSERT(offsetof(LightningPlacement, radiusY) == 0x1D);
 STATIC_ASSERT(offsetof(LightningPlacement, lifetimeBase) == 0x1E);
@@ -93,7 +93,7 @@ STATIC_ASSERT(offsetof(LightningState, countdown) == 0x18);
 STATIC_ASSERT(offsetof(LightningState, lifetimeBase) == 0x1C);
 STATIC_ASSERT(offsetof(LightningState, width) == 0x1D);
 STATIC_ASSERT(offsetof(LightningState, pad1E) == 0x1E);
-STATIC_ASSERT(offsetof(LightningState, linkedMapId) == 0x20);
+STATIC_ASSERT(offsetof(LightningState, linkedIdent) == 0x20);
 STATIC_ASSERT(offsetof(LightningState, modeBits) == 0x24);
 STATIC_ASSERT(offsetof(LightningState, flags) == 0x25);
 STATIC_ASSERT(offsetof(LightningState, pad26) == 0x26);

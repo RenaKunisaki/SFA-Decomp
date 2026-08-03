@@ -108,7 +108,7 @@ void dbholecontrol1_init(GameObject* obj, u8* params)
 {
     DbHoleControl1State* state = obj->extra;
     objAddObjectType((int)obj, DBHOLE_CONTROL1_OBJECT_GROUP);
-    *(s16*)obj = (s16)((s8)((Dbholecontrol1Placement*)params)->unk18 << 8);
+    obj->anim.rotX = (s16)(((Dbholecontrol1Placement*)params)->rotXByte << 8);
     obj->animEventCallback = dbholecontrol1_SeqFn;
     state->gameBitA = ((Dbholecontrol1Placement*)params)->gameBitA;
     state->gameBitB = ((Dbholecontrol1Placement*)params)->gameBitB;

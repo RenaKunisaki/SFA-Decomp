@@ -25,10 +25,6 @@ typedef struct CmbSrcColorIndexPair
 #define DFP_ROTATEP_RING_SETUP_MODE         5
 #define DFP_ROTATEP_EFFECT_RING_ROT_STEP    0x3FFF
 
-#define DFP_ROTATEP_CONFIG_MAP_ID_OFFSET    0x18
-#define DFP_ROTATEP_CONFIG_MODE_OFFSET      0x19
-#define DFP_ROTATEP_CONFIG_EVENT_ID_OFFSET  0x1E
-#define DFP_ROTATEP_CONFIG_FIELD20_OFFSET   0x20
 #define DFP_ROTATEP_COMPLETE_RING_COUNT     4
 #define DFP_ROTATEP_TIMER_ID                0x1D
 #define DFP_ROTATEP_TIMER_SHORT_FRAMES      0x96
@@ -363,16 +359,16 @@ void DFP_RotateP_update(GameObject* obj)
     return;
 }
 
-void DFP_RotateP_init(GameObject* obj, int config)
+void DFP_RotateP_init(GameObject* obj, DFPRotatePPlacement* placement)
 {
     DFPRotatePState* state;
 
     state = (DFPRotatePState*)obj->extra;
-    obj->anim.rotX = (s16)((s8) * (u8*)(config + DFP_ROTATEP_CONFIG_MAP_ID_OFFSET) << 8);
+    obj->anim.rotX = (s16)(placement->rotXByte << 8);
     obj->animEventCallback = (void*)DFP_RotateP_activateEffectHandleRing;
-    state->config19 = *(u8*)(config + DFP_ROTATEP_CONFIG_MODE_OFFSET);
-    state->eventId = *(s16*)(config + DFP_ROTATEP_CONFIG_EVENT_ID_OFFSET);
-    state->config20 = *(s16*)(config + DFP_ROTATEP_CONFIG_FIELD20_OFFSET);
+    state->config19 = placement->unknown19;
+    state->eventId = placement->eventGameBit;
+    state->config20 = placement->activationGameBit;
     state->unk4 = 1;
     gDFP_RotatePEffectHandles[0] = 0;
     gDFP_RotatePEffectHandles[1] = 0;

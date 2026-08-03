@@ -1593,7 +1593,7 @@ int dbstealerworm_stateHandlerA06(GameObject* obj, BaddieState* baddie)
         {
             Stack_Pop(control->msgStack, &popBuf);
         }
-        if (((GroundBaddiePlacement*)data)->unk2C == 0)
+        if (((GroundBaddiePlacement*)data)->respawnDelay == 0)
         {
             (*gMapEventInterface)->addTime(*(int*)&((GroundBaddiePlacement*)data)->base.ident, 360.0f);
         }
@@ -2409,10 +2409,10 @@ void dbstealerworm_init(GameObject* obj, u8* def, int flag)
     p40c = *(int**)&((GroundBaddieState*)sub)->control;
     memset(p40c, 0, sizeof(DbStealerwormControl));
     ((DbStealerwormControl*)p40c)->unk08 = 20.0f;
-    ((DbStealerwormControl*)p40c)->cfg = &gDbStealerwormScriptTable[(s16) * (s16*)(def + 0x24)];
+    ((DbStealerwormControl*)p40c)->cfg = &gDbStealerwormScriptTable[((GroundBaddiePlacement*)def)->unk24];
     randomValue = randomGetRange(0xa, 0x12c);
     ((DbStealerwormControl*)p40c)->countdown = (f32)(s32)randomValue;
-    ((DbStealerwormFlags44*)&((DbStealerwormControl*)p40c)->flags44)->flag20 = def[0x2b] & 1;
+    ((DbStealerwormFlags44*)&((DbStealerwormControl*)p40c)->flags44)->flag20 = ((GroundBaddiePlacement*)def)->flags & 1;
     ((DbStealerwormFlags44*)&((DbStealerwormControl*)p40c)->flags44)->flag10 = 1;
     ((DbStealerwormControl*)p40c)->linkedObj = 0;
     ObjAnim_SetCurrentMove((int)obj, 8, 0.0f, 0);

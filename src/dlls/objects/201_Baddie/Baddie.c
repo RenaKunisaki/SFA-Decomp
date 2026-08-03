@@ -350,10 +350,10 @@ void tricky_handleDefeat(GameObject* obj, int state)
         }
         else
         {
-            if (((EnemyPlacement*)setup)->respawnEnabled != 0)
+            if (((EnemyPlacement*)setup)->respawnDelay != 0)
             {
                 (*gMapEventInterface)
-                    ->addTime(((ObjPlacement*)setup)->ident, 60.0f * (f32)((EnemyPlacement*)setup)->respawnEnabled);
+                    ->addTime(((ObjPlacement*)setup)->ident, 60.0f * (f32)((EnemyPlacement*)setup)->respawnDelay);
             }
             ((EnemyState*)state)->controlFlags = ((EnemyState*)state)->controlFlags & ~(u64)0x800;
             ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 & ~3LL;
@@ -2754,7 +2754,7 @@ void enemy_update(GameObject* obj)
             {
                 return;
             }
-            if (((EnemyPlacement*)setup)->respawnEnabled == 0)
+            if (((EnemyPlacement*)setup)->respawnDelay == 0)
             {
                 return;
             }
@@ -2869,7 +2869,7 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
                 }
                 if ((obj)->userData1 == 0)
                 {
-                    if (((EnemyPlacement*)setup)->respawnEnabled != 0)
+                    if (((EnemyPlacement*)setup)->respawnDelay != 0)
                     {
                         if ((*gMapEventInterface)->shouldNotSaveTime(((ObjPlacement*)setup)->ident) == 0)
                         {

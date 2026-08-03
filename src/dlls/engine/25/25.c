@@ -249,7 +249,7 @@ void dll_19_initGroundBaddie(GameObject* obj, GroundBaddiePlacement* config, u8*
     ((GroundBaddieState*)state)->configFlags = config->flags;
     ((GroundBaddieState*)state)->triggerId = config->triggerId;
     ((GroundBaddieState*)state)->aggression = config->aggression;
-    state[1031] = config->unk27;
+    state[1031] = config->initialWeaponId;
     state[1032] = config->unk28;
     obj->objectFlags = obj->objectFlags | ((s8)state[1032] & 7);
     if ((flags & 8) != 0)
@@ -428,7 +428,7 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
                 obj->anim.alpha = 0;
                 obj->userData1 = 1;
                 obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
-                (*gMapEventInterface)->addTime(other->base.ident, (f32)(s32)(other->unk2C * 60));
+                (*gMapEventInterface)->addTime(other->base.ident, (f32)(s32)(other->respawnDelay * 60));
             }
         }
         else

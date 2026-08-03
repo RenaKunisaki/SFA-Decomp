@@ -2013,7 +2013,7 @@ void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params)
                 newClouds((CloudSpawnParams*)params, objB, posA[0], posA[1], posA[2]);
             }
         }
-        if (params[0x58] & NEWCLOUD_CMD_SPAWN)
+        if (cfg->flags58 & NEWCLOUD_CMD_SPAWN)
         {
             if (((CloudSpawnParams*)params)->cloudType == 0 || ((CloudSpawnParams*)params)->cloudType == 4)
             {

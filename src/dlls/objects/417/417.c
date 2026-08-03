@@ -356,10 +356,10 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
             }
             state->triggerList = gNwMammothGatekeeperCollectionTriggerList;
             if (state->trackedObject == NULL) {
-                short* setup = obj->anim.placementData;
+                NwMammothPlacement* setup = (NwMammothPlacement*)obj->anim.placementData;
                 if (tw2 != NULL && tw2->anim.romDefNo == 0x3fb) {
                     if (getXZDistanceSquared(&obj->anim.worldPosX, &tw2->anim.worldPosX) <
-                        (f32)(s32)(setup[0xC] * setup[0xC])) {
+                        (f32)(s32)(setup->triggerDistance * setup->triggerDistance)) {
                         if (Sfx_IsPlayingFromObjectChannel(obj, 0x10) == 0) {
                             Sfx_PlayFromObject(obj, SFXTRIG_mammoth_snowstep);
                         }
