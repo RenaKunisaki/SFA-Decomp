@@ -7,8 +7,6 @@
 #include "main/trig.h"
 #include "stdlib.h"
 
-typedef f32 Mtx[3][4];
-
 extern f32 lbl_803DE7C0;
 
 f32 interpolate(f32 a, f32 t, f32 exp)

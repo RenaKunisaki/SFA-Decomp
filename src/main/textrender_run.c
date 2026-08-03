@@ -30,9 +30,6 @@
 #include "string.h"
 #include "main/lightmap.h"
 
-typedef f32 Mtx[3][4];
-
-
 TextFont* gameTextFonts;
 int gameTextCharset;
 int curLanguage;
@@ -157,8 +154,6 @@ void gameTextLoadDir(int dirId)
     }
 }
 
-
-
 int gameTextGetCharset(void)
 {
     return gameTextCharset;
@@ -204,7 +199,6 @@ f32 gameTextGetTimer(void)
 {
     return gameTextFonts->timer;
 }
-
 
 int gameTextGetState(int i)
 {
@@ -632,7 +626,6 @@ void gameTextInitRendererState(void)
     curGameTextDir = 3;
     gGameTextStringStore = (void*)mmCreateMemoryStore(0x800);
 }
-
 
 void loadGameTextSequence(int sequenceSlotDir, int sequenceId)
 {

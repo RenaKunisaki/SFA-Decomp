@@ -27,8 +27,6 @@ typedef struct
     int matSrc;
 } ModelLightChannelState;
 
-typedef f32 Mtx[3][4];
-
 typedef struct ModelLightCornerBlock
 {
     f32 v[24];
@@ -382,7 +380,6 @@ void modelLightStruct_startColorFade(ModelLightStruct* light, int mode, s16 fram
     }
 }
 
-
 void modelLightStruct_updateGlowAlpha(ModelLightStruct* light)
 {
     s16 newAlpha;
@@ -516,7 +513,6 @@ void* modelLightStruct_getProjectionTexture(ModelLightStruct* p)
 {
     return p->projectionTexture;
 }
-
 
 void modelLightStruct_setProjectionTexture(ModelLightStruct* p, void* v)
 {
@@ -1248,7 +1244,6 @@ void modelLightStruct_selectBrightestAabbLights(f32 minX, f32 minY, f32 minZ, f3
     }
 }
 
-
 void modelLightStruct_selectObjectLights(GameObject* obj, ModelLightStruct** outLights, int maxLights, s32* outCount,
                                          int typeMask)
 {
@@ -1371,7 +1366,6 @@ void lightSetColor(int i, u8 r, u8 g, u8 b)
     base[i * 4 + 2] = b;
 }
 
-
 void updateLights(void)
 {
     f32 viewPos[3];
@@ -1466,7 +1460,6 @@ void updateLights(void)
     }
 }
 
-
 void ModelLightStruct_free(ModelLightStruct* light)
 {
     int count;
@@ -1496,7 +1489,6 @@ void ModelLightStruct_free(ModelLightStruct* light)
     }
     mm_free(light);
 }
-
 
 ModelLightStruct* objCreateLight(void* owner, u8 addToList)
 {

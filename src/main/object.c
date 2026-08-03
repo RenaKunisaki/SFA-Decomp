@@ -80,8 +80,6 @@ typedef struct ObjListObjectDef
     u32 objectId;
 } ObjListObjectDef;
 
-typedef f32 Mtx[3][4];
-
 typedef struct LoadedObj
 {
     u8 pad00[0x06];
@@ -221,7 +219,6 @@ void doNothing_beforeRenderObject(int a)
 {
 }
 
-
 void Obj_UpdateRollingRotation(GameObject* obj)
 {
     f32 m2[12];
@@ -360,7 +357,6 @@ void Obj_TickModelColorFadeRecursive(GameObject* obj)
     }
 }
 
-
 int objGetFlagsE5_2(u8* obj)
 {
     return ((GameObject*)obj)->colorFadeFlags & OBJ_COLOR_FADE_FLAG_ACTIVE;
@@ -492,7 +488,6 @@ void Obj_StartModelFadeIn(GameObject* obj, int frames)
         }
     }
 }
-
 
 void Obj_TransformLocalVectorByWorldMatrix(void* obj, f32* src, f32* dst)
 {
@@ -915,7 +910,6 @@ void mapSetupPlayer(void)
     }
 }
 
-
 ObjPlacement* Obj_AllocObjectSetup(int size, int type)
 {
     ObjPlacement* p = mmAlloc(size, 0xe, 0);
@@ -1133,9 +1127,7 @@ static void objFreeObjdef(u8* obj, int flag)
     mm_free(obj);
 }
 
-
 void Obj_RegisterObject(GameObject* obj, int b);
-
 
 int loadModLines(int idx, s16* outCount)
 {
@@ -1176,7 +1168,6 @@ static inline void Obj_FreeDeferredObjects(void)
         }
     }
 }
-
 
 u8* loadObjectFile(int id)
 {
@@ -1627,7 +1618,6 @@ void Obj_RemoveFromUpdateList(GameObject* obj)
     }
 }
 
-
 void modelInitBones(f32 scale, void* model)
 {
     f32* srcP;
@@ -1873,7 +1863,6 @@ void Obj_RegisterObject(GameObject* obj, int flags)
         gObjPartitionPivot = 0;
     }
 }
-
 
 void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int unused)
 {
@@ -2291,7 +2280,6 @@ GameObject* ObjList_FindObjectById(u32 objectId)
     return NULL;
 }
 
-
 void* ObjList_GetObjects(int* outA, int* outB)
 {
     if (outA != NULL)
@@ -2304,7 +2292,6 @@ void* ObjList_GetObjects(int* outA, int* outB)
     }
     return gObjList;
 }
-
 
 void Obj_ApplyPendingParentLinks(void)
 {

@@ -38,8 +38,6 @@ int gMmRegion0SpawnEnabled = 1;
 int gMmUseHeaps1and2 = -1;
 char sMmStoreAllocationTag[] = "mmStore";
 
-typedef f32 Mtx[3][4];
-
 #define MM_STORE_COUNT 0x20
 #define MM_DEFERRED_FREE_CAPACITY 2000
 #define MM_REGION_CAPACITY 8
