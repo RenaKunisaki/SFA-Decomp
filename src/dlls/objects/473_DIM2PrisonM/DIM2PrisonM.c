@@ -267,7 +267,7 @@ void dim2prisonmammoth_updateModelChain(GameObject* obj, int* model) {
 }
 
 ObjHitReactEntry gPrisonMammothHitReactEntry[] = {
-    {730, 885, 48, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.012f, {0, 0, 0, 0}},
+    {730, 885, 48, -1, 0, {0, 0, 0}, 0.012f, {0, 0, 0, 0}},
 };
 
 ObjectDescriptor10WithPadding gDIM2PrisonMammothObjDescriptor = {

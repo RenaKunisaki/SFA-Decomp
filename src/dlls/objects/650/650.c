@@ -124,7 +124,7 @@ void earthwalker_hitDetect(GameObject* obj)
         characterClampJointVecs(obj, objGetLookAtJointKeys(), ewState->hitTriggerId, 0, 0x186a0);
     }
 }
-ObjHitReactEntry gEarthWalkerHitReactEntries[1] = {{575, 706, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.01f, {0, 0, 0, 0}}};
+ObjHitReactEntry gEarthWalkerHitReactEntries[1] = {{575, 706, -1, -1, 0, {0, 0, 0}, 0.01f, {0, 0, 0, 0}}};
 ObjectDescriptor gEarthWalkerObjDescriptor = {
     0,
     0,

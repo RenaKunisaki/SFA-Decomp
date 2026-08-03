@@ -56,17 +56,17 @@ STATIC_ASSERT(sizeof(Dll200WanderTarget) == 0x14);
 const Dll200ItemSet gDll200WanderItemSet = {{0x166, 0x167, 0x256}};
 const Dll200ItemSet gDll200IdleItemSet = {{0x166, 0x167, 0x256}};
 ObjHitReactEntry gDll200HitReactTable[] = {
-    {SFXpk_fuelcell_fizz, -1, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
-    {SFXpk_fuelcell_fizz, -1, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
-    {SFXpk_fuelcell_fizz, -1, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
-    {SFXpk_fuelcell_fizz, -1, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
-    {SFXpk_fuelcell_fizz, -1, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
-    {SFXpk_fuelcell_fizz, -1, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
-    {SFXpk_fuelcell_fizz, -1, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
-    {SFXpk_fuelcell_fizz, -1, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
-    {SFXpk_fuelcell_fizz, -1, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
-    {SFXpk_fuelcell_fizz, -1, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
-    {SFXpk_fuelcell_fizz, -1, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
+    {SFXpk_fuelcell_fizz, -1, -1, -1, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
+    {SFXpk_fuelcell_fizz, -1, -1, -1, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
+    {SFXpk_fuelcell_fizz, -1, -1, -1, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
+    {SFXpk_fuelcell_fizz, -1, -1, -1, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
+    {SFXpk_fuelcell_fizz, -1, -1, -1, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
+    {SFXpk_fuelcell_fizz, -1, -1, -1, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
+    {SFXpk_fuelcell_fizz, -1, -1, -1, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
+    {SFXpk_fuelcell_fizz, -1, -1, -1, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
+    {SFXpk_fuelcell_fizz, -1, -1, -1, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
+    {SFXpk_fuelcell_fizz, -1, -1, -1, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
+    {SFXpk_fuelcell_fizz, -1, -1, -1, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
 };
 Dll200WanderTarget gDll200WanderTargets[] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.02f},       {79.0f, 152.0f, 20.0f, 20.0f, 0.01f}, {138.0f, -6.0f, 20.0f, 20.0f, 0.02f},

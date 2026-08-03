@@ -66,7 +66,7 @@ struct ObjHitReactEntry {
   s16 primaryHitSfxId;
   s16 secondaryHitSfxId;
   s16 reactionMoveId;
-  u8 pad06[2];
+  s16 unk06;
   u8 hitEffectMode;
   u8 pad09[3];
   f32 reactionStepScale;
