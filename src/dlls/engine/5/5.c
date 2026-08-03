@@ -311,6 +311,9 @@ typedef struct SkyDllInterface {
     u32 reserved1;
     u32 reserved2;
     u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
     ObjectDescriptorCallback updateEnvfxAct;
     ObjectDescriptorCallback loadLights;
     ObjectDescriptorCallback updateTimeOfDay;
@@ -332,9 +335,6 @@ typedef struct SkyDllInterface {
     ObjectDescriptorCallback setDayNo;
     ObjectDescriptorCallback getDayNo;
     ObjectDescriptorCallback reservedReturnZeroB;
-    ObjectDescriptorCallback slot15;
-    ObjectDescriptorCallback slot16;
-    ObjectDescriptorCallback slot17;
 } SkyDllInterface;
 
 SkyDllInterface sky_funcs = {
