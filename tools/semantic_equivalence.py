@@ -65,6 +65,7 @@ from typing import Dict, FrozenSet, List, Optional, Sequence, Tuple
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from cexpr import (Ambiguous, Node, ParseError, is_pure, normal_text,
                    parse_expression, strip_parens, tokenize)
+import cexpr_roundtrip as _roundtrip
 
 # --------------------------------------------------------------- identities
 
@@ -101,6 +102,12 @@ class Verdict:
     ok: bool
     reason: str
     rules: List[str] = field(default_factory=list)
+    # Set when tools/cexpr_roundtrip.py says a tree does not describe the
+    # source it came from.  Reported SEPARATELY from `reason` on purpose: a
+    # semantic rejection means "this rewrite is not the same computation",
+    # while this means "the tool does not understand this source at all", and
+    # the two must never be read as the same kind of no.
+    misparse: str = ""
 
     def __bool__(self):
         return self.ok
@@ -108,7 +115,8 @@ class Verdict:
     def __str__(self):
         tag = "EQUIVALENT" if self.ok else "REJECTED"
         r = (" [" + ",".join(sorted(set(self.rules))) + "]") if self.rules else ""
-        return f"{tag}: {self.reason}{r}"
+        m = ("  ** PARSER MIS-PARSE: " + self.misparse) if self.misparse else ""
+        return f"{tag}: {self.reason}{r}{m}"
 
 
 # ------------------------------------------------------------- type oracle
@@ -587,6 +595,36 @@ def prove(before: str, after: str, decl_text: str = "",
     """Is `after` the same computation as `before`?  Both are re-parsed."""
     if before.strip() == after.strip():
         return Verdict(True, "identical text")
+    # ---- A SECOND SIGNAL THAT USES NO PARSER AT ALL.
+    # Every rewrite this project performs -- commute, relational flip, ternary
+    # flip, integer re-association -- moves OPERATORS around and leaves the
+    # OPERANDS alone.  So the multiset of leaf tokens (identifiers, numbers,
+    # string and character literals) is invariant, and any change to it is a
+    # splice that dropped, duplicated or invented an operand.  This is worth
+    # having precisely because it shares nothing with the tree comparison
+    # below: it would still fire if the parser, the prover and the round trip
+    # were all wrong together.
+    def _leaves(t: str):
+        try:
+            return sorted(k.text for k in tokenize(t)
+                          if k.kind in ("id", "num", "str", "chr"))
+        except ParseError:
+            return None
+    la, lb = _leaves(before), _leaves(after)
+    if la is not None and lb is not None and la != lb:
+        def _minus(x, y):
+            rest = list(y)
+            out = []
+            for v in x:
+                if v in rest:
+                    rest.remove(v)
+                else:
+                    out.append(v)
+            return out or "-"
+        return Verdict(False, "operand tokens are not invariant "
+                              "(lost %s, gained %s)" %
+                              (_minus(la, lb), _minus(lb, la)))
+
     oracle = TypeOracle(decl_text)
     ids = frozenset(oracle.names()) | frozenset(known_ids)
     try:
@@ -601,6 +639,22 @@ def prove(before: str, after: str, decl_text: str = "",
         return Verdict(False, f"PARSE-AMBIGUOUS after: {e}")
     except ParseError as e:
         return Verdict(False, f"PARSE-ERROR after: {e}")
+
+    # ---- INDEPENDENT PARSER SOUNDNESS CHECK, before any proving happens.
+    # Everything below re-parses both spellings with the SAME parser, so a
+    # systematic mis-parse agrees with itself and the proof is over a tree
+    # that may have nothing to do with the C.  `cexpr_roundtrip` unparses each
+    # tree from its SHAPE and validates every cast type against an
+    # independently written type-name grammar; a failure here is a hard NO
+    # regardless of what the prover would have said.
+    for label, text, tree in (("before", before, a), ("after", after, b)):
+        rt = _roundtrip.check(text, ids, known_types, node=tree)
+        if not rt.ok and rt.failed_check != "parse":
+            return Verdict(False,
+                           "parser soundness: the tree for the %s spelling "
+                           "does not describe it" % label,
+                           misparse="%s [%s] %s" % (label, rt.failed_check,
+                                                    rt.why))
 
     p = Prover(before, after, oracle, allow_assoc)
     if not p.eq(a, b):
@@ -693,6 +747,12 @@ CONTROLS = [
      "the splice on that same shape"),
     ("f(a) * b", "b * f(a)", False, "a call moved across an operand"),
     ("-x - y", "-(x - y)", False, "sign does not distribute over a minus"),
+    # -- the parser-free leaf-token invariant
+    ("a + b * c", "a + b * b", False, "a splice that swapped an OPERAND"),
+    ("v[i] + v[j]", "v[i] + v[i]", False, "a splice that duplicated a subscript"),
+    ("a * b + c", "a * b", False, "a splice that dropped a term"),
+    ("x < y", "y > x", True, "a relational flip keeps every operand"),
+    ("c ? a : b", "!c ? b : a", True, "a ternary flip only adds the `!`"),
 ]
 CONTROLS = [(c[0], c[1], c[2], c[3], c[4] if len(c) > 4 else {}) for c in CONTROLS]
 
@@ -731,6 +791,22 @@ def self_test(verbose: bool = True) -> int:
         bad += 1
     else:
         print("  the two instruments are independent, as required")
+
+    # A THIRD independent control: the parser-soundness wiring.  The mutation
+    # is the one A88 found -- an ALL-CAPS name the parser knows as neither
+    # object nor type, in the one shape whose wrong tree still parses.
+    # `prove()` must reject it on SOUNDNESS, not on semantics, and must say so
+    # in a separate field, because "I do not understand this source" and "this
+    # rewrite changes the arithmetic" are different answers.
+    print("\n--- NEGATIVE CONTROL ON THE PARSER-SOUNDNESS WIRING ---")
+    bad_src = "(A89_UNDECLARED_CAP * (p->a / p->b)) + c"
+    v = prove(bad_src, "(A89_UNDECLARED_CAP * (p->b / p->a)) + c")
+    print(f"  {bad_src!r}\n        {v}")
+    if bool(v) or not v.misparse:
+        print("  *** the round-trip check is not wired in ***")
+        bad += 1
+    else:
+        print("  rejected on soundness and reported separately, as required")
 
     # the positive control is reported separately: it is the reason this tool
     # exists, and a future edit must never be able to silence it.

@@ -416,7 +416,7 @@ def sweep(unit, symbol, version, args):
     oracle = sem.TypeOracle(dtext)
     known_ids = frozenset(oracle.kind) | frozenset(
         re.findall(r"\b([a-z]\w*)\s*(?:=[^=]|\+\+|--|\[)", dtext)) | \
-        cexpr.project_macros()
+        cexpr.project_objects()
 
     ktypes = cexpr.project_typedefs()
     regions = expression_regions(src, body[0], body[1])
@@ -450,8 +450,16 @@ def sweep(unit, symbol, version, args):
         else:
             refused.append((reg, v, new_region, verdict))
 
+    # A tree that does not describe its own source is reported on its OWN
+    # line, never folded into the refusal count.  A refusal means the rewrite
+    # was judged and rejected; a mis-parse means nothing here was judged at
+    # all, and the two must never be summed into one reassuring number.
+    misparsed = [(v.rule, vd.misparse, new[:80])
+                 for _, v, new, vd in refused if vd.misparse]
+
     info = {"symbol": symbol, "unit": unit["name"], "regions": len(regions),
             "parse_fail": parse_fail, "cleared": len(cleared),
+            "misparsed": misparsed,
             "refused": [(v.rule, str(vd)[:110], new[:80])
                         for _, v, new, vd in refused]}
 
@@ -464,6 +472,8 @@ def sweep(unit, symbol, version, args):
                   f"             {vd}")
         for what, why in parse_fail:
             print(f"  [PARSE-FAIL {what}] {why}")
+        for rule, why, new in misparsed:
+            print(f"  ** MIS-PARSE {rule}: {why}\n             {new}")
         return info
 
     if not cleared:
@@ -576,7 +586,10 @@ def main():
             continue
         print(f"@@ {u} {s} base={info.get('base')} best={info.get('best')} "
               f"cleared={info.get('cleared')} refused={len(info.get('refused', []))} "
-              f"parsefail={len(info.get('parse_fail', []))}", flush=True)
+              f"parsefail={len(info.get('parse_fail', []))} "
+              f"MISPARSE={len(info.get('misparsed', []))}", flush=True)
+        for rule, why, new in info.get("misparsed", []):
+            print(f"   ** MIS-PARSE[{rule}] {why}", flush=True)
         for h in info.get("hits", []):
             print(f"   HIT {h['rule']} {h['from']:.4f}->{h['to']:.4f}\n"
                   f"       - {h['before'][:110]}\n"

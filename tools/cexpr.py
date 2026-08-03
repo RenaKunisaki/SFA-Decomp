@@ -439,6 +439,7 @@ class Parser:
 
 _TYPEDEF_CACHE: Optional[frozenset] = None
 _MACRO_CACHE: Optional[frozenset] = None
+_ENUM_CACHE: Optional[frozenset] = None
 
 
 def project_macros(root=None) -> frozenset:
@@ -480,6 +481,58 @@ def project_macros(root=None) -> frozenset:
     # also #defines it; the type reading is the one that can appear in a cast.
     _MACRO_CACHE = frozenset(names - set(project_typedefs(root)))
     return _MACRO_CACHE
+
+
+def project_enum_constants(root=None) -> frozenset:
+    """Every enumeration constant declared under include/ and src/.
+
+    The SAME hazard as `project_macros`, and the half of it that harvest
+    missed: an enum constant is an ordinary capitalised identifier, so
+    `_TYPEISH` calls it type-shaped exactly as it did an ALL-CAPS macro, and
+    `(SOME_ENUM_CONST * (a / b)) + c` builds the same wrong-but-parsable cast.
+    2354 of them are declared under include/ and src/ and every one was known
+    to this parser as neither object nor type.  Found by
+    `tools/cexpr_roundtrip.py`, which catches the wrong tree whether or not
+    this list is complete -- the list only stops the tree being built.
+    """
+    global _ENUM_CACHE
+    if _ENUM_CACHE is not None:
+        return _ENUM_CACHE
+    import pathlib
+    root = pathlib.Path(root or pathlib.Path(__file__).resolve().parent.parent)
+    body = re.compile(r"\benum\b[^{;]*\{([^}]*)\}", re.S)
+    names = set()
+    for sub in ("include", "src"):
+        d = root / sub
+        if not d.is_dir():
+            continue
+        for ext in ("*.h", "*.c"):
+            for f in d.rglob(ext):
+                try:
+                    txt = f.read_bytes().decode("latin-1")
+                except OSError:
+                    continue
+                for m in body.finditer(txt):
+                    inner = re.sub(r"/\*.*?\*/", " ", m.group(1), flags=re.S)
+                    inner = re.sub(r"//[^\n]*", " ", inner)
+                    for part in inner.split(","):
+                        mm = re.match(r"\s*([A-Za-z_]\w*)\s*(?:=|$)",
+                                      part.rstrip())
+                        if mm:
+                            names.add(mm.group(1))
+    _ENUM_CACHE = frozenset(names - set(project_typedefs(root)))
+    return _ENUM_CACHE
+
+
+def project_objects(root=None) -> frozenset:
+    """Every project-wide name the parser must treat as an OBJECT, not a type.
+
+    Object-like macros plus enumeration constants.  Callers that used to pass
+    `project_macros()` should pass this: a name is a cast hazard because it is
+    capitalised, and nothing about being a macro rather than an enum constant
+    makes it more or less so.
+    """
+    return project_macros(root) | project_enum_constants(root)
 
 
 def project_typedefs(root=None) -> frozenset:
@@ -593,7 +646,7 @@ _SELFTEST_IDS = frozenset({
 
 def _self_test() -> int:
     kt = project_typedefs()
-    mac = project_macros()
+    mac = project_objects()
     ids = _SELFTEST_IDS | mac
     ok = fail = 0
 
@@ -630,6 +683,14 @@ def _self_test() -> int:
           "an object-like macro is an OBJECT, not a type")
     check("(SHIELD_SFX_VOLUME_MAX * (state->a / state->b))", "paren",
           "same, standalone")
+    # The other half of the same hazard, missed by the macro harvest and found
+    # by tools/cexpr_roundtrip.py: an ENUM CONSTANT is just as capitalised as
+    # an ALL-CAPS macro, and 2354 of them were known to this parser as neither
+    # object nor type.  `project_objects()` covers both.
+    _enum = next(iter(sorted(project_enum_constants())), None)
+    if _enum:
+        check("(%s * (state->a / state->b)) + c" % _enum, "bin",
+              "an enum constant is an OBJECT, not a type")
 
     print("\n%d/%d controls hold" % (ok, ok + fail))
     return 1 if fail else 0
