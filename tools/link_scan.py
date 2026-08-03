@@ -129,6 +129,28 @@ def defined_symbol_layout(obj, known_names):
     return layout
 
 
+def defined_object_symbols(obj):
+    """Return {name: (section, binding)} for every data/bss object this unit defines.
+
+    mwldeppc dead-strips per SYMBOL, not per section, and FORCEACTIVE is ignored
+    for a symbol that is not global ("... is either not a global symbol or
+    doesn't exist. Ignored."), so both facts are needed to predict a strip.
+    """
+    out = subprocess.run([OBJDUMP, "-t", obj], capture_output=True, text=True).stdout
+    syms = {}
+    for line in out.splitlines():
+        parts = line.split()
+        if len(parts) < 6 or len(parts[0]) != 8:
+            continue
+        name, section = parts[-1], parts[-3]
+        if section not in ALLOC_SECTIONS or name == section or name.startswith("@"):
+            continue
+        if " O " not in line:
+            continue
+        syms[name] = (section, "g" if " g " in line[:32] else "l")
+    return syms
+
+
 def defined_symbol_locations(obj):
     out = subprocess.run([OBJDUMP, "-t", obj], capture_output=True, text=True).stdout
     locations = {}
@@ -313,11 +335,30 @@ def main():
             rejected.append((sp, "no-object"))
             continue
         sb, so = section_sizes(built), section_sizes(orig)
-        if sb != so:
+        align = section_alignments(orig)
+        # A section that is short by exactly the pad up to its own alignment is
+        # NOT a blocker: mwld aligns the next contribution anyway, so the tail
+        # dtk attributes to this object never has to be in it. main/audio.c
+        # links to the retail sha1 with .data 0xe6b against the carve's 0xe70.
+        pad_only = {
+            name
+            for name, size in so.items()
+            if name in sb
+            and sb[name] < size
+            and align.get(name)
+            and size == -(-sb[name] // align[name]) * align[name]
+        }
+        if sb.keys() != so.keys() or any(
+            sb[name] != so[name] for name in sb.keys() & so.keys() if name not in pad_only
+        ):
             rejected.append((sp, f"section-size {sb} vs {so}"))
             continue
         if any(
-            name not in BSS_SECTIONS and section_bytes(built, name) != section_bytes(orig, name)
+            name not in BSS_SECTIONS
+            and not section_bytes(orig, name).startswith(section_bytes(built, name))
+            if name in pad_only
+            else name not in BSS_SECTIONS
+            and section_bytes(built, name) != section_bytes(orig, name)
             for name in sb
         ):
             rejected.append((sp, "section-bytes"))
@@ -328,12 +369,14 @@ def main():
             continue
         built_layout = defined_symbol_layout(built, resolvable)
         orig_layout = defined_symbol_layout(orig, resolvable)
-        if built_layout != orig_layout:
-            changed = sorted(
-                name
-                for name in built_layout.keys() | orig_layout.keys()
-                if built_layout.get(name) != orig_layout.get(name)
-            )
+        # Only names BOTH objects define can be compared here. A retail name our
+        # object does not spell (retail's two 4-byte hooks against our one 8-byte
+        # pair, a pool word we mint as @N) is not by itself a blocker - it only
+        # matters if another object still names it, which the cross-object check
+        # below decides. Comparing the union rejected main/audio.c, which links.
+        shared = built_layout.keys() & orig_layout.keys()
+        changed = sorted(name for name in shared if built_layout[name] != orig_layout[name])
+        if changed:
             rejected.append((sp, f"symbol-layout {changed[:3]}"))
             continue
         external_names = {
@@ -355,15 +398,26 @@ def main():
         if ab != ao:
             rejected.append((sp, f"section-alignment {ab} vs {ao}"))
             continue
-        dead_bss = []
-        for section in BSS_SECTIONS & sb.keys():
-            owned = [name for name, entry in built_layout.items() if entry[0] == section]
-            if owned and not any(
-                name in referenced or name in force_active for name in owned
-            ):
-                dead_bss.append(section)
-        if dead_bss:
-            rejected.append((sp, f"unreferenced-bss {sorted(dead_bss)}"))
+        own_refs = set(
+            re.findall(
+                r"^\s*[0-9A-Fa-f]+\s+R_\S+\s+(\S+)",
+                subprocess.run([OBJDUMP, "-r", built], capture_output=True, text=True).stdout,
+                re.M,
+            )
+        )
+        stripped, needs_export = [], []
+        for name, (section, binding) in defined_object_symbols(built).items():
+            if name in referenced or name in own_refs:
+                continue
+            if name not in force_active:
+                stripped.append(f"{name} ({section})")
+            elif binding != "g":
+                needs_export.append(f"{name} ({section})")
+        if stripped:
+            rejected.append((sp, f"dead-stripped {sorted(stripped)[:4]}"))
+            continue
+        if needs_export:
+            rejected.append((sp, f"force-active-but-static {sorted(needs_export)[:4]}"))
             continue
         bad = [s for s in undefined_syms(built) if s not in resolvable]
         if bad:
