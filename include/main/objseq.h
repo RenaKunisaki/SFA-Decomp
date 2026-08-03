@@ -92,6 +92,14 @@ STATIC_ASSERT(offsetof(ObjectTriggerInterface, setObjects) == 0x7C);
 STATIC_ASSERT(offsetof(ObjectTriggerInterface, setOverridePos) == 0x80);
 STATIC_ASSERT(offsetof(ObjectTriggerInterface, setRunSequenceWorldSpace) == 0x84);
 
+/* One record of ObjSeqState.cmds: a sequence action opcode, the frame advance
+ * it contributes, and its packed 16-bit parameter. */
+typedef struct ObjSeqCommand {
+    s8 opcode;
+    u8 frameDelta;
+    s16 param;
+} ObjSeqCommand;
+
 struct ObjSeqState {
     void *targetObj;
     f32 posStepX;
@@ -166,6 +174,7 @@ struct ObjSeqState {
     u8 flags136[2]; /* 0x136 flags byte; bit 0x04 = record a save-point on free */
 };
 
+STATIC_ASSERT(sizeof(ObjSeqCommand) == 0x04);
 STATIC_ASSERT(sizeof(ObjSeqState) == 0x138);
 STATIC_ASSERT(offsetof(ObjSeqState, curFrame) == 0x58);
 STATIC_ASSERT(offsetof(ObjSeqState, eventIds) == 0x81);

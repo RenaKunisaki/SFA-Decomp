@@ -155,7 +155,7 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
     {
         c = saveGame_checksum((u64*)gSaveCardIoBuffer, 0x3ff);
         chk = c;
-        if (c != *(u64*)(gSaveCardIoBuffer + 0x1ff8))
+        if (c != ((u64*)gSaveCardIoBuffer)[0x3ff])
         {
             DCInvalidateRange((void*)gSaveCardIoBuffer, 0x2000);
             result = CARDRead(&gSaveCardFileInfo.fileInfo, (void*)gSaveCardIoBuffer, 0x2000, 0x4000);
@@ -163,7 +163,7 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
             {
                 c = saveGame_checksum((u64*)gSaveCardIoBuffer, 0x3ff);
                 chk = c;
-                if (c == *(u64*)(gSaveCardIoBuffer + 0x1ff8))
+                if (c == ((u64*)gSaveCardIoBuffer)[0x3ff])
                 {
                     result = saveGame_doWrite(1);
                 }

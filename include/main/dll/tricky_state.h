@@ -326,12 +326,8 @@ typedef struct TrickyState {
     GameObject* pendingFollowObj; /* target object handed off to a sibling Tricky */
     f32 footPoints[4][3];
     f32 impressTimer; /* impress-move countdown: primed to lbl_803E2408 by trickyImpress (which sets stateFlags 0x80000000); while that flag is set, -= timeDelta each cycle, and on reaching floor lbl_803E23DC the flag is cleared and a TRICKY_VOICE line fires (tricky) */
-    f32 sidestepScale; /* per-axis scale applied to sidestepDelta under TRICKY_STATE_FLAG_SIDESTEP: localPos += sidestepDelta * (dir * sidestepScale) */
-    f32 verticalScale; /* scale applied to verticalDelta under TRICKY_STATE_FLAG_VERTICAL_MOVE: localPosY += verticalScale * verticalDelta */
-    f32 backstepScale; /* per-axis scale applied to backstepDelta under TRICKY_STATE_FLAG_BACKSTEP: localPos += backstepDelta * (dir * -backstepScale) */
-    u8 pad818[2];
-    s16 rotRate;
-    u8 pad81C[0x82C - 0x81C];
+    ObjAnimEventList animEvents; /* 0x808+4: root-motion deltas and triggered anim-event ids filled by ObjAnim_AdvanceCurrentMove; rootDelta* scale the sidestep/vertical/backstep moves, rootPitch drives the facing step, triggeredIds[] pick the bark sfx */
+    f32 variantFadeTimer; /* model-variant crossfade countdown: primed to 20.0f, -= timeDelta; > 10 fades out, <= 10 swaps the texture selector and fades back in via timer/10 (tricky) */
     u8 modelVariant; /* progress/10; indexes model bank color */
     u8 progressValue; /* map-event progress byte written out via **progressPtr; computed as base+(count<<2), clamped to a max byte (tricky writes to progressPtr, substates computes/clamps) */
     union {
@@ -343,7 +339,9 @@ typedef struct TrickyState {
             u8 flags82ERest : 5;
         };
     };
-    u8 pad82F[0x838 - 0x82F];
+    u8 pad82F[0x830 - 0x82F];
+    f32 blendWeight; /* model blend-channel 1 weight, ramped toward progressPtr[0]/progressPtr[1] and clamped to [0,1]; pushed to the channel as 2*weight-1 (tricky) */
+    f32 blendVelocity; /* blendWeight ramp rate: += 0.004f*timeDelta toward the target, damped by 0.7f near it, zeroed at the clamp (tricky) */
     f32 particleTimer; /* f32 countdown decremented by timeDelta; while > threshold the queued particle effect keeps emitting; reset to a float sentinel on state entry (tricky/skeetla/weapone6/tricky_substates/mmp_cratercritter/animobjd2) */
     u8 pad83C[0x840 - 0x83C];
 } TrickyState;
@@ -370,6 +368,12 @@ STATIC_ASSERT(offsetof(TrickyState, commands) == 0x748);
 STATIC_ASSERT(offsetof(TrickyState, commandCount) == 0x798);
 STATIC_ASSERT(offsetof(TrickyState, footPoints) == 0x7D8);
 STATIC_ASSERT(offsetof(TrickyState, impressTimer) == 0x808);
+STATIC_ASSERT(offsetof(TrickyState, animEvents) == 0x80C);
+STATIC_ASSERT(offsetof(TrickyState, variantFadeTimer) == 0x828);
+STATIC_ASSERT(offsetof(TrickyState, flags82E) == 0x82E);
+STATIC_ASSERT(offsetof(TrickyState, blendWeight) == 0x830);
+STATIC_ASSERT(offsetof(TrickyState, blendVelocity) == 0x834);
+STATIC_ASSERT(offsetof(TrickyState, particleTimer) == 0x838);
 
 
 #endif /* MAIN_DLL_TRICKY_STATE_H_ */

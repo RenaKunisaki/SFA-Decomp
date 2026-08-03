@@ -332,7 +332,8 @@ typedef struct ObjDef {
   s16 mapLoadObjectId;
   u8 pad7A[0x7C - 0x7A];
   s16 helpTextIds[4];
-  u8 pad84[0x88 - 0x84];
+  u16 avoidRadiusX; /* 0x84: lateral extent of the side-step avoidance ellipse (scaled by 0.1); 0 disables avoidance for the object */
+  u16 avoidRadiusZ; /* 0x86: axial extent of the same ellipse */
   f32 shadowModelScaleBase;
   u8 pad8C;
   u8 modelLightMaskIndex;
@@ -591,6 +592,8 @@ STATIC_ASSERT(sizeof(ObjTextureSlotDef) == 0x02);
 STATIC_ASSERT(sizeof(ObjTextureRuntimeSlot) == 0x10);
 
 STATIC_ASSERT(sizeof(ObjDef) == 0x9C);
+STATIC_ASSERT(offsetof(ObjDef, avoidRadiusX) == 0x84);
+STATIC_ASSERT(offsetof(ObjDef, avoidRadiusZ) == 0x86);
 STATIC_ASSERT(offsetof(ObjDef, name) == 0x91);
 STATIC_ASSERT(offsetof(ObjDef, shadowScaleBase) == 0x00);
 STATIC_ASSERT(offsetof(ObjDef, rootMotionScaleBase) == 0x04);
