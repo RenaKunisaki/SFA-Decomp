@@ -57,7 +57,7 @@
 #define DBPROTECTION_TRICKY_TARGET_SEQID 0x8c
 #define DBPROTECTION_GAMEBIT_DIVE_ACTIVE 0xf1e
 
-extern s8 gDBprotectionTransitionPending;
+extern s8 gSB_GalleonTransitionPending;
 
 ObjectDescriptor15 gSB_GalleonObjDescriptor = {
     0,
@@ -762,18 +762,18 @@ void SB_Galleon_updateShield(GameObject* obj) {
     if (mainGetBit(DBPROTECTION_GAMEBIT_TRANSITION_ARMED) != 0 &&
         mainGetBit(DBPROTECTION_GAMEBIT_TRANSITION_USED) == 0 &&
         mainGetBit(DBPROTECTION_GAMEBIT_TRANSITION_READY) != 0) {
-        gDBprotectionTransitionPending = 1;
+        gSB_GalleonTransitionPending = 1;
         mainSetBits(DBPROTECTION_GAMEBIT_TRANSITION_USED, 1);
         (*gScreenTransitionInterface)->start(0xa, 1);
     }
 
     SB_Galleon_updateEnvfxGameBits(state);
 
-    if (gDBprotectionTransitionPending != 0 && (*gScreenTransitionInterface)->isFinished() != 0) {
+    if (gSB_GalleonTransitionPending != 0 && (*gScreenTransitionInterface)->isFinished() != 0) {
         (*gScreenTransitionInterface)->step(0x50, 1);
         (*gObjectTriggerInterface)->runSequence(1, obj, -1);
         state->cameraState = 3;
-        gDBprotectionTransitionPending = 0;
+        gSB_GalleonTransitionPending = 0;
     }
 
     (*gCloudActionInterface)->func12Nop(-25.0f, 0.0f);
@@ -823,7 +823,7 @@ u8 gSbGalleonSkyColorA[4];
 u8 gSbGalleonSkyColorB[4];
 u8 gSbGalleonSkyColorC[4];
 u8 gSbGalleonSkyLightIntensity;
-s8 gDBprotectionTransitionPending;
+s8 gSB_GalleonTransitionPending;
 f32 gSbGalleonSkyBlendFactor;
 f32 gSbGalleonSkyBlendHold;
 GameObject* gSbGalleon;

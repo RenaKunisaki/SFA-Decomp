@@ -566,7 +566,7 @@ extern ResourceDescriptor gProjectedLightObjDescriptor, gProximityMineObjDescrip
 extern ResourceDescriptor gRingObjDescriptor, gSB_CloudRunnerObjDescriptor;
 extern ResourceDescriptor gSPDrapeObjDescriptor, gSPScarabObjDescriptor, gSPitembeamObjDescriptor,
     gSeqPointObjDescriptor;
-extern ResourceDescriptor gSfxplayerObjDescriptor, gShopItemObjDescriptor, gShopKeeperObjDescriptor,
+extern ResourceDescriptor gDFP_RotatePObjDescriptor, gShopItemObjDescriptor, gShopKeeperObjDescriptor,
     gShopObjDescriptor;
 extern ResourceDescriptor gSnowBikeObjDescriptor, gSnowClawObjDescriptor;
 extern ResourceDescriptor gSoftBodyObjDescriptor, gSpellStoneObjDescriptor, gStaffObjDescriptor,
@@ -1787,7 +1787,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     &gDfpfloorbarObjDescriptor,
     &gChukaObjDescriptor,
     &gTrickyCurveObjDescriptor,
-    &gSfxplayerObjDescriptor,
+    &gDFP_RotatePObjDescriptor,
     &gDfpstatue1ObjDescriptor,
     &gDfperchwitchObjDescriptor,
     &gDfptargetblockObjDescriptor,

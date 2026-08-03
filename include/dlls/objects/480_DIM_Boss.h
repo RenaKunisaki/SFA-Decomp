@@ -246,7 +246,7 @@ extern DIMbossAnimHandlerTable gDIMbossAnimTable;
 extern DIMbossHitDetectAnimHandlerTable gDIMbossHitDetectAnimTable;
 extern MoveLibState gDIMbossAnimController;
 extern f32 gDIMbossAnimScratchBase[3];
-extern DIMbossEffectMarker gDim2IcicleHitFxBuffer;
-extern PartFxSpawnParams gDim2IcicleDustFxSource;
+extern DIMbossEffectMarker gDIMbossHitFxBuffer;
+extern PartFxSpawnParams gDIMbossDustFxSource;
 
 #endif /* DLLS_OBJECTS_480_DIM_BOSS_H_ */

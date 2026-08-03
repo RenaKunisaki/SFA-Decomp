@@ -398,7 +398,7 @@ void DFP_RotateP_initialise(void)
 {
 }
 
-ObjectDescriptor gSfxplayerObjDescriptor = {
+ObjectDescriptor gDFP_RotatePObjDescriptor = {
     0,
     0,
     0,

@@ -808,21 +808,40 @@ to all four region `symbols.txt` files and measured byte-neutral
 |---|---|---|---|---|
 | 0x232 DFP_RotateP | `sfxplayer_*` | `DFP_RotateP_*` | All twelve functions are the object's own descriptor callback set (`init`/`update`/`free`/`render`/`hitDetect`/`release`/`initialise`/`getExtraSize`/`getObjectTypeId`) and every one is referenced only by its own unit. The real sfxPlayer is dll 0x133 at `.text` 0x80198194-0x80198A00 with a complete, disjoint `SfxPlayer_*` family and its own `SfxPlayerState`; 0x232's `getExtraSize` returns 0xA. No sibling reference exists in either direction. | misattribution — renamed |
 | 0x259 SB_Cloudrunner | `WCPushBlock_*` | `SB_CloudRunner_*` | The three helpers are self-referenced only. The unit's private `WCPushBlockState` view is field-for-field the unit's own `SBCloudRunnerState` (0x10 target object, 0x2C rotX accumulator, 0x2E rotZ accumulator, 0x60, 0x64, 0x65, 0x70 stick X, 0x78), i.e. a second view of the same 0x84-byte extra block. The real WCPushBlock (dll 0x290) is a tile-grid sliding puzzle block with `WCPushBlockRuntimeState`/`WCPushBlockSetup` and a `wcpushblock_*` family, shares no state, no data and no call edge, and is not a ride at all — so the source's "retooled from the WC push-block ride" note had no support and was removed as folklore. | misattribution — renamed |
-| 0x1E0 DIM_Boss | `DIM2icicle_*` | `DIMboss_*` | Six functions, self-referenced only, all taking `DIMbossRuntime*`/`DIMbossEffectMarker*`; the TU's own brand is `DIMboss_*`/`DIMbossAnim_*`/`DIMbossHitDetect_*` with `gDIM_BossObjDescriptor`. The whole `Dim2Icicle*` data family they use (`gDim2IcicleHitDescTemplate` 0x802C2348, `gDim2IcicleMeltEntries` 0x803259E0, `gDim2IcicleDustFxSource` 0x803AC97C, `gDim2IcicleHitFxBuffer` 0x803AC994, `gDim2IcicleHitCooldown` 0x803DDB8C) lies inside 0x1E0's own `.rodata`/`.data`/`.bss`/`.sbss` carve, not 0x1DD's. dll 0x1DD DIM2Icicle is a separate 0x414-byte TU at 0x801B93FC with its own `dim2icicle_*` family. | misattribution — renamed |
+| 0x1E0 DIM_Boss | `DIM2icicle_*` | `DIMboss_*` | Six functions, self-referenced only, all taking `DIMbossRuntime*`/`DIMbossEffectMarker*`; the TU's own brand is `DIMboss_*`/`DIMbossAnim_*`/`DIMbossHitDetect_*` with `gDIM_BossObjDescriptor`. The whole `Dim2Icicle*` data family they use (`gDim2IcicleHitDescTemplate` 0x802C2348, `gDim2IcicleMeltEntries` 0x803259E0, `gDim2IcicleSequenceSfx` 0x80325AB8, `gDim2IcicleDustFxSource` 0x803AC97C, `gDim2IcicleHitFxBuffer` 0x803AC994, `gDim2IcicleHitCooldown` 0x803DDB8C) lies inside 0x1E0's own `.rodata`/`.data`/`.bss`/`.sbss` carve, not 0x1DD's. dll 0x1DD DIM2Icicle is a separate 0x414-byte TU at 0x801B93FC with its own `dim2icicle_*` family. | misattribution — renamed |
 | 0x1E8 SB_Galleon | `DBprotection_*` | `SB_Galleon_*` | `updateFlight`/`updateEnvfxGameBits`/`updateShield` are self-referenced only and operate on `SBGalleonState`. `getCameraState` was arbitrated separately because it is a genuine cross-DLL export (0x1E9 SB_Propelle, 0x1EA SB_ShipHead, `195_Player`, `engine/68`) — but the hosted-callback reading needs the referencing sibling to *be* the branded DLL, and the brand `DBprotectZo` is not a DLL at all: it is one of the 46 object defs handled by dll 0x12E (`302`, brand `CFLightWall_*`), whose code never calls it. Same verdict as the other three; all four callers are galleon consumers. | misattribution — renamed |
 | 0x1BC SC_totemstr | `platform1_control` | `sc_totemstrength_animEventCallback` | Self-referenced only (definition plus one `obj->animEventCallback =` install), body is entirely the LightFoot Test-of-Strength minigame over `ScTotemStrengthState`. The real platform1 is dll 0x23A (`570_DFP_Platfor`), a stub object whose retail `.rodata` string `"<platform1 draw>No Longer supported \n"` proves the name and whose own update slot is `platform1_controlUnsupported`. Renamed to match the direct sibling convention (`sc_totempuzzle_animEventCallback` in 0x1BA). | misattribution — renamed |
 | 0x1AE SH_LevelCon | `SCGameBitLatch_*` | `GameBitLatch_*` | Defined in the SH level-control TU and consumed by 23 units for `_Update` and 11 for `_UpdateInverted`, spanning CF, DIM, SH, CC, WC, NW, DIM2, IM, WM, LINK, LINKB, DR, CR, VFP, SC, DBSH, GPSH, ECSH, MMSH, MMP, DFP, SB and DFSH. The body is a generic game-bit latch with an optional `Music_Trigger` and a 4-byte mask state; `SC` names neither the host nor any dominant consumer (SC contributes 2 of the 90 relocs). `SCGameBitLatchState` renamed to `GameBitLatchState` with it. | generic helper — renamed |
 | — | `SkyEnvFxRampTables` | (name kept) | Declared in `include/dlls/objects/430_SH_LevelCon.h` but referenced only by dlls 0x172, 0x173 and 0x18B; SH_LevelCon spells the same four 28-entry ramps inline inside its own `ShLevelControlTables` at +0x24/+0x5C/+0x94/+0xCC. Header-home misplacement, not a naming error. Moved to `include/main/sky.h` beside its only consumer `skySetEnvFxRampTables`. | header rehomed |
 
-Deferred out of the same seven, still open:
+The three data-symbol follow-ups deferred out of the same seven are **done**. Each
+carries the verdict of its function family, was applied to all four region
+`symbols.txt` files at that region's own address, and measured byte-neutral: every
+referencing unit holds its pre-rename `fuzzy_match_percent`, every allocated
+section of every rebuilt object is byte-identical, `pairing_check.py` reports 0
+retail-only symbols, and the FORCEACTIVE warning list is unchanged at 17.
 
-- **`gSfxplayerObjDescriptor` → `gDFP_RotatePObjDescriptor`** (dll 0x232). Blocked
-  only by its single reference from `src/main/modelEngine.c`; the descriptor is the
-  last symbol in the unit still carrying the wrong brand.
-- **The `gDim2Icicle*` data symbols in dll 0x1E0** (five entries) and
-  **`gDBprotectionTransitionPending` in dll 0x1E8**. Same verdict as their function
-  families, deferred because they are `.rodata`/`.data`/`.bss`/`.sbss` symbols and a
-  data-section rename pass is a separate change class.
+| dll | old symbol | new symbol | section | GSAE01 | GSAE01_rev1 | GSAJ01 | GSAP01 |
+|---|---|---|---|---|---|---|---|
+| 0x232 | `gSfxplayerObjDescriptor` | `gDFP_RotatePObjDescriptor` | `.data` | 0x80329AA0 | 0x8032A6E0 | 0x80329BC0 | 0x8032B420 |
+| 0x1E0 | `gDim2IcicleHitDescTemplate` | `gDIMbossHitDescTemplate` | `.rodata` | 0x802C2348 | 0x802C2AC8 | 0x802C2448 | 0x802C2CC8 |
+| 0x1E0 | `gDim2IcicleMeltEntries` | `gDIMbossMeltEntries` | `.data` | 0x803259E0 | 0x80326620 | 0x80325B00 | 0x80327360 |
+| 0x1E0 | `gDim2IcicleSequenceSfx` | `gDIMbossSequenceSfx` | `.data` | 0x80325AB8 | 0x803266F8 | 0x80325BD8 | 0x80327438 |
+| 0x1E0 | `gDim2IcicleDustFxSource` | `gDIMbossDustFxSource` | `.bss` | 0x803AC97C | 0x803AD5DC | 0x803ACA9C | 0x803AE2DC |
+| 0x1E0 | `gDim2IcicleHitFxBuffer` | `gDIMbossHitFxBuffer` | `.bss` | 0x803AC994 | 0x803AD5F4 | 0x803ACAB4 | 0x803AE2F4 |
+| 0x1E0 | `gDim2IcicleHitCooldown` | `gDIMbossHitCooldown` | `.sbss` | 0x803DDB8C | 0x803DE80C | 0x803DDCAC | 0x803DF54C |
+| 0x1E8 | `gDBprotectionTransitionPending` | `gSB_GalleonTransitionPending` | `.sbss` | 0x803DDC2C | 0x803DE8AC | 0x803DDD4C | 0x803DF5EC |
+
+The 0x1E0 census above understated the family at five: `gDim2IcicleSequenceSfx`
+(`.data` 0x80325AB8) is defined and used by the same unit and lies in the same
+carve, so it renamed with the other five rather than leaving the TU spelling two
+brands at once.
+
+One `Dim2Icicle` name remains and is deliberate: `gDim2IcicleLightDuration`
+(`.sdata2` 0x803E4C74) exists only in the retail carve. No source names it — our
+object emits that pool word anonymously — so a rename there would move a
+`symbols.txt` line with no source counterpart. It is left for whenever the pool
+word acquires a spelling.
 
 ## Appendix: canonical-format files whose proposal differs
 
