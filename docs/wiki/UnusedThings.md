@@ -520,14 +520,14 @@ from the load-only `lbl_803DD2C4`), 15 (`lbl_803DD44E`/`D44F`/`D450`), 18 (`lbl_
 (`lbl_803DD4A8`), camcontrol (`lbl_803DD4CB`/`D4CC`), 50 (`lbl_803DD5F4`), 52 (`lbl_803DD618`),
 53 (`lbl_803DD6B4`), 54 (`lbl_803DD6EC`/`D6ED`), 55 (`lbl_803DD6F9`/`D6FC`/`D70C`), 0
 (`lbl_803DBA88`, `lbl_803DD81C`/`D820`), object DLLs 704 (`lbl_803DD9CC`/`D9D0`), WM_Galleon
-(`lbl_803DC0F0`), ECSH_Shrine (`lbl_803DDBC0`), SH_swapston (`lbl_803DDBF4`), WM_sun
+(`gWmGalleonFrameStep`), ECSH_Shrine (`lbl_803DDBC0`), SH_swapston (`lbl_803DDBF4`), WM_sun
 (`lbl_803DDCAC`), WORLDplanet (`lbl_803DDD10`), player (`lbl_803DE430`/`DE464`/`DE4B0`), and
 textrender_run (`lbl_803DC980`, `lbl_803DC9D0` — copied from the load-only `lbl_803DC9D4`).
 
 #### Load-only complement — the 397 loads-but-never-stored rows adjudicated
 
 The mirror scan finds **397** data symbols in writable sections that are loaded but never
-stored and never address-taken anywhere in the retail binary (reloc census over all 1069
+stored and never address-taken anywhere in the retail binary (reloc census over all 1050
 objects; the same store-through-register caveat applies in reverse — a store through a
 computed pointer would be invisible, so the surprising rows below were re-verified against
 the retail object asm directly). Every reader of these symbols sees the section's boot value:
@@ -562,7 +562,7 @@ constants; nothing severed.
   asm-verified as the only accesses) — and `gCameraProjectionMode`'s single store in the
   whole binary writes 0, so the ortho mode is unreachable and its extents were never
   configured.
-- **Never-installed pointer channels (5).** `lbl_803DCAB0` (an
+- **Never-installed pointer channels (5).** `gEnvironmentUpdateInterface` (an
   `EnvironmentUpdateInterface**` hook: lightmap NULL-checks it and would call
   `(*p)->update()`, but no code ever installs it), `lbl_803DCF40` (track_dolphin line
   sort-order buffer behind a `!= 0` guard, never allocated), `gMapCellRenderInstrsTable`

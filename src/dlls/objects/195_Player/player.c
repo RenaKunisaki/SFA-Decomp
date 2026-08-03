@@ -17229,7 +17229,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 *(void (**)(int, int))((char*)inner + 0x304) = (void (*)(int, int))playerStagedRestoreDefaultControl;
                 break;
             case 0x1f:
-                __set_debug_bba((u8*)gPlayerModelChain);
+                ObjModelChain_ResetFirstUpdate((ObjModelChain*)gPlayerModelChain);
                 ObjModelChain_SetEnabled((ObjModelChain*)gPlayerModelChain, 1);
                 break;
             case 0x20:

@@ -702,16 +702,6 @@ void drawPartialTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale, int
  * (TevColorIn 0xF/0xE/0x8/0xF).
  */
 
-/*
- * Quad-from-asset blit: takes an "asset record" (with width at +0xA,
- * height at +0xC, and an optional second-stage flag at +0x50), a per-
- * call alpha multiplier, screen-pos (sx, sy), and a u16 size scale.
- * Composes K0 from RGB(255,255,255) plus the global alpha tint
- * (alpha * gHudTintAlpha >> 8); if the asset opts in, layers a second
- * tex stage that further K-multiplies by the texture. Final width and
- * height are 4 * asset_dim * scale >> 8 in screen pixels at z=-8.
- */
-void drawTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale);
 
 
 /*

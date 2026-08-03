@@ -1363,9 +1363,9 @@ void ObjModelChain_SetOrigin(ObjModelChain* chain, f32 x, f32 y, f32 z)
     chain->damping = y;
     chain->gravityY = z;
 }
-void __set_debug_bba(u8* p)
+void ObjModelChain_ResetFirstUpdate(ObjModelChain* chain)
 {
-    p[0x19] = 0;
+    chain->firstUpdateDone = 0;
 }
 
 void ObjModelChain_AdvancePhase(ObjModelChain* chain)
