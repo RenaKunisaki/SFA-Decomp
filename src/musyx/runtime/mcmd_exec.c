@@ -623,7 +623,7 @@ void macHandleActive(McmdVoiceState* sv)
         sv->keyGroup = 0;
         sv->vibModAddScale = 0;
         sv->treScale = 0;
-        inpInit((u32)sv);
+        inpInit(sv);
         lastNote = inpGetMidiLastNote(sv->midi, sv->midiSet);
         if (lastNote != 0xff)
         {

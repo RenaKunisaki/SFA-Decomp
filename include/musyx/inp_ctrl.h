@@ -16,7 +16,7 @@ u16 inpGetReverb(McmdVoiceState *state);
 u16 inpGetPreAuxB(McmdVoiceState *state);
 u16 inpGetPostAuxB(McmdVoiceState *state);
 u16 inpGetTremolo(McmdVoiceState *state);
-void inpInit(u32 state);
+void inpInit(McmdVoiceState *vs);
 u8 inpTranslateExCtrl(u8 ctrl);
 u16 inpGetExCtrl(McmdVoiceState *state, u8 ctrl);
 void inpSetExCtrl(McmdVoiceState *state, u8 ctrl, s16 value);

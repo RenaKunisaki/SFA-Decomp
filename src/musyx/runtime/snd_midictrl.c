@@ -908,11 +908,9 @@ static inline void inpResetGlobalMIDIDirtyFlags(void)
 /*
  * Input/controller state init.
  */
-void inpInit(u32 state)
+void inpInit(McmdVoiceState* vs)
 {
-    McmdVoiceState* vs = (McmdVoiceState*)state;
-
-    if (state != 0)
+    if (vs != NULL)
     {
         vs->inpVolume.source[0].midiCtrl = MCMD_CTRL_VOLUME;
         vs->inpVolume.source[0].combine = 0;

@@ -1598,7 +1598,7 @@ void synthInit(u32 sampleRate, u32 voiceCount)
     synthMasterFader[21].volume = 1.f;
     synthMasterFader[22].volume = 1.f;
 
-    inpInit(0);
+    inpInit(NULL);
 
     for (auxIndex = 0; auxIndex < 8; auxIndex++)
     {
