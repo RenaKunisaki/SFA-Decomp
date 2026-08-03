@@ -2,6 +2,7 @@
 #define MAIN_TEXTURE_H_
 
 #include "global.h"
+#include "dolphin/gx/GXStruct.h"
 
 /*
  * Texture - the in-memory texture record managed by rcp_dolphin.c
@@ -64,9 +65,9 @@ STATIC_ASSERT(offsetof(Texture, loadedSize) == 0x4C);
 STATIC_ASSERT(offsetof(Texture, imageOffset) == 0x50);
 STATIC_ASSERT(sizeof(Texture) == 0x60);
 
-static inline struct _GXTexObj* textureGetGXTexObj(Texture* texture)
+static inline GXTexObj* textureGetGXTexObj(Texture* texture)
 {
-    return (struct _GXTexObj*)texture->gxTexObj;
+    return (GXTexObj*)texture->gxTexObj;
 }
 
 static inline void* textureGetImageData(Texture* texture)
@@ -74,9 +75,9 @@ static inline void* textureGetImageData(Texture* texture)
     return (u8*)texture + sizeof(Texture);
 }
 
-static inline struct _GXTexRegion* textureGetGXTexRegion(Texture* texture)
+static inline GXTexRegion* textureGetGXTexRegion(Texture* texture)
 {
-    return (struct _GXTexRegion*)texture->tmemAddr;
+    return (GXTexRegion*)texture->tmemAddr;
 }
 
 void *textureLoadAsset(int asset);

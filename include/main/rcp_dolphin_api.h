@@ -2,10 +2,9 @@
 #define MAIN_RCP_DOLPHIN_API_H_
 
 #include "types.h"
+#include "dolphin/gx/GXStruct.h"
 #include "main/rcp_dolphin_state_api.h"
 #include "main/texture.h"
-
-struct _GXColor;
 
 void gxSetScissorRect(int p1, int p2, int x, int y, int x2, int y2);
 void* textureAlloc(u16 width, u16 height, int format, u8 mip, u8 maxLod, u8 wrapS, u8 wrapT,
@@ -34,13 +33,13 @@ void textureSelectAnimationFramePair(void* context, Texture* texture, Texture* f
 void Rcp_ResetRenderState(void);
 void textureUpdateAnimationFrame(const Texture* texture, u32* flags, s32* frame);
 void addTexLayerStage(Texture* texture, f32 (*texMtx)[4], int mode);
-void addTexLayerStageKColor(Texture* texture, f32 (*texMtx)[4], int mode, struct _GXColor* color);
-void addTexLayerStageKAlpha(Texture* texture, f32 (*texMtx)[4], int mode, struct _GXColor* color);
-void addTexLayerStageSwizzled(Texture* texture, f32 (*texMtx)[4], int mode, struct _GXColor* color, u8 swapSelector,
+void addTexLayerStageKColor(Texture* texture, f32 (*texMtx)[4], int mode, GXColor* color);
+void addTexLayerStageKAlpha(Texture* texture, f32 (*texMtx)[4], int mode, GXColor* color);
+void addTexLayerStageSwizzled(Texture* texture, f32 (*texMtx)[4], int mode, GXColor* color, u8 swapSelector,
                               u8 useKColor);
-void addVertexColorKAlphaStage(struct _GXColor* color);
-void addKColorModulateStage(struct _GXColor* color);
-void addColorFadeStage(struct _GXColor* color);
+void addVertexColorKAlphaStage(GXColor* color);
+void addKColorModulateStage(GXColor* color);
+void addColorFadeStage(GXColor* color);
 Texture* textureGetAnimationFrame(Texture* texture, int frame);
 
 extern u8 gRcpPendingWarpDest[];

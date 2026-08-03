@@ -1148,7 +1148,7 @@ void drawReflectionTexture(void)
     GXCopyTex((char*)gNewShadowReflectionSmallTexture + 0x60, GX_TRUE);
     if (((Texture*)gNewShadowReflectionSmallTexture)->preloaded != 0)
     {
-        struct _GXTexObj* obj = textureGetGXTexObj((Texture*)gNewShadowReflectionSmallTexture);
+        GXTexObj* obj = textureGetGXTexObj((Texture*)gNewShadowReflectionSmallTexture);
         GXPreLoadEntireTexture(obj, textureGetGXTexRegion((Texture*)gNewShadowReflectionSmallTexture));
     }
 }
@@ -1163,12 +1163,12 @@ void updateReflectionTextures(void)
     GXCopyTex((char*)gNewShadowReflectionTexture2 + 0x60, GX_FALSE);
     if (gNewShadowReflectionTexture->preloaded != 0)
     {
-        struct _GXTexObj* obj = textureGetGXTexObj(gNewShadowReflectionTexture);
+        GXTexObj* obj = textureGetGXTexObj(gNewShadowReflectionTexture);
         GXPreLoadEntireTexture(obj, textureGetGXTexRegion(gNewShadowReflectionTexture));
     }
     if (((Texture*)gNewShadowReflectionTexture2)->preloaded != 0)
     {
-        struct _GXTexObj* obj = textureGetGXTexObj((Texture*)gNewShadowReflectionTexture2);
+        GXTexObj* obj = textureGetGXTexObj((Texture*)gNewShadowReflectionTexture2);
         GXPreLoadEntireTexture(obj, textureGetGXTexRegion((Texture*)gNewShadowReflectionTexture2));
     }
     if (gNewShadowReflectionTexture->preloaded == 0 ||
