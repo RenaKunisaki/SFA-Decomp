@@ -517,7 +517,6 @@ LightningEffect* lightningCreate(const Vec3f* start, const Vec3f* end, f32 radiu
     return p;
 }
 
-void snowCloudBuildBoxVerts(f32* out, f32 height, f32 scale);
 void snowCloudBuildBoxVerts(f32* out, f32 height, f32 scale)
 {
     f32 side;
@@ -662,7 +661,6 @@ void snowCloudInitFlakes(f32* buf, f32 a, f32 b, int cloudId)
     ((NewCloud*)gNewClouds[i])->waveWriteIdx = ((NewCloud*)gNewClouds[i])->waveWriteIdx + 0xfa0;
 }
 
-void snowFreeSnowCloud(int cloudId);
 void snowFreeSnowCloud(int cloudId)
 {
     SaveGameEnvState* env;
@@ -1538,20 +1536,17 @@ void newClouds(CloudSpawnParams* params, void* owner, f32 x, f32 y, f32 z)
     }
 }
 
-void dll_07_func09(void);
 void dll_07_func09(void)
 {
     Camera_GetCurrent();
     randomGetRange(5, 5);
 }
 
-int newclouds_isBlizzardActive(void);
 int newclouds_isBlizzardActive(void)
 {
     return gNewCloudBlizzardActive;
 }
 
-void newclouds_renderSnowClouds(int renderPass);
 void newclouds_renderSnowClouds(int renderPass)
 {
     int i;
@@ -1574,7 +1569,6 @@ void newclouds_renderSnowClouds(int renderPass)
                         gNewCloudSnowFlashAlphaK0, gNewCloudSnowFlashAlphaK1, gNewCloudSnowFlashParallax);
     }
 }
-void newclouds_run(void);
 void newclouds_run(void)
 {
     Camera* cam;
@@ -1902,7 +1896,6 @@ void newclouds_run(void)
     }
 }
 
-void newclouds_killSnowCloud(int cloudId, int flag);
 void newclouds_killSnowCloud(int cloudId, int flag)
 {
     void* p;
@@ -1945,7 +1938,6 @@ void newclouds_killSnowCloud(int cloudId, int flag)
         -((f32)flag / (f32)((NewCloud*)gNewClouds[i])->flakeCount);
 }
 
-void newclouds_onMapSetup(void);
 void newclouds_onMapSetup(void)
 {
     int i;
@@ -2221,7 +2213,6 @@ void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params)
     }
 }
 
-void newclouds_release(void);
 void newclouds_release(void)
 {
     int i;
@@ -2251,7 +2242,6 @@ void newclouds_release(void)
     gNewCloudInitialized = 0;
 }
 
-void newclouds_initialise(void);
 void newclouds_initialise(void)
 {
     gNewCloudInitialized = 0;

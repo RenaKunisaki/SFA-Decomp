@@ -978,7 +978,6 @@ static inline int objSeqRemoveMonitoredObj(u8* base, ObjSeqPreemptEntry** monp, 
     return 0;
 }
 
-int ObjSeq_start(int seqIdx, GameObject* obj, int flags);
 int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
 {
     u8* base;
@@ -1389,37 +1388,31 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
 }
 
 
-void ObjSeq_func13(void);
 void ObjSeq_func13(void)
 {
 }
 
 
-int ObjSeq_func12(void);
 int ObjSeq_func12(void)
 {
     return 0;
 }
 
-int ObjSeq_func0E(void);
 int ObjSeq_func0E(void)
 {
     return 0;
 }
 
-void ObjSeq_setGlobal4(int value);
 void ObjSeq_setGlobal4(int value)
 {
     seqGlobal4 = value;
 }
 
-int ObjSeq_getGlobal4(void);
 int ObjSeq_getGlobal4(void)
 {
     return seqGlobal4;
 }
 
-int ObjSeq_func0F(void);
 int ObjSeq_func0F(void)
 {
     return 1;
@@ -1445,7 +1438,6 @@ static inline GameObject* objSeqFindLinkedObject(u8* seqObj, GameObject* candida
     return NULL;
 }
 
-int ObjSeq_resolveTargetObject(GameObject* obj);
 int ObjSeq_resolveTargetObject(GameObject* obj)
 {
     int objectCount;
@@ -1612,7 +1604,6 @@ void* ObjSeq_FindTargetObject(GameObject* obj)
 
 #define ObjSeq_GetObjects(unused, count) ((GameObject**)ObjList_GetObjects((unused), (count)))
 
-void ObjSeq_runBgCmds(void);
 void ObjSeq_runBgCmds(void)
 {
     int ok;
@@ -1858,7 +1849,6 @@ void ObjSeq_seqState_init(u8* seq)
 }
 
 
-void ObjSeq_objLoadAnimdata(ObjSeqState* seq, ObjSeqAnimPlacement* placement);
 void ObjSeq_objLoadAnimdata(ObjSeqState* seq, ObjSeqAnimPlacement* placement)
 {
     ObjSeqRunBgState* runBgState = (ObjSeqRunBgState*)gObjSeqRuntimeBuffer;
@@ -2716,7 +2706,6 @@ void ObjSeq_setCamVars(int camA, int camB, int camC, int camD)
     gObjSeqCamModeArgD = camD;
 }
 
-int seqDoSubCmd0B(GameObject* obj, GameObject* sourceObj, u8* seq, u8* cmdsArg, s16 xrot, s16 countArg, s8 flag1, s8 flag2);
 int seqDoSubCmd0B(GameObject* obj, GameObject* sourceObj, u8* seq, u8* cmdsArg, s16 xrot, s16 countArg, s8 flag1, s8 flag2)
 {
     u8* cmds;
@@ -3309,7 +3298,6 @@ int RomCurveInterp_EvaluateOffsetPosition(RomCurveInterpState* state, f32* offse
     return 1;
 }
 
-void ObjSeq_UpdateCurvePosition(GameObject* obj, u8* seq);
 void ObjSeq_UpdateCurvePosition(GameObject* obj, u8* seq)
 {
     GameObject* object;
