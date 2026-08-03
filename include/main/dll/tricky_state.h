@@ -73,14 +73,14 @@ typedef struct TrickyCommand {
 } TrickyCommand;
 
 typedef struct TrickyJumpArc {
-    f32 duration;  /* 0x64: horizontal distance / lbl_803E24A4 */
-    f32 time;      /* 0x68: elapsed arc time (init 0, += timeDelta) */
-    f32 riseCoeff; /* 0x6C: linear vertical coefficient */
-    f32 baseY;     /* 0x70: launch worldPosY */
-    f32 baseX;     /* 0x74: launch worldPosX */
-    f32 baseZ;     /* 0x78: launch worldPosZ */
-    f32 landX;     /* 0x7C: landing node x */
-    f32 landZ;     /* 0x80: landing node z */
+    f32 duration;  /* 0x00: horizontal distance / lbl_803E24A4 */
+    f32 time;      /* 0x04: elapsed arc time (init 0, += timeDelta) */
+    f32 riseCoeff; /* 0x08: linear vertical coefficient */
+    f32 baseY;     /* 0x0C: launch worldPosY */
+    f32 baseX;     /* 0x10: launch worldPosX */
+    f32 baseZ;     /* 0x14: launch worldPosZ */
+    f32 landX;     /* 0x18: landing node x */
+    f32 landZ;     /* 0x1C: landing node z */
 } TrickyJumpArc;
 
 struct RomCurveDef;
@@ -141,7 +141,7 @@ typedef struct TrickyState {
     };
     u32 heightTrackObjId;
     f32 trackedHeight;
-    TrickyJumpArc jumpArc;
+    TrickyJumpArc jumpArc; /* 0x64: ballistic hop arc */
     u8 pad84[0x8C - 0x84];
     f32 prevLocalPosX;
     f32 prevLocalPosY;

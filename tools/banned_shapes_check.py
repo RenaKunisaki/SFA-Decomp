@@ -51,9 +51,19 @@ Nine pattern classes, each carrying its citation:
                   read only as name[0] -> pool anchor; NEVER READ -> anchor AND
                   dead (the purest form, and the one a reads-keyed check silently
                   misses); indexed or otherwise used -> a real array, not this
-                  shape. ALLOWED EXCEPTION: a genuine cross-TU object -- the
-                  symbol appears in config/GSAE01/symbols.txt or is referenced
-                  from a different source file.
+                  shape. ALLOWED EXCEPTION: a genuine cross-TU object, and the
+                  ONLY evidence for one is a reference from a DIFFERENT source
+                  file. Presence in config/GSAE01/symbols.txt is NOT that
+                  evidence -- the splitter emits every retail data symbol there,
+                  statics included, so the file carries no linkage information.
+                  Reading it as linkage once hid 14 real violations, the code
+                  has not done so for some time, and the self-test pins the
+                  regression; this paragraph said otherwise until now.
+                  EXTENT: keyed on `[1]` written literally, so a pin widened to
+                  `[2]` and still read only at [0] is outside the pattern. The
+                  two instances of that shape today (gAndrossBrainRenderScale,
+                  gWmPlanetsZeroVecTemplate) are sized by the carve at 0x8 and
+                  0x10, so they are real objects rather than evasions.
   UNCALLED_STATIC_FN
                   a static function definition that nothing in the tree calls,
                   not even transitively -- the phantom-function shape. MWCC emits
