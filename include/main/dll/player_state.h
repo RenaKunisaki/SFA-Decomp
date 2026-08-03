@@ -176,7 +176,7 @@ typedef struct PlayerState {
     u8 pad4E2[0x4E4 - 0x4E2];
     s8 climbStep; /* discrete climb/step level (++ up, -- down by moveInputZ); climbTargetY = climbStep*climbStepHeight + climbBaseY; >3 switches A-button icon */
     s8 climbStepCount; /* 0x4e5: total number of climb steps for the current climbable; climbStep >= climbStepCount-3 (within 3 of the top) selects the top-of-climb transition */
-    u8 climbingUp; /* 0x4e6: climb direction, 1 while ascending (forward Y lerp start->target), 0 while descending (reverse lerp) */
+    s8 climbingUp; /* 0x4e6: climb direction, 1 while ascending (forward Y lerp start->target), 0 while descending (reverse lerp) */
     s8 climbSampleDone; /* 0x4e7: one-shot latch for the climb move's initial joint-transform sampling; while 0 (and moveId<=1) samples the start/end root motion into moveStartPosY then sets to 1 */
     f32 climbEndLocalY; /* target local-Y for the ledge climb-up/down move (case 6/7): anim.localPosY is lerped w*(climbEndLocalY - localPosY)+localPosY by currentMoveProgress, snapped to climbEndLocalY on moveDone; also the camera-focus Y (paired with climbBaseY in camBuf, and gPlayerClimbEndY = climbEndLocalY + offset) */
     f32 climbBaseY; /* base local-Y for the climb-step lerp: climbTargetY = climbStep*climbStepHeight + climbBaseY */
@@ -280,7 +280,7 @@ typedef struct PlayerState {
     s8 stickEdgeLatch; /* 0x681: latched flag set to 1 when the stick/collision edge-probe vtable returns result 5 (the case with no latchedStickDir code), reset to 0 when a valid collision surface is captured (with hitObj) and on state resets; read to allow the stick-driven move to proceed even when the 0x100 button is not held */
     u8 surfaceDir; /* dominant surface-normal axis+sign (0=+X,1=-X,2=+Z,3=-Z); picks the wall slide/climb anim variant */
     u8 pad683[0x684 - 0x683];
-    int interactObject; /* object the player is interacting with; ObjMsg_SendToObject recipient, cleared after */
+    u32 interactObject; /* object the player is interacting with; ObjMsg_SendToObject recipient, cleared after */
     s16 unk688;
     u8 pad68A[0x6A4 - 0x68A];
     f32 unk6A4;

@@ -8256,7 +8256,7 @@ int playerStateOnLadder(int obj, int state)
         {
             ph = 0.012f * t + 0.025f;
         }
-        if (*(s8*)&((PlayerState*)inner)->climbingUp != 0)
+        if (((PlayerState*)inner)->climbingUp != 0)
         {
             ((GameObject*)obj)->anim.localPosY =
                 ((GameObject*)obj)->anim.currentMoveProgress *
@@ -17227,7 +17227,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 gPlayerModelChainStyle = 1;
                 break;
             case 0x1a:
-                if (*(u32*)&((PlayerState*)inner)->interactObject != 0)
+                if (((PlayerState*)inner)->interactObject != 0)
                 {
                     int p1a = *(int*)(((PlayerState*)inner)->interactObject + 0x50);
                     int snd = *(s16*)(p1a + 0x7a);
@@ -17242,7 +17242,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 }
                 break;
             case 1:
-                if (*(u32*)&((PlayerState*)inner)->interactObject != 0)
+                if (((PlayerState*)inner)->interactObject != 0)
                 {
             ObjMsg_SendToObject((void*)((PlayerState*)inner)->interactObject, 0x7000b, (void*)obj, 0);
                     ((PlayerState*)inner)->interactObject = 0;

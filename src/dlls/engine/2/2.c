@@ -4188,7 +4188,7 @@ void* ObjSeq_ToggleCommand3Target(GameObject* obj, u8* seq, ObjSeqPlacement* pla
     f32 groundY[2];
 
     result = obj;
-    *(s8*)&((ObjSeqState*)seq)->targetAttached = (s8)(((ObjSeqState*)seq)->targetAttached ^ 1);
+    ((ObjSeqState*)seq)->targetAttached = (s8)(((ObjSeqState*)seq)->targetAttached ^ 1);
     if ((s8)((ObjSeqState*)seq)->targetAttached != 0)
     {
         ObjSeq_resolveTargetObject(obj);

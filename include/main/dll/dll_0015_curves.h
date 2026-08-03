@@ -119,7 +119,7 @@ typedef struct CurvesCollisionState
     u8 localPointHitMask;
     u8 surfaceHitMask;
     u8 surfaceFlags;
-    u8 surfaceCounter;
+    s8 surfaceCounter;
     u8 updateMode;
     s8 secondaryHitType;
     u8 activeTimer;

@@ -315,7 +315,7 @@ void MagicDust_update(GameObject* obj) {
                 if ((distanceSquared < scalar * scalar) && (Obj_IsParentSlackClear(player) != 0)) {
                     value = mainGetBit(MAGICGEM_GAMEBIT_CLAIMED);
                     if (value == 0) {
-                        *(s16*)&state->pickupMsgArg = 0xFFFF;
+                        state->pickupMsgArg = -1;
                         ObjMsg_SendToObject(player, MAGICGEM_MSG_IN_RANGE, obj, (u32)&state->pickupMsgArg);
                         ObjHits_DisableObject(obj);
                         mainSetBits(MAGICGEM_GAMEBIT_CLAIMED, 1);

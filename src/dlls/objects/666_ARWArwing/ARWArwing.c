@@ -556,7 +556,7 @@ void arwarwing_spawnBomb(GameObject* obj, ArwingState* state, int side)
     ((ArwingBombSetup*)setup)->head.color[0] = 1;
     ((ArwingBombSetup*)setup)->head.color[1] = 1;
     arwing->activeBombObj = loadObjectAtObject(obj, &setup->base);
-    arwprojectile_setParamScalar(arwing->activeBombObj, *(u16*)&arwing->bombProjectileParam);
+    arwprojectile_setParamScalar(arwing->activeBombObj, arwing->bombProjectileParam);
     arwprojectile_launchForward(arwing->activeBombObj, arwing->bombProjectileLifetime);
     Sfx_PlayFromObject(obj, SFXTRIG_ar_badhit16);
 }

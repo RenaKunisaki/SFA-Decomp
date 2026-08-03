@@ -1126,7 +1126,7 @@ void curves_advanceCollision(GameObject* curveObj, CurvesCollisionState* state, 
                                          (f32*)collision->points,
                                          (int)(u32)collision->pointCounts >> CURVES_POINT_COUNT_SEGMENT_SHIFT,
                                          collision->segmentHitPlanes, 0);
-                *(s8*)&collision->surfaceCounter = collision->traceHitCount;
+                collision->surfaceCounter = collision->traceHitCount;
                 collision->surfaceHitMask = 0;
             }
             switch (collision->updateMode)

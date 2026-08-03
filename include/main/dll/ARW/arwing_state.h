@@ -131,7 +131,7 @@ typedef struct ArwingState {
     u8 pad43E[2];
     f32 bombCooldown;
     s16 bombFireDelay;
-    s16 bombProjectileParam;
+    u16 bombProjectileParam;
     f32 bombProjectileLifetime;
     u8 bombCount;        /* 0x44c */
     u8 maxBombCount;     /* 0x44d */
