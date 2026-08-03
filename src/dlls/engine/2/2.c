@@ -1856,7 +1856,7 @@ void ObjSeq_seqState_init(u8* seq)
 }
 
 
-void ObjSeq_objLoadAnimdata(ObjSeqState* seq, ObjSeqAnimPlacement* placement)
+void objLoadAnimdata(ObjSeqState* seq, ObjSeqAnimPlacement* placement)
 {
     ObjSeqRunBgState* runBgState = (ObjSeqRunBgState*)gObjSeqRuntimeBuffer;
     s16 size;
@@ -2024,7 +2024,7 @@ ObjSeqDllInterface ObjSeq_funcs = {
     (ObjectDescriptorCallback)ObjSeq_getBool,
     (ObjectDescriptorCallback)ObjSeq_update,
     (ObjectDescriptorCallback)ObjSeq_updateCamera,
-    (ObjectDescriptorCallback)ObjSeq_objLoadAnimdata,
+    (ObjectDescriptorCallback)objLoadAnimdata,
     (ObjectDescriptorCallback)ObjSeq_seqState_init,
     (ObjectDescriptorCallback)ObjSeq_seqState_free,
     (ObjectDescriptorCallback)ObjSeq_runBgCmds,
