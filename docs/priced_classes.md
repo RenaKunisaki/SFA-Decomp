@@ -31,6 +31,7 @@ here that the target section already says.
 | **The gate blind spots, and why md5-of-every-`.o` dominates.** Demotion blinds the DOL gate; `matched_code`/`matched_functions` are threshold counters; a pool rotation inside an already-NonMatching unit is free on every score axis. | `docs/purge_campaign_audit.md`, "Three sensor blind spots"; the docstring of `tools/score_delta_gate.py` | `4461d0aa45` moved neither counter and still took a function 99.981 -> 94.212; `5d467157cb`/`f5fe00213f`/`620b69dc2d` lost 144/60/16 B at `dfuzzy +0.000000`, zero regressions, zero demotions. The pool word-diff catches the third class; md5 of every `.o` catches all four *and* the score-neutral ones (class #70 renumbering), which no score can see. |
 | **The toolchain caps and the never-touch islands.** Bank on sight; do not re-probe. | §5 | Per-class detail in the memory topic files. |
 | **Every sub-100 code row is one of three kinds, and the kinds are decidable without reading any source.** Same opcode sequence, different registers = colouring. Same opcode multiset, different sequence = order. Different multiset = a different operation, which only the source text chooses. | §14 | `tools/a71_mnhist_scan.py` + the partition in §14 over all 213 sub-100 rows at `97746b6bd3`: **136 colouring / 10 order / 67 operation**, no fourth kind and no reloc-only row. |
+| **The order bucket is not a third kind.** Every "order" row is one (at most two) instructions out of place inside a register permutation, so open one only when the slid instruction is the one the source text names. | §15 | All 10 order rows of §14 worked one at a time: mnemonic-sequence delta is 1 for eight of them and 2 for the other two. One paid (`renderShadows` 99.69954 -> 99.71494, the two squares of a magnitude named in retail's order); the nine that did not slid a parameter home, a rematerialised constant, a LICM hoist or a scheduler's delay-slot filler. |
 | **The sign-in-the-constant class is EMPTY outside `trig`.** The `A + -C` recovery does not generalise; nothing else in the tree holds a value at retail's opposite sign. | §14 | `tools/a71_signscan.py` over all 1050 units: **0** units hold a mirror-signed float, and the opcode partition finds **0** `fnmsubs`/`fnmadds`/`fsubs`-for-`fmadds` rows outside the three never-touch PS islands. |
 
 ## 1. Target-unmerged dot-compare (purge-priced)
@@ -1348,3 +1349,105 @@ whose residual survives a correct operator is a colouring row wearing an operato
 136 colouring rows never needed re-opening, the 10 order rows are all §2/§3/§6-banked, and the 67
 operation rows are the banked §1-§4b set plus two `li`-vs-`mr`. Re-open a row only when a lens finds
 a mechanism *and* the mechanism's fix does not have to survive an allocator.
+
+## 15. The ten order rows, worked one at a time (measured 2026-08-03)
+
+§14 partitioned the sub-100 code frontier into 136 colouring / 10 order / 67 operation rows and
+left the order bucket described as "all §2/§3/§6-banked". This section opens all ten, because the
+order bucket is the only one whose defining property — the same instructions in a different
+sequence — names a lever the campaign actually has: source-text order. Every row below was worked
+with the text axis (statement order, operand order, expression grouping, temp naming, declaration
+placement, loop shape) and each gets a verdict.
+
+### The measurement that reframes the bucket
+
+Diff the two streams with the operands thrown away and the order rows stop looking like a kind:
+
+| Row | Unit | Score | Mnemonic-sequence delta |
+|---|---|---|---|
+| renderShadows | main/newshadows | 99.715 | 1 instruction slid |
+| mmpMoonRock_update | 386_MMP_moonroc | 99.516 | 1 |
+| gameTextFinalizeLoad | main/textrender_run | 99.334 | 1 |
+| boxBlurTexture | main/newshadows | 99.167 | 1 |
+| wispBaddieProcessAnimEvent | 202/sharpclaw | 99.156 | 1 |
+| Checkpoint_buildControlPoints | engine/3 | 98.464 | 1 |
+| playerUpdate | 195_Player | 98.432 | 1 |
+| debugTextDrawToFrameBuffer | main/dll_80136a40 | 97.656 | 1 |
+| staffUpdateSegmentTransforms | main/objprint | 97.018 | 2 |
+| expgfxGetSlot | engine/10_expgfx | 95.899 | 2 (the same slide at two sites) |
+
+**Every order row is one — at most two — instructions out of place, sitting inside a register
+permutation that accounts for the rest of its gap.** `boxBlurTexture` is the extreme case: 1356
+instructions, one slid `clrlwi`, and 115 diff hunks of which 114 are `r26`<->`r28` / `r30`<->`r31`.
+So the order bucket is **not a third kind of divergence**. It is the colouring mass plus a slid
+instruction, and the honest reading of §14's partition is that the three-way test is really a
+two-way one with a one-instruction tolerance band. Keep the test — the slide is exactly where a
+source-text mechanism can hide — but do not read "order" as "reachable".
+
+### The one that paid
+
+`main/newshadows` `renderShadows`. The elevation angle is `sqrtf(sqA + sqB)`; retail emits
+`fmuls f0,f22,f22` (the X term) before `fmuls f1,f21,f21` (the Z term), and we named the squares
+the other way round, so both products and the `fadds` that consumes them came out in the wrong
+order. Swapping the two declarations is the whole fix: **99.69954 -> 99.71494** (`9b4d9f45b9`).
+Two things were priced on the same row: collapsing the temps into an inline
+`sqrtf(vAx*vAx + vAz*vAz)` costs **99.48382**, so the named temps are load-bearing; and the
+`castSlot` address wants retail's `add base,index` operand order, but *every* spelling that writes
+the base on the left of the sum — including the natural `&shadowData->castSlots[i]` — makes MWCC
+group the constant with the scaled index instead and costs **99.40678**.
+
+### The nine that did not, and what stopped each
+
+- **`mmpMoonRock_update`** — a real structural row, and the closest any of the ten came. Retail
+  materialises the "no conflict" flag *in the loop's exit block* (`li r0,1` between the back edge
+  and the join) and the `break` path jumps over it, so the flag never crosses a call and never
+  needs a saved register; we hoist `li r26,1` into the preheader and pay a callee-saved home. The
+  shape retail has is what a `goto` past the exit assignment emits, and `goto` is banned. Two
+  non-`goto` spellings measured: moving the declaration to function scope **99.51613 -> 99.36636**,
+  and rewriting the loop as `while (1)` with the exit test and its `spacingClear = 1` inside the
+  body **-> 98.23733**. Moving the declaration into the inner block does not compile — the flag is
+  read after that block closes. PRICED.
+- **`gameTextFinalizeLoad`** — retail computes `(stringTable + numStrings*4) + 4`, we compute
+  `(numStrings*4 + 4) + stringTable`. This is a front-end canonicalisation, not a source choice:
+  `&stringTable->offsets[n]`, `&strs[n]` and an explicit `(u8*)stringTable + n*sizeof(int) +
+  sizeof(int)` all produce the **same object byte for byte**. MWCC always folds the constant into
+  the scaled index first. PRICED.
+- **`boxBlurTexture`** — one `clrlwi` (the `u16 fillHalfword = fill;` truncation) that our
+  scheduler emits two slots earlier than retail, inside a 114-hunk register permutation.
+  COLOURING.
+- **`wispBaddieProcessAnimEvent`** — retail materialises the `0` for `activeEventIndex = 0` in
+  `r0` immediately before its `stb`; we allocate it to `r4` and the scheduler then hoists it eight
+  instructions into a load-delay slot. The statement order already matches retail. COLOURING.
+- **`Checkpoint_buildControlPoints`** — the slide is one `lfd` in a LICM preheader: retail hoists
+  the s32->double bias, then pi, then 32768.0f, then 2.0f (exactly the loop body's first-use
+  order), and we hoist 2.0f first and the bias third. The other 73 hunks are a parameter-home
+  permutation. COLOURING.
+- **`playerUpdate`** *(195_Player, owner-hot under C73 — analysed read-only, not edited)* — an
+  argument-setup `mr` that retail emits seven instructions earlier, inside an `r29`<->`r30` swap
+  that accounts for essentially the whole 1.57 gap. COLOURING.
+- **`debugTextDrawToFrameBuffer`** — retail schedules the `mr r26,r5` parameter home into the
+  `addi`/`mulli` dependency gap; we emit it after both `mulli`s. Underneath, retail gives the `x`
+  parameter `r29` and puts `row1`/`row0` in `r27`/`r28`, while we give `row1`/`row0` `r29`/`r28`
+  and push `x` down to `r27`. Swapping the `row1`/`row0` declarations does move the pair (to
+  `r29`/`r28` in retail's relative order) but never lifts the parameter above them:
+  **97.65625 -> 97.39584**. The target colouring is not reachable from the declaration list
+  because the register that has to move belongs to a parameter. COLOURING.
+- **`staffUpdateSegmentTransforms`** — two slides. Inlining the `joint` temp into its
+  `ObjModel_GetJointMatrix` call is **exactly byte-neutral** (97.01807 both ways), and writing the
+  second site's matrix address in retail's addend order (`*(int*)(...) + idx2 * 0x40`) costs
+  **97.01807 -> 92.28915**. PRICED.
+- **`expgfxGetSlot`** *(engine/10_expgfx, owner-hot under C73 — analysed read-only, not edited)* —
+  retail materialises the `1` of `1u << slotIndex` before loading the active mask; we load first.
+  The same slide appears at both unrolled sites. PRICED pending an owner with the file.
+
+### What this adds to §14's closing rule
+
+§14 said to re-open a row only when a lens finds a mechanism *and* the fix does not have to survive
+an allocator. The ten order rows sharpen that into a test you can apply before spending a build:
+**an order row is worth opening only when the slid instruction is the one the source text names.**
+`renderShadows` slid an `fmuls` whose operand the source picks by writing one square before the
+other — reachable, and it paid. The other nine slid a parameter-home `mr`, a rematerialised `li`,
+a LICM hoist or a scheduler's load-delay filler — none of which any source text names, and none of
+which paid. A dead-initialiser move stays inert (§14), a canonicalised address expression stays
+canonical, and a constant that retail rematerialises where we colour is a colouring row wearing
+order's clothes.
