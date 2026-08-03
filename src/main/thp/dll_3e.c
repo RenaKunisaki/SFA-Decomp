@@ -81,7 +81,6 @@ enum {
 };
 
 extern OSMessageQueue gAttractMovieSpentTextureSetQueue;
-extern char gAttractMovieAudioDmaBuffer[];
 extern OSMessageQueue gAttractMoviePrepareReadyQueue;
 static void InitAllMessageQueue(void);
 

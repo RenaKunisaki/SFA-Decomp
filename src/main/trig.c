@@ -17,12 +17,12 @@ float fsin16Approx(int angle) {
             return x * (-2.2078018e-15f * x2 + 0.000023945184f);
         case 0x2000:
         case 0x4000:
-            return x2 * (1.3332733e-20f * x2 - 2.8707542e-10f) + 0.99999f;
+            return x2 * (1.3332733e-20f * x2 + -2.8707542e-10f) + 0.99999f;
         case 0x6000:
         case 0x8000:
             return -(x * (-2.2078018e-15f * x2 + 0.000023945184f));
         default:
-            return -(x2 * (1.3332733e-20f * x2 - 2.8707542e-10f) + 0.99999f);
+            return -(x2 * (1.3332733e-20f * x2 + -2.8707542e-10f) + 0.99999f);
     }
 }
 
@@ -34,15 +34,15 @@ float fcos16(int angle) {
     switch (angle & 0xE000) {
         case 0x0000:
         case 0xE000:
-            return x * (x2 * (6.424445e-26f * x2 - 2.294029e-15f) + 0.00002396833f);
+            return x * (x2 * (6.424445e-26f * x2 + -2.294029e-15f) + 0.00002396833f);
         case 0x2000:
         case 0x4000:
-            return (x2 * (x2 * (-2.575884e-31f * x2 + 1.3747608e-20f) - 2.8724248e-10f) + 1.0f);
+            return (x2 * (x2 * (-2.575884e-31f * x2 + 1.3747608e-20f) + -2.8724248e-10f) + 1.0f);
         case 0x6000:
         case 0x8000:
-            return -(x * (x2 * (6.424445e-26f * x2 - 2.294029e-15f) + 0.00002396833f));
+            return -(x * (x2 * (6.424445e-26f * x2 + -2.294029e-15f) + 0.00002396833f));
         default:
-            return -(x2 * (x2 * (-2.575884e-31f * x2 + 1.3747608e-20f) - 2.8724248e-10f) + 1.0f);
+            return -(x2 * (x2 * (-2.575884e-31f * x2 + 1.3747608e-20f) + -2.8724248e-10f) + 1.0f);
     }
 }
 
@@ -54,16 +54,16 @@ float fsin16Precise(int angle) {
     switch (angle & 0xE000) {
         case 0x0000:
         case 0xE000:
-            return y * (y2 * (y2 * (-8.8444e-37f * y2 + 6.590636e-26f) - 2.2949214e-15f) + 0.000023968449f);
+            return y * (y2 * (y2 * (-8.8444e-37f * y2 + 6.590636e-26f) + -2.2949214e-15f) + 0.000023968449f);
         case 0x2000:
         case 0x4000:
-            return y2 * (y2 * (y2 * (2.655e-42f * y2 - 2.632911e-31f) + 1.3751435e-20f) - 2.8724328e-10f)
+            return y2 * (y2 * (y2 * (2.655e-42f * y2 + -2.632911e-31f) + 1.3751435e-20f) + -2.8724328e-10f)
                    + 1.0f;
         case 0x6000:
         case 0x8000:
-            return -(y * (y2 * (y2 * (-8.8444e-37f * y2 + 6.590636e-26f) - 2.2949214e-15f) + 0.000023968449f));
+            return -(y * (y2 * (y2 * (-8.8444e-37f * y2 + 6.590636e-26f) + -2.2949214e-15f) + 0.000023968449f));
         default:
-            return -(y2 * (y2 * (y2 * (2.655e-42f * y2 - 2.632911e-31f) + 1.3751435e-20f) - 2.8724328e-10f)
+            return -(y2 * (y2 * (y2 * (2.655e-42f * y2 + -2.632911e-31f) + 1.3751435e-20f) + -2.8724328e-10f)
                      + 1.0f);
     }
 }
@@ -77,28 +77,28 @@ float fsin16HighPrecision(int angle) {
     switch (angle & 0xE000) {
         case 0x0000:
         case 0xE000:
-            return (float)(reducedAngle * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (-0.00000002473889883359452 * reducedSquared + 0.0000027554973093759717) - 0.00019841261464659544)
+            return (float)(reducedAngle * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (-0.00000002473889883359452 * reducedSquared + 0.0000027554973093759717) + -0.00019841261464659544)
                                   + 0.008333333318980809)
-                                 - 0.16666666666563978)
+                                 + -0.16666666666563978)
                                 + 0.9999999999999805));
         case 0x2000:
         case 0x4000:
-            return (float)((reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (2.048770813211803e-09 * reducedSquared - 0.0000002755268200651971) + 0.000024801561642773723) - 0.001388888881954176)
+            return (float)((reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (2.048770813211803e-09 * reducedSquared + -0.0000002755268200651971) + 0.000024801561642773723) + -0.001388888881954176)
                               + 0.041666666665824886)
-                             - 0.4999999999999672)
+                             + -0.4999999999999672)
                             + 1.0));
         case 0x6000:
         case 0x8000:
-            return (float)(-(reducedAngle * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (-0.00000002473889883359452 * reducedSquared + 0.0000027554973093759717) - 0.00019841261464659544)
+            return (float)(-(reducedAngle * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (-0.00000002473889883359452 * reducedSquared + 0.0000027554973093759717) + -0.00019841261464659544)
                                     + 0.008333333318980809)
-                                   - 0.16666666666563978)
+                                   + -0.16666666666563978)
                                   + 0.9999999999999805)));
         default:
             return (float)(-(reducedSquared
-                                 * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (2.048770813211803e-09 * reducedSquared - 0.0000002755268200651971) + 0.000024801561642773723)
-                                      - 0.001388888881954176)
+                                 * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (2.048770813211803e-09 * reducedSquared + -0.0000002755268200651971) + 0.000024801561642773723)
+                                      + -0.001388888881954176)
                                      + 0.041666666665824886)
-                                    - 0.4999999999999672)
+                                    + -0.4999999999999672)
                              + 1.0));
     }
 }
@@ -111,13 +111,13 @@ float fcos16Approx(int angle) {
     switch (angle & 0xE000) {
         case 0x0000:
         case 0xE000:
-            return y2 * (1.3332733e-20f * y2 - 2.8707542e-10f) + 0.99999f;
+            return y2 * (1.3332733e-20f * y2 + -2.8707542e-10f) + 0.99999f;
         case 0x2000:
         case 0x4000:
             return -(y * (-2.2078018e-15f * y2 + 0.000023945184f));
         case 0x6000:
         case 0x8000:
-            return -(y2 * (1.3332733e-20f * y2 - 2.8707542e-10f) + 0.99999f);
+            return -(y2 * (1.3332733e-20f * y2 + -2.8707542e-10f) + 0.99999f);
         default:
             return y * (-2.2078018e-15f * y2 + 0.000023945184f);
     }
@@ -131,15 +131,15 @@ float fsin16(int angle) {
     switch (angle & 0xE000) {
         case 0x0000:
         case 0xE000:
-            return y2 * (y2 * (-2.575884e-31f * y2 + 1.3747608e-20f) - 2.8724248e-10f) + 1.0f;
+            return y2 * (y2 * (-2.575884e-31f * y2 + 1.3747608e-20f) + -2.8724248e-10f) + 1.0f;
         case 0x2000:
         case 0x4000:
-            return -(y * (y2 * (6.424445e-26f * y2 - 2.294029e-15f) + 0.00002396833f));
+            return -(y * (y2 * (6.424445e-26f * y2 + -2.294029e-15f) + 0.00002396833f));
         case 0x6000:
         case 0x8000:
-            return -(y2 * (y2 * (-2.575884e-31f * y2 + 1.3747608e-20f) - 2.8724248e-10f) + 1.0f);
+            return -(y2 * (y2 * (-2.575884e-31f * y2 + 1.3747608e-20f) + -2.8724248e-10f) + 1.0f);
         default:
-            return y * (y2 * (6.424445e-26f * y2 - 2.294029e-15f) + 0.00002396833f);
+            return y * (y2 * (6.424445e-26f * y2 + -2.294029e-15f) + 0.00002396833f);
     }
 }
 
@@ -151,17 +151,17 @@ float fcos16Precise(int angle) {
     switch (angle & 0xE000) {
         case 0x0000:
         case 0xE000:
-            return y2 * (y2 * (y2 * (2.655e-42f * y2 - 2.632911e-31f) + 1.3751435e-20f) - 2.8724328e-10f)
+            return y2 * (y2 * (y2 * (2.655e-42f * y2 + -2.632911e-31f) + 1.3751435e-20f) + -2.8724328e-10f)
                    + 1.0f;
         case 0x2000:
         case 0x4000:
-            return -(y * (y2 * (y2 * (-8.8444e-37f * y2 + 6.590636e-26f) - 2.2949214e-15f) + 0.000023968449f));
+            return -(y * (y2 * (y2 * (-8.8444e-37f * y2 + 6.590636e-26f) + -2.2949214e-15f) + 0.000023968449f));
         case 0x6000:
         case 0x8000:
-            return -(y2 * (y2 * (y2 * (2.655e-42f * y2 - 2.632911e-31f) + 1.3751435e-20f) - 2.8724328e-10f)
+            return -(y2 * (y2 * (y2 * (2.655e-42f * y2 + -2.632911e-31f) + 1.3751435e-20f) + -2.8724328e-10f)
                      + 1.0f);
         default:
-            return y * (y2 * (y2 * (-8.8444e-37f * y2 + 6.590636e-26f) - 2.2949214e-15f) + 0.000023968449f);
+            return y * (y2 * (y2 * (-8.8444e-37f * y2 + 6.590636e-26f) + -2.2949214e-15f) + 0.000023968449f);
     }
 }
 
@@ -174,28 +174,28 @@ float fcos16HighPrecision(int angle) {
     switch (angle & 0xE000) {
         case 0x0000:
         case 0xE000:
-            return (float)((reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (2.048770813211803e-09 * reducedSquared - 0.0000002755268200651971) + 0.000024801561642773723) - 0.001388888881954176)
+            return (float)((reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (2.048770813211803e-09 * reducedSquared + -0.0000002755268200651971) + 0.000024801561642773723) + -0.001388888881954176)
                               + 0.041666666665824886)
-                             - 0.4999999999999672)
+                             + -0.4999999999999672)
                             + 1.0));
         case 0x2000:
         case 0x4000:
-            return (float)(-(reducedAngle * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (-0.00000002473889883359452 * reducedSquared + 0.0000027554973093759717) - 0.00019841261464659544)
+            return (float)(-(reducedAngle * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (-0.00000002473889883359452 * reducedSquared + 0.0000027554973093759717) + -0.00019841261464659544)
                                     + 0.008333333318980809)
-                                   - 0.16666666666563978)
+                                   + -0.16666666666563978)
                                   + 0.9999999999999805)));
         case 0x6000:
         case 0x8000:
             return (float)(-(reducedSquared
-                                 * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (2.048770813211803e-09 * reducedSquared - 0.0000002755268200651971) + 0.000024801561642773723)
-                                      - 0.001388888881954176)
+                                 * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (2.048770813211803e-09 * reducedSquared + -0.0000002755268200651971) + 0.000024801561642773723)
+                                      + -0.001388888881954176)
                                      + 0.041666666665824886)
-                                    - 0.4999999999999672)
+                                    + -0.4999999999999672)
                              + 1.0));
         default:
-            return (float)(reducedAngle * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (-0.00000002473889883359452 * reducedSquared + 0.0000027554973093759717) - 0.00019841261464659544)
+            return (float)(reducedAngle * (reducedSquared * (reducedSquared * (reducedSquared * (reducedSquared * (-0.00000002473889883359452 * reducedSquared + 0.0000027554973093759717) + -0.00019841261464659544)
                                   + 0.008333333318980809)
-                                 - 0.16666666666563978)
+                                 + -0.16666666666563978)
                                 + 0.9999999999999805));
     }
 }

@@ -66,6 +66,7 @@ int shaderReturnZeroStub(int unused);
 extern s16 gArrivedWarpIndex;
 extern u8 gWarpArrivalTimer;
 extern f32 gMapSavedPlayerOffsetX;
+extern f32 gMapSavedPlayerOffsetZ;
 extern s16* gMapBlockIds;
 extern u8* gMapBlockRefCounts;
 extern s16 gTrkBlkTabCount;
@@ -109,5 +110,9 @@ extern u8 bEnableSpiritVision;
 extern u8 bEnableViewFinderHud;
 extern s32 bEnableColorFilter;
 extern s8 curMapType;
+
+extern void* gHitsTab;
+extern int gLightmapDrawQueueCount;
+extern void* gCloudLayerTexture;
 
 #endif /* MAIN_SHADER_API_H_ */

@@ -738,7 +738,6 @@ char sMapAssetPathFormats[0x78] =
     "\0%s/mod%d.zlb.bin\0\0\0\0%s/mod%d.tab";
 void gxSetGPMetricsEnabled(int);
 extern u8 gLoadingScreenTextures[];
-extern volatile int gAssetLoadCompletedFlags;
 extern RingBufferQueue gVideoFlipQueue;
 
 

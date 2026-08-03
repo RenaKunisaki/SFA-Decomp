@@ -3,6 +3,7 @@
 #include "ghidra_import.h"
 #include "main/dll/dll_80136a40.h"
 #include "main/dll/savegame.h"
+#include "main/dll/dll_0017_savegame_api.h"
 #include "main/attract_movie_api.h"
 #include "dolphin/os/OSCache.h"
 #include "dolphin/os/OSArena.h"
@@ -14,6 +15,8 @@
 #include "dolphin/os/OSAlloc.h"
 #include "dolphin/os/OSInterrupt.h"
 
+#include "main/gameloop_internal.h"
+#include "main/pi_dolphin.h"
 u8 gMmRegionCount;
 s16 gMmDeferredFreeCount;
 int gMmFreeDelay;
@@ -321,10 +324,7 @@ extern char sMmFreeInvalidLocationError[];
 extern char sMmAllocFreeMessageBlock[];
 extern char sMmStbfStackTooDeepError[];
 
-extern void* gSaveGameWorkBuffer;
-extern void* gAskProgressiveScanFlag;
 extern char sMmSpawnedUnalignedSlotWarning[];
-extern int gModelsArchiveLoadCount;
 extern char sMmFreeMemoryUsageCorruptedError[];
 
 int alignUp2(int x)

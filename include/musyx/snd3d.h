@@ -129,4 +129,9 @@ extern SND_ROOM* s3dRoomRoot;
 extern SND_LISTENER* s3dListenerRoot;
 extern SND_EMITTER* s3dEmitterRoot;
 
+extern u8 startGroupNum;
+extern u8 startListNumnum;
+extern u8 runListNum;
+extern u8 sSnd3dStereo;
+
 #endif /* MUSYX_SND3D_H_ */

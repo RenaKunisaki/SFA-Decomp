@@ -24,5 +24,6 @@ extern s32 gAttractMovieAudioMode;
 extern u32 gAttractMovieAudioMixSourceAddr;
 extern u32 gAttractMovieAudioPendingSourceAddr;
 extern u32 gAttractMovieAudioDmaBufferIndex;
+extern char gAttractMovieAudioDmaBuffer[];
 
 #endif /* MAIN_ATTRACT_MOVIE_API_H_ */

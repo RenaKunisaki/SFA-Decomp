@@ -37,10 +37,6 @@ static START_GROUP startGroup[64];
 static START_LIST startListNum[64];
 static RUN_LIST runList[64];
 static u8 lbl_803CD710[0x50];
-extern u8 startGroupNum;
-extern u8 startListNumnum;
-extern u8 runListNum;
-extern u8 sSnd3dStereo;
 
 #define S3D_MAX_GROUPS                   0x40
 #define S3D_MAX_ACTIVE_NODES             0x40

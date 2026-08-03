@@ -348,9 +348,6 @@ extern const f32 lbl_803DEDFC;
 extern const f32 lbl_803DEE14;
 extern const f32 lbl_803DEE18;
 extern const f32 lbl_803DEE1C;
-extern const f32 gNewShadowFovY;
-extern f32 gNewShadowAspectWide, gNewShadowAspectNarrow;
-extern f32 gMapSavedPlayerOffsetX, gMapSavedPlayerOffsetZ;
 
 static inline void boxBlurRow(u8* row, u8* blurred, int size, int window)
 {
@@ -665,7 +662,7 @@ void renderShadows(int unused0, int unused1, int unused2)
     Camera_SetCurrentViewIndex(1);
     slot = Camera_GetCurrent();
     savedFovY = Camera_GetFovY();
-    Camera_SetFovY(gNewShadowFovY);
+    Camera_SetFovY(70.0f);
     Camera_SetAspectRatio(1.0f);
     sCamX = slot->x;
     sCamY = slot->y;
@@ -921,9 +918,9 @@ void renderShadows(int unused0, int unused1, int unused2)
         Camera_SetCurrentViewIndex(0);
         Camera_SetFovY(savedFovY);
         if (isWidescreen() != 0)
-            Camera_SetAspectRatio(gNewShadowAspectWide);
+            Camera_SetAspectRatio(2.25f);
         else
-            Camera_SetAspectRatio(gNewShadowAspectNarrow);
+            Camera_SetAspectRatio(1.66f);
         Camera_UpdateProjection(NULL, 0);
     }
     else if (isWidescreen() != 0)

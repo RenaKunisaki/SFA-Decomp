@@ -78,7 +78,6 @@ extern f32 gLightmapDegToBamScale;
 extern FrustumPlane gViewFrustumPlanes[];
 
 extern u8 gMapBlockCount; /* count of allocated blocks */
-extern u32 gCloudLayerTexture;
 extern s8 gMapBlockDrawOrderFrontToBack[];
 extern s8 gMapBlockDrawOrderBackToFront[];
 extern int gMapBlockCellStateTables[];
@@ -194,7 +193,6 @@ MapBlockData* mapGetBlock(int i)
 }
 
 extern u32 gLightmapDrawQueue[];
-extern s32 gLightmapDrawQueueCount;
 
 s8* mapGetBlockIdx(int layer)
 {
@@ -699,7 +697,7 @@ void sceneDraw(void)
     s8 buf[616];
 
     q = (char*)gLightmapDrawQueue;
-    gCloudLayerTexture = (u32)cloudGetLayerTexture(&skyA, &skyB);
+    gCloudLayerTexture = cloudGetLayerTexture(&skyA, &skyB);
     if (gCloudLayerTexture != 0)
     {
         *(f32*)(q + 0x3f48) = 0.0005f;

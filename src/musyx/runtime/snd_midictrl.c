@@ -467,8 +467,6 @@ u8 inpGetMidiLastNote(u8 channel, u8 key)
     return gInpMidiLastNote[channel];
 }
 
-extern u64 synthRealTime;
-
 /*
  * Evaluate a controller expression list and cache its 14-bit result.
  */

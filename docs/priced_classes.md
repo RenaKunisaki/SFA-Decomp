@@ -249,11 +249,22 @@ rotates the whole pool, so the section loses every byte rather than the five. `r
 `.text` at 100.0 and pays only `.sdata2` 100.0 -> 14.634 (-80), and its demotion is what keeps the
 DOL green.
 
-**Standing verdict.** Banked, not reverted — section 6's law applies: the shape is banned and the
-anchors are load-bearing, so there is no free subset to retune toward. The only known recovery is
-section 2's legal `const f32 name[1] = {v}` reconnect, which is gated on the naming law and on the
-checker's cross-TU exemption; that is a pool/naming-lane question, not a retune. Reproduce with
+**Standing verdict — REFUTED for `trig` by `e173a2c951`, still standing for `rcp_dolphin`.**
+The reading above assumed the anchors were load-bearing for the pool's ORDER. For `trig` they
+were load-bearing for its VALUES: retail's `.sdata2` carries every Horner coefficient with the
+sign already in the word (`bfc55555 5554c4d0`, `af9dd246`, `be927d83 c50b46da`), and the
+post-purge source spelled the same polynomial as `A - C` with a positive `C`, so MWCC interned
+eleven words retail never had and emitted `fnmsubs` where retail has `fmadds`. Writing `A + -C`
+at the 44 sites — plain C, no shape added, an operator deleted — returns all eight functions to
+the exact figures in the table above, `.text` 95.926 -> 99.975 and `.sdata2` 61.458 -> 93.750, and
+the tree to 99.815640: `4461d0aa45`'s stated -0.003674 recovered to the digit, at 0 REGRESSED.
+`rcp_dolphin` is a different problem — its value sequences already match retail's (section 10),
+so its 14.634 is pure source-text order. Reproduce the original loss with
 `python3 tools/score_delta_gate.py --commits fff7ee912c 86334e8343`.
+
+The last 192 bytes of `trig` `.sdata2` are section 10's problem, not this one: retail interned
+`fsin16Approx`'s cosine coefficients before its sine ones, and the case reorder that reproduces
+it (reaching 100.0, +192) moves the emitted blocks and costs that function 98.152 -> 94.667.
 
 ## Related recurring REGRESSION class (fixable — not priced, listed so windows get scanned)
 
@@ -539,3 +550,300 @@ The 148 honest rows are settled by the oracle; a later census should not re-flag
 `main/render` is the one structurally unreachable row even after `90b1a0f251`: retail's
 `.sdata2` there is 64 bytes of which 60 are `pad_11_803DE508_sdata2`, another TU's data, so the
 section stays 15 words short (9040/9104) no matter how its own constant is spelled.
+
+
+## 9b. Which crutch slots a declaration point can actually reach
+
+Section 9 sized the crutch class and priced the plain-literal route. It left one question open,
+and the whole remaining decision rests on it: for a given crutch, is retail's pool slot
+**reachable from a declaration point** - so that the const route of `90b1a0f251` could in
+principle put a word there - or is it a front-end literal minted in the middle of one function's
+own run, where no declaration can land? Section 9 answered that for a single instance
+(`engine/5`'s `0.55f` at 0x5c, measured mid-run) by trying it. This section answers it for all
+of them, and it starts by correcting the model everyone has been reasoning from.
+
+### The declaration point is NOT the head of the pool
+
+The natural reading of the `objhits` experiment - two file-scope consts declared together at the
+top emitted at 0x000 and 0x004 - is that declarations land at the head of `.sdata2` and the
+minted literals follow. **That is wrong, and it is wrong in the direction that matters.** Three
+`const f32` objects declared at three different points of `dlls/engine/68/68.c` - before the
+first function, after `firstPersonPlaceCamera`, and after `firstPersonEnter` - emit at
+
+    0x04    declared before the first function
+    0x0c    declared after the first function
+    0x60    declared after the third function
+
+interleaved with the literal groups of the functions they sit between. The tree already contains
+the same evidence from a landed commit: `90b1a0f251`'s `gVecMathAngleScaleInv`, declared at
+`vecmath.c:218`, sits at `.sdata2` **0x30**, not at 0x00. A file-scope const emits **at its
+declaration position in the translation unit**. The `objhits` pair landed at 0x000/0x004 only
+because both were declared in the same place.
+
+So the reachable set is not "the first word of the pool" (which would be three slots out of
+fifty-one). It is **every slot that falls on a boundary between two functions' mint groups**.
+
+### Reading the boundaries off retail's own object
+
+Retail's split object gives the groups directly. Take its `.sdata2` symbols in offset order and
+its `.text` relocations; each pool slot is referenced by a set of functions, and walking the
+slots in order while holding a current owner - keep it if it still references this slot,
+otherwise advance to the next function that does - segments the pool into contiguous mint groups
+in `.text` order. A crutch is at a **declaration point** when the last non-crutch slot before it
+and the first non-crutch slot after it are minted by *different* functions (or when it is at the
+head or tail of the section); it is **mid-run** when both neighbours are minted by the same one.
+
+The segmentation is calibrated against the three instances other lanes have already measured,
+and it reproduces all three:
+
+| slot | measured elsewhere | this model |
+| --- | --- | --- |
+| `engine/5` 0x5c `gSkySunMoonRiseScale` | section 9: front-end literal mid-`renderSunAndMoon` | mid-run |
+| `engine/68` 0x44 `gCameraModeViewfinderStickScale` | section 8: no declaration point reaches it | mid-run |
+| `704` 0x18 `lbl_803E2300` | section 9: plain literal recovers 0 | mid-run |
+
+### The table
+
+51 crutches in 9 units at `10b2cb641b` (`main/object`'s 16 were closed by `ca33bc08`).
+**26 sit at a declaration point; 25 are mid-run.**
+
+**`dlls/engine/0/0`** - 20 crutches, 9 at a declaration point, 11 mid-run
+
+| slot | symbol | verdict | run it sits in |
+| --- | --- | --- | --- |
+| 0x0094 | `gGameUiAngleDivisor` | mid-run | inside `pauseMenuSetHoloTransform` |
+| 0x00c0 | `hudElementOpacity` | mid-run | inside `drawViewFinderHud` |
+| 0x00c4 | `lbl_803E1EC4` | mid-run | inside `drawViewFinderHud` |
+| 0x00c8 | `gGameUiPi` | mid-run | inside `drawViewFinderHud` |
+| 0x0130 | `lbl_803E1F30` | mid-run | inside `drawViewFinderHud` |
+| 0x0134 | `lbl_803E1F34` | mid-run | inside `drawViewFinderHud` |
+| 0x0170 | `gViewFinderBamToDeg` | mid-run | inside `drawViewFinderHud` |
+| 0x01bc | `gHudElemOpacityFloor` | **declaration point** | `hudDrawCounter` / `pauseMenuDrawStatus` |
+| 0x0210 | `lbl_803E2010` | mid-run | inside `hudDrawButtons` |
+| 0x024c | `lbl_803E204C` | mid-run | inside `headDisplayDraw` |
+| 0x029c | `lbl_803E209C` | mid-run | inside `pauseMenuDraw` |
+| 0x02b8 | `lbl_803E20B8` | **declaration point** | `pauseMenuDrawStatusPage` / `pauseMenuDrawSideRails` |
+| 0x0308 | `gPauseMenuGridCursorScale` | mid-run | inside `pauseMenuDrawGrid` |
+| 0x0328 | `lbl_803E2128` | **declaration point** | `pauseMenuDrawGridCell` / `timeListDraw` |
+| 0x0378 | `gPauseMenuPodiumRollAmplitude` | **declaration point** | `pauseMenuRunSubmenu` / `pauseMenuAnimateCarousel` |
+| 0x037c | `gPauseMenuPodiumBaseY` | **declaration point** | `pauseMenuRunSubmenu` / `pauseMenuAnimateCarousel` |
+| 0x0380 | `gPauseMenuPodiumBobAmplitude` | **declaration point** | `pauseMenuRunSubmenu` / `pauseMenuAnimateCarousel` |
+| 0x038c | `gPauseMenuCommunicatorMaxScale` | **declaration point** | `pauseMenuAnimateCarousel` / `mapScreenDrawHud` |
+| 0x0390 | `gPauseMenuRingScale` | **declaration point** | `pauseMenuAnimateCarousel` / `mapScreenDrawHud` |
+| 0x0394 | `gPauseMenuRingUnselectedScale` | **declaration point** | `pauseMenuAnimateCarousel` / `mapScreenDrawHud` |
+
+**`dlls/engine/5/5`** - 2 crutches, 1 at a declaration point, 1 mid-run
+
+| slot | symbol | verdict | run it sits in |
+| --- | --- | --- | --- |
+| 0x0000 | `lbl_803DF058` | **declaration point** | `head of pool` / `skySetLightIndex` |
+| 0x005c | `gSkySunMoonRiseScale` | mid-run | inside `renderSunAndMoon` |
+
+**`dlls/engine/68/68`** - 1 crutches, 0 at a declaration point, 1 mid-run
+
+| slot | symbol | verdict | run it sits in |
+| --- | --- | --- | --- |
+| 0x0044 | `gCameraModeViewfinderStickScale` | mid-run | inside `firstPersonDoControls` |
+
+**`dlls/objects/195_Player/player`** - 3 crutches, 1 at a declaration point, 2 mid-run
+
+| slot | symbol | verdict | run it sits in |
+| --- | --- | --- | --- |
+| 0x003c | `lbl_803E7EA4` | mid-run | inside `playerUpdateTail` |
+| 0x0078 | `lbl_803E7EE0` | **declaration point** | `playerCastSpell` / `playerGetAimAngles` |
+| 0x00ac | `lbl_803E7F14` | mid-run | inside `playerState3D` |
+
+**`dlls/objects/704/704`** - 1 crutches, 0 at a declaration point, 1 mid-run
+
+| slot | symbol | verdict | run it sits in |
+| --- | --- | --- | --- |
+| 0x0018 | `lbl_803E2300` | mid-run | inside `titleScreenDrawMenuFrame` |
+
+**`main/model`** - 7 crutches, 7 at a declaration point, 0 mid-run
+
+| slot | symbol | verdict | run it sits in |
+| --- | --- | --- | --- |
+| 0x0024 | `gModelDotClampMax` | **declaration point** | `modelAnimResetState` / `modelChainUpdateNodesPassive` |
+| 0x0028 | `gModelDotClampMin` | **declaration point** | `modelAnimResetState` / `modelChainUpdateNodesPassive` |
+| 0x0040 | `gModelPhaseWrapPeriod` | **declaration point** | `modelChainApplyDampingAndJitter` / `ObjModel_ApplyBlendChannels` |
+| 0x0044 | `gModelDefaultOriginX` | **declaration point** | `modelChainApplyDampingAndJitter` / `ObjModel_ApplyBlendChannels` |
+| 0x0048 | `gModelDefaultOriginY` | **declaration point** | `modelChainApplyDampingAndJitter` / `ObjModel_ApplyBlendChannels` |
+| 0x004c | `gModelDefaultOriginZ` | **declaration point** | `modelChainApplyDampingAndJitter` / `ObjModel_ApplyBlendChannels` |
+| 0x0050 | `gModelVertexScale` | **declaration point** | `modelChainApplyDampingAndJitter` / `ObjModel_ApplyBlendChannels` |
+
+**`main/newshadows`** - 14 crutches, 5 at a declaration point, 9 mid-run
+
+| slot | symbol | verdict | run it sits in |
+| --- | --- | --- | --- |
+| 0x0028 | `gNewShadowFovY` | **declaration point** | `renderObjectShadowTexture` / `renderShadows` |
+| 0x0030 | `lbl_803DED38` | mid-run | inside `renderShadows` |
+| 0x0038 | `lbl_803DED40` | mid-run | inside `renderShadows` |
+| 0x0070 | `gNewShadowAspectWide` | mid-run | inside `renderShadows` |
+| 0x0074 | `gNewShadowAspectNarrow` | mid-run | inside `renderShadows` |
+| 0x00b8 | `lbl_803DEDC0` | mid-run | inside `createNewShadowDistortionTexture` |
+| 0x00c8 | `lbl_803DEDD0` | **declaration point** | `createNewShadowDistortionTexture` / `evalNoisePlacements` |
+| 0x00d8 | `lbl_803DEDE0` | mid-run | inside `newShadowsInitProceduralTextures` |
+| 0x00e8 | `lbl_803DEDF0` | mid-run | inside `allocLotsOfTextures` |
+| 0x00ec | `lbl_803DEDF4` | mid-run | inside `allocLotsOfTextures` |
+| 0x00f4 | `lbl_803DEDFC` | mid-run | inside `allocLotsOfTextures` |
+| 0x010c | `lbl_803DEE14` | **declaration point** | `allocLotsOfTextures` / `end of pool` |
+| 0x0110 | `lbl_803DEE18` | **declaration point** | `allocLotsOfTextures` / `end of pool` |
+| 0x0114 | `lbl_803DEE1C` | **declaration point** | `allocLotsOfTextures` / `end of pool` |
+
+**`main/objhits`** - 2 crutches, 2 at a declaration point, 0 mid-run
+
+| slot | symbol | verdict | run it sits in |
+| --- | --- | --- | --- |
+| 0x0000 | `gObjHitsScalarZero` | **declaration point** | `head of pool` / `ObjHits_InitWorkBuffers` |
+| 0x0008 | `gObjHitsScalarOne` | **declaration point** | `ObjHits_InitWorkBuffers` / `ObjHits_CheckTrackContact` |
+
+**`main/vecmath`** - 1 crutches, 1 at a declaration point, 0 mid-run
+
+| slot | symbol | verdict | run it sits in |
+| --- | --- | --- | --- |
+| 0x0000 | `lbl_803DE7C0` | **declaration point** | `head of pool` / `interpolate` |
+
+### What the table does and does not license
+
+A **declaration point** verdict is necessary, not sufficient. It says the slot's *position* is
+reachable; it says nothing about the *read*. A plain `const f32` read folds at `-O4`, and the
+folded value mints a duplicate further down the pool - that is what the `objhits` probe showed,
+and it is why the only spelling that has actually reached one of these slots is the
+single-element const array. That pin is adjudicated per instance by the const lane
+(section 8's retraction), and nothing here changes who decides it.
+
+A **mid-run** verdict is a real closure. It says the word was minted by a literal written inside
+that function's body, so the fix is in the function, not in any declaration - and 25 of the 51
+crutches are in that class, including every crutch in `engine/68` and `704` and eleven of
+`engine/0`'s twenty. Those rows should stop being counted as candidates for the const route.
+
+Two further consequences worth recording. `main/model`'s seven crutches are **all** at
+declaration points, in two adjacent runs (0x24-0x28 and 0x40-0x50) - the cleanest remaining unit
+of the class,
+and section 9 measured its plain-literal route at 0 recovered data, so nothing about it has been
+tried at the right instrument yet. And `dlls/engine/0`'s nine reachable slots fall into four
+adjacent runs (0x1bc, 0x2b8, 0x328, 0x378-0x380, 0x38c-0x394), which matters because section 9's
+decisive negative there - twenty correct words inserted **lost 4936 bytes** - was measured on the
+all-or-nothing literal route across the whole section, not on those runs.
+
+## 10. The pool is a fossil of the source text, not of the code (measured 2026-08-03)
+
+Sections 8, 8b and 9b all try to predict a `.sdata2` slot order from something the compiler
+emits — the order functions appear in `.text`, the order a function's own run references its
+words, the position of a declaration. Section 8's author already retracted the strongest claim,
+and a later lane recorded that the model has "a hole" it could not name: `main/acosf` and
+`track/intersect_render` sit at 75.410 and 91.525 with retail's mint groups in an order that is
+a *permutation* of `.text` order, which no source edit appears able to produce.
+
+There is a one-command test that closes it, and the answer is that the premise is wrong.
+
+### The value-sequence oracle
+
+For each function, walk its `.text` in address order and write down the **value** of every
+`.sdata2` word it references, in that order. Do it for our object and for the retail carve, and
+compare the two sequences. If they are equal, the two objects' code asks for exactly the same
+constants in exactly the same order, and only the slot each constant lives in differs.
+
+`tools/pool_value_sequence.py <src> [section]` does this, and `--all` runs it over every
+sub-100 data section in the report. At `e173a2c951`:
+
+| result | sections |
+| --- | --- |
+| every function's value sequence **identical** to retail's | **22** |
+| some function's sequence differs | 11 |
+
+`main/acosf` (8 functions, sequences of 6 to 36 words), `track/intersect_render` (31 functions),
+`main/object`, `main/rcp_dolphin`, `main/shader_dolphin`, `engine/19`, `SmallBasket`,
+`AppleOnTree`, `objlib` and thirteen more are all in the first row. **Their `.text` is already
+saying, word for word, what retail's says.** The pool is nevertheless laid out differently.
+
+So the slot order is not a function of the emitted code at all. It is fixed by the front end,
+from the order the literals appear in the **source text**, before the code generator runs — and
+the code generator is free to schedule the loads into any order it likes afterwards. That is why
+a function can sit at 100.0 with a rotated pool, and why no amount of register, schedule or
+statement-level work moves the section: there is nothing in the generated code left to fix.
+
+The corollary is the useful part. **Run the oracle before spending any effort on a sub-100 data
+section.** All-identical means the only remaining lever is the source *text* — which expression
+was written where — and that is a decompilation question, not a codegen one. A differing
+sequence means there is still a real value or a real reference to recover first, and that is
+where the work belongs.
+
+### Two sub-rules, both measured
+
+Within one statement the intern order is neither left-to-right nor evaluation order; it is
+**increasing expression-tree depth**. `704`'s
+
+```c
+gTitleScreenPulseAlpha = 127.0f * mathCosf(3.142f * (2.0f * t) / 100.0f) + 128.0f;
+```
+
+mints `128.0f, 127.0f, 3.142f, 2.0f` — the depths 1, 2, 5, 6 of that tree, with `100.0f` skipped
+because an earlier statement already interned it. `trig`'s `fsin16Approx` mints
+`0.99999f, -2.8707542e-10f, 1.3332733e-20f` from `x2 * (C2 * x2 + C1) + C0`, again shallowest
+first. Both reproduce exactly.
+
+An 8-byte literal is **deferred to the next 8-aligned offset, and the 4-byte hole it leaves is
+back-filled by the next 4-byte literal interned.** `704`'s `titleScreenShowCopyright` references
+`1.0f, 0.9999f, 80.0f, D(bias), 255.0f` in that order and lands them at
+`0x00, 0x04, 0x08, 0x0c=255.0f, 0x10=D` — the double stepped over `0x0c` and `255.0f` took it.
+This is the mechanism behind the "the displaced item is always a double or the word beside one"
+observation, and behind an off-by-one-word section size: a pool whose doubles are interned one
+slot earlier or later needs a pad where retail needed none.
+
+### What this costs the terminal rows
+
+`main/acosf` 248 B and `track/intersect_render` 236 B are terminal for this reason and no other:
+their code is already correct, so the residual is purely which statement of which function was
+written where in retail's `.c`. Nothing in this repository's normal toolkit reaches it. They
+should be scored as **closed on the code axis and open only on the text axis**, and a lane that
+wants them must go after the source text — not the registers.
+
+## 10b. Pricing the opaque-extern crutch PER SYMBOL, not per unit
+
+Section 9's control table prices the plain-literal route one unit at a time: replace every
+crutch read in a unit, rebuild, measure. Nine of its ten rows recover nothing, and the section
+concludes that the plain literal is the wrong instrument everywhere. `ca33bc08` had already
+shown one unit escaping that verdict (`main/object`, 16 crutches, free once `modelInitBones`'s
+`zero` temp was hoisted above the radius compare).
+
+Priced **per symbol** the picture changes again: a unit's price is almost never spread across
+its crutches, it is concentrated in two or three of them. Sweeping all 51 crutches individually
+at `f64f18ca9f`, one symbol at a time, rebuilding only that object and regenerating the whole
+report:
+
+| unit | crutches | free | priced | the price |
+| --- | --- | --- | --- | --- |
+| `main/model` | 7 | **6** | 1 | `gModelVertexScale` -> `Model_GetVertexPosition` 100.0 -> 73.033 |
+| `main/newshadows` | 14 | **3** | 11 | every one of the 11 moves `allocLotsOfTextures` |
+| `dlls/engine/0/0` | 20 | **6** | 14 | `lbl_803E209C` alone costs **4936** bytes of matched_data |
+| `dlls/objects/195_Player/player` | 3 | 0 | 3 | `lbl_803E7EE0`/`lbl_803E7F14` cost 8232 B of `.data` |
+| `main/objhits` | 2 | 0 | 2 | ~100 read sites, `ObjHits_CheckSkeletonPair` |
+| `main/vecmath` | 1 | 0 | 1 | `mtx44_multSafe` 100.0 -> 98.639 |
+| `dlls/engine/5/5` | 2 | 0 | 2 | `renderSunAndMoon` |
+| `dlls/engine/68/68` | 1 | 0 | 1 | `firstPersonDoControls` 100.0 -> 94.512 (+128 data) |
+| `dlls/objects/704/704` | 1 | 0 | 1 | `titleScreenDrawMenuFrame` 99.776 -> 99.488 |
+
+`b93a5f226d` landed the 15 free ones: tree fuzzy 99.811850 -> 99.811966, matched_data held,
+0 REGRESSED, 2 IMPROVED, and the missing-word count in those three units halved (engine/0
+18 -> 8, newshadows 13 -> 9, model 9 -> 3). **Section 9's per-unit table is an upper bound on
+the price, not the price.** Any later census of this class should sweep one symbol at a time.
+
+### Two distinct prices, and only one of them is a colouring
+
+`ca33bc08`'s lesson - that the regression is the register colouring and an ordinary source move
+fixes it - does not generalise. The 36 priced rows split cleanly:
+
+- **Address-priced.** A self-owned `lbl_XXXXXXXX` extern resolves to retail's own address, so
+  every reference through it is a *guaranteed* hit. Replace it with a literal and the reference
+  moves to wherever our own pool happens to put that word. `704` is the pure case: with the
+  crutch gone the instruction streams are identical (T=836, C=836, every region a reloc name),
+  and the whole 0.288 is the address. **These rows are gated behind fixing the pool order
+  first**, after which they become free by construction.
+- **Schedule-priced.** A load of a named global is a memory reference the instruction scheduler
+  will not move across; an interned `@NNN` literal is not, and MWCC hoists it. `engine/68`'s
+  `firstPersonDoControls` is the clean instance: `spinI = (int)(15360.0f * ((f32)stickY /
+  120.0f))` and the `camera->anim.rotX` statement after it swap wholesale, T=306 C=306.
+  Swapping the two statements in the source, and splitting the division into its own temp, both
+  reproduce **the identical 94.512** - the scheduler is deciding, not the text. No source move
+  reaches these; they are as priced as section 9 says.

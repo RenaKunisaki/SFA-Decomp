@@ -28,4 +28,10 @@ extern SynthAuxCallback synthAuxACallback[8];
 extern void* synthAuxBUser[8];
 extern SynthAuxCallback synthAuxBCallback[8];
 
+extern s32 synthGlobalVariable[16];
+extern u8 synthAuxBMIDISet[8];
+extern u8 synthAuxBMIDI[8];
+extern u8 synthAuxAMIDISet[8];
+extern u8 synthAuxAMIDI[8];
+
 #endif /* MUSYX_SND_SYNTH_API_H_ */

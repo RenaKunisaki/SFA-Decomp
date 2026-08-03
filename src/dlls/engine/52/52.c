@@ -8,6 +8,7 @@
 #include "main/textrender_api.h"
 #include "main/dll/dll_0015_save_settings.h"
 #include "main/dll/savegame.h"
+#include "main/dll/dll_0017_savegame_api.h"
 #include "track/intersect_card_api.h"
 #include "main/dll/dll_0057_cameramodetitle.h"
 #include "main/dll/dll_02C0_front.h"
@@ -55,7 +56,6 @@ extern TitleMenuTextEntry gTitleMenuEntries[4];
 extern TitleMenuTextEntry sNAttractModeStringBlock[1];
 extern u8 gOptionsRequestedPanel;
 
-extern u8* gSaveGameWorkBuffer;
 
 void TitleMenu_render(int obj)
 {

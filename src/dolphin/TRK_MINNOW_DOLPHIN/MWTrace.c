@@ -3,9 +3,8 @@
 #include "main/gametext_box_api.h"
 #include "main/textrender_api.h"
 
-extern GameTextBox gTextBoxes[];
-extern void* gCurTextBox;
 
+#include "main/gametext_internal.h"
 void MWTRACE(int boxId)
 {
     int i = gGameTextCommandCount;

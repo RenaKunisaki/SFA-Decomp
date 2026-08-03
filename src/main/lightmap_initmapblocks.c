@@ -35,7 +35,6 @@
 extern u8 gMapBlockCount; /* count of allocated blocks */
 extern void* gMapInfoBuffer;
 extern void* gMapsTab;
-extern void* gHitsTab;
 extern void* gTrkBlkTab;
 
 

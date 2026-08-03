@@ -273,7 +273,6 @@ extern u8 lbl_8031A7F8[];
 static void saveSelectGoToChapterSelect(void);
 
 void* gSaveSelectTextBuffers[SAVE_SELECT_TEXT_BUFFER_COUNT];
-extern void* gSaveGameWorkBuffer;
 extern char sSaveGameBinPathFormat[];
 
 static void saveSelectOpenFile(int sel, int slot)

@@ -47,7 +47,6 @@ u16 gModelCopyChunkWordLimit = 0x2A0;
 #define GX_AOP_AND 0
 #define GX_LEQUAL 3
 #define GX_ALWAYS 7
-extern f32 gModelPhaseWrapPeriod;
 #define MODEL_BONEXFORM_HAS_X 0x2000
 #define MODEL_BONEXFORM_HAS_Y 0x4000
 #define MODEL_BONEXFORM_HAS_Z 0x8000
@@ -98,9 +97,6 @@ typedef struct ObjHitBufs
     u8* bufs[2];
     u8* cur;
 } ObjHitBufs;
-extern const f32 gModelDotClampMax;
-extern f32 gModelDotClampMin;
-extern f32 gMapSavedPlayerOffsetZ;
 
 void setGQR7Packed(int a, int b, int c, int d);
 u8* modelBoneTransforms_next(u8* stream, int* dx, int* dy, int* dz);
@@ -1047,7 +1043,7 @@ static void modelChainUpdateNodesPassive(ObjModel* model, ModelFileHeader* file,
         PSVECSubtract(&work, &out, &dir2);
         PSVECNormalize(&dir2, &dir2);
         dot = PSVECDotProduct(&dir2, &dir1);
-        if (dot < gModelDotClampMax && dot > gModelDotClampMin)
+        if (dot < 0.999f && dot > -0.999f)
         {
             if (dot < 1.0f && dot > -1.0f)
             {
@@ -1129,7 +1125,7 @@ static void modelChainUpdateNodes(ObjModel* model, ModelFileHeader* file, ObjMod
         PSVECSubtract(&work, &out, &dir2);
         PSVECNormalize(&dir2, &dir2);
         dot = PSVECDotProduct(&dir2, &dir1);
-        if (dot < gModelDotClampMax && dot > gModelDotClampMin)
+        if (dot < 0.999f && dot > -0.999f)
         {
             PSVECCrossProduct(&dir2, &dir1, &axis);
             if (dot < -1.0f)
@@ -1384,15 +1380,12 @@ void ObjModelChain_AdvancePhase(ObjModelChain* chain)
 {
     chain->updatedThisFrame = 0;
     chain->phase += timeDelta;
-    if (chain->phase > gModelPhaseWrapPeriod)
+    if (chain->phase > 1000.0f)
     {
-        chain->phase -= *(f32*)&gModelPhaseWrapPeriod;
+        chain->phase -= 1000.0f;
     }
 }
 
-extern f32 gModelDefaultOriginX;
-extern f32 gModelDefaultOriginY;
-extern f32 gModelDefaultOriginZ;
 extern const f32 gModelVertexScale;
 
 void ObjModelChain_Free(ObjModelChain* chain)
@@ -1429,9 +1422,9 @@ ObjModelChain* ObjModelChain_Alloc(void* models, int count)
         p++;
         off += 0xc;
     }
-    state->stiffness = gModelDefaultOriginX;
-    state->damping = gModelDefaultOriginY;
-    state->gravityY = gModelDefaultOriginZ;
+    state->stiffness = 0.12f;
+    state->damping = 0.675f;
+    state->gravityY = -0.15f;
     state->phase = 0.0f;
     state->enabled = 1;
     return state;

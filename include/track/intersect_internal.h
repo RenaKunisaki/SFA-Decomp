@@ -105,4 +105,6 @@ extern GXColor gScreenImageKColor3;
 extern u32 gWhirlpoolReflectionTintColor;
 extern u32 gWhirlpoolReflectionKColor;
 
+extern u32 gWaterCausticKColor;
+
 #endif /* TRACK_INTERSECT_INTERNAL_H_ */
