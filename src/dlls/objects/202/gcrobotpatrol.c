@@ -173,7 +173,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
     s16 spd;
     SeqFxParams fx;
 
-    def = *(GroundBaddiePlacement**)&obj->anim.placementData;
+    def = (GroundBaddiePlacement*)obj->anim.placementData;
     path = *(RomCurveWalker**)state;
     if (((EnemyState*)state)->gcRobot.cooldownTimer > 0.0f)
     {

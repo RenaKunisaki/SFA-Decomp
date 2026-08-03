@@ -70,7 +70,7 @@ void breakableCarryable_update(GameObject* obj) {
     u32 hitVolumeIndex;
 
     state = obj->extra;
-    placement = *(BreakableCarryablePlacement**)&obj->anim.placementData;
+    placement = (BreakableCarryablePlacement*)obj->anim.placementData;
     switch (state->phase) {
     case BREAKABLE_CARRYABLE_PHASE_INTACT:
         (*gCarryableInterface)->updateHeld(obj, state);

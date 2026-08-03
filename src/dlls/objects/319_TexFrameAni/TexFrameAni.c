@@ -59,7 +59,7 @@ void TexFrameAnimator_update(GameObject* obj) {
     MapTextureOverride* textureOverride;
 
     state = obj->extra;
-    placement = *(TexFrameAnimatorPlacement**)&obj->anim.placementData;
+    placement = (TexFrameAnimatorPlacement*)obj->anim.placementData;
 
     if ((state->active == 0) && (mainGetBit(placement->triggerGameBit) != 0) && (state->done == 0)) {
         state->active = 1;

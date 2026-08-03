@@ -107,7 +107,7 @@ int DoorF4_SeqFn(int obj, int unused, ObjSeqState* animUpdate) {
     f32 threshold;
     int index;
 
-    placement = *(DoorF4Placement**)&((GameObject*)obj)->anim.placementData;
+    placement = (DoorF4Placement*)((GameObject*)obj)->anim.placementData;
     state = ((GameObject*)obj)->extra;
     signedDistance = 0.0f;
     objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
@@ -441,7 +441,7 @@ void DoorF4_update(GameObject* obj) {
     DoorF4State* state = obj->extra;
     state->sequenceLatch = 0;
     if (obj->userData1 == 0) {
-        DoorF4Placement* placement = *(DoorF4Placement**)&obj->anim.placementData;
+        DoorF4Placement* placement = (DoorF4Placement*)obj->anim.placementData;
         s16 sequenceId;
         obj->anim.localPosX = placement->base.posX;
         obj->anim.localPosY = placement->base.posY;

@@ -127,7 +127,7 @@ void DIMBossIceSmash_update(GameObject* obj) {
         }
         obj->anim.alpha = 0;
     } else {
-        placement = *(DimBossIceSmashPlacement**)&obj->anim.placementData;
+        placement = (DimBossIceSmashPlacement*)obj->anim.placementData;
         if ((stateFlags & DIM_BOSS_ICE_SMASH_STATE_ACTIVE) == 0) {
             if (obj->anim.bankIndex == 0) {
                 triggerBit = mainGetBit(placement->triggerGameBit);

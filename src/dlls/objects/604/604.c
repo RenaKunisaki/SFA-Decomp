@@ -458,7 +458,7 @@ int snowclaw_animEventCallback(GameObject* obj, int a2, ObjSeqState* seq)
     {
         if (obj->childObjs[0] != 0)
         {
-            Obj_FreeObject(*(GameObject**)&obj->childObjs[0]);
+            Obj_FreeObject((GameObject*)obj->childObjs[0]);
             obj->childObjs[0] = NULL;
             obj->childCount = 0;
         }
@@ -493,7 +493,7 @@ void snowclaw_free(GameObject* obj)
 {
     if (obj->childObjs[0] != NULL)
     {
-        Obj_FreeObject(*(GameObject**)&obj->childObjs[0]);
+        Obj_FreeObject((GameObject*)obj->childObjs[0]);
     }
 }
 
@@ -725,7 +725,7 @@ void snowclaw_update(GameObject* obj)
     {
         if (obj->childObjs[0] != NULL)
         {
-            Obj_FreeObject(*(GameObject**)&obj->childObjs[0]);
+            Obj_FreeObject((GameObject*)obj->childObjs[0]);
             obj->childObjs[0] = NULL;
             obj->childCount = 0;
         }

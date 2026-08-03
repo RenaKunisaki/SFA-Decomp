@@ -125,7 +125,7 @@ static void triggerEvalCurveLoop(GameObject* obj, GameObject* seqObj) {
     state = (MmpTriggerPlaneState*)obj->extra;
     curveHit = (*gRomCurveInterface)
                    ->find(state->ptB[0], state->ptB[1], state->ptB[2], &queryType, 1,
-                          *(s16*)(*(u8**)&obj->anim.placementData + 0x38));
+                          *(s16*)((u8*)obj->anim.placementData + 0x38));
     frontBlocked =
         (*gRomCurveInterface)->isPointInsideLoop(curveHit, state->ptB[0], state->ptB[1], state->ptB[2], &hitDistance);
     rearBlocked =
@@ -166,7 +166,7 @@ static int triggerPointInBox(GameObject* obj, f32* point) {
     f32 forward;
     GameObject* o = obj;
 
-    data = *(u8**)&o->anim.placementData;
+    data = (u8*)o->anim.placementData;
     pointX = point[0];
     pointY = point[1];
     pointZ = point[2];
@@ -226,7 +226,7 @@ static void triggerEvalPlaneCrossing(GameObject* obj, GameObject* seqObj) {
     f32 t;
     Vec localPos;
 
-    data = *(u8**)&obj->anim.placementData;
+    data = (u8*)obj->anim.placementData;
     state = (MmpTriggerPlaneState*)obj->extra;
 
     planeBase = state->planeD;
@@ -903,7 +903,7 @@ int Trigger_getObjectTypeId(void) {
 
 void Trigger_free(GameObject* obj) {
     u8 i;
-    u8* entry = *(u8**)&(obj)->anim.placementData + 0x18;
+    u8* entry = (u8*)(obj)->anim.placementData + 0x18;
     i = 0;
 
     while (i < 8) {
@@ -934,7 +934,7 @@ void Trigger_render(void) {
 
 void Trigger_hitDetect(GameObject* obj) {
     u8* state = (obj)->extra;
-    u8* def = *(u8**)&(obj)->anim.placementData;
+    u8* def = (u8*)(obj)->anim.placementData;
     GameObject* triggerObj;
     GameObject* trickyObj;
     GameObject* target;

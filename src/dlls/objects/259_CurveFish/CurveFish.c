@@ -81,9 +81,9 @@ void CurveFish_update(GameObject* obj) {
     int yawDelta;
 
     state = obj->extra;
-    placement = *(CurveFishPlacement**)&obj->anim.placementData;
+    placement = (CurveFishPlacement*)obj->anim.placementData;
     player = Obj_GetPlayerObject();
-    placementReloaded = *(CurveFishPlacement**)&obj->anim.placementData;
+    placementReloaded = (CurveFishPlacement*)obj->anim.placementData;
     curveQuery = gCurveFishCurveQueryKey.type;
 
     state->modeTimer += timeDelta;

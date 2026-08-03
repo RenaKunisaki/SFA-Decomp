@@ -418,8 +418,8 @@ void ARWSquadron_hitDetect(void)
 
 void ARWSquadron_update(GameObject* obj)
 {
-    ArwSquadronState* state = *(ArwSquadronState**)&obj->extra;
-    ArwSquadronSetup* setup = *(ArwSquadronSetup**)&obj->anim.placementData;
+    ArwSquadronState* state = (ArwSquadronState*)obj->extra;
+    ArwSquadronSetup* setup = (ArwSquadronSetup*)obj->anim.placementData;
     SquadCmdFlags* flags = &state->flags.cmd;
     u8 phase = state->phase;
 
@@ -443,7 +443,7 @@ void ARWSquadron_update(GameObject* obj)
     case ARW_SQUADRON_STATE_WAITING:
     {
         GameObject* leader;
-        ArwSquadronSetup* placement = *(ArwSquadronSetup**)&obj->anim.placementData;
+        ArwSquadronSetup* placement = (ArwSquadronSetup*)obj->anim.placementData;
         int activate;
         getArwing();
         leader = obj;
@@ -465,7 +465,7 @@ void ARWSquadron_update(GameObject* obj)
             ObjHits_EnableObject(obj);
             state->phase = ARW_SQUADRON_STATE_ACTIVE;
             {
-                ArwSquadronSetup* volleyPlacement = *(ArwSquadronSetup**)&obj->anim.placementData;
+                ArwSquadronSetup* volleyPlacement = (ArwSquadronSetup*)obj->anim.placementData;
                 if (state->variant == ARW_SQUADRON_VARIANT_FIGHTER)
                 {
                     flags->volleyInProgress = 0;
@@ -482,7 +482,7 @@ void ARWSquadron_update(GameObject* obj)
         ArwSquadronSetup* placement;
         int deactivate;
         obj->anim.alpha = 0xff;
-        placement = *(ArwSquadronSetup**)&obj->anim.placementData;
+        placement = (ArwSquadronSetup*)obj->anim.placementData;
         getArwing();
         leader = obj;
         if (state->leaderObj != NULL)
@@ -522,7 +522,7 @@ void ARWSquadron_update(GameObject* obj)
         }
         if (flags->attackWindowOpen)
         {
-            ArwSquadronSetup* volleyPlacement = *(ArwSquadronSetup**)&obj->anim.placementData;
+            ArwSquadronSetup* volleyPlacement = (ArwSquadronSetup*)obj->anim.placementData;
             ObjHits_SetHitVolumeSlot(&obj->anim, ARWSQUADRON_HIT_VOLUME_SLOT, state->hitVolumeMode, 0);
             if (state->variant == ARW_SQUADRON_VARIANT_FIGHTER)
                 arwsquadron_updateVolley(obj, state, volleyPlacement);

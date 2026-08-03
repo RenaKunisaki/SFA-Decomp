@@ -61,7 +61,7 @@ void dim2lavacontrol_tickCountdown(GameObject* obj) {
     Dim2LavaControlState* state = obj->extra;
 
     if (((s32)state->statusFlags & DIM2_LAVA_CONTROL_STATE_FLAG_COUNTDOWN_COMPLETE) == 0) {
-        const Dim2LavaControlPlacementView* placement = *(const Dim2LavaControlPlacementView**)&obj->anim.placementData;
+        const Dim2LavaControlPlacementView* placement = (const Dim2LavaControlPlacementView*)obj->anim.placementData;
 
         if ((s32)state->countdown > 0) {
             state->countdown -= 1;

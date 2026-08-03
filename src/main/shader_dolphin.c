@@ -266,7 +266,7 @@ void selectTextureWithSecondary(Texture* texture, int mapId)
     {
         GXLoadTexObj(base, mapId);
     }
-    if (*(void**)&texture->imageOffset != NULL)
+    if ((void*)texture->imageOffset != NULL)
     {
         textureInitSecondaryGXTexObj(texture, &sSecondaryTexObj);
         GXLoadTexObj(&sSecondaryTexObj, GX_TEXMAP1);
@@ -2481,7 +2481,7 @@ void addTexLayerStageSwizzled(Texture* tex, MtxPtr mtx, int mode, GXColor* kpara
     {
         chooseTevKonstSelectors(kparam, 1, 1, &sel, &v1);
         GXSetTevKColorSel(gRcpNextTevStage, sel);
-        if (*(void**)&tex->imageOffset != NULL)
+        if ((void*)tex->imageOffset != NULL)
         {
             GXSetTevKAlphaSel(gRcpNextTevStage + 1, v1);
         }
@@ -2494,7 +2494,7 @@ void addTexLayerStageSwizzled(Texture* tex, MtxPtr mtx, int mode, GXColor* kpara
     {
         GXSetTevKColor(gRcpNextKColor, *kparam);
         GXSetTevKColorSel(gRcpNextTevStage, gRcpNextKColorSel);
-        if (*(void**)&tex->imageOffset != NULL)
+        if ((void*)tex->imageOffset != NULL)
         {
             GXSetTevKAlphaSel(gRcpNextTevStage + 1, gRcpNextKAlphaSel);
         }
@@ -2541,13 +2541,13 @@ void addTexLayerStageSwizzled(Texture* tex, MtxPtr mtx, int mode, GXColor* kpara
         {
             GXLoadTexObj(to, map);
         }
-        if (*(void**)&tex->imageOffset != NULL)
+        if ((void*)tex->imageOffset != NULL)
         {
             textureInitSecondaryGXTexObj(tex, &sSecondaryTexObj);
             GXLoadTexObj(&sSecondaryTexObj, GX_TEXMAP1);
         }
     }
-    if (*(void**)&tex->imageOffset != NULL)
+    if ((void*)tex->imageOffset != NULL)
     {
         gRcpNumTevStages++;
         gRcpNextTevStage = gRcpNextTevStage + 1;

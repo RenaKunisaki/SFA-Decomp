@@ -554,7 +554,7 @@ int objShouldUnload(GameObject* obj)
     f32 z;
     f32 dist;
 
-    def = *(u8**)&obj->anim.placementData;
+    def = (u8*)obj->anim.placementData;
     if (def == NULL)
     {
         return 0;

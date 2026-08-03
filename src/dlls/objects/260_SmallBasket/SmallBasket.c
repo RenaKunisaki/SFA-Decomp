@@ -553,7 +553,7 @@ void SmallBasket_throw(GameObject* obj) {
     SmallBasketState* state;
     GameObject* player;
 
-    state = *(SmallBasketState**)&obj->extra;
+    state = (SmallBasketState*)obj->extra;
     player = Obj_GetPlayerObject();
     state->carryAttached = 0;
     state->carryState = SMALLBASKET_CARRY_IDLE;
@@ -586,8 +586,8 @@ void SmallBasket_render(GameObject* obj, int renderArg2, int renderArg3, int ren
     int mapTimeActive;
     s16 disableTimer;
 
-    state = *(SmallBasketState**)&obj->extra;
-    placement = *(SmallBasketPlacement**)&obj->anim.placementData;
+    state = (SmallBasketState*)obj->extra;
+    placement = (SmallBasketPlacement*)obj->anim.placementData;
     mapTimeActive = (*gMapEventInterface)->shouldNotSaveTime(placement->base.ident);
     if (mapTimeActive == 0) {
         obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
@@ -617,7 +617,7 @@ void SmallBasket_update(GameObject* obj) {
     PartFxSpawnParams effectParams;
 
     player = Obj_GetPlayerObject();
-    placement = *(SmallBasketPlacement**)&obj->anim.placementData;
+    placement = (SmallBasketPlacement*)obj->anim.placementData;
     clockScale = 1.0f;
     (*gSkyInterface)->getClockTime(&clockScale);
     state = obj->extra;

@@ -211,7 +211,7 @@ void windLift107_update(GameObject* obj) {
     char carryActive;
     u8 contactFlags;
 
-    placement = *(WindLift107Placement**)&obj->anim.placementData;
+    placement = (WindLift107Placement*)obj->anim.placementData;
     clockScale = 1.0f;
     (*gSkyInterface)->getClockTime(&clockScale);
     state = obj->extra;

@@ -91,7 +91,7 @@ void SB_CannonBall_hitDetect(GameObject* obj) {
 
     {
         ObjHitsPriorityState* hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
-        GameObject* target = *(GameObject**)&hitState->lastHitObject;
+        GameObject* target = (GameObject*)hitState->lastHitObject;
         s16 objectType;
         if (target == NULL) {
             return;
