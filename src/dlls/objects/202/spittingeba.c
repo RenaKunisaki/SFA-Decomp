@@ -146,7 +146,7 @@ void spittingEbaSpawnPollen(GameObject* obj, int state)
             ((GameObject*)ref)->anim.velocityX = velXZ;
             ((GameObject*)ref)->anim.velocityY = cosVal;
             ((GameObject*)ref)->anim.velocityZ = velY;
-            *(u32*)&((GameObject*)ref)->ownerObj = (u32)obj;
+            ((GameObject*)ref)->ownerObj = obj;
             Sfx_PlayFromObject(obj, SFXTRIG_baddie_mika_cackle);
         }
     }

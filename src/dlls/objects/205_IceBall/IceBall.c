@@ -159,21 +159,21 @@ void IceBall_update(GameObject* obj) {
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)objAddress, ICEBALL_HIT_VOLUME_SLOT, 1, 0);
     ObjHitbox_SetSphereRadius((ObjAnimComponent*)objAddress, ICEBALL_HIT_RADIUS);
     ObjHits_EnableObject((GameObject*)objAddress);
-    if ((*(ObjHitsPriorityState**)&((GameObject*)objAddress)->anim.hitReactState)->lastHitObject != 0 &&
-        ((*(ObjHitsPriorityState**)&((GameObject*)objAddress)->anim.hitReactState)->lastHitObject ==
+    if (((ObjHitsPriorityState*)((GameObject*)objAddress)->anim.hitReactState)->lastHitObject != 0 &&
+        (((ObjHitsPriorityState*)((GameObject*)objAddress)->anim.hitReactState)->lastHitObject ==
              (u32)Obj_GetPlayerObject() ||
-         (*(ObjHitsPriorityState**)&((GameObject*)objAddress)->anim.hitReactState)->lastHitObject ==
+         ((ObjHitsPriorityState*)((GameObject*)objAddress)->anim.hitReactState)->lastHitObject ==
              (u32)getTrickyObject())) {
         iceBall_handleCharacterImpact((GameObject*)objAddress);
         ((GameObject*)objAddress)->anim.alpha = 0;
         ((GameObject*)objAddress)->userData1 = ICEBALL_IMPACT_FRAMES;
-        (*(ObjHitsPriorityState**)&((GameObject*)objAddress)->anim.hitReactState)->flags &=
+        ((ObjHitsPriorityState*)((GameObject*)objAddress)->anim.hitReactState)->flags &=
             ~OBJHITS_PRIORITY_STATE_ENABLED;
-    } else if ((*(ObjHitsPriorityState**)&((GameObject*)objAddress)->anim.hitReactState)->contactFlags != 0) {
+    } else if (((ObjHitsPriorityState*)((GameObject*)objAddress)->anim.hitReactState)->contactFlags != 0) {
         iceBall_handleSurfaceImpact((GameObject*)objAddress);
         ((GameObject*)objAddress)->anim.alpha = 0;
         ((GameObject*)objAddress)->userData1 = ICEBALL_IMPACT_FRAMES;
-        (*(ObjHitsPriorityState**)&((GameObject*)objAddress)->anim.hitReactState)->flags &=
+        ((ObjHitsPriorityState*)((GameObject*)objAddress)->anim.hitReactState)->flags &=
             ~OBJHITS_PRIORITY_STATE_ENABLED;
     }
 }
