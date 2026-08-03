@@ -509,46 +509,30 @@ TitleMenuTextEntry gTitleMenuEntries[4] = {
      {0x00, 0x00, 0x02, 0x00, 0xff, 0xff, 0xff, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
       0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00}},
 };
-u32 n_attractmode_funcs[43] = {0x00000000,
-                        0x00000000,
-                        0x00000000,
-                        0x00050000,
-                        (u32)TitleMenu_initialise,
-                        (u32)TitleMenu_release,
-                        0x00000000,
-                        (u32)TitleMenu_run,
-                        (u32)TitleMenu_frameEnd,
-                        (u32)TitleMenu_render,
-                        0x73746172,
-                        0x666f782e,
-                        0x74687000,
-                        0x5e5e5e5e,
-                        0x5e5e5e5e,
-                        0x5e5e5e5e,
-                        0x5e5e5e5e,
-                        0x20206d61,
-                        0x6c6c6f63,
-                        0x20666f72,
-                        0x206d6f76,
-                        0x69652066,
-                        0x61696c65,
-                        0x640a0000,
-                        0x5e5e5e5e,
-                        0x5e5e5e5e,
-                        0x5e5e5e5e,
-                        0x5e5e5e5e,
-                        0x20205245,
-                        0x53545255,
-                        0x43542066,
-                        0x6f72206d,
-                        0x6f766965,
-                        0x0a000000,
-                        0x6e5f6174,
-                        0x74726163,
-                        0x746d6f64,
-                        0x652e6300,
-                        0x4661696c,
-                        0x20746f20,
-                        0x70726570,
-                        0x6172650a,
-                        0x00000000};
+typedef struct AttractModeResourceDescriptorLayout
+{
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    void (*callbacks[6])(void);
+    char strings[0x84];
+} AttractModeResourceDescriptorLayout;
+
+AttractModeResourceDescriptorLayout n_attractmode_funcs = {
+    0,
+    0,
+    0,
+    0x00050000,
+    {
+        (void (*)(void))TitleMenu_initialise,
+        (void (*)(void))TitleMenu_release,
+        0,
+        (void (*)(void))TitleMenu_run,
+        (void (*)(void))TitleMenu_frameEnd,
+        (void (*)(void))TitleMenu_render,
+    },
+    "starfox.thp\000^^^^^^^^^^^^^^^^  malloc for movie failed\n\000\000"
+    "^^^^^^^^^^^^^^^^  RESTRUCT for movie\n\000\000\000"
+    "n_attractmode.c\000Fail to prepare\n",
+};

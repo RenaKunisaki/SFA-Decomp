@@ -2556,44 +2556,37 @@ int gDbStealerwormWaitAvoidGroups[4] = {3, 0, 1, 10};
 f32 gDbStealerwormWaitAvoidWeights[4] = {8.0f, 3.0f, 2.0f, 4.0f};
 int gDbStealerwormKillAvoidGroups[4] = {3, 1, 0, 10};
 f32 gDbStealerwormKillAvoidWeights[10] = {2.0f, 0.8f, 0.4f, 2.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
-u32 gDBstealerwormObjDescriptor[39] = {0x00000000,
-                                       0x00000000,
-                                       0x00000000,
-                                       0x000b0000,
-                                       (u32)dbstealerworm_initialise,
-                                       (u32)dbstealerworm_release,
-                                       0x00000000,
-                                       (u32)dbstealerworm_init,
-                                       (u32)dbstealerworm_update,
-                                       (u32)dbstealerworm_hitDetect,
-                                       (u32)dbstealerworm_render,
-                                       (u32)dbstealerworm_free,
-                                       (u32)dbstealerworm_getObjectTypeId,
-                                       (u32)dbstealerworm_getExtraSize,
-                                       (u32)dbstealerworm_getControlMode,
-                                       (u32)dbstealerworm_handleMessage,
-                                       0x20537461,
-                                       0x636b202d,
-                                       0x2d2d2d2d,
-                                       0x2d2d2d2d,
-                                       0x2d2d2d2d,
-                                       0x2d2d2d2d,
-                                       0x2d2d0a00,
-                                       0x2569203a,
-                                       0x20257320,
-                                       0x3a204f70,
-                                       0x616e6420,
-                                       0x2569200a,
-                                       0x00000000,
-                                       0x20484153,
-                                       0x2042414c,
-                                       0x4c203a20,
-                                       0x25783d20,
-                                       0x25780a00,
-                                       0x20544852,
-                                       0x4f572043,
-                                       0x48414e43,
-                                       0x45202569,
-                                       0x200a0000};
+typedef struct DbStealerwormObjDescriptorLayout
+{
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    void (*callbacks[12])(void);
+    char debugStrings[0x5C];
+} DbStealerwormObjDescriptorLayout;
+
+DbStealerwormObjDescriptorLayout gDBstealerwormObjDescriptor = {
+    0,
+    0,
+    0,
+    0x000b0000,
+    {
+        (void (*)(void))dbstealerworm_initialise,
+        (void (*)(void))dbstealerworm_release,
+        0,
+        (void (*)(void))dbstealerworm_init,
+        (void (*)(void))dbstealerworm_update,
+        (void (*)(void))dbstealerworm_hitDetect,
+        (void (*)(void))dbstealerworm_render,
+        (void (*)(void))dbstealerworm_free,
+        (void (*)(void))dbstealerworm_getObjectTypeId,
+        (void (*)(void))dbstealerworm_getExtraSize,
+        (void (*)(void))dbstealerworm_getControlMode,
+        (void (*)(void))dbstealerworm_handleMessage,
+    },
+    " Stack -------------------\n\000%i : %s : Opand %i \n\000\000\000\000 HAS BALL : %x= %x\n\000 THROW "
+    "CHANCE %i \n",
+};
 
 int gDBStealerWormStateHandlersA[17];

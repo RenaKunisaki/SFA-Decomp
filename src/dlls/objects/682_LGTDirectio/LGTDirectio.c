@@ -43,14 +43,21 @@ struct DirectionalLightObjDescriptorLayout gDirectionalLightObjDescriptor = {
         (void (*)(void))directionallight_getObjectTypeId,
         (void (*)(void))directionallight_getExtraSize,
     },
-    "Mode: YAW\n\000\000Angle: %d\n\000\000Mode: PITCH\n\000\000\000\000Mode: DIFFUSE COLOUR RED\n\000\000\000Colour: "
-    "%d\n\000Mode: DIFFUSE COLOUR GREEN\n\000Mode: DIFFUSE COLOUR BLUE\n\000\000Mode: SPECULAR COLOUR "
-    "RED\n\000\000Mode: SPECULAR COLOUR GREEN\n\000\000\000\000Mode: SPECULAR COLOUR BLUE\n",
+    "Mode: YAW\n",
+    "Angle: %d\n",
+    "Mode: PITCH\n",
+    "Mode: DIFFUSE COLOUR RED\n",
+    "Colour: %d\n",
+    "Mode: DIFFUSE COLOUR GREEN\n",
+    "Mode: DIFFUSE COLOUR BLUE\n",
+    "Mode: SPECULAR COLOUR RED\n",
+    "Mode: SPECULAR COLOUR GREEN\n",
+    "Mode: SPECULAR COLOUR BLUE\n",
 };
 
 void directionallight_debugEdit(GameObject* obj, DirectionalLightState* state)
 {
-    u8* desc = (u8*)&gDirectionalLightObjDescriptor;
+    struct DirectionalLightObjDescriptorLayout* desc = &gDirectionalLightObjDescriptor;
     u16 buttons = getButtonsJustPressed(0);
 
     if ((buttons & PAD_TRIGGER_Z) != 0)
@@ -89,8 +96,8 @@ void directionallight_debugEdit(GameObject* obj, DirectionalLightState* state)
         {
             obj->anim.rotX += 0x3e8;
         }
-        logPrintf((char*)(desc + 0x38));
-        logPrintf((char*)(desc + 0x44), obj->anim.rotX);
+        logPrintf(desc->debugModeYaw);
+        logPrintf(desc->debugAngleFormat, obj->anim.rotX);
         break;
     case 1:
         if ((buttons & PAD_BUTTON_LEFT) != 0)
@@ -101,8 +108,8 @@ void directionallight_debugEdit(GameObject* obj, DirectionalLightState* state)
         {
             obj->anim.rotY += 0x3e8;
         }
-        logPrintf((char*)(desc + 0x50));
-        logPrintf((char*)(desc + 0x44), obj->anim.rotY);
+        logPrintf(desc->debugModePitch);
+        logPrintf(desc->debugAngleFormat, obj->anim.rotY);
         break;
     case 2:
         if ((buttons & PAD_BUTTON_LEFT) != 0)
@@ -113,8 +120,8 @@ void directionallight_debugEdit(GameObject* obj, DirectionalLightState* state)
         {
             state->diffuseR += 5;
         }
-        logPrintf((char*)(desc + 0x60));
-        logPrintf((char*)(desc + 0x7c), state->diffuseR);
+        logPrintf(desc->debugModeDiffuseRed);
+        logPrintf(desc->debugColourFormat, state->diffuseR);
         break;
     case 3:
         if ((buttons & PAD_BUTTON_LEFT) != 0)
@@ -125,8 +132,8 @@ void directionallight_debugEdit(GameObject* obj, DirectionalLightState* state)
         {
             state->diffuseG += 5;
         }
-        logPrintf((char*)(desc + 0x88));
-        logPrintf((char*)(desc + 0x7c), state->diffuseG);
+        logPrintf(desc->debugModeDiffuseGreen);
+        logPrintf(desc->debugColourFormat, state->diffuseG);
         break;
     case 4:
         if ((buttons & PAD_BUTTON_LEFT) != 0)
@@ -137,8 +144,8 @@ void directionallight_debugEdit(GameObject* obj, DirectionalLightState* state)
         {
             state->diffuseB += 5;
         }
-        logPrintf((char*)(desc + 0xa4));
-        logPrintf((char*)(desc + 0x7c), state->diffuseB);
+        logPrintf(desc->debugModeDiffuseBlue);
+        logPrintf(desc->debugColourFormat, state->diffuseB);
         break;
     case 5:
         if ((buttons & PAD_BUTTON_LEFT) != 0)
@@ -149,8 +156,8 @@ void directionallight_debugEdit(GameObject* obj, DirectionalLightState* state)
         {
             state->targetR += 5;
         }
-        logPrintf((char*)(desc + 0xc0));
-        logPrintf((char*)(desc + 0x7c), state->targetR);
+        logPrintf(desc->debugModeSpecularRed);
+        logPrintf(desc->debugColourFormat, state->targetR);
         break;
     case 6:
         if ((buttons & PAD_BUTTON_LEFT) != 0)
@@ -161,8 +168,8 @@ void directionallight_debugEdit(GameObject* obj, DirectionalLightState* state)
         {
             state->targetG += 5;
         }
-        logPrintf((char*)(desc + 0xdc));
-        logPrintf((char*)(desc + 0x7c), state->targetG);
+        logPrintf(desc->debugModeSpecularGreen);
+        logPrintf(desc->debugColourFormat, state->targetG);
         break;
     case 7:
         if ((buttons & PAD_BUTTON_LEFT) != 0)
@@ -173,8 +180,8 @@ void directionallight_debugEdit(GameObject* obj, DirectionalLightState* state)
         {
             state->targetB += 5;
         }
-        logPrintf((char*)(desc + 0xfc));
-        logPrintf((char*)(desc + 0x7c), state->targetB);
+        logPrintf(desc->debugModeSpecularBlue);
+        logPrintf(desc->debugColourFormat, state->targetB);
         break;
     }
 }
