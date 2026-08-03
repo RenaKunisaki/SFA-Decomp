@@ -5,7 +5,6 @@
 #include "main/frame_timing.h"
 #include "main/objprint_render_api.h"
 #include "main/objprint_dolphin_api.h"
-#include "main/objprintgxcolor.h"
 #include "main/model.h"
 #include "sys/objects.h"
 #include "main/objlib_api.h"
@@ -475,7 +474,7 @@ int objFuzzShellRenderCb(int obj, int* model, int ropIdx)
     return 1;
 }
 
-extern ObjPrintGXColor gObjFuzzKColor;
+extern GXColor gObjFuzzKColor;
 extern u8 lbl_803DCC35;
 extern u8 lbl_803DCC36;
 extern s32 gObjSelectedLightCount;
@@ -793,7 +792,7 @@ u8 gObjGxKColorCache[4] = {0};
 u8 gObjShadowColor[4] = {0x20, 0x30, 0xFF, 0xFF};
 int lbl_803DB48C = -1;
 int lbl_803DB490 = -1;
-ObjPrintGXColor gObjFuzzKColor = {0xFF, 0xFF, 0xFF, 0xFF};
+GXColor gObjFuzzKColor = {0xFF, 0xFF, 0xFF, 0xFF};
 int lbl_803DB498 = -3;
 int lbl_803DB49C = -1;
 

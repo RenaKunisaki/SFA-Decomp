@@ -192,13 +192,13 @@ typedef struct {
     u32 size;
     u32 rebootSize;
     u32 reserved2;
-} AppLoaderStruct;
+} ApploaderHeader;
 
-static AppLoaderStruct* LoadApploader() {
-    AppLoaderStruct* header;
+static ApploaderHeader* LoadApploader() {
+    ApploaderHeader* header;
 
-    header = (AppLoaderStruct*)OSAllocFromArenaLo(sizeof(AppLoaderStruct), DOLPHIN_ALIGNMENT);
-    ReadDisc(header, sizeof(AppLoaderStruct), GetApploaderPosition());
+    header = (ApploaderHeader*)OSAllocFromArenaLo(sizeof(ApploaderHeader), DOLPHIN_ALIGNMENT);
+    ReadDisc(header, sizeof(ApploaderHeader), GetApploaderPosition());
     ASSERTMSGLINE(LINE(401, 407, 409), header->rebootSize != 0, "OSResetSystem(): old apploader");
 
     ReadDisc((void*)0x81200000, OSRoundUp32B(header->size), GetApploaderPosition() + 0x20);
@@ -228,14 +228,14 @@ static void* LoadDol(const OSExecParams* params, AppLoaderCallback getInterface)
     return appGetEntry();
 }
 
-static BOOL IsNewApploader(AppLoaderStruct* header) {
+static BOOL IsNewApploader(ApploaderHeader* header) {
     return strncmp(header->date, "2004/02/01", 10) > 0 ? TRUE : FALSE;
 }
 
 void __OSBootDolSimple(u32 doloffset, u32 restartCode, void* regionStart, void* regionEnd, BOOL argsUseDefault, s32 argc, char** argv) {
     OSExecParams* params;
     void* dolEntry;
-    AppLoaderStruct* header;
+    ApploaderHeader* header;
 
 #if SDK_REVISION < 1
     OSTime start;
