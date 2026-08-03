@@ -13227,10 +13227,10 @@ void playerUpdateLookAtTarget(int p1, int p2, int p3)
         f32 clamped;
         f32 f5;
 
-        if (--*(s16*)&((PlayerState*)p3)->lookAtTimer <= 0)
+        if (--((PlayerState*)p3)->lookAtTimer <= 0)
         {
-            *(s16*)&((PlayerState*)p3)->lookAtTimer = (s16)randomGetRange(0x78, 0xf0);
-            *(s16*)&((PlayerState*)p3)->lookAtRandOffset = (s16)randomGetRange(0, 0x28);
+            ((PlayerState*)p3)->lookAtTimer = (s16)randomGetRange(0x78, 0xf0);
+            ((PlayerState*)p3)->lookAtRandOffset = (s16)randomGetRange(0, 0x28);
         }
         angle1 = getAngle(-(*(f32*)((char*)near + 0xc) - ((GameObject*)p1)->anim.localPosX),
                           -(*(f32*)((char*)near + 0x14) - ((GameObject*)p1)->anim.localPosZ)) &
@@ -13256,7 +13256,7 @@ void playerUpdateLookAtTarget(int p1, int p2, int p3)
     else
     {
         angle1 = 0;
-        *(s16*)&((PlayerState*)p3)->lookAtTimer = angle1;
+        ((PlayerState*)p3)->lookAtTimer = angle1;
     }
 
     {
@@ -14055,7 +14055,7 @@ void playerUpdateWaterMotion(GameObject* obj, int inner, int state)
 
     angle = ((PlayerState*)inner)->waterSurfaceY;
     angle = angle + mathSinf(3.1415927f * (f32)(u32) * (u16*)((char*)inner + 0x89c) / 32768.0f);
-    *(s16*)&((PlayerState*)inner)->unk89C = 256.0f * timeDelta + (f32)(u32) * (u16*)((char*)inner + 0x89c);
+    ((PlayerState*)inner)->unk89C = 256.0f * timeDelta + (f32)(u32) * (u16*)((char*)inner + 0x89c);
     {
         d = angle - obj->anim.localPosY;
         if (d > 25.0f)
@@ -14528,27 +14528,27 @@ void staffAnimate(int obj, void* state, f32 dt)
     model = *(int*)((char*)Obj_GetActiveModel((GameObject*)obj) + 0x30);
     prevChanged = 0;
 
-    if (*(s16*)&((PlayerState*)state)->staffAnimState != 3)
+    if (((PlayerState*)state)->staffAnimState != 3)
     {
         u8 b = ((PlayerState*)state)->staffActionRequest;
         if (b == 1)
         {
             staffDoGrowShrinkAnim((GameObject*)gPlayerPathObject, 0, ((PlayerState*)state)->flags3F4.b08, 0);
             ((PlayerState*)state)->staffGrown = 0;
-            if (*(s16*)&((PlayerState*)state)->staffAnimState != 0 &&
-                *(s16*)&((PlayerState*)state)->staffAnimState != 0xf)
+            if (((PlayerState*)state)->staffAnimState != 0 &&
+                ((PlayerState*)state)->staffAnimState != 0xf)
             {
-                *(s16*)&((PlayerState*)state)->staffAnimState = 3;
+                ((PlayerState*)state)->staffAnimState = 3;
             }
         }
         else if (b == 4)
         {
             staffDoGrowShrinkAnim((GameObject*)gPlayerPathObject, 1, ((PlayerState*)state)->flags3F4.b08, 0);
             ((PlayerState*)state)->staffGrown = 1;
-            if (*(s16*)&((PlayerState*)state)->staffAnimState != 0 &&
-                *(s16*)&((PlayerState*)state)->staffAnimState != 0xf)
+            if (((PlayerState*)state)->staffAnimState != 0 &&
+                ((PlayerState*)state)->staffAnimState != 0xf)
             {
-                *(s16*)&((PlayerState*)state)->staffAnimState = 3;
+                ((PlayerState*)state)->staffAnimState = 3;
             }
         }
     }
@@ -14558,7 +14558,7 @@ void staffAnimate(int obj, void* state, f32 dt)
     do
     {
         changed = 0;
-        switch (*(s16*)&((PlayerState*)state)->staffAnimState)
+        switch (((PlayerState*)state)->staffAnimState)
         {
         case 2:
             if (prevChanged != 0)
@@ -14583,7 +14583,7 @@ void staffAnimate(int obj, void* state, f32 dt)
             if (((GameObject*)obj)->anim.activeMoveProgress >= 0.85f)
             {
                 staffDoGrowShrinkAnim((GameObject*)gPlayerPathObject, 1, 0, 0);
-                *(s16*)&((PlayerState*)state)->staffAnimState = 3;
+                ((PlayerState*)state)->staffAnimState = 3;
                 changed = 1;
             }
             else
@@ -14613,7 +14613,7 @@ void staffAnimate(int obj, void* state, f32 dt)
             }
             if (((GameObject*)obj)->anim.activeMoveProgress <= 0.15f)
             {
-                *(s16*)&((PlayerState*)state)->staffAnimState = 3;
+                ((PlayerState*)state)->staffAnimState = 3;
                 changed = 1;
             }
             else
@@ -14631,7 +14631,7 @@ void staffAnimate(int obj, void* state, f32 dt)
             }
             if (((GameObject*)obj)->anim.activeMoveProgress >= 1.0f || !staffCanContinueSpin(state))
             {
-                *(s16*)&((PlayerState*)state)->staffAnimState = 3;
+                ((PlayerState*)state)->staffAnimState = 3;
                 ((PlayerState*)state)->moveVariantIndex = 0xff;
                 changed = 1;
             }
@@ -14649,7 +14649,7 @@ void staffAnimate(int obj, void* state, f32 dt)
             if (*(u16*)((char*)model + 0x58) == 0)
             {
                 ((GameObject*)obj)->anim.activeMove = -1;
-                *(s16*)&((PlayerState*)state)->staffAnimState = 0;
+                ((PlayerState*)state)->staffAnimState = 0;
             }
             else
             {
@@ -14664,18 +14664,18 @@ void staffAnimate(int obj, void* state, f32 dt)
                 if (((PlayerState*)state)->staffActionRequest == 0)
                 {
                     staffDoGrowShrinkAnim((GameObject*)gPlayerPathObject, 0, 0, 0);
-                    *(s16*)&((PlayerState*)state)->staffAnimState = 1;
+                    ((PlayerState*)state)->staffAnimState = 1;
                     changed = 1;
                 }
             }
             else if (((PlayerState*)state)->staffActionRequest == 2)
             {
-                *(s16*)&((PlayerState*)state)->staffAnimState = 2;
+                ((PlayerState*)state)->staffAnimState = 2;
                 changed = 1;
             }
             if (((PlayerState*)state)->moveVariantIndex == 5 || ((PlayerState*)state)->moveVariantIndex == 7)
             {
-                *(s16*)&((PlayerState*)state)->staffAnimState = 0xf;
+                ((PlayerState*)state)->staffAnimState = 0xf;
                 changed = 1;
             }
             break;
@@ -16089,9 +16089,9 @@ void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt)
             ((PlayerState*)state)->velSmoothRateBase = 0.05f;
             break;
         case 6:
-            if ((*(s16*)&((PlayerState*)state)->hitIntervalTimer -= dt) <= 0)
+            if ((((PlayerState*)state)->hitIntervalTimer -= dt) <= 0)
             {
-                *(s16*)&((PlayerState*)state)->hitIntervalTimer = 0x3c;
+                ((PlayerState*)state)->hitIntervalTimer = 0x3c;
                 ObjHits_RecordObjectHit(obj, NULL, 0x14, 2, 0);
             }
             break;
@@ -16105,9 +16105,9 @@ void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt)
             }
             break;
         case SURFACE_LAVA:
-            if ((*(s16*)&((PlayerState*)state)->hitIntervalTimer -= dt) <= 0)
+            if ((((PlayerState*)state)->hitIntervalTimer -= dt) <= 0)
             {
-                *(s16*)&((PlayerState*)state)->hitIntervalTimer = 0x3c;
+                ((PlayerState*)state)->hitIntervalTimer = 0x3c;
                 ObjPath_GetPointWorldPosition((GameObject*)obj, 0xb, &pos[0], &pos[1], &pos[2], 0);
                 ObjHits_RecordPositionHit(obj, NULL, 0x14, 2, -1, pos[0], pos[1], pos[2]);
             }
@@ -16175,7 +16175,7 @@ void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt)
             mainSetBits(0x643, 1);
             break;
         default:
-            *(s16*)&((PlayerState*)state)->hitIntervalTimer = 0;
+            ((PlayerState*)state)->hitIntervalTimer = 0;
             {
                 f32 zero;
                 f32 sink = ((PlayerState*)state)->sinkOffsetY;

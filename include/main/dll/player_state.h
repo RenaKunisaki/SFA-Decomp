@@ -150,8 +150,8 @@ typedef struct PlayerState {
     int lastInputHeading;
     int bodyLeanRateSigned;
     int bodyLeanRate;
-    u16 lookAtTimer; /* countdown gating look-at-nearby; reloads random 0x78-0xf0 frames on expiry */
-    u16 lookAtRandOffset; /* companion random 0-0x28 set alongside lookAtTimer reload */
+    s16 lookAtTimer; /* countdown gating look-at-nearby; reloads random 0x78-0xf0 frames on expiry */
+    s16 lookAtRandOffset; /* companion random 0-0x28 set alongside lookAtTimer reload */
     int targetObjectBearing;    /* signed relative bearing to cameraTargetObject (targetObjectYaw - targetYaw, wrapped to +-0x8000) */
     int targetObjectBearingAbs; /* abs(targetObjectBearing); compared against 0x4000 (~90deg) to gate facing-target logic */
     int targetObjectYaw;        /* heading from player toward cameraTargetObject (getAngle(-dx,-dz)) */
@@ -343,8 +343,8 @@ typedef struct PlayerState {
     f32 unk7FC;
     u8 isHoldingObject; /* 1 while carrying a held object (set with heldObj on pickup msgs 0x100008/0x100010); cleared to 0 on release/state resets */
     u8 pad801[0x806 - 0x801];
-    u16 staffAnimState; /* staff grow/shrink anim state machine (staffAnimate): 0/1=shrink,2=grow,3=settle,0xf=variant */
-    u16 hitIntervalTimer; /* countdown (-= dt) reset to 0x3c on expiry, firing a periodic ObjHits record */
+    s16 staffAnimState; /* staff grow/shrink anim state machine (staffAnimate): 0/1=shrink,2=grow,3=settle,0xf=variant */
+    s16 hitIntervalTimer; /* countdown (-= dt) reset to 0x3c on expiry, firing a periodic ObjHits record */
     s16 animState;
     s16 queuedItemCommand; /* primary queued item/use command id from ObjMsg 0x80002; -1 = none; processed by playerProcessQueuedItemCommand */
     s16 deferredItemCommand; /* item command (0x2d/0x5ce) deferred while a target object is engaged; -1 = none; consumed/cleared once resolved */
@@ -387,7 +387,7 @@ typedef struct PlayerState {
     f32 pushVelX; /* planar push/displacement velocity X: eased toward a target push via interpolate, decayed by powfBitEstimate, snapped to 0 near zero; added to the transformed world position */
     f32 pushVelZ;
     int stateHandler; /* staged state/anim handler fn-ptr (stored as int); copied into baddie.stateExitFn on anim change */
-    u16 unk89C;
+    s16 unk89C;
     u8 pad89E[0x8A0 - 0x89E];
     u16 periodicHitTimer; /* accumulates dt; on crossing 0x78 wraps (-=0x78) and fires a periodic ObjHits position-hit */
     u8 moveVariantIndex; /* index into moveAnimTable->moves[]/angles[] (0xff = none) */

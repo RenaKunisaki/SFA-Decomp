@@ -2661,7 +2661,7 @@ int objSeqExecCmd06(GameObject* obj, GameObject* sourceObj, u8* seq, int cmd, s8
         Sfx_StopObjectChannel(sourceObj, 0x7f);
         break;
     case 16:
-        *(s8*)&((ObjSeqState*)seq)->unk7D = cmdArg;
+        ((ObjSeqState*)seq)->unk7D = cmdArg;
         break;
     case 21:
         gObjSeqCamMode = 0x48;

@@ -146,7 +146,7 @@ struct ObjSeqState {
     u8 groundSnapEnabled; /* 0x7A: script-toggled; when set, the seq object is snapped to the detected floor (trackGetNearestGroundOffset / RomCurveInterp_EvaluateOffsetPosition ground adjust) */
     s8 isCameraSeq; /* 0x7B: set when placement targetType==3 (camera): FOV track clamped 35..125, gObjSeqCameraSourceObj assigned, object movement/root-motion suppressed */
     s8 pendingConditionId; /* 1-based; ObjSeq_EvaluateCondition(pendingConditionId-1), cleared when satisfied */
-    u8 unk7D;
+    s8 unk7D;
     u8 runState; /* 0=inactive, 1=running, 2=start/setup, 3=defer-attach-to-parent */
     u8 stateFlags; /* bit 1 set on jump, bit 2/4 = pending transitions */
     u8 curEventId;
