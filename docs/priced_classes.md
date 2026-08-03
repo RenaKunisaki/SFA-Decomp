@@ -2223,3 +2223,31 @@ with the operation bucket. The rule §14 should be read with: **a multiset delta
 against `mr` (either direction) is rematerialisation, and rematerialisation is an allocator decision
 wearing an operation's clothes** — the mirror of §15's closing sentence. Partition first, then subtract
 this family, and the operation bucket that is actually worth opening is **50 rows, not 67**.
+
+### 23c. The second way the allocator forges a multiset delta: store-to-load forwarding
+
+`li` against `mr` is not the only opcode the allocator can invent. `beginLoadingMap`
+(`main/shader.c`, 99.776, `LEN-2`, the histogram's only "T-only `lwz`") is the specimen:
+
+```
+gMapBlockOriginX = fastFloorf(characterPosition->x / gMapBlockWorldSize);
+gMapBlockOriginZ = fastFloorf(characterPosition->z / gMapBlockWorldSize);
+...                                     /* four stores through base + 0x8588.. */
+gMapBlockOriginWorldX = gMapBlockOriginX * 640;
+gMapBlockOriginWorldZ = gMapBlockOriginZ * 640;
+```
+
+Both compiles re-read `gMapBlockOriginX`, because the intervening `*(int*)(base + 0x8594) = 1;`
+clobbers the register that held it — `r0` in both. Only `gMapBlockOriginZ` differs, and the whole
+difference is which register received the `fctiwz` read-back at `292(r1)`: retail took `r0`, which
+that same `li r0,1` then kills, so it must reload; we took `r4`, which nothing kills, so MWCC
+forwards the store and the `lwz` never appears. **One register choice, two elided instructions, a
+`T-only {lwz: 1}` histogram row.** The source already spells both sides identically and reads the
+global at the use, so there is nothing left for it to say.
+
+Together with §23b the rule for §14's bucket is: **before opening an operation row, ask whether the
+missing opcode is one a register choice could have deleted.** A rematerialised constant (`li`/`mr`)
+and a forwarded store (a vanished `lwz`) both change the multiset without changing the operation, and
+neither is reachable from the source text. What survives that filter — a different addressing mode, a
+different literal width, an extra store, a folded stride — is the part of the bucket that is really
+asking the source a question.
