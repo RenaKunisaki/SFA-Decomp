@@ -3628,7 +3628,7 @@ dlls/objects/565_DFP_TargetB/DFP_TargetB.c:
 	.sbss       start:0x803DF6B8 end:0x803DF6C0
 	.sdata2     start:0x803E7E68 end:0x803E7EB8
 
-dlls/objects/566_DFP_LaserBe/DFP_LaserBe.c:
+dlls/objects/566_DFP_LaserBe/laser.c:
 	.text       start:0x80209858 end:0x80209924
 	.data       start:0x8032B540 end:0x8032B5C8
 
@@ -3641,7 +3641,7 @@ dlls/objects/568_LINKA_levco/LINKA_levco.c:
 	.data       start:0x8032B600 end:0x8032B638
 	.sdata2     start:0x803E7EB8 end:0x803E7EC0
 
-dlls/objects/569/569.c:
+dlls/objects/569/textblock.c:
 	.text       start:0x8020A08C end:0x8020A130
 	.data       start:0x8032B638 end:0x8032B698
 
