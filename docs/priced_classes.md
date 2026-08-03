@@ -51,7 +51,7 @@ and ours shows a single dotted `rlwinm./rlwimi./srwi.` feeding the same branch.
 |---|---|---|---|
 | atan2fHighPrecision | main/acosf | 99.125 | 0.875 |
 | atan2f | main/acosf | 98.456 | 1.544 |
-| __kernel_cos | main/acosf | 98.250 | 1.750 |
+| atan2f_fast | main/acosf | 98.250 | 1.750 |
 | removeButtonObject (unroll-guard `srwi.`+`cmplwi`) | main/gameloop_buttonobj | 98.091 | 1.909 |
 | mathSinCosf (family cousin: surplus target `fmr f1,f28` O0 arg copy-back) | main/sincosf | 98.750 | 1.250 |
 
