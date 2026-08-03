@@ -1401,7 +1401,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/objects/242_iceblast/iceblast.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/243_flameblast/flameblast.c", cflags=cflags_dll_noopt_nocse_noinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/244/244.c"),
-            Object(NonMatching, "dlls/objects/245_SidekickBal/SidekickBal.c"),
+            Object(MatchingFor("GSAE01"), "dlls/objects/245_SidekickBal/SidekickBal.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/246_Area/Area.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/247/247.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/248_LevelName/LevelName.c"),

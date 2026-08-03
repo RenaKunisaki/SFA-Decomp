@@ -297,6 +297,23 @@ void SidekickBall_update(GameObject* obj) {
     (*gPathControlInterface)->advance(obj, state, timeDelta);
 }
 
+static inline int sidekickBall_updateFloorDepth(GameObject* obj, SidekickBallState* state) {
+    if (state->floorHeight > 0.0f) {
+        state->floorY = state->floorBaseY;
+        state->floorDepth = state->floorHeight;
+        return 1;
+    }
+    if (sidekickBall_floatsNotEqual(state->floorY, 0.0f)) {
+        if (obj->anim.localPosY > state->floorY) {
+            state->floorY = 0.0f;
+        } else {
+            state->floorDepth = state->floorY - obj->anim.localPosY;
+            return 1;
+        }
+    }
+    return 0;
+}
+
 u8 trickyBallMove(GameObject* obj) {
     int hasCollisionNormal;
     Vec collisionNormal;
@@ -337,21 +354,7 @@ u8 trickyBallMove(GameObject* obj) {
         hasMovementDelta = 1;
     }
 
-    if (state->floorHeight > 0.0f) {
-        state->floorY = state->floorBaseY;
-        state->floorDepth = state->floorHeight;
-        hasFloorDepth = 1;
-    } else if (sidekickBall_floatsNotEqual(state->floorY, 0.0f)) {
-        if (obj->anim.localPosY > state->floorY) {
-            state->floorY = 0.0f;
-            hasFloorDepth = 0;
-        } else {
-            state->floorDepth = state->floorY - obj->anim.localPosY;
-            hasFloorDepth = 1;
-        }
-    } else {
-        hasFloorDepth = 0;
-    }
+    hasFloorDepth = sidekickBall_updateFloorDepth(obj, state);
 
     if (hasFloorDepth != 0) {
         obj->anim.velocityX *= SIDEKICKBALL_FLOOR_DAMPING;
