@@ -82,9 +82,9 @@ f32 gHeatEffectScale = 1.0f;
 int sWarpNoiseIndMtxScaleExp = -4;
 u8 sWarpNoiseBaseColor[8] = {0x28, 0x20, 0, 0xFF, 0, 0, 0, 0};
 
-typedef struct
+typedef struct IndTexMtx23
 {
-    f32 v[2][3];
+    f32 m[2][3];
 } IndTexMtx23;
 
 struct piIndMtx
@@ -317,9 +317,9 @@ void addWarpedNoiseTevStages(void* p1, void* mtx)
     }
     newshadows_getReflectionScrollOffsets(&sx, &sy);
     wave = mathSinf(3.142f * sx);
-    m.v[0][1] = 0.25f * wave + 0.5f;
+    m.m[0][1] = 0.25f * wave + 0.5f;
     wave = mathSinf(3.142f * sy);
-    m.v[1][2] = 0.25f * wave + 0.5f;
+    m.m[1][2] = 0.25f * wave + 0.5f;
     GXSetTevOrder(gRcpNextTevStage, GX_TEXCOORD0, gRcpNextTexMap + 1, GX_ALPHA_BUMPN);
     GXSetTevSwapMode(gRcpNextTevStage, GX_TEV_SWAP0, GX_TEV_SWAP0);
     if (mtx != 0)
@@ -332,7 +332,7 @@ void addWarpedNoiseTevStages(void* p1, void* mtx)
     {
         GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX2x4, gRcpNextTexCoordSource, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     }
-    GXSetIndTexMtx(GX_ITM_0, m.v, sWarpNoiseIndMtxScaleExp);
+    GXSetIndTexMtx(GX_ITM_0, m.m, sWarpNoiseIndMtxScaleExp);
     GXSetIndTexOrder(gRcpNextIndTexStage, gRcpNextTexCoord, gRcpNextTexMap);
     GXSetTevIndirect(gRcpNextTevStage, gRcpNextIndTexStage, 0, 7, 1, 0, 0, 0, 0, 3);
     chooseTevKonstSelectors(sWarpNoiseBaseColor, 1, 0, &out_c, &out_8);
@@ -822,10 +822,10 @@ void setupHeatShimmerTevStages(char* p1)
     k = k * gHeatEffectScale;
     cv = cv * k;
     sv = sv * k;
-    m1.v[0][0] = cv;
-    m1.v[0][1] = sv;
-    m1.v[1][0] = -sv;
-    m1.v[1][1] = cv;
+    m1.m[0][0] = cv;
+    m1.m[0][1] = sv;
+    m1.m[1][0] = -sv;
+    m1.m[1][1] = cv;
     mathSinCosf(3.142f * -ry, &sv, &cv);
     c = mathCosf(3.142f * rx);
     f31v = 0.5f * c + 0.5f;
@@ -833,10 +833,10 @@ void setupHeatShimmerTevStages(char* p1)
     k = k * gHeatEffectScale;
     cv = cv * k;
     sv = sv * k;
-    m2.v[0][0] = cv;
-    m2.v[0][1] = sv;
-    m2.v[1][0] = -sv;
-    m2.v[1][1] = cv;
+    m2.m[0][0] = cv;
+    m2.m[0][1] = sv;
+    m2.m[1][0] = -sv;
+    m2.m[1][1] = cv;
     getNewShadowHeatHazeTexture(&tex2c);
     if (tex2c != 0)
     {
@@ -883,8 +883,8 @@ void setupHeatShimmerTevStages(char* p1)
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTTEXMTX0);
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD1, GX_TEXMAP1);
     GXSetIndTexCoordScale(GX_INDTEXSTAGE0, GX_ITS_1, GX_ITS_1);
-    GXSetIndTexMtx(GX_ITM_0, m1.v, -2);
-    GXSetIndTexMtx(GX_ITM_1, m2.v, -2);
+    GXSetIndTexMtx(GX_ITM_0, m1.m, -2);
+    GXSetIndTexMtx(GX_ITM_1, m2.m, -2);
     GXSetTevIndirect(1, 0, 0, 7, 1, 6, 6, 0, 0, 0);
     PSMTXScale(mtxc4, 1.2f, 1.2f, 1.0f);
     PSMTXRotRad(mtx94, 0x7a, 0.7853982f);
@@ -1027,7 +1027,7 @@ void addWarpedRingTevStages(void)
         }
     }
     newshadows_getReflectionScrollOffsets(&rx, &ry);
-    GXSetIndTexMtx(GX_ITM_1, im.v, -1);
+    GXSetIndTexMtx(GX_ITM_1, im.m, -1);
     GXSetIndTexOrder(gRcpNextIndTexStage, gRcpNextTexCoord + 2, gRcpNextTexMap + 1);
     m188[0][0] = 0.01f;
     m188[0][1] = 0.0f;
@@ -1168,7 +1168,7 @@ void renderHeavyFog(void* fogColor)
         newshadows_getReflectionScrollOffsets(&a, &b);
         b *= 0.25f;
         a *= 0.125f;
-        GXSetIndTexMtx(GX_ITM_1, im.v, -2);
+        GXSetIndTexMtx(GX_ITM_1, im.m, -2);
         GXSetIndTexOrder(gRcpNextIndTexStage, gRcpNextTexCoord + 1, gRcpNextTexMap + 1);
         m9c[0][0] = gHeavyFogWorldScale;
         m9c[0][1] = 0.0f;
