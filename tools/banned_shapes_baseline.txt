@@ -59,7 +59,7 @@ src/dlls/objects/521_WM_LevelCon/WM_LevelCon.c:86:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/521_WM_LevelCon/WM_LevelCon.c:87:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/578_DBstealerwo/DBstealerwo.c:2261:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/589_BossDrakor/BossDrakor.c:230:SINGLE_ELEM_CONST_ARRAY
-src/dlls/objects/597/597.c:72:LBL_CONST_DEF
+src/dlls/objects/597/597.c:71:LBL_CONST_DEF
 src/dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c:1239:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c:1240:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/599_DR_EarthWar/DR_EarthWar.c:134:UNCALLED_STATIC_FN
