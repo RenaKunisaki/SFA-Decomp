@@ -2416,9 +2416,13 @@ void doPendingMapLoads(void)
                     }
                 }
                 {
-                    s8 first = 1;
-                    int slotIndex = gShaderRomListSlotCount - 1;
-                    ShaderRomListSlot* romListSlot = (ShaderRomListSlot*)(base + 0x418C) + slotIndex;
+                    int slotIndex;
+                    s8 first;
+                    ShaderRomListSlot* romListSlot;
+
+                    first = 1;
+                    slotIndex = gShaderRomListSlotCount - 1;
+                    romListSlot = (ShaderRomListSlot*)(base + 0x418C) + slotIndex;
                     for (; slotIndex >= 0; slotIndex--)
                     {
                         if (romListSlot->flag == 0)
