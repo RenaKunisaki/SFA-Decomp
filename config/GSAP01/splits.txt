@@ -5141,11 +5141,11 @@ main/acosf.c:
 	.text       start:0x802928B4 end:0x80293114
 	.sdata2     start:0x803E93B8 end:0x803E94B0
 
-dolphin/MSL_C/PPCEABI/bare/H/e_sqrt.c:
+dolphin/MSL_C/PPCEABI/bare/H/math_802927a4.c:
 	.text       start:0x80293114 end:0x802936AC
 	.sdata2     start:0x803E95C8 end:0x803E95F8
 
-dolphin/MSL_C/PPCEABI/bare/H/s_tan.c:
+dolphin/MSL_C/PPCEABI/bare/H/math_80292d3c.c:
 	.text       start:0x802936AC end:0x80293730
 	.sdata2     start:0x803E95F8 end:0x803E9610
 
@@ -5157,7 +5157,7 @@ dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.c:
 	.text       start:0x8029375C end:0x80293A9C
 	.sdata2     start:0x803E9610 end:0x803E9614
 
-dolphin/MSL_C/PPCEABI/bare/H/k_tan.c:
+dolphin/MSL_C/PPCEABI/bare/H/math_8029312c.c:
 	.text       start:0x80293A9C end:0x80293BA4
 	.sdata2     start:0x803E9668 end:0x803E9678
 

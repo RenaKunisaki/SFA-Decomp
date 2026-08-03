@@ -1,5 +1,5 @@
 #include "PowerPC_EABI_Support/Runtime/runtime.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/s_tan.h"
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_80292d3c.h"
 
 
 double trigReduceQuadrantHighPrecision(int* quadrant, float angle)
