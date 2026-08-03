@@ -1328,11 +1328,10 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
     Camera* cam;
     f32 far;
     f32 yaw;
-    f32 scale;
+    f32 riseScale;
     f32 sunT;
     f32 moonT;
     SkyRotQ q2;
-    f32 riseT;
     u8 vis;
     u8* model;
     SkyState* sky;
@@ -1402,16 +1401,16 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
             }
         }
         sunT *= 32676.0f;
-        riseT = (sky->timeOfDay - 18000.0f) / 28800.0f;
-        if (riseT < 0.0f)
+        riseScale = (sky->timeOfDay - 18000.0f) / 28800.0f;
+        if (riseScale < 0.0f)
         {
-            riseT = 0.0f;
+            riseScale = 0.0f;
         }
-        else if (riseT > 1.0f)
+        else if (riseScale > 1.0f)
         {
-            riseT = 1.0f - (riseT - 1.0f);
+            riseScale = 1.0f - (riseScale - 1.0f);
         }
-        scale = -(0.55f * riseT - 1.0f);
+        riseScale = -(0.55f * riseScale - 1.0f);
         vec[0] = 2.0f * sunDir.x;
         vec[1] = 2.0f * sunDir.y;
         vec[2] = 2.0f * sunDir.z;
@@ -1429,7 +1428,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         gSkySunObject->anim.localPosX = cam->worldX + (f32)(s16)(int)vec[0];
         gSkySunObject->anim.localPosY = cam->worldY + (f32)(s16)(int)vec[1];
         gSkySunObject->anim.localPosZ = cam->worldZ + (f32)(s16)(int)vec[2];
-        gSkySunObject->anim.rootMotionScale = 400.0f * scale;
+        gSkySunObject->anim.rootMotionScale = 400.0f * riseScale;
         *(s16*)gSkySunObject = 0x10000 - cam->yaw;
         gSkySunObject->anim.rotY = cam->pitch;
         gSkySunObject->anim.rotZ = 0;
@@ -1483,16 +1482,16 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
             }
         }
         moonTC *= 32676.0f;
-        riseT = moonT / 14400.0f;
-        if (riseT < 0.0f)
+        riseScale = moonT / 14400.0f;
+        if (riseScale < 0.0f)
         {
-            riseT = 0.0f;
+            riseScale = 0.0f;
         }
-        else if (riseT > 1.0f)
+        else if (riseScale > 1.0f)
         {
-            riseT = 1.0f - (riseT - 1.0f);
+            riseScale = 1.0f - (riseScale - 1.0f);
         }
-        scale = -(0.55f * riseT - 1.0f);
+        riseScale = -(0.55f * riseScale - 1.0f);
         vec[0] = 2.0f * moonDir.x;
         vec[1] = 2.0f * moonDir.y;
         vec[2] = 2.0f * moonDir.z;
@@ -1509,7 +1508,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
         gSkyMoonObject->anim.localPosX = cam->worldX + (f32)(s16)(int)vec[0];
         gSkyMoonObject->anim.localPosY = cam->worldY + (f32)(s16)(int)vec[1];
         gSkyMoonObject->anim.localPosZ = cam->worldZ + (f32)(s16)(int)vec[2];
-        gSkyMoonObject->anim.rootMotionScale = 400.0f * scale;
+        gSkyMoonObject->anim.rootMotionScale = 400.0f * riseScale;
         gSkyMoonObject->anim.rotX = 0x10000 - cam->yaw;
         gSkyMoonObject->anim.rotY = cam->pitch;
         vis = 0;
