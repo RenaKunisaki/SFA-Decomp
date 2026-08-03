@@ -247,7 +247,7 @@ void dimBossTonsil_newState_hitFightMain(GameObject* obj, ObjSeqState* animUpdat
     }
 
     state->savedPendingParentObj = obj->pendingParentObj;
-    *(u32*)&obj->pendingParentObj = 0;
+    obj->pendingParentObj = (void*)0;
 
     (*gPlayerInterface)
         ->update(obj, updateState, timeDelta, timeDelta, &gDIMbosstonsilStateHandlers, &gDIMbosstonsilSubstateHandlers);
