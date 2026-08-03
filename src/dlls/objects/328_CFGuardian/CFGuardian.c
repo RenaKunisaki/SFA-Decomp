@@ -204,7 +204,7 @@ ObjectDescriptor11ExtraSize gCFGuardianObjDescriptor = {
  * matching per-event sfx. sfxIds is a 3-entry table: [0] the move sfx,
  * [1] the alt (event 7) sfx, [2] the "selection" sfx played once if any
  * 1..4 marker event fired. Returns the last 1..4 marker seen. */
-int cfguardian_playEventSfx(u32 obj, ObjAnimEventList* eventList, s16* sfxIds) {
+int cfguardian_playEventSfx(GameObject* obj, ObjAnimEventList* eventList, s16* sfxIds) {
     int eventIndex;
     u8 marker;
 
@@ -213,12 +213,12 @@ int cfguardian_playEventSfx(u32 obj, ObjAnimEventList* eventList, s16* sfxIds) {
         switch (eventList->triggeredIds[eventIndex]) {
         case CFGUARDIAN_ANIM_EVENT_MOVE_SFX:
             if (sfxIds != NULL) {
-                Sfx_PlayFromObject((GameObject*)obj, sfxIds[0]);
+                Sfx_PlayFromObject(obj, sfxIds[0]);
             }
             break;
         case CFGUARDIAN_ANIM_EVENT_ALT_SFX:
             if (sfxIds != NULL) {
-                Sfx_PlayFromObject((GameObject*)obj, sfxIds[1]);
+                Sfx_PlayFromObject(obj, sfxIds[1]);
             }
             break;
         case CFGUARDIAN_ANIM_EVENT_MARKER_1:
@@ -234,12 +234,12 @@ int cfguardian_playEventSfx(u32 obj, ObjAnimEventList* eventList, s16* sfxIds) {
             marker = 4;
             break;
         case CFGUARDIAN_ANIM_EVENT_FLAP_SFX:
-            Sfx_PlayFromObject((GameObject*)obj, CFGUARDIAN_SFX_FLAP);
+            Sfx_PlayFromObject(obj, CFGUARDIAN_SFX_FLAP);
             break;
         }
     }
     if (marker != 0 && sfxIds != NULL) {
-        Sfx_PlayFromObject((GameObject*)obj, sfxIds[2]);
+        Sfx_PlayFromObject(obj, sfxIds[2]);
     }
     return marker;
 }
@@ -698,7 +698,7 @@ int cfguardian_updateMain(GameObject* obj) {
             state->chatterState = CFGUARDIAN_CHATTER_READY;
         }
         if (mainGetBit(GAMEBIT_TargetRelated04B7) != 0) {
-            (*gCameraInterface)->setTarget((int)obj);
+            (*gCameraInterface)->setTarget(obj);
             (*gObjectTriggerInterface)->runSequence(0xb, (void*)obj, -1);
             mainSetBits(GAMEBIT_TargetRelated04B7, 0);
         }
@@ -711,7 +711,7 @@ int cfguardian_updateMain(GameObject* obj) {
             state->chatterState = CFGUARDIAN_CHATTER_READY;
         }
         if (mainGetBit(GAMEBIT_TargetRelated04B7) != 0) {
-            (*gCameraInterface)->setTarget((int)obj);
+            (*gCameraInterface)->setTarget(obj);
             (*gObjectTriggerInterface)->runSequence(0xa, (void*)obj, -1);
             mainSetBits(GAMEBIT_TargetRelated04B7, 0);
         }
@@ -777,7 +777,7 @@ int cfguardian_updateMain(GameObject* obj) {
         obj->anim.currentMove != CFGUARDIAN_MOVE_LANDING) {
         state->stateFlags &= ~CFGUARDIAN_STATE_MOVE_LATCHED;
     }
-    cfguardian_playEventSfx((u32)obj, (ObjAnimEventList*)scratch.eventBuffer, gCfGuardianSfxIds);
+    cfguardian_playEventSfx(obj, (ObjAnimEventList*)scratch.eventBuffer, gCfGuardianSfxIds);
     if (randomChanceOneIn(CFGUARDIAN_CHATTER_CHANCE_DENOMINATOR) != 0) {
         objSoundStartTimed(obj, &state->soundState, CFGUARDIAN_SFX_CHATTER, CFGUARDIAN_CHATTER_PITCH, -1, 0);
     }

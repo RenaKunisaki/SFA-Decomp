@@ -694,7 +694,7 @@ void arwarwing_updateWeaponFire(GameObject* obj, ArwingState* state)
     state->fireCooldown = (f32)(u32)state->fireDelay;
 }
 
-void arwarwing_emitDamageEffects(int obj, ArwingState* state)
+void arwarwing_emitDamageEffects(void* obj, ArwingState* state)
 {
     ArwingState* arwing = state;
     u8 spawnFlag;
@@ -720,7 +720,7 @@ void arwarwing_emitDamageEffects(int obj, ArwingState* state)
                 pfx.kind = 0x61a8;
             else
                 pfx.kind = -0x63c0;
-            (*gPartfxInterface)->spawnObject((void*)obj, ARWARWING_PARTFX_DAMAGE, &pfx.pad, 4, -1, &spawnFlag);
+            (*gPartfxInterface)->spawnObject(obj, ARWARWING_PARTFX_DAMAGE, &pfx.pad, 4, -1, &spawnFlag);
         }
     }
     if ((s8)arwing->health <= 2)
@@ -730,7 +730,7 @@ void arwarwing_emitDamageEffects(int obj, ArwingState* state)
         pfx.posX = 0.0f;
         pfx.posY = 2.5f;
         pfx.posZ = -12.0f;
-        (*gPartfxInterface)->spawnObject((void*)obj, ARWARWING_PARTFX_CRITICAL, &pfx.pad, 4, -1, &spawnFlag);
+        (*gPartfxInterface)->spawnObject(obj, ARWARWING_PARTFX_CRITICAL, &pfx.pad, 4, -1, &spawnFlag);
     }
 }
 
@@ -1813,7 +1813,7 @@ void arwarwing_update(GameObject* obj)
     (*gCameraInterface)->releaseAction(camPos, 8);
     arwarwing_handlePathDamage(obj, state);
     arwarwing_handleObjectDamage(obj, state);
-    arwarwing_emitDamageEffects((int)obj, state);
+    arwarwing_emitDamageEffects(obj, state);
 }
 
 void arwarwing_init(GameObject* obj)

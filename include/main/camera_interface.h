@@ -2,6 +2,7 @@
 #define MAIN_CAMERA_INTERFACE_H_
 
 #include "global.h"
+#include "game/objects/object_fwd.h"
 
 typedef int (*CameraGetModeFn)(void);
 typedef void *(*CameraGetFn)(void);
@@ -12,14 +13,14 @@ typedef void (*CameraLoadTriggeredActionFn)(int triggerType, int actionNo, int t
 typedef void (*CameraSetFocusFn)(void *target, int unused);
 typedef void (*CameraOverridePosFn)(f32 x, f32 y, f32 z);
 typedef void (*CameraMoveByFn)(f32 x, f32 y, f32 z);
-typedef void (*CameraSetTargetReticleOverrideFn)(int target);
+typedef void (*CameraSetTargetReticleOverrideFn)(GameObject *target);
 typedef void (*CameraInitialiseFn)(f32 numerator, f32 *dst, f32 denominator, f32 minValue,
                                    f32 y, f32 z);
 typedef void (*CameraGetRelativePositionFn)(void *targetObj, f32 *outX, f32 *outY, f32 *outZ,
                                             f32 *outDistanceXZ, f32 heightOffset,
                                             int useLocalPosition);
 typedef int (*CameraGetTargetFn)(void);
-typedef void (*CameraSetTargetFn)(int target);
+typedef void (*CameraSetTargetFn)(GameObject *target);
 typedef void (*CameraUpdateTargetFeedbackFn)(void);
 typedef void (*CameraSetLetterboxFn)(int mode, int enabled);
 typedef void (*CameraReleaseActionFn)(void *camAction, int recordSize);

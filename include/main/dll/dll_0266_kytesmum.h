@@ -69,7 +69,7 @@ int kytesmum_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpd
 void kytesmum_init(GameObject* obj, KytesMumSetup* setup);
 int kytesmum_updateNearPlayerCallback(GameObject* obj, int unused, u8* arg);
 int kytesmum_updateQuestStateCallback(GameObject* obj, int unused, u8* arg);
-void kytesmum_playAnimationEventSfx(u32 obj, u8* arg, s16* sfxData);
+void kytesmum_playAnimationEventSfx(GameObject* obj, u8* arg, s16* sfxData);
 
 extern char sKytesMumYawDiffMessage[];
 extern const s32 gKytesMumQuestBits[3];

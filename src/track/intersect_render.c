@@ -4319,7 +4319,7 @@ void doBlurFilter(f32 wx, f32 wy, f32 wz, u8 param4, u8 param5)
     Camera_RebuildProjectionMatrix();
 }
 
-void setupWaterReflectionTev(int handle1, int handle2)
+void setupWaterReflectionTev(Texture* handle1, Texture* handle2)
 {
     Mtx mtx_30;
     GXColor temp;
@@ -4333,8 +4333,8 @@ void setupWaterReflectionTev(int handle1, int handle2)
 
     indBase[0] = gWaterReflectionIndTexMtx;
     selectReflectionTexture(0);
-    selectTexture((Texture*)handle1, 1);
-    selectTexture((Texture*)handle2, 2);
+    selectTexture(handle1, 1);
+    selectTexture(handle2, 2);
 
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     GXLoadTexMtxImm(gCameraLightPerspectiveFlipYMatrix, GX_PTTEXMTX7, GX_MTX3x4);
@@ -4485,7 +4485,7 @@ void setupReflectionIndirectTev(u8 flag)
     GXSetTevAlphaOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
 }
 
-void setupReflectionDistortTev(int texHandle)
+void setupReflectionDistortTev(Texture* texHandle)
 {
 
     u8 ignoredLightColor;
@@ -4495,7 +4495,7 @@ void setupReflectionDistortTev(int texHandle)
     Mtx scaleMtx;
 
     selectReflectionTexture(0);
-    selectTexture((Texture*)texHandle, 1);
+    selectTexture(texHandle, 1);
     newshadows_getReflectionScrollOffsets(&sOff, &tOff);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_POS, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX3x4, GX_TG_POS, GX_TEXMTX2, GX_FALSE, GX_PTIDENTITY);

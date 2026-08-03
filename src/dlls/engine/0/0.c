@@ -733,11 +733,11 @@ static const GXColor sPauseMenuHoloChanColor = { 0xC0, 0xC0, 0xFF, 0xA0 };
 static const GXColor sQuadTevBaseColor = { 0xC0, 0xC0, 0xFF, 0x80 };
 static const GXColor sQuadTevKColor = { 0xFF, 0xFF, 0xFF, 0xFF };
 
-void cMenuPlayTrickyCommandSfx(int obj);
+void cMenuPlayTrickyCommandSfx(GameObject* obj);
 void hudUpdateMinimapReveal(void);
 void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2);
 
-void cMenuPlayTrickyCommandSfx(int obj)
+void cMenuPlayTrickyCommandSfx(GameObject* obj)
 {
     int sfx = 0;
     switch (gCMenuActivatedId)
@@ -763,7 +763,7 @@ void cMenuPlayTrickyCommandSfx(int obj)
     }
     if (sfx != 0)
     {
-        Sfx_PlayFromObjectLimited((GameObject*)obj, sfx, 1);
+        Sfx_PlayFromObjectLimited(obj, sfx, 1);
     }
 }
 
@@ -8109,7 +8109,7 @@ void cMenuRun(void)
                                     {
                                         cMenuOpen = 0;
                                         gCMenuActivatedId = cMenuSelectedItem;
-                                        cMenuPlayTrickyCommandSfx((int)player);
+                                        cMenuPlayTrickyCommandSfx(player);
                                         gCMenuCloseSfx = 0;
                                     }
                                 }
@@ -8141,7 +8141,7 @@ void cMenuRun(void)
                     if (gTrickyHudItemMask & (1 << yButtonItem))
                     {
                         gCMenuActivatedId = yButtonItem;
-                        cMenuPlayTrickyCommandSfx((int)player);
+                        cMenuPlayTrickyCommandSfx(player);
                         buttonDisable(0, 0x900);
                     }
                 }

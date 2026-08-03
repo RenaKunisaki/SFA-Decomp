@@ -384,7 +384,7 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
 
 int LargeCrate_seq(GameObject* obj) {
     if (obj->seqIndex != -1) {
-        (*gCameraInterface)->setTargetReticleOverride((int)obj);
+        (*gCameraInterface)->setTargetReticleOverride(obj);
     }
     return 0;
 }

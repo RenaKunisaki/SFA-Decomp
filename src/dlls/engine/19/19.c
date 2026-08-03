@@ -535,7 +535,7 @@ void waterfx_render(int obj, int renderParam)
         j = 0;
         if (gWaterfxSplashCount != 0)
         {
-            setupWaterReflectionTev((int)gWaterfxSplashTexture0, (int)gWaterfxSplashTexture1);
+            setupWaterReflectionTev(gWaterfxSplashTexture0, gWaterfxSplashTexture1);
             GXSetArray(GX_VA_POS, gWaterfxSplashPosArray, 0xc);
             GXSetArray(GX_VA_TEX0, gWaterfxSplashTexCoordArray, 8);
             GXClearVtxDesc();
@@ -574,7 +574,7 @@ void waterfx_render(int obj, int renderParam)
         }
         if (gWaterfxWakeCount != 0)
         {
-            setupReflectionDistortTev((int)gWaterfxWakeTexture);
+            setupReflectionDistortTev(gWaterfxWakeTexture);
         }
         for (poolOffset = 0, j = 0, descriptorOffset = 0, vertexOffset = 0;
              j < WATERFX_POOL_SIZE;

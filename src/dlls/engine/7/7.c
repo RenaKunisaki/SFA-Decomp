@@ -720,7 +720,7 @@ const SnowVec3 lbl_802C1FC0 = {{0.0f, 0.0f, 0.0f}};
 
 static const SnowFlakeUVs kSnowFlakeUVs = {{-48, 0, 176, 0, 64, 256}};
 
-int snowPrintSnowCloud(int arg, int cloudId)
+int snowPrintSnowCloud(void* arg, int cloudId)
 {
     u8* p;
     SnowFlake* part;
@@ -840,12 +840,12 @@ int snowPrintSnowCloud(int arg, int cloudId)
     gxTevCommitStages();
     if (((NewCloud*)p)->cloudType == 4)
     {
-        setTextColor((void*)arg, 0x7d, 0x7d, 0x9b, 0xff);
+        setTextColor(arg, 0x7d, 0x7d, 0x9b, 0xff);
     }
     else if (((NewCloud*)p)->cloudType == 0)
     {
         skyGetSunColor(0, &attr.cr, &attr.cg, &attr.cb);
-        setTextColor((void*)arg, attr.cr, attr.cg, attr.cb, 0xff);
+        setTextColor(arg, attr.cr, attr.cg, attr.cb, 0xff);
     }
     gxSetAlphaBlendZTest();
     GXClearVtxDesc();
@@ -1537,7 +1537,7 @@ int newclouds_isBlizzardActive(void)
     return gNewCloudBlizzardActive;
 }
 
-void newclouds_renderSnowClouds(int renderPass)
+void newclouds_renderSnowClouds(void* renderPass)
 {
     int i;
     int total;

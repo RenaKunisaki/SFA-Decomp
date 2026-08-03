@@ -181,8 +181,8 @@ void Camera_minimapShowHelpTextForTarget(int renderArg2, int renderArg3, int ren
 void camcontrol_setAButtonIconForTarget(void);
 void camcontrol_updateTargetFeedback(void);
 int Camera_isZooming(void);
-void Camera_setTargetReticleOverride(int target);
-void Camera_setTarget(int target);
+void Camera_setTargetReticleOverride(GameObject* target);
+void Camera_setTarget(GameObject* target);
 int Camera_getTarget(void);
 int Camera_getOverrideTarget(void);
 void camcontrol_getRelativePosition(void* targetObj, f32* outX, f32* outY, f32* outZ, f32* outDistanceXZ,

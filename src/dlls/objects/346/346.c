@@ -23,10 +23,10 @@
 #define EXPLODABLE_FRAGMENT_FULL_ALPHA           0xFF
 #define EXPLODABLE_DEFAULT_SCALE                 20
 
-GameObject* explodable_spawnFragmentObject(GameObject* obj, int fragmentObjectId, int chunkAddress, int fragmentIndex) {
+GameObject* explodable_spawnFragmentObject(GameObject* obj, int fragmentObjectId, ExplodableChunk* chunk,
+                                           int fragmentIndex) {
     ExplodedPlacement* fragmentPlacement;
     f32 scale;
-    ExplodableChunk* chunk = (ExplodableChunk*)chunkAddress;
 
     if (Obj_IsLoadingLocked() == 0) {
         return 0;
@@ -118,11 +118,11 @@ void explodable_buildFragments(GameObject* obj, int placementAddress, int skipCe
             chunk->offsetX = chunk->centroidX;
             chunk->offsetY = chunk->centroidY;
             chunk->offsetZ = chunk->centroidZ;
-            explodable_computeFragmentLaunch(obj, (int)chunk, placementAddress);
+            explodable_computeFragmentLaunch(obj, chunk, placementAddress);
             chunk->unknown6B = EXPLODABLE_FRAGMENT_FULL_ALPHA;
             chunk->gameBitMode = mainGetBit(((ExplodablePlacement*)placementAddress)->doneGameBit) != 0 ? 2 : 0;
             ((ExplodableState*)childSlotAddress)->children[0] =
-                explodable_spawnFragmentObject(obj, fragmentObjectId, (int)chunk, fragmentIndex);
+                explodable_spawnFragmentObject(obj, fragmentObjectId, chunk, fragmentIndex);
             chunk++;
             modelBankOffset += 4;
             childSlotAddress += 4;
@@ -133,14 +133,13 @@ void explodable_buildFragments(GameObject* obj, int placementAddress, int skipCe
     }
 }
 
-void explodable_computeFragmentLaunch(GameObject* obj, int chunkAddress, int placementAddress) {
+void explodable_computeFragmentLaunch(GameObject* obj, ExplodableChunk* chunk, int placementAddress) {
     f32 dx;
     f32 dy;
     f32 dz;
     f32 magnitude;
     f32 scale;
     int secondaryRandomMaximum;
-    ExplodableChunk* chunk = (ExplodableChunk*)chunkAddress;
     int randomMaximum;
     ExplodablePlacement* placement = (ExplodablePlacement*)placementAddress;
     f32 zero = 0.0f;

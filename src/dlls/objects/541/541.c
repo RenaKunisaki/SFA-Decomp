@@ -58,9 +58,9 @@ static inline f32 vfplift_getModelY(GameObject* obj)
     return setup->base.posY;
 }
 
-static inline void vfplift_trigger(int triggerId, int obj)
+static inline void vfplift_trigger(int triggerId, void* obj)
 {
-    (*gObjectTriggerInterface)->runSequence(triggerId, (void*)obj, -1);
+    (*gObjectTriggerInterface)->runSequence(triggerId, obj, -1);
 }
 
 static inline void vfplift_setObjectHitEnabled(GameObject* obj)
@@ -119,7 +119,7 @@ void vfplift23_updateState(GameObject* obj)
         if (((obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0)
         {
             buttonDisable(0, VFPLIFT_INTERACT_BUTTON_MASK);
-            vfplift_trigger(VFPLIFT_TRIGGER_LOWER, (int)obj);
+            vfplift_trigger(VFPLIFT_TRIGGER_LOWER, obj);
             state->mode = VFPLIFT_STATE_LOWERED;
             Sfx_PlayFromObject(obj, VFPLIFT_SFX_MOVE);
             Sfx_StopObjectChannel(obj, VFPLIFT_SFX_CHANNEL_MOVE);
@@ -140,7 +140,7 @@ void vfplift23_updateState(GameObject* obj)
         if (((obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0)
         {
             buttonDisable(0, VFPLIFT_INTERACT_BUTTON_MASK);
-            vfplift_trigger(VFPLIFT_TRIGGER_RAISE, (int)obj);
+            vfplift_trigger(VFPLIFT_TRIGGER_RAISE, obj);
             state->mode = VFPLIFT_STATE_RAISED;
             Sfx_PlayFromObject(obj, VFPLIFT_SFX_MOVE);
             Sfx_StopObjectChannel(obj, VFPLIFT_SFX_CHANNEL_MOVE);
@@ -187,7 +187,7 @@ void vfplift1_updateState(GameObject* obj)
     if (gate[0] != 0 && gate[1] != 0 && gate[2] != 0 && gate[3] != 0 && state->mode == VFPLIFT_STATE_IDLE &&
         mainGetBit(VFPLIFT1_READY_GAMEBIT) == 0)
     {
-        vfplift_trigger(VFPLIFT1_TRIGGER_READY, (int)obj);
+        vfplift_trigger(VFPLIFT1_TRIGGER_READY, obj);
         mainSetBits(VFPLIFT1_READY_GAMEBIT, 1);
     }
     if (state->applyHeight != 0 || (state->forceRaised != 0 && state->mode == VFPLIFT_STATE_IDLE))
@@ -208,7 +208,7 @@ void vfplift1_updateState(GameObject* obj)
         if (((obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0)
         {
             buttonDisable(0, VFPLIFT_INTERACT_BUTTON_MASK);
-            vfplift_trigger(VFPLIFT_TRIGGER_LOWER, (int)obj);
+            vfplift_trigger(VFPLIFT_TRIGGER_LOWER, obj);
             state->mode = VFPLIFT_STATE_LOWERED;
             Sfx_PlayFromObject(obj, VFPLIFT_SFX_MOVE);
             Sfx_StopObjectChannel(obj, VFPLIFT_SFX_CHANNEL_MOVE);
@@ -229,7 +229,7 @@ void vfplift1_updateState(GameObject* obj)
         if (((obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0)
         {
             buttonDisable(0, VFPLIFT_INTERACT_BUTTON_MASK);
-            vfplift_trigger(VFPLIFT_TRIGGER_RAISE, (int)obj);
+            vfplift_trigger(VFPLIFT_TRIGGER_RAISE, obj);
             state->mode = VFPLIFT_STATE_RAISED;
             Sfx_PlayFromObject(obj, VFPLIFT_SFX_MOVE);
             Sfx_StopObjectChannel(obj, VFPLIFT_SFX_CHANNEL_MOVE);

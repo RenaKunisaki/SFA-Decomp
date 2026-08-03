@@ -192,10 +192,10 @@ void ring_onCollect(GameObject* obj, RingState* state, GameObject* arwing)
     state->phase = RING_PHASE_PULL_TO_ARWING;
 }
 
-int ring_checkArwingCollision(GameObject* obj, RingState* state, int arwing)
+int ring_checkArwingCollision(GameObject* obj, RingState* state, GameObject* arwing)
 {
     ObjAnimComponent* objAnim = &obj->anim;
-    ObjAnimComponent* arwingAnim = &((GameObject*)arwing)->anim;
+    ObjAnimComponent* arwingAnim = &arwing->anim;
     RingFlags* f = &state->flags;
     if (f->bit10)
     {
@@ -373,7 +373,7 @@ void ring_update(GameObject* obj)
         if (state->flags.bit80 != 0)
         {
             if (arwarwing_isDead(arwing) == 0 && arwarwing_isExplodingOrWarping(arwing) == 0 &&
-                ring_checkArwingCollision(obj, state, (int)arwing) != 0)
+                ring_checkArwingCollision(obj, state, arwing) != 0)
             {
         ring_onCollect(obj, state, arwing);
             }

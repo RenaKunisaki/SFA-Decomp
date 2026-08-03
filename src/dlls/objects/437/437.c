@@ -586,7 +586,7 @@ const f32 gLightfootPulseTimerInterval[1] = {15.0f};
 const f32 gLightfootPulseSpawnOffsetY[1] = {35.0f};
 const f32 gLightfootPulseBurstScale[1] = {0.2f};
 
-void Lightfoot_ProcessHitResponseFlags(int obj, BaddieState* inner)
+void Lightfoot_ProcessHitResponseFlags(GameObject* obj, BaddieState* inner)
 {
     if (inner->eventFlags & 4)
     {
@@ -624,8 +624,8 @@ void Lightfoot_ProcessHitResponseFlags(int obj, BaddieState* inner)
     if (inner->eventFlags & 0x800)
     {
         inner->eventFlags &= ~0x800;
-        ObjHits_RecordObjectHit(Obj_GetPlayerObject(), (GameObject*)obj, 0x19, 2, 1);
-        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_wp_simp1_c);
+        ObjHits_RecordObjectHit(Obj_GetPlayerObject(), obj, 0x19, 2, 1);
+        Sfx_PlayFromObject(obj, SFXTRIG_wp_simp1_c);
         CameraShake_StartDampened(2.5f, 5.0f, 4.0f);
         doRumble(11.0f);
     }
@@ -701,44 +701,43 @@ void Lightfoot_UpdateAttachedChild(GameObject* obj, GroundBaddieState* inner)
     }
 }
 
-void Lightfoot_UpdatePlayerInteraction(int obj, GroundBaddieState* inner, int state)
+void Lightfoot_UpdatePlayerInteraction(GameObject* obj, GroundBaddieState* inner, int state)
 {
     LightfootControlState* p = inner->control;
-    ObjPlacement* sub = (ObjPlacement*)((GameObject*)obj)->anim.placementData;
+    ObjPlacement* sub = (ObjPlacement*)obj->anim.placementData;
     int mode;
     int v;
 
     (*gBaddieControlInterface)
-        ->getTargetGeometry((GameObject*)obj, Obj_GetPlayerObject(), 0x10, &p->targetSector,
-                            &p->targetYawDelta, &p->targetDistance);
+        ->getTargetGeometry(obj, Obj_GetPlayerObject(), 0x10, &p->targetSector, &p->targetYawDelta,
+                            &p->targetDistance);
     ((BaddieState*)state)->targetDistance = (f32)(u32)p->targetDistance;
-    mode = ((GameObject*)obj)->userData2;
+    mode = obj->userData2;
     if (mode == 2)
     {
         (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
-        ((GameObject*)obj)->userData2 = 1;
+        obj->userData2 = 1;
     }
     else if (mode == 3)
     {
         (*gObjectTriggerInterface)->runSequence(1, (void*)obj, -1);
-        ((GameObject*)obj)->userData2 = 1;
+        obj->userData2 = 1;
     }
     else
     {
-        characterDoEyeAnims((GameObject*)obj, &inner->eyeAnimState);
+        characterDoEyeAnims(obj, &inner->eyeAnimState);
         ((BaddieState*)state)->targetObj = Obj_GetPlayerObject();
         v = sub->ident;
         if (v >= 0x49942 || v < 0x4993f)
         {
-            (*gBaddieControlInterface)
-                ->updateGravity((GameObject*)obj, (void*)state, 0.17f, 1);
+            (*gBaddieControlInterface)->updateGravity(obj, (void*)state, 0.17f, 1);
         }
-        inner->savedPendingParentObj = ((GameObject*)obj)->pendingParentObj;
-        ((GameObject*)obj)->pendingParentObj = 0;
+        inner->savedPendingParentObj = obj->pendingParentObj;
+        obj->pendingParentObj = 0;
         (*gPlayerInterface)
             ->update((void*)obj, (void*)state, timeDelta, timeDelta, gLightfootStateHandlers,
                      gLightfootSubstateHandlers);
-        ((GameObject*)obj)->pendingParentObj = inner->savedPendingParentObj;
+        obj->pendingParentObj = inner->savedPendingParentObj;
         Lightfoot_ProcessHitResponseFlags(obj, &inner->baddie);
     }
 }
@@ -788,7 +787,7 @@ int Lightfoot_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
     }
     if (placement->behaviorId == DLL1B5_COMPLETION_GAMEBIT_SC_TOTEM_BOND)
     {
-        Lightfoot_UpdatePlayerInteraction((int)obj, inner, (int)inner);
+        Lightfoot_UpdatePlayerInteraction(obj, inner, (int)inner);
         if ((inner->configFlags & 1) != 0 && (obj->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0)
         {
             timerRec = inner->control;
@@ -985,7 +984,7 @@ void Lightfoot_update(GameObject* obj) {
             obj->userData2 = 0;
             inner->groundBaddie.flags400 &= ~0x2;
         }
-        Lightfoot_UpdatePlayerInteraction((int)obj, &inner->groundBaddie, (int)inner);
+        Lightfoot_UpdatePlayerInteraction(obj, &inner->groundBaddie, (int)inner);
         if ((inner->groundBaddie.configFlags & 1) && (obj->objectFlags & OBJECT_OBJFLAG_RENDERED)) {
             LightfootControlState* controlState = inner->groundBaddie.control;
 

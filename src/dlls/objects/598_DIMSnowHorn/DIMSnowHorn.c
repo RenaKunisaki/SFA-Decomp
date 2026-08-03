@@ -1052,7 +1052,7 @@ int DIMSnowHorn1_canMount(GameObject* obj)
     return 0;
 }
 
-void DIMSnowHorn1_spawnFootstepEffects(int obj, DIMSnowHorn1State* pointState, DIMSnowHorn1State* inputState)
+void DIMSnowHorn1_spawnFootstepEffects(void* obj, DIMSnowHorn1State* pointState, DIMSnowHorn1State* inputState)
 {
     u8 flags;
     u8 pointIndex;
@@ -1093,7 +1093,7 @@ void DIMSnowHorn1_spawnFootstepEffects(int obj, DIMSnowHorn1State* pointState, D
             while (count != 0)
             {
                 ((EffectInterface*)*gPartfxInterface)
-                    ->spawnObject((void*)obj, randomGetRange(0, 1) + 0x1f9, &args, 0x10001, -1, NULL);
+                    ->spawnObject(obj, randomGetRange(0, 1) + 0x1f9, &args, 0x10001, -1, NULL);
                 count--;
             }
 
@@ -1219,7 +1219,7 @@ void DIMSnowHorn1_ridingUpdate(GameObject* obj, int frameStep, int slot)
 
     (*gPlayerInterface)->update(obj, (void*)state, timeDelta, timeDelta, gDIMSnowHorn1StateHandlers,
                                 &gDIMSnowHorn1DefaultStateHandler);
-    DIMSnowHorn1_spawnFootstepEffects((int)obj, state, state);
+    DIMSnowHorn1_spawnFootstepEffects(obj, state, state);
 }
 
 static inline s16 DIMSnowHorn1_angleTo(GameObject* obj, GameObject* found)

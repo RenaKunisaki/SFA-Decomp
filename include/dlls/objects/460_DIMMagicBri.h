@@ -54,7 +54,7 @@ STATIC_ASSERT(offsetof(DimMagicBridgeState, unknown66) == 0x66);
 STATIC_ASSERT(sizeof(DimMagicBridgeState) == 0x68);
 
 void dimmagicbridge_updateVertexWave(GameObject* obj, u8* stateBytes);
-void dimmagicbridge_scrollTextureChannels(int obj, u8* stateBytes);
+void dimmagicbridge_scrollTextureChannels(GameObject* obj, u8* stateBytes);
 int dimmagicbridge_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int dimmagicbridge_getExtraSize(void);
 int dimmagicbridge_getObjectTypeId(void);

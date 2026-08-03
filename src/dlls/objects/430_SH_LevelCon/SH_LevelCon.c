@@ -383,7 +383,7 @@ void SH_LevelControl_runBloopEvent(GameObject* obj, ShLevelControlState* state) 
         (state)->mapOverride = -1;                                                                                     \
     }
 
-void SH_LevelControl_doThornTailEvents(int obj, ShLevelControlState* state) {
+void SH_LevelControl_doThornTailEvents(void* obj, ShLevelControlState* state) {
     GameObject* thornTailObj;
     GameObject* playerObj;
 
@@ -394,7 +394,7 @@ void SH_LevelControl_doThornTailEvents(int obj, ShLevelControlState* state) {
         if (mainGetBit(GAMEBIT_SH_BloopEventDone) != 0) {
             state->thornTailState = 7;
         } else {
-            (*gObjectTriggerInterface)->runSequence(5, (void*)obj, -1);
+            (*gObjectTriggerInterface)->runSequence(5, obj, -1);
             state->thornTailState = 1;
         }
         break;
@@ -403,7 +403,7 @@ void SH_LevelControl_doThornTailEvents(int obj, ShLevelControlState* state) {
         if ((thornTailObj->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
             playerObj = (GameObject*)Obj_GetPlayerObject();
             if ((playerObj->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
-                (*gObjectTriggerInterface)->runSequence(6, (void*)obj, -1);
+                (*gObjectTriggerInterface)->runSequence(6, obj, -1);
                 state->thornTailState = 7;
                 mainSetBits(GAMEBIT_SH_BloopEventDone, 1);
             }
@@ -422,7 +422,7 @@ void SH_LevelControl_doThornTailEvents(int obj, ShLevelControlState* state) {
                 if ((playerObj->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
                     if (isScreenTransitionActive() != 0) {
                         mainSetBits(GAMEBIT_ITEM_MoonPassKey_Got, 1);
-                        (*gObjectTriggerInterface)->runSequence(1, (void*)obj, -1);
+                        (*gObjectTriggerInterface)->runSequence(1, obj, -1);
                         state->storyFlags |= SH_LEVELCONTROL_FLAG_THORNTAIL_TRIGGERED;
                     } else {
                         mainSetBits(GAMEBIT_ITEM_MoonPassKey_Got, 1);
@@ -435,7 +435,7 @@ void SH_LevelControl_doThornTailEvents(int obj, ShLevelControlState* state) {
             if (thornTailObj != 0) {
                 playerObj = (GameObject*)Obj_GetPlayerObject();
                 if ((playerObj->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
-                    (*gObjectTriggerInterface)->runSequence(1, (void*)obj, -1);
+                    (*gObjectTriggerInterface)->runSequence(1, obj, -1);
                     state->storyFlags |= SH_LEVELCONTROL_FLAG_THORNTAIL_TRIGGERED;
                 }
             }
@@ -583,7 +583,7 @@ void SH_LevelControl_update(GameObject* obj) {
         }
         break;
     case 3:
-        SH_LevelControl_doThornTailEvents((int)obj, (ShLevelControlState*)state);
+        SH_LevelControl_doThornTailEvents(obj, (ShLevelControlState*)state);
         break;
     case 4:
         if (((ShLevelControlState*)state)->musicLatch != 0xcc) {

@@ -803,7 +803,7 @@ static inline void* modelGetBoneMtx(ObjModel* model, int idx)
     return base + joint * sizeof(ObjModelJointMatrix);
 }
 
-void* modelLoad_layoutBuffers(u8* p, int b, int isType1, int c)
+void* modelLoad_layoutBuffers(u8* p, int b, int isType1, u8* c)
 {
     int o2;
     u8* out2;
@@ -816,7 +816,7 @@ void* modelLoad_layoutBuffers(u8* p, int b, int isType1, int c)
     u8* q;
     f32 f;
 
-    out = (u8*)c;
+    out = c;
     if (p == 0)
     {
         return 0;
@@ -2753,7 +2753,7 @@ void ObjModel_Release(u8* model)
     }
 }
 
-void* ObjModel_LoadAnimData(u8* p, int b, int c)
+void* ObjModel_LoadAnimData(u8* p, int b, u8* c)
 {
     void* m = modelLoad_layoutBuffers(p, b, p[0] == 1, c);
     modelAnimResetState(m, ((ObjModel*)m)->animStateA);

@@ -159,9 +159,10 @@ STATIC_ASSERT(offsetof(ExplodableState, recipeIndex) == 0x6E5);
 STATIC_ASSERT(offsetof(ExplodableState, pad6E6) == 0x6E6);
 STATIC_ASSERT(sizeof(ExplodableState) == 0x6E8);
 
-GameObject* explodable_spawnFragmentObject(GameObject* obj, int fragmentObjectId, int chunkAddress, int fragmentIndex);
+GameObject* explodable_spawnFragmentObject(GameObject* obj, int fragmentObjectId, ExplodableChunk* chunk,
+                                           int fragmentIndex);
 void explodable_buildFragments(GameObject* obj, int placementAddress, int skipCentroid, int stateAddress);
-void explodable_computeFragmentLaunch(GameObject* obj, int chunkAddress, int placementAddress);
+void explodable_computeFragmentLaunch(GameObject* obj, ExplodableChunk* chunk, int placementAddress);
 int explodable_getExtraSize(void);
 void explodable_free(GameObject* obj, int keepChildren);
 void explodable_render(void);

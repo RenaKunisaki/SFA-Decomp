@@ -2046,7 +2046,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
         if (idx < count)
         {
             obj->models[idx] = (u8*)obj + base + offsets[idx];
-            ObjModel_LoadAnimData(models[idx], loadFlags, (int)obj->models[idx]);
+            ObjModel_LoadAnimData(models[idx], loadFlags, obj->models[idx]);
             if (!(((ObjModel*)obj->models[idx])->file->flags & 0x8000))
             {
                 ((ObjModelInstance*)obj->def)->flags &= ~0x800000LL;
@@ -2076,7 +2076,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
         for (; i < count; i++)
         {
             obj->models[i] = (u8*)obj + base + offsets[i];
-            ObjModel_LoadAnimData(models[i], loadFlags, (int)obj->models[i]);
+            ObjModel_LoadAnimData(models[i], loadFlags, obj->models[i]);
             modelFlags = ((ObjModel*)obj->models[i])->file->flags;
             if (!(modelFlags & 0x8000) && !(modelFlags & 0x4000))
             {

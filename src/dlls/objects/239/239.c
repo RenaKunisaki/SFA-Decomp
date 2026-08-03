@@ -561,7 +561,7 @@ u32 pushable_SeqFn(GameObject* obj, MatrixTransform* referenceTransform, ObjSeqS
     state = obj->extra;
     state->savePosDelay = PUSHABLE_SEQUENCE_SAVE_DELAY;
     if (obj->seqIndex != -1) {
-        (*gCameraInterface)->setTargetReticleOverride((int)obj);
+        (*gCameraInterface)->setTargetReticleOverride(obj);
     }
     animUpdate->savedFlags = -1;
     if ((s8)animUpdate->movementState != 0) {

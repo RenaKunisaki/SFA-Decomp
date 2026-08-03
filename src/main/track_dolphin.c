@@ -173,8 +173,8 @@ struct IntersectModLineObject
 
 
 int trackBuildBlockTriangles(int base, int x0, int y0, int z0, int x1, int y1, int z1, int a, int b);
-int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int model, f32 scale, f32 x0, f32 y0, f32 z0, f32 x1,
-                f32 y1, f32 z1, u8 flags);
+int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int* model, f32 scale, f32 x0, f32 y0, f32 z0,
+                f32 x1, f32 y1, f32 z1, u8 flags);
 int trackGetIntersect2(int mode, void* tri1, void* tri2, f32* startPos, f32* endPos, int count, void* slots,
                        int flagsArg);
 int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int flags, TrackBBoxHit* hit,
@@ -2702,8 +2702,8 @@ int trackGetIntersect(GameObject* contactSrc, f32* startPos, f32* endPos, int co
     return hitCount;
 }
 
-int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int model, f32 scale, f32 x0, f32 y0, f32 z0, f32 x1, f32 y1,
-                f32 z1, u8 flags)
+int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int* model, f32 scale, f32 x0, f32 y0, f32 z0,
+                f32 x1, f32 y1, f32 z1, u8 flags)
 {
     f32 xd, xc, xb, xa;
     f32 zd, zc, zb, za;
@@ -2725,7 +2725,7 @@ int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int model, f32
     int count;
     int flag4;
 
-    hdr = *(int*)model;
+    hdr = *model;
 
     Matrix_TransformPoint(desc->currentMatrix, x0, y0, z0, &xa, &ytmp, &za);
     Matrix_TransformPoint(desc->currentMatrix, x0, y0, z1, &xb, &y0, &zb);
@@ -3461,7 +3461,7 @@ void trackIntersectBroadphase(GameObject* obj, TrackQueryBounds* ranges, u32 que
 
                 desc->firstTriangle = (s16)((cur - (int)gTrackTriangleBuffer) / 0x4c);
                 desc->object = resetObj;
-                cur = trackBuildModelTriangles(cur, desc, (int)model, 1.0f, x0, y0, z0, x1, y1, z1, queryMask);
+                cur = trackBuildModelTriangles(cur, desc, model, 1.0f, x0, y0, z0, x1, y1, z1, queryMask);
                 desc++;
                 if ((u32)cur >= gTrackTriangleBufferEnd)
                     break;

@@ -1087,13 +1087,13 @@ int Camera_isZooming(void) {
     return gCamcontrolCamera->blendProgress > 0.0f;
 }
 
-void Camera_setTargetReticleOverride(int target) {
-    gCamcontrolCamera->targetReticleOverride = (GameObject*)target;
+void Camera_setTargetReticleOverride(GameObject* target) {
+    gCamcontrolCamera->targetReticleOverride = target;
 }
 
-void Camera_setTarget(int target) {
-    gCamcontrolCamera->overrideTarget = (GameObject*)target;
-    gCamcontrolCamera->currentTarget = (GameObject*)target;
+void Camera_setTarget(GameObject* target) {
+    gCamcontrolCamera->overrideTarget = target;
+    gCamcontrolCamera->currentTarget = target;
 }
 
 int Camera_getTarget(void) {

@@ -152,7 +152,7 @@ ObjectDescriptor gKytesMumObjDescriptor = {
     kytesmum_getExtraSize,
 };
 
-void kytesmum_playAnimationEventSfx(u32 obj, u8* arg, s16* sfxData)
+void kytesmum_playAnimationEventSfx(GameObject* obj, u8* arg, s16* sfxData)
 {
     int i;
     u8 flags = 0;
@@ -163,13 +163,13 @@ void kytesmum_playAnimationEventSfx(u32 obj, u8* arg, s16* sfxData)
         case 0:
             if (sfxData != 0)
             {
-                Sfx_PlayFromObject((GameObject*)obj, sfxData[0]);
+                Sfx_PlayFromObject(obj, sfxData[0]);
             }
             break;
         case 7:
             if (sfxData != 0)
             {
-                Sfx_PlayFromObject((GameObject*)obj, sfxData[1]);
+                Sfx_PlayFromObject(obj, sfxData[1]);
             }
             break;
         case 1:
@@ -191,7 +191,7 @@ void kytesmum_playAnimationEventSfx(u32 obj, u8* arg, s16* sfxData)
     }
     if (flags != 0 && sfxData != 0)
     {
-        Sfx_PlayFromObject((GameObject*)obj, sfxData[3]);
+        Sfx_PlayFromObject(obj, sfxData[3]);
     }
 }
 
@@ -369,7 +369,7 @@ void kytesmum_update(GameObject* obj)
         ObjAnim_SetCurrentMove((int)obj, runtime->moveSet->moves[moveIdx], 0.0f, 0);
         runtime->animSpeed = (moveIdx == 0) ? 0.01f : 0.005f;
     }
-    kytesmum_playAnimationEventSfx((u32)obj, runtime->animEvents, runtime->eventSfxTable);
+    kytesmum_playAnimationEventSfx(obj, runtime->animEvents, runtime->eventSfxTable);
     characterDoEyeAnims(obj, &runtime->eyeAnimState);
     objSoundUpdateMouth(obj, &runtime->modelSoundState);
     nearest = objGetNearestTypeTo(KYTESMUM_TARGET_OBJGROUP, obj, &nearDist);

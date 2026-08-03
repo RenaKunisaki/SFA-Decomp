@@ -264,7 +264,7 @@ void TrickyCurve_updateBurstHit(GameObject* obj)
  * the function counts how many of the three axis intervals contain the player
  * (requires all three = axisCount 3) then fires a random horizontal nudge.
  */
-void TrickyCurve_updateCooldownTrigger(int obj)
+void TrickyCurve_updateCooldownTrigger(GameObject* obj)
 {
     GameObject* curve;
     TrickyCurveObjState* state;
@@ -277,7 +277,7 @@ void TrickyCurve_updateCooldownTrigger(int obj)
     f32 randomX;
     f32 randomZ;
 
-    curve = (GameObject*)obj;
+    curve = obj;
     state = (TrickyCurveObjState*)curve->extra;
     player = Obj_GetPlayerObject();
     axisCount = 0;
@@ -530,7 +530,7 @@ void TrickyCurve_update(GameObject* obj)
     }
     else if (state == 1)
     {
-        TrickyCurve_updateCooldownTrigger((int)obj);
+        TrickyCurve_updateCooldownTrigger(obj);
     }
     else if (state == 2)
     {
