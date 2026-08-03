@@ -272,10 +272,9 @@ static inline RomCurveDef* RomCurve_FindByIdWithLimit(u32 curveId, int lim)
     return NULL;
 }
 
-static inline int Objfsa_RomCurveIsBlocked(int curve)
+static inline int Objfsa_RomCurveIsBlocked(RomCurveDef* c)
 {
     int slot;
-    RomCurveDef* c = (RomCurveDef*)curve;
 
     for (slot = 0; slot < 4; slot++)
     {

@@ -2,6 +2,7 @@
 #define MAIN_DLL_OBJFSA_H_
 
 struct GameObject;
+struct RomCurveDef;
 
 #include "types.h"
 #include "main/curve.h"
@@ -23,9 +24,9 @@ void RomCurve_stepClamped(RomCurveWalker *state,f32 step);
 int RomCurve_advanceToNextSegment(RomCurveWalker *state,void *targetCurve);
 int RomCurve_setupHermiteSegment(RomCurveWalker *state,void *fromCurve,void *toCurve,void *targetCurve);
 int curves_findNearObj(struct GameObject* obj,int *curveTypes,int typeCount,int action,int bboxMode);
-f32 curves_getPathLength(u32 a, u32 b, f32 *posA, f32 *posB, f32 t1, f32 t2);
-void curves_getPos(int curve,float *outX,float *outY,float *outZ,f32 phase);
-int RomCurve_findProjectedCurveFromStart(int curve, f32 x, f32 y, f32 z, f32* outPhase);
+f32 curves_getPathLength(struct RomCurveDef *a, struct RomCurveDef *b, f32 *posA, f32 *posB, f32 t1, f32 t2);
+void curves_getPos(struct RomCurveDef* curve,float *outX,float *outY,float *outZ,f32 phase);
+struct RomCurveDef* RomCurve_findProjectedCurveFromStart(struct RomCurveDef* curve, f32 x, f32 y, f32 z, f32* outPhase);
 void* Objfsa_FindNearestCurveType24(f32* position, int walkGroupFilter, int curveSubtypeFilter);
 void* Objfsa_FindNearestEnabledCurveType24(f32* position, int walkGroupFilter, int curveSubtypeFilter);
 
