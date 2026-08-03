@@ -44,6 +44,11 @@ This repo starts from very little. Expect to do naming, struct recovery, type cl
 
 ## Ground Truth
 - `objdiff` is still the final measure of whether a change helped.
+- Treat provisional per-TU compiler overrides and false-set experiments as hypotheses, not
+  provenance. Source accumulated under an override will usually regress when it is removed, so
+  that aggregate regression does not validate the compiler choice. Require independent evidence
+  such as retail call/inlining topology, symbol shape, neighboring build settings, or contemporary
+  source lineage before retaining an exceptional compiler version.
 - Ghidra output is raw input. It will often be wrong about types, signatures, control flow details, and boundaries.
 - There are no symbol maps to lean on here. Do not write the workflow as if names or section layout are already known.
 - Reference projects are evidence, not truth. Match version, compiler behavior, ABI, and surrounding code before borrowing anything.

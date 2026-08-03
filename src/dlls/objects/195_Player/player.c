@@ -12622,13 +12622,12 @@ void playerDie(GameObject* obj)
 
 void playerCacheMoveRootHeights(int obj)
 {
-    s16* moveId;
-    f32* outputHeight;
     ObjModel* model;
     GameObject* object;
     PlayerState* player;
     s16* moveTable;
     s16 moveIndex;
+    s16 moveTableIndex;
     s16 jointRotation[3];
     f32 jointPosition[3];
 
@@ -12646,15 +12645,13 @@ void playerCacheMoveRootHeights(int obj)
     gPlayerMoveRootHeights[1] = jointPosition[1];
 
     moveIndex = 12;
-    moveId = &lbl_80332F48[17];
-    outputHeight = &gPlayerMoveRootHeights[moveIndex];
-    for (; moveIndex <= 15; moveIndex++)
-    {
-        ObjAnim_SetCurrentMove(obj, moveId[0], 0.0f, 0);
+    moveTableIndex = 17;
+    while (moveIndex <= 15) {
+        ObjAnim_SetCurrentMove(obj, lbl_80332F48[moveTableIndex], 0.0f, 0);
         ObjModel_SampleJointTransform(model, 0, 0, 0.0f, object->anim.rootMotionScale, jointPosition, jointRotation);
-        outputHeight[0] = jointPosition[1];
-        moveId++;
-        outputHeight++;
+        gPlayerMoveRootHeights[moveIndex] = jointPosition[1];
+        moveTableIndex++;
+        moveIndex++;
     }
     ObjAnim_WriteStateWord(&object->anim, OBJANIM_STATE_INDEX_CURRENT, OBJANIM_STATE_WORD_EVENT_COUNTDOWN, 0);
 }
@@ -17696,7 +17693,7 @@ void playerRender(int obj, int a, int b, int c, int d, int flag)
         }
         else if ((void*)gPlayerHeldObject != NULL)
         {
-            *(u32*)((char*)gPlayerHeldObject + 0x3c) &= ~0x100000;
+            *(u32*)((char*)gPlayerHeldObject + 0x3c) &= ~0x100000LL;
             {
                 int zero = 0;
                 gPlayerHeldObject = zero;

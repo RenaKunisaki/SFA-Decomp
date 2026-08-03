@@ -1338,7 +1338,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/projgfx/194/194.c"),
 
             # dlls/objects
-            Object(NonMatching, "dlls/objects/195_Player/player.c", mw_version="GC/1.3"),
+            Object(NonMatching, "dlls/objects/195_Player/player.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "dlls/objects/196_Tricky/tricky.c", cflags=cflags_dll_noopt_noprop_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/197/197.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/198_AnimatedObj/AnimatedObj.c"),
