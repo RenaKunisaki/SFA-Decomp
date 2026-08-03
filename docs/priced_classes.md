@@ -309,6 +309,24 @@ The `21b90aff9f`/`5b120c0545` pair (section 6) is the third instance and the fir
 regression was NOT retunable — a purge whose price is real still has to be measured and
 banked, not reported as zero.
 
+**The scan for this class is `tools/invcmp_scan.py`, and the tell is DEFINITION ORDER, not a
+mirrored register pair** (measured 2026-08-03). It is tempting to look for our stream carrying
+retail's compare with its two operands swapped and the branch inverted; a tree-wide scan for
+exactly that shape over all 211 sub-100 functions reports **zero** hits, and re-injecting the
+historic `8c611c5062` mutation (`zero < best.x` -> `best.x > zero`, which cost sky2_run
+99.653 -> 99.497) does **not** make it fire. The registers are not swapped at all. MWCC lists the
+first-evaluated operand first, so flipping the source operands moves *which value is loaded
+first*: retail emits `lfs f1,<zero>` then `lfs f2,20(r1)` and compares `fcmpo cr0,f2,f1`, while
+the flipped source loads the live value first and compares against a zero it re-materialises.
+What changes is the definition order of the two operands, which is what `invcmp_scan.py` already
+measures — so run that, not a mnemonic-and-register differ.
+
+At `79e394cfda` the scan reports three functions and no live row: `sky2_run`'s two `fcmpo` sites
+(the pinned 99.65298 residual — retail defines the LEFT operand LAST at both, a shape
+`invcmp_scan.py`'s own docstring attributes to a call or a call-ordered `static inline` on the
+right-hand side, and the plain operand flip does not reach it), plus `modelApplyBoneTransform`
+and `zlbDecompress`, which are §5 never-touch islands.
+
 ## 7. Uncalled statics are NOT automatically fabricated (class REFUTED, 2026-08-02)
 
 A census of our-only `.text` symbols (present in `build/GSAE01/src/**.o`, absent from the
