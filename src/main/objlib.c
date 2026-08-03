@@ -302,6 +302,8 @@ GameObject* objGetNearestTypeTo(int group, GameObject* obj, float* maxDistance) 
     return nearest;
 }
 
+const f32 gObjLibZero = 0.0f;
+
 GameObject** objGetAllOfType(int group, int* countOut) {
     if (group < 0 || group >= OBJTYPE_COUNT) {
         *countOut = 0;
