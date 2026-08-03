@@ -14,7 +14,6 @@
 #include "musyx/synth_jobs.h"
 #include "musyx/synth_job_init.h"
 
-extern u32 synthFlags;
 
 static f32 streamGainFromVolume(u8 volume)
 {

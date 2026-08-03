@@ -8,6 +8,8 @@
 #include "dolphin/os/OSStopwatch.h"
 #include "main/pi_dolphin_api.h"
 
+struct RingBufferQueue;
+
 void piRomLoadSection(int param_1,int param_2,int param_3);
 
 /* extern-cleanup: defining-file public prototypes */
@@ -71,5 +73,6 @@ extern int sMapFileNameIndexRemapTable[];
 extern GXFifoObj* gGxFifoObj;
 extern OSThread* gVideoWaitThread;
 extern OSStopwatch gFrameStopwatch;
+extern struct RingBufferQueue gVideoFlipQueue;
 
 #endif /* MAIN_PI_DOLPHIN_H_ */

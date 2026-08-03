@@ -365,7 +365,6 @@ typedef struct WarpDestination
     s16 angle;
 } WarpDestination;
 
-extern u8 gRcpPendingWarpDest[];
 
 void loadNextMap(void)
 {
@@ -3109,7 +3108,6 @@ int mapGetRomListAndOffsets(int p1, int flag)
     return (int)gCurRomListPage;
 }
 
-extern FrustumPlane gViewFrustumPlanes[];
 
 int ViewFrustum_IsSphereVisible(float* center, float radius)
 {
@@ -3432,7 +3430,6 @@ void frustumPlanes_updateAabbCornerIndices(FrustumPlane* planes, int count)
     }
 }
 
-extern FrustumPlane gPlayerRelativeFrustumPlanes[];
 void buildPlayerRelativeFrustumPlanes(void)
 {
     Vec tmp;

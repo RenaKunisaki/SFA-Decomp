@@ -18,6 +18,9 @@ typedef struct FrustumPlane {
     u8 pad[3];
 } FrustumPlane;
 
+extern FrustumPlane gViewFrustumPlanes[];
+extern FrustumPlane gPlayerRelativeFrustumPlanes[];
+
 void frustumPlanes_updateAabbCornerIndices(FrustumPlane *planes, int count);
 int ViewFrustum_IsSphereVisible(float *center, float radius);
 

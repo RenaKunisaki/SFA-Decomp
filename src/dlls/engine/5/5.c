@@ -100,7 +100,6 @@ extern const f32 gSkySunMoonRiseScale;
 STATIC_ASSERT(sizeof(SkyVec3) == 0xC);
 const SkyVec3 gSkyBaseSunDirection = {0.0f, 0.0f, 4600.0f};
 const SkyVec3 gSkyBaseMoonDirection = {0.0f, 0.0f, 4600.0f};
-extern u8 colorScale;
 extern int lbl_803E8458;
 int skyReservedReturnZeroB(void)
 {

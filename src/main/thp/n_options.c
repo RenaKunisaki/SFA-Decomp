@@ -48,7 +48,6 @@ static const GXColor sMovieKColor2 = {0xFF, 0x00, 0xFF, 0x80};
 #define S16_MAX               0x7fff
 
 s32 gAttractMovieAudioActive;
-extern OSMessageQueue gAttractMovieSpentTextureSetQueue[1];
 
 u16 gAttractMovieVolumeScale[128] = {
     0,     2,     8,     18,    32,    50,    73,    99,    130,   164,   203,   245,   292,   343,   398,   457,
@@ -414,7 +413,7 @@ void THPPlayerPostDrawDone(void)
     {
         while (TRUE)
         {
-            if (OSReceiveMessage(gAttractMovieSpentTextureSetQueue, &msg, OS_MESSAGE_NOBLOCK) == TRUE)
+            if (OSReceiveMessage(&gAttractMovieSpentTextureSetQueue, &msg, OS_MESSAGE_NOBLOCK) == TRUE)
             {
                 textureSet = msg;
             }
@@ -526,4 +525,4 @@ int ProperTimingForGettingNextFrame(void)
 AttractMoviePlayer gAttractMoviePlayer;
 char gPicMenuDvdReadBuffer[0x40];
 u8 gAttractMoviePrepareReadyQueue[0x34];
-OSMessageQueue gAttractMovieSpentTextureSetQueue[1];
+OSMessageQueue gAttractMovieSpentTextureSetQueue;

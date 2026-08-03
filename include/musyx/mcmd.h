@@ -252,6 +252,9 @@ typedef struct McmdVoiceState {
 
 extern McmdVoiceState* synthVoice;
 
+extern McmdInputSlot inpAuxA[8][4];
+extern McmdInputSlot inpAuxB[8][4];
+
 #ifdef STATIC_ASSERT
 STATIC_ASSERT(offsetof(McmdVoiceState, child) == 0xEC);
 STATIC_ASSERT(offsetof(McmdVoiceState, id) == 0xF4);

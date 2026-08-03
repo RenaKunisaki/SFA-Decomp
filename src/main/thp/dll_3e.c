@@ -80,7 +80,6 @@ enum {
     THP_PLAY_ODD_FIELD = 4
 };
 
-extern OSMessageQueue gAttractMovieSpentTextureSetQueue;
 extern OSMessageQueue gAttractMoviePrepareReadyQueue;
 static void InitAllMessageQueue(void);
 

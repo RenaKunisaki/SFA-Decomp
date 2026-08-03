@@ -68,7 +68,6 @@
 #include "dolphin/vi/vifuncs.h"
 
 extern u8 gLoadingScreenTextures[];
-extern RingBufferQueue gVideoFlipQueue;
 
 void videoSwapFrameBuffers(u32 retraceCount);
 void gpuErrorHandler(u32 retraceCount);

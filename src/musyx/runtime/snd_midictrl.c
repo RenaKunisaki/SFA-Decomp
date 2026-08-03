@@ -824,14 +824,6 @@ u16 inpGetPreAuxB(McmdVoiceState* state)
     return _GetInputValue(state, &state->inpPreAuxB, state->midi, state->midiSet);
 }
 
-typedef union AuxInputSlots
-{
-    McmdInputSlot slots[8][4];
-    u8 bytes[0x480];
-} AuxInputSlots;
-
-extern AuxInputSlots inpAuxB;
-extern AuxInputSlots inpAuxA;
 u32 inpAuxADirtyFlags[4] = {0x80000001, 0x80000002, 0x80000004, 0x80000008};
 u32 inpAuxBDirtyFlags[4] = {0x80000010, 0x80000020, 0x80000040, 0x80000080};
 
@@ -882,9 +874,9 @@ u16 inpGetAuxA(u8 studio, u8 index, u8 midi, u8 midiSet)
 {
     if (!inpResetGlobalMIDIDirtyFlag(midi, midiSet, inpAuxADirtyFlags[index]))
     {
-        return inpAuxA.slots[studio][index].oldValue;
+        return inpAuxA[studio][index].oldValue;
     }
-    return _GetInputValue(0, &inpAuxA.slots[studio][index], midi, midiSet);
+    return _GetInputValue(0, &inpAuxA[studio][index], midi, midiSet);
 }
 
 /*
@@ -894,9 +886,9 @@ u16 inpGetAuxB(u8 studio, u8 index, u8 midi, u8 midiSet)
 {
     if (!inpResetGlobalMIDIDirtyFlag(midi, midiSet, inpAuxBDirtyFlags[index]))
     {
-        return inpAuxB.slots[studio][index].oldValue;
+        return inpAuxB[studio][index].oldValue;
     }
-    return _GetInputValue(0, &inpAuxB.slots[studio][index], midi, midiSet);
+    return _GetInputValue(0, &inpAuxB[studio][index], midi, midiSet);
 }
 
 static inline void inpResetGlobalMIDIDirtyFlags(void)
@@ -982,8 +974,8 @@ void inpInit(u32 state)
         {
             for (j = 0; j < 4; j++)
             {
-                inpAuxA.slots[i][j].numSource = 0;
-                inpAuxB.slots[i][j].numSource = 0;
+                inpAuxA[i][j].numSource = 0;
+                inpAuxB[i][j].numSource = 0;
             }
         }
 

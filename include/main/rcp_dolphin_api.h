@@ -43,4 +43,6 @@ void addKColorModulateStage(struct _GXColor* color);
 void addColorFadeStage(struct _GXColor* color);
 Texture* textureGetAnimationFrame(Texture* texture, int frame);
 
+extern u8 gRcpPendingWarpDest[];
+
 #endif /* MAIN_RCP_DOLPHIN_API_H_ */

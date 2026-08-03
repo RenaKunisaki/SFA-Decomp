@@ -52,7 +52,6 @@ typedef struct
     Vec pos;
 } SplashFxParams;
 
-extern u8 gSurfaceSfxTable[];
 
 typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, int ref1);
 

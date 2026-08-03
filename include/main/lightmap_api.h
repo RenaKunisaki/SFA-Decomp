@@ -58,4 +58,6 @@ void setStarsHidden(int v);
 
 s8* mapGetBlockIdx(int layer);
 
+extern u8 colorScale;
+
 #endif /* MAIN_LIGHTMAP_API_H_ */

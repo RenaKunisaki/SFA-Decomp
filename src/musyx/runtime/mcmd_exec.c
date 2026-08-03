@@ -49,8 +49,6 @@ STATIC_ASSERT(offsetof(MacDataTables, auxBDirty) == 0x270);
 STATIC_ASSERT(sizeof(MacDataTables) == 0x280);
 
 extern u8 lbl_8032EDD0[];
-extern u8 inpAuxB[];
-extern u8 inpAuxA[];
 McmdCommandArgs macCurrentCmd;
 u64 macRealTime;
 int macTimeQueueRoot;
@@ -1171,7 +1169,7 @@ void macHandleActive(McmdVoiceState* sv)
             u8 i = *cmdValuePtr >> 0x18;
             u64* mask = (u64*)(dataTables + i * 8);
             u32* dirty = (u32*)(dataTables + i * 4);
-            SelectSource(sv, (McmdInputSlot*)(inpAuxA + sv->studio * 0x90 + i * 0x24), &macCurrentCmd, mask[68],
+            SelectSource(sv, (McmdInputSlot*)((u8*)inpAuxA + sv->studio * 0x90 + i * 0x24), &macCurrentCmd, mask[68],
                          dirty[144]);
             break;
         }
@@ -1180,7 +1178,7 @@ void macHandleActive(McmdVoiceState* sv)
             u8 i = *cmdValuePtr >> 0x18;
             u64* mask = (u64*)(dataTables + i * 8);
             u32* dirty = (u32*)(dataTables + i * 4);
-            SelectSource(sv, (McmdInputSlot*)(inpAuxB + sv->studio * 0x90 + i * 0x24), &macCurrentCmd, mask[74],
+            SelectSource(sv, (McmdInputSlot*)((u8*)inpAuxB + sv->studio * 0x90 + i * 0x24), &macCurrentCmd, mask[74],
                          dirty[156]);
             break;
         }

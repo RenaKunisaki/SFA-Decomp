@@ -73,8 +73,8 @@ u8 sndActive;
 
 static u32 synthTicksPerSecond[9][16];
 static SynthJobTab synthJobTable[32];
-u8 inpAuxA[0x480];
-u8 inpAuxB[0x480];
+McmdInputSlot inpAuxA[8][4];
+McmdInputSlot inpAuxB[8][4];
 s32 synthGlobalVariable[16];
 SynthITDInfo synthITDDefault[8];
 SynthAuxCallback synthAuxBCallback[8];

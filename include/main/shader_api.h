@@ -7,6 +7,8 @@
 
 struct GameObject;
 struct MapBlockData;
+struct ModelLightStruct;
+struct Camera;
 
 #define ROM_LIST_PAGE_COUNT 120
 
@@ -123,5 +125,9 @@ extern s8 gMapBlockDrawOrderBackToFront[];
 extern int gMapBlockCellStateTables[];
 extern int gMapCurRomListSlot;
 extern int gHeatEffectFadeDirection;
+extern struct Camera* gSceneCamera;
+extern struct ModelLightStruct* gTexDimmedLightList[2];
+extern struct ModelLightStruct* gTexBlockLightList[2];
+extern struct ModelLightStruct* gGlowLightList[];
 
 #endif /* MAIN_SHADER_API_H_ */

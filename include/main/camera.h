@@ -189,6 +189,8 @@ void Camera_SetFarPlane(f32 farPlane, int transitionFrames);
 f32 Camera_GetNearPlane(void);
 f32 Camera_GetAspectRatio(void);
 void Camera_SetAspectRatio(f32 aspectRatio);
+
+extern f32 gStandardAspectRatio;
 f32 Camera_GetFovY(void);
 void Camera_SetFovY(f32 fovY);
 void Camera_InitState(void);

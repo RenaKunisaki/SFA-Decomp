@@ -75,7 +75,6 @@ extern u32 renderFlags;
 #define RENDERFLAG_HIDE_STARS      0x80000
 
 extern f32 gLightmapDegToBamScale;
-extern FrustumPlane gViewFrustumPlanes[];
 
 extern u8 gMapBlockCount; /* count of allocated blocks */
 extern EnvironmentUpdateInterface** lbl_803DCAB0;
@@ -856,7 +855,6 @@ void sceneDraw(void)
     shadowVolumesSetDirty(0);
 }
 
-extern Camera* gSceneCamera;
 
 void sceneRender(int wpad0, int wpad1, int wpad2, int wpad3, int wpad4, int wpad5)
 {
