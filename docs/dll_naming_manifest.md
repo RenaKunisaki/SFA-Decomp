@@ -479,7 +479,7 @@ any of them is acted on.
 | 0x1AA | BombPlantSp | COMPLETE | dlls/objects/426_BombPlantSp/BombPlantSp.c | = (canonical) | Exact complete six-function TU with its terminal descriptor-plus-padding record, retail-proven BombPlantSp object identity, producer-backed 0x24-byte setup layout, typed 0x2B4-byte state and embedded path-control block, canonical unit header, and full data/small-data ownership; the generated source path remains unchanged |
 | 0x1AB | BombPlantin | COMPLETE | dlls/objects/427_BombPlantin/BombPlantin.c | = (canonical) | — |
 | 0x1AC | SH_queenear | COMPLETE | dlls/objects/428_SH_queenear/SH_queenear.c | = (canonical) | — |
-| 0x1AD | SH_thorntail | COMPLETE | dlls/objects/429_SH_thorntai/SH_thorntai.c | = (canonical) | — |
+| 0x1AD | SH_thorntail | COMPLETE | dlls/objects/429_SH_thorntai/SHthorntail.c | = (canonical) | Source name from the retail `OSPanic(__FILE__)` literal `SHthorntail.c` at 0x80327488, in this TU's own .data; the object def name keeps the folder |
 | 0x1AE | SH_LevelControl | COMPLETE | dlls/objects/430_SH_LevelCon/SH_LevelCon.c | = (canonical) | — |
 | 0x1AF | SH_swaplift | COMPLETE | dlls/objects/431_SH_swaplift/SH_swaplift.c | = (canonical) | — |
 | 0x1B0 | SH_swapston | COMPLETE | dlls/objects/432_SH_swapston/SH_swapston.c | = (canonical) | — |

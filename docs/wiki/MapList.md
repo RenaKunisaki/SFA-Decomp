@@ -393,7 +393,7 @@ Other concrete matches:
     with Warlock Mountain on Dinosaur Planet — matching Krazoa Palace ⇐ Warlock Mountain.
   - `src/dlls/objects/488_SB_Galleon/SB_Galleon.c` implements `SB_Galleon`; its `SB` prefix matches
     the wiki's map `00`/dir `shipbattle`.
-  - `src/dlls/objects/429_SH_thorntai/SH_thorntai.c:2`, `src/dlls/objects/433_SH_staff/SH_staff.c:4`: ThornTail Hollow
+  - `src/dlls/objects/429_SH_thorntai/SHthorntail.c:2`, `src/dlls/objects/433_SH_staff/SH_staff.c:4`: ThornTail Hollow
     naming, matching wiki's ThornTail Hollow ⇐ SwapStone Hollow (dir `swaphol`).
 - **DLL-directory prefixes that resolve to a map in this list** (verified via in-file comment text,
   not just directory-name guessing): `SB` → `shipbattle` (map `00`/`frontend`), `WM` → `warlock` (map

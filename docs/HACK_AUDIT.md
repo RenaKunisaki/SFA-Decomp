@@ -347,7 +347,7 @@ purge commits and the incremental per-file audit fragments referenced there.
 | main/main/dll/dll_0173_linklevcontrol | 100.0000 | 82.5784 | -17.4216 |
 | main/dlls/objects/689_CmbSrc/CmbSrc | 100.0000 | 82.9992 | -17.0008 |
 | main/main/dll/CC/dll_0186_ccgasventcontrol | 100.0000 | 83.0330 | -16.9670 |
-| main/dlls/objects/429_SH_thorntai/SH_thorntai | 100.0000 | 83.2576 | -16.7424 |
+| main/dlls/objects/429_SH_thorntai/SHthorntail | 100.0000 | 83.2576 | -16.7424 |
 | main/main/dll/CF/dll_0148_cfguardian | 100.0000 | 84.1805 | -15.8195 |
 | main/main/dll/WC/dll_0291_wctile | 100.0000 | 84.2817 | -15.7183 |
 | main/main/dll/dll_010C_lanternfirefly | 100.0000 | 84.4412 | -15.5588 |

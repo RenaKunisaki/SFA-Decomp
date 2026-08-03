@@ -3035,7 +3035,7 @@ dlls/objects/428_SH_queenear/SH_queenear.c:
 	.sdata      start:0x803DC0E8 end:0x803DC118
 	.sdata2     start:0x803E5518 end:0x803E5530
 
-dlls/objects/429_SH_thorntai/SH_thorntai.c:
+dlls/objects/429_SH_thorntai/SHthorntail.c:
 	.text       start:0x801D4DC0 end:0x801D6A04
 	.data       start:0x80326FB8 end:0x80327680
 	.sdata      start:0x803DC118 end:0x803DC158
