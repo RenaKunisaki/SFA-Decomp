@@ -1545,7 +1545,7 @@ void trickyApplyObjectAvoidanceToStep(f32* start, f32* end, f32* guardPoint) {
     objects = (void**)objGetAllOfType(SIDEREPEL_OBJGROUP, &count);
     for (i = 0, op = objects, scale = 0.1f; i < count; i++) {
         obj = *op;
-        def = *(u8**)&((GameObject*)obj)->anim.placementData;
+        def = (u8*)((GameObject*)obj)->anim.placementData;
         trickyAdjustStepAroundPoint(start, end, guardPoint, &((GameObject*)obj)->anim.worldPosX,
                                     scale * (f32)(u32) * (u16*)(def + 0x18), scale * (f32)(u32) * (u16*)(def + 0x1a));
         op++;
@@ -1554,7 +1554,7 @@ void trickyApplyObjectAvoidanceToStep(f32* start, f32* end, f32* guardPoint) {
     objects = ObjList_GetObjects(&startIndex, &objectCount);
     for (i = startIndex, op = objects + i; i < objectCount; i++) {
         obj = *op;
-        def = *(u8**)&((GameObject*)obj)->anim.modelInstance;
+        def = (u8*)((GameObject*)obj)->anim.modelInstance;
         minRadius = *(u16*)(def + 0x84);
         if (minRadius != 0) {
             hitState = (ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState;
@@ -3066,7 +3066,7 @@ static inline int trickyAcquireCirclingTarget(TrickyState* state) {
 
 #define TRICKY_BARK(obj, snd, p4, cfg)                                                                                 \
     {                                                                                                                  \
-        cfg = *(u8**)&((GameObject*)(obj))->extra;                                                                     \
+        cfg = (u8*)((GameObject*)(obj))->extra;                                                                     \
         if (!((TrickyState*)cfg)->soundSuppressed) {                                                                   \
             s16 a0 = ((GameObject*)(obj))->anim.currentMove;                                                           \
             if (a0 >= 0x30 || a0 < 0x29) {                                                                             \
@@ -3317,7 +3317,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t) {
                 warpCursor++;
             }
             {
-                int* circlingObstacle = *(int**)&t->unk724;
+                int* circlingObstacle = (int*)t->unk724;
                 if (circlingObstacle != NULL &&
                     (((GameObject*)circlingObstacle)->objectFlags & ANIMOBJD2_OBJFLAG_FREED)) {
                     t->unk724 = 0;
@@ -3329,8 +3329,8 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t) {
                 if (*(void**)((u8*)t + 0x724) == NULL) {
                     TRICKY_BARK((int*)gobj, 0x35b, 0x500, orbitCfg);
                 }
-                if (*(void**)((u8*)t + 0x724) == NULL || *(int**)&t->unk724 != bestWarp) {
-                    *(int**)&t->unk724 = bestWarp;
+                if (*(void**)((u8*)t + 0x724) == NULL || (int*)t->unk724 != bestWarp) {
+                    t->unk724 = (void*)bestWarp;
                     TRICKY_RETARGET((u8*)t, (int)t->unk724);
                 }
             }
@@ -6924,7 +6924,7 @@ void Tricky_free(int obj, int shouldKeepFlameChildren) {
     objAnimFreeChildren((GameObject*)obj, (TrickyState*)state,
                         (GameObject**)(state + 0x7b0)); /* raw: arrow form shifts bytes */
     objAnimFreeChildren((GameObject*)obj, (TrickyState*)state, (GameObject**)&((TrickyState*)state)->child);
-    if (*(void**)&((TrickyState*)state)->spawnedChild != NULL) {
+    if ((void*)((TrickyState*)state)->spawnedChild != NULL) {
         ObjLink_DetachChild((GameObject*)obj, ((TrickyState*)state)->spawnedChild);
         Obj_FreeObject((GameObject*)((TrickyState*)state)->spawnedChild);
     }
@@ -7151,7 +7151,7 @@ void Tricky_update(int obj) {
     cmdQuery = gTrickyCmdQueryInit;
     pair = sTrickyImpressSfxPair;
     Objfsa_UpdateWalkGroupPatches();
-    if (mainGetBit(GAMEBIT_Tricky_LoadBadge) != 0 && *(void**)&trickyState->spawnedChild == NULL &&
+    if (mainGetBit(GAMEBIT_Tricky_LoadBadge) != 0 && (void*)trickyState->spawnedChild == NULL &&
         Obj_IsLoadingLocked()) {
         mapGetLoadedMapFlags(blockFlags);
         if (blockFlags[0xd] != 0) {
@@ -7720,7 +7720,7 @@ void Tricky_update(int obj) {
     trickyState->prevLocalPosX = ((GameObject*)obj)->anim.previousLocalPosX;
     trickyState->prevLocalPosY = ((GameObject*)obj)->anim.previousLocalPosY;
     trickyState->prevLocalPosZ = ((GameObject*)obj)->anim.previousLocalPosZ;
-    if (*(void**)&trickyState->child != NULL) {
+    if ((void*)trickyState->child != NULL) {
         trickyState->childPhaseTimer0 += timeDelta;
         trickyState->childPhaseTimer1 += timeDelta;
         trickyState->childPhaseTimer2 += timeDelta;
@@ -7748,10 +7748,10 @@ void Tricky_update(int obj) {
         }
         ObjAnim_AdvanceCurrentMove((int)trickyState->child, 0.01f, timeDelta, 0);
     }
-    if (*(void**)&trickyState->childB != NULL) {
+    if ((void*)trickyState->childB != NULL) {
         ObjAnim_AdvanceCurrentMove((int)trickyState->childB, 0.01f, timeDelta, 0);
     }
-    if (*(void**)&trickyState->childA != NULL) {
+    if ((void*)trickyState->childA != NULL) {
         ObjAnim_AdvanceCurrentMove((int)trickyState->childA, 0.01f, timeDelta, 0);
     }
 }

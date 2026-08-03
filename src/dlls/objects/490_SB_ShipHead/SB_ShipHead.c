@@ -123,7 +123,7 @@ void SB_ShipHead_update(GameObject* obj) {
     object = obj;
     firingCue = 0;
     player = Obj_GetPlayerObject();
-    galleon = *(u8**)&object->anim.parent;
+    galleon = (u8*)object->anim.parent;
     if (galleon == 0) {
         return;
     }

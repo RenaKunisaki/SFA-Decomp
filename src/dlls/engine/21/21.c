@@ -715,7 +715,7 @@ void curves_preparePointCollisionFrame(int obj, CurvesCollisionState* collision)
 
     if ((s32)(collision->flags & CURVES_COLLISION_STATE_ACTIVE) != 0)
     {
-        if (*(void**)&((GameObject*)obj)->anim.parent != NULL)
+        if ((void*)((GameObject*)obj)->anim.parent != NULL)
         {
             if ((((GameObject*)obj)->anim.parentAnim->hitboxTransformState != NULL) &&
                 (ObjHits_IsObjectEnabled((ObjAnimComponent*)((GameObject*)obj)->anim.parent) != 0))
@@ -1437,7 +1437,7 @@ void curves_updateQueryBounds(GameObject* obj, CurvesCollisionState* state, f32 
         return;
     }
     {
-        if (*(void**)&obj->anim.parent != NULL)
+        if ((void*)obj->anim.parent != NULL)
         {
             if ((obj->anim.parentAnim->hitboxTransformState != NULL) &&
                 (ObjHits_IsObjectEnabled((ObjAnimComponent*)obj->anim.parent) != 0))

@@ -1355,7 +1355,7 @@ void staffUpdateSegmentTransforms(int staffArg, GameObject* objArg, int modelArg
 }
 
 void objRenderShadowIfVisible(GameObject* obj, int wpad0, int wpad1, int wpad2, int wpad3, int wpad4) {
-    void** arr = *(void***)&(obj)->anim.banks;
+    void** arr = (void*)(obj)->anim.banks;
     s8 idx = (obj)->anim.bankIndex;
     if (arr[idx] != NULL) {
         objRenderShadow(obj);
@@ -1389,14 +1389,14 @@ void objRender(int a, int b, int c, int d, GameObject* obj, int flag) {
     if ((obj->anim.flags & OBJANIM_FLAG_HIDDEN) != 0) {
         return;
     }
-    sub = *(void**)&obj->anim.parent;
+    sub = (void*)obj->anim.parent;
     if (sub != NULL && (((GameObject*)sub)->anim.flags & OBJANIM_FLAG_HIDDEN) != 0) {
         return;
     }
 
     doNothing_beforeRenderObject(4);
     obj->objectFlags |= OBJECT_OBJFLAG_RENDERED;
-    sub = *(void**)&obj->anim.dll;
+    sub = (void*)obj->anim.dll;
     if (sub != NULL) {
         if ((obj->objectFlags & OBJECT_OBJFLAG_HIDDEN) == 0) {
             vfn = *(void (**)(int, int, int, int, int, int))(*(int*)sub + 0x10);

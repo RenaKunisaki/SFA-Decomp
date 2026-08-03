@@ -76,7 +76,7 @@ int drshackle_renderAtPathPoint(GameObject* obj, int a, int b, int c, int d, int
     int* modelData;
     int joint1;
     u8* p = obj->extra;
-    int* q = *(int**)&obj->anim.placementData;
+    int* q = (int*)obj->anim.placementData;
     f32 jointPos[3];
     f32 parentPos[3];
     char* mdPtr;

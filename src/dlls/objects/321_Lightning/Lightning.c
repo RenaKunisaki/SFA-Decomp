@@ -56,7 +56,7 @@ void lightning_update(GameObject* obj) {
     f32* start;
 
     state = obj->extra;
-    objectData = *(u8**)&obj->anim.placementData;
+    objectData = (u8*)obj->anim.placementData;
     if (((LightningPlacement*)objectData)->enableGameBit != -1) {
         if (state->flags.enabled) {
             if (mainGetBit(((LightningPlacement*)objectData)->enableGameBit) == 0) {

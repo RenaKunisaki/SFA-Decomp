@@ -290,7 +290,7 @@ void pollenfragment_update(GameObject* obj)
     ObjHits_EnableObject(obj);
     hit = (void*)((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject;
     if (hit != NULL && ((GameObject*)hit)->anim.romDefNo != obj->anim.romDefNo &&
-        hit != *(void**)&extra->ownerObj)
+        hit != (void*)extra->ownerObj)
     {
         extra->timer = 0.0f;
         ObjHits_DisableObject(obj);

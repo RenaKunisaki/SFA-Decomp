@@ -177,7 +177,7 @@ void dimsnowball_update(GameObject* obj) {
     dy2 = DIM_SNOWBALL_ROTATION_SCALE;
     obj->anim.rotY = -(dy2 * -obj->anim.velocityZ - (f32)obj->anim.rotY);
     obj->anim.rotZ = -(dy2 * velocityX - (f32)obj->anim.rotZ);
-    model = *(u8**)&obj->anim.hitReactState;
+    model = (u8*)obj->anim.hitReactState;
     if (model != NULL) {
         ((ObjHitsPriorityState*)model)->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
         *(u8*)&((ObjHitsPriorityState*)model)->hitVolumePriority = DIM_SNOWBALL_HIT_VOLUME_PRIORITY;

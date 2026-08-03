@@ -941,7 +941,7 @@ int dll_19_updateSequenceMovement(GameObject* obj, ObjSeqState* seq, char* st, v
         f32 ez = seq->posOffsetZ - (obj)->anim.localPosZ;
         dist = sqrtf(ex * ex + ez * ez);
     }
-    t = *(char**)&((BaddieState*)st)->targetObj;
+    t = (char*)((BaddieState*)st)->targetObj;
     if (t == NULL)
     {
         return 0;
@@ -967,7 +967,7 @@ int dll_19_updateSequenceMovement(GameObject* obj, ObjSeqState* seq, char* st, v
         }
         if (dist >= total || gDll19SeqStallCount > 9)
         {
-            char* t2 = *(char**)&((BaddieState*)st)->targetObj;
+            char* t2 = (char*)((BaddieState*)st)->targetObj;
             int delta = (obj)->anim.rotX - (u16)((GameObject*)t2)->anim.rotX;
             if (delta > 0x8000)
             {
@@ -1146,7 +1146,7 @@ void dll_19_getTargetGeometry(GameObject* obj, GameObject* target, int div, u16*
         dp[1] = target->anim.worldPosY - (obj)->anim.worldPosY;
         dp[2] = target->anim.worldPosZ - (obj)->anim.worldPosZ;
         ang = getAngle(-dp[0], -dp[2]);
-        ovr = *(s16**)&(obj)->anim.parent;
+        ovr = (s16*)(obj)->anim.parent;
         if (ovr != NULL)
         {
             cur = (s16)((obj)->anim.rotX + *ovr);
@@ -1204,7 +1204,7 @@ u8 dll_19_getClearDirectionMask(GameObject* obj, void* state, f32 dist)
     world[1] = 10.0f + obj->anim.localPosY;
     world[2] = obj->anim.localPosZ;
     voxmaps_worldToGrid(world, (s16*)grid0);
-    ovr = *(s16**)&obj->anim.parent;
+    ovr = (s16*)obj->anim.parent;
     if (ovr != NULL)
     {
         cur = (s16)(obj->anim.rotX + *ovr);

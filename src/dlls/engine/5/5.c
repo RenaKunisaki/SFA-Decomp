@@ -664,9 +664,9 @@ void skyGetObjectLightDirection(GameObject* obj, f32* x, f32* y, f32* z)
             modelLightStruct_selectObjectLights(obj, (ModelLightStruct**)lights, 4, (s32*)&count, 2);
             if (count > 0)
             {
-                if (*(u8**)&obj->anim.modelState != NULL)
+                if ((u8*)obj->anim.modelState != NULL)
                 {
-                    found = *(u8**)(*(u8**)&obj->anim.modelState + 0x3c);
+                    found = *(u8**)((u8*)obj->anim.modelState + 0x3c);
                 }
                 cur = lights[0];
                 if (found != lights[0] && found != NULL)
@@ -733,9 +733,9 @@ void skyGetObjectLightDirection(GameObject* obj, f32* x, f32* y, f32* z)
             }
         }
     }
-    if (*(u8**)&obj->anim.modelState != NULL)
+    if ((u8*)obj->anim.modelState != NULL)
     {
-        *(u8**)(*(u8**)&obj->anim.modelState + 0x3c) = cur;
+        *(u8**)((u8*)obj->anim.modelState + 0x3c) = cur;
     }
 }
 

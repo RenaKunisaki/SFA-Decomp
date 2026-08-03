@@ -289,7 +289,7 @@ void tricky_handleDefeat(GameObject* obj, int state)
         ((EnemyState*)state)->animPlaySpeed = 1.0f / (60.0f * ((EnemyState*)state)->moveSpeedScale1);
         ((EnemyState*)state)->rootMotionFlags = 1;
         ObjAnim_SetCurrentMove((int)obj, moveId, 0.0f, 0);
-        if (*(void**)&(obj)->anim.hitReactState != NULL)
+        if ((void*)(obj)->anim.hitReactState != NULL)
         {
             hitState = (ObjHitsPriorityState*)(obj)->anim.hitReactState;
             hitState->suppressOutgoingHits = 0;
@@ -964,7 +964,7 @@ void baddie_updateSightQuadrants(GameObject* obj, EnemyState* state, f32 radius)
     voxmaps_worldToGrid((f32*)&probe, baseGrid);
     if (obj->anim.parentAddress != 0)
     {
-        baseAngle = obj->anim.rotX + **(s16**)&obj->anim.parent;
+        baseAngle = obj->anim.rotX + *(s16*)obj->anim.parent;
     }
     else
     {
@@ -1768,9 +1768,9 @@ void baddieTurnTowardTarget(GameObject* node, EnemyState* sub)
             dp[2] = node->anim.worldPosZ - target->anim.worldPosZ;
         }
         ua = getAngle(-dp[0], -dp[2]);
-        if (*(int**)&node->anim.parent != NULL)
+        if ((int*)node->anim.parent != NULL)
         {
-            raw = (s16)(node->anim.rotX + **(s16**)&node->anim.parent);
+            raw = (s16)(node->anim.rotX + *(s16*)node->anim.parent);
         }
         else
         {
@@ -1834,8 +1834,8 @@ ObjectDescriptor gBaddieObjDescriptor = {
 
 int enemy_SeqFn(GameObject* node, int unused, ObjSeqState* animUpdate)
 {
-    char* sub = *(char**)&node->extra;
-    s8* n29 = *(s8**)&node->anim.placementData;
+    char* sub = (char*)node->extra;
+    s8* n29 = (s8*)node->anim.placementData;
     int i;
     GameObject* obj;
 
@@ -2621,7 +2621,7 @@ void enemy_update(GameObject* obj)
     f32 fz;
 
     state = obj->extra;
-    setup = *(u8**)&obj->anim.placementData;
+    setup = (u8*)obj->anim.placementData;
     tricky = getTrickyObject();
     if (getCurUiDll() == 4)
     {
@@ -2800,7 +2800,7 @@ void enemy_update(GameObject* obj)
         ((EnemyState*)state)->controlFlags &= ~0x8003;
         if ((((EnemyState*)state)->flags2E4 & 0x20000) != 0)
         {
-            s2 = *(u8**)&obj->anim.placementData;
+            s2 = (u8*)obj->anim.placementData;
             obj->anim.localPosX = ((EnemyPlacement*)s2)->base.posX;
             obj->anim.localPosY = ((EnemyPlacement*)s2)->base.posY;
             obj->anim.localPosZ = ((EnemyPlacement*)s2)->base.posZ;

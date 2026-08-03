@@ -117,7 +117,7 @@ void dim2snowball_update(GameObject* obj) {
                 objects = ObjList_GetObjects(&objectIndex, &objectCount);
                 sharpClaw = dim2snowball_findSharpClaw(objects, &objectIndex, &objectCount);
                 if (sharpClaw != NULL) {
-                    (*(void (**)(GameObject*))(**(int**)&sharpClaw->anim.dll + 0x20))(sharpClaw);
+                    (*(void (**)(GameObject*))(*(int*)sharpClaw->anim.dll + 0x20))(sharpClaw);
                 }
                 Sfx_PlayFromObject((int)obj, SFXTRIG_en_nlite1_c);
             }
@@ -194,7 +194,7 @@ void dim2snowball_update(GameObject* obj) {
     }
 
     if (obj->anim.alpha == 255) {
-        int* hitState = *(int**)&obj->anim.hitReactState;
+        int* hitState = (int*)obj->anim.hitReactState;
 
         if (hitState != NULL) {
             ((ObjHitsPriorityState*)hitState)->flags |= OBJHITS_PRIORITY_STATE_ENABLED;

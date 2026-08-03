@@ -555,8 +555,8 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg) {
     }
     {
         ang = obj->anim.rotX;
-        if (*(s16**)&obj->anim.parent != NULL) {
-            ang += **(s16**)&obj->anim.parent;
+        if ((s16*)obj->anim.parent != NULL) {
+            ang += *(s16*)obj->anim.parent;
         }
         angle = (gStaffPi[0] * (f32)(int)-ang) / gStaffAngleUnitScale[0];
         sinv = mathSinf(angle);

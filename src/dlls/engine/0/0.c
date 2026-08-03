@@ -5075,7 +5075,7 @@ void pauseMenuDrawStatusPage(GameObject* player)
             for (ii = 0; ii < 7; ii++)
             {
                 f32 fy = 31.0f * (f32)(u32)(u16)ii + lbl_803E1F30;
-                pauseMenuDrawElement(*(int**)&((HudTextures*)hudTextures)->tex5C, fy, 436.0f, px, ty,
+                pauseMenuDrawElement((int*)((HudTextures*)hudTextures)->tex5C, fy, 436.0f, px, ty,
                                      (s32)lbl_803E20B8, 0);
             }
         }
@@ -5108,11 +5108,11 @@ void pauseMenuDrawStatusPage(GameObject* player)
                 }
             }
         }
-        pauseMenuDrawElement(*(int**)&((HudTextures*)hudTextures)->texBC, lbl_803DBAD0, lbl_803DBAD4,
+        pauseMenuDrawElement((int*)((HudTextures*)hudTextures)->texBC, lbl_803DBAD0, lbl_803DBAD4,
                              0x100 - gPauseMenuSlideOut, ty, 0x100, 0);
         gameUiDrawTextureRegion(((HudTextures*)hudTextures)->texB8, (f32)(lbl_803DBAD0 + 0x18), lbl_803DBAD4,
                                 0x100 - gPauseMenuSlideOut, ty, 0x100, 0x66, 0x12, 0);
-        pauseMenuDrawElement(*(int**)&((HudTextures*)hudTextures)->texC0, (f32)(lbl_803DBAD0 + 0x7e), lbl_803DBAD4,
+        pauseMenuDrawElement((int*)((HudTextures*)hudTextures)->texC0, (f32)(lbl_803DBAD0 + 0x7e), lbl_803DBAD4,
                              0x100 - gPauseMenuSlideOut, ty, 0x100, 0);
         hudDrawMagicBar((u8)ty, 0x100 - gPauseMenuSlideOut, 1);
         gPauseMenuActiveGrid = gPauseMenuStatusGrid;

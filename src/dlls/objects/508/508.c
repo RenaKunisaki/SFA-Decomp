@@ -301,14 +301,14 @@ void LaserBeam_init(GameObject* obj, const LaserBeamPlacementView* placement) {
     state->warmupThreshold = 0x118;
     state->effectHandle = -1;
     if (state->beamKind == 30) {
-        if (*(void**)&state->beamTexture == NULL) {
+        if ((void*)state->beamTexture == NULL) {
             state->beamTexture = textureLoadAsset(LASERBEAM_TEXTURE_KIND30);
         }
     } else if (state->beamKind == 1) {
-        if (*(void**)&state->beamTexture == NULL) {
+        if ((void*)state->beamTexture == NULL) {
             state->beamTexture = textureLoadAsset(LASERBEAM_TEXTURE_KIND1);
         }
-    } else if (*(void**)&state->beamTexture == NULL) {
+    } else if ((void*)state->beamTexture == NULL) {
         state->beamTexture = textureLoadAsset(LASERBEAM_TEXTURE_DEFAULT);
     }
 }

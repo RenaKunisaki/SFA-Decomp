@@ -2191,7 +2191,7 @@ static void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
             gModelMtxCacheState = 3;
         }
         {
-            u8* att = *(u8**)&((GameObject*)obj)->anim.hitReactState;
+            u8* att = (u8*)((GameObject*)obj)->anim.hitReactState;
             if (att != NULL)
             {
                 att[0xaf]--;
@@ -2394,7 +2394,7 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
             }
             else
             {
-                vtx = *(u8**)&((ModelFileHeader*)m)->vertices;
+                vtx = (u8*)((ModelFileHeader*)m)->vertices;
             }
             ObjModel_BlendVertexStream(
                 (u8*)gObjBoneMtxBuffer, m + 0x88, vtx,
@@ -2411,7 +2411,7 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
         }
         else
         {
-            u8* att = *(u8**)&((GameObject*)obj)->anim.hitReactState;
+            u8* att = (u8*)((GameObject*)obj)->anim.hitReactState;
             if (att != NULL)
             {
                 att[0xaf]--;
@@ -2436,7 +2436,7 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
         u8* o;
         u8* nxt;
         o = (u8*)obj;
-        while ((nxt = *(u8**)&((GameObject*)o)->ownerObj) != NULL)
+        while ((nxt = (u8*)((GameObject*)o)->ownerObj) != NULL)
         {
             o = nxt;
         }
@@ -2720,7 +2720,7 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
                 }
                 else
                 {
-                    vtx = *(u8**)&((ModelFileHeader*)m)->vertices;
+                    vtx = (u8*)((ModelFileHeader*)m)->vertices;
                 }
                 ObjModel_BlendVertexStream(
                     (u8*)gObjBoneMtxBuffer, m + 0x88, vtx,
@@ -2738,7 +2738,7 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
         }
         else
         {
-            u8* att = *(u8**)&((GameObject*)obj)->anim.hitReactState;
+            u8* att = (u8*)((GameObject*)obj)->anim.hitReactState;
             if (att != NULL)
             {
                 att[0xaf]--;
@@ -2835,7 +2835,7 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
             u8* o;
             u8* nxt;
             o = (u8*)obj;
-            while ((nxt = *(u8**)&((GameObject*)o)->ownerObj) != NULL)
+            while ((nxt = (u8*)((GameObject*)o)->ownerObj) != NULL)
             {
                 o = nxt;
             }
@@ -3251,7 +3251,7 @@ void objRenderShadow(void* obj)
         iter = (u8*)obj;
         for (; i < ((GameObject*)obj)->childCount; i++)
         {
-            int* child = *(int**)&((GameObject*)iter)->childObjs[0];
+            int* child = (int*)((GameObject*)iter)->childObjs[0];
             if (child != NULL)
             {
                 objRenderChild(child, obj, 1);
@@ -3418,7 +3418,7 @@ void objRenderModel(GameObject* obj)
         iter = (u8*)obj;
         for (; i < obj->childCount; i++)
         {
-            int* child = *(int**)&((GameObject*)iter)->childObjs[0];
+            int* child = (int*)((GameObject*)iter)->childObjs[0];
             if (child != NULL)
             {
                 objRenderChild(child, (int*)obj, 0);

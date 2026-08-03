@@ -252,7 +252,7 @@ int dll_CE_checkHealthState(GameObject* obj, GroundBaddieState* state) {
 }
 
 int dll_CE_checkTargetState(GameObject* obj, GroundBaddieState* state) {
-    if (*(int**)&state->baddie.targetObj != NULL) {
+    if ((int*)state->baddie.targetObj != NULL) {
         if (state->baddie.moveJustStartedB != 0) {
             f32 zero = 0.0f;
 
@@ -607,7 +607,7 @@ void dll_CE_updateTargeting(GameObject* obj, int objectStateAddress, int stateAd
 
     (void)deltaAddress;
     player = Obj_GetPlayerObject();
-    target = *(char**)&((GroundBaddieState*)stateAddress)->baddie.targetObj;
+    target = (char*)((GroundBaddieState*)stateAddress)->baddie.targetObj;
     if (target != NULL) {
         delta.x = ((GameObject*)target)->anim.worldPosX - obj->anim.worldPosX;
         delta.y = ((GameObject*)target)->anim.worldPosY - obj->anim.worldPosY;

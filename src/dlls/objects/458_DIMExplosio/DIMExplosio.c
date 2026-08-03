@@ -511,12 +511,12 @@ void explosion_update(GameObject* obj) {
             Obj_FreeObject(obj);
         } else {
             if (frameCounter > lifeFrames) {
-                if (*(void**)&((DimExplosionState*)state)->light != NULL) {
+                if ((void*)((DimExplosionState*)state)->light != NULL) {
                     modelLightStruct_setEnabled(((DimExplosionState*)state)->light, 0, sExplosionZero[0]);
                 }
             } else {
                 explosion_computeColor((f32)frameCounter, (f32)lifeFrames, ((DimExplosionState*)state)->modelKind, rgb);
-                if (*(void**)&((DimExplosionState*)state)->light != NULL) {
+                if ((void*)((DimExplosionState*)state)->light != NULL) {
                     modelLightStruct_setDiffuseColor(((DimExplosionState*)state)->light, rgb[0], rgb[1], rgb[2], 0xff);
                 }
             }
@@ -636,7 +636,7 @@ void explosion_init(GameObject* obj, int placementAddress) {
     ((DimExplosionState*)state)->light = 0;
     if (((DimExplosionPlacement*)placementAddress)->configFlags & DIM_EXPLOSION_CONFIG_HAS_LIGHT) {
         ((DimExplosionState*)state)->light = objCreateLight(0, 1);
-        if (*(void**)&((DimExplosionState*)state)->light != NULL) {
+        if ((void*)((DimExplosionState*)state)->light != NULL) {
             modelLightStruct_setLightKind(((DimExplosionState*)state)->light, MODEL_LIGHT_KIND_POINT);
             modelLightStruct_setPosition(((DimExplosionState*)state)->light, obj->anim.worldPosX, obj->anim.worldPosY,
                                          obj->anim.worldPosZ);

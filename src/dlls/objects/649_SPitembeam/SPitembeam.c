@@ -50,7 +50,7 @@ void spitembeam_update(GameObject* obj)
     f32 searchRadius;
 
     shop = *(int**)&obj->userData1;
-    def = *(u8**)&obj->anim.placementData;
+    def = (u8*)obj->anim.placementData;
     searchRadius = 10000.0f;
     if (shop == NULL)
     {

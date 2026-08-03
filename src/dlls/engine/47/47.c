@@ -128,7 +128,7 @@ void Carryable_free(GameObject* obj)
 
 int Carryable_updateRenderState(GameObject* obj, int flag)
 {
-    ObjDef* p50 = (ObjDef*)(*(int**)&obj->anim.modelInstance);
+    ObjDef* p50 = (ObjDef*)((int*)obj->anim.modelInstance);
     if (p50->shadowType == OBJ_SHADOW_TYPE_MODEL_GEOMETRIC)
     {
         if (obj->seqIndex == -1)

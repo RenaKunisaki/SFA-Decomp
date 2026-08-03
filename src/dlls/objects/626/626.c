@@ -1205,7 +1205,7 @@ void HighTop_init(GameObject* obj, HighTopPlacement* placement)
     runtime->unkC45 = placement->spawnVariant;
     runtime->turnRateThreshold = 5;
     *(s8*)&runtime->substate = -1;
-    node = (ObjModelState*)(*(int**)&(obj)->anim.modelState);
+    node = (ObjModelState*)((int*)(obj)->anim.modelState);
     if (node != 0)
     {
         node->flags |= 0xa10;

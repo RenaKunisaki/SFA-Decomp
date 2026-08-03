@@ -1191,7 +1191,7 @@ void dll_0B_updateActiveEffects(void)
                     }
                     else
                     {
-                        rot.rotX = *(s16*)(*(int**)&((PartfxEffectState*)eff)->sourceObject);
+                        rot.rotX = *(s16*)((int*)((PartfxEffectState*)eff)->sourceObject);
                     }
                     rot.rotY = 0;
                     rot.rotZ = 0;
@@ -1239,7 +1239,7 @@ void dll_0B_updateActiveEffects(void)
                     if (*(void**)eff != NULL)
                     {
                         int* o = *(int**)eff;
-                        int* list = *(int**)((char*)*(int**)&((GameObject*)o)->anim.hitReactState + 0x50);
+                        int* list = *(int**)((char*)(int*)((GameObject*)o)->anim.hitReactState + 0x50);
                         if (list != NULL)
                         {
                             if (*(s16*)((char*)list + 0x44) == (int)((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->posX)
@@ -1248,10 +1248,10 @@ void dll_0B_updateActiveEffects(void)
                                 *(int*)eff = 0;
                                 ((ModgfxPendingSpawn*)(PENDING_SPAWNS + emIdx * 0x18))->modelOrResource ^= 0x10000000;
                                 if (((ModgfxPendingSpawn*)(PENDING_SPAWNS + emIdx * 0x18))->posZ >= MODGFX_ZERO &&
-                                    *(int**)&((PartfxEffectState*)eff)->sourceObject != NULL)
+                                    (int*)((PartfxEffectState*)eff)->sourceObject != NULL)
                                 {
                                     (*gPartfxInterface)
-                                        ->spawnObject(*(int**)&((PartfxEffectState*)eff)->sourceObject,
+                                        ->spawnObject((int*)((PartfxEffectState*)eff)->sourceObject,
                                                       (int)((ModgfxPendingSpawn*)(PENDING_SPAWNS + emIdx * 0x18))->posZ, &tmpl,
                                                       0x200001, -1, 0);
                                 }
@@ -1371,14 +1371,14 @@ void dll_0B_updateActiveEffects(void)
                                 if ((int)((PartfxEffectState*)eff)->flags & 1)
                                 {
                                     (*gPartfxInterface)
-                                        ->spawnObject(*(int**)&((PartfxEffectState*)eff)->sourceObject,
+                                        ->spawnObject((int*)((PartfxEffectState*)eff)->sourceObject,
                                                       ((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->param14, NULL, 0x10001, -1,
                                                       NULL);
                                 }
                                 else
                                 {
                                     (*gPartfxInterface)
-                                        ->spawnObject(*(int**)&((PartfxEffectState*)eff)->sourceObject,
+                                        ->spawnObject((int*)((PartfxEffectState*)eff)->sourceObject,
                                                       ((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->param14, NULL, 0x10001, -1,
                                                       NULL);
                                 }
@@ -1392,14 +1392,14 @@ void dll_0B_updateActiveEffects(void)
                             if ((int)((PartfxEffectState*)eff)->flags & 1)
                             {
                                 (*gPartfxInterface)
-                                    ->spawnObject(*(int**)&((PartfxEffectState*)eff)->sourceObject,
+                                    ->spawnObject((int*)((PartfxEffectState*)eff)->sourceObject,
                                                   ((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->param14, eff + 3, 0x10002, -1,
                                                   NULL);
                             }
                             else
                             {
                                 (*gPartfxInterface)
-                                    ->spawnObject(*(int**)&((PartfxEffectState*)eff)->sourceObject,
+                                    ->spawnObject((int*)((PartfxEffectState*)eff)->sourceObject,
                                                   ((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->param14, NULL, 0x10002, -1,
                                                   NULL);
                             }
@@ -1415,10 +1415,10 @@ void dll_0B_updateActiveEffects(void)
                                      ((PartfxEffectState*)eff)->drawPosY;
                             tmpl.posZ = ((GameObject*)((PartfxEffectState*)eff)->sourceObject)->anim.worldPosZ +
                                      ((PartfxEffectState*)eff)->drawPosZ;
-                            if (*(int**)&((PartfxEffectState*)eff)->sourceObject != NULL)
+                            if ((int*)((PartfxEffectState*)eff)->sourceObject != NULL)
                             {
                                 (*gPartfxInterface)
-                                    ->spawnObject(*(int**)&((PartfxEffectState*)eff)->sourceObject,
+                                    ->spawnObject((int*)((PartfxEffectState*)eff)->sourceObject,
                                                   ((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->param14, &tmpl, 0x10001, -1,
                                                   NULL);
                             }
@@ -1428,10 +1428,10 @@ void dll_0B_updateActiveEffects(void)
                             tmpl.posX = ((PartfxEffectState*)eff)->drawPosX;
                             tmpl.posY = ((PartfxEffectState*)eff)->drawPosY;
                             tmpl.posZ = ((PartfxEffectState*)eff)->drawPosZ;
-                            if (*(int**)&((PartfxEffectState*)eff)->sourceObject != NULL)
+                            if ((int*)((PartfxEffectState*)eff)->sourceObject != NULL)
                             {
                                 (*gPartfxInterface)
-                                    ->spawnObject(*(int**)&((PartfxEffectState*)eff)->sourceObject,
+                                    ->spawnObject((int*)((PartfxEffectState*)eff)->sourceObject,
                                                   ((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->param14, &tmpl, 0x10001, -1,
                                                   NULL);
                             }
@@ -1453,7 +1453,7 @@ void dll_0B_updateActiveEffects(void)
                                 }
                                 else
                                 {
-                                    (*(ExpResFn6*)(*(int*)res + 4))(*(int**)&((PartfxEffectState*)eff)->sourceObject, 0,
+                                    (*(ExpResFn6*)(*(int*)res + 4))((int*)((PartfxEffectState*)eff)->sourceObject, 0,
                                                                     NULL, 1, -1, NULL);
                                 }
                             }
@@ -1469,7 +1469,7 @@ void dll_0B_updateActiveEffects(void)
                             }
                             else
                             {
-                                (*(ExpResFn6*)(*(int*)res + 4))(*(int**)&((PartfxEffectState*)eff)->sourceObject, 0, NULL,
+                                (*(ExpResFn6*)(*(int*)res + 4))((int*)((PartfxEffectState*)eff)->sourceObject, 0, NULL,
                                                                 1, -1, NULL);
                             }
                         }

@@ -2197,7 +2197,7 @@ int dbstealerworm_getObjectTypeId(void)
 void dbstealerworm_free(GameObject* obj)
 {
     u8* sub = obj->extra;
-    int* p40c = *(int**)&((GroundBaddieState*)sub)->control;
+    int* p40c = (int*)((GroundBaddieState*)sub)->control;
     objFreeObjectType((int)obj, DBSTEALERWORM_OBJGROUP);
     Stack_Free(((DbStealerwormControl*)p40c)->msgStack);
     if (obj->childObjs[0] != NULL)
@@ -2406,7 +2406,7 @@ void dbstealerworm_init(GameObject* obj, u8* def, int flag)
         ->initGroundBaddie(obj, def, sub, 0x10, 7, 0x10a, mode, 20.0f);
     objAddObjectType((int)obj, DBSTEALERWORM_OBJGROUP);
     obj->animEventCallback = NULL;
-    p40c = *(int**)&((GroundBaddieState*)sub)->control;
+    p40c = (int*)((GroundBaddieState*)sub)->control;
     memset(p40c, 0, sizeof(DbStealerwormControl));
     ((DbStealerwormControl*)p40c)->unk08 = 20.0f;
     ((DbStealerwormControl*)p40c)->cfg = &gDbStealerwormScriptTable[((GroundBaddiePlacement*)def)->unk24];

@@ -92,7 +92,7 @@ void dbholecontrol1_update(GameObject* obj)
 {
 
     u8* def;
-    def = *(u8**)&obj->anim.placementData;
+    def = (u8*)obj->anim.placementData;
     if (mainGetBit(((Dbholecontrol1Placement*)def)->hideGameBit) != 0)
     {
         Obj_RemoveFromUpdateList(obj);

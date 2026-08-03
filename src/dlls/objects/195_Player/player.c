@@ -6935,7 +6935,7 @@ int playerStateClimbDownFromWall(GameObject* obj, int state)
     {
         obj->anim.worldPosX = inner->savedPosX;
         obj->anim.worldPosZ = inner->savedPosZ;
-        if (*(void**)&obj->anim.parent != NULL)
+        if ((void*)obj->anim.parent != NULL)
         {
             obj->anim.worldPosX = obj->anim.worldPosX + playerMapOffsetX;
             obj->anim.worldPosZ = obj->anim.worldPosZ + playerMapOffsetZ;
@@ -7009,7 +7009,7 @@ int playerStateClimbUpFromWall(GameObject* obj, int state)
     {
         obj->anim.worldPosX = inner->savedPosX;
         obj->anim.worldPosZ = inner->savedPosZ;
-        if (*(void**)&obj->anim.parent != NULL)
+        if ((void*)obj->anim.parent != NULL)
         {
             obj->anim.worldPosX = obj->anim.worldPosX + playerMapOffsetX;
             obj->anim.worldPosZ = obj->anim.worldPosZ + playerMapOffsetZ;
@@ -17411,7 +17411,7 @@ void playerUpdateTargetSelection(GameObject* obj, int inner, int inner2)
             ((PlayerState*)inner2)->baddie.hasTarget = 1;
             if (target != NULL)
             {
-                *(int**)&((PlayerState*)inner2)->baddie.targetObj = target;
+                ((PlayerState*)inner2)->baddie.targetObj = (void*)target;
             }
             else
             {
@@ -17423,7 +17423,7 @@ void playerUpdateTargetSelection(GameObject* obj, int inner, int inner2)
         {
             if (target != NULL)
             {
-                if (*(int**)&((PlayerState*)inner2)->baddie.targetObj != target)
+                if ((int*)((PlayerState*)inner2)->baddie.targetObj != target)
                 {
                     ((PlayerState*)inner2)->baddie.hasTarget = 0;
                     if ((((GameObject*)target)->anim.hitVolumeBounds->flags & 0xf) == 1)
@@ -17440,7 +17440,7 @@ void playerUpdateTargetSelection(GameObject* obj, int inner, int inner2)
                         ((PlayerState*)inner2)->baddie.hasTarget = 1;
                     }
                 }
-                *(int**)&((PlayerState*)inner2)->baddie.targetObj = target;
+                ((PlayerState*)inner2)->baddie.targetObj = (void*)target;
             }
             else
             {
@@ -17448,7 +17448,7 @@ void playerUpdateTargetSelection(GameObject* obj, int inner, int inner2)
                 ((PlayerState*)inner2)->baddie.hasTarget = 0;
             }
         }
-        if (*(int**)&((PlayerState*)inner2)->baddie.targetObj != NULL)
+        if ((int*)((PlayerState*)inner2)->baddie.targetObj != NULL)
         {
             enemy_getCurveParams((GameObject*)((PlayerState*)inner2)->baddie.targetObj, (int*)&((PlayerState*)inner)->flags884,
                         &((PlayerState*)inner)->animSpeedDecay, &((PlayerState*)inner)->animSpeedStart);
@@ -17721,10 +17721,10 @@ void playerRender(int obj, int a, int b, int c, int d, int flag)
                     *(f32*)((char*)(int)((PlayerState*)in2)->heldObj + 0x1c) = py;
                 *(f32*)((char*)(int)((PlayerState*)in2)->heldObj + 0x14) =
                     *(f32*)((char*)(int)((PlayerState*)in2)->heldObj + 0x20) = pz;
-                if (*(s16**)&((GameObject*)obj)->anim.parent != NULL)
+                if ((s16*)((GameObject*)obj)->anim.parent != NULL)
                 {
                     *(s16*)(int)((PlayerState*)in2)->heldObj =
-                        **(s16**)&((GameObject*)obj)->anim.parent + ((GameObject*)obj)->anim.rotX;
+                        *(s16*)((GameObject*)obj)->anim.parent + ((GameObject*)obj)->anim.rotX;
                 }
                 else
                 {
@@ -18178,9 +18178,9 @@ void playerUpdate(GameObject* obj)
                                               (void*)&gPlayerStaffObject->anim.localPosY,
                                               (void*)&gPlayerStaffObject->anim.localPosZ, 0);
             }
-            if (*(s16**)&obj->anim.parent != NULL)
+            if ((s16*)obj->anim.parent != NULL)
             {
-                v = (**(s16**)&obj->anim.parent & 0xffffU) - ((0x8000U - *(s16*)cam) & 0xffff);
+                v = (*(s16*)obj->anim.parent & 0xffffU) - ((0x8000U - *(s16*)cam) & 0xffff);
                 if (v > 0x8000)
                 {
                     v -= 0xffff;

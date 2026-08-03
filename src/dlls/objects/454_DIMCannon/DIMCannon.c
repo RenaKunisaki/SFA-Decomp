@@ -592,10 +592,10 @@ void DIMCannon_init(GameObject* obj, DimCannonPlacement* placement) {
         DimCannonBallState* state;
         int* hitState;
         obj->userData1 = 0;
-        hitState = *(int**)&obj->anim.modelState;
+        hitState = (int*)obj->anim.modelState;
         if (hitState != 0) {
             *(int*)&((ObjHitsPriorityState*)hitState)->secondaryRadiusY |= 0xc10;
-            hitState = *(int**)&obj->anim.modelState;
+            hitState = (int*)obj->anim.modelState;
             *(u32*)&((ObjHitsPriorityState*)hitState)->secondaryRadiusY |= 0x8000LL;
         }
         state = obj->extra;
@@ -603,7 +603,7 @@ void DIMCannon_init(GameObject* obj, DimCannonPlacement* placement) {
         state->rotationYRate = randomGetRange(-0x64, 0x64);
         state->rotationXRate = randomGetRange(-0x64, 0x64);
         state->clearLatch = 1;
-        hitState = *(int**)&obj->anim.hitReactState;
+        hitState = (int*)obj->anim.hitReactState;
         if (hitState != 0) {
             *(s16*)&((ObjHitsPriorityState*)hitState)->trackContactMask = 1;
         }
