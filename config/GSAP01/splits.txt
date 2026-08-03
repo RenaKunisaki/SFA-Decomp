@@ -215,20 +215,21 @@ main/objprint.c:
 	.sdata2     start:0x803E0360 end:0x803E03B8
 
 main/objprint_dolphin.c:
-	.text       start:0x8003BD18 end:0x800445E4
-	.rodata     start:0x802C2490 end:0x802C25D0
+	.text       start:0x8003BD18 end:0x80041EC4
+	.rodata     start:0x802C2490 end:0x802C24F0
 	.data       start:0x802CC6E0 end:0x802CC758
-	.bss        start:0x80344770 end:0x803608A8
+	.bss        start:0x80344770 end:0x80347770
 	.sdata      start:0x803DCE18 end:0x803DCE50
-	.sbss       start:0x803DE5E0 end:0x803DE658
+	.sbss       start:0x803DE5E0 end:0x803DE630
 	.sdata2     start:0x803E03B8 end:0x803E0438
 
 main/pi_dolphin.c:
-	.text       start:0x800445E4 end:0x80049D44
+	.text       start:0x80041EC4 end:0x80049D44
+	.rodata     start:0x802C24F0 end:0x802C25D0
 	.data       start:0x802CC758 end:0x802CDE80
-	.bss        start:0x803608A8 end:0x803610A0
+	.bss        start:0x80347770 end:0x803610A0
 	.sdata      start:0x803DCE50 end:0x803DCF98
-	.sbss       start:0x803DE658 end:0x803DE6D8
+	.sbss       start:0x803DE630 end:0x803DE6D8
 
 main/boot_logo.c:
 	.data       start:0x802CDE80 end:0x8030DE80
