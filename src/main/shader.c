@@ -3486,6 +3486,6 @@ int gMapBlockCellStateTables[5];
 BlockEntry gShaderRomListSlots[8];
 int gShaderMapRomBuffers[0x5];
 f32 distortionFilterVector[0x1c];
-u8 gGlowLightList[0x190];
+ModelLightStruct* gGlowLightList[100];
 u8 gCloudLayerTexMatrix[0x30];
 char gLightmapDrawQueue[0x3F48];

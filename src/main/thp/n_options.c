@@ -48,7 +48,6 @@ static const GXColor sMovieKColor2 = {0xFF, 0x00, 0xFF, 0x80};
 #define S16_MAX               0x7fff
 
 s32 gAttractMovieAudioActive;
-extern AIDCallback gAttractMovieAudioPrevDmaCallback;
 extern OSMessageQueue gAttractMovieSpentTextureSetQueue[1];
 
 u16 gAttractMovieVolumeScale[128] = {

@@ -67,7 +67,6 @@
 #include "dolphin/os/OSThread.h"
 #include "dolphin/vi/vifuncs.h"
 
-extern GXFifoObj* gGxFifoObj;
 extern u8 gLoadingScreenTextures[];
 extern RingBufferQueue gVideoFlipQueue;
 
@@ -237,8 +236,6 @@ void setDisplayCopyFilter(void)
     }
 }
 
-extern OSThread* gVideoWaitThread;
-extern OSStopwatch gFrameStopwatch;
 extern u8 framesThisStepUnclamped;
 
 #include "main/dll/ppcwgpipe_struct.h"

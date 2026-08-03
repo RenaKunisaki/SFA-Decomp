@@ -2,6 +2,7 @@
 #define MAIN_ATTRACT_MOVIE_API_H_
 
 #include "types.h"
+#include "dolphin/ai.h"
 
 extern s32 gAttractMovieState;
 extern s32 gAttractMovieIdleFrameCount;
@@ -25,5 +26,6 @@ extern u32 gAttractMovieAudioMixSourceAddr;
 extern u32 gAttractMovieAudioPendingSourceAddr;
 extern u32 gAttractMovieAudioDmaBufferIndex;
 extern char gAttractMovieAudioDmaBuffer[];
+extern AIDCallback gAttractMovieAudioPrevDmaCallback;
 
 #endif /* MAIN_ATTRACT_MOVIE_API_H_ */
