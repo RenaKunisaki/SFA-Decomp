@@ -72,7 +72,7 @@ typedef struct DIMbossAnimHandlerTable {
     int (*hasMoveDone)(int unused, int* state);
     int (*finishDefeat)(GameObject* obj, BaddieState* state);
     int (*updatePlayerHitReaction)(GameObject* obj, BaddieState* state);
-    int (*updateBossHitReaction)(int obj, BaddieState* state);
+    int (*updateBossHitReaction)(GameObject* obj, BaddieState* state);
 } DIMbossAnimHandlerTable;
 
 typedef struct DIMbossHitDetectAnimHandlerTable {
@@ -199,7 +199,7 @@ STATIC_ASSERT(offsetof(DIMbossPlacementView, base) == 0x00);
 STATIC_ASSERT(offsetof(DIMbossPlacementView, eventId) == 0x2C);
 STATIC_ASSERT(offsetof(DIMbossPlacementView, animObjectId) == 0x2E);
 
-int DIMbossAnim_updateBossHitReaction(int obj, BaddieState* state);
+int DIMbossAnim_updateBossHitReaction(GameObject* obj, BaddieState* state);
 int DIMbossAnim_updatePlayerHitReaction(GameObject* obj, BaddieState* state);
 int DIMbossAnim_finishDefeat(GameObject* obj, BaddieState* state);
 int DIMbossAnim_hasMoveDone(int unused, int* state);

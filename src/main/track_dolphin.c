@@ -3064,8 +3064,8 @@ u8 doEdges;
         void* p = mapBlockGetPolygon((int*)c0, 0);
         dmaflip = 0;
         offA = 0;
-        cacheAllocAndCopy((u32)p, c0->nPolygons << 3, &offA, &offB, 0x2000);
-        cacheAllocAndCopy((u32)c0->vertices, c0->vertexCount * 6, &offB, &offC, 0x2000);
+        cacheAllocAndCopy((u8*)p, c0->nPolygons << 3, &offA, &offB, 0x2000);
+        cacheAllocAndCopy((u8*)c0->vertices, c0->vertexCount * 6, &offB, &offC, 0x2000);
     }
     i = 0;
     firstp = (int*)gTrackGridOrigin;
@@ -3101,8 +3101,8 @@ u8 doEdges;
             nextBase = dmaflip + 0x2000;
             p = mapBlockGetPolygon((int*)next, 0);
             offA = dmaflip;
-            c13 = cacheAllocAndCopy((u32)p, next->nPolygons << 3, &offA, &offB, nextBase);
-            c14 = cacheAllocAndCopy((u32)next->vertices, next->vertexCount * 6, &offB, &offC, nextBase);
+            c13 = cacheAllocAndCopy((u8*)p, next->nPolygons << 3, &offA, &offB, nextBase);
+            c14 = cacheAllocAndCopy((u8*)next->vertices, next->vertexCount * 6, &offB, &offC, nextBase);
             cacheQueueWait((u8)(c13 + c14));
         }
         else

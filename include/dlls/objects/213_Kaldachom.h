@@ -124,7 +124,7 @@ int kaldachom_stateHandlerA00(GameObject* obj, GroundBaddieState* state);
 void kaldachom_spawnDustEffects(GameObject* obj, KaldachomControl* control);
 void kaldachom_spawnMouthProjectile(GameObject* obj, KaldachomState* state, u8 useUpperMouthPoint);
 void kaldachom_handleAnimEvents(GameObject* obj, KaldachomState* objectState, GroundBaddieState* state);
-void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, GroundBaddieState* stateAddress);
+void kaldachom_updateCombat(GameObject* obj, GroundBaddieState* objectStateAddress, GroundBaddieState* stateAddress);
 void kaldachom_func0B(void);
 s16 kaldachom_getControlMode(GameObject* obj);
 int kaldachom_getExtraSize(void);

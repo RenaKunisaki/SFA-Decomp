@@ -51,7 +51,7 @@ int dll_CE_updateSubmergeState(GameObject* obj, GroundBaddieState* state);
 int dll_CE_updateEmergeState(GameObject* obj, GroundBaddieState* state);
 void dll_CE_spawnIceBall(GameObject* obj, GroundBaddieState* state);
 void dll_CE_acquireTarget(GameObject* obj, GroundBaddieState* objectState, GroundBaddieState* state);
-void dll_CE_updateTargeting(GameObject* obj, int objectStateAddress, GroundBaddieState* stateAddress);
+void dll_CE_updateTargeting(GameObject* obj, GroundBaddieState* objectStateAddress, GroundBaddieState* stateAddress);
 
 void dll_CE_handleMessage(GameObject* obj, int message);
 s16 dll_CE_getControlMode(GameObject* obj);

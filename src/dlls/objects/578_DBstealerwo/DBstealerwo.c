@@ -2051,13 +2051,13 @@ void dbstealerworm_launchIceBall(GameObject* obj, BaddieState* baddie)
         }
     }
 }
-void dbstealerworm_processEffectFlags(GameObject* obj, int baddie)
+void dbstealerworm_processEffectFlags(GameObject* obj, GroundBaddieState* baddie)
 {
     int i;
-    DbStealerwormControl* state = (DbStealerwormControl*)(int)((GroundBaddieState*)baddie)->control;
-    if ((state->flags14 & DBWORM_FLAG14_ATTACK) && ((GroundBaddieState*)baddie)->baddie.targetObj != 0)
+    DbStealerwormControl* state = (DbStealerwormControl*)(int)baddie->control;
+    if ((state->flags14 & DBWORM_FLAG14_ATTACK) && baddie->baddie.targetObj != 0)
     {
-        ((void (*)(GameObject*, int))dbstealerworm_launchIceBall)(obj, baddie);
+        ((void (*)(GameObject*, int))dbstealerworm_launchIceBall)(obj, (int)baddie);
     }
     if (state->flags14 & DBWORM_FLAG14_FX_DUST)
     {
@@ -2075,10 +2075,10 @@ void dbstealerworm_processEffectFlags(GameObject* obj, int baddie)
     state->flags14 = 0;
 }
 
-void dbstealerworm_acquireTarget(GameObject* obj, int groundState, int baddie)
+void dbstealerworm_acquireTarget(GameObject* obj, GroundBaddieState* groundState, int baddie)
 {
 
-    GroundBaddieState* st = (GroundBaddieState*)groundState;
+    GroundBaddieState* st = groundState;
     DbStealerwormControl* sub = (DbStealerwormControl*)st->control;
     GameObject* near;
     int data;
@@ -2105,7 +2105,7 @@ void dbstealerworm_acquireTarget(GameObject* obj, int groundState, int baddie)
     if (near != 0 && (st->configFlags & 2) == 0)
     {
         (*gBaddieControlInterface)
-            ->startHitReaction(obj, (void*)baddie, &((GroundBaddieState*)groundState)->routeNav, st->gameBitB, NULL, 0, 0, 8, -1);
+            ->startHitReaction(obj, (void*)baddie, &groundState->routeNav, st->gameBitB, NULL, 0, 0, 8, -1);
         ((BaddieState*)baddie)->targetObj = near;
         ((BaddieState*)baddie)->hasTarget = 0;
         objAddObjectType((int)obj, DBSTEALERWORM_OBJGROUP);
@@ -2363,7 +2363,7 @@ void dbstealerworm_update(GameObject* obj)
                 }
                 if (((GroundBaddieState*)blob)->targetState == 0)
                 {
-                    dbstealerworm_acquireTarget(obj, blob, blob);
+                    dbstealerworm_acquireTarget(obj, (GroundBaddieState*)blob, blob);
                 }
                 else
                 {

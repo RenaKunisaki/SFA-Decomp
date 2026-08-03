@@ -67,7 +67,7 @@ GameObject* explodable_spawnFragmentObject(GameObject* obj, int fragmentObjectId
                            NULL);
 }
 
-void explodable_buildFragments(GameObject* obj, ExplodablePlacement* placementAddress, int skipCentroid, int stateAddress) {
+void explodable_buildFragments(GameObject* obj, ExplodablePlacement* placementAddress, int skipCentroid, ExplodableState* state) {
     ExplodableChunk* chunk;
     int modelBankOffset;
     int childSlotAddress;
@@ -78,7 +78,6 @@ void explodable_buildFragments(GameObject* obj, ExplodablePlacement* placementAd
     ModelFileHeader* model;
     ExplodableBreakRecipe* recipes;
     f32 zero;
-    ExplodableState* state = (ExplodableState*)stateAddress;
     struct {
         f32 vertex[3];
         f32 sum[3];
@@ -90,9 +89,9 @@ void explodable_buildFragments(GameObject* obj, ExplodablePlacement* placementAd
     spinScale = recipes[state->recipeIndex].spinScale;
     if (fragmentObjectId != -1) {
         fragmentIndex = 0;
-        chunk = (ExplodableChunk*)stateAddress;
+        chunk = (ExplodableChunk*)state;
         modelBankOffset = 0;
-        childSlotAddress = stateAddress;
+        childSlotAddress = (int)state;
         for (; fragmentIndex < state->fragmentCount; fragmentIndex++) {
             state->spawnedFlags[fragmentIndex] = 1;
             chunk->spinScale = spinScale;
@@ -248,7 +247,7 @@ void explodable_update(GameObject* obj) {
     if (state->phase != EXPLODABLE_PHASE_BROKEN) {
         if (state->phase == EXPLODABLE_PHASE_WAIT) {
             if (mainGetBit(placement->activateGameBit) != 0) {
-                explodable_buildFragments(obj, (ExplodablePlacement*)placementAddress, 0, stateAddress);
+                explodable_buildFragments(obj, (ExplodablePlacement*)placementAddress, 0, (ExplodableState*)stateAddress);
                 if (state->breakSfxId != 0) {
                     Sfx_PlayFromObject(obj, state->breakSfxId & 0xffff);
                 }

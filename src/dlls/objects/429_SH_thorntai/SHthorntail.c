@@ -219,7 +219,7 @@ int SHthorntail_HasNearbyPendingEventObject(GameObject* obj) {
     return linkedEventPending;
 }
 
-void SHthorntail_updateTailSwing(u32 objectId, SHthorntailState* state) {
+void SHthorntail_updateTailSwing(GameObject* objectId, SHthorntailState* state) {
     u8 tailSwingState;
     int moveComplete;
 
@@ -228,7 +228,7 @@ void SHthorntail_updateTailSwing(u32 objectId, SHthorntailState* state) {
     case SHTHORNTAIL_TAIL_SWING_READY:
         state->tailSwingTimer = state->tailSwingTimer - timeDelta;
         if (state->tailSwingTimer <= SHTHORNTAIL_TIMER_DONE_THRESHOLD) {
-            Sfx_PlayFromObject((GameObject*)objectId, SHTHORNTAIL_TAIL_SWING_WINDUP_VOLUME_ID);
+            Sfx_PlayFromObject(objectId, SHTHORNTAIL_TAIL_SWING_WINDUP_VOLUME_ID);
             state->tailSwingState = SHTHORNTAIL_TAIL_SWING_WINDUP;
             state->tailSwingTimer = SHTHORNTAIL_TAIL_SWING_WINDUP_TIME;
         }
@@ -236,7 +236,7 @@ void SHthorntail_updateTailSwing(u32 objectId, SHthorntailState* state) {
     case SHTHORNTAIL_TAIL_SWING_WINDUP:
         state->tailSwingTimer = state->tailSwingTimer - timeDelta;
         if (state->tailSwingTimer <= SHTHORNTAIL_TIMER_DONE_THRESHOLD) {
-            Sfx_PlayFromObject((GameObject*)objectId, SHTHORNTAIL_TAIL_SWING_ACTIVE_VOLUME_ID);
+            Sfx_PlayFromObject(objectId, SHTHORNTAIL_TAIL_SWING_ACTIVE_VOLUME_ID);
             state->tailSwingState = SHTHORNTAIL_TAIL_SWING_ACTIVE;
         }
         break;
@@ -505,7 +505,7 @@ void SHthorntail_updateState(GameObject* obj, SHthorntailState* runtime) {
         }
         break;
     case SHTHORNTAIL_STATE_TAIL_SWING:
-        SHthorntail_updateTailSwing((u32)obj, runtime);
+        SHthorntail_updateTailSwing(obj, runtime);
         if (((runtime->behaviorFlags & SHTHORNTAIL_FLAG_MOVE_COMPLETE) != 0) &&
             (tailSwingQueued = (*gSkyInterface)->getSunPosition(0), tailSwingQueued == 0)) {
             runtime->behaviorState = SHTHORNTAIL_STATE_TAIL_SWING_RECOVER;
@@ -694,7 +694,7 @@ typedef struct SHthorntailTailSwingEffectScratch {
 #define SHTHORNTAIL_STATE_TRIGGER0_SFX(tables)     ((u16*)((tables) + SHTHORNTAIL_STATE_TRIGGER0_SFX_OFFSET))
 #define SHTHORNTAIL_STATE_TRIGGER7_SFX(tables)     ((u8*)((tables) + SHTHORNTAIL_STATE_TRIGGER7_SFX_OFFSET))
 
-void SHthorntail_updateLevelControlMode1(u32 objectId, SHthorntailState* runtime, SHthorntailPlacement* placement) {
+void SHthorntail_updateLevelControlMode1(GameObject* objectId, SHthorntailState* runtime, SHthorntailPlacement* placement) {
     int playerObj;
     int randomIdleWait;
     u8 closeToPlayer;
@@ -704,7 +704,7 @@ void SHthorntail_updateLevelControlMode1(u32 objectId, SHthorntailState* runtime
     runtime->impactSfxTable = gSHthorntailLevelControlMode1ImpactSfxTable;
     playerObj = (int)Obj_GetPlayerObject();
     {
-        int cmp = getXZDistanceSquared(&((GameObject*)objectId)->anim.worldPosX, &((GameObject*)playerObj)->anim.worldPosX) <
+        int cmp = getXZDistanceSquared(&objectId->anim.worldPosX, &((GameObject*)playerObj)->anim.worldPosX) <
                   SHTHORNTAIL_CLOSE_ATTACK_DISTANCE;
         closeToPlayer = cmp;
     }
@@ -717,14 +717,14 @@ void SHthorntail_updateLevelControlMode1(u32 objectId, SHthorntailState* runtime
                 runtime->freezeFrameCounter = 0;
                 closeToPlayer = FALSE;
             } else {
-                triggerIsSet = ObjTrigger_IsSet((GameObject*)objectId);
+                triggerIsSet = ObjTrigger_IsSet(objectId);
                 if (triggerIsSet != 0) {
                     runtime->behaviorFlags = runtime->behaviorFlags | SHTHORNTAIL_FLAG_TRIGGER_EVENT_PENDING;
                     mainSetBits(SHTHORNTAIL_LEVEL_MODE1_SECONDARY_TRIGGER_GAMEBIT, 1);
                 }
             }
         } else {
-            triggerIsSet = ObjTrigger_IsSet((GameObject*)objectId);
+            triggerIsSet = ObjTrigger_IsSet(objectId);
             if (triggerIsSet != 0) {
                 runtime->behaviorFlags = runtime->behaviorFlags | SHTHORNTAIL_FLAG_TRIGGER_EVENT_PENDING;
                 mainSetBits(SHTHORNTAIL_LEVEL_MODE1_PRIMARY_TRIGGER_GAMEBIT, 1);
@@ -968,7 +968,7 @@ void SHthorntail_update(int obj) {
             SHthorntail_updateLevelControlMode0((GameObject*)obj, runtime, config);
             break;
         case SHTHORNTAIL_CONTROL_MODE_LEVEL_1:
-            SHthorntail_updateLevelControlMode1(obj, runtime, config);
+            SHthorntail_updateLevelControlMode1((GameObject*)obj, runtime, config);
             break;
         case SHTHORNTAIL_CONTROL_MODE_ROOT_2:
             SHthorntail_updateRootControlMode2((GameObject*)obj, runtime);

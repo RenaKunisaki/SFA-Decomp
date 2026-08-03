@@ -9,7 +9,7 @@
 #include "main/model_engine.h"
 #include "main/pi_dolphin_api.h"
 
-void piRomLoadSection(int romOffset, int mapIndex, int destBuf);
+void piRomLoadSection(int romOffset, int mapIndex, void* destBuf);
 
 /* extern-cleanup: defining-file public prototypes */
 void setDisplayCopyFilter(void);

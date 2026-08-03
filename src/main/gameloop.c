@@ -325,13 +325,13 @@ void cardShowMessage(void)
 
 
 
-int cacheAllocAndCopy(u32 srcAddress, u32 size, u32* cacheCursor, u32* outEnd, u32 limit)
+int cacheAllocAndCopy(u8* srcAddress, u32 size, u32* cacheCursor, u32* outEnd, u32 limit)
 {
     u8* dst;
     u32 alignOffset;
 
     dst = getCache();
-    alignOffset = srcAddress & 0x1f;
+    alignOffset = (u32)srcAddress & 0x1f;
     size += alignOffset;
     size += 0x1f;
     size &= ~0x1f;
@@ -344,19 +344,19 @@ int cacheAllocAndCopy(u32 srcAddress, u32 size, u32* cacheCursor, u32* outEnd, u
         size >>= 5;
         while (size > 0x7f)
         {
-            copyToCache(dst, (void*)srcAddress, 0);
+            copyToCache(dst, srcAddress, 0);
             dst += 0x1000;
             srcAddress += 0x1000;
             size -= 0x80;
         }
         if (size != 0)
         {
-            copyToCache(dst, (void*)srcAddress, size);
+            copyToCache(dst, srcAddress, size);
         }
         return 1;
     }
     *outEnd = *cacheCursor;
-    *cacheCursor = srcAddress;
+    *cacheCursor = (u32)srcAddress;
     return 0;
 }
 void askProgressiveScanMode(void)

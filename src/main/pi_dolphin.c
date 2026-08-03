@@ -4637,14 +4637,14 @@ void loadDataFiles()
     }
     loadTableFiles();
 }
-void piRomLoadSection(int romOffset, int mapIndex, int destBuf)
+void piRomLoadSection(int romOffset, int mapIndex, void* destBuf)
 {
     char buf[1024];
     DVDFileInfo* fi;
     int ok;
     struct PackHeader* hdr;
 
-    if (((void*)destBuf == NULL) && ((void*)gMapRomListBuffers[mapIndex] == NULL))
+    if ((destBuf == NULL) && ((void*)gMapRomListBuffers[mapIndex] == NULL))
     {
         sprintf(buf, sRomlistZlbPathFormat, sMapFileNameTable[mapIndex]);
         fi = AtomicSList_Pop(gDvdFileInfoPool);
@@ -4676,7 +4676,7 @@ void piRomLoadSection(int romOffset, int mapIndex, int destBuf)
         if (hdr->magic == 0xfacefeed)
         {
             zlbDecompress((u8*)(gMapRomListBuffers[mapIndex] + 0x10), hdr->compressedSize, (u8*)destBuf, &hdr->decompressedSize);
-            DCStoreRange((void*)destBuf, hdr->decompressedSize);
+            DCStoreRange(destBuf, hdr->decompressedSize);
         }
     }
 }

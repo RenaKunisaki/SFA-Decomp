@@ -156,10 +156,10 @@
 #define DIMBOSS_ANIM_TABLE_OFFSET           0x690
 #define DIMBOSS_HITDETECT_ANIM_TABLE_OFFSET 0x6A8
 
-typedef void (*Dim2QueryTargetMoveFn)(int obj, void* targetObj, int queryFlags, u16* animId, s16* outParam,
+typedef void (*Dim2QueryTargetMoveFn)(GameObject* obj, void* targetObj, int queryFlags, u16* animId, s16* outParam,
                                       u16* targetDistance);
-typedef u8 (*Dim2CheckTargetRangeFn)(int obj, BaddieState* state, f32 rangeScale);
-typedef void (*Dim2RequestControlModeFn)(int obj, BaddieState* state, int controlMode);
+typedef u8 (*Dim2CheckTargetRangeFn)(GameObject* obj, BaddieState* state, f32 rangeScale);
+typedef void (*Dim2RequestControlModeFn)(GameObject* obj, BaddieState* state, int controlMode);
 
 typedef struct Dim2BaddieControlInterface {
     u8 unknown00[0x14];
@@ -228,7 +228,7 @@ static inline Dim2PlayerInterface* DIM2_GetPlayerInterface(void) {
     return (Dim2PlayerInterface*)*gPlayerInterface;
 }
 
-int DIMbossAnim_updateBossHitReaction(int obj, BaddieState* state) {
+int DIMbossAnim_updateBossHitReaction(GameObject* obj, BaddieState* state) {
     DimAnimTable* moveTable;
     s16 targetParam;
     u16 targetDistance;

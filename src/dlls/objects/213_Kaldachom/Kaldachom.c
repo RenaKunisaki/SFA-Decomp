@@ -504,7 +504,7 @@ const f32 gKaldachomTextureIdScale[1] = {127.0f};
 const f32 gKaldachomPi[1] = {3.1415927f};
 const f32 gKaldachomAngleUnitScale[1] = {32768.0f};
 
-void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, GroundBaddieState* stateAddress) {
+void kaldachom_updateCombat(GameObject* obj, GroundBaddieState* objectStateAddress, GroundBaddieState* stateAddress) {
     KaldachomControl* control;
     GameObject* playerObj;
     int hitResult;
@@ -526,13 +526,13 @@ void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, GroundBaddi
             sqrtf(stack.dz * stack.dz + (stack.dx * stack.dx + stack.dy * stack.dy));
     }
     (*gBaddieControlInterface)
-        ->processMessages(obj, stateAddress, (void*)(objectStateAddress + 0x35c),
-                          ((GroundBaddieState*)objectStateAddress)->gameBitB, NULL, 0, 0, 4);
+        ->processMessages(obj, stateAddress, &objectStateAddress->routeNav,
+                          objectStateAddress->gameBitB, NULL, 0, 0, 4);
     (*gBaddieControlInterface)->getTargetGeometry(obj, playerObj, 4, &hitType, &hitAux1, &hitAux2);
     if ((hitType == 1) || (hitType == 2)) {
         hitResult = (*gBaddieControlInterface)
-                        ->updateHitReaction(obj, stateAddress, &((GroundBaddieState*)objectStateAddress)->routeNav,
-                                            ((GroundBaddieState*)objectStateAddress)->gameBitB, NULL, NULL, 1,
+                        ->updateHitReaction(obj, stateAddress, &objectStateAddress->routeNav,
+                                            objectStateAddress->gameBitB, NULL, NULL, 1,
                                             &gKaldachomHitLightWork);
         if (hitResult != 0) {
             if ((hitResult != 0x10) && (hitResult != 0x11)) {
@@ -548,8 +548,8 @@ void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, GroundBaddi
         }
     } else {
         hitResult = (*gBaddieControlInterface)
-                        ->updateHitReaction(obj, stateAddress, &((GroundBaddieState*)objectStateAddress)->routeNav,
-                                            ((GroundBaddieState*)objectStateAddress)->gameBitB, NULL, NULL, 1,
+                        ->updateHitReaction(obj, stateAddress, &objectStateAddress->routeNav,
+                                            objectStateAddress->gameBitB, NULL, NULL, 1,
                                             &gKaldachomHitLightWork);
         if (hitResult != 0) {
             if (hitResult != 0x11) {
@@ -678,7 +678,7 @@ void kaldachom_update(GameObject* obj) {
         if (ref == 0) {
             *(u16*)&objectState->targetState = 0;
         } else {
-            kaldachom_updateCombat(obj, (int)objectState, (GroundBaddieState*)objectState);
+            kaldachom_updateCombat(obj, (GroundBaddieState*)objectState, (GroundBaddieState*)objectState);
             if (objectState->targetState == 0) {
                 texture = (int)objectState->control;
                 ((KaldachomControl*)texture)->pullupSfxTimer -= timeDelta;
