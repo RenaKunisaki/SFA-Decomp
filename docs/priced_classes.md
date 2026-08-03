@@ -87,7 +87,8 @@ otherwise sequence-identical function, and/or unit matched_data short by a rotat
 
 **Scoring facts (proven by experiment, use freely):** pool `lbl_`-vs-`@NNN` NAMING is not
 scored at an equal address (#70; asinf is 100.0 with a fully permuted, all-named pool);
-what scores is the different address/offset. Pool mint order is immune to source branch swaps.
+what scores is the different address/offset — and an extern `lbl_` reloc against an own-pool
+`@NNN` reloc *is* a different address, which is section 21's sub-case (iii) and is priced. Pool mint order is immune to source branch swaps.
 The legal named-const reconnect — `const f32 name[1] = {v};` with `[0]` uses (scalar const
 folds to an anon; extern-decl+def lands .sdata, wrong section) — is exactly score- and
 matched_data-neutral (24.c `gBoneParticleDriftMax/Rebound/Min`, commit `d3addebce3`); it may
@@ -165,7 +166,8 @@ Closed classes with no reachable spelling — bank on sight, details in the memo
 - **#67 frame/displacement**: objdiff normalises r1 displacements, frame immediates, and one
   surplus base-`addi` — score-free.
 - **#70 reloc-name-vs-@NNN at an EQUAL address**: score-neutral, but blocks a Matching flip;
-  prove with `objdump -s` identical bytes.
+  prove with `tools/obj_equal.py`, never with `objdump -s` — and read section 21 first, the class
+  splits three ways and only the equal-address one is free.
 - Zero-weld `li`-vs-`mr`; dead-tail `b`-stubs; allocator remat (incl. unroll-tail-bound remat —
   respelling the bound flips the whole unroll shape, -4); invariant-address CSE weld;
   same-field-reload (our CSE forwards where retail reloads a field it also names — but see the
@@ -1255,12 +1257,13 @@ Gaining that visibility is a *per-object* question, and the answer is not unifor
   `gAttractMovieAudioPrevDmaCallback`. Also free: adding the *owning* include to a `.c`
   (`mm.c`, `engine/52`, `engine/0`, `shader.c`, `MWTrace.c`, `dll_80136a40.c`), each measured on
   its own object first.
-- **Priced by class #70 (rejected):** `shader_api.h += main/model_light.h` rewrites **33 DLL
-  objects**. Every section's *content* is byte-identical and no score moves, but the local
-  literal-pool symbols renumber — `@103 -> @105` at the same address, in the same section, with
-  the same size. There is no evidence the new numbering is nearer retail's, so the three light
-  lists stay declared where they are. Same verdict for `textrender_internal.h += GXStruct.h`
-  (`subtitle.o`) and `shader_api.h += camera.h` (4 DLL objects).
+- **Was "priced by class #70", now FREE (section 21):** `shader_api.h += main/model_light.h`
+  rewrites **33 DLL objects**. Every section's *content* is byte-identical and no score moves; the
+  local literal-pool symbols renumber — `@103 -> @105` at the same address, in the same section,
+  with the same size. That renumbering was declined for want of evidence it was harmless; the
+  evidence exists now — with all 33 renumbered the forced link produces a byte-identical
+  `main.dol`. Same for `textrender_internal.h += GXStruct.h` (`subtitle.o`, renumbering only) and
+  `shader_api.h += camera.h` (4 DLL objects, `.comment` only — never a renumbering at all).
 
 So the rule is: propose the include, then **measure the object, not the tree** — a score-flat,
 content-identical rewrite of 33 objects is exactly the shape that a score gate reports as zero
@@ -1581,9 +1584,10 @@ instead of below it. Moving the smallest sufficient set of definitions past thei
 order **exactly** in all 21, from one moved definition (`track_dolphin`, `model`, `53`, `203`,
 `DBstealerwo`) to seventeen (`engine/0`). `engine/2` needed no move at all: its fifteen
 definitions already sit at the bottom of the file in the carve's order, which is precisely
-backwards — reversing that block put all fifteen where the carve has them. Every edit is
-byte-neutral by construction: `objdump -s` over all 1013 objects against a pristine build of the
-parent gives 0 differ / 0 missing / 0 new.
+backwards — reversing that block put all fifteen where the carve has them. Every edit leaves every
+section's *contents* untouched — but `.bss` is NOBITS and has no contents, so that is not the
+invariant to quote: `objdump -s` cannot see a `.bss` reordering at all. What these edits move is
+the symbol table, which is the point of them, and `tools/obj_equal.py` shows all 21 (section 21).
 
 ### The payoff, and the control that proves it
 
@@ -1844,16 +1848,22 @@ Compares two ELF32-BE PowerPC objects, or two trees of them (`--tree DIR_A DIR_B
   `(offset, type, addend, symbol identity)` where the symbol is identified by **name**, or by
   section for `STT_SECTION` entries, so symbol-index churn is ignored;
 * **symbols** — name -> (section, value, size, info), so symbol-table *ordering* is ignored but
-  a rename, a binding change or a size change is not.
+  a rename, a binding change or a size change is not. MWCC's `@NNN` literal-pool symbols are keyed
+  by **address** instead of by name (section 21): their numbers are emission-order churn, so a
+  pool holding the same words at the same offsets is the same pool however it is numbered, and a
+  pure renumbering prints `RENUMBERED` rather than `DIFFER`.
 
-`--self-test` runs three controls and exits non-zero on any failure:
+`--self-test` runs five controls and exits non-zero on any failure:
 
 1. **negative** — an object against a byte-identical copy under a different filename: must report
    `EQUAL` (the check must not be trigger-happy about paths or ordering);
 2. **positive, contents** — two genuinely different objects: must report a `CONTENT` difference;
 3. **positive, relocations only** — one relocation in a real tree object repointed at a different
    existing symbol, PROGBITS untouched: must report **contents identical and a `RELOC` difference**.
-   This is the class control 1 and 2 cannot distinguish, and the class `secmd5` cannot see.
+   This is the class control 1 and 2 cannot distinguish, and the class `secmd5` cannot see;
+4. **anon renumbering** — one `@NNN` symbol renamed to an unused number: must report the
+   `ANON` note and nothing else;
+5. **anon move** — one `@NNN` symbol's address advanced four bytes: must be a hard difference.
 
 The real-world positive control is the `mm.c` rename above; the real-world negative control used
 in this lane's own landing is the six inert compiler overrides of §19, where the tool correctly
@@ -1893,3 +1903,145 @@ at `0x803DE7BC` and vecmath's starts at the next 8-aligned address `0x803DE7C0`,
 embedded doubles require, so there is no word to reattribute. The only legal improvement available
 is cosmetic — the forward-`extern const` spelling retires the `lbl_<hex>` crutch at exactly zero
 cost in both directions — and it belongs to the const lane, not here.
+
+## 21. The relocation gate applied backwards: re-verifying the naming span, and the three-way split of class #70 (measured 2026-08-03, A80)
+
+Section 20 built `tools/obj_equal.py` and showed that a section-content md5 cannot see a
+relocation. Two bodies of landed work had been certified with exactly that blind check: the
+semantic lanes from C76 onward, which quote "byte-identical over all 1013 objects" for hundreds of
+renames, and the ledger's own class #70 rows, cleared on "prove `objdump -s` identical". This
+section re-runs both against the gate that can see the difference.
+
+### The method: walk the chain, not the endpoints
+
+`b8a3aaae64^..850208fbd4` is 52 commits and every lane's work is interleaved in it, so an
+endpoint-to-endpoint diff attributes nothing. The chain is linear, so a worktree cut at the span's
+parent can be walked forward one commit at a time — materialise each commit's changed files,
+re-run `configure.py`, `ninja all_source`, and compare every object ninja rebuilt against the
+previous commit's copy of it. Each step is incremental (a full build is 29 s; most steps are
+seconds), and the walk ends with a **control that matters**: the final object tree compares
+`1013 compared / 0 differ / 0 missing / 0 new` against a pristine build of `850208fbd4`, so the
+reconstruction of every intermediate state is exact and every per-commit verdict below is real.
+
+### The verdict: 33 of 52 commits move zero bytes; 19 move something, and all 19 are accounted for
+
+The 33 clean commits include every mass-rename lane, and that is the result worth stating plainly:
+
+| commit | what it renamed | objects rebuilt | verdict |
+| --- | --- | --- | --- |
+| `3dc6cf38c4` | `ghidra_import.h` retired, 168 files | **908** | identical |
+| `5b318ebb46` | 18 struct members | 294 | identical |
+| `2f991cb1b1` | 39 machine-named parameters, 18 files | 81 | identical |
+| `7fea9c3dbe` | 8 private `Mtx` clones, 1 duplicate macro | 670 | identical |
+| `082abe0cbd` | 66 machine-named locals, 21 files | 24 | identical |
+| `72182ef109` | 57 dead Ghidra prototypes | 65 | identical |
+| `f909e67506` / `b9092bb262` | `Vec` respellings, SDK type restatements | 65 / 52 | identical |
+
+A local, parameter, member or typedef rename really does touch neither contents, relocations nor
+the symbol table. **The naming lanes' standing claim survives its own audit** — it was quoted
+against the wrong invariant, but the stronger invariant holds too.
+
+The 19 that move something split three ways.
+
+**(a) Anon literal-pool renumbering — the class the old check was blind to.** Three commits that
+claimed byte-identity changed 12 objects, all in the same way: section contents identical,
+relocations pointing at the same addresses, but MWCC's `@NNN` literal-pool symbols renumbered.
+
+| commit | objects | what changed |
+| --- | --- | --- |
+| `1476aef86e` (C76 `EffectVertex` collapse) | `modgfx/170`, `modgfx/94` | `@8` -> `@77`, `@6` -> `@75` |
+| `d88f1d99b4` (object state through its struct) | 7 DLL objects | pool numbering shifts by 1-3 |
+| `3b2d8a17cf` (interfaces through vtable structs) | `player`, `tricky`, `SPitembeam` | 296 of 4705 `.text` relocations renamed |
+
+**This is not a defect and not a cost.** `@NNN` numbers are emission-order churn of exactly the
+kind the symbol table's own ordering is: they name nothing the linker resolves, and the retail DOL
+has no symbol table at all. `obj_equal.py` now identifies an `@NNN` relocation target by its
+**address** and reports a pure renumbering as `RENUMBERED` rather than `DIFFER`, with two new
+self-test controls (renumber one -> note only; move one four bytes -> hard difference).
+Self-test 5/5.
+
+**(b) Intended, and the certification wording was wrong.** `ed446243a6` moved 21 units' `.bss`
+definitions and `672b6b8061` moved `model`'s `.sbss` block; both were landed as "byte-neutral by
+construction: `objdump -s` over all 1013 objects gives 0 differ". `.bss` and `.sbss` are **NOBITS**
+— they have no contents for `objdump -s` to print, so that check could not have seen the change it
+was certifying, and `obj_equal` sees all 21 (`gObjSeqBgCmds` `.bss+15832` -> `+10880`, and so on).
+The edits are correct and their payoff is real (four units NonMatching -> Matching in the very next
+commit); only the sentence was wrong. Same shape, same verdict, for the three commits that flip a
+`static` to external linkage to link a unit (`257c4fc0c0`, `c7f59e3e3c`): a binding change from
+`STB_LOCAL` to `STB_GLOBAL` moves no byte of any section either.
+
+**(c) Deliberate code and naming changes.** Eleven commits (`73abfd6123`, `aba5d2f63c`,
+`dd06905c7b`, `5bf6287066`, `739030b8ce`, `617bfbe581`, `9a940bebc5`, `8dbcf2f006`, `8d7c8d2ff3`,
+`850208fbd4`, `8b8656a52a`) changed objects on purpose and moved `matched_data`,
+`complete_units` or the score to prove it. The file-scope renames among them (`850208fbd4`'s six
+families, `8dbcf2f006`'s shopkeeper) necessarily retarget relocations — that is what a two-sided
+rename *is* — and nothing else moved in them.
+
+**No real defect was found in the span.** Sixteen of the nineteen were certified with language
+that its check could not support; none of the sixteen is wrong.
+
+### The one candidate that needed a control: `2567e1014f`
+
+Dropping the three spurious `GC/2.0` overrides on `vid_get`, `hw_sample` and `hw_keyoff` was landed
+as "the library builds them itself". It does not build them *identically*: `.comment` differs, and
+**every `R_PPC_EMB_SDA21` relocation moves two bytes**, from the instruction offset that `GC/2.0`
+records to the low-halfword offset that `GC/1.2.5n` records. All three units are
+`MatchingFor("GSAE01")`, so our objects are the ones that link, and a misapplied SDA21 would be a
+live bug. Measured both ways at `850208fbd4`: with the overrides restored and with them dropped,
+the forced link produces `main.dol: OK` and the same md5. **The linker normalises the convention;
+the commit stands.** Record this as the shape to look for whenever a compiler version changes under
+an object: contents can be identical while the relocation table is not.
+
+### Class #70 re-audited: it is three classes, and only one of them is free
+
+Every #70 row had been cleared on "prove `objdump -s` identical bytes", which cannot reach a
+relocation. Re-measured at `850208fbd4`:
+
+| sub-case | example | old check | true verdict |
+| --- | --- | --- | --- |
+| **(i) `@NNN` -> `@MMM` at preserved addresses** | `shader_api.h += main/model_light.h`, 33 objects | blind | **FREE — proven, not inferred** |
+| **(ii) a named symbol renamed at a fixed address** | `lbl_8033527C` -> `gDREarthWarriorSpeedRows` (`8d7c8d2ff3`) | blind | free, and *intended* |
+| **(iii) an extern `lbl_` reloc replaced by an own-pool `@NNN`** | `704.o` at `73abfd6123` | blind | **PRICED** — different address, tree 99.81614 -> 99.814064 |
+
+Sub-case (i) is the one the ledger rejected rows on, and the rejection is now refuted with a
+control the old check could not run. Section 13 declined three declaration homes "priced by class
+#70"; re-measured at `850208fbd4` against a pristine build of it:
+
+| rejected row | objects touched | `obj_equal` | score | forced link |
+| --- | --- | --- | --- | --- |
+| `shader_api.h += main/model_light.h` | 33 | 0 differ / **33 renumbered** | 99.815420 flat | **`main.dol: OK`** |
+| `textrender_internal.h += GXStruct.h` | 1 (`subtitle.o`) | 0 differ / 1 renumbered | flat | — |
+| `shader_api.h += camera.h` | 4 | **`.comment` only** | flat | — |
+
+Thirty-three objects renumbered their entire literal pool and the DOL came out byte-identical.
+That settles it: **a renumbering is not a cost, and the third row was never even a renumbering** —
+its four objects differ only in `.comment`, a non-allocated section. The reason those three
+declarations stay in their `.c` files is now no reason at all; whoever owns the declaration homes
+may move them. The rule that section 13 states — "propose the include, then measure the object,
+not the tree" — is right; what it must measure with is `obj_equal`, and a `RENUMBERED` line is a
+pass.
+
+Sub-case (iii) is the correction that matters in the other direction: an `extern lbl_` relocation
+and an own-pool `@NNN` relocation name **different addresses**, so replacing one with the other is
+never free. `73abfd6123` paid 0.002 tree points for it knowingly. Do not read #70's
+"score-neutral" as covering this.
+
+### The walk extended over the three commits that landed while this ran
+
+`850208fbd4..9f4fb7a037`, same method, same control. `b68fd836a9` ("drop the includes and
+prototypes nothing in the file needs") touches **33 objects and not one allocated byte**: 32 differ
+only in `.comment` — MWCC's non-allocated browse table, which shrinks because the file declares
+less — and one is a pure `@NNN` renumbering. That is the cleanest specimen of the whole audit: a
+claim of neutrality that is exactly true where it matters and visibly false to a byte-comparison,
+which is why the gate has to be `obj_equal` and why `.comment` has to be read as what it is.
+`0c3863112e` and `9f4fb7a037` split blob symbols and change their recorded sizes, which is what
+those commits are for.
+
+### `GC/1.1` is already gone
+
+Section 19 dropped the only two objects that declared it (`rand.c`, `exponentialsf.c`). Confirmed
+at `850208fbd4`: `configure.py` contains no `GC/1.1`, and the generated `build.ninja` invokes
+`GC/2.0` (781), `GC/1.2.5n` (168), `GC/1.3` (50), `GC/1.3.2` (8), `GC/1.2.5` (4) and `GC/1.3.2r`
+(1) and nothing else. The two surviving mentions are not requirements: `tools/project.py`'s
+`COMPILER_MAP` is decomp-toolkit's own table of every known version, and `tools/flag_sweep.py`
+lists it as a probe target. **Nothing remains to retire.**

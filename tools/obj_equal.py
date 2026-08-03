@@ -5,8 +5,11 @@ Section CONTENTS alone do not certify that two builds of a translation unit are
 the same object: two invocations can emit byte-identical PROGBITS and still
 differ in their RELOCATIONS, which changes what the linker produces.  This
 compares contents, relocations and the symbol table, normalising the churn that
-is genuinely meaningless (symbol table ordering / indices, and the object's own
-recorded source path).
+is genuinely meaningless (symbol table ordering / indices, and the numbering of
+MWCC's `@NNN` literal-pool symbols, which is emission-order churn that never
+reaches the link).  A pool whose words sit at the same offsets is the same pool
+however it is numbered; a renumbering is reported as `RENUMBERED`, a literal
+that MOVES is a hard difference.
 
 Usage:
     obj_equal.py A.o B.o
@@ -17,6 +20,7 @@ Usage:
 import argparse
 import hashlib
 import os
+import re
 import struct
 import sys
 
@@ -104,6 +108,13 @@ class Elf:
             return ("BADIDX", idx)
         s = syms[idx]
         stype = s["info"] & 0xF
+        if is_anon_literal(s):
+            # MWCC numbers its literal-pool symbols in emission order.  The
+            # number is compiler-internal index churn of exactly the kind the
+            # symbol table's own ordering is: it never reaches the link.  What
+            # a relocation against one of them means is its ADDRESS, so that is
+            # what identifies it here.
+            return ("ANONLIT", s["sec"], s["value"], s["size"])
         if s["name"]:
             # STT_SECTION symbols carry an empty-ish name in some producers;
             # a named symbol is identified by its name plus binding/type.
@@ -138,6 +149,14 @@ class Elf:
         return out
 
 
+ANON_LITERAL = re.compile(r"^@[0-9]+$")
+
+
+def is_anon_literal(s):
+    """MWCC's `@NNN` literal-pool symbols: file-local, compiler-numbered."""
+    return bool(ANON_LITERAL.match(s["name"])) and (s["info"] >> 4) == 0
+
+
 def md5(b):
     return hashlib.md5(b).hexdigest()
 
@@ -159,13 +178,27 @@ def content_map(e):
 
 
 def symbol_map(e):
-    """Name -> (section, value, size, info).  Index/order churn ignored."""
-    out = {}
+    """(named symbols, anonymous literals, anonymous literal names).
+
+    Named symbols are keyed by name -> (section, value, size, info), so
+    symbol-table ordering is ignored but a rename, a binding change or a size
+    change is not.  `@NNN` literal-pool symbols are keyed by ADDRESS instead:
+    their numbers are emission-order churn, so a pool that holds the same words
+    at the same offsets is the same pool however it is numbered.
+    """
+    named = {}
+    anon = {}
+    anon_names = set()
     for s in e.symbols:
         if not s["name"]:
             continue
-        out[s["name"]] = (s["sec"], s["value"], s["size"], s["info"])
-    return out
+        if is_anon_literal(s):
+            key = (s["sec"], s["value"], s["size"], s["info"])
+            anon[key] = anon.get(key, 0) + 1
+            anon_names.add(s["name"])
+        else:
+            named[s["name"]] = (s["sec"], s["value"], s["size"], s["info"])
+    return named, anon, anon_names
 
 
 def compare(pa, pb, want_syms=True):
@@ -196,7 +229,8 @@ def compare(pa, pb, want_syms=True):
                          % (name, len(bad), len(la), x, y))
 
     if want_syms:
-        sa, sb = symbol_map(a), symbol_map(b)
+        sa, aa, na = symbol_map(a)
+        sb, ab, nb = symbol_map(b)
         only_a = sorted(set(sa) - set(sb))
         only_b = sorted(set(sb) - set(sa))
         if only_a:
@@ -208,6 +242,16 @@ def compare(pa, pb, want_syms=True):
             k = sorted(changed)[0]
             diffs.append("SYM: %d changed (e.g. %s %r vs %r)"
                          % (len(changed), k, sa[k], sb[k]))
+        if aa != ab:
+            ka = sorted(set(aa) - set(ab))
+            kb = sorted(set(ab) - set(aa))
+            diffs.append("SYM: literal pool differs, %d slots only in A "
+                         "(e.g. %r), %d only in B (e.g. %r)"
+                         % (len(ka), ka[0] if ka else None,
+                            len(kb), kb[0] if kb else None))
+        elif na != nb:
+            diffs.append("ANON: %d literal-pool symbols renumbered at "
+                         "preserved addresses" % len(na ^ nb))
     return diffs
 
 
@@ -227,19 +271,26 @@ def cmd_tree(da, db, want_syms):
     only_b = sorted(set(tb) - set(ta))
     common = sorted(set(ta) & set(tb))
     ndiff = 0
+    nanon = 0
     for rel in common:
         d = compare(ta[rel], tb[rel], want_syms)
-        if d:
+        if not d:
+            continue
+        anon_only = all(line.startswith("ANON:") for line in d)
+        if anon_only:
+            nanon += 1
+            print("RENUMBERED %s" % rel)
+        else:
             ndiff += 1
             print("DIFFER %s" % rel)
-            for line in d:
-                print("    %s" % line)
+        for line in d:
+            print("    %s" % line)
     for rel in only_a:
         print("MISSING-IN-B %s" % rel)
     for rel in only_b:
         print("NEW-IN-B %s" % rel)
-    print("%d compared / %d differ / %d missing / %d new"
-          % (len(common), ndiff, len(only_a), len(only_b)))
+    print("%d compared / %d differ / %d renumbered / %d missing / %d new"
+          % (len(common), ndiff, nanon, len(only_a), len(only_b)))
     return 1 if (ndiff or only_a or only_b) else 0
 
 
@@ -266,7 +317,8 @@ def self_test():
     for p in objs:
         e = Elf(p)
         r = e.relocs()
-        if any(len(v) > 2 for v in r.values()):
+        if any(len(v) > 2 for v in r.values()) and any(
+                is_anon_literal(s) for s in e.symbols):
             base = p
             break
     if base is None:
@@ -322,6 +374,55 @@ def self_test():
         print("    RELOC diff detected        : %s" % has_reloc)
         print("    -> %s" % ("pass" if (content_same and has_reloc) else "FAIL"))
         ok &= content_same and has_reloc
+
+        # --- anon literal-pool controls ---------------------------------
+        # `@NNN` numbers are emission-order churn.  Renumbering one must be
+        # reported as a RENUMBER note and nothing else; MOVING one to another
+        # address must be a hard difference.
+        anon = [s for s in e.symbols if is_anon_literal(s)]
+        if anon:
+            strtab_s = None
+            for s in e.sections:
+                if s["type"] == SHT_SYMTAB:
+                    symtab_s, strtab_s = s, e.sections[s["link"]]
+                    break
+            victim = anon[0]
+            raw = bytearray(e.data)
+            (nm_off,) = struct.unpack_from(
+                ">I", raw, symtab_s["off"] + victim["idx"] * 16)
+            taken = {s["name"] for s in e.symbols}
+            new = None
+            for cand in range(1, 100000):
+                t = "@%d" % cand
+                if t not in taken and len(t) == len(victim["name"]):
+                    new = t
+                    break
+            if new:
+                pos = strtab_s["off"] + nm_off
+                raw[pos:pos + len(new)] = new.encode()
+                renamed = os.path.join(tmp, "anon_renumbered.o")
+                with open(renamed, "wb") as fp:
+                    fp.write(raw)
+                d = compare(base, renamed)
+                good = bool(d) and all(x.startswith("ANON:") for x in d)
+                print("anon control (renumbered %s -> %s): %s"
+                      % (victim["name"], new,
+                         "RENUMBER note only - pass" if good else "FAIL %r" % d))
+                ok &= good
+
+            raw = bytearray(e.data)
+            voff = symtab_s["off"] + victim["idx"] * 16 + 4
+            (val,) = struct.unpack_from(">I", raw, voff)
+            struct.pack_into(">I", raw, voff, val + 4)
+            moved = os.path.join(tmp, "anon_moved.o")
+            with open(moved, "wb") as fp:
+                fp.write(raw)
+            d = compare(base, moved)
+            good = any(not x.startswith("ANON:") for x in d)
+            print("anon control (moved %s by 4 bytes): %s"
+                  % (victim["name"],
+                     "hard difference - pass" if good else "FAIL %r" % d))
+            ok &= good
     finally:
         shutil.rmtree(tmp, ignore_errors=True)
 
