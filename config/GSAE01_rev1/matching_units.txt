@@ -742,7 +742,7 @@ dolphin/gx/GXPixel.c
 dolphin/gx/GXStubs.c
 dolphin/gx/GXTev.c
 dolphin/gx/GXTexture.c
-dolphin/gx/GXTextureTables.c
+musyx/runtime/pitch_data.c
 dolphin/gx/GXTransform.c
 dolphin/mtx/mtx.c
 dolphin/mtx/mtx44.c

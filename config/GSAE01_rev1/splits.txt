@@ -4705,7 +4705,7 @@ musyx/runtime/mcmd_exec.c:
 	.sbss       start:0x803DEF50 end:0x803DEF70
 	.sdata2     start:0x803E84A8 end:0x803E84B0
 
-dolphin/gx/GXTextureTables.c:
+musyx/runtime/pitch_data.c:
 	.data       start:0x8032FE78 end:0x80330278
 
 musyx/runtime/adsr_data.c:
