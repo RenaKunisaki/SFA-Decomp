@@ -840,7 +840,7 @@ void drakorhoverpad_updateMain(GameObject* obj)
             absV = (((DrakorHoverpadState*)p)->speed >= 0.0f)
                        ? ((DrakorHoverpadState*)p)->speed
                        : -((DrakorHoverpadState*)p)->speed;
-            if (absV > (*(f32*)&gDrakorHoverpadSpeedStep) + absH)
+            if (absV > absH + (*(f32*)&gDrakorHoverpadSpeedStep))
             {
                 limit = limit + (*(f32*)&gDrakorHoverpadSpeedStep);
             }

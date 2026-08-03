@@ -2460,3 +2460,88 @@ statement or one declaration, and none of them crosses 100. `matched_code`, `mat
 99.816765**. What the sweep does establish is a floor: after 34 100 orderings, the other 120
 rows have no reachable ordering at all on either key, and the next lever for them is not an
 ordering.
+
+## 27. The colouring cap has ONE key, not two: statement order is an ORDER lever (measured 2026-08-03, A86)
+
+§26 opened the colouring cap with two tools and reported their hit sets as disjoint, and the
+mechanism it wrote down — "the saved band fills in two phases: webs that never reach a loop
+header first, in reverse FIRST-DEFINITION order, then everything else in DECLARATION order" —
+has been the standing model since. It is wrong, and the correction changes where the next lane
+should point each tool.
+
+**The controlled measurement.** Four `float` locals, each live across two calls so every one of
+them needs a callee-saved home, declaration order pinned, and the four assignment statements
+permuted through all 24 orders: **all 24 produce the identical assignment** `a=f31 b=f30 c=f29
+d=f28`. Pin the statements instead and permute the declarations through all 24 orders and
+**every one of the 24 assignments is different**. The same experiment on `int` locals gives the
+same answer for the GPR band — 24 statement orders, one result. And on the construct
+`stmt_sweep` actually permutes — a run of adjacent, call-free assignments — all 24 orders again
+give one register assignment and differ only in the ORDER of the emitted instructions.
+
+**The same result on the two landed hits.** Rebuild `mtxRotateByVec3s` with §26's `z = xf->z`
+put back where it was: the instruction multiset is identical, no register operand changes, and
+exactly one instruction (`lfs f4,20(r31)`) sits two slots away. `mapFillCellEntry` with §26's
+`gridZ`/`gridX` subtraction swapped back: identical multiset, `r30` on both sides, two
+instructions slid. Both of §26's statement hits are instruction-ORDER moves scored by an
+alignment, not register moves.
+
+**So:** declaration order is the ONLY source key for the register assignment; statement order
+is the source key for emission ORDER. The two hit sets are disjoint because the two tools attack
+two different buckets — which is worth more than the two-phase story, because it says where to
+point them. `stmt_sweep` belongs on the ORDER bucket (§24c's 11 rows plus the order residual
+that sits inside a colouring row), and `brute_match` is the whole colouring lever.
+
+**The band, measured in real code.** `tools/slot_oracle.py` swaps each adjacent pair of
+declarations and reads the register substitution the swap induces, which pins the
+slot -> register map in `n-1` probes instead of the `O(n^2)` neighbourhood. Over the 82 rows it
+could measure, adjacent slots that both own a saved register of the same class run **84
+descending to 9 ascending** — the band is contiguous and monotone in declaration order, and
+fills `r31`/`f31` downward. Both classes obey it; the FP band has no separate law and no second
+key.
+
+**What the residual is actually made of.** Partitioning all 209 sub-100 rows by which register
+class the residual permutes (`tools/a86_reg_class_partition.py`) gives **142 colouring / 67
+operation**, and inside the colouring mass only **27 rows have any FPR-only differing
+instruction at all**. Of the 139
+colouring rows outside the never-touch islands, **82 have a saved-band register move and 57 are
+volatile-only**: their whole residual sits in `f0`-`f13`/`r0`-`r13`, so no declaration order can
+reach it. Of the 82, only **9** have any saved-FPR movement. **#82 is overwhelmingly a
+scratch-register class, and that is why declaration sweeps come back empty on it.**
+
+**Caveat on the oracle, recorded so nobody over-reads it.** `slot_oracle` only pins a slot when
+an adjacent swap induces a clean transposition. It logged **490** swaps that changed the object
+without being one, and a sample of 60 of those did move registers — including a full six-cycle
+`(r26 r31 r30 r29 r28 r27)` from one swap in `cMenuSetItems`, which is the band ROTATING because
+a swap changed its membership. So "the permutation touches no declaration-owned register" (53 of
+82 rows) is strong evidence of unreachability, **not a proof**, and no row should be pruned on it.
+
+**The parse census, run explicitly.** §26's law that an unparseable row reads like a cleared row
+is worth a standing check, so both parsers were run over all 139 rows: exactly **one** row either
+one refuses — `trackBuildBlockTriangles`, the K&R definition §26 found by hand. `find_function_body`
+now steps over K&R parameter declarations between the close paren and the body (regression-checked
+against 57 stable rows: 0 block-census changes), so that row is back in the population for every
+tool instead of being a permanent hand job. The other refusals are honest: 37 rows have no
+reorderable assignment run and `mmFreeDeferred` has no declaration block with two items.
+
+**A key nobody had swept: OPERAND ORDER.** If the residual is scratch registers holding unnamed
+expression temporaries, the source key for it is the shape of the expression, and the smallest
+edit that changes that shape is swapping the two operands of one commutative operator:
+
+    a * b + c * d   ->  fmuls f0,f3,f4 ; fmadds f1,f1,f2,f0
+    b * a + c * d   ->  fmuls f0,f3,f4 ; fmadds f1,f2,f1,f0
+    c * d + a * b   ->  fmuls f0,f1,f2 ; fmadds f1,f3,f4,f0
+
+Both the operand columns and which subexpression lands in the scratch register first move, and
+neither `brute_match` (declarations) nor `stmt_sweep` (statements) can reach any of it.
+`tools/operand_sweep.py` offers only provably safe sites — both operands side-effect-free atoms,
+the site not inside a longer chain of its own OR of any higher-precedence class, no cast, and no
+literal-first rewrite (`8 * t0` is legal C that nobody wrote in 2002) — and re-checks each
+rendered variant as an exact transposition of two balanced operands before writing it.
+
+**Read the guards, because the first version of this tool was WRONG and its hits were real.** A
+`+` operand runs *through* a `*`, so taking the neighbouring atom turned `verts + j * 12` into
+`(j + verts) * 12` and `gridX + gridZ * grid->sizeX` into `gridZ + gridX * grid->sizeX` — different
+arithmetic that scored **better** and was applied by the tool's own gate. `(u32)x` was read as a
+parenthesised operand and spliced the cast off its argument. A fuzzy score cannot tell a better
+ordering from a wrong computation, so a rewriting sweep needs a semantic guard of its own and
+every hit needs reading before it is landed.

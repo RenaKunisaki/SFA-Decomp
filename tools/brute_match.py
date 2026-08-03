@@ -308,6 +308,18 @@ def find_function_body(src: str, name: str):
             k += 1
         k += 1
         k2 = skip_ws_comments(src, k)
+        # K&R-style definition: the parameter declarations sit between the close
+        # paren and the body.  Without this a K&R row is reported as "could not
+        # locate", which reads exactly like a row that was swept and found
+        # inert, so it silently leaves the population.
+        while k2 < n and src[k2] not in "{;":
+            semi = src.find(";", k2)
+            if semi < 0:
+                break
+            brace = src.find("{", k2)
+            if 0 <= brace < semi:
+                break
+            k2 = skip_ws_comments(src, semi + 1)
         # allow attribute / trailing tokens up to a '{' or ';'
         if k2 < n and src[k2] == "{":
             # find matching close brace

@@ -160,7 +160,7 @@ void blendTextures(Texture* src1, Texture* src2, f32 blend, Texture* dst)
                                ((int)(wB * (u8)(((pixelB & 0x1f) << 3) | ((pixelB & 0x1c) >> 2))) >> 8)) &
                            0xf8) >>
                           3;
-                    red = ((u8)(((int)(redA * wA) >> 8) + ((int)(redB * wB) >> 8)) & 0xf8) << 8;
+                    red = ((u8)(((int)(redB * wB) >> 8) + ((int)(redA * wA) >> 8)) & 0xf8) << 8;
                     green = ((u8)(((int)(wA * (u8)(((pixelA & 0x7e0) >> 3) | ((pixelA & 0x600) >> 9))) >> 8) +
                                ((int)(wB * (u8)(((pixelB & 0x7e0) >> 3) | ((pixelB & 0x600) >> 9))) >> 8)) &
                             0xfc)
@@ -766,7 +766,7 @@ void renderShadows(int unused0, int unused1, int unused2)
             {
                 f32 sqA = vAx * vAx;
                 f32 sqB = vAz * vAz;
-                gNewShadowLightAngleY = (u16)getAngle(sqrtf(sqA + sqB), vAy) - 0x3fc8;
+                gNewShadowLightAngleY = (u16)getAngle(sqrtf(sqB + sqA), vAy) - 0x3fc8;
             }
             slot->pitch = gNewShadowLightAngleY;
             slot->yaw = gNewShadowLightAngleX;

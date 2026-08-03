@@ -3231,7 +3231,7 @@ u8 doEdges;
                     int x, yy, z;
                     vp = (s16*)(vb + *tw * 6);
                     x = vp[0] >> 3;
-                    yy = (vp[1] >> 3) + blk->collisionYOffset;
+                    yy = blk->collisionYOffset + (vp[1] >> 3);
                     z = vp[2] >> 3;
                     if (x > maxX)
                         maxX = x;
