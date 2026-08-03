@@ -10,6 +10,27 @@ Scores are per-function `fuzzy_match_percent` at tip `d3addebce3` (2026-08-01) u
 The "price" of a class = the score a row gives up because the historical fix is banned
 (or, for compiler-side classes, because no fix exists).
 
+## Index of the measured laws
+
+Sections 8-13 outgrew the "banned fix" framing: they are the campaign's measured model of what
+MWCC's front end puts where, and of what a declaration costs. This index is the entry point.
+Each row states the law in one line and says where its measurement lives; nothing is restated
+here that the target section already says.
+
+| Law | Where | The measurement behind it |
+|---|---|---|
+| **The mover.** Only one file-scope construct puts a pool word ahead of its first live loader: a `static const` aggregate of at most 8 bytes. A plain literal and a `static const` scalar land at the use; an external-linkage `const` lands at the declaration *and* emits a duplicate that the use loads. | §12, table in §11 | `main/rcp_dolphin` `.sdata2` 14.63 -> 100, `279_AppleOnTree` 90.62 -> 100, `701` 95.65 -> 100; `matched_data` +300, `complete_units` 906 -> 909, every function byte-identical. The spelling is the banned `SINGLE_ELEM_CONST_ARRAY`, and §12b measures four spellings of it emitting the same object byte for byte, so **the ban is on the shape, not the bracket**. Not landed; patch parked at `/private/tmp/A68_declared_consts.patch`. |
+| **An aggregate places only its FIRST word for free.** Every mover word therefore needs its own four-byte symbol. | §12c | `701` with `{0.0f, 1.0f}` comes out `.sdata2` byte-identical, but element `[1]` compiles to `li rN,0` + SDA21 + `lfs f,4(rN)` where retail has one `lfs f,0(r2)`. |
+| **Mint order is the source TEXT's order, not the code's.** The front end interns at the *use*; within one expression the order is increasing tree depth; an 8-byte value defers to its own alignment; and a hole is not always back-filled. | §10, §11 | The value-sequence oracle (`tools/pool_value_sequence.py`); the insertion classifier over all 33 sub-100 data sections at `590dce7361`. |
+| **`.bss` is the same question asked for free.** Declaration order is completely inert; layout is first-use order, shallowest sub-expression first. | §11, "`.bss` order is a second, free oracle" | A 36-cell declaration x use matrix (6 declaration permutations x 6 use permutations of three `.bss` arrays) depends only on the use order. `main/objlib` is the specimen where `.text`, `.bss` and `.sdata2` disagree about the same file's source order. |
+| **`.sdata2` scores all-or-nothing per section, so a partial fix is worth strictly less than zero.** Removing five of a section's words rotates the whole pool. | §6b, §8; `docs/source_shape_levers.md` "a section scores ALL-OR-NOTHING" | `4461d0aa45`: `trig` `.sdata2` 100.0 -> 61.458 at *unchanged section size*, unit `matched_data` 192 -> 0. |
+| **A value can carry its own sign.** Retail stores `-C` in the pool and adds; spelling the same polynomial as `A - C` mints words retail never had and emits `fnmsubs` for `fmadds`. | §6b (standing verdict) | 44 sites in `src/main/trig.c` rewritten `A + -C`: tree 99.811966 -> 99.815640, `.text` 95.926 -> 99.975, `.sdata2` 61.458 -> 93.750, all eight sin/cos functions back to their pre-purge figures to the digit, 0 REGRESSED. An operator deleted, no shape added. |
+| **Restore is not declare.** If the pool's value *multiset* already matches and only the positions are wrong, you are looking at a deleted function, not a missing constant - MWCC interns plain literals across a TU, so restoring a body mints nothing new. | `docs/purge_campaign_audit.md`, "The recovery law" | `997e72e3e1`: `tricky` differed in zero words and 101 of 102 positions, `player` in zero words and 8 of 196; restoring seven deleted bodies took `matched_data` +1192 with both pools byte-identical to the carve. Where the TU *also* carries a one-element anchor minting the same value, delete the anchor (`558c86a421`). |
+| **Price the opaque-extern crutch PER SYMBOL, not per unit**, and use the oracle before assuming one: a never-defined extern is a crutch only if retail's own split object defines the symbol; a carve-blob symbol is faithful. | §9, §9b, §10b | The `nm` oracle over retail's split objects; `engine/5`'s lone missing word is the priced crutch - defining it buys +176 data and costs `renderSunAndMoon` 99.476 -> 98.214, a net tree loss. |
+| **The defining TU proposes, the reading TU disposes**, and a declaration can only move into a header that can NAME the type - type visibility, not the include, is the constraint. Extern arrays stay UNSIZED. | §13 | See §13; every rule there was established md5-identical over all 1013 source objects. |
+| **The gate blind spots, and why md5-of-every-`.o` dominates.** Demotion blinds the DOL gate; `matched_code`/`matched_functions` are threshold counters; a pool rotation inside an already-NonMatching unit is free on every score axis. | `docs/purge_campaign_audit.md`, "Three sensor blind spots"; the docstring of `tools/score_delta_gate.py` | `4461d0aa45` moved neither counter and still took a function 99.981 -> 94.212; `5d467157cb`/`f5fe00213f`/`620b69dc2d` lost 144/60/16 B at `dfuzzy +0.000000`, zero regressions, zero demotions. The pool word-diff catches the third class; md5 of every `.o` catches all four *and* the score-neutral ones (class #70 renumbering), which no score can see. |
+| **The toolchain caps and the never-touch islands.** Bank on sight; do not re-probe. | §5 | Per-class detail in the memory topic files. |
+
 ## 1. Target-unmerged dot-compare (purge-priced)
 
 **Mechanism.** Our `-O4,p` peephole record-merges a shift/rotate with the following compare
@@ -149,6 +170,17 @@ Closed classes with no reachable spelling — bank on sight, details in the memo
   modelBoneTransforms_next (private ABI), ObjModel_Transform* PS-asm bodies (the 3 permanently
   unscored functions), zlbDecompress, pi_videoinit, render.o gap_03; fn_80007F78 (register
   pressure).
+- **`setGQR6` / `setGQR7` — no `mtgqr` intrinsic (priced at 50.000, measured 2026-08-03).**
+  Retail is two instructions, `mtgqr N,r3` and `blr`; MWCC GC/2.0 exposes no intrinsic for the
+  GQR write and inline `asm{}` is banned in `src/main`, so the body can only be empty or a lie.
+  `6b383c0b7f` deleted `setGQR6`'s write-only `sGQR6Config` shadow — correctly, it was fabricated
+  `.sbss` — which lands the section at the carve size at `matched_data` +0 and takes the function
+  **70.000 -> 50.000** (`main/main/model` `.text` 92.276 -> 92.270). That is the whole price and it
+  is not recoverable: any two-instruction body still misses `mtgqr`, so it scores the same 70.000
+  the fabrication did. `setGQR7` **stays** — the `ObjModel_Transform*Vertices*` scalar
+  reconstructions genuinely read the quantisation exponent back out of `sGQR7Config`, and
+  hard-coding a scale reaches the exact section size only by replacing a runtime value with a lie.
+  A window that flags `setGQR6` is reading this row, not a new regression.
 
 ## 6. Banned-shape removal in a demoted DLL TU (purge-priced, measured 2026-08-02)
 
@@ -332,7 +364,7 @@ which is how `curveSpeedAt` is caught). `static inline` is out of class: an inli
 calls is never expanded and never emitted. A new hit is not automatically a hack — adjudicate
 it against the unit's pool with the sharing test above before accepting or deleting it.
 
-## 8. Campaign-wide audit of the purge lane (2026-08-02)
+## Campaign-wide audit of the purge lane (2026-08-02)
 
 `docs/purge_campaign_audit.md` rebuilds BOTH endpoints of all 42 purge-shaped commits and diffs
 them with `tools/score_delta_gate.py`: 27 clean, 15 RED, gross -8168 B `matched_data` and
@@ -1117,3 +1149,112 @@ and the movers; `300_Transporter` was retired as a padding artifact in section 1
 motion reaches none of them** -- confirming 8b's finding from the other direction, since every
 intra-function row's mint order is only reachable through a live use and a live use is what
 moves the load.
+
+## 13. The cross-TU declaration laws (measured 2026-08-02/03)
+
+Sections 9-12 price what a declaration *places*. This section records what a declaration *costs*
+when the same object is spelled two different ways in two translation units. MWCC type-checks one
+TU at a time, so an `extern` that contradicts its definition reaches no diagnostic and no gate;
+`tools/extern_type_census.py` finds them by comparing every file-scope declaration of every symbol
+across `src/` and `include/`. Every rule below was established by rebuilding and comparing the md5
+of **all 1013 source objects**, so each is exact rather than inferred.
+
+### The defining TU proposes, the reading TU disposes
+
+A disagreement is a defect, not a style choice: one side is wrong, and which side is wrong is
+decided by the emitted code, not by seniority. The definition is the proposal; the reader's
+opcodes are the adjudication. Three tells settle nearly every row:
+
+- **signedness** — a compare feeding a branch emits `cmpwi` for `int`/`long` and `cmplwi` for
+  unsigned, so the reader's compare names the type. `gForceLoadImmediately` was defined `u32` and
+  read signed by `pi_dolphin.c`; the *definition* changed. Same tell moved `gSaveCardState` to
+  `volatile s32`, `sMapFileNameIndexRemapTable` to `int[]`, and the two map-block draw-order
+  tables to `s8[16]`.
+- **`volatile`** — `gAssetLoadCompletedFlags` is polled across an asset load, and the polling loop
+  prices both halves of its type exactly: dropping `volatile` costs `initLoadFiles`
+  100.0 -> 97.565, and `volatile u32` instead of `volatile int` costs 100.0 -> 98.756. The
+  definition becomes `volatile int` and `objprint_dolphin.c`'s plain `u32` goes.
+- **what the address is actually made of** — `gMapsTab` does integer arithmetic, so typing it as a
+  pointer *changes `shader.o`* and `int` is the object; `gMapBlockCellStateTables` has
+  `&...[4]` taken into an `int*`, so its twenty bytes are five `int`s, not `u8[0x14]`; `gTrkBlkTab`
+  is read as halfwords, so it is `u16*`, not `void*`.
+
+`d658fa7be5` settled six rows this way, `96ef150510` fifteen more, `1b59bb079c` six of a further
+sixteen, `8722b792b1` `gGlowLightList` (`u8[0x190]` held against `ModelLightStruct*[100]` read —
+400 bytes is 100 pointers). Every one of those commits is md5-identical over all 1013 objects: a
+type disagreement that is genuinely a spelling costs nothing to settle, and one that is not shows
+up as a changed object immediately.
+
+At `cb88387945` the census reports 47 residual rows. Most are the tool's own spelling blindness
+(a typedef against its `struct` tag: `GXData*` vs `struct __GXData_struct*`,
+`FrontendSaveSlot*` vs `struct FrontendSaveSlot*`). The rest are the adjudicated pins —
+`renderFlags` (`int` in `tex_dolphin` only), `gLightmapDrawQueue`, `sNAttractModeStringBlock`,
+`gAttractMoviePrepareReadyQueue`, `gTexIndMtxTable`, `gDll12Interface`, `aramNormalPriorityQueue`,
+`gSceneCamera`, `gGlowLightList` — which are load-bearing or priced below. **Do not "fix" a pin.**
+
+### Type visibility, not the include, is the relocation constraint
+
+Moving a declaration out of a `.c` and into a header the reader already includes is free by
+construction — the token stream each TU sees is unchanged. It fails for exactly two reasons: the
+symbol is already declared there as something else (settle it first, above), or **the header cannot
+name the type**. Fifteen declarations were stranded on the second reason alone — the target header
+could not see `ModelLightStruct`, `OSMessageQueue`, `GXColor`, `AIDCallback`, `OSThread`,
+`GXFifoObj`, `Camera` or `EnvironmentUpdateInterface`.
+
+Gaining that visibility is a *per-object* question, and the answer is not uniform:
+
+- **Free (measured, md5-identical over all 1013):** `pi_dolphin.h += GXFifo.h, OSThread.h,
+  OSStopwatch.h`, which carries `gGxFifoObj`, `gVideoWaitThread` and `gFrameStopwatch` out of
+  `pi_videoinit.c`; `attract_movie_api.h += dolphin/ai.h` for
+  `gAttractMovieAudioPrevDmaCallback`. Also free: adding the *owning* include to a `.c`
+  (`mm.c`, `engine/52`, `engine/0`, `shader.c`, `MWTrace.c`, `dll_80136a40.c`), each measured on
+  its own object first.
+- **Priced by class #70 (rejected):** `shader_api.h += main/model_light.h` rewrites **33 DLL
+  objects**. Every section's *content* is byte-identical and no score moves, but the local
+  literal-pool symbols renumber — `@103 -> @105` at the same address, in the same section, with
+  the same size. There is no evidence the new numbering is nearer retail's, so the three light
+  lists stay declared where they are. Same verdict for `textrender_internal.h += GXStruct.h`
+  (`subtitle.o`) and `shader_api.h += camera.h` (4 DLL objects).
+
+So the rule is: propose the include, then **measure the object, not the tree** — a score-flat,
+content-identical rewrite of 33 objects is exactly the shape that a score gate reports as zero
+and that md5-of-every-`.o` reports as 33.
+
+### An extern array stays UNSIZED — and so, sometimes, does the definition
+
+Completing an array type is a semantic change, not a declaration move, and it is priced on both
+sides:
+
+- **Declaration side.** `gAttractMovieAudioDmaBuffer` moves into `attract_movie_api.h`, but the
+  declaration must stay `extern char gAttractMovieAudioDmaBuffer[];`. Carrying the `[0x50C]` into
+  the header completes the type for `dll_3e.c` and costs `prepareAttractMode` 100.0 -> 99.087.
+- **Definition side, and it is the data axis.** `2589a58b75`: `projgfx/194`'s
+  `sProjdfp1rDoNoLongerSupported` was defined `char [40]` where the string is retail's 0x24 bytes.
+  The four surplus bytes over-size the object, and because `matched_data` is all-or-nothing per
+  section (§8), the *whole* `.data` section leaves `matched_data` even though every byte already
+  matched. Declaring it `char []` and letting the initialiser size it: data 0/72 -> 72/72, unit
+  100/100, `matched_data` +72 at zero tree regression. Its twenty sibling `OSReport` strings are
+  all `[]` and all 0x24; `194` was the lone outlier.
+
+The mirror rule for qualifiers: `const` on a *definition* is a section decision, not decoration.
+`sReverbStdDelayLengths` is **not** `const` — making the definition `const` moves it out of
+`.data` and costs 16 bytes of `matched_data`, so `1b59bb079c` moved the reader's `const` instead.
+
+### The zero-build census, and what it is allowed to conclude
+
+`b50bfac4ff`, `e133454ffd` and `cb88387945` extend the same method past objects to the other
+declaration kinds — prototypes, macros, struct tags — where a disagreement can be found by reading
+the tree rather than by building it: an `#ifdef` selecting between two prototypes for one function
+where the macro is never defined anywhere (`DLL_0126_TRIGGER_LEGCODE_INT`,
+`FRONT_GAMETEXTBOX_NARROW`, `OBJECT_RENDER_LEGACY_DIRECT_CALL`, one dead branch each); a struct tag
+whose member is `m` in the header and `v` in a local copy (`IndTexMtx23`); a fabricated
+`#define NAN 0.0f` in `ghidra_import.h` colliding with `math.h` for ~180 files, plus the bare
+`#undef NAN` written to work around it; a header included by nothing whose five prototypes are all
+contradicted elsewhere (`MSL_Common/math_ppc.h`, including a one-argument `atan2(double)`); and 99
+local `#define`s shadowing an identical-valued definition in a header the file already reaches.
+
+The census tells you a hunk is byte-identical **by construction**, and that claim is worth
+believing only because it was checked: all 1013 objects came out md5-unchanged in each case, and
+the 18 macros a file genuinely needs (`PAD_BUTTON_*`, `RENDERFLAG_*`, `TEXT_CTRL_*`, `*_OBJGROUP`)
+were kept rather than assumed redundant. "Byte-identical by construction" earns the full gate, not
+an exemption from it.
