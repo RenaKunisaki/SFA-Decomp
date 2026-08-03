@@ -10,17 +10,17 @@
 
 typedef struct SnowHornEntry
 {
-    f32 f0;
-    f32 f4;
-    f32 f8;
-    s16 hc;
+    f32 posX;
+    f32 posY;
+    f32 posZ;
+    s16 rotX;
     u8 padE[2];
-    f32 f10;
-    f32 f14;
-    f32 f18;
-    s16 h1c;
-    u16 h1e;
-    u16 h20;
+    f32 altPosX;
+    f32 altPosY;
+    f32 altPosZ;
+    s16 altRotX;
+    u16 altPoseGameBit;
+    u16 flipRotGameBit;
     u8 pad22[2];
 } SnowHornEntry;
 

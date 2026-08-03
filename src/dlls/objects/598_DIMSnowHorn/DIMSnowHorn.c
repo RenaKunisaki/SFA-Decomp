@@ -1393,8 +1393,8 @@ void DIMSnowHorn1_update(GameObject* obj)
                         SnowHornEntry* tbl = (SnowHornEntry*)base;
                         int bit2;
                         int cc;
-                        mainSetBits(tbl[modeIndex].h1e, (found)->anim.placementData[0xd]);
-                        bit2 = tbl[modeIndex].h20;
+                        mainSetBits(tbl[modeIndex].altPoseGameBit, (found)->anim.placementData[0xd]);
+                        bit2 = tbl[modeIndex].flipRotGameBit;
                         cc = modeIndex;
                         flip = 0;
                         if (angleDelta > 0x4000 || angleDelta < -0x4000)
@@ -1508,22 +1508,22 @@ void DIMSnowHorn1_init(GameObject* obj, int def, int spawnFlag)
         if (idx >= 0)
         {
             SnowHornEntry* tbl = (SnowHornEntry*)base;
-            if (mainGetBit(tbl[idx].h1e))
+            if (mainGetBit(tbl[idx].altPoseGameBit))
             {
-                (obj)->anim.localPosX = tbl[idx].f10;
-                (obj)->anim.localPosY = tbl[idx].f14;
-                (obj)->anim.localPosZ = tbl[idx].f18;
-                (obj)->anim.rotX = tbl[idx].h1c;
+                (obj)->anim.localPosX = tbl[idx].altPosX;
+                (obj)->anim.localPosY = tbl[idx].altPosY;
+                (obj)->anim.localPosZ = tbl[idx].altPosZ;
+                (obj)->anim.rotX = tbl[idx].altRotX;
             }
             else
             {
                 SnowHornEntry* e = &tbl[idx];
-                (obj)->anim.localPosX = e->f0;
-                (obj)->anim.localPosY = e->f4;
-                (obj)->anim.localPosZ = e->f8;
-                (obj)->anim.rotX = e->hc;
+                (obj)->anim.localPosX = e->posX;
+                (obj)->anim.localPosY = e->posY;
+                (obj)->anim.localPosZ = e->posZ;
+                (obj)->anim.rotX = e->rotX;
             }
-            if (mainGetBit(tbl[idx].h20))
+            if (mainGetBit(tbl[idx].flipRotGameBit))
             {
                 (obj)->anim.rotX += 0x8000;
             }
