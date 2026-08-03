@@ -448,7 +448,7 @@ void SH_LevelControl_doThornTailEvents(void* obj, ShLevelControlState* state) {
     }
 }
 
-void SH_LevelControl_doEarlyScenes(int obj, ShLevelControlState* state) {
+void SH_LevelControl_doEarlyScenes(GameObject* obj, ShLevelControlState* state) {
     GameObject* playerObj;
 
     SHOPKEEPER_APPLY_MAP_OVERRIDE(state, GAMEBIT_SH_MetQueen);
@@ -462,7 +462,7 @@ void SH_LevelControl_doEarlyScenes(int obj, ShLevelControlState* state) {
             buttonDisable(0, PAD_BUTTON_MENU);
             playerObj = (GameObject*)Obj_GetPlayerObject();
             if ((playerObj->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
-                (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
+                (*gObjectTriggerInterface)->runSequence(0, obj, -1);
                 mainSetBits(GAMEBIT_SH_TalkedToPepper, 1);
             }
         }
@@ -486,10 +486,10 @@ void SH_LevelControl_doEarlyScenes(int obj, ShLevelControlState* state) {
         }
     }
 
-    if ((u8)(*gMapEventInterface)->getObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 6) == 0) {
+    if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.mapEventSlot, 6) == 0) {
         playerObj = (GameObject*)Obj_GetPlayerObject();
         if (playerHasSpell((GameObject*)playerObj, 0) != 0) {
-            (*gMapEventInterface)->setObjGroupStatus(((GameObject*)obj)->anim.mapEventSlot, 6, 1);
+            (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 6, 1);
         }
     }
 }
@@ -557,7 +557,7 @@ void SH_LevelControl_update(GameObject* obj) {
     }
     switch (((ShLevelControlState*)state)->mapAct) {
     case 1:
-        SH_LevelControl_doEarlyScenes((int)obj, (ShLevelControlState*)state);
+        SH_LevelControl_doEarlyScenes(obj, (ShLevelControlState*)state);
         break;
     case 2:
         val = mainGetBit(GAMEBIT_SH_ReturnedToQueen);

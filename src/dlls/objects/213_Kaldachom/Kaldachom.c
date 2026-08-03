@@ -504,7 +504,7 @@ const f32 gKaldachomTextureIdScale[1] = {127.0f};
 const f32 gKaldachomPi[1] = {3.1415927f};
 const f32 gKaldachomAngleUnitScale[1] = {32768.0f};
 
-void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAddress) {
+void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, GroundBaddieState* stateAddress) {
     KaldachomControl* control;
     GameObject* playerObj;
     int hitResult;
@@ -517,38 +517,38 @@ void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAd
     control = ((KaldachomState*)objectStateAddress)->control;
     stack.params = gKaldachomCombatParams;
     playerObj = Obj_GetPlayerObject();
-    if (((GroundBaddieState*)stateAddress)->baddie.targetObj != NULL) {
-        GameObject* target = (GameObject*)((GroundBaddieState*)stateAddress)->baddie.targetObj;
+    if (stateAddress->baddie.targetObj != NULL) {
+        GameObject* target = (GameObject*)stateAddress->baddie.targetObj;
         stack.dx = target->anim.worldPosX - obj->anim.worldPosX;
         stack.dy = target->anim.worldPosY - obj->anim.worldPosY;
         stack.dz = target->anim.worldPosZ - obj->anim.worldPosZ;
-        ((GroundBaddieState*)stateAddress)->baddie.targetDistance =
+        stateAddress->baddie.targetDistance =
             sqrtf(stack.dz * stack.dz + (stack.dx * stack.dx + stack.dy * stack.dy));
     }
     (*gBaddieControlInterface)
-        ->processMessages(obj, (void*)stateAddress, (void*)(objectStateAddress + 0x35c),
+        ->processMessages(obj, stateAddress, (void*)(objectStateAddress + 0x35c),
                           ((GroundBaddieState*)objectStateAddress)->gameBitB, NULL, 0, 0, 4);
     (*gBaddieControlInterface)->getTargetGeometry(obj, playerObj, 4, &hitType, &hitAux1, &hitAux2);
     if ((hitType == 1) || (hitType == 2)) {
         hitResult = (*gBaddieControlInterface)
-                        ->updateHitReaction(obj, (void*)stateAddress, &((GroundBaddieState*)objectStateAddress)->routeNav,
+                        ->updateHitReaction(obj, stateAddress, &((GroundBaddieState*)objectStateAddress)->routeNav,
                                             ((GroundBaddieState*)objectStateAddress)->gameBitB, NULL, NULL, 1,
                                             &gKaldachomHitLightWork);
         if (hitResult != 0) {
             if ((hitResult != 0x10) && (hitResult != 0x11)) {
                 objDoHitParticleFx((void*)obj, 0.014f, &gKaldachomHitLightWork, 3, 0);
-                (*gPlayerInterface)->setState(obj, (void*)stateAddress, 4);
-                ((GroundBaddieState*)stateAddress)->baddie.hitPoints -= 1;
+                (*gPlayerInterface)->setState(obj, stateAddress, 4);
+                stateAddress->baddie.hitPoints -= 1;
                 Obj_SetModelColorFadeRecursive(obj, 0xf, 200, 0, 0, 1);
                 Sfx_PlayFromObject(obj, SFXTRIG_stftest);
             }
-            if (((GroundBaddieState*)stateAddress)->baddie.hitPoints < 1) {
-                ((GroundBaddieState*)stateAddress)->baddie.substate = 2;
+            if (stateAddress->baddie.hitPoints < 1) {
+                stateAddress->baddie.substate = 2;
             }
         }
     } else {
         hitResult = (*gBaddieControlInterface)
-                        ->updateHitReaction(obj, (void*)stateAddress, &((GroundBaddieState*)objectStateAddress)->routeNav,
+                        ->updateHitReaction(obj, stateAddress, &((GroundBaddieState*)objectStateAddress)->routeNav,
                                             ((GroundBaddieState*)objectStateAddress)->gameBitB, NULL, NULL, 1,
                                             &gKaldachomHitLightWork);
         if (hitResult != 0) {
@@ -562,24 +562,24 @@ void kaldachom_updateCombat(GameObject* obj, int objectStateAddress, int stateAd
                     (*(void (**)(int, int, void*, int, int, void*))(*(int*)gKaldachomEffectResource + 4))(
                         0, 1, &gKaldachomHitLightWork, 0x401, -1, (KaldachomCombatParams*)((u8*)&stack + 0xc));
                     playerSetHitReactionVariant(playerObj, 2);
-                    (*gPlayerInterface)->setState(obj, (void*)stateAddress, 5);
+                    (*gPlayerInterface)->setState(obj, stateAddress, 5);
                     objDoHitParticleFx((void*)obj, 0.014f, &gKaldachomHitLightWork, 4, 0);
                     Sfx_PlayFromObject(obj, SFXTRIG_swdout1);
                 }
             } else {
-                if (((GroundBaddieState*)stateAddress)->baddie.substate != 1) {
-                    (*gPlayerInterface)->setState(obj, (void*)stateAddress, 6);
-                    ((GroundBaddieState*)stateAddress)->baddie.moveJustStartedB = 1;
-                    ((GroundBaddieState*)stateAddress)->baddie.moveJustStartedA = 1;
-                    ((GroundBaddieState*)stateAddress)->baddie.substate = 1;
+                if (stateAddress->baddie.substate != 1) {
+                    (*gPlayerInterface)->setState(obj, stateAddress, 6);
+                    stateAddress->baddie.moveJustStartedB = 1;
+                    stateAddress->baddie.moveJustStartedA = 1;
+                    stateAddress->baddie.substate = 1;
                     objDoHitParticleFx((void*)obj, 0.014f, &gKaldachomHitLightWork, 1, 0);
                     Sfx_PlayFromObject(obj, SFXTRIG_stftest);
                     Sfx_PlayFromObject(obj, SFXTRIG_baddie_rach_call3);
                 }
             }
         }
-        if (((GroundBaddieState*)stateAddress)->baddie.hitPoints < 1) {
-            ((GroundBaddieState*)stateAddress)->baddie.substate = 2;
+        if (stateAddress->baddie.hitPoints < 1) {
+            stateAddress->baddie.substate = 2;
         }
     }
 
@@ -678,7 +678,7 @@ void kaldachom_update(GameObject* obj) {
         if (ref == 0) {
             *(u16*)&objectState->targetState = 0;
         } else {
-            kaldachom_updateCombat(obj, (int)objectState, (int)objectState);
+            kaldachom_updateCombat(obj, (int)objectState, (GroundBaddieState*)objectState);
             if (objectState->targetState == 0) {
                 texture = (int)objectState->control;
                 ((KaldachomControl*)texture)->pullupSfxTimer -= timeDelta;

@@ -32,9 +32,9 @@ src/dlls/objects/328_CFGuardian/CFGuardian.c:254:UNCALLED_STATIC_FN
 src/dlls/objects/362_CRrockfall/CRrockfall.c:28:UNCALLED_STATIC_FN
 src/dlls/objects/425_BombPlant/BombPlant.c:97:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/429_SH_thorntai/SHthorntail.c:915:UNCALLED_STATIC_FN
-src/dlls/objects/437/437.c:586:SINGLE_ELEM_CONST_ARRAY
-src/dlls/objects/437/437.c:587:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/437/437.c:585:SINGLE_ELEM_CONST_ARRAY
+src/dlls/objects/437/437.c:586:SINGLE_ELEM_CONST_ARRAY
+src/dlls/objects/437/437.c:584:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/443_SC_totembon/SC_totembon.c:74:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/443_SC_totembon/SC_totembon.c:75:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/458_DIMExplosio/DIMExplosio.c:204:SINGLE_ELEM_CONST_ARRAY

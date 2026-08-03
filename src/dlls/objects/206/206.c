@@ -596,7 +596,7 @@ void dll_CE_acquireTarget(GameObject* obj, GroundBaddieState* objectState, Groun
     }
 }
 
-void dll_CE_updateTargeting(GameObject* obj, int objectStateAddress, int stateAddress) {
+void dll_CE_updateTargeting(GameObject* obj, int objectStateAddress, GroundBaddieState* stateAddress) {
     GameObject* player;
     char* target;
     int hitReactionUpdated;
@@ -607,29 +607,29 @@ void dll_CE_updateTargeting(GameObject* obj, int objectStateAddress, int stateAd
 
     (void)deltaAddress;
     player = Obj_GetPlayerObject();
-    target = (char*)((GroundBaddieState*)stateAddress)->baddie.targetObj;
+    target = (char*)stateAddress->baddie.targetObj;
     if (target != NULL) {
         delta.x = ((GameObject*)target)->anim.worldPosX - obj->anim.worldPosX;
         delta.y = ((GameObject*)target)->anim.worldPosY - obj->anim.worldPosY;
         delta.z = ((GameObject*)target)->anim.worldPosZ - obj->anim.worldPosZ;
-        ((GroundBaddieState*)stateAddress)->baddie.targetDistance =
+        stateAddress->baddie.targetDistance =
             sqrtf(delta.z * delta.z + (delta.x * delta.x + delta.y * delta.y));
     }
 
     if ((((GroundBaddieState*)objectStateAddress)->configFlags & 0x20) == 0) {
         (*gBaddieControlInterface)
-            ->pollCameraTarget(obj, (void*)stateAddress, &((GroundBaddieState*)objectStateAddress)->flags400, 2, 3,
+            ->pollCameraTarget(obj, stateAddress, &((GroundBaddieState*)objectStateAddress)->flags400, 2, 3,
                                ((GroundBaddieState*)objectStateAddress)->soundIdA,
                                ((GroundBaddieState*)objectStateAddress)->soundIdB);
     }
 
     (*gBaddieControlInterface)
-        ->processMessages(obj, (void*)stateAddress, (void*)(objectStateAddress + 0x35c),
+        ->processMessages(obj, stateAddress, (void*)(objectStateAddress + 0x35c),
                           ((GroundBaddieState*)objectStateAddress)->gameBitB, NULL, 0, 0, 8);
 
     hitReactionUpdated =
         (*gBaddieControlInterface)
-            ->updateHitReaction(obj, (void*)stateAddress, &((GroundBaddieState*)objectStateAddress)->routeNav,
+            ->updateHitReaction(obj, stateAddress, &((GroundBaddieState*)objectStateAddress)->routeNav,
                                 ((GroundBaddieState*)objectStateAddress)->gameBitB, gDllCEHitReactionMoves,
                                 gDllCEHitReactionDamage, 1, &gDllCEHitReactionScratch);
 
@@ -739,7 +739,7 @@ void dll_CE_update(GameObject* obj, int unusedA, int unusedB) {
         } else if ((state->configFlags & 0x10) != 0 && (*gSkyInterface)->getSunPosition(&sunTime) == 0) {
             state->targetState = 0;
         } else {
-            dll_CE_updateTargeting(obj, (int)state, (int)state);
+            dll_CE_updateTargeting(obj, (int)state, state);
             if (state->targetState == 0) {
                 dll_CE_acquireTarget(obj, state, state);
             } else {

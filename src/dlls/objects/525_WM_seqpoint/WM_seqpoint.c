@@ -320,13 +320,13 @@ void wmseqpoint_update(GameObject* obj)
     }
 }
 
-void wmseqpoint_init(GameObject* obj, int setup)
+void wmseqpoint_init(GameObject* obj, WmSeqPointMapData* setup)
 {
     WmSeqPointState* state;
     WmSeqPointMapData* mapData;
 
     state = obj->extra;
-    mapData = (WmSeqPointMapData*)setup;
+    mapData = setup;
     obj->animEventCallback = wmseqpoint_SeqFn;
     obj->anim.rotX = (s16)(mapData->rotXByte << 8);
     state->triggerRadius = mapData->triggerRadius;

@@ -214,33 +214,33 @@ static void pushable_driftEyePos(f32* pos, f32 driftSpeed, f32 limit)
     }
 }
 
-int pushable_updateCurtain(int obj, PushableState* state) {
+int pushable_updateCurtain(GameObject* obj, PushableState* state) {
     int placement;
     GameObject* player;
 
-    placement = ((GameObject*)obj)->anim.placementDataAddress;
+    placement = obj->anim.placementDataAddress;
     player = Obj_GetPlayerObject();
     if (((state->flags & PUSHABLE_FLAG_PUSH_LOCKED) != 0) || (playerGetStateValue(player, 10) != 0)) {
-        Sfx_StopObjectChannel((GameObject*)obj, 8);
+        Sfx_StopObjectChannel(obj, 8);
         return 0;
     }
-    Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_treedrum16);
+    Sfx_PlayFromObject(obj, SFXTRIG_treedrum16);
     state->flags |= PUSHABLE_FLAG_MOVED;
     if ((state->flags & PUSHABLE_FLAG_AIRBORNE) == 0) {
-        pushable_resolveCollisions((GameObject*)obj, state);
+        pushable_resolveCollisions(obj, state);
     }
-    if (((GameObject*)obj)->anim.localPosX <= PUSHABLE_CURTAIN_TRIGGER_X + ((ObjPlacement*)placement)->posX) {
+    if (obj->anim.localPosX <= PUSHABLE_CURTAIN_TRIGGER_X + ((ObjPlacement*)placement)->posX) {
         mainSetBits(state->gameBit, 1);
         state->flags |= PUSHABLE_FLAG_PUSH_LOCKED;
-        ((GameObject*)obj)->anim.localPosX = (f32)(((ObjPlacement*)placement)->posX - PUSHABLE_CURTAIN_POSITION_X);
-        ((GameObject*)obj)->anim.localPosY = ((ObjPlacement*)placement)->posY;
-        ((GameObject*)obj)->anim.localPosZ = (f32)(PUSHABLE_CURTAIN_POSITION_Z + ((ObjPlacement*)placement)->posZ);
-        Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_curtainopen16);
+        obj->anim.localPosX = (f32)(((ObjPlacement*)placement)->posX - PUSHABLE_CURTAIN_POSITION_X);
+        obj->anim.localPosY = ((ObjPlacement*)placement)->posY;
+        obj->anim.localPosZ = (f32)(PUSHABLE_CURTAIN_POSITION_Z + ((ObjPlacement*)placement)->posZ);
+        Sfx_PlayFromObject(obj, SFXTRIG_curtainopen16);
     }
     if (mainGetBit(GAMEBIT_PushableRelated0A1A) != 0) {
-        ((GameObject*)obj)->anim.localPosX = ((ObjPlacement*)placement)->posX;
-        ((GameObject*)obj)->anim.localPosY = ((ObjPlacement*)placement)->posY;
-        ((GameObject*)obj)->anim.localPosZ = ((ObjPlacement*)placement)->posZ;
+        obj->anim.localPosX = ((ObjPlacement*)placement)->posX;
+        obj->anim.localPosY = ((ObjPlacement*)placement)->posY;
+        obj->anim.localPosZ = ((ObjPlacement*)placement)->posZ;
     }
     return 0;
 }

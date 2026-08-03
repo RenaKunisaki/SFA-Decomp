@@ -136,10 +136,10 @@ int dimmagicbridge_getObjectTypeId(void) {
 void dimmagicbridge_free(void) {
 }
 
-void dimmagicbridge_render(int obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+void dimmagicbridge_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     s32 isVisible = visible;
     if (isVisible != 0) {
-        objRenderModelAndHitVolumes((GameObject*)obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 

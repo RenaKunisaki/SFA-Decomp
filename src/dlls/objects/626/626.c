@@ -579,33 +579,33 @@ ObjectDescriptor24 gHighTopObjDescriptor = {
     (ObjectDescriptorCallback)HighTop_getLookTargetYaw,
 };
 
-int hightop_handleMotionEvent(int obj, u8 event)
+int hightop_handleMotionEvent(GameObject* obj, u8 event)
 {
-    HighTopRuntime* runtime = ((GameObject*)obj)->extra;
+    HighTopRuntime* runtime = obj->extra;
     switch (event)
     {
     case 0:
         break;
     case 5:
-        (*gPlayerInterface)->setState((void*)obj, runtime, 8);
+        (*gPlayerInterface)->setState(obj, runtime, 8);
         break;
     case 6:
         mainSetBits(0x634, 1);
-        (*gObjectTriggerInterface)->runSequence(4, (void*)obj, -1);
+        (*gObjectTriggerInterface)->runSequence(4, obj, -1);
         break;
     case 7:
         mainSetBits(0x634, 0);
         mainSetBits(0x631, 1);
-        ((GameObject*)obj)->anim.modelInstance->runtimeSourceHitMask |= 1;
+        obj->anim.modelInstance->runtimeSourceHitMask |= 1;
         runtime->flagsC40 &= ~0x140;
         runtime->lookController.modeBits &= ~2;
-        (*gPlayerInterface)->setState((void*)obj, runtime, 7);
+        (*gPlayerInterface)->setState(obj, runtime, 7);
         break;
     case 8:
-        (*gObjectTriggerInterface)->runSequence(7, (void*)obj, -1);
+        (*gObjectTriggerInterface)->runSequence(7, obj, -1);
         break;
     case 9:
-        (*gPlayerInterface)->setState((void*)obj, runtime, 7);
+        (*gPlayerInterface)->setState(obj, runtime, 7);
         break;
     }
     return 0;
@@ -968,9 +968,9 @@ int HighTop_canDismount(void)
     return 0x0;
 }
 
-void HighTop_getRiderPosition(int obj, f32* a, f32* b, f32* c)
+void HighTop_getRiderPosition(GameObject* obj, f32* a, f32* b, f32* c)
 {
-    HighTopRuntime* runtime = ((GameObject*)obj)->extra;
+    HighTopRuntime* runtime = obj->extra;
     *a = runtime->pathPoint2X;
     *b = runtime->pathPoint2Y;
     *c = runtime->pathPoint2Z;
@@ -1134,7 +1134,7 @@ void HighTop_update(GameObject* obj)
             }
             else
             {
-                hightop_handleMotionEvent(self, ev);
+                hightop_handleMotionEvent((GameObject*)self, ev);
             }
         }
     }

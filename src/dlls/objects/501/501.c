@@ -123,27 +123,27 @@ void dll501_update(GameObject* obj) {
     Obj_FreeObject(obj);
 }
 
-void dll501_init(GameObject* obj, int placement) {
+void dll501_init(GameObject* obj, Dll1F5PlacementView* placement) {
     Dll1F5State* state;
     int light;
     int chainIndex;
 
     state = obj->extra;
-    state->sequence.gameBit = ((Dll1F5PlacementView*)placement)->gameBit;
+    state->sequence.gameBit = placement->gameBit;
     state->sequence.flags = -1;
-    state->sequence.posOffsetDecay = 1.0f / (1.0f + (f32)((Dll1F5PlacementView*)placement)->dampingDivisor);
+    state->sequence.posOffsetDecay = 1.0f / (1.0f + (f32)placement->dampingDivisor);
     state->sequence.curveId = -1;
 
     chainIndex = obj->userData1;
-    if (chainIndex == 0 && ((Dll1F5PlacementView*)placement)->segmentIndex != 1) {
+    if (chainIndex == 0 && placement->segmentIndex != 1) {
         (*gObjectTriggerInterface)->loadAnimData((u8*)state, (u8*)placement);
-        obj->userData1 = ((Dll1F5PlacementView*)placement)->segmentIndex + 1;
-    } else if (chainIndex != 0 && ((Dll1F5PlacementView*)placement)->segmentIndex != chainIndex - 1) {
+        obj->userData1 = placement->segmentIndex + 1;
+    } else if (chainIndex != 0 && placement->segmentIndex != chainIndex - 1) {
         (*gObjectTriggerInterface)->freeState((u8*)state);
-        if (((Dll1F5PlacementView*)placement)->segmentIndex != -1) {
+        if (placement->segmentIndex != -1) {
             (*gObjectTriggerInterface)->loadAnimData((u8*)state, (u8*)placement);
         }
-        obj->userData1 = ((Dll1F5PlacementView*)placement)->segmentIndex + 1;
+        obj->userData1 = placement->segmentIndex + 1;
     }
 
     if (obj->anim.romDefNo == DLL1F5_FIRE_SEQ_ID) {

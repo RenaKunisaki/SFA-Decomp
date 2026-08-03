@@ -120,6 +120,6 @@ void DIMSnowHorn1_hitDetect(void);
 void DIMSnowHorn1_update(GameObject* obj);
 void DIMSnowHorn1_release(void);
 void DIMSnowHorn1_initialise(void);
-void DIMSnowHorn1_init(GameObject* obj, int p2, int p3);
+void DIMSnowHorn1_init(GameObject* obj, DIMSnowHorn1Placement* p2, int p3);
 
 #endif /* MAIN_DLL_DIM_DLL_0256_DIMSNOWHORN1_H_ */

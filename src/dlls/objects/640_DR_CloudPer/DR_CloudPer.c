@@ -75,7 +75,7 @@ void DR_CloudPer_update(void)
 {
 }
 
-void DR_CloudPer_init(int obj, int setup)
+void DR_CloudPer_init(int obj, DrCloudPerSetup* setup)
 {
     GameObject* cloud;
     DrCloudPerSetup* setupData;
@@ -84,7 +84,7 @@ void DR_CloudPer_init(int obj, int setup)
     objAddObjectType(obj, DRCLOUDPER_GROUP_TRIGGER);
     objAddObjectType(obj, DRCLOUDPER_GROUP_SURFACE);
     cloud = (GameObject*)obj;
-    setupData = (DrCloudPerSetup*)setup;
+    setupData = setup;
     {
         int yawTmp = setupData->yawByte << 8;
         cloud->anim.rotX = yawTmp;

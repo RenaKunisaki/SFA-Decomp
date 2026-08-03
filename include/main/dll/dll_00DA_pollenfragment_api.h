@@ -30,13 +30,15 @@ extern PollenFragmentConfig gPollenFragmentConfig4;
 extern PollenFragmentConfig* gPollenFragmentConfigs[];
 extern ObjectDescriptor gPollenFragmentObjDescriptor;
 
+typedef struct PollenFragmentPlacement PollenFragmentPlacement;
+
 int pollenfragment_getExtraSize(void);
 int pollenfragment_getObjectTypeId(void);
 void pollenfragment_free(GameObject* obj);
 void pollenfragment_render(GameObject* obj, int p2, int p3, int p4, int p5);
 void pollenfragment_hitDetect(GameObject* obj);
 void pollenfragment_update(GameObject* obj);
-void pollenfragment_init(GameObject* obj, int config);
+void pollenfragment_init(GameObject* obj, PollenFragmentPlacement* setup);
 void pollenfragment_release(void);
 void pollenfragment_initialise(void);
 

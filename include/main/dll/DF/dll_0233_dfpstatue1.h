@@ -30,7 +30,7 @@ STATIC_ASSERT(offsetof(DfpStatue1MapData, effectPairCount) == 0x19);
 STATIC_ASSERT(offsetof(DfpStatue1MapData, triggerSfxId) == 0x1E);
 STATIC_ASSERT(offsetof(DfpStatue1MapData, loopSfxId) == 0x20);
 
-u32 dfpstatue1_SeqFn(int obj, u32 unused, ObjSeqState *animUpdate);
+u32 dfpstatue1_SeqFn(GameObject* obj, u32 unused, ObjSeqState *animUpdate);
 void dfpstatue1_updateState(GameObject *obj);
 
 extern ObjectDescriptor gDfpstatue1ObjDescriptor;

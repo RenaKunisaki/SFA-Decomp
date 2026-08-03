@@ -93,7 +93,7 @@ void directionallight_debugEdit(GameObject* obj, DirectionalLightState* state);
 int directionallight_getExtraSize(void);
 int directionallight_getObjectTypeId(void);
 void directionallight_free(GameObject* obj);
-void directionallight_render(int obj, int p2, int p3, int p4, int p5, f32 scale);
+void directionallight_render(GameObject* obj, int p2, int p3, int p4, int p5, f32 scale);
 void directionallight_hitDetect(void);
 void directionallight_update(GameObject* obj);
 void directionallight_init(GameObject* obj, DirectionalLightSetup* setup);

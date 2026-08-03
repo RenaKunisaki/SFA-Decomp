@@ -44,7 +44,7 @@ void dll501_free(GameObject* obj);
 void dll501_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 unusedVisible);
 void dll501_hitDetect(void);
 void dll501_update(GameObject* obj);
-void dll501_init(GameObject* obj, int placement);
+void dll501_init(GameObject* obj, Dll1F5PlacementView* placement);
 void dll501_release(void);
 void dll501_initialise(void);
 

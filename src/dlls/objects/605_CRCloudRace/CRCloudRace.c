@@ -127,9 +127,9 @@ void crcloudrace_updateRaceState(GameObject* obj)
     }
 }
 
-int crcloudrace_completionCallback(int obj, int unused, ObjSeqState* animUpdate)
+int crcloudrace_completionCallback(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
-    CrCloudRaceState* state = ((GameObject*)obj)->extra;
+    CrCloudRaceState* state = obj->extra;
     int i;
 
     state->flags |= CRCLOUDRACE_STATE_FLAG_COMPLETION_CALLBACK;
@@ -165,14 +165,14 @@ void crcloudrace_free(void)
     return;
 }
 
-void crcloudrace_render(u32 obj, u32 p2, u32 p3, u32 p4, u32 p5, char visible)
+void crcloudrace_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visible)
 {
     int draw;
 
     draw = visible;
     if (draw != 0)
     {
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     }
     return;
 }

@@ -261,9 +261,9 @@ void VFPLift_free(int obj)
     (*gExpgfxInterface)->freeSource2((u32)obj);
 }
 
-void VFPLift_render(int obj, int p2, int p3, int p4, int p5, s8 vis)
+void VFPLift_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis)
 {
-    objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
 }
 
 void VFPLift_hitDetect(GameObject* obj)

@@ -216,11 +216,11 @@ int ObjSeq_setOverridePos(f32 x, f32 y, f32 z)
     return 1;
 }
 
-int ObjSeq_SetObjs(int objs, int arg, int flags)
+int ObjSeq_SetObjs(int objs, GameObject* arg, int flags)
 {
     u8 flagsByte = (u8)flags;
     objSeqObjs = objs;
-    gObjSeqStartObjOverride = (GameObject*)arg;
+    gObjSeqStartObjOverride = arg;
     gObjSeqStartOffsetBack = flagsByte;
     return 1;
 }

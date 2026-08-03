@@ -38,7 +38,7 @@ typedef union Dll0BDescriptorTable
 void modgfx_scrollTexCoords(PartfxEffectState* state, f32* in);
 void modgfx_captureFrameBaseVertices(PartfxEffectState* state);
 void modgfx_stepVertexColor(void* state, void* p, int reinit);
-void modgfx_stepPosition(int state, int cmd, int reinit);
+void modgfx_stepPosition(PartfxEffectState* state, int cmd, int reinit);
 void modgfx_stepS16VectorLerp(PartfxEffectState* state, f32* params, int reinit);
 void modgfx_stepVertexAlpha(PartfxEffectState* state, ModgfxVertexGroupCmd* command, int reinit, u8 channelIndex);
 void modgfx_stepVertexScale(PartfxEffectState* state, ModgfxVertexGroupCmd* command, int reinit, u8 channelIndex);
@@ -381,15 +381,15 @@ void modgfx_stepVertexColor(void* state, void* p, int reinit)
     }
 }
 
-void modgfx_stepPosition(int state, int cmd, int reinit)
+void modgfx_stepPosition(PartfxEffectState* state, int cmd, int reinit)
 {
 
     if (reinit == 1)
     {
-        s16* cf = ((PartfxEffectState*)state)->stageDurations;
-        if (cf[((PartfxEffectState*)state)->currentStage] == 0)
+        s16* cf = state->stageDurations;
+        if (cf[state->currentStage] == 0)
         {
-            int flags = ((PartfxEffectState*)state)->flags;
+            int flags = state->flags;
             if ((flags & 0x4) != 0 || (flags & 0x80000) != 0)
             {
                 s16 buf[12];
@@ -400,37 +400,37 @@ void modgfx_stepPosition(int state, int cmd, int reinit)
                 fbuf[2] = fill;
                 fbuf[3] = fill;
                 fbuf[0] = MODGFX_ONE;
-                posBase = ((GameObject*)((PartfxEffectState*)state)->sourceObject)->anim.rotX;
+                posBase = ((GameObject*)state->sourceObject)->anim.rotX;
                 buf[0] = posBase;
                 buf[1] = posBase;
                 buf[2] = posBase;
                 vecRotateZXY(buf, (f32*)(cmd + 0x4));
             }
-            ((PartfxEffectState*)state)->posStepX = ((ModgfxVertexGroupCmd*)cmd)->valueX;
-            ((PartfxEffectState*)state)->posStepY = ((ModgfxVertexGroupCmd*)cmd)->valueY;
-            ((PartfxEffectState*)state)->posStepZ = ((ModgfxVertexGroupCmd*)cmd)->valueZ;
+            state->posStepX = ((ModgfxVertexGroupCmd*)cmd)->valueX;
+            state->posStepY = ((ModgfxVertexGroupCmd*)cmd)->valueY;
+            state->posStepZ = ((ModgfxVertexGroupCmd*)cmd)->valueZ;
         }
         else
         {
-            ((PartfxEffectState*)state)->posStepX =
-                ((ModgfxVertexGroupCmd*)cmd)->valueX / (f32)(s32)((PartfxEffectState*)state)->stageFrameCountdown;
-            ((PartfxEffectState*)state)->posStepY =
-                ((ModgfxVertexGroupCmd*)cmd)->valueY / (f32)(s32)((PartfxEffectState*)state)->stageFrameCountdown;
-            ((PartfxEffectState*)state)->posStepZ =
-                ((ModgfxVertexGroupCmd*)cmd)->valueZ / (f32)(s32)((PartfxEffectState*)state)->stageFrameCountdown;
+            state->posStepX =
+                ((ModgfxVertexGroupCmd*)cmd)->valueX / (f32)(s32)state->stageFrameCountdown;
+            state->posStepY =
+                ((ModgfxVertexGroupCmd*)cmd)->valueY / (f32)(s32)state->stageFrameCountdown;
+            state->posStepZ =
+                ((ModgfxVertexGroupCmd*)cmd)->valueZ / (f32)(s32)state->stageFrameCountdown;
         }
-        ((PartfxEffectState*)state)->drawPosX = ((PartfxEffectState*)state)->drawPosX + ((PartfxEffectState*)state)->posStepX;
-        ((PartfxEffectState*)state)->drawPosY = ((PartfxEffectState*)state)->drawPosY + ((PartfxEffectState*)state)->posStepY;
-        ((PartfxEffectState*)state)->drawPosZ = ((PartfxEffectState*)state)->drawPosZ + ((PartfxEffectState*)state)->posStepZ;
+        state->drawPosX = state->drawPosX + state->posStepX;
+        state->drawPosY = state->drawPosY + state->posStepY;
+        state->drawPosZ = state->drawPosZ + state->posStepZ;
     }
     else
     {
-        ((PartfxEffectState*)state)->drawPosX =
-            ((PartfxEffectState*)state)->posStepX * gModgfxMotionStep + ((PartfxEffectState*)state)->drawPosX;
-        ((PartfxEffectState*)state)->drawPosY =
-            ((PartfxEffectState*)state)->posStepY * gModgfxMotionStep + ((PartfxEffectState*)state)->drawPosY;
-        ((PartfxEffectState*)state)->drawPosZ =
-            ((PartfxEffectState*)state)->posStepZ * gModgfxMotionStep + ((PartfxEffectState*)state)->drawPosZ;
+        state->drawPosX =
+            state->posStepX * gModgfxMotionStep + state->drawPosX;
+        state->drawPosY =
+            state->posStepY * gModgfxMotionStep + state->drawPosY;
+        state->drawPosZ =
+            state->posStepZ * gModgfxMotionStep + state->drawPosZ;
     }
 }
 

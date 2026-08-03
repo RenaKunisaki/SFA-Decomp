@@ -1442,18 +1442,18 @@ void DIMSnowHorn1_update(GameObject* obj)
     }
 }
 
-void DIMSnowHorn1_init(GameObject* obj, int def, int spawnFlag)
+void DIMSnowHorn1_init(GameObject* obj, DIMSnowHorn1Placement* def, int spawnFlag)
 {
     u8* base = gDIMSnowHorn1ConfigTable;
     DIMSnowHorn1PieceCounts stk = sDIMSnowHorn1DefaultPieceCounts;
     DIMSnowHorn1State* inner;
     u8* pathState;
     s8 idx;
-    (obj)->anim.rotX = (s16)(((DIMSnowHorn1Placement*)def)->spawnRot << 8);
+    (obj)->anim.rotX = (s16)(def->spawnRot << 8);
     (obj)->animEventCallback = (void*)DIMSnowHorn1_animEventCallback;
     objAddObjectType((int)obj, DIMSNOWHORN1_OBJGROUP);
     inner = (obj)->extra;
-    inner->mode = ((DIMSnowHorn1Placement*)def)->spawnVariant;
+    inner->mode = def->spawnVariant;
     inner->advanceCountThreshold = 5;
     inner->airMeterValue = 0x3e8;
     if ((obj)->anim.modelState != NULL)

@@ -30,7 +30,7 @@ void DR_CloudPer_free(int obj);
 void DR_CloudPer_render(void);
 void DR_CloudPer_hitDetect(void);
 void DR_CloudPer_update(void);
-void DR_CloudPer_init(int obj, int setup);
+void DR_CloudPer_init(int obj, DrCloudPerSetup* setup);
 void DR_CloudPer_release(void);
 void DR_CloudPer_initialise(void);
 

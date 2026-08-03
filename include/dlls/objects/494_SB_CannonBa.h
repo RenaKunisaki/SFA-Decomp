@@ -39,7 +39,7 @@ STATIC_ASSERT(sizeof(SBCannonBallState) == 0x24);
 int SB_CannonBall_getExtraSize(void);
 int SB_CannonBall_getObjectTypeId(void);
 void SB_CannonBall_free(GameObject* obj);
-void SB_CannonBall_render(int obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
+void SB_CannonBall_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void SB_CannonBall_hitDetect(GameObject* obj);
 void SB_CannonBall_update(GameObject* obj);
 void SB_CannonBall_init(GameObject* obj);

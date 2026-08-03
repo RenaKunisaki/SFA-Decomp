@@ -149,7 +149,7 @@ STATIC_ASSERT(sizeof(PushableObjectDef) == 0x28);
 STATIC_ASSERT(offsetof(PushableRadii, values) == 0x0);
 STATIC_ASSERT(sizeof(PushableRadii) == 0x10);
 
-int pushable_updateCurtain(int obj, PushableState* state);
+int pushable_updateCurtain(GameObject* obj, PushableState* state);
 void pushable_initWcPushBlock(GameObject* obj, PushableState* state);
 int pushable_updateMagicGem(GameObject* obj, PushableState* state);
 void pushable_initMagicGem(GameObject* obj, PushableState* state);

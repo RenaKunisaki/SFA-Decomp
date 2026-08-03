@@ -1187,7 +1187,7 @@ void dll_D3_hitDetect_nop(void)
 {
 }
 
-typedef struct DllD3Placement
+struct DllD3Placement
 {
     ObjPlacement base;
     u8 pad18[0x2B - 0x18];
@@ -1195,7 +1195,7 @@ typedef struct DllD3Placement
     u8 pad2C[0x2E - 0x2C];
     s8 seqIndex;
     u8 pad2F[0x30 - 0x2F];
-} DllD3Placement;
+};
 
 void* gLandedArwingStateHandlers[6];
 PartFxSpawnParams gStaffActionHitLightParams;
@@ -1352,7 +1352,7 @@ void dll_D3_update(GameObject* obj)
 #undef dy
 #undef dz
 
-void dll_D3_init(GameObject* obj, int def, int flag)
+void dll_D3_init(GameObject* obj, DllD3Placement* def, int flag)
 {
     int state;
     LandedArwingState* extra;
@@ -1384,7 +1384,7 @@ void dll_D3_init(GameObject* obj, int def, int flag)
     extra->scriptTargetZ = (obj)->anim.localPosZ;
 
     ObjAnim_SetCurrentMove((int)obj, 0, fz, 0);
-    if (((DllD3Placement*)def)->startControlMode == 0)
+    if (def->startControlMode == 0)
     {
         ftag = 0;
     }

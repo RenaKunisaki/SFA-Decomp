@@ -120,7 +120,7 @@ STATIC_ASSERT(offsetof(ShopKeeperCurveNode, z) == 0x10);
 STATIC_ASSERT(offsetof(ShopKeeperCurveNode, type) == 0x19);
 STATIC_ASSERT(offsetof(ShopKeeperCurveNode, rotZ) == 0x2c);
 
-void ShopKeeper_spawnScarabs(GameObject* obj, int state, int count);
+void ShopKeeper_spawnScarabs(GameObject* obj, ShopkeeperState* state, int count);
 int ShopKeeper_getExtraSize(void);
 int ShopKeeper_getObjectTypeId(void);
 void ShopKeeper_free(GameObject* obj);
@@ -794,7 +794,7 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
         switch (seq->eventIds[i])
         {
         case 1:
-            ShopKeeper_spawnScarabs(obj, state, ((ShopkeeperState*)state)->amount);
+            ShopKeeper_spawnScarabs(obj, (ShopkeeperState*)state, ((ShopkeeperState*)state)->amount);
             ((ShopkeeperState*)state)->flags9D4 |= SHOPKEEPER_FLAG_PURCHASED;
             break;
         case 2:
@@ -919,7 +919,7 @@ f32 ShopKeeper_turnTowardPlayer(GameObject* obj, GameObject* player, int snap)
     return dist;
 }
 
-void ShopKeeper_spawnScarabs(GameObject* obj, int state, int count)
+void ShopKeeper_spawnScarabs(GameObject* obj, ShopkeeperState* state, int count)
 {
     int i;
     f32 groundHeight;
@@ -945,7 +945,7 @@ void ShopKeeper_spawnScarabs(GameObject* obj, int state, int count)
         ((ShopkeeperSpawnSetup*)setup)->base.color[3] = 255;
         ((ShopkeeperSpawnSetup*)setup)->base.color[0] = 16;
         ((ShopkeeperSpawnSetup*)setup)->base.color[2] = 6;
-        ((ShopkeeperSpawnSetup*)setup)->base.ident = (int)((ShopkeeperState*)state)->vendorObj;
+        ((ShopkeeperSpawnSetup*)setup)->base.ident = (int)state->vendorObj;
         objSetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
     }
 
@@ -962,7 +962,7 @@ void ShopKeeper_spawnScarabs(GameObject* obj, int state, int count)
         ((ShopkeeperSpawnSetup*)setup)->base.color[0] = 16;
         ((ShopkeeperSpawnSetup*)setup)->base.color[2] = 6;
         ((ShopkeeperSpawnSetup*)setup)->kind = 1;
-        ((ShopkeeperSpawnSetup*)setup)->base.ident = (int)((ShopkeeperState*)state)->vendorObj;
+        ((ShopkeeperSpawnSetup*)setup)->base.ident = (int)state->vendorObj;
         objSetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
     }
 }

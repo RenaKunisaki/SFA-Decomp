@@ -12,8 +12,8 @@
 #define DLL1B5_SEQUENCE_ID_SC_BABY_LIGHTFOOT         0x27C
 #define DLL1B5_COMPLETION_GAMEBIT_SC_TOTEM_BOND      0x64C
 
-typedef int (*LightfootStateHandler)(GameObject* obj, int state, f32 timeDelta);
-typedef int (*LightfootSubstateHandler)(int obj, int state);
+typedef int (*LightfootStateHandler)(GameObject* obj, BaddieState* state, f32 timeDelta);
+typedef int (*LightfootSubstateHandler)(GameObject* obj, BaddieState* state);
 
 typedef struct LightfootPlacement {
     ObjPlacement base;

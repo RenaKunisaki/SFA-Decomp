@@ -205,9 +205,9 @@ void directionallight_free(GameObject* obj)
     }
 }
 
-void directionallight_render(int obj, int p2, int p3, int p4, int p5, f32 scale)
+void directionallight_render(GameObject* obj, int p2, int p3, int p4, int p5, f32 scale)
 {
-    objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
 }
 
 void directionallight_hitDetect(void)

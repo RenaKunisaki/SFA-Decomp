@@ -23,13 +23,13 @@
 #define GAMEBIT_DFP_STATUE1_VARIANT_C 0x670
 #define GAMEBIT_DFP_STATUE1_VARIANT_D 0x9f5
 
-u32 dfpstatue1_SeqFn(int obj, u32 unused, ObjSeqState* animUpdate)
+u32 dfpstatue1_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animUpdate)
 {
     int event;
     DfpStatue1State* state;
     int i;
 
-    state = ((GameObject*)obj)->extra;
+    state = obj->extra;
     animUpdate->flags = -1;
     animUpdate->movementState = 0;
     for (i = 0; i < animUpdate->eventCount; i++)

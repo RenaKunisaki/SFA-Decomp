@@ -68,26 +68,26 @@ typedef struct DIMbossTopState {
 
 typedef struct DIMbossAnimHandlerTable {
     int (*selectTargetControlMode)(GameObject* obj);
-    int (*returnToIdleWhenDone)(int obj, int state);
+    int (*returnToIdleWhenDone)(int obj, BaddieState* state);
     int (*hasMoveDone)(int unused, int* state);
-    int (*finishDefeat)(GameObject* obj, int state);
-    int (*updatePlayerHitReaction)(GameObject* obj, int state);
+    int (*finishDefeat)(GameObject* obj, BaddieState* state);
+    int (*updatePlayerHitReaction)(GameObject* obj, BaddieState* state);
     int (*updateBossHitReaction)(int obj, int state);
 } DIMbossAnimHandlerTable;
 
 typedef struct DIMbossHitDetectAnimHandlerTable {
     int (*resetIdleMove)(GameObject* obj, u8* state);
     int (*applyForwardMove)(int* obj, u8* state, f32 weight);
-    int (*trackTargetMove)(GameObject* obj, int state, f32 weight);
-    int (*randomSwipe)(GameObject* obj, int state, f32 weight);
-    int (*blueWhiteEventCapture)(GameObject* obj, int state, f32 weight);
-    int (*blueWhiteCapture)(GameObject* obj, int state, f32 weight);
-    int (*breathBurst)(GameObject* obj, int state, f32 weight);
-    int (*lungeAttack)(GameObject* obj, int state, f32 weight);
-    int (*chooseIdleTaunt)(GameObject* obj, int state);
-    int (*liftImpact)(int obj, int state);
-    int (*liftSlam)(GameObject* obj, int state);
-    int (*tonsilSlam)(GameObject* obj, int state);
+    int (*trackTargetMove)(GameObject* obj, BaddieState* state, f32 weight);
+    int (*randomSwipe)(GameObject* obj, BaddieState* state, f32 weight);
+    int (*blueWhiteEventCapture)(GameObject* obj, BaddieState* state, f32 weight);
+    int (*blueWhiteCapture)(GameObject* obj, BaddieState* state, f32 weight);
+    int (*breathBurst)(GameObject* obj, BaddieState* state, f32 weight);
+    int (*lungeAttack)(GameObject* obj, BaddieState* state, f32 weight);
+    int (*chooseIdleTaunt)(GameObject* obj, BaddieState* state);
+    int (*liftImpact)(int obj, BaddieState* state);
+    int (*liftSlam)(GameObject* obj, BaddieState* state);
+    int (*tonsilSlam)(GameObject* obj, BaddieState* state);
 } DIMbossHitDetectAnimHandlerTable;
 
 /*
@@ -200,22 +200,22 @@ STATIC_ASSERT(offsetof(DIMbossPlacementView, eventId) == 0x2C);
 STATIC_ASSERT(offsetof(DIMbossPlacementView, animObjectId) == 0x2E);
 
 int DIMbossAnim_updateBossHitReaction(int obj, int state);
-int DIMbossAnim_updatePlayerHitReaction(GameObject* obj, int state);
-int DIMbossAnim_finishDefeat(GameObject* obj, int state);
+int DIMbossAnim_updatePlayerHitReaction(GameObject* obj, BaddieState* state);
+int DIMbossAnim_finishDefeat(GameObject* obj, BaddieState* state);
 int DIMbossAnim_hasMoveDone(int unused, int* state);
-int DIMbossAnim_returnToIdleWhenDone(int obj, int state);
+int DIMbossAnim_returnToIdleWhenDone(int obj, BaddieState* state);
 int DIMbossAnim_selectTargetControlMode(GameObject* obj);
 
-int DIMbossHitDetect_tonsilSlam(GameObject* obj, int state);
-int DIMbossHitDetect_liftSlam(GameObject* obj, int state);
-int DIMbossHitDetect_liftImpact(int obj, int state);
-int DIMbossHitDetect_chooseIdleTaunt(GameObject* obj, int state);
-int DIMbossHitDetect_lungeAttack(GameObject* obj, int state, f32 weight);
-int DIMbossHitDetect_breathBurst(GameObject* obj, int state, f32 weight);
-int DIMbossHitDetect_blueWhiteCapture(GameObject* obj, int state, f32 weight);
-int DIMbossHitDetect_blueWhiteEventCapture(GameObject* obj, int state, f32 weight);
-int DIMbossHitDetect_randomSwipe(GameObject* obj, int state, f32 weight);
-int DIMbossHitDetect_trackTargetMove(GameObject* obj, int state, f32 weight);
+int DIMbossHitDetect_tonsilSlam(GameObject* obj, BaddieState* state);
+int DIMbossHitDetect_liftSlam(GameObject* obj, BaddieState* state);
+int DIMbossHitDetect_liftImpact(int obj, BaddieState* state);
+int DIMbossHitDetect_chooseIdleTaunt(GameObject* obj, BaddieState* state);
+int DIMbossHitDetect_lungeAttack(GameObject* obj, BaddieState* state, f32 weight);
+int DIMbossHitDetect_breathBurst(GameObject* obj, BaddieState* state, f32 weight);
+int DIMbossHitDetect_blueWhiteCapture(GameObject* obj, BaddieState* state, f32 weight);
+int DIMbossHitDetect_blueWhiteEventCapture(GameObject* obj, BaddieState* state, f32 weight);
+int DIMbossHitDetect_randomSwipe(GameObject* obj, BaddieState* state, f32 weight);
+int DIMbossHitDetect_trackTargetMove(GameObject* obj, BaddieState* state, f32 weight);
 int DIMbossHitDetect_applyForwardMove(int* obj, u8* state, f32 weight);
 int DIMbossHitDetect_resetIdleMove(GameObject* obj, u8* state);
 

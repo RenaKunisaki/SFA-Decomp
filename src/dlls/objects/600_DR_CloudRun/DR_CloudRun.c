@@ -1005,14 +1005,14 @@ int DR_CloudRunner_getMountState(void)
     return 0x0;
 }
 
-void DR_CloudRunner_getCameraPosition(int obj, f32* a, f32* b, f32* c)
+void DR_CloudRunner_getCameraPosition(GameObject* obj, f32* a, f32* b, f32* c)
 {
     MatrixTransform v;
     f32 matrix[16];
     GameObject* src = Obj_GetPlayerObject();
     if (src == NULL)
     {
-        src = (GameObject*)obj;
+        src = obj;
     }
     v.x = src->anim.localPosX;
     v.y = src->anim.localPosY;
@@ -1272,20 +1272,20 @@ void DR_CloudRunner_update(GameObject* obj)
     }
 }
 
-void DR_CloudRunner_init(GameObject* obj, int def)
+void DR_CloudRunner_init(GameObject* obj, DRCloudRunnerPlacement* def)
 {
     MoveLibTarget target;
     int inner;
     int savedSlot;
-    (obj)->anim.rotX = (s16)(((DRCloudRunnerPlacement*)def)->spawnRot << 8);
+    (obj)->anim.rotX = (s16)(def->spawnRot << 8);
     (obj)->animEventCallback = DR_CloudRunner_SeqFn;
     objAddObjectType((int)obj, DRCLOUDRUNNER_OBJGROUP);
     inner = (int)obj->extra;
-    ((CloudRunnerState*)inner)->spawnVariant = ((DRCloudRunnerPlacement*)def)->spawnVariant;
+    ((CloudRunnerState*)inner)->spawnVariant = def->spawnVariant;
     ((CloudRunnerState*)inner)->unkBAE = 5;
-    ((CloudRunnerState*)inner)->airTimeRemaining = ((DRCloudRunnerPlacement*)def)->airMeterCapacity;
+    ((CloudRunnerState*)inner)->airTimeRemaining = def->airMeterCapacity;
     ((CloudRunnerState*)inner)->sequenceIndex = -1;
-    ((CloudRunnerState*)inner)->pathFollowSpeed = (f32)((DRCloudRunnerPlacement*)def)->pathSpeedTenths / 10.0f;
+    ((CloudRunnerState*)inner)->pathFollowSpeed = (f32)def->pathSpeedTenths / 10.0f;
     if ((obj)->anim.modelState != NULL)
     {
         (obj)->anim.modelState->flags |= 0xa10;

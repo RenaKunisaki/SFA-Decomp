@@ -446,7 +446,7 @@ void earthwalker_update(int obj)
 
     ObjAnim_AdvanceCurrentMove((int)obj, gEarthWalkerAnimAdvanceRate, timeDelta, 0);
 }
-void earthwalker_init(GameObject* obj, int setup)
+void earthwalker_init(GameObject* obj, EarthWalkerPlacement* setup)
 {
     EarthWalkerState* ewState = obj->extra;
     int local;
@@ -460,8 +460,8 @@ void earthwalker_init(GameObject* obj, int setup)
      * player distance and the head snaps back to neutral). */
     dll_2E_setLookAtMaxDistance((MoveLibState*)ewState, gEarthWalkerLookAtMaxDistance);
     ewState->moveLibFlags611 |= 2;
-    obj->anim.rotX = (s16)(((EarthWalkerPlacement*)setup)->spawnRot << 8);
-    ewState->encounterType = ((EarthWalkerPlacement*)setup)->encounterType;
+    obj->anim.rotX = (s16)(setup->spawnRot << 8);
+    ewState->encounterType = setup->encounterType;
     if (ewState->encounterType == 1)
     {
         if ((int)mainGetBit(GAMEBIT_WC_FoundKing) != 0 || (*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot) == 2)

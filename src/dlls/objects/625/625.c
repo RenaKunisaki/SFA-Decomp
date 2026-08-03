@@ -131,14 +131,14 @@ int drakorhoverpad_getMountState(void)
     return 0x0;
 }
 
-void drakorhoverpad_getCameraPosition(int obj, f32* ox, f32* oy, f32* oz)
+void drakorhoverpad_getCameraPosition(GameObject* obj, f32* ox, f32* oy, f32* oz)
 {
     MatrixTransform pos;
     f32 mtx[16];
     GameObject* src = Obj_GetPlayerObject();
     if (src == NULL)
     {
-        src = (GameObject*)obj;
+        src = obj;
     }
     pos.x = src->anim.localPosX;
     pos.y = src->anim.localPosY;

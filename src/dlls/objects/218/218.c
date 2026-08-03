@@ -56,13 +56,13 @@ PollenFragmentConfig* gPollenFragmentConfigs[] = {
     &gPollenFragmentConfig0, &gPollenFragmentConfig1, &gPollenFragmentConfig2, &gPollenFragmentConfig3, &gPollenFragmentConfig4,
 };
 
-typedef struct PollenFragmentPlacement
+struct PollenFragmentPlacement
 {
     ObjPlacement base;
     u8 unk18;
     s8 pollenType;
     u8 unk1A[10];
-} PollenFragmentPlacement;
+};
 
 typedef struct PollenFragmentExtra
 {
@@ -304,15 +304,13 @@ void pollenfragment_update(GameObject* obj)
     }
 }
 
-void pollenfragment_init(GameObject* obj, int config)
+void pollenfragment_init(GameObject* obj, PollenFragmentPlacement* setup)
 {
     s8 pollenType;
     u32 randomValue;
     int spawnCount;
     PollenFragmentExtra* state;
-    PollenFragmentPlacement* setup;
 
-    setup = (PollenFragmentPlacement*)config;
     state = obj->extra;
     if (setup->pollenType == 1)
     {
