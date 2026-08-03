@@ -5470,7 +5470,7 @@ void pauseMenuDrawGridCell(u8 i, int alpha, int flag)
 
 /* Draws the race-times list panel and the six
  * best-time entries with a pulsing header. */
-char sBabySnowwormTimerFormat[] = "  %02d:%02d.%02d";
+char sGameUiTimeFormat[] = "  %02d:%02d.%02d";
 
 void timeListDraw(int unused1, int unused2, int unused3)
 {
@@ -5535,7 +5535,7 @@ void timeListDraw(int unused1, int unused2, int unused3)
                 gameTextShow(0x2fa);
             }
             mins = v / 6000;
-            sprintf(buf, sBabySnowwormTimerFormat, mins, v / 100 - mins * 60, v - (int)((long)v / 100) * 100);
+            sprintf(buf, sGameUiTimeFormat, mins, v / 100 - mins * 60, v - (int)((long)v / 100) * 100);
             gameTextShowTimeStr(buf);
             p++;
         }
