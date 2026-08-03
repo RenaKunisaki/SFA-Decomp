@@ -723,9 +723,7 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
     f32 speed;
 
     state = *(int*)&(obj)->extra;
-    /* second copy of the extra pointer; the (int)(long) round-trip is
-     * load-bearing - it splits the value web so state2 gets its own
-     * register home (md5-verified: removing it changes codegen) */
+    /* second copy of the extra pointer */
     state2 = (int)(long)*(int*)&(obj)->extra;
     player = Obj_GetPlayerObject();
     range = 1.0f;

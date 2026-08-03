@@ -1,7 +1,6 @@
 /*
  * DLL 0x1D3 - world-map models, paths, presentation effects, and orbiting
- * scenery. The generated numeric source path remains the authoritative TU
- * identity because retail evidence does not establish one original basename.
+ * scenery.
  */
 #include "dlls/objects/467.h"
 

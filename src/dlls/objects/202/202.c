@@ -1,8 +1,7 @@
 /*
  * Unused GroundBaddie-derived enemy in the ChukChuk/IceBall family.
  *
- * Slot 202 has no retail object name. The iceBaddie namespace is descriptive;
- * see docs/dll_00CA_rename_proposal.md for the supporting retail-data audit.
+ * Slot 202 has no retail object name; the iceBaddie namespace is descriptive.
  */
 #include "dlls/objects/202.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"

@@ -1,7 +1,5 @@
 /*
- * DLL 0x01FF implements a small carryable-object behavior. Active retail
- * evidence does not establish an original basename, so the generated numeric
- * source path and numbered namespace remain authoritative.
+ * DLL 0x01FF implements a small carryable-object behavior.
  */
 #include "dlls/objects/511.h"
 

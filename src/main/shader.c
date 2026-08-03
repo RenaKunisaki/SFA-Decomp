@@ -2334,9 +2334,7 @@ void doPendingMapLoads(void)
                             }
                         }
                         gMapBlockIndexCount = gMapBlockIndexCount - 1;
-                        /* Vestigial grid walk over each layer's cell table: writes only dead
-                           locals, but retail emits it. MWCC collapses the two innermost levels
-                           into the closed-form pointer and row bumps of the mtctr-2 loop. */
+                        /* Vestigial grid walk over each layer's cell table: writes only dead locals. */
                         for (i = 0; i < 5; i++)
                         {
                             cellGrid = (char*)*eBase;

@@ -1,7 +1,6 @@
 /*
  * DLL 0x1F5 (slot 501) provides shared trigger-sequence behavior for several
- * object definitions. The retail source basename is not yet recovered, so its
- * symbols remain in the numbered DLL namespace.
+ * object definitions.
  */
 #include "dlls/objects/501.h"
 

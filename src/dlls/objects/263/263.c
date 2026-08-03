@@ -1,6 +1,6 @@
 /*
  * DLL 0x107 - unreachable wind-lift/blow-vent object (no OBJECTS.bin def
- * references it: retail cut content). TU = 0x80185868..0x8018646C.
+ * references it: retail cut content).
  */
 #include "dlls/objects/263.h"
 

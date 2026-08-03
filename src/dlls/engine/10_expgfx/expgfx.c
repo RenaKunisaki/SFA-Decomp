@@ -263,13 +263,6 @@ const ObjFxRandomBurstTable gObjFxRandomBurstTbl = {
 
 #define OBJFX_OBJFLAG_PARENT_SLACK 0x1000
 
-/*
- * Keep the scale and configuration writes raw: routing them through typed
- * fields reorders this TU's shared float-conversion pool. Canonical offsetof
- * expressions retain the recovered placement contract without hard-coded
- * offsets.
- */
-
 void objfx_spawnCrystalOrbitEffects(GameObject* obj, s16* work, f32 period, f32 xMul, f32 yMul, f32 xOff,
                                     f32 yOff, u8 flags)
 {

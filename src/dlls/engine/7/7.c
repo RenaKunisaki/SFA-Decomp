@@ -1950,9 +1950,8 @@ void newclouds_onMapSetup(void)
 
 
 /*
- * `params` kept as raw u8* here (not CloudSpawnParams*): the NC_CLOUD macro
- * and env slot writes index it as `params + 0x26` / `params + 0x26 * 0xc`
- * byte arithmetic; retyping shifts the index/CSE codegen. `env` is the
+ * The NC_CLOUD macro and the env slot writes index `params` as
+ * `params + 0x26` / `params + 0x26 * 0xc` byte arithmetic. `env` is the
  * savegame environment-state blob returned by saveGameGetEnvState().
  */
 #undef NC_CLOUD

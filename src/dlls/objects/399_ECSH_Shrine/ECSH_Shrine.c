@@ -460,11 +460,6 @@ void ecshShrine_update(GameObject* obj) {
     puzzle = (ECSHShrinePuzzleScratch*)gECSHShrineCupPositions;
     state = obj->extra;
     player = Obj_GetPlayerObject();
-    /*
-     * The retail pair copy spans lbl_803E8470 and the adjacent
-     * lbl_803E8474 word. Keep the combined access because splitting the
-     * assignment changes MWCC's load/store order.
-     */
     *(ECSHShrineWordPair*)&cupPositionSwap[0] = *(ECSHShrineWordPair*)(void*)&lbl_803E8470;
     if (state->introTextLatch == 0) {
         byteValue = mainGetBit(GAMEBIT_K1_SHRINE_INTRO_TEXT_TRIGGER);
@@ -538,11 +533,7 @@ void ecshShrine_update(GameObject* obj) {
                 puzzle->cupSlotMap[3] = puzzle->nextCupSlotMap[3];
                 puzzle->cupSlotMap[4] = puzzle->nextCupSlotMap[4];
                 puzzle->cupSlotMap[5] = puzzle->nextCupSlotMap[5];
-                /*
-                 * Retail reads the first halfword of the adjacent descriptor
-                 * at 0x48. Preserve the overrun without enlarging this
-                 * allocation-backed scratch layout.
-                 */
+                /* Reads the first halfword of the adjacent descriptor at 0x48. */
                 puzzle->nextCupSlotMap[0] = *(s16*)((u8*)puzzle + sizeof(ECSHShrinePuzzleScratch));
             }
             break;

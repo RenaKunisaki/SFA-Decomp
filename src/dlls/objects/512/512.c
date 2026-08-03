@@ -1,8 +1,6 @@
 /*
  * DLL 0x0200 implements map-act-specific interaction, sequence, and wandering
- * behaviors. Active retail evidence does not establish an original basename,
- * so the generated numeric source path and numbered namespace remain
- * authoritative.
+ * behaviors.
  */
 #include "dlls/objects/512.h"
 

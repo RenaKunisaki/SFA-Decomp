@@ -344,8 +344,6 @@ static inline f32 andross_getSwayPosition(f32 sway, f32 phase, f32 base) {
     return sway * phase + base;
 }
 
-// MWCC eliminates this unused function body, but its literals still establish
-// the original ordering of this translation unit's constant pool.
 static void andross_updateDistortion(GameObject* obj, AndrossState* state, f32 progress) {
     f32 radius;
     obj->anim.alpha = state->fadeAlpha * 255.0f;

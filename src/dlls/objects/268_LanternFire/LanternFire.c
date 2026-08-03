@@ -1,6 +1,3 @@
-/*
- * LanternFire (DLL 0x10C). TU = 0x80186704..0x801871C8.
- */
 #include "dlls/objects/268_LanternFire.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"

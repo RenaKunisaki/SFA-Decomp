@@ -1,7 +1,6 @@
 /*
  * DLL 0x1F4 (slot 500) drives a set-dressing object that follows a looping
- * path and emits particle and sound effects. The retail source basename is
- * not yet recovered, so its symbols remain in the numbered DLL namespace.
+ * path and emits particle and sound effects.
  */
 #include "dlls/objects/500.h"
 

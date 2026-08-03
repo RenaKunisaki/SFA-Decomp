@@ -539,10 +539,7 @@ GameObject* camcontrol_findBestTarget(CamcontrolCameraState* cameraState, ObjAni
             worldTo[0] = best->anim.hitVolumeTransforms[best->hitVolumeIndex].jointX;
             worldTo[1] = best->anim.hitVolumeTransforms[best->hitVolumeIndex].jointY;
             worldTo[2] = best->anim.hitVolumeTransforms[best->hitVolumeIndex].jointZ;
-            /*
-             * These remain 12-byte stack slots: narrowing them to VoxPos changes MWCC's retail stack layout.
-             * The voxmap APIs access only the leading three s16 coordinates.
-             */
+            /* The voxmap APIs access only the leading three s16 coordinates. */
             voxmaps_worldToGrid(worldFrom, (s16*)gridFromStorage);
             voxmaps_worldToGrid(worldTo, (s16*)gridToStorage);
             if ((u8)voxmaps_traceLine((VoxPos*)gridFromStorage, (VoxPos*)gridToStorage, (VoxPos*)traceOutStorage,

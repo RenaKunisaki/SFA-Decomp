@@ -1,8 +1,6 @@
 /*
  * DLL 0x1DA moves a small physics object, reflects its velocity from world
- * geometry, and persists its resting position. The generated numeric source
- * path remains authoritative because retail evidence does not establish an
- * original basename.
+ * geometry, and persists its resting position.
  */
 
 #include "dlls/objects/474.h"

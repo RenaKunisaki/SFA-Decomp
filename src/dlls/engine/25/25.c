@@ -642,7 +642,6 @@ GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, i
     return gDll19NearestObj;
 }
 
-/* dont_inline: keeps func0C out-of-line so func17's call site matches retail */
 void dll_19_startHitReaction(GameObject* obj, void* state, void* hitbox, s16 gameBit, u8* flagOut, s16 substate, s16 moveMode,
                    int animMove, s8 field25f)
 {
@@ -681,8 +680,6 @@ void dll_19_startHitReaction(GameObject* obj, void* state, void* hitbox, s16 gam
     }
 }
 
-/* opt_loop_invariants off: retail recomputes the loop-invariant self-position
- * reads inside the scan loop; hoisting them changes the schedule */
 GameObject* dll_19_findAggroTarget(GameObject* self, void* state, f32 frange, int halfAngle)
 {
     f32 bboxOut[20];

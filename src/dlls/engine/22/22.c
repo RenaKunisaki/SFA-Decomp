@@ -61,8 +61,7 @@ static inline void screenTransitionFadeColor(u8 r, u8 g, u8 b)
  * center of the viewport with alpha-fading strips expanding outward, first along
  * X (vertical band), then along Y (horizontal band). The band grows with the
  * transition alpha; when it covers the viewport this falls back to a plain fade.
- * The locals are reused across the two passes with shifted roles (matches the
- * retail register allocation):
+ * The locals are reused across the two passes with shifted roles:
  *   half:     pass 1 = half viewport width; pass 2 = fade extent (fadeSpan role)
  *   band:     pass 1 = band half-width, then left draw cursor; pass 2 = half height
  *   wipe:     pass 1 = wipe amount from alpha; pass 2 = band half-height, then top cursor

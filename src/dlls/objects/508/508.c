@@ -1,7 +1,5 @@
 /*
- * DLL 508 / 0x01FC - shared laser-beam hazard behavior. The generated numeric
- * path remains the authoritative source identity because no retail basename
- * has been recovered for this TU.
+ * DLL 508 / 0x01FC - shared laser-beam hazard behavior.
  */
 #include "dlls/objects/508.h"
 

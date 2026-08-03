@@ -1,7 +1,5 @@
 /*
- * DLL 0x1FB (slot 507) - an unnamed interaction-controlled animated object. The
- * generated numeric path remains its source identity because no retail
- * basename has been recovered.
+ * DLL 0x1FB (slot 507) - an unnamed interaction-controlled animated object.
  */
 #include "dlls/objects/507.h"
 

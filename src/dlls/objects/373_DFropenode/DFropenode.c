@@ -100,8 +100,6 @@ void DFropenode_buildRopeSegmentMesh(const LightmapVertex* templateVertices, int
     out[5].z += endZ;
 }
 
-/* Keep addressable so every use shares one .sdata2 entry. */
-
 const f32 gDFropenodeOneHundredth[1] = {0.01f};
 
 static inline void DFropenode_applyRopeSway(DFropenodeRope* rope) {

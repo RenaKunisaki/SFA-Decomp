@@ -57,8 +57,7 @@ void VFP_MiniFire_hitDetect(void)
 
 void VFP_MiniFire_update(GameObject* obj)
 {
-    /* randomGetRange's canonical int return is load-bearing here: the
-       sampled offsets are intentionally signed. */
+    /* The sampled offsets are intentionally signed. */
     VfpMinifireState* state = (obj)->extra;
     PartFxSpawnParams args;
     ObjHitsPriorityState* linkedGfx;

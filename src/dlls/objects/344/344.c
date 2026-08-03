@@ -351,7 +351,6 @@ void gunpowderBarrel_triggerExplosion(GameObject* obj) {
         }
         state->fuseFrames = 1;
         state->heldFlags.held = 0;
-        /* Preserve the distinct pointer-to-integer conversion at this call. */
         objFreeObjectType((u32)(void*)obj, GUNPOWDER_BARREL_OBJECT_GROUP);
         if (obj->anim.parent != 0) {
             state->radiusGrowthPerFrame = 2.2f;

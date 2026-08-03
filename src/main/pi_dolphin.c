@@ -224,21 +224,14 @@ struct MldfIterators
 #define MLDF_SIZE(s)  (tbl->sizes[s])
 #define MLDF_PTR(s)   (tbl->ptrs[s])
 #define MLDF_OWNER(s) (tbl->owners[s])
-/* Runtime-index accessors. One-shot accesses use the idx-left flat spelling
-   (slwi; addis tbl; add) or plain member form; the hot ptr/size slots go through
-   per-block biased locals (see slotPtrAddr/slotSizeAddr) so the CSE web keeps the
-   ha-sum (tbl + 0x20000 + slot*4) and each access folds the lo displacement. */
 #define MLDF_ID_RT(s)    (*(int*)(((s) << 2) + ((u32) & tbl->ids[0])))
 #define MLDF_OWNER_RT(s) (*(s16*)(((s) << 1) + ((u32) & tbl->owners[0])))
 #define MLDF_FINFO4(s4)  (tbl->fileInfo[slot])
 #define MLDF_SP_ID(p)    (tbl->ids[slot])
 #define MLDF_SP_SIZE(p)  (*(int*)(slotSizeAddr - 0x6D68))
-/* first store of the block also establishes the biased size base; embedding the
-   assignment in the lvalue makes MWCC evaluate the RHS (file length) first, as target */
 #define MLDF_SP_SIZE_INIT(p) (*(int*)((slotSizeAddr = (slot << 2) + ((u32) & tbl->sizes[0] + 0x6D68)) - 0x6D68))
 #define MLDF_SP_PTR(p)       (*(void**)(slotPtrAddr - 0x6A28))
-/* re-deref through the biased local `slotPtrAddr` on every use; the -0x6A28 displacement
-   (== &tbl->ptrs[0] relative to tbl + 0x20000) matches target addressing */
+/* the -0x6A28 displacement == &tbl->ptrs[0] relative to tbl + 0x20000 */
 #define MLDF_QPTR (*(u32*)(slotPtrAddr - 0x6A28))
 
 /* 16-byte header of a "ZLB"-tagged compressed stream; the deflate payload
@@ -3628,8 +3621,7 @@ void loadModelsBin(int offsetFlags, int* p1c, int* p20, int* p18, int* p4, int w
 }
 
 
-/* base+0x74 / base+0x78 are gResourceFileBuffers[0x1d]/[0x1e] (MldfTables.ptrs: maps info
-   bin/tab); the byte-offset spelling is codegen-load-bearing */
+/* base+0x74 / base+0x78 are gResourceFileBuffers[0x1d]/[0x1e] (MldfTables.ptrs: maps info bin/tab) */
 void mapsBinGetRomlistSize(int idx, int* out1, int* out2, int* out3, int p5)
 {
     char* base = (char*)gResourceFileBuffers;

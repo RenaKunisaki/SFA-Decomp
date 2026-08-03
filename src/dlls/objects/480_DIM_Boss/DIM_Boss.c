@@ -172,10 +172,6 @@ typedef struct Dim2PlayerInterface {
     Dim2RequestControlModeFn requestControlMode;
 } Dim2PlayerInterface;
 
-/*
- * Compiler-proven view from lbl_80325960 to gDim2LiftFarMoveChoices. The
- * named arrays between those globals remain independently owned.
- */
 typedef struct DimAnimTable {
     u8 unknown000[0x168];
     s16 surprised[6];
@@ -191,10 +187,6 @@ typedef struct Dim2BossMoveChoices {
     s16 group1[8];
 } Dim2BossMoveChoices;
 
-/*
- * Compiler-proven view across the TU's ordered BSS globals. Declaration
- * order below is load-bearing and remains the ownership source of truth.
- */
 typedef struct DIMbossAnimScratch {
     union {
         f32 effectVelocity[3];

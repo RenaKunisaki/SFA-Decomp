@@ -1,7 +1,6 @@
 /*
  * DLL 0x1DB drives a vertically moving platform between fixed upper and lower
- * stops. The generated numeric source path remains authoritative because
- * retail evidence does not establish an original basename.
+ * stops.
  */
 
 #include "dlls/objects/475.h"

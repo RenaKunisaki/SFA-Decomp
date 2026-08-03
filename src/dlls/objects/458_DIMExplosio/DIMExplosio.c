@@ -34,7 +34,6 @@
 #include "sys/objects.h"
 #include "track/intersect_render_setup_api.h"
 
-/* Preserve the target's speed-before-generation indirect-call argument order. */
 typedef void (*ExplosionSpawnFlameSpeedFirstFn)(int obj, f32 speed, int generation, f32 x, f32 y, f32 z);
 
 typedef struct DimExplosionPartfxSource {

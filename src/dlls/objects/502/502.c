@@ -1,7 +1,6 @@
 /*
  * DLL 0x1F6 (slot 502) advances object animation and responds to a linked
- * parent's rotation. The retail source basename is not yet recovered, so its
- * symbols remain in the numbered DLL namespace.
+ * parent's rotation.
  */
 #include "dlls/objects/502.h"
 

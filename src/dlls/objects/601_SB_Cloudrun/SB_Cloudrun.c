@@ -322,9 +322,7 @@ struct SBCloudRunnerState
     u8 pad80 : 7;
 };
 
-/* Overlay for the A-held bit at state+0x80. Load-bearing: accessing it
- * through this separate typed pointer (not SBCloudRunnerState.aButtonHeld)
- * is what reproduces the retail codegen (md5-verified). */
+/* Overlay for the A-held bit at state+0x80. */
 typedef struct
 {
     u8 held : 1;

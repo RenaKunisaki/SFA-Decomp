@@ -30,10 +30,6 @@ typedef enum DimTruthHornIcePhase {
 } DimTruthHornIcePhase;
 
 int dimtruthhornice_countdownCallback(GameObject* obj, int damage) {
-    /*
-     * Keep the unsigned byte load followed by the signed store/read. A typed
-     * s8 expression changes MWCC's extension order in this exact function.
-     */
     u8* stateBytes = obj->extra;
 
     *(s8*)(stateBytes + 2) = (s8)(stateBytes[2] - damage);

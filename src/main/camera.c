@@ -595,7 +595,6 @@ void Camera_ApplyCurrentViewport(void* viewportArg) {
     int viewportY;
     u32 screenSize;
 
-    /* Preserve this unpack-and-reuse sequence to retain retail's scissor-setup register allocation. */
     screenSize = getScreenResolution();
     viewportY = screenSize >> 16;
     width = screenSize;
@@ -950,10 +949,6 @@ void Camera_InitState(void) {
     Camera* camera;
 
     for (i = 0; i < CAMERA_COUNT; i++) {
-        /*
-         * Keep the index offset separate from the CameraMatrixStorage member offset. MWCC otherwise rewrites this
-         * unrolled loop and no longer emits retail's base-plus-index, then member-offset address sequence.
-         */
         camera = (Camera*)((u8*)storage + (u8)i * sizeof(Camera));
         camera = (Camera*)((u8*)camera + offsetof(CameraMatrixStorage, cameras));
         camera->roll = 0;
@@ -1000,10 +995,6 @@ void Camera_InitState(void) {
     copyMatrix44(storage->worldMatrix + 32, storage->yawTransforms[33]);
 }
 
-/*
- * MWCC emits this uninitialized block in reverse declaration order. Keep these
- * definitions together so the generated .bss follows CameraMatrixStorage.
- */
 CameraProjectionMatrix gCameraProjectionMatrix;
 CameraMatrix gCameraInverseViewMatrix;
 CameraMatrix gCameraViewMatrix;
