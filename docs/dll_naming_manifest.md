@@ -260,7 +260,7 @@ any of them is acted on.
 | 0x0CF | CannonClaw (+CannonClawO) | COMPLETE | dlls/objects/207_CannonClaw/CannonClaw.c | = (canonical) | — |
 | 0x0D0 | Grimble | COMPLETE | dlls/objects/208_Grimble/Grimble.c | = (canonical) | — |
 | 0x0D1 | TumbleWeedB | COMPLETE | dlls/objects/209_TumbleWeedB/TumbleWeedB.c | = (canonical) | — |
-| 0x0D2 | Tumbleweed1 (+Tumbleweed2, Tumbleweed3, Tumbleweed4) | COMPLETE | dlls/objects/209_TumbleWeedB/TumbleWeedB.c | = (canonical) | Slot 210 was rejoined into the 209 TumbleWeedB TU; `src/dlls/dlls.txt` still scaffolds slot 210 |
+| 0x0D2 | Tumbleweed1 (+Tumbleweed2, Tumbleweed3, Tumbleweed4) | COMPLETE | dlls/objects/209_TumbleWeedB/TumbleWeedB.c | = (canonical) | Slot 210 was rejoined into the 209 TumbleWeedB TU; `src/dlls/dlls.txt` still scaffolds slot 210. Proven, not assumed: `lbl_803E2F5C/60/64/68/70` in `.sdata2` are each referenced from both halves, and MWCC interns a float constant once per TU, so two TUs would need two copies |
 | 0x0D3 | — | NO-RETAIL-NAME | dlls/objects/211/211.c | = (canonical) | — |
 | 0x0D4 | SkeetlaWall | COMPLETE | dlls/objects/212_SkeetlaWall/SkeetlaWall.c | = (canonical) | — |
 | 0x0D5 | Kaldachom | COMPLETE | dlls/objects/213_Kaldachom/Kaldachom.c | = (canonical) | — |
@@ -984,3 +984,82 @@ more as they are recovered.
 | 0x235 | dlls/objects/565_DFP_TargetB/DFP_TargetB.c | include/main/dll/dll_0235_dfptargetblock.h |
 | 0x259 | dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c | include/main/dll/WC/dll_0259_sbcloudrunner.h |
 | 0x287 | dlls/objects/647_SPScarab/SPScarab.c | include/main/dll/SP/dll_0287_spscarab.h |
+
+## Deciding file identity: the oracles and the rename gate
+
+A wrong filename is byte-identical to a right one and invisible to every
+score gate in this project, so file identity has to be settled on
+evidence and then *proved not to have moved anything*.  What follows is
+the method, with the populations it has been run against.
+
+### The four oracles
+
+**1. Rare's own self-naming strings.**  Only two shapes name a file, and
+both are Rare-authored: an `OSPanic(__FILE__, __LINE__, msg)` file
+argument (`n_attractmode.c`, `SHthorntail.c`, `camcontrol.c`,
+`dvdfs.c`, `expgfx.c`), and a `<name.c Init>` / `<name.c -- fn>`
+diagnostic prefix (`laser.c`, `textblock.c`, `objanim.c`, `DIMBoss.c`).
+Scan the **DOL**, never the source: the tags that live only as
+`char x[] = {0x..}` hex blobs are invisible to a source grep and fall out
+of a binary scan for free.  Sibling tags that do *not* spell the `.c`
+(`<platform1 Init>`, `<dfperchwitch Init>`, the fifteen `<projNNN Do>`)
+name the module, not the file -- Rare wrote the `.c` when they meant the
+file, and that asymmetry is the whole argument.  Population: 57
+angle-bracket tags plus 17 bare `*.c` tokens across all DOL segments.
+
+**2. String-pool ownership.**  With `-str reuse` -- this project's flag
+-- MWCC GC/2.0 emits string literals as anonymous `@N` objects and
+addresses them off the *section* base: `lis rX,HA(...data.0);
+addi rN,rX,LO(...data.0); addi r3,rN,off`.  A TU only ever emits a
+`...data.0`-relative reference to a string **it emitted itself**, so the
+literal and the code that reads it are in the same TU, and the literal's
+offset within `.data` is fixed by how much initialised data the TU
+declares ahead of the first use.  This is what proved
+`src/n_attractmode.c` and `dlls/engine/52/52.c` were one TU.
+
+**3. `.sdata2` interning.**  MWCC interns a float constant once per TU.
+If one `.sdata2` word is referenced from both candidate halves of a
+suspected split, the halves are one TU -- two TUs would each carry their
+own copy.  This is what proved DLL 0x0D1 and 0x0D2 genuinely share the
+`TumbleWeedB.c` TU rather than needing a cut.
+
+**4. Anonymous data may not cross a TU boundary.**  A jumptable belongs
+to the function that switches on it; an `@N` literal belongs to the TU
+that emitted it.  A relocation from unit A into an anonymous object
+carved to unit B means the carve or the file boundary is wrong.
+Population: 360 jumptable relocations in the DOL, 348 TU-local; the 12
+that cross are the known decomp scaffolding splits
+(`objprint_dolphin.c` -> `pi_dolphin.c`, `textrender_run.c` ->
+`textrender.c`), which is what this oracle detects and does not by
+itself condemn -- those source files do not claim a retail name.
+
+A fifth check is cheap and worth running as a screen rather than an
+oracle: `gResourceDescriptors` at `.data:0x802C6300` is indexed by DLL
+id, so every descriptor should land in a unit whose path carries that
+id.  706 slots, 2 null, 703 agree, 1 flagged -- and the one flag
+(0x0D2 above) is real structure, not an error.
+
+### The rename gate
+
+A file move renames the objdiff unit, so it always reads as LOST + NEW.
+That is acceptable when, and only when:
+
+- every LOST unit pairs 1:1 with a NEW unit at the **same carve**
+  (identical section start/end in `config/*/splits.txt`);
+- the two objects are `EQUAL` under `tools/obj_equal.py --no-syms`, the
+  only difference being the `STT_FILE` symbol, which lives in no
+  allocated section;
+- per-function `fuzzy_match_percent` is identical on both sides, and the
+  unit's `matched_code` / `matched_data` / complete flag do not move;
+- `tools/obj_equal.py --tree` against a **pristine control worktree at
+  the same parent** reports 0 differ over every shared object;
+- the forced link (`rm build/GSAE01/main.{dol,elf}`) still gives
+  sha1 `e750e8e894707a52446118a4b84f1b58b677b269`;
+- the report's `matched_code`, `matched_data` and `complete_units` are
+  unchanged -- a *merge* is the one exception, where `complete_units`
+  and `total_units` each drop by the number of units absorbed.
+
+Two housekeeping items ride along and are easy to miss: all four
+`config/<version>/splits.txt` carry the unit key and must move together,
+and `tools/banned_shapes_baseline.txt` is keyed by path, so a rename
+that skips it shows up as regrowth.
