@@ -927,7 +927,7 @@ int ObjHits_CheckHitVolumes(int objA, int objB, int srcObj, char checkA, char ch
     int countA;
     int countB;
     ObjHitsPriorityState* stateA;
-    ObjHitsPriorityState* stateB;
+    int idxA;
     ObjHitsContactScratchEntry* cw;
     char modeB;
     float* sphB;
@@ -958,7 +958,7 @@ int ObjHits_CheckHitVolumes(int objA, int objB, int srcObj, char checkA, char ch
     int j;
     int k;
     int hit;
-    int idxA;
+    ObjHitsPriorityState* stateB;
     ObjHitsPriorityState* react;
     u32 linkA;
     u32 linkB;

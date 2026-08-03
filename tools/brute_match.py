@@ -23,8 +23,19 @@ regen afterwards.
 
 Usage:
   python3 tools/brute_match.py <unit> <symbol> [-v GSAE01]
-      [--max-variants N] [--time-budget SECONDS] [--strategy swaps|moves|all]
+      [--max-variants N] [--time-budget SECONDS]
+      [--strategy swaps|moves|all|radius2|radius2only]
       [--dry-run] [--apply-best]
+
+  --strategy radius2      radius 1 (every swap and every move) followed by
+                          every composition of TWO INDEPENDENT edits -- pairs
+                          with disjoint supports, smallest total disturbance
+                          first.  n<=5 blocks get the full symmetric group.
+  --strategy radius2only  the same two-edit compositions WITHOUT the radius-1
+                          prefix.  On a big block that prefix alone exceeds any
+                          sane cap (81 items = 3240 swaps before a single
+                          move), so a capped `radius2` run never reaches
+                          radius 2; use this once radius 1 is known swept.
 
   --dry-run       parse + print the decl block and the variants it WOULD try,
                   build nothing.
@@ -575,6 +586,40 @@ def collect_decl_blocks(src: str, body_open: int, body_end: int, min_items: int 
 
 
 # ------------------------------------------------------------ variant gen
+def _elementary_ops(n: int):
+    """Every radius-1 declaration edit, with the index range it disturbs.
+
+    A swap of positions a,b moves exactly those two declarations and leaves
+    everything between them where it was, so its support is {a, b}.  A move of
+    i to j shifts every declaration between i and j by one, so its support is
+    the whole closed interval.  Two ops with DISJOINT supports commute, which
+    is what makes "apply both to the base" well defined.
+    """
+    ops = []
+    for a, b in itertools.combinations(range(n), 2):
+        ops.append(("swap", (a, b), frozenset((a, b))))
+    for i in range(n):
+        for j in range(n):
+            if i == j:
+                continue
+            ops.append(("move", (i, j), frozenset(range(min(i, j),
+                                                       max(i, j) + 1))))
+    return ops
+
+
+def _apply_op(order: list, op) -> list:
+    kind, arg, _ = op
+    o = list(order)
+    if kind == "swap":
+        a, b = arg
+        o[a], o[b] = o[b], o[a]
+    else:
+        i, j = arg
+        x = o.pop(i)
+        o.insert(j, x)
+    return o
+
+
 def gen_variants(n: int, strategy: str, cap: int, seed: int = 12345):
     """Yield orderings (as tuples of indices) excluding the identity first."""
     base = tuple(range(n))
@@ -586,6 +631,54 @@ def gen_variants(n: int, strategy: str, cap: int, seed: int = 12345):
         if t not in seen:
             seen.add(t)
             out.append(t)
+
+    if strategy in ("radius2", "radius2only") and n <= 5:
+        # Small enough to be exhaustive: radius 2 is a subset of the full
+        # symmetric group, and at n<=5 the whole group is 119 orderings, so
+        # sweep it and be done rather than reason about a radius at all.
+        for p in itertools.permutations(range(n)):
+            add(list(p))
+        return [base] + out[: max(0, cap - 1)]
+
+    if strategy in ("radius2", "radius2only"):
+        # Radius 1 first, so a radius-2 run is a strict superset of the
+        # sweeps that came before it and its own zero is comparable to
+        # theirs.  Then every composition of TWO INDEPENDENT elementary
+        # edits: disjoint supports, so the pair commutes and is genuinely
+        # two edits rather than one edit spelled twice.  Anything a single
+        # edit already reaches is deduped away by `add`.
+        ops = _elementary_ops(n)
+        for op in ops:
+            add(_apply_op(list(base), op))
+        if strategy == "radius2only":
+            # On a big block the radius-1 prefix alone exceeds any sane cap
+            # (an 81-item block has 3240 swaps before a single move), so a
+            # capped `radius2` run never reaches radius 2 at all.  This mode
+            # drops the prefix and spends the whole budget on the two-edit
+            # compositions, for rows whose radius 1 has already been swept.
+            seen |= {tuple(o) for o in out}
+            out = []
+        # Pair only ops with a SMALL support.  A pair of long-range moves
+        # disturbs most of the list and is a different animal from "the dev
+        # declared these two the other way round"; it also makes the pair
+        # enumeration O(n^4) on the big blocks for no plausibility.  Swaps
+        # always qualify (support 2); moves qualify out to distance 3.
+        small = [o for o in ops if len(o[2]) <= 4]
+        pairs = []
+        for x in range(len(small)):
+            for y in range(x + 1, len(small)):
+                if small[x][2] & small[y][2]:
+                    continue
+                pairs.append((len(small[x][2]) + len(small[y][2]), x, y))
+        # smallest total disturbance first: a two-swap edit is far likelier
+        # to be the thing a 2002 dev's declaration list actually differs by
+        # than a pair of long-range moves.
+        pairs.sort()
+        for _w, x, y in pairs:
+            if len(out) >= cap - 1:
+                break
+            add(_apply_op(_apply_op(list(base), small[x]), small[y]))
+        return [base] + out[: max(0, cap - 1)]
 
     if strategy in ("swaps", "all"):
         for a, b in itertools.combinations(range(n), 2):
@@ -726,7 +819,8 @@ def main():
     ap.add_argument("-v", "--version", default="GSAE01")
     ap.add_argument("--max-variants", type=int, default=60)
     ap.add_argument("--time-budget", type=float, default=900.0)
-    ap.add_argument("--strategy", choices=["swaps", "moves", "all"],
+    ap.add_argument("--strategy",
+                    choices=["swaps", "moves", "all", "radius2", "radius2only"],
                     default="all")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--apply-best", action="store_true")
