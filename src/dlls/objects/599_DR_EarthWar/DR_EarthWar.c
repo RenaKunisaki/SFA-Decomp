@@ -1114,7 +1114,7 @@ void DR_EarthWarrior_init(GameObject* obj, DREarthWarriorPlacement* def)
     pathState = (u8*)&state->baddie + 4;
     (*gPathControlInterface)->init(pathState, 0, 0x48683, 1);
     (*gPathControlInterface)->setup(pathState, 4, base->segmentLocalPoints, base->segmentRadii, &stk);
-    (*gPathControlInterface)->setLocalPointCollision(pathState, 1, base->localPointPositions, base->unk64, 8);
+    (*gPathControlInterface)->setLocalPointCollision(pathState, 1, base->localPointPositions, base->localPointRadii, 8);
     pathState[0x264] = 0x28;
     (*gPathControlInterface)->attachObject(obj, pathState);
     ObjHits_EnableObject(obj);

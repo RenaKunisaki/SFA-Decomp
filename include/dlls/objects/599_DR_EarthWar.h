@@ -143,10 +143,11 @@ typedef struct EarthWarriorState {
 
 typedef struct DREarthWarriorInitData {
     u8 unk0[0xC];
-    u8 segmentLocalPoints[0x30];
-    u8 segmentRadii[0x10];
-    u8 localPointPositions[0x18];
-    u8 unk64[0x20];
+    f32 segmentLocalPoints[12];
+    f32 segmentRadii[4];
+    f32 localPointPositions[6];
+    f32 localPointRadii[4];
+    s32 unk74[4];
     f32 configRow[0x15];
     s16 moveTable[0x20];
     u8 paramCurve0Data[0xA4];
@@ -175,6 +176,8 @@ STATIC_ASSERT(offsetof(DREarthWarriorPlacement, setupVariant) == 0x19);
 STATIC_ASSERT(offsetof(DREarthWarriorPlacement, energyCapacity) == 0x1A);
 STATIC_ASSERT(sizeof(DREarthWarriorPlacement) == 0x1C);
 
+STATIC_ASSERT(offsetof(DREarthWarriorInitData, localPointRadii) == 0x64);
+STATIC_ASSERT(offsetof(DREarthWarriorInitData, unk74) == 0x74);
 STATIC_ASSERT(offsetof(DREarthWarriorInitData, configRow) == 0x84);
 STATIC_ASSERT(offsetof(DREarthWarriorInitData, moveTable) == 0xD8);
 STATIC_ASSERT(offsetof(DREarthWarriorInitData, paramCurve0Data) == 0x118);
