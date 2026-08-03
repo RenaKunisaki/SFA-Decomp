@@ -525,8 +525,6 @@ int trickySelectQueuedCommandTarget(TrickyState* state, int commandType) {
 /* "staff" (DLL 0xE2) */
 #define SKEETLA_PARTICLE_SPAWN_FLAGS 0x200001
 #define SKEETLA_PARTICLE_RANDOM_RATE 4
-void tricky_state04_nop(void);
-void tricky_updateBallRoll();
 void tricky_state06_nop(void);
 void trickyFlame();
 void trickyGuard();

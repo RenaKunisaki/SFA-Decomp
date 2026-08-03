@@ -393,7 +393,6 @@ struct EnglishDiscStatusResource
 /* Dino-language glyph substitution order (see translateToDinoLanguage). */
 u8 sGameTextGlyphOrder[0x1b] = "urstovwxazbcmdefghtkilnpoq";
 
-int getControlCharLen(u32 c);
 
 static inline int ctrlCharLen(u32 c)
 {

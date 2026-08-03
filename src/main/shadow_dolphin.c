@@ -698,8 +698,8 @@ int objShadowRender(GameObject* obj, int renderMode, int unused, int frameCount)
     int idxOut = 0;
     int drawScratch;
     u32* vtx;
-    int alphaOut = 0;
-    int alpha;
+    int triangleTable = 0;
+    int triangleBuffer;
     ObjectShadowMesh* shadowMesh;
     f32 vec[3];
     f32 base[3];
@@ -742,12 +742,12 @@ int objShadowRender(GameObject* obj, int renderMode, int unused, int frameCount)
 
         trackIntersectBroadphase(obj, &ranges, 0x81, 0);
         trackGetGridOrigin((int**)&vtx);
-        trackGetTriangleBuffer(&idxOut, &alphaOut);
+        trackGetTriangleBuffer(&idxOut, &triangleTable);
 
-        alpha = alphaOut;
-        idxOut = collectShadowTrackTriangles((int*)obj, alpha, gShadowDrawScratch, gShadowVolumeBuffer, idxOut, (f32)(int)vtx[0],
+        triangleBuffer = triangleTable;
+        idxOut = collectShadowTrackTriangles((int*)obj, triangleBuffer, gShadowDrawScratch, gShadowVolumeBuffer, idxOut, (f32)(int)vtx[0],
                              (f32)(int)vtx[2], renderMode, modelState->flags & 0x40000);
-        gShadowTrackTriangleBuffer = alpha;
+        gShadowTrackTriangleBuffer = triangleBuffer;
         gShadowTrackTriangleCount = idxOut;
         gShadowTrackGridOrigin = (int)vtx;
         trackDolphin_buildShadowVolumePlanes((int*)obj, buf48, bufA8);
