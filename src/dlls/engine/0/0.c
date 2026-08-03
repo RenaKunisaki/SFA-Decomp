@@ -942,7 +942,7 @@ void gameUiSetupTexturedQuadTev(void* this, u8 a, s16 b, int c)
     GXSetTevSwapMode(GX_TEVSTAGE0, GX_TEV_SWAP0, GX_TEV_SWAP0);
     GXSetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    if (*(void**)((char*)this + 0x50) != NULL)
+    if (*(void**)&((Texture*)this)->imageOffset != NULL)
     {
         GXSetTevDirect(GX_TEVSTAGE1);
         GXSetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD0, GX_TEXMAP1, GX_COLOR_NULL);
@@ -1978,21 +1978,21 @@ void GameUI_showItemInfoPopupByTexture(s16 textureId, int displayDuration, int i
 
 void GameUI_showItemInfoPopup(s16 itemGamebit, int displayDuration, int itemCount)
 {
-    int* entry = (int*)gCMenuSections;
+    CMenuSection* entry = gCMenuSections;
     gHudItemInfoPopup.texture = NULL;
-    while ((void*)*entry != NULL)
+    while (entry->items != NULL)
     {
-        s16* row = (s16*)*entry;
-        while (row[0] != -1)
+        CMenuItemDef* row = entry->items;
+        while (row->ownedGameBit != -1)
         {
-            if (row[0] == itemGamebit)
+            if (row->ownedGameBit == itemGamebit)
             {
-                gHudItemInfoPopup.texture = textureLoadAsset(row[3]);
+                gHudItemInfoPopup.texture = textureLoadAsset(row->iconTextureId);
                 break;
             }
-            row += 8;
+            row++;
         }
-        entry = (int*)((char*)entry + 0x10);
+        entry++;
     }
     if (gHudItemInfoPopup.texture != NULL)
     {
@@ -8835,16 +8835,16 @@ void cMenuSelectItemByTarget(int idx, s16 target, s8 flag)
 
 void cMenuSelectFirstEnabledItem(int idx, s8 flag)
 {
-    void* entry;
+    CMenuSection* entry;
     s16* posPtr;
     u8 prev = 1;
     int count;
     s16 pos;
     u8 i;
 
-    entry = (u8*)gCMenuSections + idx * 16;
-    count = cMenuSetItems((CMenuItemDef*)*(int*)entry, flag);
-    posPtr = (s16*)((char*)entry + 4);
+    entry = (CMenuSection*)((u8*)gCMenuSections + idx * 16);
+    count = cMenuSetItems(entry->items, flag);
+    posPtr = &entry->cursor;
     pos = *posPtr;
 
     for (i = 0; i < count * 2; i++)

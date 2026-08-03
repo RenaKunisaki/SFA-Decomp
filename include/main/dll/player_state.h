@@ -4,6 +4,7 @@
 #include "types.h"
 #include "global.h"
 #include "game/objects/object.h"
+#include "main/byte_flags.h"
 #include "main/dll/baddie_state.h"
 
 typedef struct PlayerStatus {
@@ -81,19 +82,28 @@ typedef struct PlayerState {
     u8 maxMagicUsed;
     u8 pad3E9[0x3EC - 0x3E9];
     f32 randomTimer3EC;
-    u8 flags3F0; /* state flag byte (bits read via >>N&1 and a ByteFlags overlay): bit4/5 move-mode gates, bit6/7 etc. */
-    u8 flags3F1; /* state flag byte: bit0/bit4/bit5 gate locomotion/yaw-arc paths */
-    u8 unk3F2;
-    u8 flags3F3; /* state flag byte: bits 1/2/3 queried by accessor getters */
-    u8 flags3F4; /* state flag byte: bit6 = path-follow/scripted-move gate */
+    union {
+        u8 flagByte3F0; /* whole-byte view: loaded once where several bits are tested together */
+        ByteFlags flags3F0; /* bit4/5 move-mode gates, bit6/7 etc. */
+    };
+    union {
+        u8 flagByte3F1; /* whole-byte view: loaded once where several bits are tested together */
+        ByteFlags flags3F1; /* bit0/bit4/bit5 gate locomotion/yaw-arc paths */
+    };
+    ByteFlags flags3F2;
+    ByteFlags flags3F3;
+    ByteFlags flags3F4;
     u8 pad3F5[0x3F6 - 0x3F5];
-    u8 unk3F6;
+    ByteFlags flags3F6;
     u8 fallSeverity; /* fall/landing severity tier (0-3) set from the fall height-difference (hdiff vs lbl_803E8104/8108/810C thresholds); selects the landing move/sfx (move 0xa/0x90) and at >=2 fires camera shake + a ground-impact ObjHits; reset to 0 on state change */
     union {
         int moveAnimTable; /* raw address view retained for incomplete call sites */
         s16* moveAnimIds;  /* anim/move-id table fed to ObjAnim_SetCurrentMove */
     };
-    u8 pad3FC[0x400 - 0x3FC];
+    union {
+        int prevMoveAnimTable; /* raw address view retained for incomplete call sites */
+        s16* prevMoveAnimIds;  /* moveAnimIds as of the previous playerSetMovingAnims call; compared against moveAnimIds to detect a locomotion-table switch */
+    };
     int moveParams; /* ptr to a 0x60 locomotion-parameter block (gPlayerDefaultMoveParams); deref'd as f32 speed thresholds/limits at +4/+c/+10/+14/+18/+1c */
     f32 maxSpeed;
     f32 currentSpeed; /* player current movement speed; clamped to [0, maxSpeed], scaled by friction */

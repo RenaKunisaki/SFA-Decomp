@@ -297,7 +297,7 @@ s16 playerSetMoveBlendFromPlane(int obj, int baseMoveId, int blendMoveId, int* b
 
 static inline int staffCanContinueSpin(void* state)
 {
-    ByteFlags* bf = (ByteFlags*)((char*)state + 0x3f0);
+    ByteFlags* bf = &((PlayerState*)state)->flags3F0;
     s16 t;
 
     if (bf->b10 || bf->b04 || bf->b08 || bf->b20 || ((PlayerState*)state)->baddie.controlMode == 0x36)
@@ -1291,9 +1291,9 @@ int playerGetStateValue(GameObject* obj, int sel)
         return ((PlayerState*)state)->animState;
     case 18:
     {
-        void* p = *(void**)((char*)state + 0x7f0);
+        GameObject* p = ((PlayerState*)state)->focusObject;
         if (p != 0)
-            return *(s16*)((char*)p + 0x46);
+            return p->anim.romDefNo;
         return 0;
     }
     }
@@ -1339,7 +1339,7 @@ int isTrickyNear(GameObject* obj)
 int playerCanEnterStaffCombatCamera(GameObject* player)
 {
     PlayerState* inner = player->extra;
-    return ((inner->flags3F0 >> 1) & 1) == 0;
+    return inner->flags3F0.b02 == 0;
 }
 
 int playerIsTargetSuppressed(GameObject* obj)
@@ -1363,7 +1363,7 @@ static int playerIsInDeepWater(GameObject* obj)
 int playerIsQuakeShockwaveActive(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
-    return inner->baddie.controlMode == 0x36 && ((ByteFlags*)((char*)inner + 0x3f3))->b10;
+    return inner->baddie.controlMode == 0x36 && ((PlayerState*)inner)->flags3F3.b10;
 }
 
 int playerFindNearestFirefly(GameObject* player)
@@ -1387,13 +1387,13 @@ int playerIsClimbingWall(GameObject* obj)
 int playerIsDisguised(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
-    return (inner->flags3F3 >> 3) & 1;
+    return inner->flags3F3.b08;
 }
 
 int playerIsPathFollowing(GameObject* player)
 {
     PlayerState* inner = player->extra;
-    return (inner->flags3F4 >> 6) & 1;
+    return inner->flags3F4.b40;
 }
 
 void staffToggle(GameObject* obj, int a)
@@ -1404,7 +1404,7 @@ void staffToggle(GameObject* obj, int a)
     {
         return;
     }
-    if (((ByteFlags*)((char*)inner + 0x3f4))->b40 == a)
+    if (((PlayerState*)inner)->flags3F4.b40 == a)
     {
         return;
     }
@@ -1413,10 +1413,10 @@ void staffToggle(GameObject* obj, int a)
         if ((void*)gPlayerPathObject != NULL)
         {
             *(s16*)((char*)gPlayerPathObject + 6) |= 0x4000;
-            if ((void*)gPlayerPathObject != NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+            if ((void*)gPlayerPathObject != NULL && ((PlayerState*)inner)->flags3F4.b40)
             {
                 inner->staffActionRequest = 1;
-                ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+                ((PlayerState*)inner)->flags3F4.b08 = 1;
             }
             mainSetBits(GAMEBIT_ITEM_SuperQuake_Disabled, 1);
             mainSetBits(GAMEBIT_ITEM_Spell0961_Disabled, 1);
@@ -1431,10 +1431,10 @@ void staffToggle(GameObject* obj, int a)
     {
         if ((void*)gPlayerPathObject != NULL)
         {
-            if ((void*)gPlayerPathObject != NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+            if ((void*)gPlayerPathObject != NULL && ((PlayerState*)inner)->flags3F4.b40)
             {
                 inner->staffActionRequest = 4;
-                ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+                ((PlayerState*)inner)->flags3F4.b08 = 1;
             }
             *(s16*)((char*)gPlayerPathObject + 6) &= ~0x4000;
             mainSetBits(GAMEBIT_ITEM_SuperQuake_Disabled, 0);
@@ -1446,7 +1446,7 @@ void staffToggle(GameObject* obj, int a)
             mainSetBits(GAMEBIT_ITEM_PortalSpell_Disabled, 0);
         }
     }
-    ((ByteFlags*)((char*)inner + 0x3f4))->b40 = a;
+    ((PlayerState*)inner)->flags3F4.b40 = a;
 }
 
 void playerSetDisguised(GameObject* obj, int mode)
@@ -1461,7 +1461,7 @@ void playerSetDisguised(GameObject* obj, int mode)
     if (mode != 0)
     {
         staffToggle(obj, 0);
-        ((ByteFlags*)((char*)inner + 0x3f3))->b08 = 1;
+        ((PlayerState*)inner)->flags3F3.b08 = 1;
         tricky = getTrickyObject();
         if (tricky != NULL)
         {
@@ -1477,14 +1477,14 @@ void playerSetDisguised(GameObject* obj, int mode)
         memcpy((void*)*(int*)((char*)newModel + 0x30), (void*)*(int*)((char*)oldModel + 0x30), 0x68);
         if (mode == 2)
         {
-            ((ByteFlags*)((char*)inner + 0x3f4))->b80 = 1;
+            ((PlayerState*)inner)->flags3F4.b80 = 1;
         }
     }
     else
     {
         staffToggle(obj, 1);
-        ((ByteFlags*)((char*)inner + 0x3f3))->b08 = 0;
-        ((ByteFlags*)((char*)inner + 0x3f4))->b80 = 0;
+        ((PlayerState*)inner)->flags3F3.b08 = 0;
+        ((PlayerState*)inner)->flags3F4.b80 = 0;
         (*gBoneParticleEffectInterface)->spawnEffect((void*)obj, 0x801, NULL, 0x50, NULL);
         oldModel = (int)Obj_GetActiveModel(obj);
         Obj_SetActiveModelIndex(obj, 1);
@@ -1621,9 +1621,9 @@ int Obj_IsParentSlackClear(GameObject* obj)
 int playerIsInNormalControlUndisguisedOnLand(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
-    ByteFlags* f = (ByteFlags*)((char*)inner + 0x3f0);
+    ByteFlags* f = &((PlayerState*)inner)->flags3F0;
     s16 s;
-    if (f->b04 || f->b08 || f->b20 || f->b10 || ((ByteFlags*)((char*)inner + 0x3f3))->b08)
+    if (f->b04 || f->b08 || f->b20 || f->b10 || ((PlayerState*)inner)->flags3F3.b08)
     {
         return 0;
     }
@@ -1638,7 +1638,7 @@ int playerIsInNormalControlUndisguisedOnLand(GameObject* obj)
 int playerIsInNormalControl(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
-    ByteFlags* f = (ByteFlags*)((char*)inner + 0x3f0);
+    ByteFlags* f = &((PlayerState*)inner)->flags3F0;
     s16 s;
     if (f->b04 || f->b08 || f->b10)
     {
@@ -1662,16 +1662,16 @@ int playerCanUseCombatTargeting(GameObject* player)
 {
     PlayerState* state = player->extra;
     if (((player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0 &&
-         ((ByteFlags*)((char*)state + 0x3f2))->b80 == 0) ||
-        ((ByteFlags*)((char*)state + 0x3f0))->b04 || ((ByteFlags*)((char*)state + 0x3f0))->b08 ||
-        ((ByteFlags*)((char*)state + 0x3f0))->b20 || state->heldObj != NULL ||
-        ((ByteFlags*)((char*)state + 0x3f0))->b02)
+         ((PlayerState*)state)->flags3F2.b80 == 0) ||
+        ((PlayerState*)state)->flags3F0.b04 || ((PlayerState*)state)->flags3F0.b08 ||
+        ((PlayerState*)state)->flags3F0.b20 || state->heldObj != NULL ||
+        ((PlayerState*)state)->flags3F0.b02)
     {
         return 0;
     }
     if (state->baddie.controlMode == 1 || state->baddie.controlMode == 2 || state->baddie.controlMode == 0x26 ||
         (state->baddie.controlMode == 0x18 &&
-         (mainGetBit(GAMEBIT_NW_SnowHorn03E3) || *(s16*)((char*)state->focusObject + 0x46) == 0x416)) ||
+         (mainGetBit(GAMEBIT_NW_SnowHorn03E3) || state->focusObject->anim.romDefNo == 0x416)) ||
         state->baddie.targetObj != NULL)
     {
         return 1;
@@ -1689,7 +1689,7 @@ u8 playerIsPushingObject(GameObject* obj, GameObject* otherObj, u8* out)
 int playerGetFlags3F0Bit5(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
-    return (inner->flags3F0 >> 5) & 1;
+    return inner->flags3F0.b20;
 }
 
 int EmissionController_IsLingering(GameObject* obj)
@@ -1737,18 +1737,18 @@ void objSetAnimStateFlags(GameObject* obj, int flag, int set)
     PlayerState* inner = obj->extra;
     if (set != 0)
     {
-        *(s8*)((char*)inner->playerStatus + 2) |= flag;
+        ((PlayerStatus*)inner->playerStatus)->animStateFlags |= flag;
     }
     else
     {
-        *(s8*)((char*)inner->playerStatus + 2) &= ~flag;
+        ((PlayerStatus*)inner->playerStatus)->animStateFlags &= ~flag;
     }
 }
 
 int objGetAnimStateFlags(GameObject* obj, int flag)
 {
     PlayerState* inner = obj->extra;
-    return *(s8*)((char*)inner->playerStatus + 2) & flag;
+    return ((PlayerStatus*)inner->playerStatus)->animStateFlags & flag;
 }
 
 int playerGetTimeScale(GameObject* obj, f32* out)
@@ -1785,7 +1785,7 @@ int playerSetHeldObject(GameObject* obj, GameObject* heldObj)
                 Carryable_putDownAndSavePos(sub);
             }
             *(s16*)((char*)inner->heldObj + 6) &= ~0x4000;
-            *(int*)((char*)inner->heldObj + 0xf8) = 0;
+            inner->heldObj->userData2 = 0;
             inner->heldObj = NULL;
         }
         *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
@@ -1842,28 +1842,28 @@ void playerPutAwayStaff(GameObject* obj, int mode)
     {
         if (gPlayerPathObject == NULL)
             return;
-        if (((ByteFlags*)((char*)inner + 0x3f4))->b40 == 0)
+        if (((PlayerState*)inner)->flags3F4.b40 == 0)
             return;
         inner->staffActionRequest = 0;
-        ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 0;
+        ((PlayerState*)inner)->flags3F4.b08 = 0;
     }
     else if (mode == 1)
     {
         if (gPlayerPathObject == NULL)
             return;
-        if (((ByteFlags*)((char*)inner + 0x3f4))->b40 == 0)
+        if (((PlayerState*)inner)->flags3F4.b40 == 0)
             return;
         inner->staffActionRequest = 1;
-        ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+        ((PlayerState*)inner)->flags3F4.b08 = 1;
     }
     else
     {
         if (gPlayerPathObject == NULL)
             return;
-        if (((ByteFlags*)((char*)inner + 0x3f4))->b40 == 0)
+        if (((PlayerState*)inner)->flags3F4.b40 == 0)
             return;
         inner->staffActionRequest = 1;
-        ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 0;
+        ((PlayerState*)inner)->flags3F4.b08 = 0;
     }
 }
 
@@ -1874,35 +1874,35 @@ void playerPullOutStaff(GameObject* obj, int mode)
     {
         if (gPlayerPathObject == NULL)
             return;
-        if (((ByteFlags*)((char*)inner + 0x3f4))->b40 == 0)
+        if (((PlayerState*)inner)->flags3F4.b40 == 0)
             return;
         inner->staffActionRequest = 2;
-        ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 0;
+        ((PlayerState*)inner)->flags3F4.b08 = 0;
     }
     else if (mode == 1)
     {
         if (gPlayerPathObject == NULL)
             return;
-        if (((ByteFlags*)((char*)inner + 0x3f4))->b40 == 0)
+        if (((PlayerState*)inner)->flags3F4.b40 == 0)
             return;
         inner->staffActionRequest = 4;
-        ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+        ((PlayerState*)inner)->flags3F4.b08 = 1;
     }
     else
     {
         if (gPlayerPathObject == NULL)
             return;
-        if (((ByteFlags*)((char*)inner + 0x3f4))->b40 == 0)
+        if (((PlayerState*)inner)->flags3F4.b40 == 0)
             return;
         inner->staffActionRequest = 4;
-        ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 0;
+        ((PlayerState*)inner)->flags3F4.b08 = 0;
     }
 }
 
 int playerGetMoney(GameObject* player)
 {
     PlayerState* inner = player->extra;
-    return *(u8*)((char*)inner->playerStatus + 8);
+    return ((PlayerStatus*)inner->playerStatus)->money;
 }
 
 void playerAddMoney(GameObject* obj, int amount)
@@ -1926,7 +1926,7 @@ void playerAddMoney(GameObject* obj, int amount)
     {
         cap = 0xa;
     }
-    total = *(u8*)((char*)inner->playerStatus + 8);
+    total = ((PlayerStatus*)inner->playerStatus)->money;
     total += amount;
     if (amount > inner->maxMagicUsed)
     {
@@ -1940,7 +1940,7 @@ void playerAddMoney(GameObject* obj, int amount)
     {
         total = cap;
     }
-    *(u8*)((char*)inner->playerStatus + 8) = (u8)total;
+    ((PlayerStatus*)inner->playerStatus)->money = (u8)total;
     mainSetBits(GAMEBIT_ITEM_GiveScarabs_Count, total);
 }
 
@@ -1948,7 +1948,7 @@ void playerGetAimAngles(GameObject* obj, s16* out1, s16* out2)
 {
     PlayerState* inner = obj->extra;
     *out1 = 10240.0f * inner->aimInputX;
-    if (*(void**)((char*)inner + 0x7f0) != NULL)
+    if (((PlayerState*)inner)->focusObject != NULL)
     {
         *out2 = 8192.0f * inner->aimInputZ;
     }
@@ -1961,7 +1961,7 @@ void playerGetAimAngles(GameObject* obj, s16* out1, s16* out2)
 int playerGetSurfaceType(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
-    if (((ByteFlags*)((char*)inner + 0x3f1))->b01)
+    if (((PlayerState*)inner)->flags3F1.b01)
     {
         return inner->surfaceType;
     }
@@ -1971,24 +1971,24 @@ int playerGetSurfaceType(GameObject* obj)
 int playerGetCurMagic(GameObject* player)
 {
     PlayerState* inner = player->extra;
-    return *(s16*)((char*)inner->playerStatus + 4);
+    return ((PlayerStatus*)inner->playerStatus)->magic;
 }
 
 void playerAddRemoveMagic(GameObject* obj, int amount)
 {
     PlayerState* inner = obj->extra;
-    int deref = inner->playerStatus;
-    int m = *(s16*)((char*)deref + 4);
+    PlayerStatus* deref = (PlayerStatus*)inner->playerStatus;
+    int m = deref->magic;
     m += amount;
     if (m < 0)
     {
         m = 0;
     }
-    else if (m > *(s16*)((char*)deref + 6))
+    else if (m > deref->maxMagic)
     {
-        m = *(s16*)((char*)deref + 6);
+        m = deref->maxMagic;
     }
-    *(s16*)((char*)deref + 4) = (s16)m;
+    deref->magic = (s16)m;
     if (amount > 0)
     {
         Sfx_PlayFromObject(0, SFXTRIG_id_21c);
@@ -1998,14 +1998,14 @@ void playerAddRemoveMagic(GameObject* obj, int amount)
 int playerGetMaxMagic(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
-    return *(s16*)((char*)inner->playerStatus + 6);
+    return ((PlayerStatus*)inner->playerStatus)->maxMagic;
 }
 
 void playerAddMaxMagic(GameObject* obj, int delta)
 {
     PlayerState* inner = obj->extra;
-    int deref = inner->playerStatus;
-    int v = *(s16*)((char*)deref + 6) + delta;
+    PlayerStatus* deref = (PlayerStatus*)inner->playerStatus;
+    int v = deref->maxMagic + delta;
     if (v < 0)
     {
         v = 0;
@@ -2014,36 +2014,36 @@ void playerAddMaxMagic(GameObject* obj, int delta)
     {
         v = 0x64;
     }
-    *(s16*)((char*)deref + 6) = (s16)v;
+    deref->maxMagic = (s16)v;
 }
 
 int playerGetMaxHealth(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
-    return *(s8*)((char*)inner->playerStatus + 1);
+    return ((PlayerStatus*)inner->playerStatus)->maxHealth;
 }
 
 int playerGetCurHealth(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
-    return *(s8*)((char*)inner->playerStatus);
+    return ((PlayerStatus*)inner->playerStatus)->health;
 }
 
 void playerAddHealth(GameObject* obj, int amount)
 {
     PlayerState* inner = obj->extra;
-    int h = *(s8*)((char*)inner->playerStatus);
+    int h = ((PlayerStatus*)inner->playerStatus)->health;
     h += amount;
     if (h < 0)
     {
         h = 0;
     }
-    else if (h > *(s8*)((char*)inner->playerStatus + 1))
+    else if (h > ((PlayerStatus*)inner->playerStatus)->maxHealth)
     {
-        h = *(s8*)((char*)inner->playerStatus + 1);
+        h = ((PlayerStatus*)inner->playerStatus)->maxHealth;
     }
-    *(s8*)((char*)inner->playerStatus) = (s8)h;
-    if (*(s8*)((char*)inner->playerStatus) <= 0)
+    ((PlayerStatus*)inner->playerStatus)->health = (s8)h;
+    if (((PlayerStatus*)inner->playerStatus)->health <= 0)
     {
         playerDie(obj);
     }
@@ -2099,25 +2099,25 @@ void playerLock(GameObject* obj, int lock)
 int playerStatusIsPositive(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
-    return *(s8*)((char*)inner->playerStatus) > 0;
+    return ((PlayerStatus*)inner->playerStatus)->health > 0;
 }
 
 int playerIsDead(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
-    return (inner->flags3F3 >> 1) & 1;
+    return inner->flags3F3.b02;
 }
 
 int playerHasRevived(GameObject* player)
 {
     PlayerState* inner = player->extra;
-    return (inner->flags3F3 >> 2) & 1;
+    return inner->flags3F3.b04;
 }
 
 void playerSetIsDead(GameObject* obj, int flag)
 {
     int inner = *(int*)&obj->extra;
-    ((ByteFlags*)((char*)inner + 0x3f3))->b02 = flag;
+    ((PlayerState*)inner)->flags3F3.b02 = flag;
 }
 
 void playerHeal(GameObject* obj)
@@ -2139,7 +2139,7 @@ void playerHeal(GameObject* obj)
     }
     *(s8*)((char*)*(int*)((char*)inner + 0x35C)) = (s8)v;
     Obj_SetModelColorFadeRecursive(obj, 0x168, 0xc8, 0, 0, 1);
-    ((ByteFlags*)((char*)inner + 0x3f3))->b04 = 1;
+    ((PlayerState*)inner)->flags3F3.b04 = 1;
     inner->knockbackTimer = 0.0f;
     inner->moveVariantIndex = 0xff;
 }
@@ -2158,16 +2158,16 @@ void playerReleaseLedgeGrabOn(GameObject* obj, GameObject* parentObj)
         {
             ((PlayerState*)state)->baddie.flags4 &= ~0x100000;
             playerRefreshCollisionState((GameObject*)obj, (int)inner, 5);
-            ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
-            ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
-            ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
+            ((PlayerState*)inner)->flags3F0.b80 = 0;
+            ((PlayerState*)inner)->flags3F0.b10 = 0;
+            ((PlayerState*)inner)->flags3F0.b08 = 0;
             Shield_setMode(gPlayerStaffObject, 2);
-            ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 0;
+            ((PlayerState*)inner)->flags3F0.b02 = 0;
             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
             ObjHits_SyncObjectPositionIfDirty(obj);
-            ((ByteFlags*)((char*)inner + 0x3f0))->b40 = 0;
-            ((ByteFlags*)((char*)inner + 0x3f0))->b04 = 1;
-            ((ByteFlags*)((char*)inner + 0x3f4))->b10 = 1;
+            ((PlayerState*)inner)->flags3F0.b40 = 0;
+            ((PlayerState*)inner)->flags3F0.b04 = 1;
+            ((PlayerState*)inner)->flags3F4.b10 = 1;
             inner->isHoldingObject = 0;
             if (((PlayerState*)inner)->heldObj != NULL)
             {
@@ -2181,7 +2181,7 @@ void playerReleaseLedgeGrabOn(GameObject* obj, GameObject* parentObj)
                     Carryable_putDownAndSavePos((GameObject*)inner->heldObj);
                 }
                 *(s16*)((char*)inner->heldObj + 6) &= ~0x4000;
-                *(int*)((char*)inner->heldObj + 0xf8) = 0;
+                inner->heldObj->userData2 = 0;
                 inner->heldObj = 0;
             }
             (*gPlayerInterface)->setState(obj, (void*)state, 2);
@@ -2306,19 +2306,19 @@ void playerReparentPreservingWorldTransform(GameObject* obj, GameObject* newPare
 void playerSetInCutscene(GameObject* obj)
 {
     int inner = *(int*)&obj->extra;
-    ((ByteFlags*)((char*)inner + 0x3f2))->b20 = 1;
+    ((PlayerState*)inner)->flags3F2.b20 = 1;
 }
 
 void playerSetCutsceneCameraFlag(GameObject* obj)
 {
     int inner = *(int*)&obj->extra;
-    ((ByteFlags*)((char*)inner + 0x3f2))->b40 = 1;
+    ((PlayerState*)inner)->flags3F2.b40 = 1;
 }
 
 void playerSetOverrideParentSlack(GameObject* obj)
 {
     int inner = *(int*)&obj->extra;
-    ((ByteFlags*)((char*)inner + 0x3f2))->b80 = 1;
+    ((PlayerState*)inner)->flags3F2.b80 = 1;
 }
 
 u32 playerGetStateFlag310(GameObject* obj)
@@ -2408,16 +2408,16 @@ int playerState41(GameObject* obj, int state, f32 fv)
     if (0.0f == inner->verticalVel)
     {
         void* sub;
-        ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
-        ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
-        ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
+        ((PlayerState*)inner)->flags3F0.b80 = 0;
+        ((PlayerState*)inner)->flags3F0.b10 = 0;
+        ((PlayerState*)inner)->flags3F0.b08 = 0;
         Shield_setMode(gPlayerStaffObject, 2);
-        ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 0;
+        ((PlayerState*)inner)->flags3F0.b02 = 0;
         *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
         ObjHits_SyncObjectPositionIfDirty(obj);
-        ((ByteFlags*)((char*)inner + 0x3f0))->b40 = 0;
-        ((ByteFlags*)((char*)inner + 0x3f0))->b04 = 1;
-        ((ByteFlags*)((char*)inner + 0x3f4))->b10 = 0;
+        ((PlayerState*)inner)->flags3F0.b40 = 0;
+        ((PlayerState*)inner)->flags3F0.b04 = 1;
+        ((PlayerState*)inner)->flags3F4.b10 = 0;
         inner->isHoldingObject = 0;
         sub = ((PlayerState*)inner)->heldObj;
         if (sub != NULL)
@@ -2431,8 +2431,8 @@ int playerState41(GameObject* obj, int state, f32 fv)
             {
                 Carryable_putDownAndSavePos((GameObject*)sub);
             }
-            *(s16*)((char*)inner->heldObj + 0x6) &= ~0x4000;
-            *(int*)((char*)inner->heldObj + 0xf8) = 0;
+            inner->heldObj->anim.flags &= ~0x4000;
+            inner->heldObj->userData2 = 0;
             inner->heldObj = 0;
         }
         ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedRestoreDefaultControl;
@@ -2508,7 +2508,7 @@ void playerStagedEndGuardAndMarkTeleported(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
     *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
-    ((ByteFlags*)((char*)inner + 0x3f6))->b20 = 0;
+    ((PlayerState*)inner)->flags3F6.b20 = 0;
 }
 
 int playerState3D(int obj, int state, f32 fv)
@@ -2567,10 +2567,10 @@ int playerState3D(int obj, int state, f32 fv)
     {
         if (((PlayerState*)state)->baddie.hasTarget != 1)
         {
-            if (gPlayerPathObject != 0 && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+            if (gPlayerPathObject != 0 && ((PlayerState*)inner)->flags3F4.b40)
             {
                 inner->staffActionRequest = 0;
-                ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 0;
+                ((PlayerState*)inner)->flags3F4.b08 = 0;
             }
             ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedRestoreDefaultControl;
             return -1;
@@ -2634,10 +2634,10 @@ int playerState3C(GameObject* obj, int state, f32 fv)
     {
         if (((PlayerState*)state)->baddie.hasTarget != 1)
         {
-            if (gPlayerPathObject != 0 && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+            if (gPlayerPathObject != 0 && ((PlayerState*)inner)->flags3F4.b40)
             {
                 inner->staffActionRequest = 0;
-                ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 0;
+                ((PlayerState*)inner)->flags3F4.b08 = 0;
             }
             ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedRestoreDefaultControl;
             return -1;
@@ -2702,10 +2702,10 @@ int playerState3B(GameObject* obj, int state, f32 fv)
     {
         if (((PlayerState*)state)->baddie.hasTarget != 1)
         {
-            if (gPlayerPathObject != 0 && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+            if (gPlayerPathObject != 0 && ((PlayerState*)inner)->flags3F4.b40)
             {
                 inner->staffActionRequest = 0;
-                ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 0;
+                ((PlayerState*)inner)->flags3F4.b08 = 0;
             }
             ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedRestoreDefaultControl;
             return -1;
@@ -2770,10 +2770,10 @@ int playerState3A(GameObject* obj, int state, f32 fv)
     {
         if (((PlayerState*)state)->baddie.hasTarget != 1)
         {
-            if (gPlayerPathObject != 0 && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+            if (gPlayerPathObject != 0 && ((PlayerState*)inner)->flags3F4.b40)
             {
                 inner->staffActionRequest = 0;
-                ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 0;
+                ((PlayerState*)inner)->flags3F4.b08 = 0;
             }
             ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedRestoreDefaultControl;
             return -1;
@@ -2822,9 +2822,9 @@ int playerState39(GameObject* obj, int state, f32 fv)
     }
     if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedA != 0)
     {
-        ((ByteFlags*)((char*)inner + 0x3f6))->b10 = 0;
+        ((PlayerState*)inner)->flags3F6.b10 = 0;
     }
-    if (((ByteFlags*)((char*)inner + 0x3f6))->b10)
+    if (((PlayerState*)inner)->flags3F6.b10)
     {
         ((PlayerState*)state)->baddie.moveSpeed = 0.03f;
         if (obj->anim.currentMove != 0x455)
@@ -2835,7 +2835,7 @@ int playerState39(GameObject* obj, int state, f32 fv)
         }
         if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
         {
-            ((ByteFlags*)((char*)inner + 0x3f6))->b10 = 0;
+            ((PlayerState*)inner)->flags3F6.b10 = 0;
         }
     }
     else
@@ -2891,10 +2891,10 @@ int playerState38(GameObject* obj, int state, f32 fv)
     {
         if (((PlayerState*)state)->baddie.hasTarget != 1)
         {
-            if ((void*)gPlayerPathObject != NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+            if ((void*)gPlayerPathObject != NULL && ((PlayerState*)inner)->flags3F4.b40)
             {
                 inner->staffActionRequest = 0;
-                ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 0;
+                ((PlayerState*)inner)->flags3F4.b08 = 0;
             }
             ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedRestoreDefaultControl;
             return -1;
@@ -2912,7 +2912,7 @@ int playerState37(GameObject* obj, int state)
 {
     int inner = *(int*)&obj->extra;
     u8 v;
-    ((ByteFlags*)((char*)inner + 0x3f6))->b20 = 1;
+    ((PlayerState*)inner)->flags3F6.b20 = 1;
     v = ((PlayerState*)state)->baddie.inputSector;
     if (v == 3)
     {
@@ -2936,9 +2936,9 @@ int playerState37(GameObject* obj, int state)
 void playerStagedResetAnimState(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
-    ((ByteFlags*)((char*)inner + 0x3f4))->b20 = 0;
+    ((PlayerState*)inner)->flags3F4.b20 = 0;
     inner->buttonHoldTimer = 0.0f;
-    ((ByteFlags*)((char*)inner + 0x3f3))->b10 = 0;
+    ((PlayerState*)inner)->flags3F3.b10 = 0;
     inner->animState = -1;
     ObjHits_SyncObjectPositionIfDirty(obj);
 }
@@ -2951,7 +2951,7 @@ int playerStateSuperQuake(GameObject* obj, int state, f32 fv)
     *(int*)state |= 0x200000;
     if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedA != 0)
     {
-        ((ByteFlags*)((char*)inner + 0x3f3))->b10 = 0;
+        ((PlayerState*)inner)->flags3F3.b10 = 0;
         if (inner->animState == 0xc55)
         {
             ((PlayerState*)inner)->chargeCapacity = 0x14;
@@ -2962,7 +2962,7 @@ int playerStateSuperQuake(GameObject* obj, int state, f32 fv)
         }
         ObjHits_MarkObjectPositionDirty(&obj->anim);
     }
-    if (((ByteFlags*)((char*)inner + 0x3f0))->b20 == 0 && 0.0f != inner->verticalVel)
+    if (((PlayerState*)inner)->flags3F0.b20 == 0 && 0.0f != inner->verticalVel)
     {
         ((PlayerState*)state)->baddie.stateHandler = 0;
         return 0x42;
@@ -3007,7 +3007,7 @@ int playerStateSuperQuake(GameObject* obj, int state, f32 fv)
         }
         break;
     case 0x86:
-        if (((ByteFlags*)((char*)inner + 0x3f3))->b10 == 0 &&
+        if (((PlayerState*)inner)->flags3F3.b10 == 0 &&
             obj->anim.currentMoveProgress > 0.1f)
         {
             void* tricky = getTrickyObject();
@@ -3017,7 +3017,7 @@ int playerStateSuperQuake(GameObject* obj, int state, f32 fv)
             }
             Sfx_PlayFromObject(obj, SFXTRIG_staff_boulder_move1);
             staffStartQuakeSpell(&obj->anim.localPosX);
-            ((ByteFlags*)((char*)inner + 0x3f3))->b10 = 1;
+            ((PlayerState*)inner)->flags3F3.b10 = 1;
             doRumble(30.0f);
         }
         if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
@@ -3039,11 +3039,11 @@ int playerStateSuperQuake(GameObject* obj, int state, f32 fv)
         ObjAnim_SetCurrentMove((int)obj, 0x84, f, 0);
         ((PlayerState*)state)->baddie.moveSpeed = 0.015f;
         inner->chargeLevel = 0.0f;
-        ((ByteFlags*)((char*)inner + 0x3f3))->b10 = 0;
-        if (gPlayerPathObject != NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+        ((PlayerState*)inner)->flags3F3.b10 = 0;
+        if (gPlayerPathObject != NULL && ((PlayerState*)inner)->flags3F4.b40)
         {
             inner->staffActionRequest = 4;
-            ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+            ((PlayerState*)inner)->flags3F4.b08 = 1;
         }
         break;
     }
@@ -3159,10 +3159,10 @@ int playerState35(GameObject* obj, int state)
         ((PlayerState*)state)->baddie.moveEventFlags = 0;
         inner->targetYaw = gPlayerInteractTarget->anim.rotX;
         inner->yaw = inner->targetYaw;
-        if (gPlayerPathObject != NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+        if (gPlayerPathObject != NULL && ((PlayerState*)inner)->flags3F4.b40)
         {
             inner->staffActionRequest = 4;
-            ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+            ((PlayerState*)inner)->flags3F4.b08 = 1;
         }
         break;
     }
@@ -3214,10 +3214,10 @@ int playerState34(GameObject* obj, int state)
         ((PlayerState*)state)->baddie.moveEventFlags = 0;
         inner->targetYaw = gPlayerInteractTarget->anim.rotX;
         inner->yaw = inner->targetYaw;
-        if ((void*)gPlayerPathObject != NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+        if ((void*)gPlayerPathObject != NULL && ((PlayerState*)inner)->flags3F4.b40)
         {
             inner->staffActionRequest = 4;
-            ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+            ((PlayerState*)inner)->flags3F4.b08 = 1;
         }
         break;
     }
@@ -3392,10 +3392,10 @@ int playerStateStaffLiftRock(int obj, int state, f32 fv)
                                                &((GameObject*)obj)->anim.localPosZ);
         inner->targetYaw = gPlayerInteractTarget->anim.rotX + 0x8000;
         inner->yaw = inner->targetYaw;
-        if (gPlayerPathObject != NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+        if (gPlayerPathObject != NULL && ((PlayerState*)inner)->flags3F4.b40)
         {
             inner->staffActionRequest = 4;
-            ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+            ((PlayerState*)inner)->flags3F4.b08 = 1;
         }
         gPlayerLiftRockPullAccum = 0.0f;
         gPlayerRocketBoostSfxPlayed = 0;
@@ -3606,10 +3606,10 @@ int playerStateStaffBoost(GameObject* obj, int state, f32 fv)
             gPlayerStaffBoostTargetY = 100.0f + obj->anim.localPosY;
         }
         gPlayerQuakeChargeSfxPlayed = 0;
-        if (gPlayerPathObject != NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+        if (gPlayerPathObject != NULL && ((PlayerState*)inner)->flags3F4.b40)
         {
             inner->staffActionRequest = 4;
-            ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+            ((PlayerState*)inner)->flags3F4.b08 = 1;
         }
         inner->chargeLevel = 0.0f;
         if (inner->curAnimId != 0x48 && inner->curAnimId != 0x47)
@@ -3641,7 +3641,7 @@ int playerState31(GameObject* obj, int p2)
     f32 fz;
     dist = 100.0f;
     near = (void*)objGetNearestTypeTo(MAGICPLANT_OBJGROUP_B, obj, &dist);
-    ((ByteFlags*)((char*)inner + 0x3f4))->b20 = 1;
+    ((PlayerState*)inner)->flags3F4.b20 = 1;
     fz = 0.0f;
     inner->buttonHoldTimer = fz;
     if (near != 0)
@@ -3880,7 +3880,7 @@ void playerStagedRestoreCameraAndAnimState(GameObject* obj)
     {
         (*gCameraInterface)->setMode(0x42, 0, 1, 0, NULL, 0x3c, 0xfe);
     }
-    ((ByteFlags*)((char*)inner + 0x3f6))->b40 = 0;
+    ((PlayerState*)inner)->flags3F6.b40 = 0;
     inner->animState = -1;
 }
 
@@ -3909,7 +3909,7 @@ void playerStagedEndIceSpellAndRestoreCamera(GameObject* obj, int p2)
         {
             (*gCameraInterface)->setMode(0x42, 0, 1, 0, NULL, 0x3c, 0xfe);
         }
-        ((ByteFlags*)((char*)inner + 0x3f6))->b40 = 0;
+        ((PlayerState*)inner)->flags3F6.b40 = 0;
     }
 
     z[0] = 0;
@@ -4624,11 +4624,11 @@ int playerStateStartAimStaff(GameObject* obj, int state, f32 fv)
                 Sfx_PlayFromObject(obj, SFXTRIG_wp_swddirt16);
                 if (gPlayerPathObject != NULL)
                 {
-                    b = (((PlayerState*)inner)->flags3F4 >> 6) & 1;
+                    b = ((PlayerState*)inner)->flags3F4.b40;
                     if (b != 0)
                     {
                         inner->staffActionRequest = 2;
-                        ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 0;
+                        ((PlayerState*)inner)->flags3F4.b08 = 0;
                     }
                 }
             }
@@ -4646,11 +4646,11 @@ int playerStateStartAimStaff(GameObject* obj, int state, f32 fv)
         ((PlayerState*)state)->baddie.moveSpeed = 0.0333f;
         if (gPlayerPathObject != NULL)
         {
-            b = (((PlayerState*)inner)->flags3F4 >> 6) & 1;
+            b = ((PlayerState*)inner)->flags3F4.b40;
             if (b != 0)
             {
                 inner->staffActionRequest = 4;
-                ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+                ((PlayerState*)inner)->flags3F4.b08 = 1;
             }
         }
         z = 0.0f;
@@ -4676,13 +4676,13 @@ int playerState29(GameObject* obj, int state)
     u32 b;
     if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x100) != 0)
     {
-        b = (((PlayerState*)inner)->flags3F4 >> 6) & 1;
+        b = ((PlayerState*)inner)->flags3F4.b40;
         if (b != 0)
         {
             if (gPlayerPathObject != NULL && b != 0)
             {
                 inner->staffActionRequest = 4;
-                ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+                ((PlayerState*)inner)->flags3F4.b08 = 1;
             }
             ((PlayerState*)state)->baddie.stateHandler = 0;
             return 0x32;
@@ -4698,10 +4698,10 @@ int playerState28(GameObject* obj, int state, f32 fv)
 
     if (((PlayerState*)state)->baddie.hasTarget != 1 && ((PlayerState*)state)->baddie.controlMode != 0x26)
     {
-        if (gPlayerPathObject != NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+        if (gPlayerPathObject != NULL && ((PlayerState*)inner)->flags3F4.b40)
         {
             inner->staffActionRequest = 0;
-            ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 0;
+            ((PlayerState*)inner)->flags3F4.b08 = 0;
         }
         ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedRestoreDefaultControl;
         return 2;
@@ -4709,17 +4709,17 @@ int playerState28(GameObject* obj, int state, f32 fv)
     v = playerCheckCommonTransitions((int)obj, state, (int)inner, fv);
     if (v != 0)
     {
-        if (gPlayerPathObject != NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+        if (gPlayerPathObject != NULL && ((PlayerState*)inner)->flags3F4.b40)
         {
             inner->staffActionRequest = 1;
-            ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+            ((PlayerState*)inner)->flags3F4.b08 = 1;
         }
         *(int*)&((PlayerState*)state)->baddie.targetObj = 0;
         ((PlayerState*)state)->baddie.hasTarget = 0;
         (*gCameraInterface)->setTarget(0);
         return v;
     }
-    if (((PlayerState*)state)->baddie.controlMode == 0x26 || ((ByteFlags*)((char*)inner + 0x3f6))->b20)
+    if (((PlayerState*)state)->baddie.controlMode == 0x26 || ((PlayerState*)inner)->flags3F6.b20)
     {
         return 0;
     }
@@ -4727,7 +4727,7 @@ int playerState28(GameObject* obj, int state, f32 fv)
     {
         if ((padGetTriggers(0) & 0x20) != 0)
         {
-            ((ByteFlags*)((char*)inner + 0x3f6))->b20 = 1;
+            ((PlayerState*)inner)->flags3F6.b20 = 1;
             ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedEndGuardAndMarkTeleported;
             return 0x3a;
         }
@@ -4737,10 +4737,10 @@ int playerState28(GameObject* obj, int state, f32 fv)
         return 0;
     }
     if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x100) && gPlayerPathObject != NULL &&
-        ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+        ((PlayerState*)inner)->flags3F4.b40)
     {
         inner->staffActionRequest = 4;
-        ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+        ((PlayerState*)inner)->flags3F4.b08 = 1;
     }
     v = playerState30(obj, state, fv);
     if (v != 0)
@@ -4784,7 +4784,7 @@ int playerState27(GameObject* obj, int state, f32 fv)
             ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedEndIceSpellAndSettleHeading;
             return 0x25;
         }
-        ((ByteFlags*)((char*)inner + 0x3f1))->b80 = 1;
+        ((PlayerState*)inner)->flags3F1.b80 = 1;
         *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
         ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedRestoreDefaultControl;
         return 2;
@@ -5116,11 +5116,7 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
             ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedEndIceSpellAndSettleHeading;
             return 0x25;
         }
-        ((struct {
-             u8 hi : 1;
-             u8 lo : 7;
-         }*)&inner->flags3F1)
-            ->hi = 1;
+        ((PlayerState*)inner)->flags3F1.b80 = 1;
         *(u32*)&inner->flags360 |= PLAYER_FLAG_TELEPORTED;
         ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedRestoreDefaultControl;
         return 2;
@@ -5489,7 +5485,7 @@ int playerState22(GameObject* obj, int state)
 {
     PlayerState* inner = obj->extra;
     ((PlayerState*)state)->baddie.stateTag = 3;
-    if (*(s8*)((char*)inner->playerStatus) > 0)
+    if (((PlayerStatus*)inner->playerStatus)->health > 0)
     {
         ObjAnim_SetCurrentMove((int)obj, 0xc8, 0.0f, 0);
         ((PlayerState*)state)->baddie.stateHandler = 0;
@@ -5508,7 +5504,7 @@ int playerState21(int obj, int state, f32 fv)
     {
     case 0x450:
         ((PlayerState*)state)->baddie.moveSpeed = 0.02f;
-        if (((GameObject*)obj)->anim.velocityY < 1.0f && ((ByteFlags*)((char*)inner + 0x3f1))->b01)
+        if (((GameObject*)obj)->anim.velocityY < 1.0f && ((PlayerState*)inner)->flags3F1.b01)
         {
             if (inner->characterId == 0)
             {
@@ -5541,7 +5537,7 @@ int playerState21(int obj, int state, f32 fv)
         break;
     case 0xc4:
         ((PlayerState*)state)->baddie.moveSpeed = 0.05f;
-        if (((GameObject*)obj)->anim.velocityY < 1.0f && ((ByteFlags*)((char*)inner + 0x3f1))->b01)
+        if (((GameObject*)obj)->anim.velocityY < 1.0f && ((PlayerState*)inner)->flags3F1.b01)
         {
             if (inner->characterId == 0)
             {
@@ -5790,16 +5786,16 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
     setAButtonIcon(0xf);
     if (*(s8*)&state->baddie.moveJustStartedA != 0)
     {
-        ((ByteFlags*)((char*)inner + 0x3f3))->b01 = ((ByteFlags*)((char*)inner + 0x3f3))->b08;
+        ((PlayerState*)inner)->flags3F3.b01 = ((PlayerState*)inner)->flags3F3.b08;
         state->baddie.stateId = 0x1d;
         inner->stateHandler = (int)playerStagedRestoreCameraAndSyncPosition;
     }
     if (*(s8*)&state->baddie.moveJustStartedA != 0)
     {
-        if (gPlayerPathObject != 0 && ((ByteFlags*)((char*)inner + 0x3f4))->b40 != 0)
+        if (gPlayerPathObject != 0 && ((PlayerState*)inner)->flags3F4.b40 != 0)
         {
             inner->staffActionRequest = 1;
-            ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+            ((PlayerState*)inner)->flags3F4.b08 = 1;
         }
         if (inner->curAnimId != 0x48 && inner->curAnimId != 0x47)
         {
@@ -5815,7 +5811,7 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
             inner->yaw = ang;
             self->anim.rotX = ang;
         }
-        ((ByteFlags*)((char*)inner + 0x3f2))->b01 = 1;
+        ((PlayerState*)inner)->flags3F2.b01 = 1;
         ObjAnim_SetCurrentMove(obj, 0x5f, 0.0f, 0);
         ObjAnim_SetCurrentEventStepFrames((ObjAnimComponent*)obj, 8);
         state->baddie.moveSpeed = 0.01f;
@@ -5824,7 +5820,7 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
             inner->stickTargetX = z;
             inner->stickTargetY = z;
         }
-        ((ByteFlags*)((char*)inner + 0x3f3))->b80 = 0;
+        ((PlayerState*)inner)->flags3F3.b80 = 0;
         ObjHits_MarkObjectPositionDirty((ObjAnimComponent*)obj);
     }
     inner->aimInputZ = 0.8f;
@@ -5864,7 +5860,7 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
     xc = (t < -1.0f) ? -1.0f : ((t > 1.0f) ? 1.0f : t);
     t2 = (f32)padGetStickY(0) / 56.0f;
     yc = (t2 < -1.0f) ? -1.0f : ((t2 > 1.0f) ? 1.0f : t2);
-    if (((ByteFlags*)((char*)inner + 0x3f3))->b80 == 0)
+    if (((PlayerState*)inner)->flags3F3.b80 == 0)
     {
         f32 component;
         f32 k;
@@ -5915,9 +5911,9 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
         inner->stickTargetX += k * (xT - inner->stickTargetX);
         inner->stickTargetY += k * (yT - inner->stickTargetY);
     }
-    if (((ByteFlags*)((char*)inner + 0x3f3))->b80 == 0 &&
+    if (((PlayerState*)inner)->flags3F3.b80 == 0 &&
         ((*(int*)&state->baddie.heldButtons & 0x100) == 0 || inner->stickEdgeLatch != 0 ||
-         (((ByteFlags*)((char*)inner + 0x3f1))->b01 == 0 && ((PlayerState*)state)->baddie.unk1B0 >= 15.0f)))
+         (((PlayerState*)inner)->flags3F1.b01 == 0 && ((PlayerState*)state)->baddie.unk1B0 >= 15.0f)))
     {
         if (inner->stickDirection != 0)
         {
@@ -5931,9 +5927,9 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
             return 2;
         }
         inner->stickDirection = 0;
-        ((ByteFlags*)((char*)inner + 0x3f3))->b80 = 1;
+        ((PlayerState*)inner)->flags3F3.b80 = 1;
     }
-    if (((ByteFlags*)((char*)inner + 0x3f3))->b80 == 0)
+    if (((PlayerState*)inner)->flags3F3.b80 == 0)
     {
         if (inner->stickDirection != 0)
         {
@@ -5946,22 +5942,22 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
             *(u32*)&inner->flags360 |= 0x200LL;
             if (inner->stickDirection != prev || *(s8*)&inner->latchedStickDir == 0)
             {
-                ((ByteFlags*)((char*)inner + 0x3f2))->b01 = 1;
+                ((PlayerState*)inner)->flags3F2.b01 = 1;
                 inner->latchedStickDir = 0;
             }
             else if (inner->stickDirection == *(s8*)&inner->latchedStickDir)
             {
-                if (((ByteFlags*)((char*)inner + 0x3f3))->b08 != 0 && ((ByteFlags*)((char*)inner + 0x3f3))->b01 == 0)
+                if (((PlayerState*)inner)->flags3F3.b08 != 0 && ((PlayerState*)inner)->flags3F3.b01 == 0)
                 {
-                    ((ByteFlags*)((char*)inner + 0x3f2))->b01 = 1;
+                    ((PlayerState*)inner)->flags3F2.b01 = 1;
                     inner->latchedStickDir = 0;
                 }
                 else
                 {
-                    ((ByteFlags*)((char*)inner + 0x3f2))->b01 = 0;
+                    ((PlayerState*)inner)->flags3F2.b01 = 0;
                 }
             }
-            if (((ByteFlags*)((char*)inner + 0x3f2))->b01 != 0)
+            if (((PlayerState*)inner)->flags3F2.b01 != 0)
             {
                 state->baddie.moveSpeed =
                     0.01f * state->baddie.inputMagnitude + tbl->spdD[inner->stickDirection];
@@ -6041,7 +6037,7 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
             self->anim.localPosZ = k * inner->surfaceNormalZ + self->anim.localPosZ;
         }
     }
-    ((ByteFlags*)((char*)inner + 0x3f3))->b01 = ((ByteFlags*)((char*)inner + 0x3f3))->b08;
+    ((PlayerState*)inner)->flags3F3.b01 = ((PlayerState*)inner)->flags3F3.b08;
     return 0;
 }
 
@@ -6319,7 +6315,7 @@ int playerStateOnCloudRunner(GameObject* obj, int state)
 
     *(u32*)&inner->flags360 &= ~PLAYER_FLAG_HITDETECT;
     ObjHits_EnableObject(obj);
-    sub = *(void**)((char*)inner + 0x7f0);
+    sub = ((PlayerState*)inner)->focusObject;
     if (sub == NULL)
     {
         f32 z = 0.0f;
@@ -6333,7 +6329,7 @@ int playerStateOnCloudRunner(GameObject* obj, int state)
     }
     else
     {
-        if (*(s16*)((char*)sub + 0x46) != 0x714)
+        if (((GameObject*)sub)->anim.romDefNo != 0x714)
         {
             ObjHits_DisableObject(obj);
         }
@@ -6350,10 +6346,10 @@ int playerStateOnCloudRunner(GameObject* obj, int state)
         inner->actionCooldown = 0.0f;
         if (gPlayerPathObject != NULL)
         {
-            if (((ByteFlags*)((char*)inner + 0x3f4))->b40 != 0)
+            if (((PlayerState*)inner)->flags3F4.b40 != 0)
             {
                 inner->staffActionRequest = 4;
-                ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+                ((PlayerState*)inner)->flags3F4.b08 = 1;
             }
         }
     }
@@ -6382,8 +6378,8 @@ int playerStateOnCloudRunner(GameObject* obj, int state)
             : (((PlayerState*)state)->baddie.moveInputZ / 56.0f) > 1.5f
                 ? 1.5f
                 : ((PlayerState*)state)->baddie.moveInputZ / 56.0f;
-        hit = *(void**)((char*)inner + 0x7f0);
-        if (hit != NULL && *(s16*)((char*)hit + 0x46) == 0x484)
+        hit = ((PlayerState*)inner)->focusObject;
+        if (hit != NULL && ((GameObject*)hit)->anim.romDefNo == 0x484)
         {
             c = c + lbl_803DC6E0;
         }
@@ -6495,7 +6491,7 @@ int playerState19(GameObject* obj, int state)
     {
         VEHICLE_INTERFACE(sub)->getRiderPosition((GameObject*)sub, (f32*)((char*)obj + 0xc),
                                                  (f32*)((char*)obj + 0x10), (f32*)((char*)obj + 0x14));
-        switch (*(s16*)((char*)sub + 0x46))
+        switch (((GameObject*)sub)->anim.romDefNo)
         {
         case 0x38c:
         case 0x72:
@@ -6635,7 +6631,7 @@ int playerStateOnBike(GameObject* obj, int state)
     ((PlayerState*)state)->baddie.flags4 |= 0x100000;
     *(u32*)&((PlayerState*)inner)->flags360 &= ~PLAYER_FLAG_HITDETECT;
     ObjHits_DisableObject(obj);
-    sub = *(void**)((char*)inner + 0x7f0);
+    sub = ((PlayerState*)inner)->focusObject;
     if (sub == NULL)
     {
         obj->anim.activeMove = -1;
@@ -6752,12 +6748,12 @@ int playerStateMountBike(GameObject* obj, int state, f32 fv)
         int sel;
         f32 scratch[2];
 
-        if (gPlayerPathObject != NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40 != 0)
+        if (gPlayerPathObject != NULL && ((PlayerState*)inner)->flags3F4.b40 != 0)
         {
             inner->staffActionRequest = 1;
-            ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+            ((PlayerState*)inner)->flags3F4.b08 = 1;
         }
-        switch (*(s16*)((char*)sub + 0x46))
+        switch (((GameObject*)sub)->anim.romDefNo)
         {
         case 0x72:
             inner->moveSequence = (int)(base + 0x3f0);
@@ -6849,7 +6845,7 @@ int playerStateMountBike(GameObject* obj, int state, f32 fv)
         *(s8*)&((PlayerState*)state)->baddie.moveDone != 0) {
         ObjAnim_SetCurrentMove((int)obj, *(s16*)inner->moveSequence, 0.0f, 1);
         VEHICLE_INTERFACE(sub)->setMountState((GameObject*)sub, VEHICLE_Mounted);
-        if (arrayIndexOf((int*)(base + 0x160), 4, *(s16*)((char*)sub + 0x46)) != -1)
+        if (arrayIndexOf((int*)(base + 0x160), 4, ((GameObject*)sub)->anim.romDefNo) != -1)
         {
             ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedClearActiveMove;
             return 0x1b;
@@ -7481,10 +7477,10 @@ int playerStateClimbOntoWall(GameObject* obj, int state)
         inner->stateHandler = (int)playerStagedRestoreCameraUnlessClimbing;
         if (gPlayerPathObject != NULL)
         {
-            if (((ByteFlags*)((char*)inner + 0x3f4))->b40)
+            if (((PlayerState*)inner)->flags3F4.b40)
             {
                 inner->staffActionRequest = 1;
-                ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+                ((PlayerState*)inner)->flags3F4.b08 = 1;
             }
         }
         ObjHits_MarkObjectPositionDirty(&obj->anim);
@@ -7624,10 +7620,10 @@ int playerState11(GameObject* obj, int state)
     ((PlayerState*)state)->baddie.flags4 |= 0x8000000;
     obj->anim.velocityY = k;
     if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedA != 0 && gPlayerPathObject != 0 &&
-        ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+        ((PlayerState*)inner)->flags3F4.b40)
     {
         ((PlayerState*)inner)->staffActionRequest = 1;
-        ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+        ((PlayerState*)inner)->flags3F4.b08 = 1;
     }
     switch (obj->anim.currentMove)
     {
@@ -7741,16 +7737,16 @@ int playerStateSlideDownLadder(GameObject* obj, int state, f32 fv)
                     obj->anim.velocityY = zero;
                     obj->anim.velocityZ = zero;
                     playerRefreshCollisionState(obj, (int)inner, 5);
-                    ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
-                    ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
-                    ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
+                    ((PlayerState*)inner)->flags3F0.b80 = 0;
+                    ((PlayerState*)inner)->flags3F0.b10 = 0;
+                    ((PlayerState*)inner)->flags3F0.b08 = 0;
                     Shield_setMode(gPlayerStaffObject, 2);
-                    ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 0;
+                    ((PlayerState*)inner)->flags3F0.b02 = 0;
                     *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
                     ObjHits_SyncObjectPositionIfDirty(obj);
-                    ((ByteFlags*)((char*)inner + 0x3f0))->b40 = 0;
-                    ((ByteFlags*)((char*)inner + 0x3f0))->b04 = 1;
-                    ((ByteFlags*)((char*)inner + 0x3f4))->b10 = 1;
+                    ((PlayerState*)inner)->flags3F0.b40 = 0;
+                    ((PlayerState*)inner)->flags3F0.b04 = 1;
+                    ((PlayerState*)inner)->flags3F4.b10 = 1;
                     inner->isHoldingObject = 0;
                     sub = ((PlayerState*)inner)->heldObj;
                     if (sub != NULL)
@@ -7764,8 +7760,8 @@ int playerStateSlideDownLadder(GameObject* obj, int state, f32 fv)
                         {
                             Carryable_putDownAndSavePos((GameObject*)sub);
                         }
-                        *(s16*)((char*)inner->heldObj + 0x6) &= ~0x4000;
-                        *(int*)((char*)inner->heldObj + 0xf8) = 0;
+                        inner->heldObj->anim.flags &= ~0x4000;
+                        inner->heldObj->userData2 = 0;
                         inner->heldObj = 0;
                     }
                     ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedRestoreDefaultControl;
@@ -7875,10 +7871,10 @@ int playerStateOnLadder(int obj, int state)
     if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedA != 0)
     {
         ObjHits_MarkObjectPositionDirty((ObjAnimComponent*)obj);
-        if (gPlayerPathObject != 0 && ((u32) ((PlayerState*)inner)->flags3F4 >> 6 & 1) != 0)
+        if (gPlayerPathObject != 0 && (((PlayerState*)inner)->flags3F4.b40) != 0)
         {
             ((PlayerState*)inner)->staffActionRequest = 1;
-            ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+            ((PlayerState*)inner)->flags3F4.b08 = 1;
         }
         if (((GameObject*)obj)->anim.currentMove == lbl_80332F2C[8] ||
             ((GameObject*)obj)->anim.currentMove == lbl_80332F2C[12])
@@ -8021,7 +8017,7 @@ int playerStateOnLadder(int obj, int state)
             {
                 playerRefreshCollisionState((GameObject*)obj, inner, 5);
             }
-            ObjAnim_SetCurrentMove(obj, **(s16**)((char*)inner + 0x3f8), 0.0f, 1);
+            ObjAnim_SetCurrentMove(obj, *((PlayerState*)inner)->moveAnimIds, 0.0f, 1);
             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
             ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedRestoreDefaultControl;
             return 2;
@@ -8173,16 +8169,16 @@ int playerStateOnLadder(int obj, int state)
                                 ((GameObject*)obj)->anim.velocityY = z3;
                                 ((GameObject*)obj)->anim.velocityZ = z3;
                             }
-                            ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
-                            ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
-                            ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
+                            ((PlayerState*)inner)->flags3F0.b80 = 0;
+                            ((PlayerState*)inner)->flags3F0.b10 = 0;
+                            ((PlayerState*)inner)->flags3F0.b08 = 0;
                             Shield_setMode(gPlayerStaffObject, 2);
-                            ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 0;
+                            ((PlayerState*)inner)->flags3F0.b02 = 0;
                             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
                             ObjHits_SyncObjectPositionIfDirty((GameObject*)obj);
-                            ((ByteFlags*)((char*)inner + 0x3f0))->b40 = 0;
-                            ((ByteFlags*)((char*)inner + 0x3f0))->b04 = 1;
-                            ((ByteFlags*)((char*)inner + 0x3f4))->b10 = 1;
+                            ((PlayerState*)inner)->flags3F0.b40 = 0;
+                            ((PlayerState*)inner)->flags3F0.b04 = 1;
+                            ((PlayerState*)inner)->flags3F4.b10 = 1;
                             ((PlayerState*)inner)->isHoldingObject = 0;
                             if (((PlayerState*)inner)->heldObj != NULL)
                             {
@@ -8199,7 +8195,7 @@ int playerStateOnLadder(int obj, int state)
                                 }
                                 *(s16*)((char*)((PlayerState*)inner)->heldObj + 6) =
                                     *(s16*)((char*)((PlayerState*)inner)->heldObj + 6) & ~0x4000;
-                                *(int*)((char*)((PlayerState*)inner)->heldObj + 0xf8) = 0;
+                                ((PlayerState*)inner)->heldObj->userData2 = 0;
                                 ((PlayerState*)inner)->heldObj = 0;
                             }
                             playerRefreshCollisionState((GameObject*)obj, inner, 5);
@@ -8392,10 +8388,10 @@ int playerStateClimbOntoLadder(GameObject* obj, int state, f32 fv)
             f32 vz;
         } vb;
         ObjHits_MarkObjectPositionDirty(&obj->anim);
-        if (gPlayerPathObject != NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40 != 0)
+        if (gPlayerPathObject != NULL && ((PlayerState*)inner)->flags3F4.b40 != 0)
         {
             inner->staffActionRequest = 1;
-            ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+            ((PlayerState*)inner)->flags3F4.b08 = 1;
         }
         {
             f32 z = 0.0f;
@@ -8692,16 +8688,16 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
             ((GameObject*)obj)->anim.velocityZ = z;
             ((PlayerState*)state)->baddie.flags4 &= ~0x100000;
             playerRefreshCollisionState((GameObject*)obj, inner, 5);
-            ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
-            ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
-            ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
+            ((PlayerState*)inner)->flags3F0.b80 = 0;
+            ((PlayerState*)inner)->flags3F0.b10 = 0;
+            ((PlayerState*)inner)->flags3F0.b08 = 0;
             Shield_setMode(gPlayerStaffObject, 2);
-            ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 0;
+            ((PlayerState*)inner)->flags3F0.b02 = 0;
             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
             ObjHits_SyncObjectPositionIfDirty((GameObject*)obj);
-            ((ByteFlags*)((char*)inner + 0x3f0))->b40 = 0;
-            ((ByteFlags*)((char*)inner + 0x3f0))->b04 = 1;
-            ((ByteFlags*)((char*)inner + 0x3f4))->b10 = 1;
+            ((PlayerState*)inner)->flags3F0.b40 = 0;
+            ((PlayerState*)inner)->flags3F0.b04 = 1;
+            ((PlayerState*)inner)->flags3F4.b10 = 1;
             ((PlayerState*)inner)->isHoldingObject = 0;
             if (((PlayerState*)inner)->heldObj != NULL)
             {
@@ -8714,9 +8710,9 @@ int playerStateClimbLedge(int obj, int state, f32 fv)
                 {
                     Carryable_putDownAndSavePos((GameObject*)((PlayerState*)inner)->heldObj);
                 }
-                *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) =
-                    *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) & ~0x4000;
-                *(int*)((char*)((PlayerState*)inner)->heldObj + 0xf8) = 0;
+                ((PlayerState*)inner)->heldObj->anim.flags =
+                    ((PlayerState*)inner)->heldObj->anim.flags & ~0x4000;
+                ((PlayerState*)inner)->heldObj->userData2 = 0;
                 ((PlayerState*)inner)->heldObj = 0;
             }
             ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedRestoreDefaultControl;
@@ -8821,7 +8817,7 @@ int playerState0B(GameObject* obj, int state)
         {
             Sfx_PlayFromObject(obj, (u16)(inner->characterId == 0 ? SFXTRIG_jump3 : SFXTRIG_sabrepush));
         }
-        if ((((u32)inner->flags3F0 >> 5) & 1) || gPlayerCurrentMoveId == 0x1a)
+        if ((inner->flags3F0.b20) || gPlayerCurrentMoveId == 0x1a)
         {
             if (((PlayerState*)state)->baddie.eventFlags & 0x80)
             {
@@ -8889,7 +8885,7 @@ int playerState0B(GameObject* obj, int state)
         inner->moveStartX = obj->anim.localPosX;
         inner->moveStartY = obj->anim.localPosY;
         inner->moveStartZ = obj->anim.localPosZ;
-        if (*(void**)((char*)inner + 0x4c4) != NULL)
+        if (((PlayerState*)inner)->groundObject != NULL)
         {
             Obj_TransformWorldPointToLocal(*(f32*)((int)inner + 0x5d4), *(f32*)((int)inner + 0x5d8),
                                            *(f32*)((int)inner + 0x5dc), (f32*)((char*)inner + 0x5d4),
@@ -8949,8 +8945,8 @@ int playerStateGrabLedge(GameObject* obj, int state)
             {
                 Carryable_putDownAndSavePos((GameObject*)sub);
             }
-            *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) &= ~0x4000;
-            *(int*)((char*)((PlayerState*)inner)->heldObj + 0xf8) = 0;
+            ((PlayerState*)inner)->heldObj->anim.flags &= ~0x4000;
+            ((PlayerState*)inner)->heldObj->userData2 = 0;
             ((PlayerState*)inner)->heldObj = 0;
         }
     }
@@ -9035,7 +9031,7 @@ int playerStateGrabLedge(GameObject* obj, int state)
                 ->setMode(CAMERA_MODE_STAFF_ANIM_RESOURCE_ID, 1, 0, sizeof(CameraModeStaffAnimSettings),
                           &cameraSettings, 0, 0xff);
         }
-        if (*(void**)((char*)inner + 0x4c4) != NULL)
+        if (((PlayerState*)inner)->groundObject != NULL)
         {
             Obj_TransformWorldPointToLocal(*(f32*)((int)inner + 0x5d4), *(f32*)((int)inner + 0x5d8),
                                            *(f32*)((int)inner + 0x5dc), (f32*)((char*)inner + 0x5d4),
@@ -9116,7 +9112,7 @@ int playerState09(GameObject* obj, int state)
                                        &obj->anim.localPosY, &obj->anim.localPosZ,
                                        obj->anim.parent);
         Obj_SetParent(obj, ((PlayerState*)inner)->groundObject, 1);
-        if (*(void**)((char*)inner + 0x4c4) != NULL)
+        if (((PlayerState*)inner)->groundObject != NULL)
         {
             Obj_TransformWorldPointToLocal(*(f32*)((int)inner + 0x5d4), *(f32*)((int)inner + 0x5d8),
                                            *(f32*)((int)inner + 0x5dc), (f32*)((char*)inner + 0x5d4),
@@ -9186,14 +9182,14 @@ int playerState08(GameObject* obj, int state, f32 fv)
         switch (inner->climbProbeResult)
         {
         case 0:
-            if (((ByteFlags*)((char*)inner + 0x3f1))->b01)
+            if (((PlayerState*)inner)->flags3F1.b01)
             {
                 ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedRestoreCameraUnlessClimbing;
                 return 0xf;
             }
             break;
         case 9:
-            if (((ByteFlags*)((char*)inner + 0x3f1))->b01)
+            if (((PlayerState*)inner)->flags3F1.b01)
             {
                 ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedRestoreCameraUnlessClimbing;
                 return 0x13;
@@ -9232,7 +9228,7 @@ int playerState08(GameObject* obj, int state, f32 fv)
         default:
             break;
         }
-        if (((PlayerState*)inner)->heldObj == NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+        if (((PlayerState*)inner)->heldObj == NULL && ((PlayerState*)inner)->flags3F4.b40)
         {
             int* objects;
             objects = (int*)objGetAllOfType(STAFF_ACTIVATED_OBJECT_GROUP, &cnt41);
@@ -9307,10 +9303,10 @@ int playerState08(GameObject* obj, int state, f32 fv)
             GameObject* player;
             void* att;
             buttonDisable(0, PAD_BUTTON_A);
-            if (gPlayerPathObject != NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+            if (gPlayerPathObject != NULL && ((PlayerState*)inner)->flags3F4.b40)
             {
                 inner->staffActionRequest = 1;
-                ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+                ((PlayerState*)inner)->flags3F4.b08 = 1;
             }
             player = Obj_GetPlayerObject();
             if (Obj_IsLoadingLocked() == 0)
@@ -9363,21 +9359,21 @@ int playerState08(GameObject* obj, int state, f32 fv)
         {
             int r2;
             if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x200) != 0 && gPlayerPathObject != NULL &&
-                ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+                ((PlayerState*)inner)->flags3F4.b40)
             {
                 inner->staffActionRequest = 0;
-                ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 0;
+                ((PlayerState*)inner)->flags3F4.b08 = 0;
             }
             {
                 int in2 = *(int*)&obj->extra;
                 u8 b;
                 if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x100) != 0 &&
-                    (b = ((ByteFlags*)((char*)in2 + 0x3f4))->b40, b != 0))
+                    (b = ((PlayerState*)in2)->flags3F4.b40, b != 0))
                 {
                     if (gPlayerPathObject != NULL && b != 0)
                     {
                         *(u8*)((char*)in2 + 0x8b4) = 4;
-                        ((ByteFlags*)((char*)in2 + 0x3f4))->b08 = 1;
+                        ((PlayerState*)in2)->flags3F4.b08 = 1;
                     }
                     ((PlayerState*)state)->baddie.stateHandler = 0;
                     r2 = 0x32;
@@ -9397,8 +9393,8 @@ int playerState08(GameObject* obj, int state, f32 fv)
             if ((*(int*)&((PlayerState*)state)->baddie.pressedButtons & 0x100) != 0)
             {
                 int ok2;
-                if (((PlayerState*)inner)->heldObj != NULL || !((ByteFlags*)((char*)inner + 0x3f4))->b40 ||
-                    ((ByteFlags*)((char*)inner + 0x3f0))->b20 || ((ByteFlags*)((char*)inner + 0x3f0))->b10)
+                if (((PlayerState*)inner)->heldObj != NULL || !((PlayerState*)inner)->flags3F4.b40 ||
+                    ((PlayerState*)inner)->flags3F0.b20 || ((PlayerState*)inner)->flags3F0.b10)
                 {
                     ok2 = 0;
                 }
@@ -9412,18 +9408,18 @@ int playerState08(GameObject* obj, int state, f32 fv)
                         (inner->cameraTargetObject != NULL && inner->targetObjectDist < 70.0f &&
                          inner->targetObjectBearingAbs < 0x4000 && ((PlayerState*)inner)->targetObjModelType == 1))
                     {
-                        if (gPlayerPathObject != NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+                        if (gPlayerPathObject != NULL && ((PlayerState*)inner)->flags3F4.b40)
                         {
                             inner->staffActionRequest = 4;
-                            ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+                            ((PlayerState*)inner)->flags3F4.b08 = 1;
                         }
                         ((PlayerState*)state)->baddie.stateHandler = 0;
                         return 0x32;
                     }
-                    if (gPlayerPathObject != NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+                    if (gPlayerPathObject != NULL && ((PlayerState*)inner)->flags3F4.b40)
                     {
                         inner->staffActionRequest = 2;
-                        ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 0;
+                        ((PlayerState*)inner)->flags3F4.b08 = 0;
                     }
                 }
             }
@@ -9489,7 +9485,7 @@ int playerStateThrowing(GameObject* obj, int state)
                 Carryable_putDownAndSavePos(s2);
             }
             *(s16*)((char*)inner->heldObj + 6) &= ~0x4000;
-            *(int*)((char*)inner->heldObj + 0xf8) = 0;
+            inner->heldObj->userData2 = 0;
             inner->heldObj = 0;
         }
     }
@@ -9566,7 +9562,7 @@ int playerState06(GameObject* obj, int state)
                 Carryable_putDownAndSavePos(s2);
             }
             *(s16*)((char*)inner->heldObj + 6) &= ~0x4000;
-            *(int*)((char*)inner->heldObj + 0xf8) = 0;
+            inner->heldObj->userData2 = 0;
             inner->heldObj = 0;
         }
     }
@@ -9581,10 +9577,10 @@ int playerState05(GameObject* obj, int state)
     {
         if (gPlayerPathObject != NULL)
         {
-            if (((ByteFlags*)((char*)inner + 0x3f4))->b40)
+            if (((PlayerState*)inner)->flags3F4.b40)
             {
                 inner->staffActionRequest = 1;
-                ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+                ((PlayerState*)inner)->flags3F4.b08 = 1;
             }
         }
         ((PlayerState*)state)->baddie.stateId = 1;
@@ -9625,7 +9621,7 @@ int playerState05(GameObject* obj, int state)
         if (sub != NULL && ((GameObject*)sub)->anim.romDefNo == 0x112)
         {
             inner->moveAnimTable = (int)lbl_80333110;
-            *(int*)((char*)inner->heldObj + 0xf8) = 1;
+            inner->heldObj->userData2 = 1;
             ObjAnim_SetCurrentMove((int)obj, *(s16*)inner->moveAnimTable, 0.0f, 0);
             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
             ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedRestoreDefaultControl;
@@ -9707,7 +9703,7 @@ int playerStateIceSpell(int obj, int state, f32 fv)
 void playerStagedRestoreDefaultControl(GameObject* obj, int state)
 {
     PlayerState* inner = obj->extra;
-    ((ByteFlags*)((char*)inner + 0x3f1))->b80 = 0;
+    ((PlayerState*)inner)->flags3F1.b80 = 0;
     {
         s16 mode = ((PlayerState*)state)->baddie.controlMode;
         if (mode != 2 && mode != 1 && mode != 5 && mode != 7 && mode != 6)
@@ -9726,8 +9722,8 @@ void playerStagedRestoreDefaultControl(GameObject* obj, int state)
                 {
                     Carryable_putDownAndSavePos((GameObject*)sub);
                 }
-                *(s16*)((char*)inner->heldObj + 0x6) &= ~0x4000;
-                *(int*)((char*)inner->heldObj + 0xf8) = 0;
+                inner->heldObj->anim.flags &= ~0x4000;
+                inner->heldObj->userData2 = 0;
                 inner->heldObj = 0;
             }
         }
@@ -9736,14 +9732,14 @@ void playerStagedRestoreDefaultControl(GameObject* obj, int state)
         s16 mode = ((PlayerState*)state)->baddie.controlMode;
         if (mode != 2 && mode != 1)
         {
-            ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
-            ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
-            ((ByteFlags*)((char*)inner + 0x3f0))->b40 = 0;
-            ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
-            ((ByteFlags*)((char*)inner + 0x3f0))->b04 = 0;
+            ((PlayerState*)inner)->flags3F0.b10 = 0;
+            ((PlayerState*)inner)->flags3F0.b80 = 0;
+            ((PlayerState*)inner)->flags3F0.b40 = 0;
+            ((PlayerState*)inner)->flags3F0.b08 = 0;
+            ((PlayerState*)inner)->flags3F0.b04 = 0;
             inner->staffHoldFrames = 0;
-            ((ByteFlags*)((char*)inner + 0x3f0))->b20 = 0;
-            if (((ByteFlags*)((char*)inner + 0x3f1))->b20)
+            ((PlayerState*)inner)->flags3F0.b20 = 0;
+            if (((PlayerState*)inner)->flags3F1.b20)
             {
                 s16 t = obj->anim.rotX;
                 inner->yaw = t;
@@ -9751,14 +9747,14 @@ void playerStagedRestoreDefaultControl(GameObject* obj, int state)
                 inner->lastInputHeading = t;
                 inner->baddie.animSpeedB = 0.0f;
             }
-            ((ByteFlags*)((char*)inner + 0x3f1))->b20 = 0;
-            if (((ByteFlags*)((char*)inner + 0x3f1))->b10)
+            ((PlayerState*)inner)->flags3F1.b20 = 0;
+            if (((PlayerState*)inner)->flags3F1.b10)
             {
                 u8 anim = inner->curAnimId;
                 if (anim != 0x48 && anim != 0x47 && getCurSeqNo() == 0)
                 {
                     (*gCameraInterface)->setMode(0x42, 0, 1, 0, NULL, 0x1e, 0xff);
-                    ((ByteFlags*)((char*)inner + 0x3f1))->b10 = 0;
+                    ((PlayerState*)inner)->flags3F1.b10 = 0;
                 }
             }
             *(u32*)&((PlayerState*)inner)->flags360 &= ~0x2000000LL;
@@ -9767,7 +9763,7 @@ void playerStagedRestoreDefaultControl(GameObject* obj, int state)
     if (((PlayerState*)state)->baddie.controlMode != 2)
     {
         Shield_setMode(gPlayerStaffObject, 2);
-        ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 0;
+        ((PlayerState*)inner)->flags3F0.b02 = 0;
         *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
         ObjHits_SyncObjectPositionIfDirty(obj);
     }
@@ -9783,19 +9779,19 @@ int playerStateMoving(int obj, int state, f32 fv)
     f32 ya;
 
     inner = *(int*)&((GameObject*)obj)->extra;
-    ((ByteFlags*)((char*)inner + 0x3f1))->b02 = 0;
-    ((ByteFlags*)((char*)inner + 0x3f1))->b04 = 0;
-    ((ByteFlags*)((char*)inner + 0x3f1))->b08 = 0;
-    ((ByteFlags*)((char*)inner + 0x3f2))->b10 = 0;
+    ((PlayerState*)inner)->flags3F1.b02 = 0;
+    ((PlayerState*)inner)->flags3F1.b04 = 0;
+    ((PlayerState*)inner)->flags3F1.b08 = 0;
+    ((PlayerState*)inner)->flags3F2.b10 = 0;
     if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedA != 0)
     {
         *(u32*)&((PlayerState*)inner)->flags360 |= 0x2000000LL;
-        ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
-        ((ByteFlags*)((char*)inner + 0x3f0))->b40 = 0;
-        ((ByteFlags*)((char*)inner + 0x3f3))->b40 = 0;
+        ((PlayerState*)inner)->flags3F0.b80 = 0;
+        ((PlayerState*)inner)->flags3F0.b40 = 0;
+        ((PlayerState*)inner)->flags3F3.b40 = 0;
         *(u8*)&((PlayerState*)inner)->gaitLevel = 0;
         ((PlayerState*)inner)->unk81E = 0;
-        ((ByteFlags*)((char*)inner + 0x3f2))->b10 = 1;
+        ((PlayerState*)inner)->flags3F2.b10 = 1;
     }
     {
         int r = playerCheckCommonTransitions(obj, state, inner, fv);
@@ -9806,7 +9802,7 @@ int playerStateMoving(int obj, int state, f32 fv)
     }
     playerSetMovingAnims(obj, inner);
     {
-        u32 fl = ((PlayerState*)inner)->flags3F0;
+        u32 fl = ((PlayerState*)inner)->flagByte3F0;
         if ((fl >> 5 & 1) != 0)
         {
             *(int*)state |= 0x200000;
@@ -9814,7 +9810,7 @@ int playerStateMoving(int obj, int state, f32 fv)
             *(u32*)&((PlayerState*)inner)->flags360 |= 0x2000000LL;
             ((PlayerState*)state)->baddie.stateId = 2;
             ((PlayerState*)inner)->stateHandler = (int)playerStagedRestoreDefaultControl;
-            if (((u32) ((PlayerState*)inner)->flags3F1 >> 5 & 1) != 0)
+            if ((((PlayerState*)inner)->flags3F1.b20) != 0)
             {
                 ((PlayerState*)inner)->maxSpeed = 0.8f;
             }
@@ -9823,7 +9819,7 @@ int playerStateMoving(int obj, int state, f32 fv)
                 ((PlayerState*)inner)->maxSpeed = 1.1996999f;
             }
         }
-        else if (((u32) ((PlayerState*)inner)->flags3F1 >> 5 & 1) != 0)
+        else if ((((PlayerState*)inner)->flags3F1.b20) != 0)
         {
             *(u32*)&((PlayerState*)inner)->flags360 |= 0x2000000LL;
             *(int*)state |= 0x800000;
@@ -9846,7 +9842,7 @@ int playerStateMoving(int obj, int state, f32 fv)
     }
     if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedA != 0)
     {
-        if (((u32) ((PlayerState*)inner)->flags3F1 >> 5 & 1) == 0 && ((u32) ((PlayerState*)inner)->flags3F0 >> 2 & 1) == 0)
+        if ((((PlayerState*)inner)->flags3F1.b20) == 0 && (((PlayerState*)inner)->flags3F0.b04) == 0)
         {
             ((PlayerState*)inner)->yaw = ((PlayerState*)inner)->yaw + ((PlayerState*)inner)->yawRate * 0xb6;
         }
@@ -9863,7 +9859,7 @@ int playerStateMoving(int obj, int state, f32 fv)
     ((PlayerState*)inner)->currentSpeed =
         (((PlayerState*)inner)->maxSpeed - 0.05f) * (t * ((PlayerState*)inner)->speedScale);
     {
-        u32 fl = ((PlayerState*)inner)->flags3F0;
+        u32 fl = ((PlayerState*)inner)->flagByte3F0;
         if ((fl >> 6 & 1) != 0)
         {
             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_HEADING_LOCK;
@@ -9876,15 +9872,15 @@ int playerStateMoving(int obj, int state, f32 fv)
             }
             if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
             {
-                ((ByteFlags*)((char*)inner + 0x3f0))->b40 = 0;
+                ((PlayerState*)inner)->flags3F0.b40 = 0;
                 {
                     int a = ((PlayerState*)inner)->yaw;
                     ((PlayerState*)inner)->targetYaw = a;
                     ((PlayerState*)inner)->lastInputHeading = a;
                 }
                 *(u8*)&((PlayerState*)inner)->gaitLevel = 0xc;
-                ((ByteFlags*)((char*)inner + 0x3f1))->b04 = 1;
-                ((ByteFlags*)((char*)inner + 0x3f1))->b08 = 1;
+                ((PlayerState*)inner)->flags3F1.b04 = 1;
+                ((PlayerState*)inner)->flags3F1.b08 = 1;
             }
             ((PlayerState*)state)->baddie.animSpeedC =
                 ((PlayerState*)inner)->animSpeedRate * timeDelta + ((PlayerState*)state)->baddie.animSpeedC;
@@ -9934,11 +9930,11 @@ int playerStateMoving(int obj, int state, f32 fv)
                 u32 fl2;
                 int stay;
                 if ((padGetTriggers(0) & 0x20) != 0 &&
-                    ((u32) ((PlayerState*)inner)->flags3F4 >> 6 & 1) != 0 &&
-                    ((fl2 = ((PlayerState*)inner)->flags3F0) >> 5 & 1) == 0 && (fl2 >> 3 & 1) == 0 &&
+                    (((PlayerState*)inner)->flags3F4.b40) != 0 &&
+                    ((fl2 = ((PlayerState*)inner)->flagByte3F0) >> 5 & 1) == 0 && (fl2 >> 3 & 1) == 0 &&
                     (fl2 >> 2 & 1) == 0 && ((PlayerState*)inner)->curAnimId != 0x44 &&
                     ((PlayerState*)inner)->heldObj == NULL && ((PlayerState*)inner)->baddie.targetObj == NULL &&
-                    ((u32) * (u8*)((char*)inner + 0x3f6) >> 6 & 1) == 0 &&
+                    (((PlayerState*)inner)->flags3F6.b40) == 0 &&
                     ((PlayerState*)inner)->baddie.controlMode != 0x26 &&
                     (((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0 &&
                     !((PlayerState*)inner)->idleDelayTimer)
@@ -9951,13 +9947,13 @@ int playerStateMoving(int obj, int state, f32 fv)
                 }
                 if (!stay)
                 {
-                    if (gPlayerPathObject != 0 && ((u32) ((PlayerState*)inner)->flags3F4 >> 6 & 1) != 0)
+                    if (gPlayerPathObject != 0 && (((PlayerState*)inner)->flags3F4.b40) != 0)
                     {
                         ((PlayerState*)inner)->staffActionRequest = 1;
-                        ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+                        ((PlayerState*)inner)->flags3F4.b08 = 1;
                     }
                     Shield_setMode(gPlayerStaffObject, 2);
-                    ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 0;
+                    ((PlayerState*)inner)->flags3F0.b02 = 0;
                     *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
                     ObjHits_SyncObjectPositionIfDirty((GameObject*)obj);
                     leave = 1;
@@ -9994,7 +9990,7 @@ int playerStateMoving(int obj, int state, f32 fv)
     {
         int calm;
         {
-            u32 fl = ((PlayerState*)inner)->flags3F0;
+            u32 fl = ((PlayerState*)inner)->flagByte3F0;
             if ((fl >> 5 & 1) == 0 && (fl >> 6 & 1) == 0 && (fl >> 4 & 1) == 0 && (fl >> 2 & 1) == 0 &&
                 (fl >> 3 & 1) == 0 && (fl >> 1 & 1) == 0 && ((PlayerState*)inner)->heldObj == NULL &&
                 ((PlayerState*)inner)->curAnimId != 0x44)
@@ -10014,9 +10010,9 @@ int playerStateMoving(int obj, int state, f32 fv)
     {
         int ok;
         {
-            u32 fl = ((PlayerState*)inner)->flags3F0;
+            u32 fl = ((PlayerState*)inner)->flagByte3F0;
             if ((fl >> 5 & 1) == 0 && (fl >> 6 & 1) == 0 && (fl >> 7 & 1) == 0 && (fl >> 4 & 1) == 0 &&
-                (fl >> 2 & 1) == 0 && (fl >> 3 & 1) == 0 && ((u32) ((PlayerState*)inner)->flags3F1 >> 5 & 1) == 0)
+                (fl >> 2 & 1) == 0 && (fl >> 3 & 1) == 0 && (((PlayerState*)inner)->flags3F1.b20) == 0)
             {
                 ok = 1;
             }
@@ -10029,7 +10025,7 @@ int playerStateMoving(int obj, int state, f32 fv)
             (((PlayerState*)inner)->inputMagnitude < -0.3f || ((PlayerState*)inner)->yawRateSigned >= 0x96))
         {
             ((PlayerState*)inner)->pendingFxFlags |= 8;
-            ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 1;
+            ((PlayerState*)inner)->flags3F0.b80 = 1;
             ((PlayerState*)inner)->animSoundId = ((PlayerState*)inner)->altAnimSoundId;
             *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_HEADING_LOCK;
             ((PlayerState*)inner)->animSpeedRate = ((PlayerState*)state)->baddie.animSpeedA;
@@ -10037,8 +10033,8 @@ int playerStateMoving(int obj, int state, f32 fv)
         }
     }
     {
-        u32 fl = ((PlayerState*)inner)->flags3F0;
-        if ((fl >> 7 & 1) == 0 && (fl >> 6 & 1) == 0 && ((u32) ((PlayerState*)inner)->flags3F1 >> 5 & 1) == 0)
+        u32 fl = ((PlayerState*)inner)->flagByte3F0;
+        if ((fl >> 7 & 1) == 0 && (fl >> 6 & 1) == 0 && (((PlayerState*)inner)->flags3F1.b20) == 0)
         {
             if (((PlayerState*)inner)->yawRateSigned < 0x96)
             {
@@ -10072,7 +10068,7 @@ int playerStateMoving(int obj, int state, f32 fv)
             }
             else
             {
-                u32 fl3 = ((PlayerState*)inner)->flags3F0;
+                u32 fl3 = ((PlayerState*)inner)->flagByte3F0;
                 if ((fl3 >> 3 & 1) == 0 && (fl3 >> 2 & 1) == 0 && (fl3 >> 4 & 1) == 0 &&
                     ((PlayerState*)state)->baddie.animSpeedC <= *(f32*)(((PlayerState*)inner)->moveParams + 4) &&
                     ((PlayerState*)state)->baddie.animSpeedA <= *(f32*)(((PlayerState*)inner)->moveParams + 0xc))
@@ -10084,7 +10080,7 @@ int playerStateMoving(int obj, int state, f32 fv)
     }
     {
         u32 fl;
-        u32 fl1 = ((PlayerState*)inner)->flags3F1;
+        u32 fl1 = ((PlayerState*)inner)->flagByte3F1;
         if ((fl1 >> 5 & 1) != 0)
         {
             spd = ((PlayerState*)inner)->maxSpeed *
@@ -10137,7 +10133,7 @@ int playerStateMoving(int obj, int state, f32 fv)
                     ((PlayerState*)state)->baddie.moveSpeed = 0.005f;
                 }
             }
-            if (((u32) ((PlayerState*)inner)->flags3F0 >> 5 & 1) != 0)
+            if ((((PlayerState*)inner)->flags3F0.b20) != 0)
             {
                 ((PlayerState*)state)->baddie.moveSpeed *= 0.5f;
             }
@@ -10163,7 +10159,7 @@ int playerStateMoving(int obj, int state, f32 fv)
         }
         else
         {
-            fl = ((PlayerState*)inner)->flags3F0;
+            fl = ((PlayerState*)inner)->flagByte3F0;
             if ((fl >> 6 & 1) == 0 && (fl1 >> 2 & 1) == 0 && (fl >> 4 & 1) == 0 && (fl1 >> 1 & 1) == 0 &&
                 (fl >> 3 & 1) == 0 && (fl >> 2 & 1) == 0 && (fl >> 1 & 1) == 0)
             {
@@ -10185,8 +10181,8 @@ int playerStateMoving(int obj, int state, f32 fv)
                 }
                 ((PlayerState*)state)->baddie.animSpeedB = 0.0f;
             }
-            else if (((ByteFlags*)((char*)inner + 0x3f0))->b08 != 0 ||
-                     ((ByteFlags*)((char*)inner + 0x3f0))->b04 != 0)
+            else if (((PlayerState*)inner)->flags3F0.b08 != 0 ||
+                     ((PlayerState*)inner)->flags3F0.b04 != 0)
             {
                 f32 vz;
 
@@ -10194,7 +10190,7 @@ int playerStateMoving(int obj, int state, f32 fv)
                     -mathSinf((3.1415927f * (182.044f * (f32) ((PlayerState*)inner)->yawRate)) / 32768.0f);
                 vz = ((PlayerState*)inner)->currentSpeed *
                      mathCosf((3.1415927f * (182.044f * (f32) ((PlayerState*)inner)->yawRate)) / 32768.0f);
-                if (((u32) ((PlayerState*)inner)->flags3F0 >> 2 & 1) != 0)
+                if ((((PlayerState*)inner)->flags3F0.b04) != 0)
                 {
                     ((PlayerState*)state)->baddie.animSpeedC =
                         ((PlayerState*)state)->baddie.animSpeedC * powfBitEstimate(0.98f, timeDelta);
@@ -10231,9 +10227,9 @@ int playerStateMoving(int obj, int state, f32 fv)
                 ((PlayerState*)state)->baddie.animSpeedC = (v < -lim) ? -lim : ((v > lim) ? lim : v);
             }
             {
-                if (((u32) ((PlayerState*)inner)->flags3F0 >> 4 & 1) == 0 &&
-                    ((u32) ((PlayerState*)inner)->flags3F1 >> 1 & 1) == 0 &&
-                    ((u32) ((PlayerState*)inner)->flags3F0 >> 1 & 1) == 0)
+                if ((((PlayerState*)inner)->flags3F0.b10) == 0 &&
+                    (((PlayerState*)inner)->flags3F1.b02) == 0 &&
+                    (((PlayerState*)inner)->flags3F0.b02) == 0)
                 {
                     ((PlayerState*)state)->baddie.animSpeedA =
                         ((PlayerState*)state)->baddie.animSpeedA +
@@ -10245,14 +10241,14 @@ int playerStateMoving(int obj, int state, f32 fv)
         }
     }
     {
-        u32 fl = ((PlayerState*)inner)->flags3F0;
+        u32 fl = ((PlayerState*)inner)->flagByte3F0;
         if ((fl >> 7 & 1) == 0 && (fl >> 6 & 1) == 0 && (fl >> 4 & 1) == 0 && (fl >> 2 & 1) == 0 &&
             (fl >> 3 & 1) == 0 && (fl >> 1 & 1) == 0)
         {
             int step;
             int locked;
             locked = 0;
-            if (((u32) ((PlayerState*)inner)->flags3F1 >> 3 & 1) != 0)
+            if ((((PlayerState*)inner)->flags3F1.b08) != 0)
             {
                 locked = 1;
                 spd = 0.0f;
@@ -10314,7 +10310,7 @@ int playerStateMoving(int obj, int state, f32 fv)
                     }
                 }
             }
-            if (locked != 0 || *(void**)((char*)inner + 0x3fc) != *(void**)((char*)inner + 0x3f8) ||
+            if (locked != 0 || ((PlayerState*)inner)->prevMoveAnimIds != ((PlayerState*)inner)->moveAnimIds ||
                 ((GameObject*)obj)->anim.currentMove !=
                     *(s16*)(((PlayerState*)inner)->moveAnimTable + (((PlayerState*)inner)->gaitLevel + dir) * 2))
             {
@@ -10325,7 +10321,7 @@ int playerStateMoving(int obj, int state, f32 fv)
                         obj,
                         *(s16*)(((PlayerState*)inner)->moveAnimTable + (((PlayerState*)inner)->gaitLevel + dir) * 2),
                         spd, 0);
-                    if (((u32) ((PlayerState*)inner)->flags3F1 >> 5 & 1) != 0 &&
+                    if ((((PlayerState*)inner)->flags3F1.b20) != 0 &&
                         *(s8*)&((PlayerState*)state)->baddie.moveJustStartedA == 0)
                     {
                         ObjAnim_SetCurrentEventStepFrames((ObjAnimComponent*)obj, 0xc);
@@ -10353,9 +10349,9 @@ int playerStateMoving(int obj, int state, f32 fv)
         {
             ad = -t;
         }
-        if (((u32) ((PlayerState*)inner)->flags3F1 >> 5 & 1) == 0)
+        if ((((PlayerState*)inner)->flags3F1.b20) == 0)
         {
-            u32 fl = ((PlayerState*)inner)->flags3F0;
+            u32 fl = ((PlayerState*)inner)->flagByte3F0;
             if ((fl >> 7 & 1) == 0 && (fl >> 6 & 1) == 0 && (fl >> 4 & 1) == 0 && (fl >> 2 & 1) == 0 &&
                 (fl >> 3 & 1) == 0 && (fl >> 1 & 1) == 0)
             {
@@ -10400,7 +10396,7 @@ int playerStateIdle(int obj, int state, f32 fv)
         {
             ((PlayerState*)state)->baddie.animSpeedC = 0.0f;
         }
-        else if (((ByteFlags*)((char*)inner + 0x3f1))->b20 == 0)
+        else if (((PlayerState*)inner)->flags3F1.b20 == 0)
         {
             int a = ((PlayerState*)inner)->inputHeading;
             ((PlayerState*)inner)->lastInputHeading = a;
@@ -10445,9 +10441,9 @@ int playerStateIdle(int obj, int state, f32 fv)
         return 3;
     }
     playerSetMovingAnims(obj, inner);
-    if (*(s16**)((char*)inner + 0x3f8) == (s16*)(tbl + 0x190))
+    if (((PlayerState*)inner)->moveAnimIds == (s16*)(tbl + 0x190))
     {
-        if (((PlayerState*)inner)->idleHoldTimer >= 60.0f && **(s8**)&((PlayerState*)inner)->playerStatus <= 4)
+        if (((PlayerState*)inner)->idleHoldTimer >= 60.0f && ((PlayerStatus*)((PlayerState*)inner)->playerStatus)->health <= 4)
         {
             move = 0x5d;
             fv = 0.005f;
@@ -10458,7 +10454,7 @@ int playerStateIdle(int obj, int state, f32 fv)
         }
         else
         {
-            move = **(s16**)((char*)inner + 0x3f8);
+            move = *((PlayerState*)inner)->moveAnimIds;
             fv = 0.005f;
             if (((PlayerState*)inner)->idleWaitTimer <= 0)
             {
@@ -10480,7 +10476,7 @@ int playerStateIdle(int obj, int state, f32 fv)
                 ((PlayerState*)inner)->idleWaitTimer = randomGetRange(800, 0x44c);
             }
         }
-        if (((GameObject*)obj)->anim.currentMove == **(s16**)((char*)inner + 0x3f8))
+        if (((GameObject*)obj)->anim.currentMove == *((PlayerState*)inner)->moveAnimIds)
         {
             ((PlayerState*)inner)->idleHoldTimer = ((PlayerState*)inner)->idleHoldTimer + timeDelta;
             v = ((PlayerState*)inner)->idleHoldTimer;
@@ -10511,16 +10507,16 @@ int playerStateIdle(int obj, int state, f32 fv)
     }
     else
     {
-        move = **(s16**)((char*)inner + 0x3f8);
+        move = *((PlayerState*)inner)->moveAnimIds;
         fv = 0.005f;
     }
-    if (((ByteFlags*)((char*)inner + 0x3f0))->b20 != 0)
+    if (((PlayerState*)inner)->flags3F0.b20 != 0)
     {
         *(int*)state |= 0x200000;
         *(u32*)&((PlayerState*)inner)->flags360 &= ~0x2000000LL;
         ((PlayerState*)state)->baddie.stateId = 1;
         ((PlayerState*)inner)->stateHandler = (int)playerStagedRestoreDefaultControl;
-        if (((ByteFlags*)((char*)inner + 0x3f1))->b20 != 0)
+        if (((PlayerState*)inner)->flags3F1.b20 != 0)
         {
             ((PlayerState*)inner)->maxSpeed = 0.8f;
         }
@@ -10531,7 +10527,7 @@ int playerStateIdle(int obj, int state, f32 fv)
     }
     else
     {
-        if (((ByteFlags*)((char*)inner + 0x3f1))->b20 != 0)
+        if (((PlayerState*)inner)->flags3F1.b20 != 0)
         {
             *(u32*)&((PlayerState*)inner)->flags360 |= 0x2000000LL;
             ((PlayerState*)state)->baddie.stateId = 0;
@@ -10550,12 +10546,12 @@ int playerStateIdle(int obj, int state, f32 fv)
     }
     ((PlayerState*)inner)->currentSpeed =
         (((PlayerState*)inner)->maxSpeed - 0.05f) * (t * ((PlayerState*)inner)->speedScale);
-    if (((ByteFlags*)((char*)inner + 0x3f0))->b20 != 0)
+    if (((PlayerState*)inner)->flags3F0.b20 != 0)
     {
         playerUpdateWaterMotion((GameObject*)obj, inner, state);
     }
     {
-        u32 fl = ((PlayerState*)inner)->flags3F0;
+        u32 fl = ((PlayerState*)inner)->flagByte3F0;
         if ((fl >> 5 & 1) == 0 && (fl >> 6 & 1) == 0 && (fl >> 4 & 1) == 0 && (fl >> 2 & 1) == 0 &&
             (fl >> 3 & 1) == 0 && (fl >> 1 & 1) == 0 && ((PlayerState*)inner)->heldObj == NULL &&
             ((PlayerState*)inner)->curAnimId != 0x44)
@@ -10573,7 +10569,7 @@ int playerStateIdle(int obj, int state, f32 fv)
         ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedRestoreDefaultControl;
         return 3;
     }
-    if (((ByteFlags*)((char*)inner + 0x3f1))->b20 == 0)
+    if (((PlayerState*)inner)->flags3F1.b20 == 0)
     {
         ((PlayerState*)state)->baddie.animSpeedC =
             ((PlayerState*)state)->baddie.animSpeedC +
@@ -10590,7 +10586,7 @@ int playerStateIdle(int obj, int state, f32 fv)
         ((PlayerState*)inner)->gaitStepLevel = 0;
         ((PlayerState*)state)->baddie.velSmoothTime = 8.0f;
         ((PlayerState*)state)->baddie.moveSpeed = 0.0066649998f;
-        if (((ByteFlags*)((char*)inner + 0x3f0))->b20 == 0 && ((ByteFlags*)((char*)inner + 0x3f1))->b20 == 0)
+        if (((PlayerState*)inner)->flags3F0.b20 == 0 && ((PlayerState*)inner)->flags3F1.b20 == 0)
         {
             if (((PlayerState*)state)->baddie.prevControlMode == 2)
             {
@@ -10600,7 +10596,7 @@ int playerStateIdle(int obj, int state, f32 fv)
                         (mA = *(s16*)(((PlayerState*)inner)->moveAnimTable + 0x30)) &&
                     (mB = *(s16*)(((PlayerState*)inner)->moveAnimTable + 0x32),
                      ((GameObject*)obj)->anim.currentMove != mB) &&
-                    ((ByteFlags*)((char*)inner + 0x3f3))->b40 == 0)
+                    ((PlayerState*)inner)->flags3F3.b40 == 0)
                 {
                     if (((GameObject*)obj)->anim.currentMoveProgress <= 0.5f)
                     {
@@ -10635,7 +10631,7 @@ int playerStateIdle(int obj, int state, f32 fv)
             ((PlayerState*)state)->baddie.moveSpeed = fv;
         }
     }
-    else if (((ByteFlags*)((char*)inner + 0x3f0))->b20 == 0 && ((ByteFlags*)((char*)inner + 0x3f1))->b20 == 0 &&
+    else if (((PlayerState*)inner)->flags3F0.b20 == 0 && ((PlayerState*)inner)->flags3F1.b20 == 0 &&
              ((PlayerState*)inner)->targetYawRateSigned > 5)
     {
         if (((GameObject*)obj)->anim.currentMove != *(s16*)(((PlayerState*)inner)->moveAnimTable + 0x3e) &&
@@ -10668,7 +10664,7 @@ int playerStateIdle(int obj, int state, f32 fv)
             }
         }
     }
-    if (((ByteFlags*)((char*)inner + 0x3f1))->b20 == 0)
+    if (((PlayerState*)inner)->flags3F1.b20 == 0)
     {
         f32 step;
         f32 lim;
@@ -10716,7 +10712,7 @@ int playerStateIdle(int obj, int state, f32 fv)
                        ? ((PlayerState*)inner)->maxSpeed
                        : ((PlayerState*)state)->baddie.animSpeedC);
     }
-    if (((ByteFlags*)((char*)inner + 0x3f0))->b20 == 0)
+    if (((PlayerState*)inner)->flags3F0.b20 == 0)
     {
         playerUpdateLookAtTarget(obj, state, inner);
     }
@@ -10918,7 +10914,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
             {
                 continue;
             }
-            b = ((PlayerState*)state)->flags3F0;
+            b = ((PlayerState*)state)->flagByte3F0;
             if ((u32)b >> 3 & 1)
             {
                 continue;
@@ -10934,7 +10930,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
         }
         case 0:
         case 10:
-            if (((u32)((PlayerState*)state)->flags3F1 & 1) == 0)
+            if ((((PlayerState*)state)->flags3F1.b01) == 0)
             {
                 logPrintf(sNotOnGroundFailureMessage);
                 continue;
@@ -10944,7 +10940,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
         case 3:
         case 5:
         {
-            u8 b = ((PlayerState*)state)->flags3F0;
+            u8 b = ((PlayerState*)state)->flagByte3F0;
             if ((u32)b >> 3 & 1 || (u32)b >> 2 & 1)
             {
                 ok = 1;
@@ -10955,15 +10951,15 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
         case 2:
         {
             u8 b2;
-            if (((u32)((PlayerState*)state)->flags3F1 & 1) == 0)
+            if ((((PlayerState*)state)->flags3F1.b01) == 0)
             {
-                u8 b = ((PlayerState*)state)->flags3F0;
+                u8 b = ((PlayerState*)state)->flagByte3F0;
                 if (((u32)b >> 3 & 1) == 0 && ((u32)b >> 2 & 1) == 0)
                 {
                     continue;
                 }
             }
-            b2 = ((PlayerState*)state)->flags3F0;
+            b2 = ((PlayerState*)state)->flagByte3F0;
             if ((u32)b2 >> 3 & 1 || (u32)b2 >> 2 & 1)
             {
                 ok = 1;
@@ -10974,15 +10970,15 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
         case 6:
         {
             u8 b2;
-            if (((u32)((PlayerState*)state)->flags3F1 & 1) == 0)
+            if ((((PlayerState*)state)->flags3F1.b01) == 0)
             {
-                u8 b = ((PlayerState*)state)->flags3F0;
+                u8 b = ((PlayerState*)state)->flagByte3F0;
                 if (((u32)b >> 3 & 1) == 0 && ((u32)b >> 2 & 1) == 0)
                 {
                     continue;
                 }
             }
-            b2 = ((PlayerState*)state)->flags3F0;
+            b2 = ((PlayerState*)state)->flagByte3F0;
             if ((u32)b2 >> 3 & 1 || (u32)b2 >> 2 & 1)
             {
                 ok = 1;
@@ -11063,7 +11059,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
             case 2:
             case 4:
             case 6:
-                if (((u32)((PlayerState*)state)->flags3F1 & 1) != 0)
+                if ((((PlayerState*)state)->flags3F1.b01) != 0)
                 {
                     if (dp > -0.8f || (((GameObject*)obj)->anim.localPosY > buf.upperY0 - 10.0f &&
                                               ((GameObject*)obj)->anim.localPosY > buf.upperY1 - 10.0f))
@@ -11347,7 +11343,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
 void playerGetMovementOrFacingDirection(GameObject* obj, int state, f32* out)
 {
     f32 mag;
-    u32 flag = (((PlayerState*)state)->flags3F1 >> 5) & 1;
+    u32 flag = ((PlayerState*)state)->flags3F1.b20;
 
     if (flag != 0 || ((PlayerState*)state)->baddie.targetObj != NULL)
     {
@@ -11786,7 +11782,7 @@ int playerBuildWallTransitionProbe(GameObject* obj, char* cam, f32* out, f32* ve
         *(u8*)((char*)out + 0x61) = 1;
         if (parent != NULL && (((ObjAnimComponent*)parent)->modelInstance->flags & 0x8000) == 0)
         {
-            *(void**)((char*)inner + 0x4c4) = parent;
+            ((PlayerState*)inner)->groundObject = parent;
         }
         else
         {
@@ -11935,7 +11931,7 @@ int playerBuildLedgeClimbProbe(int a, int b, void* c, int d, f32* e, f32 distanc
     {
         *(f32*)((char*)d + 0x8) = ((GameObject*)a)->anim.previousLocalPosY;
         *(f32*)((char*)d + 0x0) = *(f32*)((char*)d + 0x4) - *(f32*)((char*)d + 0x8);
-        if ((((PlayerState*)b)->flags3F1 & 1) != 0u)
+        if ((((PlayerState*)b)->flags3F1.b01) != 0u)
         {
             if (hit != NULL && (((ObjAnimComponent*)hit)->modelInstance->flags & 0x8000) == 0)
             {
@@ -11998,14 +11994,14 @@ void playerRestoreAfterSequence(GameObject* obj, int p2, int p3)
     viewFinderSetZoom(Camera_GetFovY());
     obj->objectFlags &= ~OBJECT_OBJFLAG_PARENT_SLACK;
     obj->anim.alpha = 0xff;
-    ((ByteFlags*)((char*)inner + 0x3f2))->b80 = 0;
-    if (((ByteFlags*)((char*)inner + 0x3f2))->b40)
+    ((PlayerState*)inner)->flags3F2.b80 = 0;
+    if (((PlayerState*)inner)->flags3F2.b40)
     {
         inner->targetSuppressTimer = 60.0f;
     }
-    ((ByteFlags*)((char*)inner + 0x3f2))->b40 = 0;
-    ((ByteFlags*)((char*)inner + 0x3f2))->b20 = 0;
-    ((ByteFlags*)((char*)inner + 0x3f4))->b80 = 0;
+    ((PlayerState*)inner)->flags3F2.b40 = 0;
+    ((PlayerState*)inner)->flags3F2.b20 = 0;
+    ((PlayerState*)inner)->flags3F4.b80 = 0;
     ObjHits_EnableObject(obj);
     obj->anim.velocityY = 0.0f;
     if ((*(s16*)((char*)p3 + 0x6e) & 1) != 0)
@@ -12027,17 +12023,17 @@ void playerRestoreAfterSequence(GameObject* obj, int p2, int p3)
     }
     *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
     inner->interactObject = 0;
-    ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
-    ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
-    ((ByteFlags*)((char*)inner + 0x3f0))->b04 = 0;
+    ((PlayerState*)inner)->flags3F0.b10 = 0;
+    ((PlayerState*)inner)->flags3F0.b08 = 0;
+    ((PlayerState*)inner)->flags3F0.b04 = 0;
     inner->staffHoldFrames = 0;
-    ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
-    ((ByteFlags*)((char*)inner + 0x3f0))->b40 = 0;
-    ((ByteFlags*)((char*)inner + 0x3f0))->b20 = 0;
+    ((PlayerState*)inner)->flags3F0.b80 = 0;
+    ((PlayerState*)inner)->flags3F0.b40 = 0;
+    ((PlayerState*)inner)->flags3F0.b20 = 0;
     inner->animState = -1;
-    ((ByteFlags*)((char*)inner + 0x3f6))->b40 = 0;
+    ((PlayerState*)inner)->flags3F6.b40 = 0;
     Shield_setMode(gPlayerStaffObject, 2);
-    ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 0;
+    ((PlayerState*)inner)->flags3F0.b02 = 0;
     *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
     ObjHits_SyncObjectPositionIfDirty(obj);
     inner->waterDepth = 0.0f;
@@ -12100,12 +12096,12 @@ int playerCanUseStaffBooster(GameObject* obj, int p2)
     s16 sel = ((PlayerState*)p2)->baddie.controlMode;
 
     if (!((sel != 1 && sel != 2 && sel != 0x26) || !mainGetBit(GAMEBIT_STAFF_ABILITY_STAFF_BOOSTER) ||
-          (slot = inner->cameraTargetObject) == NULL || *(s16*)((char*)slot + 0x46) != 0x64f ||
+          (slot = inner->cameraTargetObject) == NULL || ((GameObject*)slot)->anim.romDefNo != 0x64f ||
           ((af = *(u8*)((char*)slot + 0xaf)) & 4) == 0 || (af & 0x18) != 0 ||
           ((PlayerState*)p2)->baddie.targetObj != NULL || (c = inner->curAnimId) == 0x48 || c == 0x47 || c == 0x44 ||
-          ((PlayerState*)inner)->heldObj != NULL || ((ByteFlags*)((char*)inner + 0x3f0))->b20 ||
-          ((ByteFlags*)((char*)inner + 0x3f0))->b04 || ((ByteFlags*)((char*)inner + 0x3f0))->b08 ||
-          ((ByteFlags*)((char*)inner + 0x3f4))->b40 == 0 ||
+          ((PlayerState*)inner)->heldObj != NULL || ((PlayerState*)inner)->flags3F0.b20 ||
+          ((PlayerState*)inner)->flags3F0.b04 || ((PlayerState*)inner)->flags3F0.b08 ||
+          ((PlayerState*)inner)->flags3F4.b40 == 0 ||
           *(s16*)((char*)*(int*)((char*)*(int*)&obj->extra + 0x35c) + 4) < 0xa))
     {
         return 1;
@@ -12123,15 +12119,15 @@ int playerCanCastPortalOpenSpell(GameObject* obj, int p2)
         void* slot = inner->cameraTargetObject;
         u8 af;
         u8 c;
-        if (slot == NULL || *(s16*)((char*)slot + 0x46) != 0x414 || ((af = *(u8*)((char*)slot + 0xaf)) & 4) == 0 ||
+        if (slot == NULL || ((GameObject*)slot)->anim.romDefNo != 0x414 || ((af = *(u8*)((char*)slot + 0xaf)) & 4) == 0 ||
             (af & 0x18) != 0)
         {
             return 0;
         }
         if (((PlayerState*)p2)->baddie.targetObj != NULL || (c = inner->curAnimId) == 0x48 || c == 0x47 || c == 0x44 ||
-            ((PlayerState*)inner)->heldObj != NULL || ((ByteFlags*)((char*)inner + 0x3f0))->b20 ||
-            ((ByteFlags*)((char*)inner + 0x3f0))->b04 || ((ByteFlags*)((char*)inner + 0x3f0))->b08 ||
-            ((ByteFlags*)((char*)inner + 0x3f4))->b40 == 0 || *(s16*)((char*)inner->playerStatus + 4) < 0x14 ||
+            ((PlayerState*)inner)->heldObj != NULL || ((PlayerState*)inner)->flags3F0.b20 ||
+            ((PlayerState*)inner)->flags3F0.b04 || ((PlayerState*)inner)->flags3F0.b08 ||
+            ((PlayerState*)inner)->flags3F4.b40 == 0 || ((PlayerStatus*)inner->playerStatus)->magic < 0x14 ||
             !mainGetBit(GAMEBIT_STAFF_ABILITY_OPEN_PORTAL))
         {
             return 0;
@@ -12155,9 +12151,9 @@ int playerCanCastQuakeSpell(GameObject* obj, int p2)
     }
     if (mainGetBit(GAMEBIT_STAFF_ABILITY_GROUND_QUAKE) == 0 ||
         *(s16*)((char*)*(int*)((char*)*(int*)&obj->extra + 0x35c) + 4) < threshold || inner->curAnimId == 0x44 ||
-        ((PlayerState*)inner)->heldObj != NULL || ((ByteFlags*)((char*)inner + 0x3f0))->b20 ||
-        ((ByteFlags*)((char*)inner + 0x3f0))->b04 || ((ByteFlags*)((char*)inner + 0x3f0))->b08 ||
-        ((ByteFlags*)((char*)inner + 0x3f4))->b40 == 0)
+        ((PlayerState*)inner)->heldObj != NULL || ((PlayerState*)inner)->flags3F0.b20 ||
+        ((PlayerState*)inner)->flags3F0.b04 || ((PlayerState*)inner)->flags3F0.b08 ||
+        ((PlayerState*)inner)->flags3F4.b40 == 0)
     {
         return 0;
     }
@@ -12177,19 +12173,19 @@ int playerCanCastBlasterSpell(GameObject* obj, int p2, int p3)
     u8 c;
     int v;
     if ((c = inner->curAnimId) == 0x48 || c == 0x47 || c == 0x44 || ((PlayerState*)inner)->heldObj != NULL ||
-        ((ByteFlags*)((char*)inner + 0x3f0))->b20 || ((ByteFlags*)((char*)inner + 0x3f0))->b04 ||
-        ((ByteFlags*)((char*)inner + 0x3f0))->b08 || ((ByteFlags*)((char*)inner + 0x3f4))->b40 == 0)
+        ((PlayerState*)inner)->flags3F0.b20 || ((PlayerState*)inner)->flags3F0.b04 ||
+        ((PlayerState*)inner)->flags3F0.b08 || ((PlayerState*)inner)->flags3F4.b40 == 0)
     {
         return 0;
     }
     if (p3 == GAMEBIT_STAFF_ABILITY_FIRE_BLASTER)
     {
-        if (*(s16*)((char*)inner->playerStatus + 4) < 2)
+        if (((PlayerStatus*)inner->playerStatus)->magic < 2)
             return 0;
     }
     else
     {
-        if (*(s16*)((char*)inner->playerStatus + 4) < 1)
+        if (((PlayerStatus*)inner->playerStatus)->magic < 1)
             return 0;
     }
     if ((v = ((PlayerState*)p2)->baddie.controlMode) == 1 || v == 2 || v == 0x2a || v == 0x2c || (u16)(v - 0x2e) <= 1 ||
@@ -12206,19 +12202,19 @@ int playerIsBlasterSpellAvailable(GameObject* obj, int p2, int p3)
     u8 c;
     int v;
     if ((c = inner->curAnimId) == 0x48 || c == 0x47 || c == 0x44 || ((PlayerState*)inner)->heldObj != NULL ||
-        ((ByteFlags*)((char*)inner + 0x3f0))->b20 || ((ByteFlags*)((char*)inner + 0x3f0))->b04 ||
-        ((ByteFlags*)((char*)inner + 0x3f0))->b08 || ((ByteFlags*)((char*)inner + 0x3f4))->b40 == 0)
+        ((PlayerState*)inner)->flags3F0.b20 || ((PlayerState*)inner)->flags3F0.b04 ||
+        ((PlayerState*)inner)->flags3F0.b08 || ((PlayerState*)inner)->flags3F4.b40 == 0)
     {
         return 0;
     }
     if (p3 == GAMEBIT_STAFF_ABILITY_FIRE_BLASTER)
     {
-        if (*(s16*)((char*)inner->playerStatus + 4) < 2)
+        if (((PlayerStatus*)inner->playerStatus)->magic < 2)
             return 0;
     }
     else
     {
-        if (*(s16*)((char*)inner->playerStatus + 4) < 1)
+        if (((PlayerStatus*)inner->playerStatus)->magic < 1)
             return 0;
     }
     if ((v = ((PlayerState*)p2)->baddie.controlMode) == 1 || v == 2 || (u16)(v - 0x24) <= 1 || (u16)(v - 0x2a) <= 2 ||
@@ -12602,8 +12598,8 @@ void playerDie(GameObject* obj)
     ((ObjPlacement*)setup)->posY = obj->anim.localPosY;
     ((ObjPlacement*)setup)->posZ = obj->anim.localPosZ;
     inner->spawnedObject = (int)objSetupObject(setup, 5, -1, -1, NULL);
-    ((ByteFlags*)((char*)inner + 0x3f3))->b04 = 0;
-    ((ByteFlags*)((char*)inner + 0x3f3))->b02 = 1;
+    ((PlayerState*)inner)->flags3F3.b04 = 0;
+    ((PlayerState*)inner)->flags3F3.b02 = 1;
     z[0] = 0;
     gPlayerIceSpellSustaining = z[0];
     for (z[1] = z[0]; z[1] < 7; z[1]++)
@@ -12743,7 +12739,7 @@ void playerDrawTeleportAnim(GameObject* obj)
 void playerRenderPostEffects(GameObject* obj, int inner, int a, int b, int c)
 {
     int v;
-    if (gPlayerPathObject != NULL && (((u32)((PlayerState*)inner)->flags3F4 >> 6) & 1) != 0)
+    if (gPlayerPathObject != NULL && ((u32)((PlayerState*)inner)->flags3F4.b40) != 0)
     {
         (*gModgfxInterface)->renderEffects((void*)a, b, c, 1, gPlayerPathObject);
     }
@@ -13067,7 +13063,7 @@ void playerUpdateLookAndLean(GameObject* obj, BaddieState* baddie, PlayerState* 
     if (d < -0x8000) {
         d += 0xffff;
     }
-    if ((((u32)player->flags3F1 >> 5) & 1) || (((u32)player->flags3F0 >> 4) & 1)) {
+    if (((u32)player->flags3F1.b20) || (player->flags3F0.b10)) {
         d = 0;
     }
     {
@@ -13087,8 +13083,8 @@ void playerUpdateLookAndLean(GameObject* obj, BaddieState* baddie, PlayerState* 
     }
     player->headPitch = (f32)(int)player->headPitch + interpolate((f32)(int)d, 0.15f, timeDelta);
     near = playerFindNearestLookTarget(obj);
-    if ((u32)near != 0 && (((u32)player->flags3F0 >> 7) & 1) == 0 && (((u32)player->flags3F0 >> 6) & 1) == 0 &&
-        (((u32)player->flags3F0 >> 4) & 1) == 0 && (((u32)player->flags3F0 >> 5) & 1) == 0) {
+    if ((u32)near != 0 && (player->flags3F0.b80) == 0 && (player->flags3F0.b40) == 0 &&
+        (player->flags3F0.b10) == 0 && (player->flags3F0.b20) == 0) {
         int gd = (u16)getAngle(-(*(f32*)((char*)near + 0xc) - obj->anim.localPosX),
                                -(*(f32*)((char*)near + 0x14) - obj->anim.localPosZ)) -
                  (u16)player->targetYaw;
@@ -13109,7 +13105,7 @@ void playerUpdateLookAndLean(GameObject* obj, BaddieState* baddie, PlayerState* 
     }
     {
         int r0;
-        if (!((((u32)player->flags3F1 >> 5) & 1) || (((u32)player->flags3F0 >> 4) & 1))) {
+        if (!(((u32)player->flags3F1.b20) || (player->flags3F0.b10))) {
             r0 = player->targetYawRate;
         } else {
             r0 = 0;
@@ -13225,7 +13221,7 @@ void playerUpdateLookAtTarget(int p1, int p2, int p3)
     int angle2;
 
     near = (void*)playerFindNearestLookTarget((GameObject*)p1);
-    if (near != NULL && ((ByteFlags*)((char*)p3 + 0x3f0))->b80 == 0 && ((ByteFlags*)((char*)p3 + 0x3f0))->b40 == 0)
+    if (near != NULL && ((PlayerState*)p3)->flags3F0.b80 == 0 && ((PlayerState*)p3)->flags3F0.b40 == 0)
     {
         f32 ratio;
         f32 clamped;
@@ -13265,7 +13261,7 @@ void playerUpdateLookAtTarget(int p1, int p2, int p3)
 
     {
         int targetYawRate;
-        if (((ByteFlags*)((char*)p3 + 0x3f1))->b20)
+        if (((PlayerState*)p3)->flags3F1.b20)
         {
             targetYawRate = 0;
         }
@@ -13300,7 +13296,7 @@ void playerUpdateLookAtTarget(int p1, int p2, int p3)
     {
         angle2 = angle2 + 0xFFFF;
     }
-    if (((ByteFlags*)((char*)p3 + 0x3f1))->b20)
+    if (((PlayerState*)p3)->flags3F1.b20)
     {
         angle2 = 0;
     }
@@ -13339,9 +13335,9 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
     f32 idleZero = 0.0f;
 
     if (((PlayerState*)inner)->curAnimId != 0x48 && ((PlayerState*)inner)->curAnimId != 0x47 &&
-        !((ByteFlags*)((char*)inner + 0x3f0))->b04 && !((ByteFlags*)((char*)inner + 0x3f0))->b08 &&
-        ((PlayerState*)inner)->heldObj == NULL && !((ByteFlags*)((char*)inner + 0x3f0))->b02 &&
-        ((PlayerState*)inner)->baddie.targetObj == NULL && !((ByteFlags*)((char*)inner + 0x3f6))->b40 &&
+        !((PlayerState*)inner)->flags3F0.b04 && !((PlayerState*)inner)->flags3F0.b08 &&
+        ((PlayerState*)inner)->heldObj == NULL && !((PlayerState*)inner)->flags3F0.b02 &&
+        ((PlayerState*)inner)->baddie.targetObj == NULL && !((PlayerState*)inner)->flags3F6.b40 &&
         ((PlayerState*)inner)->baddie.controlMode != 0x26)
     {
         ok = 1;
@@ -13352,7 +13348,7 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
     }
     if (ok != 0 && (((PlayerState*)inner)->buttonsHeld & PAD_TRIGGER_L) != 0 && getCurSeqNo() == 0)
     {
-        if (!((ByteFlags*)((char*)inner + 0x3f1))->b20 && !((ByteFlags*)((char*)inner + 0x3f0))->b10)
+        if (!((PlayerState*)inner)->flags3F1.b20 && !((PlayerState*)inner)->flags3F0.b10)
         {
             f32 b;
             f32 a;
@@ -13368,23 +13364,23 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
             setMatrixFromObjectPos(mtx, &pos);
             Matrix_TransformPoint(mtx, a, 0.0f, -b, (f32*)((char*)inner + 0x4c8), &dummy,
                                   (f32*)((char*)inner + 0x4cc));
-            ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
-            ((ByteFlags*)((char*)inner + 0x3f0))->b40 = 0;
-            ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
-            ((ByteFlags*)((char*)inner + 0x3f1))->b08 = 1;
+            ((PlayerState*)inner)->flags3F0.b80 = 0;
+            ((PlayerState*)inner)->flags3F0.b40 = 0;
+            ((PlayerState*)inner)->flags3F0.b10 = 0;
+            ((PlayerState*)inner)->flags3F1.b08 = 1;
             {
                 s16 v = ((PlayerState*)inner)->targetYaw;
                 ((PlayerState*)inner)->yaw = v;
                 ((GameObject*)obj)->anim.rotX = v;
             }
-            ((ByteFlags*)((char*)inner + 0x3f1))->b20 = 1;
+            ((PlayerState*)inner)->flags3F1.b20 = 1;
             {
                 f32 z = 0.0f;
                 ((PlayerState*)inner)->aimInputZ = z;
                 ((PlayerState*)inner)->aimInputX = z;
             }
         }
-        if (!((ByteFlags*)((char*)inner + 0x3f1))->b10)
+        if (!((PlayerState*)inner)->flags3F1.b10)
         {
             Camera_setBlendCurveMode(2);
             (*gCameraInterface)
@@ -13394,12 +13390,12 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
                 Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_headcam_in);
             }
             gPlayerLastSfxFrame = gPlayerFrameCounter;
-            ((ByteFlags*)((char*)inner + 0x3f1))->b10 = 1;
+            ((PlayerState*)inner)->flags3F1.b10 = 1;
         }
     }
     else
     {
-        if (((ByteFlags*)((char*)inner + 0x3f1))->b20)
+        if (((PlayerState*)inner)->flags3F1.b20)
         {
             s16 v = ((GameObject*)obj)->anim.rotX;
             ((PlayerState*)inner)->yaw = v;
@@ -13407,26 +13403,26 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
             ((PlayerState*)inner)->lastInputHeading = v;
             ((PlayerState*)inner)->baddie.animSpeedB = 0.0f;
         }
-        ((ByteFlags*)((char*)inner + 0x3f1))->b20 = 0;
-        if (((ByteFlags*)((char*)inner + 0x3f1))->b10 && ((PlayerState*)inner)->curAnimId != 0x48 &&
+        ((PlayerState*)inner)->flags3F1.b20 = 0;
+        if (((PlayerState*)inner)->flags3F1.b10 && ((PlayerState*)inner)->curAnimId != 0x48 &&
             ((PlayerState*)inner)->curAnimId != 0x47 && getCurSeqNo() == 0)
         {
             (*gCameraInterface)->setMode(0x42, 0, 1, 0, NULL, 0x1e, 0xff);
-            ((ByteFlags*)((char*)inner + 0x3f1))->b10 = 0;
+            ((PlayerState*)inner)->flags3F1.b10 = 0;
         }
     }
     gPlayerFrameCounter = gPlayerFrameCounter + 1;
-    if (!((ByteFlags*)((char*)inner + 0x3f0))->b20 && ((PlayerState*)inner)->waterDepth > 25.0f &&
+    if (!((PlayerState*)inner)->flags3F0.b20 && ((PlayerState*)inner)->waterDepth > 25.0f &&
         ((PlayerState*)state)->baddie.unk1B0 < 120.0f)
     {
         playerEnterDeepWater(obj, inner, state);
         return 0;
     }
     {
-        if (!((ByteFlags*)((char*)inner + 0x3f0))->b20 && !((ByteFlags*)((char*)inner + 0x3f0))->b08 &&
-            !((ByteFlags*)((char*)inner + 0x3f0))->b04)
+        if (!((PlayerState*)inner)->flags3F0.b20 && !((PlayerState*)inner)->flags3F0.b08 &&
+            !((PlayerState*)inner)->flags3F0.b04)
         {
-            if (((ByteFlags*)((char*)inner + 0x3f1))->b01 || ((PlayerState*)state)->baddie.unk1B0 < 15.0f)
+            if (((PlayerState*)inner)->flags3F1.b01 || ((PlayerState*)state)->baddie.unk1B0 < 15.0f)
             {
                 ((PlayerState*)inner)->staffHoldFrames = 0;
             }
@@ -13438,16 +13434,16 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
                 (((PlayerState*)inner)->staffHoldFrames > 10) ? 10 : ((PlayerState*)inner)->staffHoldFrames;
             if (((PlayerState*)inner)->staffHoldFrames > 2)
             {
-                ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
-                ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
-                ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
+                ((PlayerState*)inner)->flags3F0.b80 = 0;
+                ((PlayerState*)inner)->flags3F0.b10 = 0;
+                ((PlayerState*)inner)->flags3F0.b08 = 0;
                 Shield_setMode(gPlayerStaffObject, 2);
-                ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 0;
+                ((PlayerState*)inner)->flags3F0.b02 = 0;
                 *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
                 ObjHits_SyncObjectPositionIfDirty((GameObject*)obj);
-                ((ByteFlags*)((char*)inner + 0x3f0))->b40 = 0;
-                ((ByteFlags*)((char*)inner + 0x3f0))->b04 = 1;
-                ((ByteFlags*)((char*)inner + 0x3f4))->b10 = 0;
+                ((PlayerState*)inner)->flags3F0.b40 = 0;
+                ((PlayerState*)inner)->flags3F0.b04 = 1;
+                ((PlayerState*)inner)->flags3F4.b10 = 0;
                 ((PlayerState*)inner)->isHoldingObject = 0;
                 if (((PlayerState*)inner)->heldObj != NULL)
                 {
@@ -13460,23 +13456,23 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
                     {
                         Carryable_putDownAndSavePos((GameObject*)((PlayerState*)inner)->heldObj);
                     }
-                    *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) =
-                        *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) & ~0x4000;
-                    *(int*)((char*)((PlayerState*)inner)->heldObj + 0xf8) = 0;
+                    ((PlayerState*)inner)->heldObj->anim.flags =
+                        ((PlayerState*)inner)->heldObj->anim.flags & ~0x4000;
+                    ((PlayerState*)inner)->heldObj->userData2 = 0;
                     ((PlayerState*)inner)->heldObj = 0;
                 }
                 ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedRestoreDefaultControl;
                 return 3;
             }
         }
-        if (!((ByteFlags*)((char*)inner + 0x3f0))->b20 && 0.0f != ((PlayerState*)inner)->verticalVel)
+        if (!((PlayerState*)inner)->flags3F0.b20 && 0.0f != ((PlayerState*)inner)->verticalVel)
         {
             ((PlayerState*)state)->baddie.stateHandler = 0;
             return 0x42;
         }
-        if (!((ByteFlags*)((char*)inner + 0x3f0))->b20 && !((ByteFlags*)((char*)inner + 0x3f0))->b08 &&
-            !((ByteFlags*)((char*)inner + 0x3f0))->b04 && ((PlayerState*)inner)->baddie.targetObj == NULL &&
-            !((ByteFlags*)((char*)inner + 0x3f6))->b40 && ((PlayerState*)inner)->baddie.controlMode != 0x26)
+        if (!((PlayerState*)inner)->flags3F0.b20 && !((PlayerState*)inner)->flags3F0.b08 &&
+            !((PlayerState*)inner)->flags3F0.b04 && ((PlayerState*)inner)->baddie.targetObj == NULL &&
+            !((PlayerState*)inner)->flags3F6.b40 && ((PlayerState*)inner)->baddie.controlMode != 0x26)
         {
             ok = 1;
         }
@@ -13494,9 +13490,9 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
             ((PlayerState*)state)->baddie.stateHandler = (int)playerResetMoveTables;
             return 8;
         }
-        if (!((ByteFlags*)((char*)inner + 0x3f0))->b20 && !((ByteFlags*)((char*)inner + 0x3f0))->b08 &&
-            !((ByteFlags*)((char*)inner + 0x3f0))->b04 && !((ByteFlags*)((char*)inner + 0x3f0))->b02 &&
-            ((PlayerState*)inner)->baddie.targetObj == NULL && !((ByteFlags*)((char*)inner + 0x3f6))->b40 &&
+        if (!((PlayerState*)inner)->flags3F0.b20 && !((PlayerState*)inner)->flags3F0.b08 &&
+            !((PlayerState*)inner)->flags3F0.b04 && !((PlayerState*)inner)->flags3F0.b02 &&
+            ((PlayerState*)inner)->baddie.targetObj == NULL && !((PlayerState*)inner)->flags3F6.b40 &&
             ((PlayerState*)inner)->baddie.controlMode != 0x26)
         {
             ok = 1;
@@ -13516,7 +13512,7 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
         if (((PlayerState*)state)->baddie.targetObj != NULL)
         {
             s16 t = ((PlayerState*)state)->baddie.controlMode;
-            if (t != 0x24 && t != 0x25 && t != 0x26 && !((ByteFlags*)((char*)inner + 0x3f6))->b20 &&
+            if (t != 0x24 && t != 0x25 && t != 0x26 && !((PlayerState*)inner)->flags3F6.b20 &&
                 *(u8*)&((PlayerState*)state)->baddie.hasTarget == 1)
             {
                 ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedEndIceSpellAndSettleHeading;
@@ -13527,10 +13523,10 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
             int btn = padGetTriggers(0);
             if ((btn & 0x20) != 0)
             {
-                if (((ByteFlags*)((char*)inner + 0x3f4))->b40 && !((ByteFlags*)((char*)inner + 0x3f0))->b20 &&
-                    !((ByteFlags*)((char*)inner + 0x3f0))->b08 && !((ByteFlags*)((char*)inner + 0x3f0))->b04 &&
+                if (((PlayerState*)inner)->flags3F4.b40 && !((PlayerState*)inner)->flags3F0.b20 &&
+                    !((PlayerState*)inner)->flags3F0.b08 && !((PlayerState*)inner)->flags3F0.b04 &&
                     ((PlayerState*)inner)->curAnimId != 0x44 && ((PlayerState*)inner)->heldObj == NULL &&
-                    ((PlayerState*)inner)->baddie.targetObj == NULL && !((ByteFlags*)((char*)inner + 0x3f6))->b40 &&
+                    ((PlayerState*)inner)->baddie.targetObj == NULL && !((PlayerState*)inner)->flags3F6.b40 &&
                     ((PlayerState*)inner)->baddie.controlMode != 0x26 &&
                     (((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0 &&
                     ((PlayerState*)inner)->idleDelayTimer == idleZero)
@@ -13541,24 +13537,24 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
                 {
                     ok = 0;
                 }
-                if (ok != 0 && !((ByteFlags*)((char*)inner + 0x3f0))->b02)
+                if (ok != 0 && !((PlayerState*)inner)->flags3F0.b02)
                 {
                     Shield_setMode(gPlayerStaffObject, 1);
                     ObjAnim_SetCurrentMove(obj, 0x4f, ((GameObject*)obj)->anim.currentMoveProgress, 0);
                     ObjAnim_SetCurrentEventStepFrames((ObjAnimComponent*)obj, 8);
-                    if (gPlayerPathObject != NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+                    if (gPlayerPathObject != NULL && ((PlayerState*)inner)->flags3F4.b40)
                     {
                         ((PlayerState*)inner)->staffActionRequest = 4;
-                        ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+                        ((PlayerState*)inner)->flags3F4.b08 = 1;
                     }
                     ((PlayerState*)state)->baddie.moveSpeed = 0.01f;
-                    ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
-                    ((ByteFlags*)((char*)inner + 0x3f0))->b40 = 0;
-                    ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
-                    ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
-                    ((ByteFlags*)((char*)inner + 0x3f0))->b04 = 0;
+                    ((PlayerState*)inner)->flags3F0.b10 = 0;
+                    ((PlayerState*)inner)->flags3F0.b40 = 0;
+                    ((PlayerState*)inner)->flags3F0.b80 = 0;
+                    ((PlayerState*)inner)->flags3F0.b08 = 0;
+                    ((PlayerState*)inner)->flags3F0.b04 = 0;
                     ((PlayerState*)inner)->staffHoldFrames = 0;
-                    ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 1;
+                    ((PlayerState*)inner)->flags3F0.b02 = 1;
                     ((PlayerState*)inner)->isHoldingObject = 0;
                     if (((PlayerState*)inner)->heldObj != NULL)
                     {
@@ -13571,9 +13567,9 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
                         {
                             Carryable_putDownAndSavePos((GameObject*)((PlayerState*)inner)->heldObj);
                         }
-                        *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) =
-                            *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) & ~0x4000;
-                        *(int*)((char*)((PlayerState*)inner)->heldObj + 0xf8) = 0;
+                        ((PlayerState*)inner)->heldObj->anim.flags =
+                            ((PlayerState*)inner)->heldObj->anim.flags & ~0x4000;
+                        ((PlayerState*)inner)->heldObj->userData2 = 0;
                         ((PlayerState*)inner)->heldObj = 0;
                     }
                     ObjHits_MarkObjectPositionDirty((ObjAnimComponent*)obj);
@@ -13582,7 +13578,7 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
                 }
             }
         }
-        if (((ByteFlags*)((char*)inner + 0x3f0))->b08 || ((ByteFlags*)((char*)inner + 0x3f0))->b04)
+        if (((PlayerState*)inner)->flags3F0.b08 || ((PlayerState*)inner)->flags3F0.b04)
         {
             r = playerCheckIfClimbingOntoWall(obj, inner, state, buf, fv, 0x14);
             if (r == 0xc)
@@ -13605,7 +13601,7 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
                 }
             }
         }
-        if (((ByteFlags*)((char*)inner + 0x3f0))->b20)
+        if (((PlayerState*)inner)->flags3F0.b20)
         {
             r = playerCheckIfClimbingOntoWall(obj, inner, state, buf, 1.0f, 0x100);
             if (r == 5)
@@ -13614,9 +13610,9 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
                 ((PlayerState*)state)->baddie.stateHandler = 0;
                 return 0xc;
             }
-            if (((PlayerState*)inner)->waterDepth < 24.0f && ((ByteFlags*)((char*)inner + 0x3f1))->b01)
+            if (((PlayerState*)inner)->waterDepth < 24.0f && ((PlayerState*)inner)->flags3F1.b01)
             {
-                ((ByteFlags*)((char*)inner + 0x3f0))->b20 = 0;
+                ((PlayerState*)inner)->flags3F0.b20 = 0;
             }
         }
         return 0;
@@ -13626,47 +13622,47 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
 void playerSetMovingAnims(int p1, int obj)
 {
     char* t = (char*)lbl_80332EC0;
-    *(int*)((char*)obj + 0x3fc) = *(int*)((char*)obj + 0x3f8);
-    if (((ByteFlags*)((char*)obj + 0x3f0))->b20)
+    ((PlayerState*)obj)->prevMoveAnimTable = ((PlayerState*)obj)->moveAnimTable;
+    if (((PlayerState*)obj)->flags3F0.b20)
     {
-        if (((ByteFlags*)((char*)obj + 0x3f1))->b20)
+        if (((PlayerState*)obj)->flags3F1.b20)
         {
-            *(int*)((char*)obj + 0x3f8) = (int)(t + 0x310);
-            *(int*)((char*)obj + 0x400) = (int)(t + 0xd8);
+            ((PlayerState*)obj)->moveAnimTable = (int)(t + 0x310);
+            ((PlayerState*)obj)->moveParams = (int)(t + 0xd8);
         }
         else
         {
-            *(int*)((char*)obj + 0x3f8) = (int)(t + 0x210);
-            *(int*)((char*)obj + 0x400) = (int)(t + 0xd8);
+            ((PlayerState*)obj)->moveAnimTable = (int)(t + 0x210);
+            ((PlayerState*)obj)->moveParams = (int)(t + 0xd8);
         }
     }
-    else if (*(void**)((char*)obj + 0x7f8) != NULL)
+    else if (((PlayerState*)obj)->heldObj != NULL)
     {
-        *(int*)((char*)obj + 0x3f8) = (int)(t + 0x250);
-        *(int*)((char*)obj + 0x400) = (int)(t + 0x390);
+        ((PlayerState*)obj)->moveAnimTable = (int)(t + 0x250);
+        ((PlayerState*)obj)->moveParams = (int)(t + 0x390);
     }
-    else if (((ByteFlags*)((char*)obj + 0x3f1))->b20)
+    else if (((PlayerState*)obj)->flags3F1.b20)
     {
-        if (*(u8*)((char*)obj + 0x8b3) != 0)
+        if (((PlayerState*)obj)->staffGrown != 0)
         {
-            *(int*)((char*)obj + 0x3f8) = (int)(t + 0x290);
-            *(int*)((char*)obj + 0x400) = (int)(t + 0x390);
+            ((PlayerState*)obj)->moveAnimTable = (int)(t + 0x290);
+            ((PlayerState*)obj)->moveParams = (int)(t + 0x390);
         }
         else
         {
-            *(int*)((char*)obj + 0x3f8) = (int)(t + 0x2d0);
-            *(int*)((char*)obj + 0x400) = (int)(t + 0x390);
+            ((PlayerState*)obj)->moveAnimTable = (int)(t + 0x2d0);
+            ((PlayerState*)obj)->moveParams = (int)(t + 0x390);
         }
     }
-    else if (*(u8*)((char*)obj + 0x8b3) != 0)
+    else if (((PlayerState*)obj)->staffGrown != 0)
     {
-        *(int*)((char*)obj + 0x3f8) = (int)(t + 0x1d0);
-        *(int*)((char*)obj + 0x400) = (int)(t + 0x390);
+        ((PlayerState*)obj)->moveAnimTable = (int)(t + 0x1d0);
+        ((PlayerState*)obj)->moveParams = (int)(t + 0x390);
     }
     else
     {
-        *(int*)((char*)obj + 0x3f8) = (int)(t + 0x190);
-        *(int*)((char*)obj + 0x400) = (int)(t + 0x390);
+        ((PlayerState*)obj)->moveAnimTable = (int)(t + 0x190);
+        ((PlayerState*)obj)->moveParams = (int)(t + 0x390);
     }
 }
 
@@ -13697,9 +13693,9 @@ int playerUpdateAirborneMotion(GameObject* obj, int inner, int state)
     }
         if (obj->anim.currentMoveProgress >= (5.0f * ((PlayerState*)state)->baddie.moveSpeed))
         {
-            ((ByteFlags*)(((char*)inner) + 0x3f2))->b08 = 0;
+            ((PlayerState*)inner)->flags3F2.b08 = 0;
         }
-        else if ((((PlayerState*)inner)->fallSeverity >= 2) && (((ByteFlags*)(((char*)inner) + 0x3f2))->b04 == 0))
+        else if ((((PlayerState*)inner)->fallSeverity >= 2) && (((PlayerState*)inner)->flags3F2.b04 == 0))
         {
             s8 hv;
             CameraShake_Enable();
@@ -13714,12 +13710,12 @@ int playerUpdateAirborneMotion(GameObject* obj, int inner, int state)
                 hv = 2;
             }
             ObjHits_RecordPositionHit(obj, NULL, (int)hv, 1, 0, v[3], v[4], v[5]);
-            ((ByteFlags*)(((char*)inner) + 0x3f2))->b04 = 1;
+            ((PlayerState*)inner)->flags3F2.b04 = 1;
         }
         if ((*((s8*)(&((PlayerState*)state)->baddie.moveDone))) != 0)
         {
-            ((ByteFlags*)(((char*)inner) + 0x3f0))->b04 = 0;
-            ((ByteFlags*)(((char*)inner) + 0x3f3))->b40 = 1;
+            ((PlayerState*)inner)->flags3F0.b04 = 0;
+            ((PlayerState*)inner)->flags3F3.b40 = 1;
             ((PlayerState*)inner)->staffHoldFrames = 0;
             return 1;
         }
@@ -13746,7 +13742,7 @@ int playerUpdateAirborneMotion(GameObject* obj, int inner, int state)
             }
             else
             {
-                ((ByteFlags*)(((char*)inner) + 0x3f0))->b04 = 0;
+                ((PlayerState*)inner)->flags3F0.b04 = 0;
                 ((PlayerState*)inner)->staffHoldFrames = 0;
                 playerDie(obj);
             }
@@ -13765,8 +13761,8 @@ int playerUpdateAirborneMotion(GameObject* obj, int inner, int state)
         }
         if ((*((s8*)(&((PlayerState*)state)->baddie.moveDone))) != 0)
         {
-            ((ByteFlags*)(((char*)inner) + 0x3f0))->b04 = 0;
-            ((ByteFlags*)(((char*)inner) + 0x3f3))->b40 = 1;
+            ((PlayerState*)inner)->flags3F0.b04 = 0;
+            ((PlayerState*)inner)->flags3F3.b40 = 1;
             ((PlayerState*)inner)->staffHoldFrames = 0;
             return 1;
         }
@@ -13780,19 +13776,19 @@ int playerUpdateAirborneMotion(GameObject* obj, int inner, int state)
         ((PlayerState*)state)->baddie.moveSpeed = 0.05f;
         ((PlayerState*)inner)->emissionState = 2;
         ((PlayerState*)inner)->fallSeverity = 0;
-        ((ByteFlags*)(((char*)inner) + 0x3f0))->b01 = 0;
-        ((ByteFlags*)(((char*)inner) + 0x3f2))->b08 = 0;
-        ((ByteFlags*)(((char*)inner) + 0x3f2))->b04 = 0;
-        ((ByteFlags*)(((char*)inner) + 0x3f2))->b02 = 0;
+        ((PlayerState*)inner)->flags3F0.b01 = 0;
+        ((PlayerState*)inner)->flags3F2.b08 = 0;
+        ((PlayerState*)inner)->flags3F2.b04 = 0;
+        ((PlayerState*)inner)->flags3F2.b02 = 0;
         ((PlayerState*)inner)->prevWorldPosY = obj->anim.worldPosY;
         break;
     }
 
     ps = (PlayerState*)inner;
     hdiff = ((PlayerState*)inner)->prevWorldPosY - obj->anim.worldPosY;
-    if ((((ByteFlags*)(((char*)inner) + 0x3f1))->b01 != 0) && (((ByteFlags*)(((char*)inner) + 0x3f0))->b01 == 0))
+    if ((((PlayerState*)inner)->flags3F1.b01 != 0) && (((PlayerState*)inner)->flags3F0.b01 == 0))
     {
-        ((ByteFlags*)(((char*)inner) + 0x3f0))->b01 = 1;
+        ((PlayerState*)inner)->flags3F0.b01 = 1;
         sfx = surfaceSfxSelectTrigger(ps->surfaceType, ps->footstepSoundId);
         if (hdiff > 260.0f)
         {
@@ -13814,7 +13810,7 @@ int playerUpdateAirborneMotion(GameObject* obj, int inner, int state)
                 hv = 2;
             }
             ObjHits_RecordPositionHit(obj, NULL, (int)hv, 2, 0, v[3], v[4], v[5]);
-            ((ByteFlags*)(((char*)inner) + 0x3f2))->b08 = 0;
+            ((PlayerState*)inner)->flags3F2.b08 = 0;
             if (ps->waterDepth > 1.5f)
             {
                 Sfx_PlayFromObject(obj, SFXTRIG_foot_run_jingle3);
@@ -13828,7 +13824,7 @@ int playerUpdateAirborneMotion(GameObject* obj, int inner, int state)
             Sfx_PlayFromObject(obj, sfx);
             Sfx_StopFromObject(obj,
                                (u16)((ps->characterId == 0) ? (SFXTRIG_jump2) : (SFXTRIG_sa_climb02)));
-            ((ByteFlags*)(((char*)inner) + 0x3f2))->b08 = 1;
+            ((PlayerState*)inner)->flags3F2.b08 = 1;
             if (ps->waterDepth > 1.5f)
             {
                 Sfx_PlayFromObject(obj, SFXTRIG_foot_run_jingle3_429);
@@ -13842,7 +13838,7 @@ int playerUpdateAirborneMotion(GameObject* obj, int inner, int state)
             Sfx_PlayFromObject(obj, sfx);
             Sfx_PlayFromObject(
                 obj, (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_panting2 : SFXTRIG_sa_jump03_var));
-            ((ByteFlags*)((char*)inner + 0x3f2))->b08 = 1;
+            ((PlayerState*)inner)->flags3F2.b08 = 1;
             if (((PlayerState*)inner)->waterDepth > 1.5f)
             {
                 Sfx_PlayFromObject(obj, SFXTRIG_foot_run_jingle3_42a);
@@ -13852,11 +13848,11 @@ int playerUpdateAirborneMotion(GameObject* obj, int inner, int state)
         {
             doRumble(5.0f);
             Sfx_PlayFromObject(0, sfx);
-            ((ByteFlags*)(((char*)inner) + 0x3f0))->b04 = 0;
+            ((PlayerState*)inner)->flags3F0.b04 = 0;
             ((PlayerState*)inner)->staffHoldFrames = 0;
-            ((ByteFlags*)(((char*)inner) + 0x3f1))->b08 = 1;
-            ((ByteFlags*)(((char*)inner) + 0x3f2))->b10 = 1;
-            ((ByteFlags*)(((char*)inner) + 0x3f2))->b08 = 1;
+            ((PlayerState*)inner)->flags3F1.b08 = 1;
+            ((PlayerState*)inner)->flags3F2.b10 = 1;
+            ((PlayerState*)inner)->flags3F2.b08 = 1;
             if (((PlayerState*)inner)->waterDepth > 1.5f)
             {
                 Sfx_PlayFromObject(obj, SFXTRIG_foot_run_jingle3_42b);
@@ -13870,11 +13866,11 @@ int playerUpdateAirborneMotion(GameObject* obj, int inner, int state)
         }
         ((PlayerState*)state)->baddie.animSpeedB = 0.0f;
     }
-    if (((ByteFlags*)(((char*)inner) + 0x3f0))->b01 == 0)
+    if (((PlayerState*)inner)->flags3F0.b01 == 0)
     {
         if (((PlayerState*)state)->baddie.unk1B0 < 40.0f)
         {
-            ((ByteFlags*)(((char*)inner) + 0x3f2))->b08 = 1;
+            ((PlayerState*)inner)->flags3F2.b08 = 1;
         }
         if ((hdiff > 260.0f) && (ps->fallSeverity < 3))
         {
@@ -13882,7 +13878,7 @@ int playerUpdateAirborneMotion(GameObject* obj, int inner, int state)
             ObjAnim_SetCurrentEventStepFrames(&obj->anim, 0x19);
             ((PlayerState*)state)->baddie.moveSpeed = 0.01f;
             ps->fallSeverity = 3;
-            ((ByteFlags*)(((char*)inner) + 0x3f2))->b08 = 0;
+            ((PlayerState*)inner)->flags3F2.b08 = 0;
         }
         else if ((hdiff > 130.0f) && (ps->fallSeverity < 2))
         {
@@ -13901,20 +13897,20 @@ int playerUpdateAirborneMotion(GameObject* obj, int inner, int state)
             ((PlayerState*)inner)->fallSeverity = 1;
         }
     }
-    if ((((ByteFlags*)(((char*)inner) + 0x3f2))->b08 != 0) &&
+    if ((((PlayerState*)inner)->flags3F2.b08 != 0) &&
         ((((PlayerState*)inner)->buttonsJustPressed & 0x400) != 0))
     {
-        ((ByteFlags*)(((char*)inner) + 0x3f2))->b02 = 1;
+        ((PlayerState*)inner)->flags3F2.b02 = 1;
         ((PlayerState*)inner)->buttonsJustPressed = ps->buttonsJustPressed & (~0x400);
     }
-    if (((((ByteFlags*)(((char*)inner) + 0x3f0))->b01 != 0) && (((ByteFlags*)(((char*)inner) + 0x3f2))->b02 != 0)) &&
+    if (((((PlayerState*)inner)->flags3F0.b01 != 0) && (((PlayerState*)inner)->flags3F2.b02 != 0)) &&
         (ps->fallSeverity < 3))
     {
         playerStartStaffAttack(obj, inner, state);
-        ((ByteFlags*)(((char*)inner) + 0x3f0))->b04 = 0;
+        ((PlayerState*)inner)->flags3F0.b04 = 0;
         ps->staffHoldFrames = 0;
     }
-    if ((ps->fallSeverity == 0) && (((ByteFlags*)(((char*)inner) + 0x3f4))->b10 == 0))
+    if ((ps->fallSeverity == 0) && (((PlayerState*)inner)->flags3F4.b10 == 0))
     {
         f32 b;
         f32 a;
@@ -13952,7 +13948,7 @@ int playerUpdateAirborneMotion(GameObject* obj, int inner, int state)
 int playerUpdateFallingMotion(GameObject* obj, int inner, int p3)
 {
     obj->anim.velocityY = obj->anim.velocityY - lbl_803DC67C * timeDelta;
-    if (((PlayerState*)inner)->fallFrames > 5 && ((ByteFlags*)((char*)inner + 0x3f1))->b01)
+    if (((PlayerState*)inner)->fallFrames > 5 && ((PlayerState*)inner)->flags3F1.b01)
     {
         u16 snd;
         doRumble(5.0f);
@@ -13967,24 +13963,24 @@ int playerUpdateFallingMotion(GameObject* obj, int inner, int p3)
             snd = 0x25;
         }
         Sfx_PlayFromObject(obj, snd);
-        ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
-        ((ByteFlags*)((char*)inner + 0x3f1))->b08 = 1;
-        ((ByteFlags*)((char*)inner + 0x3f2))->b10 = 1;
+        ((PlayerState*)inner)->flags3F0.b08 = 0;
+        ((PlayerState*)inner)->flags3F1.b08 = 1;
+        ((PlayerState*)inner)->flags3F2.b10 = 1;
     }
     if (obj->anim.worldPosY <= ((PlayerState*)inner)->fallThresholdY ||
         ((((PlayerState*)p3)->baddie.surfaceFlags & 2) && (((PlayerState*)p3)->baddie.surfaceFlags & 0x20) == 0) || ((PlayerState*)p3)->baddie.groundContact != 0)
     {
         void* sub;
-        ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
-        ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
-        ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
+        ((PlayerState*)inner)->flags3F0.b80 = 0;
+        ((PlayerState*)inner)->flags3F0.b10 = 0;
+        ((PlayerState*)inner)->flags3F0.b08 = 0;
         Shield_setMode(gPlayerStaffObject, 2);
-        ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 0;
+        ((PlayerState*)inner)->flags3F0.b02 = 0;
         *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
         ObjHits_SyncObjectPositionIfDirty(obj);
-        ((ByteFlags*)((char*)inner + 0x3f0))->b40 = 0;
-        ((ByteFlags*)((char*)inner + 0x3f0))->b04 = 1;
-        ((ByteFlags*)((char*)inner + 0x3f4))->b10 = 0;
+        ((PlayerState*)inner)->flags3F0.b40 = 0;
+        ((PlayerState*)inner)->flags3F0.b04 = 1;
+        ((PlayerState*)inner)->flags3F4.b10 = 0;
         ((PlayerState*)inner)->isHoldingObject = 0;
         sub = ((PlayerState*)inner)->heldObj;
         if (sub != NULL)
@@ -13998,8 +13994,8 @@ int playerUpdateFallingMotion(GameObject* obj, int inner, int p3)
             {
                 Carryable_putDownAndSavePos((GameObject*)sub);
             }
-            *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) &= ~0x4000;
-            *(int*)((char*)((PlayerState*)inner)->heldObj + 0xf8) = 0;
+            ((PlayerState*)inner)->heldObj->anim.flags &= ~0x4000;
+            ((PlayerState*)inner)->heldObj->userData2 = 0;
             ((PlayerState*)inner)->heldObj = 0;
         }
     }
@@ -14178,8 +14174,8 @@ int playerUpdateQuickTurn(GameObject* obj, int inner, int state)
             *(f32*)((char*)((PlayerState*)inner)->moveParams + 0x1c) - 0.4f &&
         ((PlayerState*)state)->baddie.inputMagnitude > 0.8f && ((PlayerState*)inner)->yawRateSigned >= 0x96)
     {
-        ((ByteFlags*)((char*)inner + 0x3f0))->b40 = 1;
-        ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
+        ((PlayerState*)inner)->flags3F0.b40 = 1;
+        ((PlayerState*)inner)->flags3F0.b80 = 0;
         ((PlayerState*)inner)->animSoundId = ((PlayerState*)inner)->altAnimSoundId;
         ((PlayerState*)state)->baddie.moveSpeed = 0.033f;
         ObjAnim_SetCurrentMove((int)obj, *(s16*)((char*)((PlayerState*)inner)->moveAnimTable + 0x3a), 0.0f, 0);
@@ -14193,15 +14189,15 @@ int playerUpdateQuickTurn(GameObject* obj, int inner, int state)
         ((PlayerState*)state)->baddie.animSpeedC = -((PlayerState*)state)->baddie.animSpeedC;
         ((PlayerState*)state)->baddie.animSpeedA = -((PlayerState*)state)->baddie.animSpeedA;
     }
-    if (((ByteFlags*)((char*)inner + 0x3f0))->b80)
+    if (((PlayerState*)inner)->flags3F0.b80)
     {
         if (((PlayerState*)state)->baddie.animSpeedC <=
                 (lim = *(f32*)((char*)((PlayerState*)inner)->moveParams + 0x10)) &&
             ((PlayerState*)state)->baddie.animSpeedA <= lim)
         {
             ((PlayerState*)inner)->lastInputHeading = ((PlayerState*)inner)->yaw;
-            ((ByteFlags*)((char*)inner + 0x3f0))->b40 = 0;
-            ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
+            ((PlayerState*)inner)->flags3F0.b40 = 0;
+            ((PlayerState*)inner)->flags3F0.b80 = 0;
             return 1;
         }
         ((PlayerState*)inner)->currentSpeed = 0.0f;
@@ -14240,7 +14236,7 @@ void playerUpdateStaffAttack(GameObject* obj, int state, int p3)
         ((PlayerState*)state)->targetYawSmoothRate = fa4;
         ((PlayerState*)state)->yawSmoothRate = fa4;
     }
-    b = (((PlayerState*)state)->flags3F1 >> 4) & 1;
+    b = ((PlayerState*)state)->flags3F1.b10;
     if (b != 0)
     {
         f32 ea4 = 0.0f;
@@ -14257,10 +14253,10 @@ void playerUpdateStaffAttack(GameObject* obj, int state, int p3)
     if (obj->anim.currentMoveProgress >= 1.0f)
     {
         short tmp;
-        ((ByteFlags*)((char*)state + 0x3f0))->b10 = 0;
+        ((PlayerState*)state)->flags3F0.b10 = 0;
         gPlayerModelChainStyle = 1;
-        ((ByteFlags*)((char*)state + 0x3f1))->b02 = 1;
-        ((ByteFlags*)((char*)state + 0x3f1))->b08 = 1;
+        ((PlayerState*)state)->flags3F1.b02 = 1;
+        ((PlayerState*)state)->flags3F1.b08 = 1;
         *(u8*)&((PlayerState*)state)->gaitLevel = 0xc;
         tmp = ((PlayerState*)state)->yaw;
         ((PlayerState*)state)->targetYaw = tmp;
@@ -14275,24 +14271,24 @@ void playerEnterDeepWater(int obj, int inner, int state)
     GameObject* sub;
     f32 z;
 
-    ((ByteFlags*)((char*)inner + 0x3f1))->b40 = 0;
-    ((ByteFlags*)((char*)inner + 0x3f0))->b40 = 0;
-    ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
-    ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 0;
-    ((ByteFlags*)((char*)inner + 0x3f0))->b04 = 0;
+    ((PlayerState*)inner)->flags3F1.b40 = 0;
+    ((PlayerState*)inner)->flags3F0.b40 = 0;
+    ((PlayerState*)inner)->flags3F0.b80 = 0;
+    ((PlayerState*)inner)->flags3F0.b08 = 0;
+    ((PlayerState*)inner)->flags3F0.b04 = 0;
     ((PlayerState*)inner)->staffHoldFrames = 0;
-    ((ByteFlags*)((char*)inner + 0x3f0))->b20 = 1;
-    ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
+    ((PlayerState*)inner)->flags3F0.b20 = 1;
+    ((PlayerState*)inner)->flags3F0.b10 = 0;
     z = 0.0f;
     ((PlayerState*)inner)->waterCurrentVelB = z;
     ((PlayerState*)inner)->waterCurrentVelA = z;
     Sfx_StopFromObject((GameObject*)obj,
                        (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_jump2 : SFXTRIG_sa_climb02));
 
-    if ((void*)gPlayerPathObject != NULL && ((ByteFlags*)((char*)inner + 0x3f4))->b40)
+    if ((void*)gPlayerPathObject != NULL && ((PlayerState*)inner)->flags3F4.b40)
     {
         ((PlayerState*)inner)->staffActionRequest = 1;
-        ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+        ((PlayerState*)inner)->flags3F4.b08 = 1;
     }
     ((PlayerState*)inner)->isHoldingObject = 0;
     sub = ((PlayerState*)inner)->heldObj;
@@ -14308,7 +14304,7 @@ void playerEnterDeepWater(int obj, int inner, int state)
             Carryable_putDownAndSavePos(sub);
         }
         *(s16*)((char*)((PlayerState*)inner)->heldObj + 6) &= ~0x4000;
-        *(int*)((char*)((PlayerState*)inner)->heldObj + 0xf8) = 0;
+        ((PlayerState*)inner)->heldObj->userData2 = 0;
         ((PlayerState*)inner)->heldObj = 0;
     }
     if (((GameObject*)obj)->anim.velocityY < -2.0f)
@@ -14373,23 +14369,23 @@ void playerStartWallTransition(GameObject* obj, int inner, int state)
     ((PlayerState*)inner)->groundRefY = obj->anim.worldPosY;
     ((PlayerState*)inner)->fallThresholdY = obj->anim.worldPosY - 10.0f;
 
-    ((ByteFlags*)((char*)inner + 0x3f0))->b08 = 1;
-    ((ByteFlags*)((char*)inner + 0x3f0))->b04 = 0;
+    ((PlayerState*)inner)->flags3F0.b08 = 1;
+    ((PlayerState*)inner)->flags3F0.b04 = 0;
     ((PlayerState*)inner)->staffHoldFrames = 0;
-    ((ByteFlags*)((char*)inner + 0x3f0))->b10 = 0;
-    ((ByteFlags*)((char*)inner + 0x3f0))->b80 = 0;
+    ((PlayerState*)inner)->flags3F0.b10 = 0;
+    ((PlayerState*)inner)->flags3F0.b80 = 0;
     Shield_setMode(gPlayerStaffObject, 2);
-    ((ByteFlags*)((char*)inner + 0x3f0))->b02 = 0;
+    ((PlayerState*)inner)->flags3F0.b02 = 0;
     *(u32*)&((PlayerState*)inner)->flags360 |= PLAYER_FLAG_TELEPORTED;
     ObjHits_SyncObjectPositionIfDirty(obj);
-    if (((ByteFlags*)((char*)inner + 0x3f0))->b40)
+    if (((PlayerState*)inner)->flags3F0.b40)
     {
         ((PlayerState*)inner)->yaw += -0x8000;
     }
-    ((ByteFlags*)((char*)inner + 0x3f0))->b40 = 0;
-    ((ByteFlags*)((char*)inner + 0x3f1))->b01 = 0;
+    ((PlayerState*)inner)->flags3F0.b40 = 0;
+    ((PlayerState*)inner)->flags3F1.b01 = 0;
     ((PlayerState*)inner)->fallFrames = 0;
-    if (((ByteFlags*)((char*)inner + 0x3f1))->b20)
+    if (((PlayerState*)inner)->flags3F1.b20)
     {
         int t = *(s16*)obj;
         ((PlayerState*)inner)->yaw = t;
@@ -14397,12 +14393,12 @@ void playerStartWallTransition(GameObject* obj, int inner, int state)
         ((PlayerState*)inner)->lastInputHeading = t;
         ((PlayerState*)inner)->baddie.animSpeedB = 0.0f;
     }
-    ((ByteFlags*)((char*)inner + 0x3f1))->b20 = 0;
-    if (((ByteFlags*)((char*)inner + 0x3f1))->b10 && ((PlayerState*)inner)->curAnimId != 0x48 &&
+    ((PlayerState*)inner)->flags3F1.b20 = 0;
+    if (((PlayerState*)inner)->flags3F1.b10 && ((PlayerState*)inner)->curAnimId != 0x48 &&
         ((PlayerState*)inner)->curAnimId != 0x47 && getCurSeqNo() == 0)
     {
         (*gCameraInterface)->setMode(0x42, 0, 1, 0, NULL, 0x1e, 0xff);
-        ((ByteFlags*)((char*)inner + 0x3f1))->b10 = 0;
+        ((PlayerState*)inner)->flags3F1.b10 = 0;
     }
     {
         u16 sfxId;
@@ -14430,8 +14426,8 @@ void playerStartWallTransition(GameObject* obj, int inner, int state)
             {
                 Carryable_putDownAndSavePos((GameObject*)sub);
             }
-            *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) &= ~0x4000;
-            *(int*)((char*)((PlayerState*)inner)->heldObj + 0xf8) = 0;
+            ((PlayerState*)inner)->heldObj->anim.flags &= ~0x4000;
+            ((PlayerState*)inner)->heldObj->userData2 = 0;
             ((PlayerState*)inner)->heldObj = 0;
         }
     }
@@ -14453,16 +14449,16 @@ void playerStartStaffAttack(GameObject* obj, int state, int p3)
     ((PlayerState*)p3)->baddie.moveSpeed = 0.025f;
     ((PlayerState*)state)->targetYaw = ((PlayerState*)state)->yaw;
     ((PlayerState*)state)->animSpeedRate = 0.0f;
-    ((ByteFlags*)((char*)state + 0x3f0))->b10 = 1;
-    ((ByteFlags*)((char*)state + 0x3f0))->b80 = 0;
+    ((PlayerState*)state)->flags3F0.b10 = 1;
+    ((PlayerState*)state)->flags3F0.b80 = 0;
     Shield_setMode(gPlayerStaffObject, 2);
-    ((ByteFlags*)((char*)state + 0x3f0))->b02 = 0;
+    ((PlayerState*)state)->flags3F0.b02 = 0;
     *(u32*)&((PlayerState*)state)->flags360 |= PLAYER_FLAG_TELEPORTED;
     ObjHits_SyncObjectPositionIfDirty(obj);
-    ((ByteFlags*)((char*)state + 0x3f0))->b08 = 0;
-    ((ByteFlags*)((char*)state + 0x3f0))->b04 = 0;
+    ((PlayerState*)state)->flags3F0.b08 = 0;
+    ((PlayerState*)state)->flags3F0.b04 = 0;
     ((PlayerState*)state)->staffHoldFrames = 0;
-    ((ByteFlags*)((char*)state + 0x3f0))->b40 = 0;
+    ((PlayerState*)state)->flags3F0.b40 = 0;
     ((PlayerState*)state)->yawRateSigned = 0;
     ((PlayerState*)state)->targetYawRateSigned = 0;
     ((PlayerState*)state)->yawRate = 0;
@@ -14481,10 +14477,10 @@ void playerStartStaffAttack(GameObject* obj, int state, int p3)
             Carryable_putDownAndSavePos((GameObject*)((PlayerState*)state)->heldObj);
         }
         *(s16*)((char*)((PlayerState*)state)->heldObj + 6) &= ~0x4000;
-        *(int*)((char*)((PlayerState*)state)->heldObj + 0xf8) = 0;
+        ((PlayerState*)state)->heldObj->userData2 = 0;
         ((PlayerState*)state)->heldObj = 0;
     }
-    b = (((PlayerState*)state)->flags3F1 >> 5) & 1;
+    b = ((PlayerState*)state)->flags3F1.b20;
     if (b != 0)
     {
         short t = obj->anim.rotX;
@@ -14493,7 +14489,7 @@ void playerStartStaffAttack(GameObject* obj, int state, int p3)
         ((PlayerState*)state)->lastInputHeading = t;
         ((PlayerState*)state)->baddie.animSpeedB = 0.0f;
     }
-    ((ByteFlags*)((char*)state + 0x3f1))->b20 = 0;
+    ((PlayerState*)state)->flags3F1.b20 = 0;
     if (((PlayerState*)state)->waterDepth > 1.0f)
     {
         if (((PlayerState*)state)->characterId == 0)
@@ -14537,7 +14533,7 @@ void staffAnimate(int obj, void* state, f32 dt)
         u8 b = ((PlayerState*)state)->staffActionRequest;
         if (b == 1)
         {
-            staffDoGrowShrinkAnim((GameObject*)gPlayerPathObject, 0, ((ByteFlags*)((char*)state + 0x3f4))->b08, 0);
+            staffDoGrowShrinkAnim((GameObject*)gPlayerPathObject, 0, ((PlayerState*)state)->flags3F4.b08, 0);
             ((PlayerState*)state)->staffGrown = 0;
             if (*(s16*)&((PlayerState*)state)->staffAnimState != 0 &&
                 *(s16*)&((PlayerState*)state)->staffAnimState != 0xf)
@@ -14547,7 +14543,7 @@ void staffAnimate(int obj, void* state, f32 dt)
         }
         else if (b == 4)
         {
-            staffDoGrowShrinkAnim((GameObject*)gPlayerPathObject, 1, ((ByteFlags*)((char*)state + 0x3f4))->b08, 0);
+            staffDoGrowShrinkAnim((GameObject*)gPlayerPathObject, 1, ((PlayerState*)state)->flags3F4.b08, 0);
             ((PlayerState*)state)->staffGrown = 1;
             if (*(s16*)&((PlayerState*)state)->staffAnimState != 0 &&
                 *(s16*)&((PlayerState*)state)->staffAnimState != 0xf)
@@ -14721,7 +14717,7 @@ void playerProcessQueuedItemCommand(GameObject* obj, int state)
         case GAMEBIT_STAFF_ABILITY_FREEZE_BLAST:
             if (playerCanCastBlasterSpell(obj, state, sel) != 0)
             {
-                ByteFlags* flags = (ByteFlags*)((char*)state + 0x3f1);
+                ByteFlags* flags = &((PlayerState*)state)->flags3F1;
                 u8 c8;
                 if (((PlayerState*)state)->baddie.targetObj != NULL)
                 {
@@ -14756,7 +14752,7 @@ void playerProcessQueuedItemCommand(GameObject* obj, int state)
                 }
                 Camera_setBlendCurveMode(2);
                 (*gCameraInterface)->setMode(CAMERA_MODE_FORCE_BEHIND_RESOURCE_ID, 1, 0, 0, NULL, 0x2d, 0xff);
-                ((ByteFlags*)((char*)state + 0x3f6))->b40 = 1;
+                ((PlayerState*)state)->flags3F6.b40 = 1;
                 (*gPlayerInterface)->setState(obj, (void*)state, 0x2a);
                 ((PlayerState*)state)->baddie.stateExitFn = (BaddieStateExitFn)playerStagedEndIceSpellAndRestoreCamera;
                 playerCastSpell((int)obj, state, ((PlayerState*)state)->queuedItemCommand);
@@ -14791,8 +14787,8 @@ void playerProcessQueuedItemCommand(GameObject* obj, int state)
         {
             PlayerState* inner = obj->extra;
             int ok;
-            if (((PlayerState*)state)->baddie.targetObj != NULL || *(s16*)((char*)inner->playerStatus + 4) < 0xa ||
-                ((ByteFlags*)((char*)inner + 0x3f3))->b08)
+            if (((PlayerState*)state)->baddie.targetObj != NULL || ((PlayerStatus*)inner->playerStatus)->magic < 0xa ||
+                ((PlayerState*)inner)->flags3F3.b08)
             {
                 ok = 0;
             }
@@ -14804,7 +14800,7 @@ void playerProcessQueuedItemCommand(GameObject* obj, int state)
             {
                 ok = 0;
             }
-            if (ok && !((ByteFlags*)((char*)state + 0x3f3))->b08)
+            if (ok && !((PlayerState*)state)->flags3F3.b08)
             {
                 playerCastSpell((int)obj, state, sel);
             }
@@ -14863,8 +14859,8 @@ void playerRunActiveSpells(GameObject* obj, int state)
         mainSetBits(GAMEBIT_ITEM_Spell0961_Disabled, 1);
     }
     inner = *(int*)&obj->extra;
-    if (((PlayerState*)state)->baddie.targetObj != NULL || *(s16*)(((PlayerState*)inner)->playerStatus + 4) < 0xa ||
-        ((ByteFlags*)((char*)inner + 0x3f3))->b08 != 0)
+    if (((PlayerState*)state)->baddie.targetObj != NULL || ((PlayerStatus*)((PlayerState*)inner)->playerStatus)->magic < 0xa ||
+        ((PlayerState*)inner)->flags3F3.b08 != 0)
     {
         result = 0;
     }
@@ -14913,7 +14909,7 @@ void playerRunActiveSpells(GameObject* obj, int state)
     case GAMEBIT_STAFF_ABILITY_FIRE_BLASTER:
         break;
     case GAMEBIT_STAFF_ABILITY_SHARPCLAW_DISGUISE:
-        if ((getButtonsJustPressed(0) & 0x200) != 0 && ((ByteFlags*)((char*)state + 0x3f3))->b08 != 0 &&
+        if ((getButtonsJustPressed(0) & 0x200) != 0 && ((PlayerState*)state)->flags3F3.b08 != 0 &&
             ((PlayerState*)state)->curAnimId != 0x44)
         {
             playerSetDisguised(obj, 0);
@@ -15000,17 +14996,17 @@ void playerProcessHitResponse(int obj, int inner, int state)
     work = ObjHits_GetPriorityHitWithPosition((GameObject*)(obj), &hitObj, &surfIdx, (u32*)&damage, &buf.posX,
                                               &buf.posY, &buf.posZ);
     orig = work;
-    if (**(s8**)&((PlayerState*)inner)->playerStatus <= 0)
+    if (((PlayerStatus*)((PlayerState*)inner)->playerStatus)->health <= 0)
     {
-        **(s8**)&((PlayerState*)inner)->playerStatus = 1;
+        ((PlayerStatus*)((PlayerState*)inner)->playerStatus)->health = 1;
     }
     if (ObjHits_IsObjectEnabled((ObjAnimComponent*)obj) == 0 || objGetFlagsE5_2((u8*)obj) != 0 ||
-        ((ByteFlags*)((char*)inner + 0x3f3))->b20 != 0 ||
+        ((PlayerState*)inner)->flags3F3.b20 != 0 ||
         (((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK))
     {
         return;
     }
-    if (*(void**)((char*)inner + 0x7f0) != NULL && work != 0)
+    if (((PlayerState*)inner)->focusObject != NULL && work != 0)
     {
         work = 0x15;
     }
@@ -15034,7 +15030,7 @@ void playerProcessHitResponse(int obj, int inner, int state)
         ((GameObject*)obj)->anim.activeMove = -1;
         newAnim = -1;
         {
-            u32 fl = ((PlayerState*)inner)->flags3F0;
+            u32 fl = ((PlayerState*)inner)->flagByte3F0;
             if ((fl >> 4 & 1) != 0 || (fl >> 2 & 1) != 0 || (fl >> 3 & 1) != 0 || (fl >> 5 & 1) != 0 ||
                 (anim = ((PlayerState*)state)->baddie.controlMode) == 0x36)
             {
@@ -15093,7 +15089,7 @@ void playerProcessHitResponse(int obj, int inner, int state)
             }
             break;
         case 1:
-            damage = **(s8**)&((PlayerState*)inner)->playerStatus;
+            damage = ((PlayerStatus*)((PlayerState*)inner)->playerStatus)->health;
             break;
         case 0x15:
             switch (((PlayerState*)inner)->focusObject->anim.romDefNo)
@@ -15105,7 +15101,7 @@ void playerProcessHitResponse(int obj, int inner, int state)
             }
             break;
         case 0x16:
-            if (((ByteFlags*)((char*)inner + 0x3f0))->b02 == 0)
+            if (((PlayerState*)inner)->flags3F0.b02 == 0)
             {
                 keepKnock = 0;
             }
@@ -15128,7 +15124,7 @@ void playerProcessHitResponse(int obj, int inner, int state)
             {
                 knockKind = 1;
             }
-            if (((ByteFlags*)((char*)inner + 0x3f0))->b02 == 0)
+            if (((PlayerState*)inner)->flags3F0.b02 == 0)
             {
                 keepKnock = 0;
             }
@@ -15138,10 +15134,10 @@ void playerProcessHitResponse(int obj, int inner, int state)
             }
             break;
         case 0x1e:
-            if (((ByteFlags*)((char*)inner + 0x3f3))->b08 == 0)
+            if (((PlayerState*)inner)->flags3F3.b08 == 0)
             {
                 knockKind = 2;
-                if (((ByteFlags*)((char*)inner + 0x3f0))->b02 == 0)
+                if (((PlayerState*)inner)->flags3F0.b02 == 0)
                 {
                     keepKnock = 0;
                 }
@@ -15177,7 +15173,7 @@ void playerProcessHitResponse(int obj, int inner, int state)
         if ((*(u32*)&((PlayerState*)inner)->flags360 & 0x800) != 0 && keepKnock != 0)
         {
             damage = 0;
-            ((ByteFlags*)((char*)inner + 0x3f6))->b10 = 1;
+            ((PlayerState*)inner)->flags3F6.b10 = 1;
             if (hitObj != NULL && ((GameObject*)hitObj)->anim.romDefNo != 0x2c5)
             {
                 if (gPlayerSfxTimerA == 0)
@@ -15302,14 +15298,14 @@ void playerProcessHitResponse(int obj, int inner, int state)
                 {
                     Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_foot_metal_scuff);
                 }
-                if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
+                if (((PlayerStatus*)((PlayerState*)inner)->playerStatus)->health > 0)
                 {
                     objDoHitParticleFx((void*)obj, 0.014f, &buf, 6, 0);
                 }
                 break;
             case 0x1c:
                 Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_fox_var);
-                if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
+                if (((PlayerStatus*)((PlayerState*)inner)->playerStatus)->health > 0)
                 {
                     objDoHitParticleFx((void*)obj, 0.014f, &buf, 8, 0);
                 }
@@ -15323,19 +15319,19 @@ void playerProcessHitResponse(int obj, int inner, int state)
                     {
                     case 0x33:
                         Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_snort);
-                        if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
+                        if (((PlayerStatus*)((PlayerState*)inner)->playerStatus)->health > 0)
                         {
                             objDoHitParticleFx((void*)obj, 0.014f, &buf, 5, 0);
                         }
                         break;
                     case 0x7c8:
-                        if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
+                        if (((PlayerStatus*)((PlayerState*)inner)->playerStatus)->health > 0)
                         {
                             objDoHitParticleFx((void*)obj, 0.014f, &buf, 8, 0);
                         }
                         break;
                     default:
-                        if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
+                        if (((PlayerStatus*)((PlayerState*)inner)->playerStatus)->health > 0)
                         {
                             objDoHitParticleFx((void*)obj, 0.014f, &buf, 5, 0);
                         }
@@ -15344,14 +15340,14 @@ void playerProcessHitResponse(int obj, int inner, int state)
                 }
                 else
                 {
-                    if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
+                    if (((PlayerStatus*)((PlayerState*)inner)->playerStatus)->health > 0)
                     {
                         objDoHitParticleFx((void*)obj, 0.014f, &buf, 5, 0);
                     }
                 }
                 break;
             }
-            if (**(s8**)&((PlayerState*)inner)->playerStatus > 0)
+            if (((PlayerStatus*)((PlayerState*)inner)->playerStatus)->health > 0)
             {
                 Obj_SetModelColorFadeRecursive((GameObject*)obj, 0xb4, 200, 0, 0, 1);
             }
@@ -15375,11 +15371,11 @@ void playerProcessHitResponse(int obj, int inner, int state)
                 }
                 *(s16*)((char*)((PlayerState*)inner)->heldObj + 6) =
                     *(s16*)((char*)((PlayerState*)inner)->heldObj + 6) & ~0x4000;
-                *(int*)((char*)((PlayerState*)inner)->heldObj + 0xf8) = 0;
+                ((PlayerState*)inner)->heldObj->userData2 = 0;
                 ((PlayerState*)inner)->heldObj = 0;
             }
             if (newAnim != -1 && ((PlayerState*)state)->baddie.controlMode != newAnim &&
-                **(s8**)&((PlayerState*)inner)->playerStatus > 0)
+                ((PlayerStatus*)((PlayerState*)inner)->playerStatus)->health > 0)
             {
                 (*gPlayerInterface)->setState((void*)obj, (void*)state, newAnim);
                 ((PlayerState*)state)->baddie.stateExitFn = (BaddieStateExitFn)((PlayerState*)inner)->stateHandler;
@@ -15406,7 +15402,7 @@ void playerUpdateKnockbackTimers(GameObject* obj, int state)
     {
         return;
     }
-    if (((ByteFlags*)((char*)state + 0x3f0))->b10 == 0)
+    if (((PlayerState*)state)->flags3F0.b10 == 0)
     {
         v = sqrtf(obj->anim.velocityZ * obj->anim.velocityZ +
                   (obj->anim.velocityX * obj->anim.velocityX +
@@ -15489,7 +15485,7 @@ void playerDoEyeAnims(GameObject* obj, int state)
     f32 f31v;
     f32 f30v;
 
-    if ((s8) * (s8*)(((PlayerState*)state)->playerStatus) > 0)
+    if (((PlayerStatus*)((PlayerState*)state)->playerStatus)->health > 0)
     {
         characterDoEyeAnims(obj, (void*)(state + 0x364));
     }
@@ -15516,7 +15512,7 @@ void playerDoEyeAnims(GameObject* obj, int state)
         ((PlayerState*)state)->bodyLeanHalf =
             (f32)((PlayerState*)state)->bodyLeanHalf * powfBitEstimate(0.85f, timeDelta);
     }
-    if (((ByteFlags*)((char*)state + 0x3f0))->b20)
+    if (((PlayerState*)state)->flags3F0.b20)
     {
         f31v = inner->baddie.animSpeedC / *(f32*)((char*)(((PlayerState*)state)->moveParams) + 0x18);
         f31v = (f31v < 0.0f) ? 0.0f : ((f31v > 1.0f) ? 1.0f : f31v);
@@ -15524,7 +15520,7 @@ void playerDoEyeAnims(GameObject* obj, int state)
     }
     if (vec9 != NULL)
     {
-        if (((ByteFlags*)((char*)state + 0x3f0))->b20)
+        if (((PlayerState*)state)->flags3F0.b20)
         {
             f32 k = 0.5f;
             vec9[2] =
@@ -15541,7 +15537,7 @@ void playerDoEyeAnims(GameObject* obj, int state)
     if (vec0 != NULL)
     {
         vec0[0] = -((PlayerState*)state)->headYaw;
-        if (((ByteFlags*)((char*)state + 0x3f0))->b20)
+        if (((PlayerState*)state)->flags3F0.b20)
         {
             int h4 = ((PlayerState*)state)->bodyLeanAngle / 2;
             int h0 = -(((PlayerState*)state)->headPitch / 2);
@@ -15555,7 +15551,7 @@ void playerDoEyeAnims(GameObject* obj, int state)
             vec0[2] = -(((PlayerState*)state)->headPitch / 2);
         }
     }
-    if (!((ByteFlags*)((char*)state + 0x3f0))->b20)
+    if (!((PlayerState*)state)->flags3F0.b20)
     {
         obj->anim.rotZ = ((PlayerState*)state)->headPitch / 4;
     }
@@ -15577,13 +15573,13 @@ void playerDoEyeAnims(GameObject* obj, int state)
     }
     if ((obj->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0)
     {
-        if (((ByteFlags*)((char*)state + 0x3f1))->b20)
+        if (((PlayerState*)state)->flags3F1.b20)
         {
             gPlayerModelChainStyle = 5;
         }
         else
         {
-            if (playerGetStateValue(obj, 2) == 0 && (s8) * (s8*)(((PlayerState*)state)->playerStatus) > 4 &&
+            if (playerGetStateValue(obj, 2) == 0 && ((PlayerStatus*)((PlayerState*)state)->playerStatus)->health > 4 &&
                 gPlayerModelChainStyle == 1 && randomGetRange(0, 0x12c) == 1)
             {
                 gPlayerModelChainStyle = 2;
@@ -15772,7 +15768,7 @@ void playerUpdateMotionState(GameObject* obj, void* inner, BaddieState* baddieSt
     {
         ((PlayerState*)inner)->targetObjectBearingAbs = ((PlayerState*)inner)->targetObjectBearing;
     }
-    if (((ByteFlags*)((char*)inner + 0x3f1))->b20 != 0)
+    if (((PlayerState*)inner)->flags3F1.b20 != 0)
     {
         spd = sqrtf(baddieState->animSpeedA * baddieState->animSpeedA +
                     baddieState->animSpeedB * baddieState->animSpeedB);
@@ -15833,7 +15829,7 @@ void playerUpdateMotionState(GameObject* obj, void* inner, BaddieState* baddieSt
     idx = (int)u;
     ((PlayerState*)inner)->yawRateLimit =
         Curve_EvalCatmullRom((void*)(((PlayerState*)inner)->paramCurve4 + (idx + 1) * 4), u - (f32)idx, 0);
-    if (((ByteFlags*)((char*)inner + 0x3f0))->b20 != 0)
+    if (((PlayerState*)inner)->flags3F0.b20 != 0)
     {
         f32 k;
         ((PlayerState*)inner)->targetYawSmoothRate = ((PlayerState*)inner)->targetYawSmoothRate * (k = 4.0f);
@@ -15865,7 +15861,7 @@ void playerUpdateMotionState(GameObject* obj, void* inner, BaddieState* baddieSt
     }
     one = 1.0f;
     ((PlayerState*)inner)->leanCurveScale = one;
-    if (((ByteFlags*)((char*)inner + 0x3f0))->b20 == 0 && ((PlayerState*)inner)->waterDepth > (v = 0.0f))
+    if (((PlayerState*)inner)->flags3F0.b20 == 0 && ((PlayerState*)inner)->waterDepth > (v = 0.0f))
     {
         ((PlayerState*)inner)->speedScale = (((PlayerState*)inner)->waterDepth - 7.0f) / 18.0f;
         v = (((PlayerState*)inner)->speedScale < v)
@@ -15904,7 +15900,7 @@ void playerUpdateInputTimers(GameObject* obj, int state, f32 fv)
 
     if ((((PlayerState*)state)->buttonsHeld & PAD_BUTTON_A) && playerCanCastQuakeSpell(obj, state))
     {
-        ((ByteFlags*)((char*)state + 0x3f4))->b20 = 1;
+        ((PlayerState*)state)->flags3F4.b20 = 1;
         ((PlayerState*)state)->buttonHoldTimer += fv;
         v = ((PlayerState*)state)->buttonHoldTimer;
         ((PlayerState*)state)->buttonHoldTimer =
@@ -15912,7 +15908,7 @@ void playerUpdateInputTimers(GameObject* obj, int state, f32 fv)
     }
     else
     {
-        ((ByteFlags*)((char*)state + 0x3f4))->b20 = 0;
+        ((PlayerState*)state)->flags3F4.b20 = 0;
         ((PlayerState*)state)->buttonHoldTimer = 0.0f;
     }
 
@@ -15998,7 +15994,7 @@ void playerUpdateVelocityFromMotion(GameObject* a, void* b, BaddieState* baddieS
     {
         f31v = baddieState->animSpeedA;
         f30v = baddieState->animSpeedB;
-        if (((ByteFlags*)((char*)b + 0x3f0))->b20)
+        if (((PlayerState*)b)->flags3F0.b20)
         {
             f31v = f31v + ((PlayerState*)b)->waterCurrentVelA;
             f30v = f30v + ((PlayerState*)b)->waterCurrentVelB;
@@ -16058,7 +16054,7 @@ void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt)
     }
     ((PlayerState*)state)->velSmoothRateBase = 0.06f;
     ((PlayerState*)state)->surfaceType = 0;
-    b = ((PlayerState*)state)->flags3F0 >> 5 & 1;
+    b = ((PlayerState*)state)->flags3F0.b20;
     if (b == 0 || (b != 0 && -1e+05f != ((PlayerState*)cfg)->baddie.waterSurfaceY))
     {
         ((PlayerState*)state)->waterSurfaceY = ((PlayerState*)cfg)->baddie.waterSurfaceY;
@@ -16071,13 +16067,13 @@ void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt)
     {
         ((PlayerState*)state)->waterDepth = lbl_803E7EA4;
     }
-    ((ByteFlags*)((char*)state + 0x3f1))->b01 = 0;
+    ((PlayerState*)state)->flags3F1.b01 = 0;
     clamp = lbl_803E7EA4;
     pushX = lbl_803E7EA4;
     pushZ = lbl_803E7EA4;
     if ((((PlayerState*)cfg)->baddie.surfaceFlags & 0x10) != 0)
     {
-        ((ByteFlags*)((char*)state + 0x3f1))->b01 = 1;
+        ((PlayerState*)state)->flags3F1.b01 = 1;
         ((PlayerState*)state)->surfaceType = ((PlayerState*)cfg)->baddie.paletteSlot;
         switch (((PlayerState*)state)->surfaceType)
         {
@@ -16157,19 +16153,19 @@ void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt)
                 (velMag = velMag + (nearList[0]->height - nearList[iv - 1]->height), velMag > 25.0f))
             {
                 int inner;
-                s8* p = *(s8**)&((PlayerState*)(inner = *(int*)&obj->extra))->playerStatus;
-                iv = *p;
+                PlayerStatus* p = (PlayerStatus*)((PlayerState*)(inner = *(int*)&obj->extra))->playerStatus;
+                iv = p->health;
                 iv = iv - 1;
                 if (iv < 0)
                 {
                     iv = 0;
                 }
-                else if (iv > p[1])
+                else if (iv > p->maxHealth)
                 {
-                    iv = p[1];
+                    iv = p->maxHealth;
                 }
-                *p = (s8)iv;
-                if (**(s8**)&((PlayerState*)inner)->playerStatus <= 0)
+                p->health = (s8)iv;
+                if (((PlayerStatus*)((PlayerState*)inner)->playerStatus)->health <= 0)
                 {
                     playerDie(obj);
                 }
@@ -16275,9 +16271,9 @@ void playerItemGetAnimFn(int obj, int inner, int state)
                 {
                     Carryable_putDownAndSavePos((GameObject*)((PlayerState*)inner)->heldObj);
                 }
-                *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) =
-                    *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) & ~0x4000;
-                *(int*)((char*)((PlayerState*)inner)->heldObj + 0xf8) = 0;
+                ((PlayerState*)inner)->heldObj->anim.flags =
+                    ((PlayerState*)inner)->heldObj->anim.flags & ~0x4000;
+                ((PlayerState*)inner)->heldObj->userData2 = 0;
                 ((PlayerState*)inner)->heldObj = 0;
             }
             break;
@@ -16315,9 +16311,9 @@ void playerItemGetAnimFn(int obj, int inner, int state)
                 {
                     Carryable_putDownAndSavePos((GameObject*)((PlayerState*)inner)->heldObj);
                 }
-                *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) =
-                    *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) & ~0x4000;
-                *(int*)((char*)((PlayerState*)inner)->heldObj + 0xf8) = 0;
+                ((PlayerState*)inner)->heldObj->anim.flags =
+                    ((PlayerState*)inner)->heldObj->anim.flags & ~0x4000;
+                ((PlayerState*)inner)->heldObj->userData2 = 0;
                 ((PlayerState*)inner)->heldObj = 0;
             }
             Sfx_PlayFromObject((GameObject*)obj,
@@ -16358,9 +16354,9 @@ void playerItemGetAnimFn(int obj, int inner, int state)
                 {
                     Carryable_putDownAndSavePos((GameObject*)((PlayerState*)inner)->heldObj);
                 }
-                *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) =
-                    *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) & ~0x4000;
-                *(int*)((char*)((PlayerState*)inner)->heldObj + 0xf8) = 0;
+                ((PlayerState*)inner)->heldObj->anim.flags =
+                    ((PlayerState*)inner)->heldObj->anim.flags & ~0x4000;
+                ((PlayerState*)inner)->heldObj->userData2 = 0;
                 ((PlayerState*)inner)->heldObj = 0;
             }
             break;
@@ -16422,10 +16418,10 @@ void playerItemGetAnimFn(int obj, int inner, int state)
             {
                 *(int*)((char*)t + 0x30) = 0x1000;
             }
-            if (gPlayerPathObject != 0 && ((ByteFlags*)((char*)inner + 0x3f4))->b40 != 0)
+            if (gPlayerPathObject != 0 && ((PlayerState*)inner)->flags3F4.b40 != 0)
             {
                 ((PlayerState*)inner)->staffActionRequest = 1;
-                ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+                ((PlayerState*)inner)->flags3F4.b08 = 1;
             }
             break;
         }
@@ -16443,10 +16439,10 @@ void playerItemGetAnimFn(int obj, int inner, int state)
                 ((PlayerState*)inner)->unk7FC = (f32)(param >> 0x10) / 10.0f;
                 (*gPlayerInterface)->setState((void*)obj, (void*)state, 5);
                 ((PlayerState*)state)->baddie.stateExitFn = (BaddieStateExitFn)playerStagedMarkTeleported;
-                if (gPlayerPathObject != 0 && ((ByteFlags*)((char*)inner + 0x3f4))->b40 != 0)
+                if (gPlayerPathObject != 0 && ((PlayerState*)inner)->flags3F4.b40 != 0)
                 {
                     ((PlayerState*)inner)->staffActionRequest = 1;
-                    ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+                    ((PlayerState*)inner)->flags3F4.b08 = 1;
                 }
             }
             break;
@@ -16464,10 +16460,10 @@ void playerItemGetAnimFn(int obj, int inner, int state)
                 ((PlayerState*)inner)->unk7FC = (f32)(param >> 0x10);
                 (*gPlayerInterface)->setState((void*)obj, (void*)state, 5);
                 ((PlayerState*)state)->baddie.stateExitFn = (BaddieStateExitFn)playerStagedMarkTeleported;
-                if (gPlayerPathObject != 0 && ((ByteFlags*)((char*)inner + 0x3f4))->b40 != 0)
+                if (gPlayerPathObject != 0 && ((PlayerState*)inner)->flags3F4.b40 != 0)
                 {
                     ((PlayerState*)inner)->staffActionRequest = 1;
-                    ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+                    ((PlayerState*)inner)->flags3F4.b08 = 1;
                 }
             }
             break;
@@ -16524,8 +16520,8 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
         ObjPath_GetPointWorldPosition((GameObject*)obj, 4, &gPlayerStaffObject->anim.localPosX,
                                       &gPlayerStaffObject->anim.localPosY, &gPlayerStaffObject->anim.localPosZ, 0);
     }
-    if ((((u32) ((PlayerState*)inner)->flags3F3 >> 3 & 1) != 0 || ((PlayerState*)inner)->animState == 0x40) &&
-        ((u32) ((PlayerState*)inner)->flags3F4 >> 7 & 1) == 0)
+    if (((((PlayerState*)inner)->flags3F3.b08) != 0 || ((PlayerState*)inner)->animState == 0x40) &&
+        (((PlayerState*)inner)->flags3F4.b80) == 0)
     {
         playerSetDisguised((GameObject*)obj, 0);
         ((PlayerState*)inner)->animState = -1;
@@ -16543,10 +16539,10 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
         }
         if (((u32) * (u8*)((char*)inner + 0x3f2) >> 7 & 1) == 0)
         {
-            if (gPlayerPathObject != NULL && ((u32) ((PlayerState*)inner)->flags3F4 >> 6 & 1) != 0)
+            if (gPlayerPathObject != NULL && (((PlayerState*)inner)->flags3F4.b40) != 0)
             {
                 ((PlayerState*)inner)->staffActionRequest = 1;
-                ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 1;
+                ((PlayerState*)inner)->flags3F4.b08 = 1;
             }
             ((PlayerState*)inner)->isHoldingObject = 0;
             {
@@ -16563,7 +16559,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                         Carryable_putDownAndSavePos(p);
                     }
                     *(s16*)((char*)((PlayerState*)inner)->heldObj + 6) &= ~0x4000;
-                    *(int*)((char*)((PlayerState*)inner)->heldObj + 0xf8) = 0;
+                    ((PlayerState*)inner)->heldObj->userData2 = 0;
                     ((PlayerState*)inner)->heldObj = 0;
                 }
             }
@@ -17098,17 +17094,17 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 break;
             }
             case 0xa:
-                if (gPlayerPathObject != NULL && ((u32) ((PlayerState*)inner)->flags3F4 >> 6 & 1) != 0)
+                if (gPlayerPathObject != NULL && (((PlayerState*)inner)->flags3F4.b40) != 0)
                 {
                     ((PlayerState*)inner)->staffActionRequest = 2;
-                    ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 0;
+                    ((PlayerState*)inner)->flags3F4.b08 = 0;
                 }
                 break;
             case 0x18:
-                if (gPlayerPathObject != NULL && ((u32) ((PlayerState*)inner)->flags3F4 >> 6 & 1) != 0)
+                if (gPlayerPathObject != NULL && (((PlayerState*)inner)->flags3F4.b40) != 0)
                 {
                     ((PlayerState*)inner)->staffActionRequest = 0;
-                    ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 0;
+                    ((PlayerState*)inner)->flags3F4.b08 = 0;
                 }
                 break;
             case 0xd:
@@ -17383,7 +17379,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
         objSetAnimField48to0((GameObject*)gPlayerPathObject);
     }
     staffAnimate(obj, (void*)inner, timeDelta);
-    if (gPlayerPathObject != NULL && ((u32) ((PlayerState*)inner)->flags3F4 >> 6 & 1) != 0)
+    if (gPlayerPathObject != NULL && (((PlayerState*)inner)->flags3F4.b40) != 0)
     {
         ((GameObject*)gPlayerPathObject)->objectFlags &= ~7;
         if (((PlayerState*)inner)->staffGrown == 0)
@@ -17401,7 +17397,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
 void playerUpdateTargetSelection(GameObject* obj, int inner, int inner2)
 {
     int* target = (int*)(*gCameraInterface)->getOverrideTarget();
-    u32 v = (((PlayerState*)inner)->flags3F4 >> 6) & 1;
+    u32 v = ((PlayerState*)inner)->flags3F4.b40;
 
     if (v != 0)
     {
@@ -17410,7 +17406,7 @@ void playerUpdateTargetSelection(GameObject* obj, int inner, int inner2)
             if (gPlayerPathObject != NULL && v != 0)
             {
                 ((PlayerState*)inner)->staffActionRequest = 2;
-                ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 0;
+                ((PlayerState*)inner)->flags3F4.b08 = 0;
             }
             ((PlayerState*)inner2)->baddie.hasTarget = 1;
             if (target != NULL)
@@ -17434,11 +17430,11 @@ void playerUpdateTargetSelection(GameObject* obj, int inner, int inner2)
                     {
                         if (gPlayerPathObject != NULL)
                         {
-                            u32 targetFlag = (((PlayerState*)inner)->flags3F4 >> 6) & 1;
+                            u32 targetFlag = ((PlayerState*)inner)->flags3F4.b40;
                             if (targetFlag != 0)
                             {
                                 ((PlayerState*)inner)->staffActionRequest = 2;
-                                ((ByteFlags*)((char*)inner + 0x3f4))->b08 = 0;
+                                ((PlayerState*)inner)->flags3F4.b08 = 0;
                             }
                         }
                         ((PlayerState*)inner2)->baddie.hasTarget = 1;
@@ -17489,10 +17485,10 @@ void playerAnimate(GameObject* obj, int state, f32 fv)
         *(int*)&((PlayerState*)state)->baddie.targetObj = 0;
         ((PlayerState*)state)->baddie.hasTarget = 0;
         (*gCameraInterface)->setTarget(0);
-        if (gPlayerPathObject != 0 && ((ByteFlags*)((char*)state + 0x3f4))->b40)
+        if (gPlayerPathObject != 0 && ((PlayerState*)state)->flags3F4.b40)
         {
             ((PlayerState*)state)->staffActionRequest = 1;
-            ((ByteFlags*)((char*)state + 0x3f4))->b08 = 1;
+            ((PlayerState*)state)->flags3F4.b08 = 1;
         }
         (*gPlayerInterface)->setState(obj, (void*)state, 0xa);
         ((PlayerState*)state)->baddie.stateExitFn = NULL;
@@ -17550,7 +17546,7 @@ void playerRenderFuzz(GameObject* obj, int p2, int fuzzPass)
             return;
         }
     }
-    v = (inner->flags3F3 >> 3) & 1;
+    v = inner->flags3F3.b08;
     if (v != 0)
     {
         return;
@@ -17559,7 +17555,7 @@ void playerRenderFuzz(GameObject* obj, int p2, int fuzzPass)
     {
         return;
     }
-    if (*(void**)((char*)inner + 0x7f0) != NULL)
+    if (((PlayerState*)inner)->focusObject != NULL)
     {
         if ((obj->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0 ||
             arrayIndexOf(lbl_803DC6C4, 2, inner->baddie.controlMode) != -1)
@@ -17633,7 +17629,7 @@ void playerRender(int obj, int a, int b, int c, int d, int flag)
 
     if ((s8)flag == -1 || (*(u32*)&((PlayerState*)inner)->flags360 & 0x4001) == 0)
     {
-        if (*(void**)((char*)inner + 0x7f0) != NULL &&
+        if (((PlayerState*)inner)->focusObject != NULL &&
             ((((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0 ||
              arrayIndexOf(lbl_803DC6C4, 2, ((PlayerState*)inner)->baddie.controlMode) != -1))
         {
@@ -17644,7 +17640,7 @@ void playerRender(int obj, int a, int b, int c, int d, int flag)
             playerDrawTeleportAnim((GameObject*)(obj));
         }
         (*gPlayerShadowInterface)->renderObject((GameObject*)obj);
-        if (*(void**)((char*)inner + 0x7f0) != NULL &&
+        if (((PlayerState*)inner)->focusObject != NULL &&
             ((((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0 ||
              arrayIndexOf(lbl_803DC6C4, 2, ((PlayerState*)inner)->baddie.controlMode) != -1))
         {
@@ -17824,7 +17820,7 @@ void playerDoHitDetection(int obj)
     f32 z;
 
     *(u32*)&((PlayerState*)inner)->flags360 &= ~PLAYER_FLAG_WORLDPOS_OVERRIDE;
-    if (((ByteFlags*)((char*)inner + 0x3f2))->b20 != 0 &&
+    if (((PlayerState*)inner)->flags3F2.b20 != 0 &&
         (((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0)
     {
         ((PlayerState*)inner)->baddie.physicsActive = 0;
@@ -17838,7 +17834,7 @@ void playerDoHitDetection(int obj)
         (*gPlayerInterface)->updateVelocityState((void*)obj, (void*)inner, gPlayerStateHandlers);
         if (*(s8*)&((PlayerState*)inner)->baddie.stateTag == 1)
         {
-            if (gPlayerPathObject != 0 && ((ByteFlags*)((char*)inner + 0x3f4))->b40 != 0 &&
+            if (gPlayerPathObject != 0 && ((PlayerState*)inner)->flags3F4.b40 != 0 &&
                 (*(void**)((sub = *(int*)((char*)gPlayerPathObject + 0x54)) + 0x50) != NULL ||
                  (*(s8*)(sub + 0xad) != 0 && *(s8*)(sub + 0xac) != 0xe)))
             {
@@ -18018,7 +18014,7 @@ void playerDoHitDetection(int obj)
                         ((PlayerState*)inner)->baddie.animSpeedA =
                             (c < 0.0f) ? 0.0f : ((c > spd) ? spd : c);
                     }
-                    if (((ByteFlags*)((char*)inner + 0x3f0))->b40 == 0)
+                    if (((PlayerState*)inner)->flags3F0.b40 == 0)
                     {
                         ((PlayerState*)inner)->baddie.animSpeedC = ((PlayerState*)inner)->baddie.animSpeedA;
                     }
@@ -18109,11 +18105,11 @@ void playerUpdate(GameObject* obj)
         {
             return;
         }
-        if (((ByteFlags*)((char*)inner + 0x3f3))->b08 != 0)
+        if (((PlayerState*)inner)->flags3F3.b08 != 0)
         {
             setBButtonIcon(10);
         }
-        if (obj->anim.parent == NULL && *(void**)((char*)inner + 0x7f0) == NULL &&
+        if (obj->anim.parent == NULL && ((PlayerState*)inner)->focusObject == NULL &&
             isInBounds(obj->anim.localPosX, obj->anim.localPosZ) == 0)
         {
             *(int*)&((PlayerState*)inner)->baddie.targetObj = 0;
@@ -18276,9 +18272,9 @@ void playerUpdate(GameObject* obj)
                         {
                             Carryable_putDownAndSavePos(held);
                         }
-                        *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) =
-                            *(s16*)((char*)((PlayerState*)inner)->heldObj + 0x6) & ~0x4000;
-                        *(int*)((char*)((PlayerState*)inner)->heldObj + 0xf8) = 0;
+                        ((PlayerState*)inner)->heldObj->anim.flags =
+                            ((PlayerState*)inner)->heldObj->anim.flags & ~0x4000;
+                        ((PlayerState*)inner)->heldObj->userData2 = 0;
                         ((PlayerState*)inner)->heldObj = 0;
                     }
                 }
@@ -18302,11 +18298,11 @@ void playerUpdate(GameObject* obj)
             obj->sphereMapIntensity = (u8)v;
             playerRunActiveSpells(obj, inner);
             playerProcessQueuedItemCommand(obj, inner);
-            if (((ByteFlags*)((char*)inner + 0x3f3))->b20 != 0 && (*gScreenTransitionInterface)->isFinished() != 0)
+            if (((PlayerState*)inner)->flags3F3.b20 != 0 && (*gScreenTransitionInterface)->isFinished() != 0)
             {
                 (*gMapEventInterface)->gotoRestartPoint();
             }
-            if (((ByteFlags*)((char*)inner + 0x3f3))->b20 == 0 && (((PlayerState*)inner)->baddie.queuedBitMask & 1) != 0)
+            if (((PlayerState*)inner)->flags3F3.b20 == 0 && (((PlayerState*)inner)->baddie.queuedBitMask & 1) != 0)
             {
                 int po = (int)obj;
                 if (Sfx_IsPlayingFromObject(
@@ -18315,11 +18311,11 @@ void playerUpdate(GameObject* obj)
                     Sfx_PlayFromObject(
                         0, (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_jump2 : SFXTRIG_sa_climb02));
                 }
-                ((ByteFlags*)((char*)inner + 0x3f3))->b20 = 1;
+                ((PlayerState*)inner)->flags3F3.b20 = 1;
                 (*gScreenTransitionInterface)->start(0x1e, 1);
                 Pause_ResetMenuFrameCounter();
             }
-            if (gPlayerPathObject != 0 && ((ByteFlags*)((char*)inner + 0x3f4))->b40 != 0)
+            if (gPlayerPathObject != 0 && ((PlayerState*)inner)->flags3F4.b40 != 0)
             {
                 ((GameObject*)gPlayerPathObject)->objectFlags = ((GameObject*)gPlayerPathObject)->objectFlags & ~7;
                 if (((PlayerState*)inner)->staffGrown == 0)
@@ -18327,7 +18323,7 @@ void playerUpdate(GameObject* obj)
                     ((GameObject*)gPlayerPathObject)->objectFlags = ((GameObject*)gPlayerPathObject)->objectFlags | 2;
                 }
             }
-            hov = ((ByteFlags*)((char*)inner + 0x3f4))->b40;
+            hov = ((PlayerState*)inner)->flags3F4.b40;
             if (hov != 0)
             {
                 if (((PlayerState*)inner)->staffGrown != 0)
@@ -18338,8 +18334,8 @@ void playerUpdate(GameObject* obj)
                 {
                     int ok;
                     if (((PlayerState*)inner)->heldObj != NULL || hov == 0 ||
-                        ((ByteFlags*)((char*)inner + 0x3f0))->b20 != 0 ||
-                        ((ByteFlags*)((char*)inner + 0x3f0))->b10 != 0)
+                        ((PlayerState*)inner)->flags3F0.b20 != 0 ||
+                        ((PlayerState*)inner)->flags3F0.b10 != 0)
                     {
                         ok = 0;
                     }
@@ -18401,7 +18397,7 @@ void objLoadPlayerFromSave(int obj)
     ((PlayerState*)inner)->targetAnimSpeed = fz;
     ((PlayerState*)inner)->yawSmoothScale = fz;
     ((PlayerState*)inner)->velSmoothRateBase = 0.06f;
-    ((ByteFlags*)((char*)inner + 0x3f1))->b01 = 1;
+    ((PlayerState*)inner)->flags3F1.b01 = 1;
     ((PlayerState*)inner)->idleDelayTimer = 20.0f;
     ((PlayerState*)inner)->walkAnimSoundId = 3;
     ((PlayerState*)inner)->runAnimSoundId = 4;
@@ -18425,7 +18421,7 @@ void objLoadPlayerFromSave(int obj)
     }
     (*(void (*)(GameUIInterface*))(*(int*)((char*)*gGameUIInterface + 0x14)))(*gGameUIInterface);
     *(int*)&gPlayerChildObject = (off = 0);
-    ((ByteFlags*)((char*)inner + 0x3f4))->b40 = 1;
+    ((PlayerState*)inner)->flags3F4.b40 = 1;
     ((PlayerState*)inner)->moveAnimTable = (int)(base + 0x190);
     ((PlayerState*)inner)->moveSlots = (int)(base + 0x854);
     ((PlayerState*)inner)->moveSlotCount = 0x1c;
@@ -18488,7 +18484,7 @@ void objLoadPlayerFromSave(int obj)
         {
             v = 0x50;
         }
-        *(s8*)(in1->playerStatus + 1) = (s8)v;
+        ((PlayerStatus*)in1->playerStatus)->maxHealth = (s8)v;
         v = gPlayerPendingHealth;
         in2 = (PlayerState*)((GameObject*)obj)->extra;
         if (v < 0)
@@ -18497,13 +18493,13 @@ void objLoadPlayerFromSave(int obj)
         }
         else
         {
-            hi = *(s8*)(in2->playerStatus + 1);
+            hi = ((PlayerStatus*)in2->playerStatus)->maxHealth;
             if (v > hi)
             {
                 v = hi;
             }
         }
-        *(s8*)(in2->playerStatus + 0) = (s8)v;
+        ((PlayerStatus*)in2->playerStatus)->health = (s8)v;
         gPlayerPendingHealth = 0;
     }
     gPlayerHeldObject = 0;
