@@ -4435,7 +4435,7 @@ void pauseMenuCreateHeads(void)
                 ((GameObject*)gHeadDisplayModelObjs[i])->anim.rootMotionScale = 0.07f;
                 if ((u32)((GameObject*)gHeadDisplayModelObjs[i])->anim.placementData > 0x90000000u)
                 {
-                    *(u32*)&((GameObject*)gHeadDisplayModelObjs[i])->anim.placementData = 0;
+                    ((GameObject*)gHeadDisplayModelObjs[i])->anim.placementData = NULL;
                 }
                 ObjAnim_SetCurrentMove((int)gHeadDisplayModelObjs[i], 1, 0.0f, 0);
             }
@@ -9017,7 +9017,7 @@ void GameUI_initialise(void)
     gCMenuCloseSfx = 0;
     gTrickyHudCachedIconIndex = -1;
     res = getScreenResolution();
-    *(int*)&gGameUiScreenWidthOffset = res;
+    gGameUiScreenWidthOffset = res;
     height = res >> 16;
     gGameUiScreenHeightOffset = height;
     width = res & 0xffff;
