@@ -601,8 +601,25 @@ def gen_variants(n: int, strategy: str, cap: int, seed: int = 12345):
 
 # ------------------------------------------------------------------- build
 def rebuild(unit_object: str, version: str) -> bool:
+    """Recompile one unit's src .o.
+
+    By default this goes through tools/direct_build.py, which recovers the
+    unit's compile command from ninja ONCE and then runs it directly: ninja's
+    global build-dir mutex otherwise serialises every probe of every concurrent
+    sweep onto a single invocation, which pins a ten-worker fleet on a ten-core
+    box at a load average of 3.9.  The object produced is byte-identical (the
+    command is ninja's own), and direct_build falls back to locked_ninja when
+    the command cannot be recovered.  Set SFA_BRUTE_LOCKED_NINJA=1 to force the
+    old path.
+    """
     rel = unit_object.replace(f"build/{version}/obj/", f"build/{version}/src/")
     src_o = REPO / rel
+    if not os.environ.get("SFA_BRUTE_LOCKED_NINJA"):
+        try:
+            from direct_build import direct_build
+            return direct_build(unit_object, version)
+        except Exception:
+            pass
     try:
         src_o.unlink()
     except FileNotFoundError:
