@@ -28,7 +28,6 @@
 #include "dolphin/gx/GXCull.h"
 #include "dolphin/gx/GXTransform.h"
 #include "track/intersect_api.h"
-#include "string.h"
 
 typedef union Dll0BDescriptorTable
 {

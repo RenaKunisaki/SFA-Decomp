@@ -22,7 +22,6 @@
 #include "main/track_bbox_api.h"
 #include "main/track_dolphin_api.h"
 #include "main/vecmath.h"
-#include "string.h"
 #include "main/objseq_api.h"
 #include "main/pad.h"
 

@@ -20,7 +20,6 @@
 #include "main/objhits.h"
 #include "main/shader_api.h"
 #include "main/vecmath.h"
-#include "string.h"
 #include "sys/objects.h"
 #include "main/curve.h"
 #include "main/audio/sfx_play_api.h"

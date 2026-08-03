@@ -7,7 +7,6 @@
 #include "main/dll/dll_0015_curves.h"
 #include "main/dll/dll_002E_moveLib.h"
 #include "main/dll/FRONT/POST.h"
-#include "string.h"
 #include "main/obj_path.h"
 #include "main/obj_query.h"
 #include "main/objtype.h"

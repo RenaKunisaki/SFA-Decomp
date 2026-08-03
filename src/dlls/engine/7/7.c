@@ -33,7 +33,6 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/frame_timing.h"
-#include "string.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.h"
 
 u8 gNewCloudBlizzardActivePrev;
@@ -702,7 +701,6 @@ void snowFreeSnowCloud(int cloudId)
         gNewClouds[i] = NULL;
     }
 }
-extern NewCloud* gNewClouds[8];
 
 void dll_07_func0A_nop(void)
 {

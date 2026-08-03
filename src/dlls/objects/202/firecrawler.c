@@ -22,7 +22,6 @@
 #include "main/player_control_interface.h"
 #include "main/vecmath.h"
 #include "main/voxmaps.h"
-#include "string.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 #include "main/dll/baddie_state.h"
@@ -82,7 +81,6 @@
 #include "main/dll/hagabon_mk2.h"
 #include "main/dll/snowworm.h"
 #include "main/dll/baddiewhirlpool.h"
-#include "track/intersect_whirlpool_api.h"
 
 /* Baddie-family animation data shared with the sequence-driver TUs. */
 

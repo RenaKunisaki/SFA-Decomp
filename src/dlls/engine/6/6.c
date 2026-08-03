@@ -15,16 +15,13 @@
 #include "main/sky.h"
 #include "main/sky_api.h"
 #include "main/lightmap_api.h"
-#include "main/lightmap_render_control_api.h"
 #include "dlls/object_descriptor.h"
-#include "main/loaded_file_flags.h"
 #include "track/intersect_api.h"
 #include "dolphin/gx/GXLighting.h"
 #include "dolphin/gx/GXPixel.h"
 #include "dolphin/gx/GXTev.h"
 #include "main/lightmap.h"
 #include "main/track_dolphin_shadow_api.h"
-#include "string.h"
 
 u32 lbl_803DD18C;
 u32 lbl_803DD188;

@@ -26,7 +26,6 @@
 #include "main/dll/dll19_state.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/baddie_state.h"
-#include "string.h"
 #include "main/object_transform.h"
 #include "main/player_control_interface.h"
 #include "main/dll/dll_0019_dll19func0.h"

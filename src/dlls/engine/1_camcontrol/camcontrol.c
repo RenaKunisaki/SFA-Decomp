@@ -14,7 +14,6 @@
 #include "main/obj_query.h"
 #include "main/pad.h"
 #include "main/voxmaps.h"
-#include "string.h"
 #include "dlls/objects/261_LargeCrate.h"
 #include "main/dll/objfx.h"
 #include "main/audio/sfx_trigger_ids.h"

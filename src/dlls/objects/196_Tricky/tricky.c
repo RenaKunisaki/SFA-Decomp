@@ -98,7 +98,6 @@
 #include "main/dll/baddie_state.h"
 #include "main/dll/player_api.h"
 #include "main/dll/player_state_api.h"
-#include "main/gameloop_gamebit_api.h"
 #include "main/dll/WC/WCbeacon.h"
 #include "main/voxmaps.h"
 #include "main/dll/DR/dll_026B_drchimmey.h"
@@ -114,7 +113,6 @@
 #include "main/pi_dolphin_texture_api.h"
 #include "main/pi_dolphin_path_api.h"
 #include "main/newshadows_audio_api.h"
-#include "string.h"
 
 typedef struct
 {
@@ -624,8 +622,6 @@ static f32 trickyApproachSpeedStep(f32 speed, f32 target)
     }
     return 0.05f;
 }
-void tricky_state04_nop(void);
-void tricky_updateBallRoll();
 void tricky_state06_nop(void);
 void trickyFlame();
 void trickyGuard();
@@ -634,22 +630,7 @@ void tricky_idleAndEat();
 void tricky_fetchBall();
 void trickyUpdateCirclingTargetPosition();
 void trickyUpdateCircling();
-void trickyGrowl();
 void tricky_trackTumbleweed();
-void tricky_stateGoToWarpPoint();
-int tricky_substateFollowIdle();
-u32 tricky_substateReturnToHeel();
-u32 tricky_substateWaitQueuedMove();
-int tricky_substateSleep();
-int tricky_substateHowlCall();
-u32 tricky_substateWaitMoveEnd();
-u32 tricky_substateFidgetB();
-u32 tricky_substateFidgetA();
-int tricky_substateIdlePick();
-int tricky_substateDigForFood();
-int tricky_substateBegForFood();
-int tricky_substateFlameBreath();
-int tricky_substateApproachThorntail();
 
 typedef void (*TrickyStateHandler)(void* obj, void* state);
 

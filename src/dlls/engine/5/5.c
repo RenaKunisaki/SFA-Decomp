@@ -43,7 +43,6 @@
 #include "main/lightmap.h"
 #include "main/track_dolphin_sky_api.h"
 #include "main/track_dolphin_shadow_api.h"
-#include "string.h"
 
 typedef struct SkyColor
 {

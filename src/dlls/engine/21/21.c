@@ -19,7 +19,6 @@
 #include "main/frame_timing.h"
 #include "main/audio/audio_control_api.h"
 #include "main/pad.h"
-#include "string.h"
 
 GameObject* sCurvesCachedHitObj;
 s32 sCurvesCachedHitCount;

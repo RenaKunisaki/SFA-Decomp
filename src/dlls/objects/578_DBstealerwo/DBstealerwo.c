@@ -54,7 +54,6 @@
 #include "main/dll/dll_00E2_staff_api.h"
 #include "main/dll/dll_0242_dbstealerworm.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
-#include "string.h"
 #include "main/dll/baddie_control_interface.h"
 
 extern int gDbStealerwormRunToAvoidGroups[];

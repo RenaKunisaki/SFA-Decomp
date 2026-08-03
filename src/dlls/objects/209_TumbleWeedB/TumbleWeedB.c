@@ -18,7 +18,6 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
-#include "string.h"
 #include "main/audio/sfx_looped_object_api.h"
 #include "main/dll/dll_00C4_tricky.h"
 #include "main/dll/partfx_interface.h"

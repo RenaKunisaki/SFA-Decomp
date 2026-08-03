@@ -13,7 +13,6 @@
 #include "main/dll/player_status.h"
 #include "main/mapEventTypes.h"
 #include "dolphin/os/OSReboot.h"
-#include "string.h"
 #include "main/gamebits.h"
 #include "main/dll/tricky_api.h"
 #include "main/textrender_api.h"
@@ -146,8 +145,6 @@ const Vec3f gSaveGameDefaultPosition = {
 
 void loadMapForCurrentSaveGame(void);
 
-extern u8 gSaveGameData[SAVEGAME_LIVE_BUFFER_SIZE];
-extern u8 saveData[SAVE_DATA_SIZE];
 u32 gMapObjGroupStatuses[SAVEGAME_MAP_COUNT];
 extern u8 gExtendedMapActLookup[SAVEGAME_EXTENDED_MAP_COUNT];
 

@@ -23,7 +23,6 @@
 #include "main/objhits.h"
 #include "main/pad.h"
 #include "main/vecmath.h"
-#include "string.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 

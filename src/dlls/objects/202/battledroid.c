@@ -3,7 +3,6 @@
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "main/audio/sfx_play_api.h"
-#include "main/audio/sfx_trigger_ids.h"
 #include "main/camera.h"
 #include "main/camera_shake_api.h"
 #include "main/dll/baddie_control_interface.h"
@@ -22,7 +21,6 @@
 #include "main/player_control_interface.h"
 #include "main/vecmath.h"
 #include "main/voxmaps.h"
-#include "string.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 #include "main/dll/baddie_state.h"
@@ -40,7 +38,6 @@
 #include "main/dll/rom_curve_interface.h"
 #include "main/gamebits.h"
 #include "main/dll/objfsa.h"
-#include "main/gamebit_ids.h"
 #include "main/dll/newseqobj_baddie.h"
 #include "main/dll/baddie_frozen.h"
 #include "main/game_ui_interface.h"
@@ -82,7 +79,6 @@
 #include "main/dll/hagabon_mk2.h"
 #include "main/dll/snowworm.h"
 #include "main/dll/baddiewhirlpool.h"
-#include "track/intersect_whirlpool_api.h"
 
 /* Baddie-family animation data shared with the sequence-driver TUs. */
 

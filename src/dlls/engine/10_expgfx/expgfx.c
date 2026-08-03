@@ -53,7 +53,6 @@
 #include "dolphin/mtx/vec.h"
 #include "dolphin/os/OSCache.h"
 #include "main/audio/sfx_play_legacy_api.h"
-#include "string.h"
 
 typedef union ExpgfxWGPipe
 {

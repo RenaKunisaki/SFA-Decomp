@@ -21,7 +21,6 @@
 #include "main/mm.h"
 #include "main/frame_timing.h"
 #include "main/maketex_api.h"
-#include "main/maketex_random_api.h"
 #include "main/maketex_sequence_api.h"
 #include "main/maketex_timer_api.h"
 #include "main/textrender_api.h"

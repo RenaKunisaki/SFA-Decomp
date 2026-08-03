@@ -31,7 +31,6 @@
 #include "main/texture.h"
 #include "main/track_dolphin_api.h"
 #include "main/vecmath.h"
-#include "string.h"
 #include "sys/objects.h"
 #include "track/intersect_render_setup_api.h"
 

@@ -46,7 +46,6 @@
 #include "main/sky_api.h"
 #include "main/textrender_api.h"
 #include "main/vecmath.h"
-#include "string.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 #include "main/audio/music_api.h"

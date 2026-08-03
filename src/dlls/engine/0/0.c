@@ -536,7 +536,6 @@ extern f32 gPauseMenuMapSwivelAngle;
 extern u8 gPauseMenuMapBackSide;
 extern Texture* gPauseMenuGridBackdropTexture;
 extern u8 gCurTaskHintMapId;
-extern f32 gPauseMenuSavedFovY;
 extern GridEntry* gPauseMenuActiveGrid;
 extern u8 gPauseMenuScarabCapacity;
 extern GameTextDef* gPauseMenuCurHintText;
@@ -603,11 +602,6 @@ extern u8 shouldOpenCMenu;
 extern int lbl_803A9320[0x11];
 extern int lbl_803DD898;
 extern int gGameUiScreenWidthOffset;
-void gameUiUpdateNpcDialogue(void);
-int pauseMenuUpdateMapScroll(void);
-void drawWorldMapHud(void);
-void timeListDraw(int a, int b, int c);
-void cMenuRun(void);
 extern u32 gCMenuButtons;
 extern s8 gCMenuCloseSfx;
 
@@ -1624,7 +1618,6 @@ void hudDrawAirMeter(void)
 
 extern int gNpcDialoguePhraseState[6];
 extern int gHudTimedElementTexSlot[6];
-extern GameObject* gGameUiHudAnimObjects[6];
 extern GameObject* gHeadDisplayModelObjs[6];
 extern GameObject* gCMenuRingObjs[3];
 extern GameObject* gCMenuRingFrontObjs[3];
@@ -1633,7 +1626,6 @@ extern int gCMenuRingIconActiveFlags[7];
 extern HudItemInfoPopup gHudItemInfoPopup;
 extern int lbl_803A9364[13];
 
-extern char lbl_803A8830[0x120];
 void GameUI_airMeterRun(int v)
 {
     int clamped;
@@ -1982,8 +1974,6 @@ void GameUI_showItemInfoPopupByTexture(s16 textureId, int displayDuration, int i
     gHudItemInfoPopup.itemCount = itemCount;
     gHudItemInfoPopup.alpha = 0.0f;
 }
-
-extern f32 lbl_803A8950[0x18];
 
 void GameUI_showItemInfoPopup(s16 itemGamebit, int displayDuration, int itemCount)
 {
@@ -5137,12 +5127,9 @@ void pauseMenuDrawSideRails(s32 alpha)
 
 
 /* Forward declarations. */
-void pauseMenuDrawTaskHintPanel(void* unused, u8 alpha);
-void pauseMenuDrawGrid(int alpha);
 void pauseMenuDrawGridCell(u8 i, int alpha, int flag);
 void timeListDraw(int unused1, int unused2, int unused3);
 void highScoreScreenDraw(int p1, int p2, int p3);
-void hudDrawCommunicatorAlert(int unused1, int unused2, int unused3);
 int pauseMenuUpdateMapScroll(void);
 int pauseMenuIsFox(void);
 void timeListPromptUpdate(void);
@@ -5212,8 +5199,6 @@ void pauseMenuDrawTaskHintPanel(void* unused, u8 alpha)
         gPauseMenuStatusGrid[lbl_803DBA9C[i]].id = (s16)t;
     }
 }
-
-void pauseMenuDrawGridCell(u8 i, int alpha, int flag);
 
 /* Pause-menu grid renderer: draws all cells
  * (selection last), the breathing selected cell, header/footer text, and the
@@ -9017,12 +9002,6 @@ void GameUI_initialise(void)
     yButtonState = 0;
     airMeter = 0;
 }
-
-extern Texture* hudTextures[102];
-extern s16 lbl_803A8B48[0x98];
-extern u8 gCMenuItemEnabledTable[0x3C0];
-extern int gCMenuItemTargetTable[0xBA];
-extern int lbl_803A9320[0x11];
 
 int gPauseMenuSavedTextDir;
 int gGameUiCurHintTextMap;

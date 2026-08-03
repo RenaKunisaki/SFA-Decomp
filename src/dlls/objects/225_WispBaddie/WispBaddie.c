@@ -18,7 +18,6 @@
 #include "main/objhits.h"
 #include "main/objtype.h"
 #include "main/vecmath.h"
-#include "string.h"
 
 #define WISPBADDIE_HIT_VOLUME_SLOT 10
 

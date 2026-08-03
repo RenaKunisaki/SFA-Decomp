@@ -17,7 +17,6 @@
 #include "main/player_control_interface.h"
 #include "main/vecmath.h"
 #include "main/voxmaps.h"
-#include "string.h"
 #include "sys/objects.h"
 #include "main/curve.h"
 #include "main/obj_message.h"

@@ -35,7 +35,6 @@
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
-#include "main/gamebit_ids.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
 

@@ -40,7 +40,6 @@
 #include "main/objseq.h"
 #include "main/objfx.h"
 #include "dlls/object_descriptor.h"
-#include "string.h"
 #include "dlls/objects/210.h"
 #include "main/obj_message.h"
 #include "main/gamebits.h"

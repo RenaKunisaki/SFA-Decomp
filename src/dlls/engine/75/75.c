@@ -10,7 +10,6 @@
 #include "main/mm.h"
 #include "main/object_transform.h"
 #include "main/vecmath.h"
-#include "string.h"
 
 extern f32 lbl_803E19A0;
 extern f32 gCamClimbDistanceSmoothRate;

@@ -17,8 +17,6 @@
 #include "main/sky_interface.h"
 #include "main/textrender_api.h"
 #include "main/gametext_color_api.h"
-#include "main/gametext_command_api.h"
-#include "main/gametext_show_str_api.h"
 #include "main/gameloop_api.h"
 #include "main/frame_timing.h"
 #include "main/trig.h"
@@ -685,64 +683,6 @@ void waterFxInit(void)
     gWaterRippleWriteIdx = 0;
     lbl_803DCFF4 = 0;
 }
-
-
-/* 4x4 identity fill. */
-
-
-void drawPartialTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale, int width, int height, int u_offset,
-                        int v_offset);
-
-
-/*
- * Caller-coloured asset blit. Same mechanic as drawTexture but the K0
- * color comes from a writable GXColor the caller passes in (we apply the
- * gHudTintAlpha alpha tint to it in place). The flag arg picks between
- * "raster passthrough" (TevColorIn 0xF/0xF/0xF/0xE) and "K-tint replace"
- * (TevColorIn 0xF/0xE/0x8/0xF).
- */
-
-
-
-/*
- * Fullscreen 640x480 texture-tinted quad with shape-controlled alpha:
- * `flag != 0` lights the screen with three pre-set GXColors stamped into
- * K0/T1/T2; `flag == 0` instead does a single K0 modulate where K0's
- * alpha is the caller's byte divided by 4. Builds a per-call 3x4 tex
- * coord matrix that scales the source texture by 1/sx and 1/sy with a
- * sub-pixel offset baked from -320.0f/50.
- */
-
-
-/*
- * Retail ships a locally-defined empty OSReport that disables debug
- * output.
- */
-void OSReport(const char* msg, ...);
-
-
-/*
- * Per-frame "blocking" dialog renderer driven by the card-write retry
- * loops in _saveGame, maybeTryLoadSave, loadSaveGame and cardCreateSaveFile.
- * Pumps 60 frames of the GX/dialog
- * pipeline; on each frame either lets the active controller draw its own
- * popup (gScreenTransitionInterface[0]->vtbl[1]) or falls back to hudDrawColored
- * tinting the reflection texture with gSaveCardBackdropColor, then routes the OK/Cancel/back text
- * to gameTextShowAt based on the dialog kind passed in.
- */
-
-/*
- * Card-write callback dispatched through saveGame_prepareAndWrite from _saveGame.
- * Stages a per-slot 0x6EC-byte block plus the shared 0xE4-byte trailer
- * into the card-IO buffer (gSaveCardIoBuffer), then asks saveGame_doWrite(2) to
- * commit; if that fails it falls back to saveGame_doWrite(1).
- */
-
-/*
- * Card-write callback dispatched through saveGame_prepareAndWrite from maybeTryLoadSave.
- * Copies the 0xE4-byte block at offset 0x1F14 in the card buffer (held in
- * gSaveCardIoBuffer) into the caller-supplied destination.
- */
 
 
 /* .bss block 0x80391DC0-0x803967C0 */

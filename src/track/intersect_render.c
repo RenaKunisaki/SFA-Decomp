@@ -14,8 +14,6 @@
 #include "main/sky_interface.h"
 #include "main/textrender_api.h"
 #include "main/gametext_color_api.h"
-#include "main/gametext_command_api.h"
-#include "main/gametext_show_str_api.h"
 #include "main/gameloop_api.h"
 #include "main/frame_timing.h"
 #include "main/trig.h"
@@ -32,7 +30,6 @@
 #include "main/maketex_api.h"
 #include "main/pad.h"
 #include "main/pi_dolphin.h"
-#include "main/audio/sfx_trigger_ids.h"
 #include "main/shader_api.h"
 #include "dolphin/gx/GXBump.h"
 #include "dolphin/gx/GXCull.h"
@@ -94,10 +91,6 @@ extern inline float sqrtf(float x)
     return x;
 }
 
-int cardDeleteSaveFile(void);
-void cardGetMessage(u32* buttons, u32* texts, u32* count);
-void showMemCardError(u8 err);
-
 typedef struct StageCountTable
 {
     u8 count[7];
@@ -118,11 +111,6 @@ static const GXColor sColorFilterKColor2 = {0x14, 0x14, 0x14, 0};
 static const GXColor sColorFilterTevColor = {0x0A, 0x0A, 0x0A, 255};
 
 extern u32 gProjectedShadowFogColorBits;
-int cardProbe(u8 retry);
-void showMemCardError(u8 err);
-void cardShowLoadingMsg(u8 kind);
-int saveGameWriteSlotCb(u8 slot, int unused, void* src1, void* src2);
-int saveGameReadGlobalsCb(int saveId, int size, void* dst);
 
 
 
@@ -4677,54 +4665,6 @@ void setupReflectionBumpDistortTev(void* texture)
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-
-
-/*
- * Retail ships a locally-defined empty OSReport that disables debug
- * output.
- */
-void OSReport(const char* msg, ...);
-
-
-int cardDeleteSaveFile(void);
-
-int _saveGame(int slot, void* save, void* data);
-
-int maybeTryLoadSave(void* data);
-
-
-int cardProbe(u8 retry);
-
-
-void cardGetMessage(u32* buttons, u32* texts, u32* count);
-
-void showMemCardError(u8 err);
-
-/*
- * Per-frame "blocking" dialog renderer driven by the card-write retry
- * loops in _saveGame, maybeTryLoadSave, loadSaveGame and cardCreateSaveFile.
- * Pumps 60 frames of the GX/dialog
- * pipeline; on each frame either lets the active controller draw its own
- * popup (gScreenTransitionInterface[0]->vtbl[1]) or falls back to hudDrawColored
- * tinting the reflection texture with gSaveCardBackdropColor, then routes the OK/Cancel/back text
- * to gameTextShowAt based on the dialog kind passed in.
- */
-void cardShowLoadingMsg(u8 kind);
-
-/*
- * Card-write callback dispatched through saveGame_prepareAndWrite from _saveGame.
- * Stages a per-slot 0x6EC-byte block plus the shared 0xE4-byte trailer
- * into the card-IO buffer (gSaveCardIoBuffer), then asks saveGame_doWrite(2) to
- * commit; if that fails it falls back to saveGame_doWrite(1).
- */
-int saveGameWriteSlotCb(u8 slot, int unused, void* src1, void* src2);
-
-/*
- * Card-write callback dispatched through saveGame_prepareAndWrite from maybeTryLoadSave.
- * Copies the 0xE4-byte block at offset 0x1F14 in the card buffer (held in
- * gSaveCardIoBuffer) into the caller-supplied destination.
- */
-int saveGameReadGlobalsCb(int saveId, int size, void* dst);
 
 
 /* .bss block 0x80391DC0-0x803967C0 */

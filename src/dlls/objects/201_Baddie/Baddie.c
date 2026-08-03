@@ -65,7 +65,6 @@
 #include "main/dll/seqObj11D.h"
 #include "main/dll/dll_00C4_tricky.h"
 #include "main/dll/fall_ladders.h"
-#include "string.h"
 #include "main/gameloop_gamebit_api.h"
 #include "main/dll/dll_80136a40.h"
 #include "main/obj_path.h"

@@ -19,7 +19,6 @@
 #include "main/sky.h"
 #include "main/texture.h"
 #include "main/vecmath.h"
-#include "string.h"
 #include "main/audio/sfx_play_api.h"
 #include "track/intersect_api.h"
 

@@ -15,7 +15,6 @@
 #include "main/obj_list.h"
 #include "main/gamebits.h"
 #include "main/dll/modgfx.h"
-#include "string.h"
 #include "main/dll/dll_0014_unk.h"
 #include "main/vecmath_distance_api.h"
 #include "main/shader_api.h"

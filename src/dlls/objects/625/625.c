@@ -41,7 +41,6 @@
 #include "main/obj_path.h"
 #include "main/obj_query.h"
 #include "main/objhits.h"
-#include "string.h"
 
 const f32 gDrakorHoverpadSpeedStep = 2.0f;
 f32 gDrakorHoverpadMtx[16];

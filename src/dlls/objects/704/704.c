@@ -46,7 +46,6 @@
 #include "main/dll/FRONT/dll_0034_n_filemenu.h"
 #include "main/dll/dll_003D_titlemenuitem.h"
 #include "main/dll/dll_0057_cameramodetitle.h"
-#include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/printf.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/gamebit_ids.h"
@@ -467,8 +466,6 @@ void titleScreenDrawMenuFrame(int alpha, int hideHighlight, u32 showArrows)
         drawTexture(gTitleScreenTextures[16], (f32)(r = xb + 0x2f), (f32)(int)(yb + 0x4b), 0xff, 0xff);
     }
 }
-
-extern u8 gTitleScreenMtx[0x34];
 
 /* Sets the name-entry text scroll offsets (x is applied in 4-px steps). */
 void nameEntrySetScroll(u32 a, u32 b)
@@ -973,8 +970,6 @@ void titleScreenSetMenuActive(s8 arg)
     gTitleScreenPrevMenuActive = cur;
     gTitleScreenMenuActive = arg;
 }
-
-extern u8 gTitleScreenSfxFlagGrid[0x48];
 
 /* Two-byte state push (no equality check): copy gTitleScreenMenuSelection to
  * gTitleScreenPrevMenuSelection and write new value. */

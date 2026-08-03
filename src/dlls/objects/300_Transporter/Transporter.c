@@ -8,6 +8,7 @@
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
 #include "main/render_envfx_api.h"
+#include "main/shader_api.h"
 #include "main/sky_api.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/tricky_api.h"
@@ -58,9 +59,6 @@ STATIC_ASSERT(offsetof(TransporterEffectParams, count) == 0x06);
 STATIC_ASSERT(offsetof(TransporterEffectParams, scale) == 0x08);
 STATIC_ASSERT(offsetof(TransporterEffectParams, pos) == 0x0C);
 STATIC_ASSERT(sizeof(TransporterEffectParams) == 0x18);
-
-extern u8 gWarpArrivalTimer;
-extern s16 gArrivedWarpIndex;
 
 void Transporter_updateEffects(GameObject* obj) {
     TransporterState* state;

@@ -39,7 +39,6 @@
 #include "main/object_render.h"
 #include "main/dll/dll_0273_firepipe.h"
 #include "game/objects/object_setup.h"
-#include "string.h"
 #include "main/gamebits.h"
 #include "main/mm.h"
 #include "main/model_light.h"
