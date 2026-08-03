@@ -338,8 +338,8 @@ int debugPrintDrawRecord(int color, u8* p)
             {
                 y1 = debugPrintYpos + 0xa;
                 x = debugPrintXpos;
-                y0 = gDebugRectStartY;
                 x0 = gDebugRectStartX;
+                y0 = gDebugRectStartY;
                 if ((((x - x0) == 0) | ((y1 - y0) == 0)) == 0)
                 {
                     if (x0 >= 2)
@@ -380,8 +380,8 @@ int debugPrintDrawRecord(int color, u8* p)
             {
                 y1 = debugPrintYpos + 0xa;
                 x = debugPrintXpos;
-                y0 = gDebugRectStartY;
                 x0 = gDebugRectStartX;
+                y0 = gDebugRectStartY;
                 if ((((x - x0) == 0) | ((y1 - y0) == 0)) == 0)
                 {
                     if (x0 >= 2)
@@ -442,8 +442,8 @@ int debugPrintDrawRecord(int color, u8* p)
                         x0 -= 2;
                     }
                     x1 = x + 2;
-                    x0 = x0 * sc;
                     x1 = x1 * sc;
+                    x0 = x0 * sc;
                     y0 = y0 * (sc = gDebugScaleY + gDebugScaleBiasY);
                     y1 = y1 * sc;
                     debugPrintFillRect(x0, y0, x1, y1);

@@ -9143,8 +9143,8 @@ int playerState08(GameObject* obj, int state, f32 fv)
 {
     PlayerState* inner = obj->extra;
     int c;
-    int i;
     int* list;
+    int i;
     u8 buf[64];
     f32 dist;
     int cnt41;

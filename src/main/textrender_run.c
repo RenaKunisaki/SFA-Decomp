@@ -941,8 +941,8 @@ void gameTextBuildSystemFontAtlas(void)
             int j2;
 
             src = (u32*)buf;
-            tx = glyph->u >> 3;
             ty = glyph->v >> 3;
+            tx = glyph->u >> 3;
             row = ty;
             txEnd = tx + 3;
             tyEnd = ty + 3;

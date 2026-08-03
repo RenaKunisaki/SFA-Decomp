@@ -2674,8 +2674,8 @@ void mapFillCellEntry(int gridX, int gridZ, MapCellEntry* out, int layer)
             *(s8*)(activeFlags + slot * 8) = 1;
         }
         mapBounds = (MapBounds*)gShaderMapRomBuffers[1] + id;
-        gridX = gridX - mapBounds->minX;
         gridZ = gridZ - mapBounds->minZ;
+        gridX = gridX - mapBounds->minX;
         cell = grid->cells[gridX + gridZ * grid->sizeX];
         out->cellIndex = (cell >> 0x11) & 0x3f;
         out->romListIndex = (cell >> 0x17) & 0xff;
