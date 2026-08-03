@@ -282,7 +282,7 @@ void languageMenuInit(void)
 
     if (isCheatUnlocked(LANGUAGE_MENU_CHEAT_ID) != 0 && gGameTextFontIsSjis == 0)
     {
-        panel->entries[panel->count - 2].pad18[3] = panel->count - 1;
+        panel->entries[panel->count - 2].downLink = panel->count - 1;
         panel->entries[panel->count - 1].flags &= ~TITLE_MENU_TEXT_ENTRY_HIDDEN;
 
         gOptionsMenuItems[1] = gTitleMenuItemInterface->vtable->createWithWindow(
@@ -290,7 +290,7 @@ void languageMenuInit(void)
     }
     else
     {
-        panel->entries[panel->count - 2].pad18[3] = -1;
+        panel->entries[panel->count - 2].downLink = -1;
         panel->entries[panel->count - 1].flags |= TITLE_MENU_TEXT_ENTRY_HIDDEN;
     }
 
@@ -344,13 +344,13 @@ void optionsMenu_openAudioPanel(void)
 
     if (isCheatUnlocked(2) != 0)
     {
-        panels->audioEntries[4].pad18[3] = 5;
+        panels->audioEntries[4].downLink = 5;
         panels->audioEntries[5].flags = (u16)(panels->audioEntries[5].flags & ~TITLE_MENU_TEXT_ENTRY_HIDDEN);
-        panels->audioEntries[5].pad18[2] = 4;
+        panels->audioEntries[5].upLink = 4;
     }
     else
     {
-        panels->audioEntries[4].pad18[3] = -1;
+        panels->audioEntries[4].downLink = -1;
         panels->audioEntries[5].flags = (u16)(panels->audioEntries[5].flags | TITLE_MENU_TEXT_ENTRY_HIDDEN);
     }
 
@@ -412,13 +412,13 @@ void optionsMenu_openGeneralPanel(void)
     {
         if (isCheatUnlocked((u8)(cheatId - 2)) != 0)
         {
-            panels->optionEntries[entryIndex - 1].pad18[3] = cheatId;
+            panels->optionEntries[entryIndex - 1].downLink = cheatId;
             panels->optionEntries[entryIndex].flags &= ~TITLE_MENU_TEXT_ENTRY_HIDDEN;
             lastUnlocked = cheatId;
         }
         else
         {
-            panels->optionEntries[entryIndex - 1].pad18[3] = lastUnlocked;
+            panels->optionEntries[entryIndex - 1].downLink = lastUnlocked;
             panels->optionEntries[entryIndex].flags |= TITLE_MENU_TEXT_ENTRY_HIDDEN;
         }
         entryIndex--;
@@ -432,7 +432,7 @@ void optionsMenu_openGeneralPanel(void)
     {
         if (isCheatUnlocked((u8)(cheatId2 - 2)) != 0)
         {
-            panels->optionEntries[entryIndex2].pad18[2] = lastUnlocked2;
+            panels->optionEntries[entryIndex2].upLink = lastUnlocked2;
             panels->optionEntries[entryIndex2].flags &= ~TITLE_MENU_TEXT_ENTRY_HIDDEN;
             lastUnlocked2 = cheatId2;
         }

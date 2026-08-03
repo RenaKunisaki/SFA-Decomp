@@ -5,14 +5,36 @@
 #include "main/gameloop_api.h"
 #include "main/dll/dll_003C_tumbleweedbush.h"
 
+#define TITLE_MENU_TEXT_ENTRY_SLOTS 25
+
 typedef struct TitleMenuTextEntry {
   u16 textId;
-  u8 unk02[0x0E];
-  s32 actionParam;
-  u8 unk14[2];
+  u16 boxId;
+  s16 rightX;
+  s16 textTop;
+  s16 slotWidth;
+  s16 x;
+  s16 y;
+  u8 pad0E[2];
+  s32 textureAssetId;
+  u16 width;
   u16 flags;
-  s8 pad18[0x24];
+  u8 unk18[2];
+  s8 upLink;
+  s8 downLink;
+  s8 leftLink;
+  s8 rightLink;
+  s8 state;
+  s8 slots[TITLE_MENU_TEXT_ENTRY_SLOTS];
+  s8 timer;
+  u8 pad39[3];
 } TitleMenuTextEntry;
+
+STATIC_ASSERT(offsetof(TitleMenuTextEntry, textureAssetId) == 0x10);
+STATIC_ASSERT(offsetof(TitleMenuTextEntry, flags) == 0x16);
+STATIC_ASSERT(offsetof(TitleMenuTextEntry, upLink) == 0x1A);
+STATIC_ASSERT(offsetof(TitleMenuTextEntry, slots) == 0x1F);
+STATIC_ASSERT(sizeof(TitleMenuTextEntry) == 0x3C);
 
 #define TITLE_MENU_TEXT_ENTRY_SELECTABLE 0x1
 #define TITLE_MENU_TEXT_ENTRY_DISABLED 0x2

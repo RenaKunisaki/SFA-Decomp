@@ -304,7 +304,7 @@ static void saveSelectOpenFile(int sel, int slot)
             {
                 (*(TitleMenuTextEntry**)((char*)pp + off))->flags =
                     (u16)((*(TitleMenuTextEntry**)((char*)pp + off))->flags | TITLE_MENU_TEXT_ENTRY_HIDDEN);
-                (*(TitleMenuTextEntry**)((char*)pp + off))[1].pad18[2] = -1;
+                (*(TitleMenuTextEntry**)((char*)pp + off))[1].upLink = -1;
                 (*(TitleMenuTextEntry**)((char*)pp + off))[1].textId = 984;
                 gSaveSelectMenuItemActive = 1;
                 gSaveSelectMenuItem = gTitleMenuItemInterface->vtable->createWithWindow(983, 41, 0, 1, 0);
@@ -357,7 +357,7 @@ static void saveFileSelect_init(int sel, int slot)
                 gSaveSelectPanels[SAVE_SELECT_PANEL_OPEN_FILE].entries[0].flags =
                     (u16)(gSaveSelectPanels[SAVE_SELECT_PANEL_OPEN_FILE].entries[0].flags &
                           ~TITLE_MENU_TEXT_ENTRY_HIDDEN);
-                gSaveSelectPanels[SAVE_SELECT_PANEL_OPEN_FILE].entries[1].pad18[2] = 0;
+                gSaveSelectPanels[SAVE_SELECT_PANEL_OPEN_FILE].entries[1].upLink = 0;
                 gSaveSelectPanels[SAVE_SELECT_PANEL_OPEN_FILE].entries[1].textId = 982;
                 gSaveSelectMenuItemActive = 0;
                 gTitleMenuLinkInterface->vtable->setup(gSaveSelectPanels[SAVE_SELECT_PANEL_OPEN_FILE].entries,
@@ -385,14 +385,14 @@ static void saveSelectSetupMenuItems(SaveSelectPanel* p)
             p->entries[i].textId = 0x39d;
             p->entries[i].flags = (u16)(p->entries[i].flags & ~0x1);
             p->entries[i].flags = (u16)(p->entries[i].flags | 0x2);
-            p->entries[i].actionParam = -1;
+            p->entries[i].textureAssetId = -1;
         }
         else
         {
             p->entries[i].textId = i;
             p->entries[i].flags = (u16)(p->entries[i].flags & ~0x2);
             p->entries[i].flags = (u16)(p->entries[i].flags | 0x1);
-            p->entries[i].actionParam = -1;
+            p->entries[i].textureAssetId = -1;
         }
     }
 }
@@ -422,11 +422,11 @@ static void saveSelectGoToChapterSelect(void)
             }
             if (i <= saveFileSelect_saveSlots[saveFileSelect_currentSlotIndex].chaptersUnlocked + -1 && i < 5)
             {
-                panel->entries[i].pad18[3] = (s8)(i + 1);
+                panel->entries[i].downLink = (s8)(i + 1);
             }
             else
             {
-                panel->entries[i].pad18[3] = -1;
+                panel->entries[i].downLink = -1;
             }
         }
         gTitleMenuLinkInterface->vtable->setup(panel->entries, panel->count, 0, lbl_8031A7F8, 5, 4, 0, 0, 0, 0, 0,
@@ -494,11 +494,11 @@ void saveSelectGoToChooseSlot(int arg)
     {
         if (gSaveSelectInfoStartSlot[i] != 3)
         {
-            p->entries[0].pad18[2] = 3;
+            p->entries[0].upLink = 3;
         }
         else
         {
-            p->entries[0].pad18[2] = -1;
+            p->entries[0].upLink = -1;
         }
     }
 
@@ -818,7 +818,7 @@ int SaveSelectScreen_run(void)
                     gSaveSelectPanelIndex = SAVE_SELECT_PANEL_OPEN_FILE;
                     panel = &gSaveSelectPanels[SAVE_SELECT_PANEL_OPEN_FILE];
                     panel->entries[0].flags = (u16)(panel->entries[0].flags & ~TITLE_MENU_TEXT_ENTRY_HIDDEN);
-                    panel->entries[1].pad18[2] = 0;
+                    panel->entries[1].upLink = 0;
                     panel->entries[1].textId = 0x3d6;
                     gSaveSelectMenuItemActive = 0;
                     gTitleMenuLinkInterface->vtable->setup(panel->entries, panel->count, 0, NULL, 5, 4, 0x14, 0xc8,
@@ -908,7 +908,7 @@ void SaveSelectScreen_initialise(void)
         gSaveSelectPanelIndex = SAVE_SELECT_PANEL_OPEN_FILE;
         panel = &gSaveSelectPanels[SAVE_SELECT_PANEL_OPEN_FILE];
         panel->entries[0].flags = (u16)(panel->entries[0].flags & ~TITLE_MENU_TEXT_ENTRY_HIDDEN);
-        panel->entries[1].pad18[2] = 0;
+        panel->entries[1].upLink = 0;
         panel->entries[1].textId = 0x3d6;
         gSaveSelectMenuItemActive = 0;
         gTitleMenuLinkInterface->vtable->setup(panel->entries, panel->count, 0, NULL, 5, 4, 0x14, 0xc8, 0xff, 0xff,
@@ -934,132 +934,301 @@ void SaveSelectScreen_initialise(void)
 TitleMenuTextEntry gSaveSelectChooseSlotEntries[3] = {
     {
         0xFFFF,
-        {0x00, 0x18, 0x00, 0x82, 0x00, 0xB2, 0x01, 0x40, 0x00, 0x59, 0x00, 0xAA, 0x00, 0x00},
+        0x0018,
+        130,
+        178,
+        320,
+        89,
+        170,
+        {0, 0},
         -1,
-        {0x01, 0x40},
+        0x0140,
         0x0000,
-        {0, 0, -1, 1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0x00, 0x00},
+        -1,
+        1,
+        -1,
+        -1,
+        -1,
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        0,
+        {0, 0, 0},
     },
     {
         0xFFFF,
-        {0x00, 0x19, 0x00, 0x82, 0x00, 0xCC, 0x01, 0x40, 0x00, 0x59, 0x00, 0xC4, 0x00, 0x00},
+        0x0019,
+        130,
+        204,
+        320,
+        89,
+        196,
+        {0, 0},
         -1,
-        {0x01, 0x40},
+        0x0140,
         0x0000,
-        {0, 0, 0, 2, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0x00, 0x00},
+        0,
+        2,
+        -1,
+        -1,
+        -1,
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        0,
+        {0, 0, 0},
     },
     {
         0xFFFF,
-        {0x00, 0x1A, 0x00, 0x82, 0x00, 0xE6, 0x01, 0x40, 0x00, 0x59, 0x00, 0xDE, 0x00, 0x00},
+        0x001A,
+        130,
+        230,
+        320,
+        89,
+        222,
+        {0, 0},
         -1,
-        {0x01, 0x40},
+        0x0140,
         0x0000,
-        {0, 0, 1, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0x00, 0x00},
+        1,
+        -1,
+        -1,
+        -1,
+        -1,
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        0,
+        {0, 0, 0},
     },
 };
 
 TitleMenuTextEntry gSaveSelectOpenFileEntries[2] = {
     {
         0x03D5,
-        {0x00, 0x1D, 0x00, 0x3A, 0x01, 0x53, 0x00, 0x00, 0x00, 0x3A, 0x01, 0x47, 0x00, 0x00},
+        0x001D,
+        58,
+        339,
+        0,
+        58,
+        327,
+        {0, 0},
         -1,
-        {0x00, 0x00},
         0x0000,
-        {5, 4, -1, 1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        0x0000,
+        {0x05, 0x04},
+        -1,
+        1,
+        -1,
+        -1,
+        -1,
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        0,
+        {0, 0, 0},
     },
     {
         0x03D6,
-        {0x00, 0x1E, 0x00, 0x3A, 0x01, 0x53, 0x00, 0x00, 0x00, 0x3A, 0x01, 0x47, 0x00, 0x00},
+        0x001E,
+        58,
+        339,
+        0,
+        58,
+        327,
+        {0, 0},
         -1,
-        {0x00, 0x00},
         0x0000,
-        {5, 4, 0, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        0x0000,
+        {0x05, 0x04},
+        0,
+        -1,
+        -1,
+        -1,
+        -1,
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        0,
+        {0, 0, 0},
     },
 };
 
 TitleMenuTextEntry gSaveSelectConfirmEraseEntries[1] = {
     {
         0xFFFF,
-        {0x00, 0x02, 0x00, 0x3A, 0x01, 0x53, 0x00, 0x00, 0x00, 0x3A, 0x01, 0x47, 0x00, 0x00},
+        0x0002,
+        58,
+        339,
+        0,
+        58,
+        327,
+        {0, 0},
         -1,
-        {0x00, 0x00},
         0x0000,
-        {5, 4, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        0x0000,
+        {0x05, 0x04},
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        0,
+        {0, 0, 0},
     },
 };
 
 TitleMenuTextEntry gSaveSelectSlotActionEntries[1] = {
     {
         0xFFFF,
-        {0x00, 0x02, 0x01, 0x40, 0x01, 0x7E, 0x00, 0x00, 0x01, 0x40, 0x01, 0x72, 0x00, 0x00},
+        0x0002,
+        320,
+        382,
+        0,
+        320,
+        370,
+        {0, 0},
         -1,
-        {0x00, 0x00},
+        0x0000,
         0x0400,
-        {5, 4, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0x05, 0x04},
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        0,
+        {0, 0, 0},
     },
 };
 
 TitleMenuTextEntry gSaveSelectChapterSelectEntries[6] = {
     {
         0x03D5,
-        {0x00, 0x17, 0x00, 0x82, 0x00, 0xB2, 0x01, 0x40, 0x00, 0x59, 0x00, 0xAA, 0x00, 0x00},
+        0x0017,
+        130,
+        178,
+        320,
+        89,
+        170,
+        {0, 0},
         -1,
-        {0x01, 0x40},
+        0x0140,
         0x0000,
-        {0, 0, -1, 1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0x00, 0x00},
+        -1,
+        1,
+        -1,
+        -1,
+        -1,
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        0,
+        {0, 0, 0},
     },
     {
         0x039E,
-        {0x00, 0x19, 0x00, 0x82, 0x00, 0xB2, 0x01, 0x40, 0x00, 0x59, 0x00, 0xAA, 0x00, 0x00},
+        0x0019,
+        130,
+        178,
+        320,
+        89,
+        170,
+        {0, 0},
         -1,
-        {0x01, 0x40},
+        0x0140,
         0x0000,
-        {0, 0, 0, 2, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0x00, 0x00},
+        0,
+        2,
+        -1,
+        -1,
+        -1,
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        0,
+        {0, 0, 0},
     },
     {
         0x039F,
-        {0x00, 0x1A, 0x00, 0x82, 0x00, 0xCC, 0x01, 0x40, 0x00, 0x59, 0x00, 0xC4, 0x00, 0x00},
+        0x001A,
+        130,
+        204,
+        320,
+        89,
+        196,
+        {0, 0},
         -1,
-        {0x01, 0x40},
+        0x0140,
         0x0000,
-        {0, 0, 1, 3, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0x00, 0x00},
+        1,
+        3,
+        -1,
+        -1,
+        -1,
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        0,
+        {0, 0, 0},
     },
     {
         0x03A0,
-        {0x00, 0x1B, 0x00, 0x82, 0x00, 0xE6, 0x01, 0x40, 0x00, 0x59, 0x00, 0xDE, 0x00, 0x00},
+        0x001B,
+        130,
+        230,
+        320,
+        89,
+        222,
+        {0, 0},
         -1,
-        {0x01, 0x40},
+        0x0140,
         0x0000,
-        {0, 0, 2, 4, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0x00, 0x00},
+        2,
+        4,
+        -1,
+        -1,
+        -1,
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        0,
+        {0, 0, 0},
     },
     {
         0x03A1,
-        {0x00, 0x1C, 0x00, 0x82, 0x00, 0xE6, 0x01, 0x40, 0x00, 0x59, 0x00, 0xDE, 0x00, 0x00},
+        0x001C,
+        130,
+        230,
+        320,
+        89,
+        222,
+        {0, 0},
         -1,
-        {0x01, 0x40},
+        0x0140,
         0x0000,
-        {0, 0, 3, 5, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0x00, 0x00},
+        3,
+        5,
+        -1,
+        -1,
+        -1,
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        0,
+        {0, 0, 0},
     },
     {
         0x03A2,
-        {0x00, 0x1D, 0x00, 0x82, 0x00, 0xE6, 0x01, 0x40, 0x00, 0x59, 0x00, 0xDE, 0x00, 0x00},
+        0x001D,
+        130,
+        230,
+        320,
+        89,
+        222,
+        {0, 0},
         -1,
-        {0x01, 0x40},
+        0x0140,
         0x0000,
-        {0, 0, 4, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-         0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        {0x00, 0x00},
+        4,
+        -1,
+        -1,
+        -1,
+        -1,
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        0,
+        {0, 0, 0},
     },
 };
 
