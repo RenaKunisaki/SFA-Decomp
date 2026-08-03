@@ -64,12 +64,12 @@ typedef struct KTRexArenaState
     f32 laneDX[4];
     f32 laneDY[4];
     f32 laneDZ[4];
-    void* rowAX;
-    void* rowAY;
-    void* rowAZ;
-    void* rowBX;
-    void* rowBY;
-    void* rowBZ;
+    f32* rowAX;
+    f32* rowAY;
+    f32* rowAZ;
+    f32* rowBX;
+    f32* rowBY;
+    f32* rowBZ;
     f32 posX;
     f32 posY;
     f32 posZ;
