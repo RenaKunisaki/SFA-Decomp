@@ -1,5 +1,5 @@
-#ifndef MAIN_DLL_BADDIE_TUMBLEWEEDBUSH_H_
-#define MAIN_DLL_BADDIE_TUMBLEWEEDBUSH_H_
+#ifndef MAIN_DLL_DLL_003C_LINK_API_H_
+#define MAIN_DLL_DLL_003C_LINK_API_H_
 
 #include "types.h"
 
@@ -10,4 +10,4 @@ u16 linkGetSelectedItemId(void);
 void Link_refreshOverlappingItemTimers(void);
 void Link_scanItemVerticalBounds(void);
 
-#endif /* MAIN_DLL_BADDIE_TUMBLEWEEDBUSH_H_ */
+#endif /* MAIN_DLL_DLL_003C_LINK_API_H_ */

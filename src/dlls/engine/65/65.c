@@ -11,7 +11,7 @@
 #include "main/dll/dll_0041_warpstoneui.h"
 #include "main/resource.h"
 #include "main/gameloop_api.h"
-#include "main/dll/dll_003C_tumbleweedbush.h"
+#include "main/dll/dll_003C_link.h"
 
 int gWarpStoneUiTextPosY = 0x140;
 int gWarpStoneUiTextureX = 0x136;

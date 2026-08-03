@@ -6,7 +6,7 @@
 #include "main/frame_timing.h"
 #include "main/textrender_api.h"
 #include "main/dll/dll_0038_weirdunusedmenu.h"
-#include "main/dll/dll_003C_tumbleweedbush.h"
+#include "main/dll/dll_003C_link.h"
 #include "dolphin/pad.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/dll/savegame.h"

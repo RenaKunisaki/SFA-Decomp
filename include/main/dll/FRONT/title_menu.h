@@ -3,7 +3,7 @@
 
 #include "types.h"
 #include "main/gameloop_api.h"
-#include "main/dll/dll_003C_tumbleweedbush.h"
+#include "main/dll/dll_003C_link.h"
 
 #define TITLE_MENU_TEXT_ENTRY_SLOTS 25
 

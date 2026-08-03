@@ -5,7 +5,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/frame_timing.h"
 #include "main/gameloop_api.h"
-#include "main/dll/dll_003C_tumbleweedbush.h"
+#include "main/dll/dll_003C_link.h"
 #include "main/dll/dll_0035_saveselectscreen.h"
 #include "main/gametext_color_api.h"
 #include "dolphin/pad.h"

@@ -1,5 +1,5 @@
-#ifndef MAIN_DLL_DLL_003C_TUMBLEWEEDBUSH_H_
-#define MAIN_DLL_DLL_003C_TUMBLEWEEDBUSH_H_
+#ifndef MAIN_DLL_DLL_003C_LINK_H_
+#define MAIN_DLL_DLL_003C_LINK_H_
 
 #include "global.h"
 
@@ -44,4 +44,4 @@ STATIC_ASSERT(sizeof(LinkInterfaceVTable) == 0x38);
 
 void Link_setNavigationEnabled(u8 v);
 
-#endif /* MAIN_DLL_DLL_003C_TUMBLEWEEDBUSH_H_ */
+#endif /* MAIN_DLL_DLL_003C_LINK_H_ */

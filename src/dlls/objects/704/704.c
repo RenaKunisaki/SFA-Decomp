@@ -40,7 +40,7 @@
 #include "sys/objects.h"
 #include "dlls/object_descriptor.h"
 #include "main/model.h"
-#include "main/dll/baddie/dll_003C_TumbleweedBush.h"
+#include "main/dll/dll_003C_link_api.h"
 #include "main/dll/FRONT/dll_39.h"
 #include "main/objseq.h"
 #include "main/dll/FRONT/dll_0034_n_filemenu.h"
