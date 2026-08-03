@@ -133,7 +133,7 @@ void DIMbosstonsil_checkHit(GameObject* obj, GroundBaddieState* state) {
         spawnPos = &spawnArgs.posX;
         {
             f32(*modelPos)[4] =
-                (f32(*)[4])(*(int*)(*(int*)(*(int*)&(obj)->anim.banks + ((s8)((u8*)obj)[0xad] << 2)) + 0x50));
+                (f32(*)[4])(*(int*)(*(int*)((int)(obj)->anim.banks + ((s8)((u8*)obj)[0xad] << 2)) + 0x50));
             spawnPos[0] = playerMapOffsetX + modelPos[modelPart][1];
             spawnPos[1] = modelPos[modelPart][2];
             spawnPos[2] = playerMapOffsetZ + modelPos[modelPart][3];
@@ -527,7 +527,7 @@ void DIMbosstonsil_init(GameObject* obj, u32 placementAddress, int isAltVariant)
     u8 variant;
     int state;
 
-    state = *(int*)&obj->extra;
+    state = (int)obj->extra;
     variant = 6;
     if (isAltVariant != 0) {
         variant = variant | 1;

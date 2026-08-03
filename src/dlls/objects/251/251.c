@@ -76,7 +76,7 @@ int PressureSwitchFB_animEventCallback(GameObject* obj, int unused, ObjSeqState*
     int positionAddress;
     u8 trackedIndex;
 
-    stateAddress = *(int*)&obj->extra;
+    stateAddress = (int)obj->extra;
     placement = (PressureSwitchFBPlacement*)obj->anim.placementData;
     if (animUpdate->curEventId == PRESSURESWITCHFB_ANIM_COMMAND_CAPTURE_POSITIONS) {
         for (trackedIndex = 0; trackedIndex < PRESSURESWITCHFB_TRACKED_OBJECT_COUNT; trackedIndex++) {

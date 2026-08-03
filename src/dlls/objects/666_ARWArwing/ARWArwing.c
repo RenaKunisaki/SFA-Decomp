@@ -1248,7 +1248,7 @@ void arwarwing_initAttachments(GameObject* obj, ArwingState* state)
     {
         if (state->light == 0)
         {
-            *(int*)&state->light = (int)objCreateLight(obj, 1);
+            state->light = (void*)objCreateLight(obj, 1);
             if (state->light != 0)
             {
                 modelLightStruct_setLightKind(state->light, MODEL_LIGHT_KIND_POINT);

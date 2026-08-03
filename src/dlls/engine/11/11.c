@@ -1000,7 +1000,7 @@ void dll_0B_detachSource(void* param)
                 {
                     arr[i]->flags |= 0x200000;
                 }
-                *(int*)&arr[i]->sourceObject = 0;
+                arr[i]->sourceObject = 0;
             }
         }
     }

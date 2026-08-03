@@ -188,7 +188,7 @@ void shopitem_renderSparkle(GameObject* obj, int p2, int p3, int p4, int p5)
 
 void shopitem_onSeqFree(GameObject* obj)
 {
-    int state = *(int*)&obj->extra;
+    int state = (int)obj->extra;
     int def = obj->anim.placementDataAddress;
     PushcartState97* b = (PushcartState97*)&((ShopItemState*)state)->flags97;
     if (b->flag_40 == 0)
@@ -210,7 +210,7 @@ void shopitem_onSeqFree(GameObject* obj)
 
 int shopitem_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
 {
-    int sub = *(int*)&(obj)->extra;
+    int sub = (int)obj->extra;
     ObjAnimComponent* objAnim = &obj->anim;
     ShopItemState* s = (ShopItemState*)sub;
 
@@ -306,7 +306,7 @@ void shopitem_update(GameObject* obj)
 {
     int def = (obj)->anim.placementDataAddress;
     void* player = Obj_GetPlayerObject();
-    int state = *(int*)&(obj)->extra;
+    int state = (int)obj->extra;
     f32 range = 10000.0f;
     ShopItemState* s = (ShopItemState*)state;
     PushcartState97* b = (PushcartState97*)&s->flags97;
@@ -431,7 +431,7 @@ void shopitem_update(GameObject* obj)
 void shopitem_init(GameObject* obj, ShopItemDef* data)
 {
     ObjAnimComponent* objAnim;
-    int state = *(int*)&(obj)->extra;
+    int state = (int)obj->extra;
     ShopItemState* s = (ShopItemState*)state;
 
     objAnim = &obj->anim;

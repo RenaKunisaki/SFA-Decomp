@@ -2398,10 +2398,10 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
             }
             ObjModel_BlendVertexStream(
                 (u8*)gObjBoneMtxBuffer, m + 0x88, vtx,
-                (int*)*(int*)&((ModelFileHeader*)am)->jointBlendData,
+                (int*)(int)((ModelFileHeader*)am)->jointBlendData,
                 (u8*)((int*)((char*)am + 0x1c))[(((ObjModel*)am)->bufferFlags >> 1) & 1]);
             ObjModel_BlendNormalStream((u8*)gObjBoneMtxBuffer, m + 0xac,
-                                       (u8*)*(int*)&((ModelFileHeader*)m)->normals,
+                                       (u8*)(int)((ModelFileHeader*)m)->normals,
                                        (u8**)((ObjModel*)am)->blendAnimData,
                                        ((ModelFileHeader*)m)->flags24 & 8);
         }
@@ -2724,10 +2724,10 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
                 }
                 ObjModel_BlendVertexStream(
                     (u8*)gObjBoneMtxBuffer, m + 0x88, vtx,
-                    (int*)*(int*)&((ModelFileHeader*)am)->jointBlendData,
+                    (int*)(int)((ModelFileHeader*)am)->jointBlendData,
                     (u8*)((int*)((char*)am + 0x1c))[(((ObjModel*)am)->bufferFlags >> 1) & 1]);
                 ObjModel_BlendNormalStream((u8*)gObjBoneMtxBuffer, m + 0xac,
-                                           (u8*)*(int*)&((ModelFileHeader*)m)->normals,
+                                           (u8*)(int)((ModelFileHeader*)m)->normals,
                                            (u8**)((ObjModel*)am)->blendAnimData,
                                            ((ModelFileHeader*)m)->flags24 & 8);
             }

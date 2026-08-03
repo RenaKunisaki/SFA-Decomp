@@ -60,7 +60,7 @@ void DIMbossspit_updateBurst(GameObject* obj) {
     int radius;
     int i;
 
-    stateAddress = *(int*)&obj->extra;
+    stateAddress = (int)obj->extra;
     obj->anim.rootMotionScale += DIMBOSSSPIT_BURST_SCALE_STEP;
     obj->anim.rotX += DIMBOSSSPIT_BURST_ROT_X_STEP;
     obj->anim.rotZ += DIMBOSSSPIT_BURST_ROT_YZ_STEP;
@@ -163,7 +163,7 @@ void DIMbossspit_update(GameObject* obj) {
     s16 glowAlpha;
     ModelLightStruct* light;
 
-    stateAddress = *(int*)&obj->extra;
+    stateAddress = (int)obj->extra;
     if (*(s16*)stateAddress == DIMBOSSSPIT_PHASE_FLIGHT) {
         obj->userData1 -= framesThisStep;
         if (obj->userData1 < 0) {

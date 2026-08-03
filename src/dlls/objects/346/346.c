@@ -101,7 +101,7 @@ void explodable_buildFragments(GameObject* obj, int placementAddress, int skipCe
                 chunk->centroidX = zero;
                 chunk->centroidY = zero;
                 chunk->centroidZ = zero;
-                model = (ModelFileHeader*)*(int*)(*(int*)(*(int*)&obj->anim.banks + modelBankOffset));
+                model = (ModelFileHeader*)*(int*)(*(int*)((int)obj->anim.banks + modelBankOffset));
                 centroidScratch.sum[0] = zero;
                 centroidScratch.sum[1] = zero;
                 centroidScratch.sum[2] = zero;
@@ -216,7 +216,7 @@ void explodable_free(GameObject* obj, int keepChildren) {
     int childSlotAddress;
     GameObject* child;
 
-    stateAddress = *(int*)&obj->extra;
+    stateAddress = (int)obj->extra;
     objFreeObjectType((int)obj, EXPLODABLE_OBJECT_GROUP);
     if (keepChildren == 0) {
         childSlotAddress = stateAddress - 4;
@@ -242,7 +242,7 @@ void explodable_update(GameObject* obj) {
     ExplodableState* state;
     ExplodablePlacement* placement;
 
-    stateAddress = *(int*)&obj->extra;
+    stateAddress = (int)obj->extra;
     placementAddress = obj->anim.placementDataAddress;
     state = (ExplodableState*)stateAddress;
     placement = (ExplodablePlacement*)placementAddress;
@@ -287,7 +287,7 @@ void explodable_update(GameObject* obj) {
 }
 
 void explodable_init(GameObject* obj, int placementAddress) {
-    int stateAddress = *(int*)&obj->extra;
+    int stateAddress = (int)obj->extra;
     int recipeIndex;
     ExplodableBreakRecipe* recipes;
     u32 fragmentCount;
@@ -295,14 +295,14 @@ void explodable_init(GameObject* obj, int placementAddress) {
     ExplodablePlacement* placement = (ExplodablePlacement*)placementAddress;
 
     objAddObjectType((int)obj, EXPLODABLE_OBJECT_GROUP);
-    stateAddress = *(int*)&obj->extra;
+    stateAddress = (int)obj->extra;
     state = (ExplodableState*)stateAddress;
     fragmentCount = placement->fragmentCount;
     if (fragmentCount == 0) {
         fragmentCount = 1;
     }
     state->fragmentCount = fragmentCount;
-    *(int*)&state->completedFragmentMask = 0;
+    state->completedFragmentMask = 0;
     state->children[0] = 0;
     state->children[1] = 0;
     state->children[2] = 0;

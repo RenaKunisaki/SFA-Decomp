@@ -301,7 +301,7 @@ int DR_CloudRunner_stateHandler07(GameObject* obj)
 int DR_CloudRunner_stateHandler06(GameObject* obj, CloudRunnerState* baddie)
 {
     CloudRunnerState* inner = (obj)->extra;
-    int hitState = *(int*)&(obj)->anim.hitReactState;
+    int hitState = (int)obj->anim.hitReactState;
     baddie->baddie.flags0 |= 0x200000;
     if (baddie->baddie.moveJustStartedA != 0)
     {
@@ -1153,8 +1153,8 @@ void DR_CloudRunner_updateFlightControl(GameObject* obj, f32 f, int triggerFrame
     slot = (int)Camera_GetCurrent();
     inner = (obj)->extra;
     inner->baddie.hitPoints = 0;
-    *(int*)&inner->baddie &= ~0x8000;
-    *(int*)&inner->baddie |= 0x200000;
+    inner->baddie.flags0 &= ~0x8000;
+    inner->baddie.flags0 |= 0x200000;
     if (inner->flightState == CLOUDRUNNER_FLIGHT_MOUNTED)
     {
         inner->baddie.moveInputX = (f32)padGetStickX(0);
@@ -1177,10 +1177,10 @@ void DR_CloudRunner_updateFlightControl(GameObject* obj, f32 f, int triggerFrame
         inner->baddie.heldButtons = 0;
         inner->baddie.cameraYaw = 0;
     }
-    *(int*)&inner->baddie |= 0x400000;
+    inner->baddie.flags0 |= 0x400000;
     if (flag != 0)
     {
-        *(int*)&inner->baddie &= ~0x400000;
+        inner->baddie.flags0 &= ~0x400000;
     }
     (*gPlayerInterface)->update(obj, inner, f, timeDelta, gDRCloudRunnerStateHandlers,
                                 &gDRCloudRunnerDefaultStateHandler);
@@ -1280,7 +1280,7 @@ void DR_CloudRunner_init(GameObject* obj, int def)
     (obj)->anim.rotX = (s16)(((DRCloudRunnerPlacement*)def)->spawnRot << 8);
     (obj)->animEventCallback = DR_CloudRunner_SeqFn;
     objAddObjectType((int)obj, DRCLOUDRUNNER_OBJGROUP);
-    inner = *(int*)&(obj)->extra;
+    inner = (int)obj->extra;
     ((CloudRunnerState*)inner)->spawnVariant = ((DRCloudRunnerPlacement*)def)->spawnVariant;
     ((CloudRunnerState*)inner)->unkBAE = 5;
     ((CloudRunnerState*)inner)->airTimeRemaining = ((DRCloudRunnerPlacement*)def)->airMeterCapacity;

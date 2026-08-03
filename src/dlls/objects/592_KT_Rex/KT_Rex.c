@@ -1678,7 +1678,7 @@ void ktrex_init(GameObject* obj, char* arg, int flag)
     rt = (GroundBaddieState*)gKTRexRuntime;
     (*gPlayerInterface)->setState(obj, rt, 0);
     rt->baddie.substate = 2;
-    *(int*)&rt->baddie.targetObj = 0;
+    rt->baddie.targetObj = 0;
     rt->baddie.physicsActive = 0;
     rt->baddie.hasTarget = 0;
     (obj)->anim.resetHitboxFlags |= 0x88;

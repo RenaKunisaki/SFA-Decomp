@@ -2146,7 +2146,7 @@ void hudDrawStatusBarsAndCounters(int unused1, int unused2, int unused3)
         if (near != NULL && pauseMenuState == 0)
         {
             (*(void (*)(int*, int*, int*, int*)) *
-             (int*)((char*)*(int*)(*(int*)&((GameObject*)near)->anim.dll) + 0x54))(near, &c2, &c1, &c0);
+             (int*)((char*)*(int*)((int)((GameObject*)near)->anim.dll) + 0x54))(near, &c2, &c1, &c0);
             hcArg = 0x118;
             hudDrawCounter(0x1e, (s16)(c1 - c2), (s16)c0, 0xff, 0, &hcArg, 1);
         }

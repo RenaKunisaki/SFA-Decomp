@@ -318,21 +318,21 @@ void staffUpdateAttackEffects(GameObject* obj, GameObject* player) {
             if (chargeLevel > 0.0f) {
                 fxA.count = 21 - (int)(15.0f * (chargeLevel / 60.0f));
                 fxA.id = 0xc95;
-                playerGetFxOffsets((GameObject*)(*(int*)&obj->ownerObj), &effectOffsets);
+                playerGetFxOffsets((GameObject*)((int)obj->ownerObj), &effectOffsets);
                 fxB.posX = effectOffsets[3];
                 fxB.posY = effectOffsets[4];
                 fxB.posZ = effectOffsets[5];
-                (*gPartfxInterface)->spawnObject((void*)*(int*)&obj->ownerObj, 0x7b9, &fxB, 0x200001, -1, &fxA);
-                (*gPartfxInterface)->spawnObject((void*)*(int*)&obj->ownerObj, 0x7b9, &fxB, 0x200001, -1, &fxA);
-                (*gPartfxInterface)->spawnObject((void*)*(int*)&obj->ownerObj, 0x7b9, &fxB, 0x200001, -1, &fxA);
-                (*gPartfxInterface)->spawnObject((void*)*(int*)&obj->ownerObj, 0x7b9, &fxB, 0x200001, -1, &fxA);
+                (*gPartfxInterface)->spawnObject((void*)(int)obj->ownerObj, 0x7b9, &fxB, 0x200001, -1, &fxA);
+                (*gPartfxInterface)->spawnObject((void*)(int)obj->ownerObj, 0x7b9, &fxB, 0x200001, -1, &fxA);
+                (*gPartfxInterface)->spawnObject((void*)(int)obj->ownerObj, 0x7b9, &fxB, 0x200001, -1, &fxA);
+                (*gPartfxInterface)->spawnObject((void*)(int)obj->ownerObj, 0x7b9, &fxB, 0x200001, -1, &fxA);
                 fxA.count = 9;
                 fxA.id = 0xc95;
                 fxA.scale = 0.8f * (chargeLevel / 60.0f) + 0.1f;
                 fxB.posX = effectOffsets[3];
                 fxB.posY = effectOffsets[4];
                 fxB.posZ = effectOffsets[5];
-                (*gPartfxInterface)->spawnObject((void*)*(int*)&obj->ownerObj, 0x7ba, &fxB, 0x200001, -1, &fxA);
+                (*gPartfxInterface)->spawnObject((void*)(int)obj->ownerObj, 0x7ba, &fxB, 0x200001, -1, &fxA);
             }
             break;
         case 134: {
@@ -891,7 +891,7 @@ void staff_hitDetectGeometry(GameObject* obj) {
 }
 
 void staff_updateSwipe(GameObject* obj, int p4, int p5) {
-    StaffState* inner = (StaffState*)*(int*)&obj->extra;
+    StaffState* inner = (StaffState*)(int)obj->extra;
     staff_setupSwipe((int)obj, (u8*)inner, p5, p4);
     if (getHudHiddenFrameCount() != 0) {
         inner->hudSuppressed = 1;
@@ -1018,7 +1018,7 @@ void staff_update(GameObject* obj) {
     }
 
     staffUpdateAttackEffects(obj, (GameObject*)obj->ownerObj);
-    objGetAnimState80A((GameObject*)(*(int*)&obj->ownerObj));
+    objGetAnimState80A((GameObject*)((int)obj->ownerObj));
     ((StaffState*)state)->swipeTextureIndex = 0;
     staffUpdateQuakeSpell();
 }

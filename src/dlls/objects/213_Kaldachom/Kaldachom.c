@@ -250,7 +250,7 @@ int kaldachom_stateHandlerA07(GameObject* obj, GroundBaddieState* state) {
             }
             if (linkedObj != NULL) {
                 f32 fz = 0.0f;
-                (**(void (**)(GameObject*, f32, f32, f32))(*(int*)(*(int*)&linkedObj->anim.dll) + 0x2c))(
+                (**(void (**)(GameObject*, f32, f32, f32))(*(int*)((int)linkedObj->anim.dll) + 0x2c))(
                     linkedObj, fz, 1.0f, fz);
             }
         }

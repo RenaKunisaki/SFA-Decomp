@@ -223,7 +223,7 @@ int CameraModeNormal_chooseWallAvoidanceDirection(CameraObject* cam, f32* outA, 
     result = 0;
     (*gCameraInterface)
         ->getRelativePosition(cam, &spinB, &spinC, &spinD, &spinA, gCameraModeNormalState->targetHeight, 0);
-    tgt0 = *(int*)&cam->anim.targetObj;
+    tgt0 = (int)cam->anim.targetObj;
     *(int*)&probe[35] = tgt0;
     probe[1] = cam->anim.worldPosY;
     pathA[0] = cam->anim.worldPosX;
@@ -253,7 +253,7 @@ int CameraModeNormal_chooseWallAvoidanceDirection(CameraObject* cam, f32* outA, 
         if (found1 == -1) {
             dx = spinD;
             dz = spinB;
-            tgt = (GameObject*)(*(int*)&cam->anim.targetObj);
+            tgt = (GameObject*)((int)cam->anim.targetObj);
             rad = (3.1415927f * (f32)(s16)ang) / 32768.0f;
             cosv = mathSinf(rad);
             sinv = mathCosf(rad);
@@ -273,7 +273,7 @@ int CameraModeNormal_chooseWallAvoidanceDirection(CameraObject* cam, f32* outA, 
         if (found2 == -1) {
             dx = spinD;
             dz = spinB;
-            tgt = (GameObject*)(*(int*)&cam->anim.targetObj);
+            tgt = (GameObject*)((int)cam->anim.targetObj);
             rad = (3.1415927f * (f32)(s16)(-s * 0xb6)) / 32768.0f;
             cosv = mathSinf(rad);
             sinv = mathCosf(rad);

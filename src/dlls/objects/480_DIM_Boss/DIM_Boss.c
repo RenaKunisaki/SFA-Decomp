@@ -318,7 +318,7 @@ int DIMbossAnim_updatePlayerHitReaction(GameObject* obj, int runtime) {
     u16 distance;
     int state;
     s16 mode;
-    state = *(int*)&obj->extra;
+    state = (int)obj->extra;
     if (((BaddieState*)runtime)->moveDone != 0 || ((BaddieState*)runtime)->moveJustStartedB != 0) {
         (*gBaddieControlInterface)
             ->getTargetGeometry(obj, (GameObject*)((BaddieState*)runtime)->targetObj, 0x10, &dirSector, &unused,
@@ -362,10 +362,10 @@ int DIMbossAnim_finishDefeat(GameObject* obj, int p2) {
     int state;
 
     Obj_GetPlayerObject();
-    state = *(int*)&obj->extra;
+    state = (int)obj->extra;
 
     if ((s32)((BaddieState*)p2)->moveJustStartedB != 0) {
-        *(int*)&((BaddieState*)p2)->targetObj = 0;
+        ((BaddieState*)p2)->targetObj = 0;
         ((BaddieState*)p2)->physicsActive = 0;
         ((BaddieState*)p2)->hasTarget = 0;
         ObjHits_DisableObject(obj);
@@ -436,7 +436,7 @@ int DIMbossHitDetect_tonsilSlam(GameObject* obj, int runtime) {
 }
 
 int DIMbossHitDetect_liftSlam(GameObject* obj, int runtime) {
-    int state = *(int*)&obj->extra;
+    int state = (int)obj->extra;
     if (((BaddieState*)runtime)->moveJustStartedA != 0) {
         f32 animSpeed;
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_2000;
@@ -453,7 +453,7 @@ int DIMbossHitDetect_liftSlam(GameObject* obj, int runtime) {
             ((BaddieState*)runtime)->moveDone = 0;
         }
         if (((GroundBaddieState*)state)->targetState == 1) {
-            *(f32*)(*(int*)&((GroundBaddieState*)state)->control + 0xa8) = 780.0f;
+            *(f32*)((int)((GroundBaddieState*)state)->control + 0xa8) = 780.0f;
         }
     }
     (*gPlayerInterface)->playSoundOnEvent0F(obj, (void*)runtime, 0, 1, lbl_803DBF30);
@@ -713,7 +713,7 @@ void DIMboss_spawnBlueWhiteEffect(DIMbossEffectMarker* source, f32* velocity) {
 }
 
 void DIMboss_createStateLight(GameObject* obj, u8 isGreen) {
-    ModelLightStruct** lightSlot = (ModelLightStruct**)*(int*)&((GroundBaddieState*)*(int*)&obj->extra)->control;
+    ModelLightStruct** lightSlot = (ModelLightStruct**)(int)((GroundBaddieState*)(int)obj->extra)->control;
 
     if (*(void**)lightSlot != NULL) {
         return;
@@ -1254,11 +1254,11 @@ void DIMboss_updateCombatState(GameObject* obj, ObjSeqState* animUpdate, DIMboss
     } else {
         gameObj->hitVolumeIndex = 2;
     }
-    runtime->savedPendingParentObj = *(int*)&gameObj->pendingParentObj;
-    *(int*)&gameObj->pendingParentObj = 0;
+    runtime->savedPendingParentObj = (int)gameObj->pendingParentObj;
+    gameObj->pendingParentObj = 0;
     (*gPlayerInterface)
         ->update((void*)obj, updateRuntime, timeDelta, timeDelta, &gDIMbossHitDetectAnimTable, &gDIMbossAnimTable);
-    *(int*)&gameObj->pendingParentObj = runtime->savedPendingParentObj;
+    gameObj->pendingParentObj = (void*)runtime->savedPendingParentObj;
 }
 
 DimBossMeltEntry gDIMbossMeltEntries[] = {

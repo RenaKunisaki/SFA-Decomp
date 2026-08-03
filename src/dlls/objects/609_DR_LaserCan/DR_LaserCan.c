@@ -507,7 +507,7 @@ void DR_LaserCannon_update(GameObject* obj)
                             inv[3] = hitPos[0];
                             inv[4] = hitPos[1];
                             inv[5] = hitPos[2];
-                            (*(void (**)(int, f32*, f32*, f32))(*(int*)(*(int*)&spawned->anim.dll) +
+                            (*(void (**)(int, f32*, f32*, f32))(*(int*)((int)spawned->anim.dll) +
                                                                 0x24))((int)spawned, outv, inv,
                                                                        setup->beamSpeed / 10.0f);
                             state->beamObject = (int)spawned;

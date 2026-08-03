@@ -477,7 +477,7 @@ void DIMCannon_update(GameObject* obj) {
     state = obj->extra;
     player = Obj_GetPlayerObject();
     if (playerGetFocusObject(player) != NULL) {
-        *(int*)&state->targetPlayer = 0;
+        state->targetPlayer = 0;
     } else {
         state->targetPlayer = player;
     }

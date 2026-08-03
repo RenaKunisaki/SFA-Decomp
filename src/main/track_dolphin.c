@@ -1536,7 +1536,7 @@ void trackSetLinesEnabledByParam(int matchVal, GameObject* obj, int flag)
     IntersectLine* e;
     if ((u32)obj != 0)
     {
-        base = *(int*)&(obj)->anim.modelInstance;
+        base = (int)(obj)->anim.modelInstance;
         e = *(IntersectLine**)(base + 0x34);
         count = *(u8*)(base + 0x5c);
     }

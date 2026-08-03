@@ -182,8 +182,8 @@ void dimsnowball_update(GameObject* obj) {
         ((ObjHitsPriorityState*)model)->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
         *(u8*)&((ObjHitsPriorityState*)model)->hitVolumePriority = DIM_SNOWBALL_HIT_VOLUME_PRIORITY;
         *(u8*)&((ObjHitsPriorityState*)model)->hitVolumeId = DIM_SNOWBALL_HIT_VOLUME_ID;
-        *(int*)&((ObjHitsPriorityState*)model)->objectHitMask = DIM_SNOWBALL_HIT_MASK;
-        *(int*)&((ObjHitsPriorityState*)model)->skeletonHitMask = DIM_SNOWBALL_HIT_MASK;
+        ((ObjHitsPriorityState*)model)->objectHitMask = DIM_SNOWBALL_HIT_MASK;
+        ((ObjHitsPriorityState*)model)->skeletonHitMask = DIM_SNOWBALL_HIT_MASK;
     }
 }
 

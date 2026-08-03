@@ -315,7 +315,7 @@ void warpstone_loadBaseUi(void) {
 }
 
 int warpstone_SeqFn(GameObject* obj, u32 unused, int animObj) {
-    int state = *(int*)&(obj)->extra;
+    int state = (int)obj->extra;
     int i;
     int child;
     u8 command;
@@ -534,7 +534,7 @@ void warpstone_update(int obj) {
     int yawDelta;
     int moveId;
 
-    state = *(int*)&((GameObject*)obj)->extra;
+    state = (int)((GameObject*)obj)->extra;
     child = *(int*)state;
     if ((void*)child != NULL) {
         ObjLink_DetachChild((GameObject*)obj, (GameObject*)child);
@@ -660,7 +660,7 @@ void warpstone_init(GameObject* obj, const WarpStonePlacement* placement) {
     int state;
     s16 rotX;
 
-    state = *(int*)&obj->extra;
+    state = (int)obj->extra;
     rotX = (s16)(placement->rotXByte << 8);
     obj->anim.rotX = rotX;
     obj->animEventCallback = warpstone_SeqFn;

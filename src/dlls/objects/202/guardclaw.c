@@ -276,7 +276,7 @@ void guardClaw_init(GameObject* obj, u8* state)
     ((EnemyState*)state)->moveSpeedScale2 = fz;
     if (sub->sequenceId != -1)
     {
-        *(int*)&((EnemyState*)state)->controlFlags |= 1;
+        ((EnemyState*)state)->controlFlags |= 1;
     }
     (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
 }

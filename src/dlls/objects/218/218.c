@@ -183,7 +183,7 @@ void pollenfragment_update(GameObject* obj)
     }
     if (obj->ownerObj != NULL)
     {
-        extra->ownerObj = *(int*)&obj->ownerObj;
+        extra->ownerObj = (int)obj->ownerObj;
         obj->ownerObj = NULL;
     }
     if ((extra->def)->timed)

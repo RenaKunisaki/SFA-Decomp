@@ -86,7 +86,7 @@ int dbshSymbol_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animU
     if (state->partnerSymbol == NULL) {
         objectList = ObjList_GetObjects(&objectIndex, &objectCount);
         while (objectIndex < objectCount) {
-            *(int*)&state->partnerSymbol = objectList[objectIndex];
+            state->partnerSymbol = (void*)objectList[objectIndex];
             if (state->partnerSymbol->anim.romDefNo == DBSH_SYMBOL_PARTNER_SEQUENCE_ID) {
                 break;
             }
@@ -145,7 +145,7 @@ int dbshSymbol_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animU
             }
         }
         if (state->partnerSymbol != NULL) {
-            if (ObjAnim_AdvanceCurrentMove(*(int*)&state->partnerSymbol,
+            if (ObjAnim_AdvanceCurrentMove((int)state->partnerSymbol,
                                            -((f32)state->spinProgress - state->previousSpinProgress) /
                                                DBSH_SYMBOL_ANIMATION_STEP_SCALE,
                                            timeDelta, NULL) != 0) {

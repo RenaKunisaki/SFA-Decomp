@@ -223,7 +223,7 @@ int dll_CE_checkDeathState(GameObject* obj, GroundBaddieState* state) {
         control->soundTimer = zero;
         control->nextSoundTime = zero;
         (*gPlayerInterface)->setState(obj, state, 6);
-        *(int*)&state->baddie.targetObj = 0;
+        state->baddie.targetObj = 0;
         state->baddie.physicsActive = 0;
         *(s8*)&state->baddie.hasTarget = 0;
         ObjHits_DisableObject(obj);
@@ -472,7 +472,7 @@ int dll_CE_updateSubmergeState(GameObject* obj, GroundBaddieState* state) {
     if (state->baddie.moveDone != '\0') {
         mainSetBits(objectState->gameBitB, 0);
         ObjAnim_SetCurrentMove((int)obj, 8, 0.0f, 0);
-        *(int*)&state->baddie.targetObj = 0;
+        state->baddie.targetObj = 0;
         state->baddie.physicsActive = 0;
         *(s8*)&state->baddie.hasTarget = 0;
         objectState->targetState = 0;
@@ -549,7 +549,7 @@ void dll_CE_spawnIceBall(GameObject* obj, GroundBaddieState* state) {
                 duration;
             projectile->anim.velocityZ =
                 (((GameObject*)state->baddie.targetObj)->anim.localPosZ - obj->anim.localPosZ) / duration;
-            *(int*)&projectile->ownerObj = (int)obj;
+            projectile->ownerObj = (void*)obj;
         }
     }
 }
@@ -566,7 +566,7 @@ void dll_CE_acquireTarget(GameObject* obj, GroundBaddieState* objectState, Groun
         (*gBaddieControlInterface)
             ->startHitReaction(obj, state, &((GroundBaddieState*)objectState)->routeNav, objectState->gameBitB, NULL, 0, 0, 8,
                                disabledSoundId);
-        *(int*)&state->baddie.targetObj = (int)target;
+        state->baddie.targetObj = (void*)target;
         state->baddie.hasTarget = 0;
         objectState->targetState = 1;
     } else {

@@ -438,7 +438,7 @@ s16* objFindJointPoseVector(GameObject* obj, int key) {
         vecOffset = 0;
         count = OBJPRINT_JOINT_COUNT(modelDef);
         for (i = 0; i < count; i++) {
-            jointData = *(int*)&((ObjDef*)modelDef)->jointData;
+            jointData = (int)((ObjDef*)modelDef)->jointData;
             if ((int)*(u8*)(jointData + OBJPRINT_ACTIVE_BANK_INDEX(obj) + entryIdx + 1) != 0xff &&
                 (s32) * (u8*)(jointData + entryIdx) == key) {
                 result = (s16*)((char*)(obj)->anim.jointPoseData + vecOffset);
@@ -846,7 +846,7 @@ s16 objJointTracksAimAtTarget(GameObject* obj, GameObject* target, f32* pos, u8*
             iv[1] = (int)found[0];
             n = ((ObjDef*)m[0])->jointCount;
             for (j = 0; j < n; j++) {
-                int entries = *(int*)&((ObjDef*)m[0])->jointData;
+                int entries = (int)((ObjDef*)m[0])->jointData;
                 if ((int)*(u8*)(entries + OBJPRINT_ACTIVE_BANK_INDEX(go) + iv[0] + 1) != 0xff &&
                     key == (int)*(u8*)(entries + iv[0])) {
                     found[0] = (s16*)((int)go->anim.jointPoseData + iv[1]);
@@ -1056,7 +1056,7 @@ void characterAimHeadAtTarget(GameObject* obj, void* tgt, void* p3, int a, u8 in
         iv[1] = (int)found[0];
         n = ((ObjDef*)m[0])->jointCount;
         for (j = 0; j < n; j++) {
-            int entries = *(int*)&((ObjDef*)m[0])->jointData;
+            int entries = (int)((ObjDef*)m[0])->jointData;
             if ((int)*(u8*)(entries + OBJPRINT_ACTIVE_BANK_INDEX(obj) + iv[0] + 1) != 0xff &&
                 (int)*(u8*)(entries + iv[0]) == 0) {
                 found[0] = (s16*)((char*)(obj)->anim.jointPoseData + iv[1]);
@@ -1427,7 +1427,7 @@ void objRender(int a, int b, int c, int d, GameObject* obj, int flag) {
     }
     doNothing_afterRenderObject();
     for (i = 0, walk = (int)obj; i < (s32)(u32)obj->childCount; i++) {
-        int staff = *(int*)&((GameObject*)walk)->childObjs[0];
+        int staff = (int)((GameObject*)walk)->childObjs[0];
         if (((GameObject*)staff)->anim.classId == 0x2d) {
             staffUpdateSegmentTransforms(staff, obj, (int)OBJPRINT_ACTIVE_BANK(staff), a, b, c);
         }

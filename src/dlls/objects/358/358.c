@@ -38,7 +38,7 @@ void exploded_initDebrisState(GameObject* obj, ExplodedPlacement* placement, int
         center.sum[1] = zero;
         center.sum[2] = zero;
 
-        model = (ModelFileHeader*)*(int*)(*(int*)(*(int*)&obj->anim.banks + placement->modelBankIndex * 4));
+        model = (ModelFileHeader*)*(int*)(*(int*)((int)obj->anim.banks + placement->modelBankIndex * 4));
         for (vertexIndex = 0; vertexIndex < model->vertexCount; vertexIndex++) {
             Model_GetVertexPosition(model, vertexIndex, center.vertex);
             center.sum[0] = center.vertex[0] + center.sum[0];

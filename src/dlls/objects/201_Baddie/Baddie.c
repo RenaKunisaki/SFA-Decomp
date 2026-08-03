@@ -845,7 +845,7 @@ int baddie_spawnRewardDrops(GameObject* obj, int state, int spawnBits, u32 useAl
     gTrickyNearestObject = (GameObject*)nearest;
     if ((((GameObject*)nearest)->anim.romDefNo == TRICKY_OBJ_APPLE) || (((GameObject*)nearest)->anim.romDefNo == TRICKY_CHILD_OBJ_ENERGY_EGG))
     {
-        (*(void (**)(int, f32, f32, f32))(*(int*)(*(int*)&((GameObject*)nearest)->anim.dll) + 0x2c))(
+        (*(void (**)(int, f32, f32, f32))(*(int*)((int)((GameObject*)nearest)->anim.dll) + 0x2c))(
             nearest, 0.0f, 1.0f, 0.0f);
     }
     return (int)gTrickyNearestObject;
@@ -1852,7 +1852,7 @@ int enemy_SeqFn(GameObject* node, int unused, ObjSeqState* animUpdate)
             obj = getTrickyObject();
             if (obj != NULL)
             {
-                (*(void (*)(GameObject*, int, GameObject*))(*(int*)(*(int*)(*(int*)&obj->anim.dll) + 0x34)))(
+                (*(void (*)(GameObject*, int, GameObject*))(*(int*)(*(int*)((int)obj->anim.dll) + 0x34)))(
                     obj, 1, node);
                 ((EnemyState*)sub)->controlFlags |= 0x200000LL;
                 ((EnemyState*)sub)->trackedObj = obj;
@@ -1950,7 +1950,7 @@ int enemy_findNearbyEnemies(GameObject* obj, f32 radius, u8 flags, int max, Enem
     void* dp = &d;
 
     cur[0] = 0;
-    state = *(int*)&obj->extra;
+    state = (int)obj->extra;
     count = 0;
     resultCount = 0;
     if ((flags & 1) != 0)

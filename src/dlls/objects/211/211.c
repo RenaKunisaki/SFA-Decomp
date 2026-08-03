@@ -85,7 +85,7 @@ int LandedArwing_UpdateBounceFade(GameObject* obj, BaddieState* baddie)
     LandedArwingState* state;
     ObjHitsPriorityState* hitState;
 
-    state = (LandedArwingState*)((GroundBaddieState*)*(int*)&obj->extra)->control;
+    state = (LandedArwingState*)((GroundBaddieState*)(int)obj->extra)->control;
     baddie->stateTag = 3;
     if (baddie->moveJustStartedA != 0)
     {
@@ -159,7 +159,7 @@ int LandedArwing_UpdateRetreatChase(GameObject* obj, BaddieState* baddie)
     f32 y;
     f32 z;
 
-    state = (LandedArwingState*)((GroundBaddieState*)*(int*)&(obj)->extra)->control;
+    state = (LandedArwingState*)((GroundBaddieState*)(int)obj->extra)->control;
     player = (GameObject*)((int)Obj_GetPlayerObject());
     playerObj = player;
     baddie->stateTag = 1;
@@ -267,7 +267,7 @@ u32 LandedArwing_UpdateFlightChase(GameObject* obj, BaddieState* state)
     f32 chaseScale;
     u32 scriptFlags;
 
-    sub = (LandedArwingState*)((GroundBaddieState*)*(int*)&obj->extra)->control;
+    sub = (LandedArwingState*)((GroundBaddieState*)(int)obj->extra)->control;
     playerObj = Obj_GetPlayerObject();
     state->stateTag = 1;
 
@@ -431,7 +431,7 @@ u32 landedarwing_updateMovementState(GameObject* obj, BaddieState* baddie)
 {
     LandedArwingState* state;
 
-    state = (LandedArwingState*)((GroundBaddieState*)*(int*)&obj->extra)->control;
+    state = (LandedArwingState*)((GroundBaddieState*)(int)obj->extra)->control;
     baddie->stateTag = 1;
     if (baddie->moveJustStartedA != 0)
     {
@@ -1019,7 +1019,7 @@ void landedarwing_updateConstrainedChaseVelocity(GameObject* obj, f32 targetX, f
     f32 scale;
     f32 dot;
 
-    state = (LandedArwingState*)((GroundBaddieState*)*(int*)&(obj)->extra)->control;
+    state = (LandedArwingState*)((GroundBaddieState*)(int)obj->extra)->control;
     if ((u32)(state->flags92 >> 2 & 1) == 0)
     {
         vx = targetX - (obj)->anim.localPosX;
@@ -1122,7 +1122,7 @@ void dll_D3_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
     f32 mtx[15];
     f32 scale;
 
-    state = (LandedArwingState*)((GroundBaddieState*)*(int*)&(obj)->extra)->control;
+    state = (LandedArwingState*)((GroundBaddieState*)(int)obj->extra)->control;
     slideMtx = &state->unk_04;
     if (visible != 0)
     {
@@ -1360,7 +1360,7 @@ void dll_D3_init(GameObject* obj, int def, int flag)
     f32 fz;
     int ftag;
 
-    state = *(int*)&(obj)->extra;
+    state = (int)obj->extra;
     setupFlags = 6;
     if (flag != 0)
     {

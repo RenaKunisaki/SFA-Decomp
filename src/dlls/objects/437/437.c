@@ -834,7 +834,7 @@ int Lightfoot_getObjectTypeId(void) {
 
 void Lightfoot_free(GameObject* obj, int preserveChildren) {
     void* child;
-    int inner = *(int*)&obj->extra;
+    int inner = (int)obj->extra;
     int count;
     int i;
 
@@ -1008,7 +1008,7 @@ void Lightfoot_update(GameObject* obj) {
 
 void Lightfoot_init(GameObject* obj, const LightfootPlacement* placement, int isReload) {
     PlayerLightfootAnimTable* playerAnimTableBase = &gPlayerLightfootAnimTable;
-    int inner = *(int*)&obj->extra;
+    int inner = (int)obj->extra;
     const LightfootPlacement* placementData = placement;
     int control;
     u8 initFlags = 0x16;

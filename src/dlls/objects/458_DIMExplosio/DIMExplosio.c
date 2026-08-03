@@ -245,7 +245,7 @@ void explosion_render(GameObject* obj, int renderArg2, int renderArg3, int rende
     int cursor;
     colA = sExplosionQuadColorA[0];
     colB = lbl_803E8468;
-    state = *(int*)&obj->extra;
+    state = (int)obj->extra;
     model = (int)Obj_GetActiveModel(obj);
     cursor = state;
     if (visible != 0) {
@@ -345,7 +345,7 @@ void explosion_update(GameObject* obj) {
     Vec vpos;
     Mtx m;
     u8 rgb[3];
-    int state = *(int*)&(obj)->extra;
+    int state = (int)obj->extra;
     int i;
     int cursor;
     gExplosionUpdateTick += 1;
@@ -383,7 +383,7 @@ void explosion_update(GameObject* obj) {
                             f32 childSpeed;
                             parentGeneration = ((DimExplosionFlame*)cursor)->generation;
                             parentSpeed = ((DimExplosionFlame*)cursor)->speed;
-                            spawnState = *(int*)&(obj)->extra;
+                            spawnState = (int)obj->extra;
                             vpos.x = ((DimExplosionFlame*)cursor)->scale *
                                       (sExplosionChildOffsetStep[0] * (f32)randomGetRange(-5, 3) +
                                        sExplosionBaseScale[0]);
@@ -549,7 +549,7 @@ void explosion_init(GameObject* obj, int placementAddress) {
     Mtx mB;
     Mtx mA;
     int cursor;
-    int state = *(int*)&obj->extra;
+    int state = (int)obj->extra;
     f32 scale;
     int i;
     int debrisCount;

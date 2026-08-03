@@ -200,8 +200,8 @@ void dim2snowball_update(GameObject* obj) {
             ((ObjHitsPriorityState*)hitState)->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
             *(u8*)&((ObjHitsPriorityState*)hitState)->hitVolumePriority = 4;
             *(u8*)&((ObjHitsPriorityState*)hitState)->hitVolumeId = 2;
-            *(int*)&((ObjHitsPriorityState*)hitState)->objectHitMask = 16;
-            *(int*)&((ObjHitsPriorityState*)hitState)->skeletonHitMask = 16;
+            ((ObjHitsPriorityState*)hitState)->objectHitMask = 16;
+            ((ObjHitsPriorityState*)hitState)->skeletonHitMask = 16;
         }
     }
     Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_firlp6);

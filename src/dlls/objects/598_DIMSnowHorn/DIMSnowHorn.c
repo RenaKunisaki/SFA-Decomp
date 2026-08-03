@@ -265,7 +265,7 @@ int DIMSnowHorn1_stateHandler0A(GameObject* obj, DIMSnowHorn1State* state, f32 t
 
     ObjAnim_SampleRootCurvePhase(&obj->anim, state->baddie.animSpeedA,
                                  &state->baddie.moveSpeed);
-    if ((*(int*)&state->baddie.pressedButtons & PAD_BUTTON_A) != 0)
+    if ((state->baddie.pressedButtons & PAD_BUTTON_A) != 0)
     {
         if (near == NULL || ((near)->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) == 0)
         {
@@ -311,7 +311,7 @@ int DIMSnowHorn1_stateHandler09(GameObject* obj, DIMSnowHorn1State* state, f32 f
     state->baddie.moveSpeed = 0.012f;
     (*gPlayerInterface)->updateAnimRootMotion(obj, (void*)state, fv, 8);
 
-    if (*(int*)&state->baddie.pressedButtons & PAD_BUTTON_A)
+    if (state->baddie.pressedButtons & PAD_BUTTON_A)
     {
         if (near == NULL ||
             (near->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) == 0)
@@ -346,7 +346,7 @@ int DIMSnowHorn1_stateHandler08(GameObject* obj, DIMSnowHorn1State* state)
         }
         if (inner->airMeterValue != 0 && state->baddie.moveSpeed > 0.0f)
         {
-            if (*(int*)&state->baddie.pressedButtons != 0 ||
+            if (state->baddie.pressedButtons != 0 ||
                 0.0f != state->baddie.moveInputX ||
                 0.0f != state->baddie.moveInputZ)
             {
@@ -357,7 +357,7 @@ int DIMSnowHorn1_stateHandler08(GameObject* obj, DIMSnowHorn1State* state)
     case 0x205:
         if (inner->airMeterValue != 0)
         {
-            if (*(int*)&state->baddie.pressedButtons != 0 ||
+            if (state->baddie.pressedButtons != 0 ||
                 0.0f != state->baddie.moveInputX ||
                 0.0f != state->baddie.moveInputZ)
             {
@@ -438,7 +438,7 @@ int DIMSnowHorn1_stateHandler07(GameObject* obj, DIMSnowHorn1State* state)
             return 0xb;
         }
     }
-    if (*(int*)&state->baddie.pressedButtons & PAD_BUTTON_A)
+    if (state->baddie.pressedButtons & PAD_BUTTON_A)
     {
         if (near == NULL || (near->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) == 0)
         {
@@ -1253,7 +1253,7 @@ void DIMSnowHorn1_update(GameObject* obj)
     u32 flip;
     int flags;
 
-    data = *(int*)&(obj)->extra;
+    data = (int)obj->extra;
     ((DIMSnowHorn1State*)data)->advanceCountThreshold = 5;
     (obj)->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
     ((ObjHitsPriorityState*)(obj)->anim.hitReactState)->trackContactMask = 9;
@@ -1312,7 +1312,7 @@ void DIMSnowHorn1_update(GameObject* obj)
     {
     case 0:
     case 5:
-        statePtr = (DIMSnowHorn1State*)(*(int*)&(obj)->extra);
+        statePtr = (DIMSnowHorn1State*)((int)obj->extra);
         playerObj = Obj_GetPlayerObject();
         if (playerObj != NULL &&
             Vec_distance(&playerObj->anim.worldPosX, &(obj)->anim.worldPosX) < 300.0f &&
@@ -1411,7 +1411,7 @@ void DIMSnowHorn1_update(GameObject* obj)
                     {
                         mainSetBits(GAMEBIT_NW_SnowHown05BB, 1);
                     }
-                    *(int*)&((DIMSnowHorn1State*)data)->baddie.pressedButtons = 0;
+                    ((DIMSnowHorn1State*)data)->baddie.pressedButtons = 0;
                     (*gGameUIInterface)->airMeterShutdown();
                     (*gMapEventInterface)->clearRestartPoint();
                 }

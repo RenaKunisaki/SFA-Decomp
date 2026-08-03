@@ -881,7 +881,7 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
     keepPathControls = 1;
     lbl_803DD44E = 0;
 
-    attachment = *(int*)&((BaddieState*)state)->targetObj;
+    attachment = (int)((BaddieState*)state)->targetObj;
     if ((void*)attachment != NULL)
     {
         dx = ((GameObject*)attachment)->anim.localPosX - ((GameObject*)pos)->anim.localPosX;

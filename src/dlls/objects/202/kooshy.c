@@ -125,7 +125,7 @@ void kooshy_spawnProjectile(GameObject* obj, int state)
                 ((GameObject*)newObj)->anim.velocityZ =
                     0.02f * (((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosZ - fx->posZ);
             }
-            *(int*)&((GameObject*)newObj)->ownerObj = (int)obj;
+            ((GameObject*)newObj)->ownerObj = (void*)obj;
         }
         Sfx_PlayFromObject(obj, SFXTRIG_baddie_blooplaugh2);
     }

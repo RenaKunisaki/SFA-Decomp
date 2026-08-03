@@ -768,7 +768,7 @@ void grimble_update(GameObject* obj) {
             if (state->baddie.targetObj != NULL || state->baddie.hitPoints == 0) {
                 ((ObjHitsPriorityState*)obj->anim.hitReactState)->flags |= 1;
                 if ((*gBaddieControlInterface)->shouldDropTarget(obj, state, (f32)state->aggroRange, 1) != 0) {
-                    *(int*)&state->baddie.targetObj = 0;
+                    state->baddie.targetObj = 0;
                 }
             } else {
                 ((ObjHitsPriorityState*)obj->anim.hitReactState)->flags &= ~1;

@@ -2219,9 +2219,8 @@ void skyUpdateEnvfxAct(int a, int b, u8* cfg)
             ((SkyState*)gSkyState)->skyTextureIds[5] = ((Sky2Config*)cfg)->skyTexId5 + 0xc38;
             ((SkyState*)gSkyState)->skyTextureIds[6] = ((Sky2Config*)cfg)->skyTexId6 + 0xc38;
             ((SkyState*)gSkyState)->skyTextureIds[7] = ((Sky2Config*)cfg)->skyTexId7 + 0xc38;
-            tmp = *(int*)&((SkyState*)gSkyState)->texture1;
-            *(int*)&((SkyState*)gSkyState)->texture1 =
-                *(int*)((u8*)&((SkyState*)gSkyState)->texture0 + ((SkyState*)gSkyState)->swapTexIndex * 4);
+            tmp = (int)((SkyState*)gSkyState)->texture1;
+            ((SkyState*)gSkyState)->texture1 = (void*)*(int*)((u8*)&((SkyState*)gSkyState)->texture0 + ((SkyState*)gSkyState)->swapTexIndex * 4);
             *(int*)((u8*)&((SkyState*)gSkyState)->texture0 + ((SkyState*)gSkyState)->swapTexIndex * 4) = tmp;
             ((SkyState*)gSkyState)->unk250 = -1;
             if ((((u32)(u8)((SkyState*)gSkyState)->flags255 >> 7) & 1) != 0)

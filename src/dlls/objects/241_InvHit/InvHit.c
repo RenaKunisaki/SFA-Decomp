@@ -247,8 +247,8 @@ void InvHit_init(GameObject* obj, InvHitObjectDef* setup) {
         hitState->hitVolumeId = INVHIT_DEFAULT_HIT_VOLUME_ID;
         hitState->activeHitboxMode = 0;
         hitState->resetHitboxMode = 0;
-        *(int*)&hitState->objectHitMask = INVHIT_HIT_MASK;
-        *(int*)&hitState->skeletonHitMask = INVHIT_HIT_MASK;
+        hitState->objectHitMask = INVHIT_HIT_MASK;
+        hitState->skeletonHitMask = INVHIT_HIT_MASK;
         hitState->lateralResponseWeight = 0;
         hitState->axialResponseWeight = 0;
         break;
@@ -268,8 +268,8 @@ void InvHit_init(GameObject* obj, InvHitObjectDef* setup) {
         hitState->hitVolumePriority = INVHIT_SELF_FREE_HIT_PRIORITY;
         hitState->hitVolumeId = 0;
         hitState->resetHitboxMode = 0;
-        *(int*)&hitState->objectHitMask = INVHIT_HIT_MASK;
-        *(int*)&hitState->skeletonHitMask = INVHIT_HIT_MASK;
+        hitState->objectHitMask = INVHIT_HIT_MASK;
+        hitState->skeletonHitMask = INVHIT_HIT_MASK;
         hitState->lateralResponseWeight = 0;
         hitState->axialResponseWeight = 0;
         break;
@@ -283,8 +283,8 @@ void InvHit_init(GameObject* obj, InvHitObjectDef* setup) {
         hitState->resetHitboxMode = 0;
         hitState->hitVolumePriority = INVHIT_ATTACH_HIT_PRIORITY;
         hitState->hitVolumeId = INVHIT_DEFAULT_HIT_VOLUME_ID;
-        *(int*)&hitState->objectHitMask = INVHIT_HIT_MASK;
-        *(int*)&hitState->skeletonHitMask = INVHIT_HIT_MASK;
+        hitState->objectHitMask = INVHIT_HIT_MASK;
+        hitState->skeletonHitMask = INVHIT_HIT_MASK;
         hitState->lateralResponseWeight = 0;
         hitState->axialResponseWeight = 0;
         break;
@@ -301,7 +301,7 @@ void InvHit_init(GameObject* obj, InvHitObjectDef* setup) {
         hitState->shapeFlags = OBJHITS_SHAPE_SPHERE;
         hitState->primaryRadius = INVHIT_HOMING_RADIUS;
         hitState->flags = OBJHITS_PRIORITY_STATE_ENABLED | OBJHITS_PRIORITY_STATE_NO_SEPARATION_RESPONSE;
-        *(int*)&hitState->objectHitMask = INVHIT_HIT_MASK;
+        hitState->objectHitMask = INVHIT_HIT_MASK;
         obj->userData2 = INVHIT_HOMING_LIFETIME;
         {
             GameObject* anchorObj = *(GameObject**)&setup->anchorObj;

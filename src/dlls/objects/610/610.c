@@ -419,7 +419,7 @@ void drakormissile_init(GameObject* obj, DrakorMissileSetup* setup)
     state->state = DRAKORMISSILE_STATE_IDLE;
     state->flags = 0;
     state->timer = 0;
-    *(int*)&state->light = 0;
+    state->light = 0;
     state->fadeTime = 0.0f;
     for (i = 0; i < DRAKORMISSILE_RENDER_TRAIL_COUNT; i++)
     {
