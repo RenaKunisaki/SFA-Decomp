@@ -305,6 +305,7 @@ DELEGATED = [
     ("stmt_sweep", ["--self-test", "--mutate"]),
     ("score_delta_gate", ["--self-test"]),
     ("missing_param_check", ["--selftest"]),
+    ("decl_split_sweep", ["--self-test"]),
 ]
 
 
@@ -634,11 +635,99 @@ def family_oracle(verbose):
     return 1
 
 
+def family_parser(verbose):
+    """The DECLARATION PARSER every ordering sweep permutes through.
+
+    `brute_match.looks_like_decl` decides what a "declaration block" contains,
+    and `brute_match`, `slot_oracle`, `stmt_sweep`, `perm_solve`, `deep_decl`,
+    `expr_sweep` and `decl_split_sweep` all permute exactly what it hands them.
+    If it accepts a STATEMENT, the sweepers reorder side-effecting stores
+    against each other -- and NO gate in this project can see that, because
+    objdiff fuzzy, obj_equal, score_delta_gate and the forced link all compare
+    retail's BYTES and never its MEANING.  A reordered pair of stores that
+    happened to score better would have landed as "a declaration ordering".
+
+    So the parser needs a control of its own: subjects that MUST be refused,
+    and an ablation that removes the guard and shows the refusal was the guard
+    doing work rather than something else declining them anyway.
+    """
+    print("\n=== PARSER (what the ordering sweeps are allowed to permute) ===")
+    sys.path.insert(0, os.path.join(REPO, "tools"))
+    import brute_match as B                                   # noqa: E402
+    bad = 0
+
+    must_refuse = [
+        "tri->edgeOutBits = 0;",
+        "cfg.startPosX += spawnParams->posX;",
+        "slot->scaleTarget = slot->scaleCurrent;",
+        "obj->anim.localPosX = knockbackDistance * -obj->anim.velocityX;",
+        "state->dirX /= length;",
+    ]
+    must_accept = [
+        "int x;",
+        "GameObject* obj = p;",
+        "f32 *a, *b;",
+        "u8 buf[4];",
+        "ShaderRomListSlot* romListSlot = (ShaderRomListSlot*)(base + 4) + i;",
+    ]
+    ref = [s for s in must_refuse if B.looks_like_decl(s)]
+    acc = [s for s in must_accept if not B.looks_like_decl(s)]
+    bad += bool(ref) + bool(acc)
+    print("  [%s] a member-access STORE is not a declaration  (%d/%d refused)"
+          % ("held" if not ref else "ACCEPTED", len(must_refuse) - len(ref),
+             len(must_refuse)))
+    for s in ref:
+        print("        *** accepted: %s" % s)
+    print("  [%s] a real declaration still parses  (%d/%d accepted)"
+          % ("held" if not acc else "REFUSED", len(must_accept) - len(acc),
+             len(must_accept)))
+    for s in acc:
+        print("        *** refused: %s" % s)
+
+    # ABLATION: remove the member-access guard and require the subjects to be
+    # accepted again.  If they are still refused, something else is declining
+    # them and the guard is decorative.
+    src = open(os.path.join(REPO, "tools", "brute_match.py")).read()
+    guard = 'if "->" in head or "." in head:\n        return False'
+    if guard not in src:
+        print("  [MISSING] the member-access guard is not in brute_match.py")
+        return bad + 1
+    ns = {"__file__": os.path.join(REPO, "tools", "brute_match.py"),
+          "__name__": "brute_match_ablated"}
+    exec(compile(src.replace(guard, "pass"), "<ablated>", "exec"), ns)
+    ablated = ns["looks_like_decl"]
+    revived = [s for s in must_refuse if ablated(s)]
+    ok = len(revived) == len(must_refuse)
+    bad += not ok
+    print("  [%s] ablating the guard makes the parser accept all %d stores "
+          "again (%d)" % ("held" if ok else "VACUOUS", len(must_refuse),
+                          len(revived)))
+
+    # And the ablation must be VISIBLE where it matters: a block whose stores
+    # are order-dependent.  `slot->scaleCurrent = v; slot->scaleTarget =
+    # slot->scaleCurrent;` reads a value the previous store wrote, so swapping
+    # the two changes the computation -- which is the whole point.
+    dependent = ("    slot->scaleCurrent = scaleVal;\n"
+                 "    slot->scaleTarget = slot->scaleCurrent;\n")
+    body = "void f(void) {\n" + dependent + "    g();\n}\n"
+    o, e = B.find_function_body(body, "f")
+    now = B.collect_decl_blocks(body, o, e)
+    then = ns["collect_decl_blocks"](body, o, e)
+    ok = (not now) and len(then) == 1 and len(then[0]["items"]) == 2
+    bad += not ok
+    print("  [%s] an ORDER-DEPENDENT pair of stores is no longer a permutable "
+          "block (was %d item(s), now %d)"
+          % ("held" if ok else "STILL PERMUTABLE",
+             len(then[0]["items"]) if then else 0,
+             len(now[0]["items"]) if now else 0))
+    return bad
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--family",
                     choices=("scope", "object", "delegate", "build",
-                             "report", "oracle"),
+                             "report", "oracle", "parser"),
                     action="append")
     ap.add_argument("--unit-object",
                     default="build/GSAE01/obj/main/camera.o",
@@ -656,8 +745,11 @@ def main():
         print("build:    direct_build unitfuzzy   (opt-in: writes objects)")
         print("report:   build/GSAE01/report.json")
         print("oracle:   slot_oracle              (opt-in: writes source)")
+        print("parser:   brute_match.looks_like_decl -- what every ordering "
+              "sweep is allowed to permute")
         return 0
-    fams = a.family or ["scope", "object", "delegate", "report"]
+    fams = a.family or ["scope", "object", "delegate", "report",
+                        "parser"]
     bad = 0
     if "scope" in fams:
         bad += family_scope(a.verbose)
@@ -671,6 +763,8 @@ def main():
         bad += family_report(a.verbose)
     if "oracle" in fams:
         bad += family_oracle(a.verbose)
+    if "parser" in fams:
+        bad += family_parser(a.verbose)
     print("\nvacuity audit: %s" % ("ALL INSTRUMENTS SCREAMED" if not bad
                                    else "%d INSTRUMENT(S) STAYED SILENT" % bad))
     return 1 if bad else 0

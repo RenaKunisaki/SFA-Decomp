@@ -457,6 +457,17 @@ def looks_like_decl(core: str) -> bool:
     head = rest[:stop]
     if "(" in head:
         return False
+    # A DECLARATION INTRODUCES A NAME.  `tri->edgeOutBits = 0;` and
+    # `cfg.startPosX += p->x;` match the `Ident ... ident` shape above but
+    # declare nothing -- they are STATEMENTS, and absorbing them into a
+    # declaration block means the sweepers permute side-effecting stores
+    # against each other.  No gate in this project can see that: objdiff,
+    # obj_equal and the forced link all compare retail's BYTES, never its
+    # MEANING, so a reordered pair of stores that happens to score better
+    # would have landed as a "declaration ordering".  Member access in the
+    # declarator position is the tell, and no C declaration has one.
+    if "->" in head or "." in head:
+        return False
     # head must contain another identifier (the variable name), possibly via '*'
     import re as _re
     if _re.search(r"[A-Za-z_]\w*", head) or "*" in head:
