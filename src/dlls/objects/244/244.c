@@ -418,14 +418,14 @@ int DoorF4_getObjectTypeId(void) {
     return DOORF4_OBJECT_TYPE_ID;
 }
 
-void DoorF4_free(int obj) {
-    DoorF4State* state = ((GameObject*)obj)->extra;
+void DoorF4_free(GameObject* obj) {
+    DoorF4State* state = obj->extra;
     if (state->openSfxId != 0) {
-        if (Sfx_IsPlayingFromObject((GameObject*)obj, state->openSfxId) != 0) {
-            Sfx_StopFromObject((GameObject*)obj, state->openSfxId);
+        if (Sfx_IsPlayingFromObject(obj, state->openSfxId) != 0) {
+            Sfx_StopFromObject(obj, state->openSfxId);
         }
     }
-    objFreeObjectType(obj, DOORF4_OBJECT_GROUP);
+    objFreeObjectType((int)obj, DOORF4_OBJECT_GROUP);
 }
 
 void DoorF4_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {

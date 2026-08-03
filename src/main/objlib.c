@@ -623,19 +623,19 @@ int Obj_IsObjectAlive(GameObject* objArg) {
     return alive;
 }
 
-bool ObjTrigger_UpdateIdBlockFlag(int obj) {
+bool ObjTrigger_UpdateIdBlockFlag(GameObject* obj) {
     int disguised;
     u8 flags;
 
     disguised = (int)Obj_GetPlayerObject();
     disguised = playerIsDisguised((GameObject*)disguised);
     if (disguised != 0) {
-        flags = *(u8*)(obj + OBJTRIGGER_FLAGS_OFFSET) | OBJTRIGGER_ID_BLOCK_FLAG;
-        *(u8*)(obj + OBJTRIGGER_FLAGS_OFFSET) = flags;
+        flags = obj->anim.resetHitboxFlags | OBJTRIGGER_ID_BLOCK_FLAG;
+        obj->anim.resetHitboxFlags = flags;
         return false;
     }
-    flags = *(u8*)(obj + OBJTRIGGER_FLAGS_OFFSET) & ~OBJTRIGGER_ID_BLOCK_FLAG;
-    *(u8*)(obj + OBJTRIGGER_FLAGS_OFFSET) = flags;
+    flags = obj->anim.resetHitboxFlags & ~OBJTRIGGER_ID_BLOCK_FLAG;
+    obj->anim.resetHitboxFlags = flags;
     return true;
 }
 
@@ -812,13 +812,13 @@ int ObjContact_AddCallback(GameObject* obj, GameObject* otherObj, ObjContactCall
     return 1;
 }
 
-int ObjTrigger_IsSetById(int obj, int eventId) {
+int ObjTrigger_IsSetById(GameObject* obj, int eventId) {
     int playerState;
     int triggerFlags;
     int flagEnabled;
     int flagBlocked;
 
-    triggerFlags = *(u8*)(obj + OBJTRIGGER_FLAGS_OFFSET);
+    triggerFlags = obj->anim.resetHitboxFlags;
     flagEnabled = triggerFlags & OBJTRIGGER_ID_ENABLE_FLAG;
     if (flagEnabled != 0) {
         flagBlocked = triggerFlags & OBJTRIGGER_ID_BLOCK_FLAG;
@@ -834,8 +834,7 @@ int ObjTrigger_IsSetById(int obj, int eventId) {
     return 0;
 }
 
-int ObjTrigger_IsSet(int objPtr) {
-    GameObject* obj = (GameObject*)objPtr;
+int ObjTrigger_IsSet(GameObject* obj) {
     u32 flags;
     int playerState;
     int triggerFlags;

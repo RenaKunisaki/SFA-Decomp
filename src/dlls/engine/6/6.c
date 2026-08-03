@@ -407,7 +407,7 @@ void sky2ApplyModelTint(GameObject* obj)
     }
 }
 
-void sky2ApplyTextColor(int obj)
+void sky2ApplyTextColor(void* context)
 {
     SkySlotAnim* s = (SkySlotAnim*)gSky2State;
     f32 v;
@@ -430,11 +430,11 @@ void sky2ApplyTextColor(int obj)
             {
                 alpha = (int)(255.0f - 255.0f * (v / 15.0f));
             }
-            setTextColor((void*)obj, (u8)s->colorR, (u8)s->colorG, (u8)s->colorB, (u8)alpha);
+            setTextColor(context, (u8)s->colorR, (u8)s->colorG, (u8)s->colorB, (u8)alpha);
         }
         else
         {
-            setTextColor((void*)obj, 255, 255, 255, 0);
+            setTextColor(context, 255, 255, 255, 0);
         }
     }
 }

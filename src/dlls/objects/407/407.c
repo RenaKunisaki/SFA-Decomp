@@ -136,8 +136,8 @@ void dll407_render(GameObject* obj, int renderArg2, int renderArg3, int renderAr
 void dll407_hitDetect(void) {
 }
 
-void dll407_update(int objectAddress) {
-    Dll197State* state = ((GameObject*)objectAddress)->extra;
+void dll407_update(GameObject* objectAddress) {
+    Dll197State* state = objectAddress->extra;
     Dll69EffectParams resourceParams;
     Dll197EffectSpawnParams effectSpawnParams;
     GameObject* player;
@@ -149,16 +149,16 @@ void dll407_update(int objectAddress) {
     resourceParams = gDll197EffectParamTemplate;
 
     player = Obj_GetPlayerObject();
-    distance = Vec_distance(&player->anim.worldPosX, &((GameObject*)objectAddress)->anim.worldPosX);
-    if (Sfx_IsPlayingFromObjectChannel((GameObject*)objectAddress, DLL197_PROXIMITY_SFX_CHANNEL) != 0) {
+    distance = Vec_distance(&player->anim.worldPosX, &objectAddress->anim.worldPosX);
+    if (Sfx_IsPlayingFromObjectChannel(objectAddress, DLL197_PROXIMITY_SFX_CHANNEL) != 0) {
         if (distance >= DLL197_PROXIMITY_DISTANCE && state->active != 0) {
-            Sfx_StopObjectChannel((GameObject*)objectAddress, DLL197_PROXIMITY_SFX_CHANNEL);
+            Sfx_StopObjectChannel(objectAddress, DLL197_PROXIMITY_SFX_CHANNEL);
         }
     } else if (distance < DLL197_PROXIMITY_DISTANCE && state->active != 0) {
-        Sfx_PlayFromObject((GameObject*)objectAddress, SFXTRIG_mushdizzylp12);
+        Sfx_PlayFromObject(objectAddress, SFXTRIG_mushdizzylp12);
     }
 
-    objUpdateOpacity((GameObject*)objectAddress);
+    objUpdateOpacity(objectAddress);
 
     if (state->hitCooldown > 0) {
         state->hitCooldown -= framesThisStep;
@@ -174,7 +174,7 @@ void dll407_update(int objectAddress) {
 
     effectSpawnParams.scale = -2.0f;
     state->previousActive = state->active;
-    if (ObjHits_GetPriorityHit((GameObject*)objectAddress, 0, 0, 0) != 0 ||
+    if (ObjHits_GetPriorityHit(objectAddress, 0, 0, 0) != 0 ||
         (state->hitCooldown != 0 && state->hitCooldown <= 0x14)) {
         state->active = 1 - state->active;
         if (state->active != 0) {
@@ -200,7 +200,7 @@ void dll407_update(int objectAddress) {
 
     if (state->active != 0 && state->sparkTimer <= 0 && state->sparkArmed != 0) {
         state->sparkArmed = 0;
-        Sfx_PlayFromObject((GameObject*)objectAddress, SFXTRIG_cvdrip1c);
+        Sfx_PlayFromObject(objectAddress, SFXTRIG_cvdrip1c);
     }
 
     if (state->active == state->previousActive) {
@@ -212,7 +212,7 @@ void dll407_update(int objectAddress) {
         stageEffectBase = state->stage * 2;
         resourceParams.param1 = stageEffectBase + DLL197_STAGE_EFFECT_PARAM1_BASE;
         resourceParams.param2 = stageEffectBase + DLL197_STAGE_EFFECT_PARAM2_BASE;
-        (*resource)->spawn((GameObject*)objectAddress, 1, &effectSpawnParams, DLL197_EFFECT_SPAWN_FLAGS, -1,
+        (*resource)->spawn(objectAddress, 1, &effectSpawnParams, DLL197_EFFECT_SPAWN_FLAGS, -1,
                            &resourceParams);
         Resource_Release(resource);
 
@@ -236,9 +236,9 @@ void dll407_update(int objectAddress) {
         state->sparkArmed = 1;
         state->sparkTimer = 1;
     } else {
-        Sfx_StopObjectChannel((GameObject*)objectAddress, DLL197_SHUTDOWN_SFX_CHANNEL);
+        Sfx_StopObjectChannel(objectAddress, DLL197_SHUTDOWN_SFX_CHANNEL);
         (*gModgfxInterface)->detachSource((void*)objectAddress);
-        (*gExpgfxInterface)->freeSource(objectAddress);
+        (*gExpgfxInterface)->freeSource((u32)objectAddress);
         if (state->gameBit != -1 && mainGetBit(state->gameBit) != 0) {
             mainSetBits(state->gameBit, 0);
         }

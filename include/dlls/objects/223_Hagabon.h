@@ -57,7 +57,7 @@ STATIC_ASSERT(sizeof(HagabonState) == 0x28);
 void Hagabon_updateMovement(GameObject* obj, HagabonState* state);
 int Hagabon_getExtraSize(void);
 int Hagabon_getObjectTypeId(void);
-void Hagabon_free(int objAddress);
+void Hagabon_free(GameObject* objAddress);
 void Hagabon_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible);
 void Hagabon_hitDetect(GameObject* obj);
 void Hagabon_update(GameObject* obj);

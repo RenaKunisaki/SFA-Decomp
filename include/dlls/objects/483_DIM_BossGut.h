@@ -53,7 +53,7 @@ void DIM_BossGut2_free(GameObject* obj);
 void DIM_BossGut2_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void DIM_BossGut2_hitDetect(void);
 void DIM_BossGut2_update(GameObject* obj);
-void DIM_BossGut2_init(GameObject* obj, int placementAddress, int isAltVariant);
+void DIM_BossGut2_init(GameObject* obj, u8* placementAddress, int isAltVariant);
 void DIM_BossGut2_release(void);
 void DIM_BossGut2_initialise(void);
 

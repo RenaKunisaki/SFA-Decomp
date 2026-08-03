@@ -55,7 +55,7 @@ void drearthcal_update(GameObject* obj)
         {
             setAButtonIcon(0x15);
         }
-        if (ObjTrigger_IsSet((int)obj) != 0)
+        if (ObjTrigger_IsSet(obj) != 0)
         {
             (*gObjectTriggerInterface)->runSequence(1, (void*)obj, -1);
         }
@@ -86,7 +86,7 @@ void drearthcal_update(GameObject* obj)
         {
             setAButtonIcon(0x14);
         }
-        if (ObjTrigger_IsSet((int)obj) != 0)
+        if (ObjTrigger_IsSet(obj) != 0)
         {
             (*gObjectTriggerInterface)->runSequence(2, (void*)obj, -1);
         }

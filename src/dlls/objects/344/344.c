@@ -530,19 +530,17 @@ void gunpowderBarrel_render(GameObject* obj, int renderArg2, int renderArg3, int
     }
 }
 
-void gunpowderBarrel_hitDetect(int obj) {
-    GameObject* barrel;
+void gunpowderBarrel_hitDetect(GameObject* barrel) {
     GunpowderBarrelState* state;
     f32 capturedVelocity[3];
     f32 collisionNormal[3];
     GunpowderBarrelCollisionScratch collision;
 
-    barrel = (GameObject*)obj;
     state = barrel->extra;
 
     if (Obj_IsObjectAlive(state->linkedTimerObject) == 0) {
         if (state->linkedTimerObject != NULL) {
-            ObjLink_DetachChild((GameObject*)obj, state->linkedTimerObject);
+            ObjLink_DetachChild(barrel, state->linkedTimerObject);
             state->linkedTimerObject = NULL;
         }
     }
@@ -562,7 +560,7 @@ void gunpowderBarrel_hitDetect(int obj) {
     }
 
     if (state->queuedHitObject != NULL) {
-        Obj_SetParent((GameObject*)obj, state->queuedHitObject, 1);
+        Obj_SetParent(barrel, state->queuedHitObject, 1);
         state->queuedHitObject = NULL;
     }
 
@@ -592,14 +590,14 @@ void gunpowderBarrel_hitDetect(int obj) {
 
     if (state->heldByCarryInterface == 0 &&
         trackGetLineIntersect(&barrel->anim.previousLocalPosX, &barrel->anim.localPosX, 8.0f, 1, &collision.hit,
-                           (GameObject*)obj, 8, -1, 0xff, 0) != 0) {
+                           barrel, 8, -1, 0xff, 0) != 0) {
         if (collision.hit.kind == 0x14) {
             state->detonationTrigger = GUNPOWDER_BARREL_DETONATION_TRIGGER_IMPACT;
         }
 
         if (state->heldFlags.playerHeld != 0 && collision.hit.kind == 3) {
-            gunpowderBarrel_setPlayerHeldState((GameObject*)obj, 0);
-            objFreeObjectType(obj, GUNPOWDER_BARREL_LOOSE_OBJECT_GROUP);
+            gunpowderBarrel_setPlayerHeldState(barrel, 0);
+            objFreeObjectType((int)barrel, GUNPOWDER_BARREL_LOOSE_OBJECT_GROUP);
         } else {
             collisionNormal[0] = collision.hit.normalX;
             collisionNormal[1] = collision.hit.normalY;
@@ -619,7 +617,7 @@ void gunpowderBarrel_hitDetect(int obj) {
 
             if (state->impactSoundCooldown > 60.0f) {
                 if (PSVECMag(&state->throwVelocity) > gGunpowderBarrelImpactSoundSpeedThreshold) {
-                    Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_statue_waterfall);
+                    Sfx_PlayFromObject(barrel, SFXTRIG_statue_waterfall);
                 }
                 state->impactSoundCooldown = 0.0f;
             }

@@ -119,7 +119,7 @@ int kytesmum_updateQuestStateCallback(GameObject* obj, int unused, u8* arg)
         (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         return 1;
     }
-    if (ObjTrigger_IsSet((int)obj) != 0)
+    if (ObjTrigger_IsSet(obj) != 0)
     {
         (obj)->animEventCallback = kytesmum_idleCallback;
         (*gObjectTriggerInterface)->runSequence(next, (void*)obj, -1);
@@ -288,12 +288,12 @@ int kytesmum_getObjectTypeId(void)
     return KYTESMUM_OBJECT_TYPE_ID;
 }
 
-void kytesmum_free(int obj)
+void kytesmum_free(GameObject* obj)
 {
-    KytesMumSetup* setup = (KytesMumSetup*)((GameObject*)obj)->anim.placementData;
+    KytesMumSetup* setup = (KytesMumSetup*)(obj)->anim.placementData;
     if (setup->mode != 0)
     {
-        objFreeObjectType(obj, KYTESMUM_OBJGROUP);
+        objFreeObjectType((int)obj, KYTESMUM_OBJGROUP);
     }
 }
 

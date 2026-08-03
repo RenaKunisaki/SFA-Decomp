@@ -393,12 +393,12 @@ void landed_arwing_update(GameObject* obj) {
 
     switch (state->sequenceState) {
     case LANDED_ARWING_SEQUENCE_STATE_DIRECT:
-        if (ObjTrigger_IsSet((int)obj) != 0) {
+        if (ObjTrigger_IsSet(obj) != 0) {
             landed_arwing_runTargetSequence(obj);
         }
         break;
     case LANDED_ARWING_SEQUENCE_STATE_TRIGGER:
-        if (ObjTrigger_IsSet((int)obj) != 0) {
+        if (ObjTrigger_IsSet(obj) != 0) {
             state->sequenceState = LANDED_ARWING_SEQUENCE_STATE_CONFIRM;
             showFuelCellTokenConfirmMenu();
         }

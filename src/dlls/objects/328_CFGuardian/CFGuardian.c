@@ -421,7 +421,7 @@ int cfguardian_updateMain(GameObject* obj) {
     state->stateFlags &= ~CFGUARDIAN_STATE_PATH_FLYING;
     state->moveSpeed = 0.005f;
     player = Obj_GetPlayerObject();
-    ObjTrigger_UpdateIdBlockFlag((int)obj);
+    ObjTrigger_UpdateIdBlockFlag(obj);
     if (placement->variant == 1 && mainGetBit(GAMEBIT_CF_PowerOn) == 0) {
         obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         return 0;
@@ -731,7 +731,7 @@ int cfguardian_updateMain(GameObject* obj) {
         break;
     }
     dll_2E_updateLookAt(obj, &state->moveLib);
-    if (ObjTrigger_IsSet((int)obj) != 0) {
+    if (ObjTrigger_IsSet(obj) != 0) {
         buttonDisable(0, PAD_BUTTON_A);
         if ((*gGameUIInterface)->isItemBeingUsed(CFGUARDIAN_WATER_SPELL_STONE_EVENT) != 0) {
             mainSetBits(GAMEBIT_WaterSpellStone1_4AB, 1);

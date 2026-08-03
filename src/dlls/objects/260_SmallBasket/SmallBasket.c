@@ -691,7 +691,7 @@ void SmallBasket_update(GameObject* obj) {
             if (state->carryState == SMALLBASKET_CARRY_IDLE) {
                 nextState[0] = 0;
                 if (((buttonGetDisabled(0) & PAD_BUTTON_A) == 0) && (obj->userData2 == 0) &&
-                    (ObjTrigger_IsSet((int)obj) != 0)) {
+                    (ObjTrigger_IsSet(obj) != 0)) {
                     state->carryAngle = -0x8000;
                     state->carryParam = 0;
                     ObjHits_DisableObject(obj);

@@ -203,7 +203,7 @@ void sh_queenearthwalker_updateFeeding(GameObject* obj, QueenEarthWalkerState* s
             }
         }
         Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 4);
-        if (ObjTrigger_IsSetById((int)obj, GAMEBIT_ITEM_WhiteShroom_Count) != 0) {
+        if (ObjTrigger_IsSetById(obj, GAMEBIT_ITEM_WhiteShroom_Count) != 0) {
             state->flags |= QUEEN_EARTH_WALKER_FLAG_ACTIVE;
             total = mainGetBit(GAMEBIT_ITEM_WhiteShroom_Count);
             total += mainGetBit(GAMEBIT_ITEM_WhiteGrubTub_Used);
@@ -386,7 +386,7 @@ void sh_queenearthwalker_update(GameObject* obj) {
     stateFlags = state->flags;
     if ((stateFlags & QUEEN_EARTH_WALKER_FLAG_ACTIVE) == 0) {
         state->flags &= ~QUEEN_EARTH_WALKER_FLAG_TARGETING;
-        if (ObjTrigger_IsSet((int)obj) != 0 && obj->anim.hitVolumeBounds->flags != 4) {
+        if (ObjTrigger_IsSet(obj) != 0 && obj->anim.hitVolumeBounds->flags != 4) {
             eventIndex = randomGetRange(1, *state->eventTable);
             state->flags |= QUEEN_EARTH_WALKER_FLAG_TARGETING;
             (*gObjectTriggerInterface)->runSequence(state->eventTable[eventIndex], obj, -1);

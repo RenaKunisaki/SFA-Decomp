@@ -59,31 +59,30 @@ static const f32 gWcEarthWalkerApproachPlayerDistance = 200.0f;
 static const f32 gWcEarthWalkerChaseMoveSpeed = 0.012f;
 static const f32 gWcEarthWalkerWalkMoveSpeed = 0.005f;
 
-int earthwalker_SeqFn(int obj, int unused, ObjSeqState* animUpdate, int shouldAdvanceMove)
+int earthwalker_SeqFn(GameObject* ewObj, int unused, ObjSeqState* animUpdate, int shouldAdvanceMove)
 {
-    GameObject* ewObj = (GameObject*)obj;
     EarthWalkerState* ewState = ewObj->extra;
     int i;
 
     ewState->flags &= ~1;
-    characterDoEyeAnims((GameObject*)obj, &ewState->eyeAnimState);
-    if (dll_2E_updateSequenceTurn((GameObject*)obj, (ObjSeqState*)animUpdate, (MoveLibState*)ewState, 0, 0) != 0)
+    characterDoEyeAnims(ewObj, &ewState->eyeAnimState);
+    if (dll_2E_updateSequenceTurn(ewObj, (ObjSeqState*)animUpdate, (MoveLibState*)ewState, 0, 0) != 0)
     {
         return 0;
     }
     if ((s8)shouldAdvanceMove != 0)
     {
-        ObjAnim_AdvanceCurrentMove((int)obj, gEarthWalkerAnimAdvanceRate, timeDelta, 0);
+        ObjAnim_AdvanceCurrentMove((int)ewObj, gEarthWalkerAnimAdvanceRate, timeDelta, 0);
     }
     for (i = 0; i < animUpdate->eventCount; i++)
     {
         switch (animUpdate->eventIds[i])
         {
         case 1:
-            getEnvfxActImmediately((void*)obj, (void*)obj, 509, 0);
+            getEnvfxActImmediately((void*)ewObj, (void*)ewObj, 509, 0);
             break;
         case 2:
-            getEnvfxActImmediately((void*)obj, (void*)obj, 512, 0);
+            getEnvfxActImmediately((void*)ewObj, (void*)ewObj, 512, 0);
             break;
         }
     }

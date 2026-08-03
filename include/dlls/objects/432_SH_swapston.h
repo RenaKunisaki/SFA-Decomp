@@ -55,7 +55,7 @@ STATIC_ASSERT(offsetof(WarpStoneState, behaviorFlags) == 0xD5);
 STATIC_ASSERT(sizeof(WarpStoneState) == 0xD8);
 
 void warpstone_updateDustEffects(GameObject* obj);
-u32 warpstone_advanceAnimEvents(int obj, f32 moveStepScale);
+u32 warpstone_advanceAnimEvents(GameObject* lantern, f32 moveStepScale);
 u32 warpstoneProbePlayerAnimState(void);
 int warpstone_testEvent(u32 obj, u32 unused, int option);
 void warpstone_loadBaseUi(void);

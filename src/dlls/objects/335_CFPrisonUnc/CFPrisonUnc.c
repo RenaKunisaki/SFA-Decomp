@@ -113,7 +113,7 @@ void cfPrisonUncle_update(GameObject* obj) {
             }
         }
     }
-    ObjTrigger_UpdateIdBlockFlag((int)obj);
+    ObjTrigger_UpdateIdBlockFlag(obj);
     state->cageOpen = mainGetBit(GAMEBIT_CF_PrisonCageOpened);
     if (state->cageOpen == 0) {
         player = Obj_GetPlayerObject();
@@ -122,7 +122,7 @@ void cfPrisonUncle_update(GameObject* obj) {
         if (randomGetRange(0, CFPRISONUNCLE_MUTTER_RANDOM_RANGE) == 0) {
             objSoundStart((int)obj, &state->soundState, SFXbaddie_kooshy_call);
         }
-        if (ObjTrigger_IsSet((int)obj) != 0) {
+        if (ObjTrigger_IsSet(obj) != 0) {
             s16* modelVector;
             characterAimHeadAtTarget(obj, player, &((CfPrisonUncleState*)obj->extra)->eyeAnimState,
                                      CFPRISONUNCLE_HEAD_AIM_LIMIT, 0, 3);

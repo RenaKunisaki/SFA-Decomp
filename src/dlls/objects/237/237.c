@@ -451,7 +451,7 @@ void collectible_checkProximityPickup(GameObject* obj, CollectibleState* state) 
             state->pickupLatch |= COLLECTIBLE_PICKUP_LATCHED;
             break;
         default:
-            if (ObjTrigger_IsSet((int)obj) != 0) {
+            if (ObjTrigger_IsSet(obj) != 0) {
                 mainSetBits(GAMEBIT_EnableCMenu, 1);
                 state->pickupMsgValue = placement->collectGameBit;
                 ObjMsg_SendToObject(player, COLLECTIBLE_MSG_IN_RANGE, (void*)obj,

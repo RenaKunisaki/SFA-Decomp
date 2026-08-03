@@ -32,7 +32,7 @@ int drakorenergy_getObjectTypeId(void);
 void drakorenergy_free(void);
 void drakorenergy_render(GameObject* obj, int p1, int p2, int p3, int p4, s8 visible);
 void drakorenergy_hitDetect(void);
-void drakorenergy_update(int obj);
+void drakorenergy_update(GameObject* o);
 void drakorenergy_init(GameObject* obj, DrakorenergyPlacement* placement);
 void drakorenergy_release(void);
 void drakorenergy_initialise(void);

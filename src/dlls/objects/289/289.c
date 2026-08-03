@@ -22,7 +22,7 @@ int infotext_getExtraSize(void) {
 void infotext_update(GameObject* obj) {
     InfoTextState* state = obj->extra;
 
-    if (ObjTrigger_IsSet((int)obj) != 0 && isAreaNameTextActive() == 0) {
+    if (ObjTrigger_IsSet(obj) != 0 && isAreaNameTextActive() == 0) {
         state->displayTimer = INFO_TEXT_DISPLAY_DURATION;
     }
     if (state->displayTimer > 0.0f) {

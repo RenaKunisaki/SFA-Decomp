@@ -58,7 +58,7 @@ void ccPedestal_updateFireGemGate(GameObject* obj, CCPedestalState* state) {
         do {
             if (mainGetBit(GAMEBIT_ITEM_FireGem_Count) != 0) {
                 obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
-                if (ObjTrigger_IsSetById((int)obj, CC_PEDESTAL_FIRE_GEM_TRIGGER_ID) != 0) {
+                if (ObjTrigger_IsSetById(obj, CC_PEDESTAL_FIRE_GEM_TRIGGER_ID) != 0) {
                     (*gObjectTriggerInterface)->runSequence(CC_PEDESTAL_GATE_SEQUENCE, obj, -1);
                     gameBitDecrement(GAMEBIT_ITEM_FireGem_Count);
                     activationTriggered = 1;
@@ -94,7 +94,7 @@ void ccPedestal_updateFireGemSource(GameObject* obj, CCPedestalState* state) {
         int activationTriggered;
 
         Obj_SetActiveModelIndex(obj, CC_PEDESTAL_SOURCE_IDLE_MODEL);
-        if (ObjTrigger_IsSet((int)obj) != 0) {
+        if (ObjTrigger_IsSet(obj) != 0) {
             (*gObjectTriggerInterface)->runSequence(CC_PEDESTAL_SOURCE_SEQUENCE, obj, -1);
             gameBitIncrement(GAMEBIT_ITEM_FireGem_Count);
             activationTriggered = 1;

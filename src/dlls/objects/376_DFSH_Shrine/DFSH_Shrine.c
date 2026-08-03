@@ -230,14 +230,13 @@ ObjectDescriptor gDFSHShrineObjDescriptor = {
 void dfshShrine_hitDetect(void) {
 }
 
-void dfshShrine_update(int objArg) {
+void dfshShrine_update(GameObject* obj) {
     u16* rewardTableCursor[1];
     DFSHShrineState* state;
     GameObject* player;
     s16 i;
     u8 anyMissing;
     u16* required;
-    GameObject* obj = (GameObject*)objArg;
 
     rewardTableCursor[0] = gDFSHShrineRewardTable;
     state = obj->extra;

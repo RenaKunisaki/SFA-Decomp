@@ -27,7 +27,7 @@ void BombPlantingSpot_update(GameObject* obj) {
         obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
     }
 
-    if (ObjTrigger_IsSetById((int)obj, GAMEBIT_ITEM_BombSpore_Count) != 0) {
+    if (ObjTrigger_IsSetById(obj, GAMEBIT_ITEM_BombSpore_Count) != 0) {
         gameBitDecrement(GAMEBIT_ITEM_BombSpore_Count);
         mainSetBits(placement->plantedGameBit, 1);
         (*gObjectTriggerInterface)->runSequence(1, obj, -1);

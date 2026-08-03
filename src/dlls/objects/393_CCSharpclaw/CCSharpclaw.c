@@ -69,7 +69,7 @@ void ccSharpClawPad_update(GameObject* obj) {
             obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_PROMPT_SUPPRESSED;
         }
         state = obj->extra;
-        if (ObjTrigger_IsSet((int)obj) != 0 && isAreaNameTextActive() == 0) {
+        if (ObjTrigger_IsSet(obj) != 0 && isAreaNameTextActive() == 0) {
             state->helpTimer = CC_SHARPCLAW_PAD_HELP_DURATION;
         }
         if (state->helpTimer > 0.0f) {

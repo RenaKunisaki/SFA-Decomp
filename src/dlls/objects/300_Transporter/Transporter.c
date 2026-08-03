@@ -199,7 +199,7 @@ void Transporter_updateInteraction(GameObject* obj) {
             gameBit = placement->enableGameBit;
             if (((gameBit == TRANSPORTER_GAME_BIT_NONE) ||
                  ((mainGetBit(gameBit) != 0) && ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0))) &&
-                (ObjTrigger_IsSet((int)obj) != 0)) {
+                (ObjTrigger_IsSet(obj) != 0)) {
                 (*gObjectTriggerInterface)->runSequence(TRANSPORTER_SEQUENCE_OUTBOUND, (void*)obj, -1);
                 obj->userData1 = state->activateDelay;
                 state->triggerMode = TRANSPORTER_TRIGGER_INTERACTION;

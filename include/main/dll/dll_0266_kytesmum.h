@@ -62,7 +62,7 @@ void kytesmum_release(void);
 void kytesmum_update(GameObject* obj);
 int kytesmum_idleCallback(void);
 void kytesmum_render(GameObject* obj, int p2, int p3, int p4, int p5, char visible);
-void kytesmum_free(int obj);
+void kytesmum_free(GameObject* obj);
 int kytesmum_spawnInteractionCallback(GameObject* obj);
 int kytesmum_updateInteractionRangeCallback(GameObject* obj, int unused, u8* arg);
 int kytesmum_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);

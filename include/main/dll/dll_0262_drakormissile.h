@@ -40,7 +40,7 @@ int drakormissile_getObjectTypeId(void);
 void drakormissile_hitDetect(void);
 void drakormissile_initialise(void);
 void drakormissile_release(void);
-void drakormissile_update(int obj);
+void drakormissile_update(GameObject* o);
 int drakormissile_isFadingOut(GameObject* obj);
 void drakormissile_abortStraightFlight(GameObject* obj);
 void drakormissile_requestFree(GameObject* obj);

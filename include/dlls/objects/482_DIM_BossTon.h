@@ -59,7 +59,7 @@ void DIMbosstonsil_render(GameObject* obj, u32 renderArg2, u32 renderArg3, u32 r
                           char visible);
 void DIMbosstonsil_hitDetect(GameObject* obj);
 void DIMbosstonsil_update(GameObject* obj);
-void DIMbosstonsil_init(GameObject* obj, u32 placementAddress, int isAltVariant);
+void DIMbosstonsil_init(GameObject* obj, u8* placementAddress, int isAltVariant);
 void DIMbosstonsil_release(void);
 void DIMbosstonsil_initialise(void);
 

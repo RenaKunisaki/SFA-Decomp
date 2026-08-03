@@ -25,7 +25,7 @@ STATIC_ASSERT(offsetof(Dll22CMapData, gameBit) == 0x20);
 int dll_22C_SeqFn(void);
 int dll_22C_getExtraSize_ret_16(void);
 int dll_22C_getObjectTypeId(void);
-void dll_22C_free(int p1);
+void dll_22C_free(GameObject* p1);
 void dll_22C_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void dll_22C_hitDetect_nop(void);
 void dll_22C_update(GameObject* obj);

@@ -228,14 +228,12 @@ static inline Dim2PlayerInterface* DIM2_GetPlayerInterface(void) {
     return (Dim2PlayerInterface*)*gPlayerInterface;
 }
 
-int DIMbossAnim_updateBossHitReaction(int obj, int statePtr) {
+int DIMbossAnim_updateBossHitReaction(int obj, BaddieState* state) {
     DimAnimTable* moveTable;
-    BaddieState* state;
     s16 targetParam;
     u16 targetDistance;
     u16 targetAnim[2];
 
-    state = (BaddieState*)statePtr;
     moveTable = (DimAnimTable*)lbl_80325960;
     if (state->moveDone != 0 || state->moveJustStartedB != 0) {
         DIM2_GetBaddieControlInterface()->queryTargetMove(obj, state->targetObj, 0x10, targetAnim, &targetParam,
@@ -386,9 +384,9 @@ int DIMbossAnim_hasMoveDone(int unused, int* state) {
     return ((BaddieState*)state)->moveDone != 0;
 }
 
-int DIMbossAnim_returnToIdleWhenDone(int obj, BaddieState* runtime) {
+int DIMbossAnim_returnToIdleWhenDone(GameObject* obj, BaddieState* runtime) {
     if (runtime->moveDone != 0) {
-        (*gPlayerInterface)->setState((void*)obj, runtime, 0);
+        (*gPlayerInterface)->setState(obj, runtime, 0);
     }
     return 0;
 }
@@ -460,23 +458,23 @@ int DIMbossHitDetect_liftSlam(GameObject* obj, BaddieState* runtime) {
     return 0;
 }
 
-int DIMbossHitDetect_liftImpact(int obj, BaddieState* p2) {
+int DIMbossHitDetect_liftImpact(GameObject* obj, BaddieState* p2) {
     f32 zeroProgress;
 
     p2->moveSpeed = 0.008f;
     zeroProgress = 0.0f;
     p2->animSpeedA = zeroProgress;
     p2->animSpeedB = zeroProgress;
-    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DIM2LIFT_HIT_VOLUME_SLOT_10, 1, -1);
+    ObjHits_SetHitVolumeSlot(&obj->anim, DIM2LIFT_HIT_VOLUME_SLOT_10, 1, -1);
 
     if ((s32)p2->moveJustStartedA != 0) {
-        ObjAnim_SetCurrentMove(obj, 15, 0.0f, 0);
+        ObjAnim_SetCurrentMove((int)obj, 15, 0.0f, 0);
         p2->moveDone = 0;
     }
 
     if ((p2->eventFlags & BADDIE_EVENT_FOOTSTEP) != 0) {
         gDIMbossSequenceFlags |= 0x4004;
-        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_mn_dimbos46);
+        Sfx_PlayFromObject(obj, SFXTRIG_mn_dimbos46);
         CameraShake_Enable();
         CameraShake_StartDampened(5.0f, 10.0f, 4.0f);
         doRumble(20.0f);

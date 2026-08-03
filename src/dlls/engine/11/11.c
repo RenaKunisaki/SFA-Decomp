@@ -180,13 +180,13 @@ void dll_0B_resetSequenceSpawns(void)
     gModgfxSequenceParamIndex = 0;
 }
 
-void dll_0B_beginSequence(int source, u8 mode, u8 flagByte, int word40, int word3C)
+void dll_0B_beginSequence(void* source, u8 mode, u8 flagByte, int word40, int word3C)
 {
     f32 fz;
     f32 fz2;
     memset(&gModgfxSpawnContext, 0, sizeof(gModgfxSpawnContext));
     gModgfxSpawnContext.modeByte = mode;
-    gModgfxSpawnContext.attachedSource = (void*)source;
+    gModgfxSpawnContext.attachedSource = source;
     gModgfxSpawnContext.sourceModeCopy = mode;
     fz = MODGFX_ZERO;
     gModgfxSpawnContext.posX = fz;

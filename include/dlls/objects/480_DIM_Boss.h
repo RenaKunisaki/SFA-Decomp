@@ -68,11 +68,11 @@ typedef struct DIMbossTopState {
 
 typedef struct DIMbossAnimHandlerTable {
     int (*selectTargetControlMode)(GameObject* obj);
-    int (*returnToIdleWhenDone)(int obj, BaddieState* state);
+    int (*returnToIdleWhenDone)(GameObject* obj, BaddieState* state);
     int (*hasMoveDone)(int unused, int* state);
     int (*finishDefeat)(GameObject* obj, BaddieState* state);
     int (*updatePlayerHitReaction)(GameObject* obj, BaddieState* state);
-    int (*updateBossHitReaction)(int obj, int state);
+    int (*updateBossHitReaction)(int obj, BaddieState* state);
 } DIMbossAnimHandlerTable;
 
 typedef struct DIMbossHitDetectAnimHandlerTable {
@@ -85,7 +85,7 @@ typedef struct DIMbossHitDetectAnimHandlerTable {
     int (*breathBurst)(GameObject* obj, BaddieState* state, f32 weight);
     int (*lungeAttack)(GameObject* obj, BaddieState* state, f32 weight);
     int (*chooseIdleTaunt)(GameObject* obj, BaddieState* state);
-    int (*liftImpact)(int obj, BaddieState* state);
+    int (*liftImpact)(GameObject* obj, BaddieState* state);
     int (*liftSlam)(GameObject* obj, BaddieState* state);
     int (*tonsilSlam)(GameObject* obj, BaddieState* state);
 } DIMbossHitDetectAnimHandlerTable;
@@ -199,16 +199,16 @@ STATIC_ASSERT(offsetof(DIMbossPlacementView, base) == 0x00);
 STATIC_ASSERT(offsetof(DIMbossPlacementView, eventId) == 0x2C);
 STATIC_ASSERT(offsetof(DIMbossPlacementView, animObjectId) == 0x2E);
 
-int DIMbossAnim_updateBossHitReaction(int obj, int state);
+int DIMbossAnim_updateBossHitReaction(int obj, BaddieState* state);
 int DIMbossAnim_updatePlayerHitReaction(GameObject* obj, BaddieState* state);
 int DIMbossAnim_finishDefeat(GameObject* obj, BaddieState* state);
 int DIMbossAnim_hasMoveDone(int unused, int* state);
-int DIMbossAnim_returnToIdleWhenDone(int obj, BaddieState* state);
+int DIMbossAnim_returnToIdleWhenDone(GameObject* obj, BaddieState* state);
 int DIMbossAnim_selectTargetControlMode(GameObject* obj);
 
 int DIMbossHitDetect_tonsilSlam(GameObject* obj, BaddieState* state);
 int DIMbossHitDetect_liftSlam(GameObject* obj, BaddieState* state);
-int DIMbossHitDetect_liftImpact(int obj, BaddieState* state);
+int DIMbossHitDetect_liftImpact(GameObject* obj, BaddieState* state);
 int DIMbossHitDetect_chooseIdleTaunt(GameObject* obj, BaddieState* state);
 int DIMbossHitDetect_lungeAttack(GameObject* obj, BaddieState* state, f32 weight);
 int DIMbossHitDetect_breathBurst(GameObject* obj, BaddieState* state, f32 weight);

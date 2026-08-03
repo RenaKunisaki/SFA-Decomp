@@ -65,7 +65,7 @@ void MagicCaveBottom_update(GameObject* obj) {
         if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0) {
             setAButtonIcon(MAGIC_CAVE_BOTTOM_A_BUTTON_ICON);
         }
-        if (ObjTrigger_IsSet((int)obj) != 0) {
+        if (ObjTrigger_IsSet(obj) != 0) {
             state->phase = MAGIC_CAVE_BOTTOM_PHASE_WARP;
             if (placement->sequenceBank != 0) {
                 (*gObjectTriggerInterface)

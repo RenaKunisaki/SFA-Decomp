@@ -263,7 +263,7 @@ void SidekickBall_update(GameObject* obj) {
     case SIDEKICK_BALL_HELD:
         obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED;
         triggered = 0;
-        if ((buttonGetDisabled(0) & PAD_BUTTON_A) == 0u && obj->userData2 == 0 && ObjTrigger_IsSet((int)obj) != 0) {
+        if ((buttonGetDisabled(0) & PAD_BUTTON_A) == 0u && obj->userData2 == 0 && ObjTrigger_IsSet(obj) != 0) {
             ObjHits_DisableObject(obj);
             triggered = 1;
         }

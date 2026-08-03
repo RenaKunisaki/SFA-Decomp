@@ -644,7 +644,7 @@ void SHthorntail_updateRootControlMode2(GameObject* obj, SHthorntailState* runti
             }
         } else {
             triggerIsSet = mainGetBit(SHTHORNTAIL_ROOT_MODE2_TRIGGER_SELECTOR_GAMEBIT);
-            if ((triggerIsSet == 0) && (objectTriggerIsSet = ObjTrigger_IsSet((int)obj), objectTriggerIsSet != 0)) {
+            if ((triggerIsSet == 0) && (objectTriggerIsSet = ObjTrigger_IsSet((GameObject*)obj), objectTriggerIsSet != 0)) {
                 runtime->behaviorFlags = runtime->behaviorFlags | SHTHORNTAIL_FLAG_TRIGGER_EVENT_PENDING;
                 runtime->behaviorState = SHTHORNTAIL_STATE_ROOT_MODE2_EVENT;
                 (*gMapEventInterface)
@@ -717,14 +717,14 @@ void SHthorntail_updateLevelControlMode1(u32 objectId, SHthorntailState* runtime
                 runtime->freezeFrameCounter = 0;
                 closeToPlayer = FALSE;
             } else {
-                triggerIsSet = ObjTrigger_IsSet(objectId);
+                triggerIsSet = ObjTrigger_IsSet((GameObject*)objectId);
                 if (triggerIsSet != 0) {
                     runtime->behaviorFlags = runtime->behaviorFlags | SHTHORNTAIL_FLAG_TRIGGER_EVENT_PENDING;
                     mainSetBits(SHTHORNTAIL_LEVEL_MODE1_SECONDARY_TRIGGER_GAMEBIT, 1);
                 }
             }
         } else {
-            triggerIsSet = ObjTrigger_IsSet(objectId);
+            triggerIsSet = ObjTrigger_IsSet((GameObject*)objectId);
             if (triggerIsSet != 0) {
                 runtime->behaviorFlags = runtime->behaviorFlags | SHTHORNTAIL_FLAG_TRIGGER_EVENT_PENDING;
                 mainSetBits(SHTHORNTAIL_LEVEL_MODE1_PRIMARY_TRIGGER_GAMEBIT, 1);
@@ -1050,7 +1050,7 @@ void SHthorntail_update(int obj) {
             characterDoEyeAnims((GameObject*)obj, &runtime->eyeAnimState);
         }
         runtime->behaviorFlags = runtime->behaviorFlags & ~2;
-        if (((runtime->behaviorFlags & 4) == 0) && (val = ObjTrigger_IsSet(obj), val != 0)) {
+        if (((runtime->behaviorFlags & 4) == 0) && (val = ObjTrigger_IsSet((GameObject*)obj), val != 0)) {
             uval = randomGetRange(1, (u32)*runtime->impactSfxTable);
             runtime->behaviorFlags = runtime->behaviorFlags | SHTHORNTAIL_FLAG_IMPACT_PENDING;
             (*gObjectTriggerInterface)->runSequence(runtime->impactSfxTable[uval], (void*)obj, -1);

@@ -52,9 +52,9 @@ int VFPDragHead_getObjectTypeId(void)
     return 0x0;
 }
 
-void VFPDragHead_free(int obj)
+void VFPDragHead_free(GameObject* obj)
 {
-    (*gExpgfxInterface)->freeSource2(obj);
+    (*gExpgfxInterface)->freeSource2((u32)obj);
     (*gModgfxInterface)->freeSourceEffects((void*)obj);
     if (gVfpDragHeadResource != NULL)
     {

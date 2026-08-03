@@ -222,7 +222,7 @@ int hightop_stateHandler09(GameObject* obj, HighTopRuntime* stateArg)
             Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 2);
         }
     }
-    if (ObjTrigger_IsSetById((int)obj, 0xaf7) != 0)
+    if (ObjTrigger_IsSetById(obj, 0xaf7) != 0)
     {
         int total = mainGetBit(GAMEBIT_ITEM_CCGoldBar_Used);
         total = total + mainGetBit(GAMEBIT_ITEM_CCGoldBar_Count);
@@ -1154,7 +1154,7 @@ void HighTop_update(GameObject* obj)
     characterDoEyeAnims((GameObject*)self, &runtime->eyeAnimState);
     objSoundUpdateMouth((GameObject*)(self), &runtime->modelSoundState);
     dll_2E_updateLookAt((GameObject*)self, &((HighTopRuntime*)state)->lookController);
-    if (ObjTrigger_IsSet(self) != 0)
+    if (ObjTrigger_IsSet((GameObject*)self) != 0)
     {
         s8 substate;
         buttonDisable(0, PAD_BUTTON_A);

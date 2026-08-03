@@ -83,11 +83,11 @@ int AndrossHand_getExtraSize(void);
 int AndrossHand_getObjectTypeId(void);
 void AndrossHand_free(void);
 void AndrossHand_render(GameObject* obj, int p2, int p3, int p4, int p5);
-void AndrossHand_update(int obj);
+void AndrossHand_update(GameObject* o);
 void AndrossHand_hitDetect(void);
 void androsshand_setState(GameObject* obj, AndrossHandStateId newState, u8 force);
 void androsshand_handleDamage(GameObject* obj, AndrossHandState* state);
-void AndrossHand_init(int obj, AndrossHandSetup* setup);
+void AndrossHand_init(GameObject* gobj, AndrossHandSetup* setup);
 void androsshand_spawnShot(GameObject* obj, AndrossHandState* state, int p3);
 
 #endif /* MAIN_DLL_DLL_02BD_ANDROSSHAND_H_ */

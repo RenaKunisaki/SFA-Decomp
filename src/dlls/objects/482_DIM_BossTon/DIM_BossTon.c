@@ -523,7 +523,7 @@ void DIMbosstonsil_update(GameObject* obj) {
     }
 }
 
-void DIMbosstonsil_init(GameObject* obj, u32 placementAddress, int isAltVariant) {
+void DIMbosstonsil_init(GameObject* obj, u8* placementAddress, int isAltVariant) {
     u8 variant;
     int state;
 
@@ -532,7 +532,7 @@ void DIMbosstonsil_init(GameObject* obj, u32 placementAddress, int isAltVariant)
     if (isAltVariant != 0) {
         variant = variant | 1;
     }
-    (*gBaddieControlInterface)->initGroundBaddie(obj, (u8*)placementAddress, (u8*)state, 2, 2, 0x102, variant, 20.0f);
+    (*gBaddieControlInterface)->initGroundBaddie(obj, placementAddress, (u8*)state, 2, 2, 0x102, variant, 20.0f);
     obj->animEventCallback = DIMbosstonsil_SeqFn;
     (*gPlayerInterface)->setState(obj, (void*)state, 0);
     ((BaddieState*)state)->substate = 0;

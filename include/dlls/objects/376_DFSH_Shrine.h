@@ -82,7 +82,7 @@ int dfshShrine_getObjectTypeId(void);
 void dfshShrine_free(GameObject* obj);
 void dfshShrine_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void dfshShrine_hitDetect(void);
-void dfshShrine_update(int objArg);
+void dfshShrine_update(GameObject* obj);
 void dfshShrine_init(GameObject* obj, const DFSHShrinePlacement* placement);
 void dfshShrine_release(void);
 void dfshShrine_initialise(void);

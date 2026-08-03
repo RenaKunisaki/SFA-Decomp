@@ -145,7 +145,7 @@ int dll_06_func07_ret_0(void);
 void sky2_release(void);
 void skyLoadLights(void);
 void sky2ApplyFog(int obj);
-void sky2ApplyTextColor(int obj);
+void sky2ApplyTextColor(void* context);
 void sky2ApplyModelTint(GameObject* obj);
 void skyApplyPlayerEnvFx(u8 idx);
 void sky2BlendTowardTargetColor(s32* red, s32* green, s32* blue);

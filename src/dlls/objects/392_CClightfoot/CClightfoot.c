@@ -466,7 +466,7 @@ void ccLightfoot_update(GameObject* obj) {
                 state->phase = CC_LIGHTFOOT_PHASE_DESPAWN;
             }
         } else {
-            if (ObjTrigger_IsSet((int)obj) != 0) {
+            if (ObjTrigger_IsSet(obj) != 0) {
                 mainSetBits(CC_LIGHTFOOT_ENCOUNTER_TRIGGERED_GAMEBIT, 1);
             } else if ((state->flags & CC_LIGHTFOOT_FLAG_TURN_REQUIRED) != 0) {
                 state->phase = CC_LIGHTFOOT_PHASE_DORMANT_TURN;

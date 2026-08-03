@@ -33,7 +33,7 @@ void mcupgrade_update(GameObject* obj)
     {
         gameObj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     }
-    else if (ObjTrigger_IsSet((int)obj) != 0)
+    else if (ObjTrigger_IsSet(obj) != 0)
     {
         mainSetBits(setup->collectedGameBit, 1);
         (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);

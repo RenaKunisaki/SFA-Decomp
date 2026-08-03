@@ -256,9 +256,8 @@ void drakormissile_hitDetect(void)
 {
 }
 
-void drakormissile_update(int obj)
+void drakormissile_update(GameObject* o)
 {
-    GameObject* o = (GameObject*)obj;
     DrakorMissileState* state = o->extra;
     int moving;
     Vec toTarget;
@@ -277,21 +276,21 @@ void drakormissile_update(int obj)
     {
     case DRAKORMISSILE_STATE_STRAIGHT:
         moving = 1;
-        objMove((GameObject*)obj, o->anim.velocityX * timeDelta, o->anim.velocityY * timeDelta,
+        objMove(o, o->anim.velocityX * timeDelta, o->anim.velocityY * timeDelta,
                 o->anim.velocityZ * timeDelta);
         break;
     case DRAKORMISSILE_STATE_EXPLODING:
         o->anim.alpha = 0;
         if (state->timer == 0)
         {
-            ObjHits_DisableObject((GameObject*)obj);
+            ObjHits_DisableObject(o);
         }
         state->timer += framesThisStep;
         if (state->timer > DRAKORMISSILE_CLEAR_TIMER)
         {
-            ObjHits_DisableObject((GameObject*)obj);
-            Sfx_StopFromObject((GameObject*)obj, SFXTRIG_dn_boar1_c_173);
-            Sfx_StopFromObject((GameObject*)obj, DRAKORMISSILE_ACTIVE_SFX_A);
+            ObjHits_DisableObject(o);
+            Sfx_StopFromObject(o, SFXTRIG_dn_boar1_c_173);
+            Sfx_StopFromObject(o, DRAKORMISSILE_ACTIVE_SFX_A);
             state->state = DRAKORMISSILE_STATE_FADEOUT;
         }
         break;
@@ -317,7 +316,7 @@ void drakormissile_update(int obj)
             tmpAng = getAngle(o->anim.velocityY, mag);
             o->anim.rotY = tmpAng;
         }
-        objMove((GameObject*)obj, o->anim.velocityX * timeDelta, o->anim.velocityY * timeDelta,
+        objMove(o, o->anim.velocityX * timeDelta, o->anim.velocityY * timeDelta,
                 o->anim.velocityZ * timeDelta);
         moving = 1;
         break;
@@ -327,7 +326,7 @@ void drakormissile_update(int obj)
         state->fadeTime = life;
         if (life > 60.0f)
         {
-        Obj_FreeObject((GameObject*)obj);
+        Obj_FreeObject(o);
             return;
         }
         break;
@@ -339,7 +338,7 @@ void drakormissile_update(int obj)
     {
         lastHit = (GameObject*)((ObjHitsPriorityState*)o->anim.hitReactState)->lastHitObject;
         hitObj = NULL;
-        hit = ObjHits_GetPriorityHit((GameObject*)(obj), (int*)&hitObj, 0, 0);
+        hit = ObjHits_GetPriorityHit((GameObject*)(o), (int*)&hitObj, 0, 0);
         expired = 0;
         rem = state->timer - framesThisStep;
         state->timer = rem;
@@ -373,15 +372,15 @@ void drakormissile_update(int obj)
             state->timer = 0;
             if ((((ObjHitsPriorityState*)o->anim.hitReactState)->flags & 8) != 0)
             {
-                Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_wp_blaserrecoil16);
+                Sfx_PlayFromObject((GameObject*)(u32)o, SFXTRIG_wp_blaserrecoil16);
             }
             if (o->anim.mapEventSlot == 2)
             {
-                spawnExplosion((GameObject*)obj, 50.0f, 3, 0, 0, 0, 0, 0, 3);
+                spawnExplosion(o, 50.0f, 3, 0, 0, 0, 0, 0, 3);
             }
             else
             {
-                spawnExplosion((GameObject*)obj, 50.0f, 1, 0, 0, 0, 0, 0, 3);
+                spawnExplosion(o, 50.0f, 1, 0, 0, 0, 0, 0, 3);
             }
             if (state->light != NULL)
             {

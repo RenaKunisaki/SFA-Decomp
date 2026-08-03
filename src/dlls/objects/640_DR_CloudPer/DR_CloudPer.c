@@ -75,15 +75,13 @@ void DR_CloudPer_update(void)
 {
 }
 
-void DR_CloudPer_init(int obj, DrCloudPerSetup* setup)
+void DR_CloudPer_init(GameObject* cloud, DrCloudPerSetup* setup)
 {
-    GameObject* cloud;
     DrCloudPerSetup* setupData;
     DrCloudPerState* state;
 
-    objAddObjectType(obj, DRCLOUDPER_GROUP_TRIGGER);
-    objAddObjectType(obj, DRCLOUDPER_GROUP_SURFACE);
-    cloud = (GameObject*)obj;
+    objAddObjectType((int)cloud, DRCLOUDPER_GROUP_TRIGGER);
+    objAddObjectType((int)cloud, DRCLOUDPER_GROUP_SURFACE);
     setupData = setup;
     {
         int yawTmp = setupData->yawByte << 8;

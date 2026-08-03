@@ -507,7 +507,7 @@ int ShopKeeper_updateTracking(GameObject* obj, BaddieState* baddie)
         state->bobAmplitude = rngf;
     }
     state->bobPhase = sum;
-    if (ObjTrigger_IsSet((int)obj) != 0)
+    if (ObjTrigger_IsSet(obj) != 0)
     {
         rng = randomGetRange(0, 2);
         (*gObjectTriggerInterface)->runSequence(rng, obj, -1);

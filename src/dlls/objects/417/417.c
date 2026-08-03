@@ -300,7 +300,7 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
             Sfx_PlayFromObject(obj, SFXTRIG_skeep_mumb);
             state->sfxTimer -= 900.0f;
         }
-        if (ObjTrigger_IsSet((int)obj) != 0) {
+        if (ObjTrigger_IsSet(obj) != 0) {
             (*gObjectTriggerInterface)->runSequence(3, (void*)nearestObj, -1);
             state->runtimeFlags = state->runtimeFlags | NW_MAMMOTH_RUNTIME_MENU_LOCK;
             state->stateIndex = 0xd;
@@ -537,7 +537,7 @@ void NW_mammoth_updateArtifactQuest(GameObject* obj, NwMammothState* state, NwMa
     switch (state->stateIndex) {
     case 4:
         state->triggerList = gNwMammothArtifactState4TriggerList;
-        if (ObjTrigger_IsSetById((int)obj, 418) != 0) {
+        if (ObjTrigger_IsSetById(obj, 418) != 0) {
             state->runtimeFlags = state->runtimeFlags | NW_MAMMOTH_RUNTIME_MENU_LOCK;
             mainSetBits(GAMEBIT_SnowHornArtifact19D, 1);
             mainSetBits(GAMEBIT_ITEM_NWSnowHornArtifact_Used, 1);
@@ -575,7 +575,7 @@ void NW_mammoth_updateFeedQuest(GameObject* obj, NwMammothState* state, NwMammot
         state->triggerList = gNwMammothFeedState1TriggerList;
         switch (mainGetBit(GAMEBIT_ITEM_AlpineRoot_Used)) {
         case 0:
-            if (ObjTrigger_IsSetById((int)obj, 1398) != 0) {
+            if (ObjTrigger_IsSetById(obj, 1398) != 0) {
                 mainSetBits(GAMEBIT_ITEM_AlpineRoot_Used, 1);
                 gameBitDecrement(GAMEBIT_ITEM_IMAlpineRoot_Count);
                 (*gObjectTriggerInterface)->runSequence(2, obj, -1);
@@ -593,7 +593,7 @@ void NW_mammoth_updateFeedQuest(GameObject* obj, NwMammothState* state, NwMammot
         break;
     case 2:
         state->triggerList = gNwMammothFeedState2TriggerList;
-        if (ObjTrigger_IsSetById((int)obj, 1398) != 0) {
+        if (ObjTrigger_IsSetById(obj, 1398) != 0) {
             mainSetBits(GAMEBIT_ITEM_AlpineRoot_Used, 2);
             gameBitDecrement(GAMEBIT_ITEM_IMAlpineRoot_Count);
             (*gObjectTriggerInterface)->runSequence(4, obj, -1);
@@ -738,7 +738,7 @@ void NW_mammoth_update(GameObject* obj, int unusedArg) {
     NW_mammoth_updateEyeTracking(obj, state,
                                  tables[0]->stateFlags[state->stateIndex] & NW_MAMMOTH_STATE_FLAG_TRIGGER_REFRESH);
     state->runtimeFlags = state->runtimeFlags & ~NW_MAMMOTH_RUNTIME_TRIGGER_REFRESH;
-    if (((state->runtimeFlags & NW_MAMMOTH_RUNTIME_MENU_LOCK) == 0) && (ObjTrigger_IsSet((int)obj) != 0)) {
+    if (((state->runtimeFlags & NW_MAMMOTH_RUNTIME_MENU_LOCK) == 0) && (ObjTrigger_IsSet(obj) != 0)) {
         triggerIndex = randomGetRange(NW_MAMMOTH_TRIGGER_RANDOM_MIN, *state->triggerList);
         state->runtimeFlags = state->runtimeFlags | NW_MAMMOTH_RUNTIME_TRIGGER_REFRESH;
         (*gObjectTriggerInterface)->runSequence(state->triggerList[triggerIndex], obj, -1);
