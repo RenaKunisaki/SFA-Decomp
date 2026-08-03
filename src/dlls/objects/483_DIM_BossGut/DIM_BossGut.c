@@ -53,7 +53,7 @@ void dimbossgut2_updateBobAndSway(GameObject* obj, DimBossGut2State* state) {
     heightDelta = control->surfaceY - obj->anim.localPosY;
 
     control->bobPhase += 0x400;
-    heightDelta = heightDelta + (f32)cos16(control->bobPhase) / 65535.0f;
+    heightDelta = heightDelta + (f32)sin16(control->bobPhase) / 65535.0f;
 
     control->verticalVelocity = timeDelta * (heightDelta / 50.0f - control->turnHeightBias) + control->verticalVelocity;
 

@@ -4,7 +4,7 @@
  * The shield (romDefNo 0x836 uses mode 5, otherwise mode 7) is a four-segment
  * ring driven by Shield_setMode. Each mode sets the per-segment fade/scale
  * targets in ShieldState, drives a point light (modelLightStruct_*) and the
- * 0x42C/0x42D loop sfx, and seeds the fcos16 wobble for the four segments.
+ * 0x42C/0x42D loop sfx, and seeds the fsin16 wobble for the four segments.
  * Shield_update advances the fade toward its target, modulates alpha from a
  * random flicker, and updates the segment cosine; Shield_render re-renders
  * the four segments with per-segment rotation and (off-HUD) spawns particle
@@ -212,7 +212,7 @@ void Shield_setMode(GameObject* obj, u8 mode) {
                     f32 wave;
                     f32 sum;
                     phaseCursor[SHIELD_SEGMENT_PHASE_S16_INDEX] = -0x4000;
-                    wave = fcos16((u16)phaseCursor[SHIELD_SEGMENT_PHASE_S16_INDEX]);
+                    wave = fsin16((u16)phaseCursor[SHIELD_SEGMENT_PHASE_S16_INDEX]);
                     sum = amp + wave;
                     wave = sum * k;
                     valueCursor[SHIELD_SEGMENT_SCALE_F32_INDEX] = *tableCursor[0] * wave;
@@ -287,7 +287,7 @@ void Shield_setMode(GameObject* obj, u8 mode) {
                 f32 wave;
                 f32 sum;
                 phaseCursor[SHIELD_SEGMENT_PHASE_S16_INDEX] = 0;
-                wave = fcos16((u16)phaseCursor[SHIELD_SEGMENT_PHASE_S16_INDEX]);
+                wave = fsin16((u16)phaseCursor[SHIELD_SEGMENT_PHASE_S16_INDEX]);
                 sum = amp + wave;
                 wave = sum * k;
                 valueCursor[SHIELD_SEGMENT_SCALE_F32_INDEX] = *tableCursor[0] * wave;
@@ -332,7 +332,7 @@ void Shield_setMode(GameObject* obj, u8 mode) {
                 f32 wave;
                 f32 sum;
                 phaseCursor[SHIELD_SEGMENT_PHASE_S16_INDEX] = -0x4000;
-                wave = fcos16((u16)phaseCursor[SHIELD_SEGMENT_PHASE_S16_INDEX]);
+                wave = fsin16((u16)phaseCursor[SHIELD_SEGMENT_PHASE_S16_INDEX]);
                 sum = amp + wave;
                 wave = sum * k;
                 valueCursor[SHIELD_SEGMENT_SCALE_F32_INDEX] = *segmentScaleCursor * wave;
@@ -370,7 +370,7 @@ void Shield_setMode(GameObject* obj, u8 mode) {
             f32 wave;
             f32 sum;
             phaseCursor[SHIELD_SEGMENT_PHASE_S16_INDEX] = 0x4000;
-            wave = fcos16((u16)phaseCursor[SHIELD_SEGMENT_PHASE_S16_INDEX]);
+            wave = fsin16((u16)phaseCursor[SHIELD_SEGMENT_PHASE_S16_INDEX]);
             sum = amp + wave;
             wave = sum * k;
             valueCursor[SHIELD_SEGMENT_SCALE_F32_INDEX] = *segmentScaleCursor * wave;
@@ -569,12 +569,12 @@ void Shield_update(GameObject* obj) {
             stateS16[SHIELD_SEGMENT_PHASE_S16_INDEX] = (s16)((f32)stateS16[SHIELD_SEGMENT_RATE_S16_INDEX] * timeDelta +
                                                              stateS16[SHIELD_SEGMENT_PHASE_S16_INDEX]);
             if (obj->anim.romDefNo == SHIELD_SEQID_OMNI_SHIELD) {
-                f32 c = fcos16((u16)stateS16[SHIELD_SEGMENT_PHASE_S16_INDEX]);
+                f32 c = fsin16((u16)stateS16[SHIELD_SEGMENT_PHASE_S16_INDEX]);
                 c = c / 4.0f + 1.0f;
                 stateF32[SHIELD_SEGMENT_SCALE_F32_INDEX] = *omniScaleCursor * c;
                 stateF32[SHIELD_SEGMENT_ALPHA_F32_INDEX] = *omniAlphaCursor;
             } else {
-                f32 c = fcos16((u16)stateS16[SHIELD_SEGMENT_PHASE_S16_INDEX]);
+                f32 c = fsin16((u16)stateS16[SHIELD_SEGMENT_PHASE_S16_INDEX]);
                 f32 sum = 1.0f + c;
                 c = sum / 2.0f;
                 stateF32[SHIELD_SEGMENT_SCALE_F32_INDEX] = *tableCursor[0] * c;

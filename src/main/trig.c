@@ -26,7 +26,7 @@ float fsin16Approx(int angle) {
     }
 }
 
-float fcos16(int angle) {
+float fsin16(int angle) {
     s16 scaledAngleBits = (s16)(int)((angle << 2) & 0x3FFFC);
     float x = fastCastS16ToFloat(&scaledAngleBits);
     float x2 = x * x;
@@ -123,7 +123,7 @@ float fcos16Approx(int angle) {
     }
 }
 
-float fsin16(int angle) {
+float fcos16(int angle) {
     s16 scaledAngleBits = (s16)(int)((angle << 2) & 0x3FFFC);
     float y = fastCastS16ToFloat(&scaledAngleBits);
     float y2 = y * y;

@@ -2,7 +2,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/s_tan.h"
 
 
-double tan(int* quadrant, float angle)
+double trigReduceQuadrantHighPrecision(int* quadrant, float angle)
 {
     unsigned int roundedQuadrant;
     double absoluteAngle;

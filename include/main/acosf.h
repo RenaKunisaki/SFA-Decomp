@@ -5,6 +5,6 @@
 
 float atan2f(float y, float x);
 
-f32 __kernel_cos(f32, f32);
+f32 atan2f_fast(f32, f32);
 
 #endif

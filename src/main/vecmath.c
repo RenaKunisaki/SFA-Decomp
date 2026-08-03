@@ -45,17 +45,17 @@ void basisVectorsToEulerAngles(f32* a, f32* b, s16* out0, s16* out1, s16* out2)
     {
         if (sinp > -1.5707964f)
         {
-            roll = __kernel_cos(c2, a2);
-            yaw = __kernel_cos(b0, b1);
+            roll = atan2f_fast(c2, a2);
+            yaw = atan2f_fast(b0, b1);
         }
         else
         {
-            roll = -__kernel_cos(c1, c0) + (yaw = 0.0f);
+            roll = -atan2f_fast(c1, c0) + (yaw = 0.0f);
         }
     }
     else
     {
-        roll = __kernel_cos(c1, c0) - (yaw = 0.0f);
+        roll = atan2f_fast(c1, c0) - (yaw = 0.0f);
     }
     {
         f32 twoPi;
@@ -130,9 +130,9 @@ f32 Vec_distance(f32* a, f32* b)
     return sqrtf(dx * dx + dy * dy + dz * dz);
 }
 
-int cos16(s16 angle)
+int sin16(s16 angle)
 {
-    return (int)(65536.0f * fcos16((u16)angle));
+    return (int)(65536.0f * fsin16((u16)angle));
 }
 
 int atan2Angle16(float y, float x)
@@ -241,61 +241,61 @@ void vecRotateZXY(s16* rotation, f32* vector)
 }
 void mtxRotateByVec3s(f32* mtx, const void* transform)
 {
-    f32 cx;
     f32 sx;
-    f32 cy;
+    f32 cx;
     f32 sy;
+    f32 cy;
     f32 s;
     f32 t1, t2, u, v;
-    f32 cz;
+    f32 sz;
     f32 x, y;
     f32 z;
     f32 t;
-    f32 sz;
+    f32 cz;
     const MatrixTransform* xf = (const MatrixTransform*)transform;
 
-    s = (f32)(int)(65536.0f * fcos16((u16)xf->rotX));
-    cx = s * gVecMathAngleScaleInv[0];
     s = (f32)(int)(65536.0f * fsin16((u16)xf->rotX));
     sx = s * gVecMathAngleScaleInv[0];
-    s = (f32)(int)(65536.0f * fcos16((u16)xf->rotY));
-    cy = s * gVecMathAngleScaleInv[0];
+    s = (f32)(int)(65536.0f * fcos16((u16)xf->rotX));
+    cx = s * gVecMathAngleScaleInv[0];
     s = (f32)(int)(65536.0f * fsin16((u16)xf->rotY));
     sy = s * gVecMathAngleScaleInv[0];
-    cz = (f32)(int)(65536.0f * fcos16((u16)xf->rotZ));
-    cz = cz * gVecMathAngleScaleInv[0];
+    s = (f32)(int)(65536.0f * fcos16((u16)xf->rotY));
+    cy = s * gVecMathAngleScaleInv[0];
     sz = (f32)(int)(65536.0f * fsin16((u16)xf->rotZ));
     sz = sz * gVecMathAngleScaleInv[0];
+    cz = (f32)(int)(65536.0f * fcos16((u16)xf->rotZ));
+    cz = cz * gVecMathAngleScaleInv[0];
 
-    t1 = cy * cz;
-    s = t1 * cx;
-    t2 = sx * sz;
+    t1 = sy * sz;
+    s = t1 * sx;
+    t2 = cx * cz;
     s = t2 - s;
     mtx[0] = s;
-    t2 = cy * sz;
-    v = t2 * cx;
+    t2 = sy * cz;
+    v = t2 * sx;
     {
-        f32 p = sx * cz;
+        f32 p = cx * sz;
         v = v + p;
     }
     mtx[1] = v;
-    mtx[2] = -(cx * sy);
+    mtx[2] = -(sx * cy);
     mtx[3] = (u = lbl_803DE7C0);
-    mtx[4] = -(sy * cz);
-    mtx[5] = sy * sz;
-    mtx[6] = cy;
+    mtx[4] = -(cy * sz);
+    mtx[5] = cy * cz;
+    mtx[6] = sy;
     mtx[7] = u;
-    v = t1 * sx;
+    v = t1 * cx;
     {
-        f32 p = cx * sz;
+        f32 p = sx * cz;
         mtx[8] = v + p;
     }
-    t2 = t2 * sx;
+    t2 = t2 * cx;
     {
-        f32 p = cx * cz;
+        f32 p = sx * sz;
         mtx[9] = p - t2;
     }
-    mtx[10] = sx * sy;
+    mtx[10] = cx * cy;
     mtx[11] = u;
     x = xf->x;
     y = xf->y;

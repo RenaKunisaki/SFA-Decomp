@@ -89,7 +89,7 @@ float mathSinfHighPrecision(float angle) {
     double reducedAngle;
     double reducedSquared;
 
-    reducedAngle = tan(&quadrant, angle);
+    reducedAngle = trigReduceQuadrantHighPrecision(&quadrant, angle);
     quadrant += (*(u32*)&angle & 0x80000000) >> 29;
     reducedSquared = reducedAngle * reducedAngle;
 
@@ -141,7 +141,7 @@ float mathCosfPrecise(float angle) {
 
 float mathCosfHighPrecision(float angle) {
     int quadrant;
-    double reducedAngle = tan(&quadrant, angle);
+    double reducedAngle = trigReduceQuadrantHighPrecision(&quadrant, angle);
     double reducedSquared = reducedAngle * reducedAngle;
 
     switch (quadrant & 6) {

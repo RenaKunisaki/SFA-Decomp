@@ -144,19 +144,19 @@ int objMatrixToRotation(f32* m, s16* outA, s16* outB, s16* outC)
     {
         if (x > -1.5707964f)
         {
-            y = __kernel_cos(buf[2], buf[10]);
-            z = __kernel_cos(buf[4], buf[5]);
+            y = atan2f_fast(buf[2], buf[10]);
+            z = atan2f_fast(buf[4], buf[5]);
         }
         else
         {
-            y = __kernel_cos(buf[1], buf[0]);
+            y = atan2f_fast(buf[1], buf[0]);
             z = 0.0f;
             y = z - y;
         }
     }
     else
     {
-        y = __kernel_cos(buf[1], buf[0]);
+        y = atan2f_fast(buf[1], buf[0]);
         z = 0.0f;
         y = y - z;
     }

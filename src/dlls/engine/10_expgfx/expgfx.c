@@ -291,7 +291,7 @@ void objfx_spawnCrystalOrbitEffects(GameObject* obj, s16* work, f32 period, f32 
         work[0x12 + crystalIdx] = (65535.0f / period + (f32)(crystalIdx * randomGetRange(120, 127)));
         wave = work[0x12 + crystalIdx];
         work[0xe + crystalIdx] = (wave * timeDelta + work[0xe + crystalIdx]);
-        wave = fcos16((u16)work[0xe + crystalIdx]);
+        wave = fsin16((u16)work[0xe + crystalIdx]);
         wave = (1.0f + wave) / 2.0f;
         {
             f32 amp = gObjFxCrystalAmpTbl.amps[crystalIdx];

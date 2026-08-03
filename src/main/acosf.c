@@ -136,7 +136,7 @@ static inline u32 float_bits(const float *value) {
     return ((const FloatWord *)value)->bits;
 }
 
-float __kernel_cos(float y, float x) {
+float atan2f_fast(float y, float x) {
     float absoluteX = __fabsf(x);
     float absoluteY = __fabsf(y);
     float axisRatio;
