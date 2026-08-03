@@ -1160,7 +1160,7 @@ int dbstealerworm_stateHandlerA09(GameObject* obj, BaddieState* baddie)
     }
     return 0;
 }
-int dbstealerworm_stateHandlerA08(GameObject* obj, int baddie, f32 t)
+int dbstealerworm_stateHandlerA08(GameObject* obj, BaddieState* baddie, f32 t)
 {
     int q;
     int* ptr;
@@ -1191,12 +1191,12 @@ int dbstealerworm_stateHandlerA08(GameObject* obj, int baddie, f32 t)
 
     sub->flags14 |= DBWORM_FLAG14_FX_DUST;
     sub->flags15 &= ~4;
-    if (((BaddieState*)baddie)->moveJustStartedA != 0)
+    if (baddie->moveJustStartedA != 0)
     {
         ObjHits_EnableObject(obj);
         ObjHits_ClearHitVolumes((ObjAnimComponent*)obj);
     }
-    ((BaddieState*)baddie)->moveSpeed = 0.01f;
+    baddie->moveSpeed = 0.01f;
     if (sub->linkedObject == NULL)
     {
         h = sub->msgSlotIndex;
@@ -1226,16 +1226,16 @@ int dbstealerworm_stateHandlerA08(GameObject* obj, int baddie, f32 t)
     }
     else
     {
-        if (((BaddieState*)baddie)->moveJustStartedA != 0)
+        if (baddie->moveJustStartedA != 0)
         {
             ObjAnim_SetCurrentMove((int)obj, 0x11, 0.0f, 0);
-            ((BaddieState*)baddie)->moveDone = 0;
+            baddie->moveDone = 0;
         }
-        ((BaddieState*)baddie)->moveSpeed = 0.018f;
+        baddie->moveSpeed = 0.018f;
         frac = blob->aggression / 80.0f;
     }
-    ((BaddieState*)baddie)->stateTag = 0x1f;
-    if (dbstealerworm_turnToFaceObject(obj, ((BaddieState*)baddie)->targetObj, 200.0f, frac, 0.2f,
+    baddie->stateTag = 0x1f;
+    if (dbstealerworm_turnToFaceObject(obj, baddie->targetObj, 200.0f, frac, 0.2f,
                     t) != 0)
     {
         sub->msgAdvance = 1;
@@ -1267,7 +1267,7 @@ int dbstealerworm_stateHandlerA08(GameObject* obj, int baddie, f32 t)
                 }
             }
             player = Obj_GetPlayerObject();
-            ((BaddieState*)baddie)->targetObj = player;
+            baddie->targetObj = player;
             tmp2A = sub->objGroup;
             tmp2B = sub->msgMode;
             ptr = (int*)sub->msgStack;
@@ -1305,8 +1305,8 @@ int dbstealerworm_stateHandlerA08(GameObject* obj, int baddie, f32 t)
     }
     else if (sub->linkedObject == NULL)
     {
-        int dv = -(2535.0f * ((BaddieState*)baddie)->animSpeedA);
-        int fv = -(2535.0f * ((BaddieState*)baddie)->animSpeedB);
+        int dv = -(2535.0f * baddie->animSpeedA);
+        int fv = -(2535.0f * baddie->animSpeedB);
         dv = (s16)dv;
         if (dv < -0x500)
         {
@@ -1341,11 +1341,10 @@ int dbstealerworm_stateHandlerA08(GameObject* obj, int baddie, f32 t)
             p3++;
         }
     }
-    ObjAnim_SampleRootCurvePhase((ObjAnimComponent*)obj, ((BaddieState*)baddie)->animSpeedA,
-                                 (float*)(baddie + 0x2a0));
+    ObjAnim_SampleRootCurvePhase(&obj->anim, baddie->animSpeedA, &baddie->moveSpeed);
     return 0;
 }
-int dbstealerworm_stateHandlerA07(GameObject* obj, int baddie, f32 t)
+int dbstealerworm_stateHandlerA07(GameObject* obj, BaddieState* baddie, f32 t)
 {
     GroundBaddieState* blob = obj->extra;
     DbStealerwormControl* sub = (DbStealerwormControl*)blob->control;
@@ -1377,12 +1376,12 @@ int dbstealerworm_stateHandlerA07(GameObject* obj, int baddie, f32 t)
     sub->flags14 |= DBWORM_FLAG14_FX_DUST;
     sub->flags15 &= ~4;
     ((void (*)(GameObject*, int))Sfx_KeepAliveLoopedObjectSound)(obj, SFXTRIG_baddie_vambat_death);
-    if (((BaddieState*)baddie)->moveJustStartedA != 0)
+    if (baddie->moveJustStartedA != 0)
     {
         ObjHits_EnableObject(obj);
     }
     ObjHits_ClearHitVolumes((ObjAnimComponent*)obj);
-    ((BaddieState*)baddie)->moveSpeed = 0.01f;
+    baddie->moveSpeed = 0.01f;
     if (sub->linkedObject == NULL)
     {
         h = sub->msgSlotIndex;
@@ -1409,10 +1408,10 @@ int dbstealerworm_stateHandlerA07(GameObject* obj, int baddie, f32 t)
             sub->msgAdvance = 1;
             sub->msgSlotIndex = -1;
         }
-        if (((BaddieState*)baddie)->moveJustStartedA != 0)
+        if (baddie->moveJustStartedA != 0)
         {
             ObjAnim_SetCurrentMove((int)obj, 0xf, 0.0f, 0);
-            ((BaddieState*)baddie)->moveDone = 0;
+            baddie->moveDone = 0;
         }
         frac = blob->aggression / 40.0f;
         if (RandomTimer_UpdateRangeTrigger(&sub->randomTimer4C, 1.0f, 3.0f) != 0)
@@ -1426,16 +1425,16 @@ int dbstealerworm_stateHandlerA07(GameObject* obj, int baddie, f32 t)
         {
             Sfx_PlayFromObject(obj, SFXTRIG_baddie);
         }
-        if (((BaddieState*)baddie)->moveJustStartedA != 0)
+        if (baddie->moveJustStartedA != 0)
         {
             ObjAnim_SetCurrentMove((int)obj, 0x11, 0.0f, 0);
-            ((BaddieState*)baddie)->moveDone = 0;
+            baddie->moveDone = 0;
         }
-        ((BaddieState*)baddie)->moveSpeed = 0.018f;
+        baddie->moveSpeed = 0.018f;
         frac = blob->aggression / 80.0f;
     }
-    ((BaddieState*)baddie)->stateTag = 0x1f;
-    if (dbstealerworm_turnToFaceObjectVertical(obj, ((BaddieState*)baddie)->targetObj, 16.0f, frac, 0.2f, t) != 0)
+    baddie->stateTag = 0x1f;
+    if (dbstealerworm_turnToFaceObjectVertical(obj, baddie->targetObj, 16.0f, frac, 0.2f, t) != 0)
     {
         sub->msgAdvance = 1;
     }
@@ -1466,7 +1465,7 @@ int dbstealerworm_stateHandlerA07(GameObject* obj, int baddie, f32 t)
                 }
             }
             player = Obj_GetPlayerObject();
-            ((BaddieState*)baddie)->targetObj = player;
+            baddie->targetObj = player;
             tmp2A = sub->objGroup;
             tmp2B = sub->msgMode;
             ptr = (int*)sub->msgStack;
@@ -1504,8 +1503,8 @@ int dbstealerworm_stateHandlerA07(GameObject* obj, int baddie, f32 t)
     }
     else if (sub->linkedObject == NULL)
     {
-        int dv = -(2535.0f * ((BaddieState*)baddie)->animSpeedA);
-        int fv = -(2535.0f * ((BaddieState*)baddie)->animSpeedB);
+        int dv = -(2535.0f * baddie->animSpeedA);
+        int fv = -(2535.0f * baddie->animSpeedB);
         dv = (s16)dv;
         if (dv < -0x500)
         {
@@ -1540,8 +1539,7 @@ int dbstealerworm_stateHandlerA07(GameObject* obj, int baddie, f32 t)
             p3++;
         }
     }
-    ObjAnim_SampleRootCurvePhase((ObjAnimComponent*)obj, ((BaddieState*)baddie)->animSpeedA,
-                                 (float*)(baddie + 0x2a0));
+    ObjAnim_SampleRootCurvePhase(&obj->anim, baddie->animSpeedA, &baddie->moveSpeed);
     return 0;
 }
 
