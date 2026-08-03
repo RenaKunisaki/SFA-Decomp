@@ -101,22 +101,22 @@
 #define DLL1B5_WEAPON_DEF_2 0x6F2
 #define DLL1B5_OBJECT_GROUP 3
 
-typedef struct Dll1B5ButtonTimingTables {
+typedef struct LightfootButtonTimingTables {
     u8 pad00[0x60];
     s16 anims[14];
     f32 blends[25];
     u16 gameBits[8];
     f32 meterScales[16];
-} Dll1B5ButtonTimingTables;
+} LightfootButtonTimingTables;
 
-STATIC_ASSERT(sizeof(Dll1B5ButtonTimingTables) == 0x130);
+STATIC_ASSERT(sizeof(LightfootButtonTimingTables) == 0x130);
 
 int Lightfoot_UpdateProximityInteractionState(int obj, int state)
 {
     GroundBaddieState* inner = ((GameObject*)obj)->extra;
     if (((BaddieState*)state)->targetObj != NULL)
     {
-        if (((Dll1B5ControlState*)inner->control)->targetDistance < inner->aggroRange)
+        if (((LightfootControlState*)inner->control)->targetDistance < inner->aggroRange)
         {
             if (((BaddieState*)state)->moveJustStartedB != 0 ||
                 ((BaddieState*)state)->moveDone != 0 || ((BaddieState*)state)->controlMode == 0)
@@ -135,9 +135,9 @@ int Lightfoot_UpdateProximityInteractionState(int obj, int state)
 
 int Lightfoot_UpdateCompletionInteraction(int obj, int state)
 {
-    Dll1B5Placement* data = (Dll1B5Placement*)((GameObject*)obj)->anim.placementData;
+    LightfootPlacement* data = (LightfootPlacement*)((GameObject*)obj)->anim.placementData;
     GroundBaddieState* inner = ((GameObject*)obj)->extra;
-    Dll1B5ControlState* control = inner->control;
+    LightfootControlState* control = inner->control;
     if (((BaddieState*)state)->moveJustStartedB != 0 ||
         ((BaddieState*)state)->moveDone != 0)
     {
@@ -149,20 +149,20 @@ int Lightfoot_UpdateCompletionInteraction(int obj, int state)
         {
             if (((BaddieState*)state)->controlMode != 3)
             {
-                ((Dll1B5ControlState*)control)->completionCountdown = 4;
+                ((LightfootControlState*)control)->completionCountdown = 4;
                 (*gPlayerInterface)->setState((void*)obj, (void*)state, 3);
             }
-            if (((Dll1B5ControlState*)control)->completionCountdown != 0)
+            if (((LightfootControlState*)control)->completionCountdown != 0)
             {
-                ((Dll1B5ControlState*)control)->completionCountdown -= 1;
-                if (((Dll1B5ControlState*)control)->completionCountdown == 0)
+                ((LightfootControlState*)control)->completionCountdown -= 1;
+                if (((LightfootControlState*)control)->completionCountdown == 0)
                 {
                     mainSetBits(data->completionGameBit, 1);
                     mainSetBits(data->activeGameBit, 0);
                     ((GameObject*)obj)->anim.alpha = 0;
                     ((GameObject*)obj)->anim.flags |= OBJANIM_FLAG_HIDDEN;
-                    ((Dll1B5ControlState*)control)->completionTimer = 120.0f;
-                    ((Dll1B5ControlState*)control)->lifeTimer = 100.0f;
+                    ((LightfootControlState*)control)->completionTimer = 120.0f;
+                    ((LightfootControlState*)control)->lifeTimer = 100.0f;
                 }
             }
         }
@@ -183,8 +183,8 @@ int Lightfoot_UpdateCompletionInteraction(int obj, int state)
 int Lightfoot_UpdateChallengeGateInteraction(int obj, int state)
 {
     GroundBaddieState* inner = ((GameObject*)obj)->extra;
-    Dll1B5Placement* r4c;
-    Dll1B5ControlState* sub;
+    LightfootPlacement* r4c;
+    LightfootControlState* sub;
     int v;
 
     if (((BaddieState*)state)->targetObj != NULL)
@@ -197,7 +197,7 @@ int Lightfoot_UpdateChallengeGateInteraction(int obj, int state)
         }
         if ((u16)v < 0x1770)
         {
-            r4c = (Dll1B5Placement*)((GameObject*)obj)->anim.placementData;
+            r4c = (LightfootPlacement*)((GameObject*)obj)->anim.placementData;
             ((GameObject*)obj)->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
             switch (r4c->base.ident)
             {
@@ -292,7 +292,7 @@ int Lightfoot_UpdateChallengeGateInteraction(int obj, int state)
 int Lightfoot_UpdateWanderSteering(GameObject* obj, int state, f32 fv)
 {
     GroundBaddieState* inner = obj->extra;
-    Dll1B5ControlState* sub = inner->control;
+    LightfootControlState* sub = inner->control;
     if (sub->wanderTimer <= 0.0f)
     {
         Sfx_PlayFromObject(obj, SFXTRIG_htop_hurry1);
@@ -351,7 +351,7 @@ int Lightfoot_UpdateRandomTurn(int obj, int state, f32 fv)
     GroundBaddieState* inner = ((GameObject*)obj)->extra;
     if (((BaddieState*)state)->moveJustStartedA != 0)
     {
-        Sfx_PlayFromObject((GameObject*)(u32)obj, ((Dll1B5ControlState*)inner->control)->movementSfxId);
+        Sfx_PlayFromObject((GameObject*)(u32)obj, ((LightfootControlState*)inner->control)->movementSfxId);
         if (randomGetRange(0, 1) != 0)
         {
             ((GameObject*)obj)->anim.rotX += 0x8AA9;
@@ -386,7 +386,7 @@ PlayerLightfootMoveSpeeds gPlayerMoveSpeedTable = {
 int Lightfoot_UpdateTargetAnimationCycle(GameObject* obj, int state, f32 fv)
 {
     GroundBaddieState* inner = obj->extra;
-    Dll1B5ControlState* control = inner->control;
+    LightfootControlState* control = inner->control;
     void* p = ((BaddieState*)state)->targetObj;
     if (p != NULL)
     {
@@ -413,10 +413,10 @@ int Lightfoot_UpdateTargetAnimationCycle(GameObject* obj, int state, f32 fv)
 
 int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv)
 {
-    const Dll1B5Placement* placement;
-    Dll1B5ButtonTimingTables* controls = (Dll1B5ButtonTimingTables*)&gPlayerLightfootAnimTable;
+    const LightfootPlacement* placement;
+    LightfootButtonTimingTables* controls = (LightfootButtonTimingTables*)&gPlayerLightfootAnimTable;
     GroundBaddieState* actor = obj->extra;
-    Dll1B5ButtonTimingControlState* challenge = actor->control;
+    LightfootButtonTimingControlState* challenge = actor->control;
     BaddieState* playerState = (BaddieState*)state;
     GameObject* target = playerState->targetObj;
     if (target != NULL)
@@ -486,7 +486,7 @@ int Lightfoot_UpdateButtonTimingChallenge(GameObject* obj, int state, f32 fv)
             fearTestMeterSetFadeIn(1);
             setAButtonIcon(6);
         }
-        placement = (const Dll1B5Placement*)obj->anim.placementData;
+        placement = (const LightfootPlacement*)obj->anim.placementData;
         if (playerState->moveJustStartedA != 0)
         {
             challenge->animationIndex = 0;
@@ -517,7 +517,7 @@ int Lightfoot_UpdateAnimationCycle(GameObject* obj, int state, f32 fv)
 {
     GroundBaddieState* inner = obj->extra;
     void* p = ((BaddieState*)state)->targetObj;
-    Dll1B5ControlState* control;
+    LightfootControlState* control;
     const s16* moves;
     const f32* blends;
     if (p != NULL)
@@ -552,7 +552,7 @@ int Lightfoot_UpdateAnimationCycle(GameObject* obj, int state, f32 fv)
     return 0;
 }
 
-void Lightfoot_RecordCompletedChallengeTargetHit(GameObject* obj, GroundBaddieState* inner, Dll1B5ControlState* animState)
+void Lightfoot_RecordCompletedChallengeTargetHit(GameObject* obj, GroundBaddieState* inner, LightfootControlState* animState)
 {
     ObjPlacement* idx;
 
@@ -582,9 +582,9 @@ void Lightfoot_RecordCompletedChallengeTargetHit(GameObject* obj, GroundBaddieSt
  * collision query tests. Low byte = behaviour flags; the high bits select the
  * map-surface type (consumed by trackBuildBlockTriangles).
  */
-const f32 gDll1B5PulseTimerInterval[1] = {15.0f};
-const f32 gDll1B5PulseSpawnOffsetY[1] = {35.0f};
-const f32 gDll1B5PulseBurstScale[1] = {0.2f};
+const f32 gLightfootPulseTimerInterval[1] = {15.0f};
+const f32 gLightfootPulseSpawnOffsetY[1] = {35.0f};
+const f32 gLightfootPulseBurstScale[1] = {0.2f};
 
 void Lightfoot_ProcessHitResponseFlags(int obj, BaddieState* inner)
 {
@@ -670,7 +670,7 @@ void Lightfoot_ResetScriptedPosition(GameObject* obj)
 
 void Lightfoot_UpdateAttachedChild(GameObject* obj, GroundBaddieState* inner)
 {
-    Dll1B5ControlState* animState = inner->control;
+    LightfootControlState* animState = inner->control;
     GameObject* child;
     ObjPlacement* setup;
 
@@ -703,7 +703,7 @@ void Lightfoot_UpdateAttachedChild(GameObject* obj, GroundBaddieState* inner)
 
 void Lightfoot_UpdatePlayerInteraction(int obj, GroundBaddieState* inner, int state)
 {
-    Dll1B5ControlState* p = inner->control;
+    LightfootControlState* p = inner->control;
     ObjPlacement* sub = (ObjPlacement*)((GameObject*)obj)->anim.placementData;
     int mode;
     int v;
@@ -736,8 +736,8 @@ void Lightfoot_UpdatePlayerInteraction(int obj, GroundBaddieState* inner, int st
         inner->savedPendingParentObj = ((GameObject*)obj)->pendingParentObj;
         ((GameObject*)obj)->pendingParentObj = 0;
         (*gPlayerInterface)
-            ->update((void*)obj, (void*)state, timeDelta, timeDelta, gDll1B5StateHandlers,
-                     gDll1B5SubstateHandlers);
+            ->update((void*)obj, (void*)state, timeDelta, timeDelta, gLightfootStateHandlers,
+                     gLightfootSubstateHandlers);
         ((GameObject*)obj)->pendingParentObj = inner->savedPendingParentObj;
         Lightfoot_ProcessHitResponseFlags(obj, &inner->baddie);
     }
@@ -746,8 +746,8 @@ void Lightfoot_UpdatePlayerInteraction(int obj, GroundBaddieState* inner, int st
 int Lightfoot_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     GroundBaddieState* inner = obj->extra;
-    Dll1B5Placement* placement = (Dll1B5Placement*)obj->anim.placementData;
-    Dll1B5ControlState* timerRec;
+    LightfootPlacement* placement = (LightfootPlacement*)obj->anim.placementData;
+    LightfootControlState* timerRec;
     int mode;
     u8 i;
     u8 j;
@@ -775,7 +775,7 @@ int Lightfoot_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
             inner->configFlags = inner->configFlags | 1;
             mainSetBits(placement->eventGameBit, 1);
             arr[3] = 0.0f;
-            arr[4] = gDll1B5PulseSpawnOffsetY[0];
+            arr[4] = gLightfootPulseSpawnOffsetY[0];
             arr[5] = 0.0f;
             j = 0x19;
             scale = 0.8f;
@@ -796,43 +796,43 @@ int Lightfoot_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
             if (timerRec->pulseTimer <= 0.0f)
             {
                 mode = 3;
-                timerRec->pulseTimer += gDll1B5PulseTimerInterval[0];
+                timerRec->pulseTimer += gLightfootPulseTimerInterval[0];
             }
             else
             {
                 mode = 0;
             }
             snd[0] = 0.0f;
-            snd[1] = gDll1B5PulseSpawnOffsetY[0];
+            snd[1] = gLightfootPulseSpawnOffsetY[0];
             snd[2] = 0.0f;
             Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_foot_metal_scuff_455);
-            objfx_spawnPulseBurst(obj, gDll1B5PulseBurstScale[0] * obj->anim.rootMotionScale, 3, mode, 0, snd);
+            objfx_spawnPulseBurst(obj, gLightfootPulseBurstScale[0] * obj->anim.rootMotionScale, 3, mode, 0, snd);
         }
     }
     inner->flags400 = inner->flags400 | 2;
     return 0;
 }
 
-s16 gDll1B5MoveIds0[2] = {0x33, -1};
-f32 gDll1B5MoveSpeeds0[2] = {0.0009f, -1.0f};
-s16 gDll1B5MoveIds1[2] = {0x33, -1};
-f32 gDll1B5MoveSpeeds1[2] = {0.001f, -1.0f};
-s16 gDll1B5MoveIds2[2] = {0x36, -1};
-f32 gDll1B5MoveSpeeds2[2] = {0.003f, -1.0f};
-s16 gDll1B5MoveIds3[2] = {0x128, -1};
-f32 gDll1B5MoveSpeeds3[2] = {0.01f, -1.0f};
-s16 gDll1B5MoveIds4[2] = {1, -1};
-f32 gDll1B5MoveSpeeds4[2] = {0.01f, -1.0f};
+s16 gLightfootMoveIds0[2] = {0x33, -1};
+f32 gLightfootMoveSpeeds0[2] = {0.0009f, -1.0f};
+s16 gLightfootMoveIds1[2] = {0x33, -1};
+f32 gLightfootMoveSpeeds1[2] = {0.001f, -1.0f};
+s16 gLightfootMoveIds2[2] = {0x36, -1};
+f32 gLightfootMoveSpeeds2[2] = {0.003f, -1.0f};
+s16 gLightfootMoveIds3[2] = {0x128, -1};
+f32 gLightfootMoveSpeeds3[2] = {0.01f, -1.0f};
+s16 gLightfootMoveIds4[2] = {1, -1};
+f32 gLightfootMoveSpeeds4[2] = {0.01f, -1.0f};
 
-int dll437_getExtraSize(void) {
-    return sizeof(Dll1B5State);
+int Lightfoot_getExtraSize(void) {
+    return sizeof(LightfootState);
 }
 
-int dll437_getObjectTypeId(void) {
+int Lightfoot_getObjectTypeId(void) {
     return 0x14B;
 }
 
-void dll437_free(GameObject* obj, int preserveChildren) {
+void Lightfoot_free(GameObject* obj, int preserveChildren) {
     void* child;
     int inner = *(int*)&obj->extra;
     int count;
@@ -852,7 +852,7 @@ void dll437_free(GameObject* obj, int preserveChildren) {
     (*gBaddieControlInterface)->releaseState(obj, (void*)inner, 0x20);
 }
 
-void dll437_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+void Lightfoot_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     s32 visibleValue = visible;
 
     if (visibleValue != 0) {
@@ -866,13 +866,13 @@ void dll437_render(GameObject* obj, int renderArg2, int renderArg3, int renderAr
     }
 }
 
-void dll437_hitDetect(void) {
+void Lightfoot_hitDetect(void) {
 }
 
-void dll437_update(GameObject* obj) {
-    Dll1B5State* inner = obj->extra;
+void Lightfoot_update(GameObject* obj) {
+    LightfootState* inner = obj->extra;
     int workValue = obj->anim.placementDataAddress;
-    Dll1B5ControlState* control = inner->groundBaddie.control;
+    LightfootControlState* control = inner->groundBaddie.control;
     f32 pulseOffset[3];
     f32 effectParams[6];
     u8 effectCount;
@@ -888,7 +888,7 @@ void dll437_update(GameObject* obj) {
     }
 
     if (obj->anim.romDefNo == DLL1B5_SEQUENCE_ID_SC_BABY_LIGHTFOOT && inner->groundBaddie.gameBitA != -1) {
-        switch (((Dll1B5Placement*)workValue)->base.ident) {
+        switch (((LightfootPlacement*)workValue)->base.ident) {
         case 0x4993F:
         case 0x49940:
         case 0x49941:
@@ -967,9 +967,9 @@ void dll437_update(GameObject* obj) {
     }
 
     if (obj->userData1 != 0) {
-        if (((((Dll1B5Placement*)workValue)->base.ident == 0x499B5 && mainGetBit(0xC42) &&
+        if (((((LightfootPlacement*)workValue)->base.ident == 0x499B5 && mainGetBit(0xC42) &&
               (mainGetBit(0xC3B) == 0 || mainGetBit(0xC3C) == 0 || mainGetBit(0xC3D) == 0)) ||
-             (((Dll1B5Placement*)workValue)->base.ident == 0x499B6 && mainGetBit(0xC46) &&
+             (((LightfootPlacement*)workValue)->base.ident == 0x499B6 && mainGetBit(0xC46) &&
               (mainGetBit(0xC3E) == 0 || mainGetBit(0xC3F) == 0 || mainGetBit(0xC40) == 0)))) {
             effectParams[3] = 0.0f;
             effectParams[4] = 24.0f;
@@ -987,29 +987,29 @@ void dll437_update(GameObject* obj) {
         }
         Lightfoot_UpdatePlayerInteraction((int)obj, &inner->groundBaddie, (int)inner);
         if ((inner->groundBaddie.configFlags & 1) && (obj->objectFlags & OBJECT_OBJFLAG_RENDERED)) {
-            Dll1B5ControlState* controlState = inner->groundBaddie.control;
+            LightfootControlState* controlState = inner->groundBaddie.control;
 
             controlState->pulseTimer -= timeDelta;
             if (controlState->pulseTimer <= 0.0f) {
                 workValue = 3;
-                controlState->pulseTimer += gDll1B5PulseTimerInterval[0];
+                controlState->pulseTimer += gLightfootPulseTimerInterval[0];
             } else {
                 workValue = 0;
             }
             pulseOffset[0] = 0.0f;
-            pulseOffset[1] = gDll1B5PulseSpawnOffsetY[0];
+            pulseOffset[1] = gLightfootPulseSpawnOffsetY[0];
             pulseOffset[2] = 0.0f;
             Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_foot_metal_scuff_455);
-            objfx_spawnPulseBurst(obj, gDll1B5PulseBurstScale[0] * obj->anim.rootMotionScale, 3, workValue, 0, pulseOffset);
+            objfx_spawnPulseBurst(obj, gLightfootPulseBurstScale[0] * obj->anim.rootMotionScale, 3, workValue, 0, pulseOffset);
         }
         control->wanderTimer -= timeDelta;
     }
 }
 
-void dll437_init(GameObject* obj, const Dll1B5Placement* placement, int isReload) {
+void Lightfoot_init(GameObject* obj, const LightfootPlacement* placement, int isReload) {
     PlayerLightfootAnimTable* playerAnimTableBase = &gPlayerLightfootAnimTable;
     int inner = *(int*)&obj->extra;
-    const Dll1B5Placement* placementData = placement;
+    const LightfootPlacement* placementData = placement;
     int control;
     u8 initFlags = 0x16;
 
@@ -1022,61 +1022,61 @@ void dll437_init(GameObject* obj, const Dll1B5Placement* placement, int isReload
     ((GroundBaddieState*)inner)->baddie.controlMode = 0;
     ((GroundBaddieState*)inner)->baddie.substate = 0;
     obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HITDETECT_DISABLED);
-    control = (int)((Dll1B5State*)inner)->groundBaddie.control;
-    ((Dll1B5ControlState*)control)->weaponDefNoSentinel = -1;
-    ((Dll1B5ControlState*)control)->weaponDefNo = ((Dll1B5ControlState*)control)->weaponDefNoSentinel;
+    control = (int)((LightfootState*)inner)->groundBaddie.control;
+    ((LightfootControlState*)control)->weaponDefNoSentinel = -1;
+    ((LightfootControlState*)control)->weaponDefNo = ((LightfootControlState*)control)->weaponDefNoSentinel;
     obj->objectFlags = (u16)(obj->objectFlags | (placement->objectFlags & 0x7));
     if (placement->completionGameBit == DLL1B5_COMPLETION_GAMEBIT_SC_TOTEM_BOND) {
         ((GroundBaddieState*)inner)->baddie.controlMode = 2;
         ((GroundBaddieState*)inner)->baddie.substate = 1;
         ObjHits_DisableObject(obj);
-        ((Dll1B5ControlState*)control)->moveIndex = randomGetRange(0, 3);
-        ((Dll1B5ControlState*)control)->weaponDefNo = DLL1B5_WEAPON_DEF_1;
-        ((Dll1B5ControlState*)control)->moveIds = gDll1B5MoveIds0;
-        ((Dll1B5ControlState*)control)->moveSpeeds = gDll1B5MoveSpeeds0;
+        ((LightfootControlState*)control)->moveIndex = randomGetRange(0, 3);
+        ((LightfootControlState*)control)->weaponDefNo = DLL1B5_WEAPON_DEF_1;
+        ((LightfootControlState*)control)->moveIds = gLightfootMoveIds0;
+        ((LightfootControlState*)control)->moveSpeeds = gLightfootMoveSpeeds0;
         obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
         obj->userData2 = 0;
     } else {
         switch (placementData->base.ident) {
         case 0x34316:
-            ((Dll1B5ControlState*)control)->moveIds = gDll1B5MoveIds3;
-            ((Dll1B5ControlState*)control)->moveSpeeds = gDll1B5MoveSpeeds3;
+            ((LightfootControlState*)control)->moveIds = gLightfootMoveIds3;
+            ((LightfootControlState*)control)->moveSpeeds = gLightfootMoveSpeeds3;
             ObjHits_DisableObject(obj);
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x33E3C:
-            ((Dll1B5ControlState*)control)->moveIds = gDll1B5MoveIds0;
-            ((Dll1B5ControlState*)control)->moveSpeeds = gDll1B5MoveSpeeds0;
-            ((Dll1B5ControlState*)control)->weaponDefNo = DLL1B5_WEAPON_DEF_1;
+            ((LightfootControlState*)control)->moveIds = gLightfootMoveIds0;
+            ((LightfootControlState*)control)->moveSpeeds = gLightfootMoveSpeeds0;
+            ((LightfootControlState*)control)->weaponDefNo = DLL1B5_WEAPON_DEF_1;
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x33E34:
-            ((Dll1B5ControlState*)control)->moveIds = gDll1B5MoveIds1;
-            ((Dll1B5ControlState*)control)->moveSpeeds = gDll1B5MoveSpeeds1;
-            ((Dll1B5ControlState*)control)->weaponDefNo = DLL1B5_WEAPON_DEF_1;
+            ((LightfootControlState*)control)->moveIds = gLightfootMoveIds1;
+            ((LightfootControlState*)control)->moveSpeeds = gLightfootMoveSpeeds1;
+            ((LightfootControlState*)control)->weaponDefNo = DLL1B5_WEAPON_DEF_1;
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x45C47:
-            ((Dll1B5ControlState*)control)->moveIds = gDll1B5MoveIds2;
-            ((Dll1B5ControlState*)control)->moveSpeeds = gDll1B5MoveSpeeds2;
+            ((LightfootControlState*)control)->moveIds = gLightfootMoveIds2;
+            ((LightfootControlState*)control)->moveSpeeds = gLightfootMoveSpeeds2;
             ObjHits_DisableObject(obj);
-            ((Dll1B5ControlState*)control)->weaponDefNo = DLL1B5_WEAPON_DEF_2;
+            ((LightfootControlState*)control)->weaponDefNo = DLL1B5_WEAPON_DEF_2;
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x460B6:
-            ((Dll1B5ControlState*)control)->moveIds = gDll1B5MoveIds4;
-            ((Dll1B5ControlState*)control)->moveSpeeds = gDll1B5MoveSpeeds4;
+            ((LightfootControlState*)control)->moveIds = gLightfootMoveIds4;
+            ((LightfootControlState*)control)->moveSpeeds = gLightfootMoveSpeeds4;
             ObjHits_DisableObject(obj);
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x3433F:
-            ((Dll1B5ControlState*)control)->moveIds = playerAnimTableBase->heavyScuff.anims;
-            ((Dll1B5ControlState*)control)->moveSpeeds = playerAnimTableBase->heavyScuff.rates;
+            ((LightfootControlState*)control)->moveIds = playerAnimTableBase->heavyScuff.anims;
+            ((LightfootControlState*)control)->moveSpeeds = playerAnimTableBase->heavyScuff.rates;
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
@@ -1084,22 +1084,22 @@ void dll437_init(GameObject* obj, const Dll1B5Placement* placement, int isReload
             if (mainGetBit(GAMEBIT_LV_ChallengeGate1Complete)) {
                 obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             }
-            ((Dll1B5ControlState*)control)->moveIds = playerAnimTableBase->lightScuff.anims;
-            ((Dll1B5ControlState*)control)->moveSpeeds = playerAnimTableBase->lightScuff.rates;
+            ((LightfootControlState*)control)->moveIds = playerAnimTableBase->lightScuff.anims;
+            ((LightfootControlState*)control)->moveSpeeds = playerAnimTableBase->lightScuff.rates;
             break;
         case 0x46A55:
             if (mainGetBit(GAMEBIT_LV_ChallengeGate2Complete)) {
                 obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             }
-            ((Dll1B5ControlState*)control)->moveIds = playerAnimTableBase->lightScuff.anims;
-            ((Dll1B5ControlState*)control)->moveSpeeds = playerAnimTableBase->lightScuff.rates;
+            ((LightfootControlState*)control)->moveIds = playerAnimTableBase->lightScuff.anims;
+            ((LightfootControlState*)control)->moveSpeeds = playerAnimTableBase->lightScuff.rates;
             break;
         case 0x49928:
             if (mainGetBit(GAMEBIT_SC_ChallengeGate3Complete)) {
                 obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             }
-            ((Dll1B5ControlState*)control)->moveIds = playerAnimTableBase->lightScuff.anims;
-            ((Dll1B5ControlState*)control)->moveSpeeds = playerAnimTableBase->lightScuff.rates;
+            ((LightfootControlState*)control)->moveIds = playerAnimTableBase->lightScuff.anims;
+            ((LightfootControlState*)control)->moveSpeeds = playerAnimTableBase->lightScuff.rates;
             break;
         case 0x499AC:
         case 0x499AE:
@@ -1108,62 +1108,62 @@ void dll437_init(GameObject* obj, const Dll1B5Placement* placement, int isReload
         case 0x499B1:
         case 0x499B2:
             ((GroundBaddieState*)inner)->baddie.substate = 2;
-            ((Dll1B5ControlState*)control)->moveIds = playerAnimTableBase->heavyScuff.anims;
-            ((Dll1B5ControlState*)control)->moveSpeeds = playerAnimTableBase->heavyScuff.rates;
-            ((Dll1B5ControlState*)control)->wanderTimer = (f32)(s32)randomGetRange(0x78, 0xB4);
+            ((LightfootControlState*)control)->moveIds = playerAnimTableBase->heavyScuff.anims;
+            ((LightfootControlState*)control)->moveSpeeds = playerAnimTableBase->heavyScuff.rates;
+            ((LightfootControlState*)control)->wanderTimer = (f32)(s32)randomGetRange(0x78, 0xB4);
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x499B5:
         case 0x499B6:
             obj->userData1 = 1;
-            ((Dll1B5ControlState*)control)->moveIds = playerAnimTableBase->heavyScuff.anims;
-            ((Dll1B5ControlState*)control)->moveSpeeds = playerAnimTableBase->heavyScuff.rates;
+            ((LightfootControlState*)control)->moveIds = playerAnimTableBase->heavyScuff.anims;
+            ((LightfootControlState*)control)->moveSpeeds = playerAnimTableBase->heavyScuff.rates;
             break;
         default:
-            ((Dll1B5ControlState*)control)->moveIds = playerAnimTableBase->lightScuff.anims;
-            ((Dll1B5ControlState*)control)->moveSpeeds = playerAnimTableBase->lightScuff.rates;
+            ((LightfootControlState*)control)->moveIds = playerAnimTableBase->lightScuff.anims;
+            ((LightfootControlState*)control)->moveSpeeds = playerAnimTableBase->lightScuff.rates;
             break;
         }
     }
     Lightfoot_ResetScriptedPosition(obj);
     ObjAnim_SetMoveProgress((ObjAnimComponent*)obj, (f32)(s32)randomGetRange(0, 0x63) / 100.0f);
-    ((Dll1B5ControlState*)control)->movementSfxId = (u16)(randomGetRange(0, 1) != 0 ? 0x133 : 0x134);
-    ((Dll1B5ControlState*)control)->pulseTimer = gDll1B5PulseTimerInterval[0];
+    ((LightfootControlState*)control)->movementSfxId = (u16)(randomGetRange(0, 1) != 0 ? 0x133 : 0x134);
+    ((LightfootControlState*)control)->pulseTimer = gLightfootPulseTimerInterval[0];
     if (obj->userData1 != 0) {
         ObjHits_DisableObject(obj);
     }
 }
 
-void dll437_release(void) {
+void Lightfoot_release(void) {
 }
 
-void dll437_initialise(void) {
-    gDll1B5StateHandlers[0] = Lightfoot_UpdateAnimationCycle;
-    gDll1B5StateHandlers[1] = Lightfoot_UpdateButtonTimingChallenge;
-    gDll1B5StateHandlers[2] = Lightfoot_UpdateTargetAnimationCycle;
-    gDll1B5StateHandlers[3] = (Dll1B5StateHandler)Lightfoot_UpdateRandomTurn;
-    gDll1B5StateHandlers[4] = Lightfoot_UpdateWanderSteering;
-    gDll1B5SubstateHandlers[0] = Lightfoot_UpdateChallengeGateInteraction;
-    gDll1B5SubstateHandlers[1] = Lightfoot_UpdateCompletionInteraction;
-    gDll1B5SubstateHandlers[2] = Lightfoot_UpdateProximityInteractionState;
+void Lightfoot_initialise(void) {
+    gLightfootStateHandlers[0] = Lightfoot_UpdateAnimationCycle;
+    gLightfootStateHandlers[1] = Lightfoot_UpdateButtonTimingChallenge;
+    gLightfootStateHandlers[2] = Lightfoot_UpdateTargetAnimationCycle;
+    gLightfootStateHandlers[3] = (LightfootStateHandler)Lightfoot_UpdateRandomTurn;
+    gLightfootStateHandlers[4] = Lightfoot_UpdateWanderSteering;
+    gLightfootSubstateHandlers[0] = Lightfoot_UpdateChallengeGateInteraction;
+    gLightfootSubstateHandlers[1] = Lightfoot_UpdateCompletionInteraction;
+    gLightfootSubstateHandlers[2] = Lightfoot_UpdateProximityInteractionState;
 }
 
-ObjectDescriptor gDll1B5ObjDescriptor = {
+ObjectDescriptor gLightfootObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)dll437_initialise,
-    (ObjectDescriptorCallback)dll437_release,
+    (ObjectDescriptorCallback)Lightfoot_initialise,
+    (ObjectDescriptorCallback)Lightfoot_release,
     0,
-    (ObjectDescriptorCallback)dll437_init,
-    (ObjectDescriptorCallback)dll437_update,
-    (ObjectDescriptorCallback)dll437_hitDetect,
-    (ObjectDescriptorCallback)dll437_render,
-    (ObjectDescriptorCallback)dll437_free,
-    (ObjectDescriptorCallback)dll437_getObjectTypeId,
-    dll437_getExtraSize,
+    (ObjectDescriptorCallback)Lightfoot_init,
+    (ObjectDescriptorCallback)Lightfoot_update,
+    (ObjectDescriptorCallback)Lightfoot_hitDetect,
+    (ObjectDescriptorCallback)Lightfoot_render,
+    (ObjectDescriptorCallback)Lightfoot_free,
+    (ObjectDescriptorCallback)Lightfoot_getObjectTypeId,
+    Lightfoot_getExtraSize,
 };
 
-Dll1B5StateHandler gDll1B5StateHandlers[DLL1B5_STATE_HANDLER_COUNT];
-Dll1B5SubstateHandler gDll1B5SubstateHandlers[DLL1B5_SUBSTATE_HANDLER_COUNT];
+LightfootStateHandler gLightfootStateHandlers[DLL1B5_STATE_HANDLER_COUNT];
+LightfootSubstateHandler gLightfootSubstateHandlers[DLL1B5_SUBSTATE_HANDLER_COUNT];

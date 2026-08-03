@@ -1662,7 +1662,7 @@ ResourceDescriptor* gResourceDescriptors[] = {
     (ResourceDescriptor*)&gSH_staffHazeObjDescriptor,
     (ResourceDescriptor*)&gSH_BeaconObjDescriptor,
     (ResourceDescriptor*)&gSH_EmptyTumbleWObjDescriptor,
-    (ResourceDescriptor*)&gDll1B5ObjDescriptor,
+    (ResourceDescriptor*)&gLightfootObjDescriptor,
     (ResourceDescriptor*)&gSC_levelcontrolObjDescriptor,
     (ResourceDescriptor*)&gSC_MusicTreeObjDescriptor,
     (ResourceDescriptor*)&gSC_totempoleObjDescriptor,
