@@ -4137,8 +4137,8 @@ void* ObjSeq_ToggleCommand3Target(GameObject* obj, u8* seq, ObjSeqPlacement* pla
     f32 groundY[2];
 
     result = obj;
-    *(s8*)&((ObjSeqState*)seq)->unk79 = (s8)(((ObjSeqState*)seq)->unk79 ^ 1);
-    if ((s8)((ObjSeqState*)seq)->unk79 != 0)
+    *(s8*)&((ObjSeqState*)seq)->targetAttached = (s8)(((ObjSeqState*)seq)->targetAttached ^ 1);
+    if ((s8)((ObjSeqState*)seq)->targetAttached != 0)
     {
         ObjSeq_resolveTargetObject(obj);
         seqObj = *(GameObject**)seq;
@@ -4304,7 +4304,7 @@ void ObjSeq_RebuildCurveStateToFrame(GameObject* obj, GameObject* seqObj, u8* se
     state->retriggerFrame = -0x32;
     state->useRootMotionSpeed = 0;
     state->groundSnapEnabled = 0;
-    state->unk79 = 0;
+    state->targetAttached = 0;
     state->targetObj = NULL;
     state->isCameraSeq = 0;
     state->fade = 0.0f;

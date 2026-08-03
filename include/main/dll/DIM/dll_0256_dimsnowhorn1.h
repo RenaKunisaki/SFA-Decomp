@@ -56,8 +56,8 @@ typedef struct DIMSnowHorn1State
     u8 mode;
     u8 triggerMode;
     u8 flags; /* 0xA8E: bit0x2 riding (GAMEBIT_SNOWHORN_RIDING), bit0x8 hitvol-priority, bit0x20 sequence-triggered */
-    u8 queryFlagA8F;   /* 0xA8F: nonzero queried by DIMSnowHorn1_getDismountSide (set cross-DLL) */
-    u8 queryFlagA90;   /* 0xA90: nonzero queried by DIMSnowHorn1_getMountSide (set cross-DLL) */
+    u8 dismountSide;   /* 0xA8F: nonzero = side 2; set cross-DLL */
+    u8 mountSide;      /* 0xA90: nonzero = side 1; set cross-DLL */
     u8 proximityPhase; /* 0xA91: 0/1/2 phase toggling linked objects by player distance (stateHandler05) */
     u8 padA92[2];
     f32 hitReactStepScale;

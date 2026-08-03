@@ -983,7 +983,7 @@ void DIMSnowHorn1_getCameraPosition(GameObject* obj, f32* outX, f32* outY, f32* 
 
 int DIMSnowHorn1_getDismountSide(GameObject* obj)
 {
-    if (((DIMSnowHorn1State*)obj->extra)->queryFlagA8F != 0)
+    if (((DIMSnowHorn1State*)obj->extra)->dismountSide != 0)
     {
         return 2;
     }
@@ -1012,7 +1012,7 @@ void DIMSnowHorn1_getRiderPosition(GameObject* obj, f32* out_x, f32* out_y, f32*
 
 int DIMSnowHorn1_getMountSide(GameObject* obj)
 {
-    if (((DIMSnowHorn1State*)obj->extra)->queryFlagA90 != 0)
+    if (((DIMSnowHorn1State*)obj->extra)->mountSide != 0)
     {
         return 1;
     }

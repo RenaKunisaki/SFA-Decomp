@@ -103,7 +103,7 @@ typedef struct EarthWarriorSub {
     f32 riderPosX;
     f32 riderPosY;
     f32 riderPosZ;
-    f32 unk8EC;
+    f32 maxSpeed;
     u8 pad8F0[0x90];
     int savedControlMode;
     u8 pad984[2];
@@ -143,9 +143,9 @@ typedef struct EarthWarriorState {
 
 typedef struct DREarthWarriorInitData {
     u8 unk0[0xC];
-    u8 unkC[0x30];
-    u8 unk3C[0x10];
-    u8 unk4C[0x18];
+    u8 segmentLocalPoints[0x30];
+    u8 segmentRadii[0x10];
+    u8 localPointPositions[0x18];
     u8 unk64[0x20];
     f32 configRow[0x15];
     s16 moveTable[0x20];
@@ -193,7 +193,7 @@ STATIC_ASSERT(offsetof(EarthWarriorSub, unk7E0) == 0x7E0);
 STATIC_ASSERT(offsetof(EarthWarriorSub, animSpeedASmoothing) == 0x82C);
 STATIC_ASSERT(offsetof(EarthWarriorSub, paramCurve0Count) == 0x8D0);
 STATIC_ASSERT(offsetof(EarthWarriorSub, riderPosX) == 0x8E0);
-STATIC_ASSERT(offsetof(EarthWarriorSub, unk8EC) == 0x8EC);
+STATIC_ASSERT(offsetof(EarthWarriorSub, maxSpeed) == 0x8EC);
 STATIC_ASSERT(offsetof(EarthWarriorSub, turnThreshold) == 0x986);
 STATIC_ASSERT(offsetof(EarthWarriorSub, energy) == 0x98A);
 STATIC_ASSERT(offsetof(EarthWarriorSub, mountState) == 0x98E);

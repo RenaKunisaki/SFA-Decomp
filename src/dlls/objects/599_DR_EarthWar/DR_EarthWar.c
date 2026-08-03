@@ -72,7 +72,7 @@ static const u8 gDREarthWarriorPathSetupParam[4] = {1, 1, 1, 1};
 
 static void DR_EarthWarrior_setupPathState(u8* pathState, DREarthWarriorInitData* base, EarthWarriorSub* warrior)
 {
-    (*gPathControlInterface)->setup(pathState, 4, base->unkC, base->unk3C, (void*)gDREarthWarriorPathSetupParam);
+    (*gPathControlInterface)->setup(pathState, 4, base->segmentLocalPoints, base->segmentRadii, (void*)gDREarthWarriorPathSetupParam);
     warrior->aimAccumY = 0.0f;
     warrior->aimHalfY = (f32)warrior->yawTurnDir;
 }
@@ -85,8 +85,8 @@ void DR_EarthWarrior_feed(GameObject* obj, int mode)
     case 1:
         state->sub.energy += 4;
         objSoundStartTimed(obj, &state->modelSoundState, 0x291, 0x1000, -1, 1);
-        state->sub.unk8EC = 4.32f;
-        lbl_8033527C[4].maxSpeed = state->sub.unk8EC;
+        state->sub.maxSpeed = 4.32f;
+        lbl_8033527C[4].maxSpeed = state->sub.maxSpeed;
         break;
     default:
         break;
@@ -259,7 +259,7 @@ int DR_EarthWarrior_stateHandler03(GameObject* obj, BaddieState* baddie)
             state->sub.energy -= 1;
             if (state->sub.energy <= 0)
             {
-                state->sub.unk8EC = lbl_803DC76C;
+                state->sub.maxSpeed = lbl_803DC76C;
                 CameraShake_Enable();
                 CameraShake_SetOffset(1.0f);
                 playerAddHealth(Obj_GetPlayerObject(), -1);
@@ -1113,8 +1113,8 @@ void DR_EarthWarrior_init(GameObject* obj, DREarthWarriorPlacement* def)
     state->baddie.gravity = 0.17f;
     pathState = (u8*)&state->baddie + 4;
     (*gPathControlInterface)->init(pathState, 0, 0x48683, 1);
-    (*gPathControlInterface)->setup(pathState, 4, base->unkC, base->unk3C, &stk);
-    (*gPathControlInterface)->setLocalPointCollision(pathState, 1, base->unk4C, base->unk64, 8);
+    (*gPathControlInterface)->setup(pathState, 4, base->segmentLocalPoints, base->segmentRadii, &stk);
+    (*gPathControlInterface)->setLocalPointCollision(pathState, 1, base->localPointPositions, base->unk64, 8);
     pathState[0x264] = 0x28;
     (*gPathControlInterface)->attachObject(obj, pathState);
     ObjHits_EnableObject(obj);
@@ -1123,7 +1123,7 @@ void DR_EarthWarrior_init(GameObject* obj, DREarthWarriorPlacement* def)
     dll_2E_setMoveTables(&state->moveLib, &r1, &r2, 2);
     dll_2E_setLookAtMaxDistance(&state->moveLib, 150.0f);
     state->moveLib.modeBits |= 2;
-    state->sub.unk8EC = 4.32f;
+    state->sub.maxSpeed = 4.32f;
     state->sub.energy = def->energyCapacity;
     state->sub.moveTable = (const s16*)base->moveTable;
     state->sub.configRow = (const EWSpeedRange*)base->configRow;

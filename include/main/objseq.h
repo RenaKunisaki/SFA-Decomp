@@ -134,7 +134,7 @@ struct ObjSeqState {
     u8 unk72[2];
     s32 savedFrame; /* saved frame value restored into curFrame */
     s8 useRootMotionSpeed; /* 0x78: script-toggled; when set (and isCameraSeq==0) movement speed comes from ObjAnim_SampleRootCurvePhase (root-motion) instead of the track-9 speed curve */
-    u8 unk79;
+    u8 targetAttached;
     u8 groundSnapEnabled; /* 0x7A: script-toggled; when set, the seq object is snapped to the detected floor (trackGetNearestGroundOffset / RomCurveInterp_EvaluateOffsetPosition ground adjust) */
     s8 isCameraSeq; /* 0x7B: set when placement targetType==3 (camera): FOV track clamped 35..125, gObjSeqCameraSourceObj assigned, object movement/root-motion suppressed */
     s8 pendingConditionId; /* 1-based; ObjSeq_EvaluateCondition(pendingConditionId-1), cleared when satisfied */

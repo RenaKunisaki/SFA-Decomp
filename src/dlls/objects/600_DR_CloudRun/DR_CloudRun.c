@@ -1028,7 +1028,7 @@ void DR_CloudRunner_getCameraPosition(int obj, f32* a, f32* b, f32* c)
 int DR_CloudRunner_getDismountSide(GameObject* obj)
 {
     CloudRunnerState* inner = obj->extra;
-    if (inner->unkBB7 != 0)
+    if (inner->dismountSide != 0)
     {
         return 2;
     }
@@ -1049,7 +1049,7 @@ void DR_CloudRunner_getRiderPosition(GameObject* obj, f32* x, f32* y, f32* z)
 int DR_CloudRunner_getMountSide(GameObject* obj)
 {
     CloudRunnerState* inner = obj->extra;
-    if (inner->unkBB8 != 0)
+    if (inner->mountSide != 0)
     {
         return 1;
     }
