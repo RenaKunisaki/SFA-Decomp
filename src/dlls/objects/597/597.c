@@ -25,7 +25,6 @@
 #include "main/checkpoint_interface.h"
 #include "main/dll/DR/DRcloudcage.h"
 #include "main/dll/DR/DRpickup.h"
-#include "main/dll/DR/DRshackle.h"
 #include "main/dll/DR/drcloudcage_internal.h"
 #include "main/dll/SP/dll_0287_spscarab.h"
 #include "main/dll/dll_0015_curves.h"
@@ -705,11 +704,11 @@ f32 drcloudcage_getRouteIntensity(GameObject* obj, int state)
 /*
  * SnowBike shackle swing and attachment math.
  *
- * drshackle_updateAttachedPosition rides the shackle along its checkpoint
+ * SnowBike_UpdateAttachedPosition rides the shackle along its checkpoint
  * route while it tracks the player: on first contact it anchors to the
  * route (snapping yaw, seeding swing accel and floor offset), thereafter
  * it advances the route and blends the swing each frame.
- * drshackle_updateSwingBlend computes the per-frame swing-blend factor
+ * SnowBike_UpdateSwingBlend computes the per-frame swing-blend factor
  * from the yaw delta between the object and its anchor, clamps it, and
  * decides the return direction.
  *
@@ -717,31 +716,31 @@ f32 drcloudcage_getRouteIntensity(GameObject* obj, int state)
  * comments).
  */
 
-STATIC_ASSERT(offsetof(ShackleSwingState, anchorX) == 0x0C);
-STATIC_ASSERT(offsetof(ShackleSwingState, collider) == 0x28);
-STATIC_ASSERT(offsetof(ShackleSwingState, colliderMode) == 0x5D);
-STATIC_ASSERT(offsetof(ShackleSwingState, attachment) == 0x178);
-STATIC_ASSERT(offsetof(ShackleSwingState, distanceFade) == 0x3E4);
-STATIC_ASSERT(offsetof(ShackleSwingState, yaw) == 0x40C);
-STATIC_ASSERT(offsetof(ShackleSwingState, targetYaw) == 0x40E);
-STATIC_ASSERT(offsetof(ShackleSwingState, flags) == 0x428);
-STATIC_ASSERT(offsetof(ShackleSwingState, swingAccel) == 0x430);
-STATIC_ASSERT(offsetof(ShackleSwingState, floorAdjustFlag) == 0x434);
-STATIC_ASSERT(offsetof(ShackleSwingState, swingCommand) == 0x44C);
-STATIC_ASSERT(offsetof(ShackleSwingState, swingReturn) == 0x458);
-STATIC_ASSERT(offsetof(ShackleSwingState, swingBlend) == 0x45C);
-STATIC_ASSERT(offsetof(ShackleSwingState, unk494) == 0x494);
-STATIC_ASSERT(offsetof(ShackleSwingState, lastPitch) == 0x49C);
+STATIC_ASSERT(offsetof(SnowBikeSwingState, anchorX) == 0x0C);
+STATIC_ASSERT(offsetof(SnowBikeSwingState, collider) == 0x28);
+STATIC_ASSERT(offsetof(SnowBikeSwingState, colliderMode) == 0x5D);
+STATIC_ASSERT(offsetof(SnowBikeSwingState, attachment) == 0x178);
+STATIC_ASSERT(offsetof(SnowBikeSwingState, distanceFade) == 0x3E4);
+STATIC_ASSERT(offsetof(SnowBikeSwingState, yaw) == 0x40C);
+STATIC_ASSERT(offsetof(SnowBikeSwingState, targetYaw) == 0x40E);
+STATIC_ASSERT(offsetof(SnowBikeSwingState, flags) == 0x428);
+STATIC_ASSERT(offsetof(SnowBikeSwingState, swingAccel) == 0x430);
+STATIC_ASSERT(offsetof(SnowBikeSwingState, floorAdjustFlag) == 0x434);
+STATIC_ASSERT(offsetof(SnowBikeSwingState, swingCommand) == 0x44C);
+STATIC_ASSERT(offsetof(SnowBikeSwingState, swingReturn) == 0x458);
+STATIC_ASSERT(offsetof(SnowBikeSwingState, swingBlend) == 0x45C);
+STATIC_ASSERT(offsetof(SnowBikeSwingState, unk494) == 0x494);
+STATIC_ASSERT(offsetof(SnowBikeSwingState, lastPitch) == 0x49C);
 
 #define DRSHACKLE_ANGLE_STEP         0xb6
 #define DRSHACKLE_SWING_BLEND_LIMIT  0x41
 #define DRSHACKLE_SWING_RETURN_LEFT  0x100
 #define DRSHACKLE_ANGLE_RETURN_LIMIT 0x2aaa
 
-int drshackle_updateSwingBlend(GameObject* obj, ShackleSwingState* state)
+int SnowBike_UpdateSwingBlend(GameObject* obj, SnowBikeSwingState* state)
 {
     GameObject* o = (GameObject*)obj;
-    ShackleSwingState* s = state;
+    SnowBikeSwingState* s = state;
     int hitResult;
     int yawDelta;
     f32 fade;
@@ -823,10 +822,10 @@ int drshackle_updateSwingBlend(GameObject* obj, ShackleSwingState* state)
     return 1;
 }
 
-int drshackle_updateAttachedPosition(GameObject* obj, ShackleSwingState* state)
+int SnowBike_UpdateAttachedPosition(GameObject* obj, SnowBikeSwingState* state)
 {
-    ShackleSwingState* s = state;
-    ShackleFlags* flags;
+    SnowBikeSwingState* s = state;
+    SnowBikeSwingFlags* flags;
     int mapBlockIdx;
     int hitResult;
     s16 angle;
@@ -884,7 +883,7 @@ int drshackle_updateAttachedPosition(GameObject* obj, ShackleSwingState* state)
             flags->positionAnchored = 1;
             return 0;
         }
-        return drshackle_updateSwingBlend(obj, state) != 0;
+        return SnowBike_UpdateSwingBlend(obj, state) != 0;
     }
 
     hitResult = (*gCheckpointInterface)
@@ -2276,7 +2275,7 @@ void SnowBike_update(GameObject* obj)
         SnowBike_UpdateRouteFollowing(obj, (SnowBikeState*)state);
         if (s->routeFlags.b02)
         {
-            if (drshackle_updateAttachedPosition(obj, (ShackleSwingState*)state) != 0)
+            if (SnowBike_UpdateAttachedPosition(obj, (SnowBikeSwingState*)state) != 0)
             {
                 SnowBike_UpdateExhaustFx(obj, (int)state);
                 ((void (*)(GameObject*, int))SnowBike_buildOrientationMatrices)(obj, (int)state);
