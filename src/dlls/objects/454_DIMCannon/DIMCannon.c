@@ -98,7 +98,7 @@ void DIMCannon_updateBall(GameObject* obj) {
     if (obj->userData1 > 1200) {
         Obj_FreeObject(obj);
     } else if (state->clearLatch != 0) {
-        *(s8*)&state->clearLatch = 0;
+        state->clearLatch = 0;
     }
 }
 
@@ -605,7 +605,7 @@ void DIMCannon_init(GameObject* obj, DimCannonPlacement* placement) {
         state->clearLatch = 1;
         hitState = (int*)obj->anim.hitReactState;
         if (hitState != 0) {
-            *(s16*)&((ObjHitsPriorityState*)hitState)->trackContactMask = 1;
+            ((ObjHitsPriorityState*)hitState)->trackContactMask = 1;
         }
         obj->objectFlags |= OBJECT_OBJFLAG_HIDDEN;
     } else {
