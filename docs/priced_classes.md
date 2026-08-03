@@ -847,3 +847,93 @@ fixes it - does not generalise. The 36 priced rows split cleanly:
   Swapping the two statements in the source, and splitting the division into its own temp, both
   reproduce **the identical 94.512** - the scheduler is deciding, not the text. No source move
   reaches these; they are as priced as section 9 says.
+
+## 11. The front-end storage-order laws, and which text-axis rows they reach (measured 2026-08-03)
+
+Sections 8, 8b and 10 model the `.sdata2` slot order and conclude that it is a fossil of the
+source text. This section is the constructive half: what every file-scope construct actually
+emits and where, which sub-100 rows that reaches, and a second oracle - `.bss` - that asks the
+same question for free.
+
+### What each construct emits, and where
+
+Measured with single-TU probes under both live flag sets (`-O4,p -opt nopeephole,noschedule
+-inline noauto` for `src/main`, `-O4,p -opt nopeephole,noschedule,nopropagation -inline auto`
+for the DLLs); both sets agree.
+
+| construct | what lands in `.sdata2` | what the read compiles to |
+| --- | --- | --- |
+| plain literal in an expression | a word where the expression is lowered | that word |
+| `static const f32 X = V;` | **nothing** - folded, then dead-stripped | a duplicate literal at first use |
+| `const f32 X = V;` (external linkage) | a word **at the declaration point** | a duplicate literal at first use; the object itself is never referenced |
+| `static const` aggregate (struct or `[2]`), size <= 8 | a word at the declaration point | a real SDA21 load - no fold, no duplicate |
+| any aggregate larger than 8 bytes | `.rodata`, never `.sdata2` | - |
+| `static __inline` fn defined above the users | its literals intern **at the use site** | - |
+| plain `static` fn defined above the users | its literals intern at the **definition**, but MWCC also emits the body into `.text` | - |
+
+Two consequences. First, the only construct that places a word at a chosen position while
+emitting zero instructions is the external-linkage scalar `const`: it is a pure **insertion**,
+able to add a word between any two mint points and unable to move an existing one. Second, the
+`static` function is not a usable phantom minter - the body is emitted, and
+`banned_shapes_check.py` scans uncalled statics anyway.
+
+Because nothing references an inserted const, `mwld` dead-strips it and the pool shortens again,
+shifting every later SDA2 reference and breaking the DOL. The symbol must be listed in
+`config/GSAE01/config.yml` `force_active`; the entries already there
+(`lbl_803E06C4`, `gGcRobotPatrolZero`, `gDIMSnowHorn1ZeroOffset`, `lbl_803E3E44`, ...) are the
+same class, and the tree already carries six of these consts in game code
+(`gMikaBombZero`, `gDll76Zero`, `gDll77Zero`, ...).
+
+### The insertion classifier, run over the whole frontier
+
+`tools/pool_value_sequence.py --all` says which sections are open only on the text axis. A second
+pass says which of those the const lever can actually close: diff the two slot sequences (size,
+bytes) with an LCS and ask whether every opcode is `equal` or `insert`, and whether each inserted
+word is referenced on retail's side. Over all 33 sub-100 data sections at `590dce7361`:
+
+| row | verdict |
+| --- | --- |
+| `main/objlib` | one **unreferenced** zero word at slot 1. CLOSED - `.sdata2` 91.667 -> 100.0, +48 `matched_data` |
+| `300_Transporter` | not a pool row at all - see below. RETIRE |
+| `engine/5`, `engine/68` | INSERT-ONLY, but the inserted word is **referenced**, so it needs a real minter; these are exactly the priced crutch rows of section 9 |
+| `main/render` | the insertion is the 60-byte `pad_11_803DE508_sdata2` blob - a splits-ownership question, not a text-axis one |
+| the other 28 | need words **moved**; no file-scope construct moves a literal |
+
+### `300_Transporter` is a carve-attribution artifact, not a gap
+
+Both `.sdata2` sections carry `2**3` alignment (each holds a bias double). Our object's section is
+0x4c bytes and `302`'s starts 8-aligned at `0x803E3EE8`, so `mwld` inserts four bytes of padding
+that `splits.txt` attributes to Transporter's range; objdiff compares 76 bytes against 80 forever.
+The DOL is byte-identical either way. The row should leave the frontier rather than be "fixed"
+with a fabricated tail object.
+
+### `.bss` order is a second, free oracle for the same question
+
+Declaration order is **completely inert** - a 36-cell declaration x use matrix (all six
+declaration permutations of three `.bss` arrays against all six use permutations) gives results
+that depend only on the use order. The law is **first-use order**, where "use" is the front end's
+and not the code generator's:
+
+- uses in separate statements, or in separate functions: layout == first-use order exactly;
+- three uses inside one expression `A[i] + B[i] + C[i]`: layout `C A B`, the shallowest
+  sub-expression first. That is section 10's increasing-tree-depth rule, now confirmed on a
+  second kind of storage.
+
+So `.bss` asks the source-text question for the price of one `objdump -t`, and on a mover row it
+corroborates the pool. `main/objlib` is the specimen: retail's `.bss` is `gObjectTypeList,
+gObjectTypeIndices, gObjContactCallbacks`, ours is `gObjectTypeIndices, gObjectTypeList,
+gObjContactCallbacks`, and the two spellings that do fix the order (`entry = gObjectTypeList;`
+hoisted, and `entry = gObjectTypeList + (index = gObjectTypeIndices.offsets[group]);`) both lift
+the list base's `lis`/`addi` above the `limit` load and break `objIsObjectType`. `.text`,
+`.bss` and `.sdata2` therefore disagree about the source order of the same file - which is the
+sharpest statement yet of what section 10 found, and it is why `main/objlib` stays `NonMatching`
+even with a byte-identical `.sdata2`: flipping it links our `.bss` order and moves 33 DOL words.
+
+### Phantom minters: the negative results
+
+None of these interns anything (single-TU probes): a dead local initialiser `f32 t = 100.0f;`,
+a dead store `t = x * 200.0f; t = 0.0f;`, an unused `(f32)n` conversion (no bias double), a
+function-local `const f32 t = 300.0f;`, and `x * 500.0f * 0.0f` (folded). The one shape that does
+mint a word it never loads is a dead **comparison** - `(x > 400.0f) ? x : x` emits `400.0f` - so
+the front end interns when it lowers a compare, not when it folds arithmetic. It is not plausible
+C and is recorded only to close the search.
