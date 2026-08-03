@@ -1016,3 +1016,104 @@ of an earlier function's literals (`CFGuardian`: `4330000080000000` before `cfgu
 no declaration can place it; these are dead-static rows or nothing. `main/shader_dolphin` needs
 `0.0f` hoisted, and the file has 181 `0.0f` literals - every one would have to be rewritten for
 the pool to hold a single word, which is not plausible source at any price.
+
+### 12b. The spelling census: the ban is on the shape, not on the bracket (measured 2026-08-03)
+
+Section 12 left one question open: its mover is `const T name[1] = {V}`, which
+`tools/banned_shapes_check.py` gates as `SINGLE_ELEM_CONST_ARRAY`, so it asked whether some
+other aggregate spelling reaches the same layout without tripping the checker. Seven spellings
+were measured, one build each, on `701` -- the smallest specimen, one word (`0.0f`) wanted at
+`.sdata2+0x0c` ahead of `AndrossHand_render`'s `1.0f`:
+
+| spelling | word emitted at | how the use loads it | checker |
+| --- | --- | --- | --- |
+| plain literal | at the use | `lfs f,0(r2)` via SDA21 | silent |
+| `static const f32 x = V;` | **nowhere** -- folded *and* dead-stripped, section size unchanged | literal at the use | silent |
+| `const f32 x = V;` (external linkage) | declaration point **and** a duplicate at the use | the duplicate | silent |
+| `static const f32 x[1] = {V};` | declaration point, offset 0 | `lfs f,0(r2)` via SDA21 | **gated** |
+| `static const struct { f32 v; } x = {V};` | declaration point, offset 0 | `lfs f,0(r2)` via SDA21 | silent |
+| `static const union { f32 f; } x = {V};` | declaration point, offset 0 | `lfs f,0(r2)` via SDA21 | silent |
+| named one-member `struct` typedef | declaration point, offset 0 | `lfs f,0(r2)` via SDA21 | silent |
+
+The four aggregate rows produce the same object file byte for byte. The checker does not see
+three of them because `RE_ONE_ELEM` keys on the literal `[1]` subscript and `RE_LBL_UNION` only
+on an `lbl_`-named union. Re-deriving section 12's three units with the struct spelling
+reproduces its figures to the digit: `matched_data` 1203321 -> 1203621 (+300), `complete_units`
+906 -> 909, `fuzzy_match_percent` 99.81558 unchanged, every section of `main/rcp_dolphin`,
+`279_AppleOnTree` and `701` at 100.0, `all_source` EXIT=0 -- and `banned_shapes_check` at
+102 hits / 83 baseline / 19 regrowth, **unchanged, adding zero**.
+
+**Verdict: there is no clean spelling, and none of these was landed.** A one-member struct or
+union read only through that member is the banned construct in different syntax: its only
+function is to stop MWCC folding a scalar `const`, which is exactly what the check's own
+rationale says the one-element array is for. Passing the gate on a regex technicality is not a
+recovery, and no 2002 developer writing "a named constant zero" reaches for a struct wrapper.
+The verified array-spelling patch stays parked at `/private/tmp/A68_declared_consts.patch`; the
+decision to accept any of these forms into `tools/banned_shapes_baseline.txt` belongs to whoever
+owns that baseline, and it is now a decision about a shape rather than about a spelling.
+
+### 12c. Why a genuine multi-word aggregate cannot stand in for it
+
+The one honest aggregate is a table whose words are all real and adjacent in retail's pool, so
+the obvious escape is a two-element array with two honestly-named words. It is closed on the
+code side, not on the naming side. Measured on `701` with
+`static const f32 sAndrossHandProgressRange[2] = {0.0f, 1.0f};` covering both the zeros and the
+ones: `.sdata2` comes out **byte-identical** -- the pair lands at 0x0c with both words in
+retail's order -- but `.text` breaks at every read of element `[1]`, which compiles to
+
+    li      r8,0            ; R_PPC_EMB_SDA21 sAndrossHandProgressRange
+    lfs     f1,4(r8)
+
+where retail has the single `lfs f1,0(r2)` against its own symbol. Retail loads every one of
+these words at offset zero from its own symbol, so a member at offset 4 is the wrong shape by
+construction. Section 12 predicted this cost as `addi rN,r2,sym`; the emitted form is the base
+materialised into a GPR by the SDA21 relocation, and the conclusion is the stronger one: **an
+aggregate places only its first word for free**, so every mover word needs its own four-byte
+symbol, and a four-byte aggregate holding one `f32` is the banned shape whatever brackets or
+braces it wears.
+
+That also settles the three rows individually, because each needs at least one *lone* word that
+no honest pair can carry: `main/rcp_dolphin` wants `2.146452f, 2.520326f, 255.0f` and a
+three-word array is twelve bytes, which goes to `.rodata`; `279_AppleOnTree` wants a lone `1.0f`
+ahead of the fall-scale pair `{0.25f, 0.75f}`; `701` wants a lone `0.0f`, and the only pair that
+would cover it is `{0.0f, 1.0f}`, whose members are a move start time, four velocity components,
+a render scale and a progress limit -- no honest name spans them.
+
+### 12d. The intra-function frontier is complete, and every row on it is adjudicated
+
+Section 8b's classifier -- map each pool slot to the function of its first reference on both
+sides -- was applied to all 31 sub-100 data sections at `f63cb3dc08`, extending its list of six
+named specimens to the whole frontier. The 31 rows split 18 intra-function against 13
+cross-function:
+
+- **intra-function (8b), 15 with a single owning function**: `main/vecmath`
+  (`interpolate`), `main/rcp_dolphin` (`Rcp_InitDistortionEffects`), `dlls/engine/5`
+  (`renderSunAndMoon`), `dlls/engine/7` (`lightningDrawStrand`), `dlls/engine/19`
+  (`waterfx_drawSplashBurst`), `dlls/engine/24` (`boneParticleEffect_update`), `dlls/engine/68`
+  (`firstPersonDoControls`), `dlls/engine/69` (`CameraModeTalk_update`), `202/mikaladon`,
+  `260_SmallBasket` (`SmallBasket_spawnContents`), `328_CFGuardian` (`cfguardian_steerToward`),
+  `362_CRrockfall` (`crrockfall_update`), `429_SH_thorntai`, `609_DR_LaserCan`
+  (`drlasercannon_aimAtTarget`), `main/trig` (`fsin16Approx`). Three more are degenerate:
+  `300_Transporter` and `musyx/sal_volume`'s two `extab` sections have no owning function at all.
+- **cross-function (8), 13 rows**: `main/model`, `main/object`, `main/objhits`,
+  `main/pi_videoinit`, `main/shader_dolphin`, `main/newshadows`, `main/acosf`,
+  `track/intersect_render`, `dlls/engine/0`, `704`, `279_AppleOnTree`, `701`, `332`.
+
+One refinement the sweep forced: 8b's test ("same owning function on both sides") is necessary
+but not sufficient. `main/rcp_dolphin` passes it -- all three moved words are
+`Rcp_InitDistortionEffects`'s on both sides -- yet it is a section 12 mover, not an 8b row,
+because retail puts them at the pool *head*, ahead of four other functions' words, and
+`Rcp_InitDistortionEffects` is the last function in the unit. The test has to be read together
+with the destination: an 8b row is one whose moved words stay inside their own function's
+contiguous run.
+
+No unadjudicated row survives: section 8b prices `engine/19`, `engine/69`, `202/mikaladon`,
+`429_SH_thorntai`, `609_DR_LaserCan` and `main/trig`; section 9 prices `engine/5` (its lone
+missing word is the `gSkySunMoonRiseScale` crutch, and defining it costs `renderSunAndMoon`
+99.476 -> 98.214 for +176 data, a net tree loss) and `engine/68`; section 8's table declines
+`engine/7`; section 12 covers `main/vecmath`, `engine/24`, `328_CFGuardian`, `362_CRrockfall`
+and the movers; `300_Transporter` was retired as a padding artifact in section 11; and
+`musyx/sal_volume`'s two rows are zero-size sections. **Mission-2-style pure statement or use
+motion reaches none of them** -- confirming 8b's finding from the other direction, since every
+intra-function row's mint order is only reachable through a live use and a live use is what
+moves the load.
