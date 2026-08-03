@@ -1734,7 +1734,7 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
                     outA[0] = ((TrackTriangle*)triBuf + j)->planeN[0];
                     outA[1] = ((TrackTriangle*)triBuf + j)->planeN[1];
                     outA[2] = ((TrackTriangle*)triBuf + j)->planeN[2];
-                    *(u8*)((char*)outA + 0x10) = *(u8*)&((TrackTriangle*)triBuf + j)->flags;
+                    *(u8*)((char*)outA + 0x10) = ((TrackTriangle*)triBuf + j)->flags;
                     vertsOut += 0x24;
                     total += 3;
                     outA = (f32*)((char*)outA + 0x14);
@@ -1783,7 +1783,7 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
                     outA[0] = ((TrackTriangle*)triBuf + j)->planeN[0];
                     outA[1] = ((TrackTriangle*)triBuf + j)->planeN[1];
                     outA[2] = ((TrackTriangle*)triBuf + j)->planeN[2];
-                    *(u8*)((char*)outA + 0x10) = *(u8*)&((TrackTriangle*)triBuf + j)->flags;
+                    *(u8*)((char*)outA + 0x10) = ((TrackTriangle*)triBuf + j)->flags;
                     vertsOut += 0x24;
                     total += 3;
                     outA = (f32*)((char*)outA + 0x14);

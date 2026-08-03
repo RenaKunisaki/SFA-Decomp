@@ -221,7 +221,7 @@ void dll_F7_init(GameObject* obj, DllF7Placement* placement) {
             modelState->flags |= DLLF7_MODEL_FLAGS;
         }
     }
-    *(u8*)&state->hitsRemaining = DLLF7_HIT_COUNT;
+    state->hitsRemaining = DLLF7_HIT_COUNT;
     *(u8*)&state->alternateMode = placement->alternateMode;
     if (state->alternateMode == 0) {
         int mapEventState = (*gMapEventInterface)->shouldNotSaveTime(placement->base.ident);

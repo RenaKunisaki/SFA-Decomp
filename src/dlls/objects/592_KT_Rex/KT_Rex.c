@@ -453,7 +453,7 @@ int ktrex_stateHandlerA07(GameObject* obj, GroundBaddieState* runtime)
 int ktrex_stateHandlerA06(GameObject* obj, GroundBaddieState* runtime)
 {
     int slot;
-    if (*(s8*)&runtime->baddie.moveJustStartedB != 0)
+    if (runtime->baddie.moveJustStartedB != 0)
     {
         (*gPlayerInterface)->setState(obj, runtime, 5);
     }

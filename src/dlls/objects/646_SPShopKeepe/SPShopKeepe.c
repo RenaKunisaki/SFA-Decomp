@@ -733,7 +733,7 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
         if ((*gScreenTransitionInterface)->isFinished() != 0)
         {
             (*gScreenTransitionInterface)->step(0x1E, 1);
-            (*gObjectTriggerInterface)->endSequence(*(s8*)&seq->slot);
+            (*gObjectTriggerInterface)->endSequence(seq->slot);
         }
         return 0;
     }

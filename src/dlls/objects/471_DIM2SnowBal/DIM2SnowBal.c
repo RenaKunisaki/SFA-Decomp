@@ -199,7 +199,7 @@ void dim2snowball_update(GameObject* obj) {
         if (hitState != NULL) {
             ((ObjHitsPriorityState*)hitState)->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
             *(u8*)&((ObjHitsPriorityState*)hitState)->hitVolumePriority = 4;
-            *(u8*)&((ObjHitsPriorityState*)hitState)->hitVolumeId = 2;
+            ((ObjHitsPriorityState*)hitState)->hitVolumeId = 2;
             ((ObjHitsPriorityState*)hitState)->objectHitMask = 16;
             ((ObjHitsPriorityState*)hitState)->skeletonHitMask = 16;
         }

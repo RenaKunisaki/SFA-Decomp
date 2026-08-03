@@ -174,7 +174,7 @@ void SPScarab_init(GameObject* obj, SpscarabPlacement* def)
     (obj)->anim.velocityX = -mathSinf(3.1415927f * (f32)(s32)(obj)->anim.rotX / 32768.0f);
     (obj)->anim.velocityZ = -mathCosf(3.1415927f * (f32)(s32)(obj)->anim.rotX / 32768.0f);
 
-    objAnim->bankIndex = (s8)(1 - *(u8*)&def->kind);
+    objAnim->bankIndex = (s8)(1 - def->kind);
 
     state->groundY = (f32)(s32)def->groundY;
     state->speedScale = 0.4f + randomGetRange(0, 0x64) / 100.0f;

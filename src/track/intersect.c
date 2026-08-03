@@ -511,7 +511,7 @@ void waterFxSpawnContactEffect(u8* obj, f32* pos, u8 flip, u8 type)
     base = (WaterFxState*)gWaterFxState;
     if (((GameObject*)obj)->anim.classId == 1)
     {
-        gWaterFxBank = *(u8*)&((GameObject*)obj)->anim.bankIndex;
+        gWaterFxBank = ((GameObject*)obj)->anim.bankIndex;
     }
     else if (((GameObject*)obj)->anim.romDefNo == 0x416)
     {

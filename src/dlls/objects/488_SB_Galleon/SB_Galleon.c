@@ -796,7 +796,7 @@ void SB_Galleon_updateShield(GameObject* obj) {
         state->shieldSfxLatch = 0;
     }
 
-    *(u16*)&obj->anim.rotZ = 432.0f * angleSin;
+    obj->anim.rotZ = 432.0f * angleSin;
     state->shieldAngle = (u16)(s32)(128.0f * timeDelta + state->shieldAngle);
 }
 

@@ -1208,7 +1208,7 @@ void HighTop_init(GameObject* obj, HighTopPlacement* placement)
     node = (ObjModelState*)(*(int**)&(obj)->anim.modelState);
     if (node != 0)
     {
-        *(int*)&node->flags |= 0xa10;
+        node->flags |= 0xa10;
     }
     objAddObjectType((int)obj, PLAYER_VEHICLE_OBJGROUP);
     objAddObjectType((int)obj, HIGHTOP_OBJGROUP);

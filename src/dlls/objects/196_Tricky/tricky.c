@@ -1558,7 +1558,7 @@ void trickyApplyObjectAvoidanceToStep(f32* start, f32* end, f32* guardPoint) {
         minRadius = *(u16*)(def + 0x84);
         if (minRadius != 0) {
             hitState = (ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState;
-            if ((hitState != NULL) && ((*(s16*)&hitState->flags & 1) != 0)) {
+            if ((hitState != NULL) && ((hitState->flags & 1) != 0)) {
                 trickyAdjustStepAroundPoint(start, end, guardPoint, &((GameObject*)obj)->anim.worldPosX,
                                             0.1f * (f32)(u32)minRadius, 0.1f * (f32)(u32) * (u16*)(def + 0x86));
             }
@@ -3474,14 +3474,14 @@ const char sTrickyShouldNeverStopCirclingError[] = "error tricky should never st
 
 #define TRICKY_CLEAR_RESET_FLAGS(st)                                                                                   \
     {                                                                                                                  \
-        *(u32*)&((TrickyState*)(st))->stateFlags &= ~(u64)TRICKY_STATE_RESET_FLAG_10;                                  \
-        *(u32*)&((TrickyState*)(st))->stateFlags &= ~(u64)TRICKY_STATE_RESET_FLAG_10000;                               \
-        *(u32*)&((TrickyState*)(st))->stateFlags &= ~(u64)TRICKY_STATE_RESET_FLAG_20000;                               \
-        *(u32*)&((TrickyState*)(st))->stateFlags &= ~(u64)TRICKY_STATE_RESET_FLAG_40000;                               \
+        ((TrickyState*)(st))->stateFlags &= ~(u64)TRICKY_STATE_RESET_FLAG_10;                                  \
+        ((TrickyState*)(st))->stateFlags &= ~(u64)TRICKY_STATE_RESET_FLAG_10000;                               \
+        ((TrickyState*)(st))->stateFlags &= ~(u64)TRICKY_STATE_RESET_FLAG_20000;                               \
+        ((TrickyState*)(st))->stateFlags &= ~(u64)TRICKY_STATE_RESET_FLAG_40000;                               \
         {                                                                                                              \
             s8 mm;                                                                                                     \
             mm = -1;                                                                                                   \
-            *(s8*)&((TrickyState*)(st))->commandPhase = mm;                                                            \
+            ((TrickyState*)(st))->commandPhase = mm;                                                            \
         }                                                                                                              \
     }
 
@@ -6402,7 +6402,7 @@ void tricky_attachToWalkGroup(GameObject* obj, int state) {
         ((TrickyState*)state)->stateFlags = ((TrickyState*)state)->stateFlags & (u64)~0x10000u;
         ((TrickyState*)state)->stateFlags = ((TrickyState*)state)->stateFlags & (u64)~0x20000u;
         ((TrickyState*)state)->stateFlags = ((TrickyState*)state)->stateFlags & (u64)~0x40000u;
-        *(s8*)&((TrickyState*)state)->commandPhase = -1;
+        ((TrickyState*)state)->commandPhase = -1;
     }
     if (gTrickyHelperObject == 0) {
         int setup = (int)Obj_AllocObjectSetup(0x18, 0x25);
@@ -6622,7 +6622,7 @@ void Tricky_commandPlayBall(int* obj, int commandEnabled, int targetObj) {
             state->substate = 0;
         }
     } else {
-        *(u32*)&state->stateFlags |= 0x10000LL;
+        state->stateFlags |= 0x10000LL;
     }
 }
 

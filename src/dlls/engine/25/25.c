@@ -855,7 +855,7 @@ void dll_19_updateGravity(GameObject* obj, void* state, f32 gravity, s8 field25f
     }
     if (field25f != -1)
     {
-        *(s8*)&((BaddieState*)state)->physicsActive = field25f;
+        ((BaddieState*)state)->physicsActive = field25f;
     }
     ((BaddieState*)state)->gravity = gravity;
     fz = 0.0f;

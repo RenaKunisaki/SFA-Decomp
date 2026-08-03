@@ -120,7 +120,7 @@ int SH_LevelControl_sequenceCallback(void* obj, void* unused, ObjSeqState* updat
     puzzleObj = (GameObject*)obj;
     i = 0;
     while (i < updateState->eventCount) {
-        switch (*(u8*)&updateState->eventIds[i]) {
+        switch (updateState->eventIds[i]) {
         case 0:
             SH_LevelControl_setMusic((short*)puzzleObj->extra);
             break;

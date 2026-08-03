@@ -1551,7 +1551,7 @@ void trackSetLinesEnabledByParam(int matchVal, GameObject* obj, int flag)
         {
             if (e->param == matchVal)
             {
-                e->kind = (s8)(*(u8*)&e->kind & ~0x40);
+                e->kind = (s8)(e->kind & ~0x40);
             }
             e++;
         }
@@ -1562,7 +1562,7 @@ void trackSetLinesEnabledByParam(int matchVal, GameObject* obj, int flag)
         {
             if (e->param == matchVal)
             {
-                e->kind = (s8)(*(u8*)&e->kind | 0x40);
+                e->kind = (s8)(e->kind | 0x40);
             }
             e++;
         }

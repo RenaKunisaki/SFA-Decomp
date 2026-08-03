@@ -492,7 +492,7 @@ int dll_28B_substateHandler3(GameObject* obj, BaddieState* ai)
 {
     Dll28BAiState* state = *(Dll28BAiState**)&obj->extra;
 
-    if (*(s8*)&ai->moveJustStartedB != 0)
+    if (ai->moveJustStartedB != 0)
     {
         state->flagsAC0 &= ~1;
         (*gPlayerInterface)->setState((void*)obj, (void*)ai, 3);
@@ -509,7 +509,7 @@ int dll_28B_substateHandler2(GameObject* obj, BaddieState* ai)
     Dll28BAiState* state = *(Dll28BAiState**)&obj->extra;
     f32 dist;
 
-    if (*(s8*)&ai->moveJustStartedB != 0)
+    if (ai->moveJustStartedB != 0)
     {
         state->flagsAC0 |= 1;
         (*gPlayerInterface)->setState((void*)obj, (void*)ai, 1);
@@ -536,7 +536,7 @@ int dll_28B_substateHandler1(GameObject* obj, BaddieState* ai)
     Dll28BAiState* state = *(Dll28BAiState**)&obj->extra;
     RomCurveWalker* route = &state->route;
 
-    if (*(s8*)&ai->moveJustStartedB != 0)
+    if (ai->moveJustStartedB != 0)
     {
         state->flagsAC0 &= ~1;
         (*gPlayerInterface)->setState((void*)obj, (void*)ai, 2);

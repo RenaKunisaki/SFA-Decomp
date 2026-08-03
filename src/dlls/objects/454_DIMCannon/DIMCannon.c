@@ -55,7 +55,7 @@ static void DIMCannon_explodeBall(GameObject* obj, DimCannonBallState* state) {
     ObjHitbox_SetSphereRadius(&obj->anim, state->hitboxRadius);
     spawnExplosion(obj, 50.0f, 2, 1, 0, 1, 1, 1, 0);
     obj->userData1 = 1180;
-    *(s8*)&state->mode = DIM_CANNON_BALL_MODE_EXPLODED;
+    state->mode = DIM_CANNON_BALL_MODE_EXPLODED;
     obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
 }
 

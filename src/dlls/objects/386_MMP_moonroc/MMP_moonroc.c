@@ -494,7 +494,7 @@ void mmpMoonRock_init(GameObject* obj, const MMPMoonRockPlacement* placement) {
     u8 kind;
 
     obj->objectFlags = obj->objectFlags | OBJECT_OBJFLAG_HITDETECT_DISABLED;
-    *(s16*)&state->flags = 0;
+    state->flags = 0;
     state->kind = mainGetBit(placement->kindGameBit);
     kind = state->kind;
     if (kind != 0) {

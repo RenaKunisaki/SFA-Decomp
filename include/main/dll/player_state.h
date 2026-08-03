@@ -68,7 +68,7 @@ typedef struct PlayerState {
         };
     };
     int playerStatus; /* PlayerStatus*; kept integer while raw decomp arithmetic remains */
-    int flags360; /* player state flag word; bits 2/0x2000/0x800000/0x2000000... */
+    u32 flags360; /* player state flag word; bits 2/0x2000/0x800000/0x2000000... */
     u8 pad364[0x3C4 - 0x364];
     f32 fxOffsetX;
     f32 fxOffsetY;

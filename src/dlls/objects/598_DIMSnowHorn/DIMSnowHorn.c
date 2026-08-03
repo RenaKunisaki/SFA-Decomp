@@ -112,13 +112,13 @@ int DIMSnowHorn1_stateHandler0B(GameObject* obj, DIMSnowHorn1State* state)
     if (inner->flags & SNOWHORN1_FLAG_HITVOL_PRIO)
     {
         *(u8*)&sub->hitVolumePriority = 0;
-        *(u8*)&sub->hitVolumeId = 0;
+        sub->hitVolumeId = 0;
         sub->flags &= ~OBJHITS_PRIORITY_STATE_TRACK_CONTACT;
     }
     else
     {
         *(u8*)&sub->hitVolumePriority = 0xb;
-        *(u8*)&sub->hitVolumeId = 1;
+        sub->hitVolumeId = 1;
         sub->flags |= OBJHITS_PRIORITY_STATE_TRACK_CONTACT;
     }
     if ((obj)->anim.currentMoveProgress > 0.9f)
@@ -1188,7 +1188,7 @@ void DIMSnowHorn1_ridingUpdate(GameObject* obj, int frameStep, int slot)
         state->baddie.moveInputX = (f32)(s8)padGetStickX(0);
         state->baddie.moveInputZ = (f32)(s8)padGetStickY(0);
         *(u32*)&state->baddie.pressedButtons = getButtonsJustPressed(0);
-        *(u32*)&state->baddie.heldButtons = getButtonsHeld(0);
+        state->baddie.heldButtons = getButtonsHeld(0);
         state->baddie.cameraYaw = *(s16*)viewSlot;
     }
     else
@@ -1197,7 +1197,7 @@ void DIMSnowHorn1_ridingUpdate(GameObject* obj, int frameStep, int slot)
         state->baddie.moveInputX = zero;
         state->baddie.moveInputZ = zero;
         *(u32*)&state->baddie.pressedButtons = 0;
-        *(u32*)&state->baddie.heldButtons = 0;
+        state->baddie.heldButtons = 0;
         *(u16*)&state->baddie.cameraYaw = 0;
     }
 
@@ -1207,7 +1207,7 @@ void DIMSnowHorn1_ridingUpdate(GameObject* obj, int frameStep, int slot)
         *(u32*)state &= ~0x00400000;
     }
 
-    if (*(s8*)&state->baddie.physicsActive != 0)
+    if (state->baddie.physicsActive != 0)
     {
         (obj)->anim.velocityY = (obj)->anim.velocityY - 0.14f * (f32)frameStep;
     }

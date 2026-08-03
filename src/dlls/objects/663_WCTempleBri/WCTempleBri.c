@@ -223,7 +223,7 @@ void wctemplebri_init(GameObject* obj, WCTempleBriSetup* setup)
     int done;
 
     obj->anim.rotX = (s16)(setup->type << 8);
-    *(u8*)&objAnim->bankIndex = setup->modelIndex;
+    objAnim->bankIndex = setup->modelIndex;
     if (objAnim->bankIndex >= objAnim->modelInstance->modelCount)
         objAnim->bankIndex = 0;
     obj->animEventCallback = wctemplebri_SeqFn;

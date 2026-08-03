@@ -593,7 +593,7 @@ void wcpushblock_init(GameObject* obj, WCPushBlockSetup* setup)
     WCPushBlockRuntimeState* state = obj->extra;
 
     objAnim->alpha = 0;
-    *(u8*)&objAnim->bankIndex = setup->modelIndex;
+    objAnim->bankIndex = setup->modelIndex;
     if (objAnim->bankIndex >= objAnim->modelInstance->modelCount)
     {
         objAnim->bankIndex = 0;

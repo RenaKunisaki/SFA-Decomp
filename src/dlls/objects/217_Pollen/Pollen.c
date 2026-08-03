@@ -180,7 +180,7 @@ void Pollen_init(GameObject* obj) {
     {
         int* modelStateAddress = *(int**)&obj->anim.modelState;
         if (modelStateAddress != NULL) {
-            *(int*)&((ObjModelState*)modelStateAddress)->flags |= POLLEN_MODEL_FLAGS;
+            ((ObjModelState*)modelStateAddress)->flags |= POLLEN_MODEL_FLAGS;
         }
     }
 }
