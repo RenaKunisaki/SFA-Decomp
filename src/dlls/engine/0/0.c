@@ -3075,8 +3075,6 @@ void hudUpdateMinimapReveal(void)
 void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
 {
     u8* base;
-    int iconIndex;
-    int rowOffset;
     int i;
     GameObject* player;
     int k;
@@ -3188,12 +3186,14 @@ void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
         }
         GXSetScissor(0, 0, 0x280, 0x1E0);
         hudDrawCMenu(cMenuArg0, cMenuArg1, cMenuArg2);
-        for (rowOffset = iconIndex = 0; iconIndex < GCMENU_ITEM_ICON_COUNT; iconIndex++, rowOffset += 0x32)
+        i = 0;
+        k = 0;
+        for (; i < GCMENU_ITEM_ICON_COUNT; i++, k += 0x32)
         {
-            if (gCMenuItemIcons[iconIndex] > 1)
+            if (gCMenuItemIcons[i] > 1)
             {
                 alpha = fade;
-                rowFade = gCMenuScrollTimer + rowOffset;
+                rowFade = gCMenuScrollTimer + k;
                 if (rowFade < gCMenuRowFadeInThreshold)
                 {
                     alpha = fade + (rowFade - gCMenuRowFadeInThreshold) * 8;
@@ -3212,11 +3212,11 @@ void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
                 }
                 fadedAlpha = alpha * gCMenuHighlightFade / 0xFF;
                 GXSetScissor(0, 0, 0x280, 0x1E0);
-                sprintf(label.text, lbl_803DBB58, gCMenuItemIcons[iconIndex]);
+                sprintf(label.text, lbl_803DBB58, gCMenuItemIcons[i]);
                 gameTextSetColor(0, 0, 0, fadedAlpha & 0xFF);
-                gameTextShowStr(label.text, 0x93, 0x247, 0x2B + (gCMenuScrollTimer + rowOffset));
+                gameTextShowStr(label.text, 0x93, 0x247, 0x2B + (gCMenuScrollTimer + k));
                 gameTextSetColor(0xFF, 0xFF, 0xFF, (u8)fadedAlpha);
-                gameTextShowStr(label.text, 0x93, 0x246, 0x2A + (gCMenuScrollTimer + rowOffset));
+                gameTextShowStr(label.text, 0x93, 0x246, 0x2A + (gCMenuScrollTimer + k));
             }
         }
         drawTexture(((CMenuHud*)base)->textures1C0[0x21], 537.0f, 175.0f,
