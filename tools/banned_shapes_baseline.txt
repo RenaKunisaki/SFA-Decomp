@@ -10,13 +10,8 @@ src/dlls/engine/24/24.c:47:UNCALLED_STATIC_FN
 src/dlls/engine/69/69.c:29:UNCALLED_STATIC_FN
 src/dlls/objects/195_Player/player.c:1357:UNCALLED_STATIC_FN
 src/dlls/objects/195_Player/player.c:1375:UNCALLED_STATIC_FN
-src/dlls/objects/196_Tricky/tricky.c:1102:UNCALLED_STATIC_FN
-src/dlls/objects/196_Tricky/tricky.c:123:SINGLE_ELEM_CONST_ARRAY
-src/dlls/objects/196_Tricky/tricky.c:129:SINGLE_ELEM_CONST_ARRAY
-src/dlls/objects/196_Tricky/tricky.c:349:UNCALLED_STATIC_FN
-src/dlls/objects/196_Tricky/tricky.c:619:UNCALLED_STATIC_FN
-src/dlls/objects/196_Tricky/tricky.c:885:UNCALLED_STATIC_FN
-src/dlls/objects/196_Tricky/tricky.c:899:UNCALLED_STATIC_FN
+src/dlls/objects/196_Tricky/tricky.c:122:SINGLE_ELEM_CONST_ARRAY
+src/dlls/objects/196_Tricky/tricky.c:128:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/201_Baddie/Baddie.c:205:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/201_Baddie/Baddie.c:3090:LBL_CONST_DEF
 src/dlls/objects/202/hagabon_mk2.c:137:SINGLE_ELEM_CONST_ARRAY
