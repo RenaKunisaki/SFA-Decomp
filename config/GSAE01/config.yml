@@ -127,6 +127,9 @@ force_active:
   - lbl_803DDB54
   # dlls/objects/213_Kaldachom/Kaldachom.c
   - lbl_803DDA9C
+  # main/shader_dolphin.c
+  - sWarpedRingRotAxes
+  - sWarpedRingIndMtx
 
 # Path to the main.dol file.
 object: sys/main.dol
