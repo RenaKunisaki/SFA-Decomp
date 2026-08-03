@@ -148,7 +148,8 @@ typedef struct DREarthWarriorInitData {
     f32 localPointPositions[6];
     f32 localPointRadii[4];
     s32 unk74[4];
-    f32 configRow[0x15];
+    EWSpeedRange configRow[6];
+    u8 hitVolumeRowIndices[0x24];
     s16 moveTable[0x20];
     u8 paramCurve0Data[0xA4];
     u8 paramCurve1Data[0xA4];
@@ -179,6 +180,7 @@ STATIC_ASSERT(sizeof(DREarthWarriorPlacement) == 0x1C);
 STATIC_ASSERT(offsetof(DREarthWarriorInitData, localPointRadii) == 0x64);
 STATIC_ASSERT(offsetof(DREarthWarriorInitData, unk74) == 0x74);
 STATIC_ASSERT(offsetof(DREarthWarriorInitData, configRow) == 0x84);
+STATIC_ASSERT(offsetof(DREarthWarriorInitData, hitVolumeRowIndices) == 0xB4);
 STATIC_ASSERT(offsetof(DREarthWarriorInitData, moveTable) == 0xD8);
 STATIC_ASSERT(offsetof(DREarthWarriorInitData, paramCurve0Data) == 0x118);
 STATIC_ASSERT(offsetof(DREarthWarriorInitData, paramCurve1Data) == 0x1BC);

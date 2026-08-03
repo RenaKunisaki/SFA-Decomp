@@ -658,9 +658,7 @@ char lbl_8031D2E8[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-char gTrickyPathPointCollision[] = {
-    0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-};
+f32 gTrickyPathPointCollision[3] = {0.0f, 0.0f, 0.0f};
 
 TrickyStateHandler gTrickyStateHandlers[] = {
     (TrickyStateHandler)tricky_attachToWalkGroup,

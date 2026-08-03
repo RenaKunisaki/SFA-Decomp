@@ -47,7 +47,7 @@ STATIC_ASSERT(sizeof(BombPlantSporeFlags) == 1);
 #define BOMB_PLANT_SPORE_FLAGS(state) ((BombPlantSporeFlags*)&(state)->flags)
 
 u8 gBombPlantSporePathSetupData[8] = {0x40, 0xA0, 0, 0, 0, 0, 0, 0};
-u8 gBombPlantSporePathPointData[12] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+f32 gBombPlantSporePathPointData[3] = {0.0f, 0.0f, 0.0f};
 
 extern f32 gBombPlantSporeLightAttenuationNear;
 extern const f32 gBombPlantSporeLightAttenuationFar;

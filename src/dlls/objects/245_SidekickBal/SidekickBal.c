@@ -29,7 +29,7 @@
 
 extern char sSidekickBallYVelDepthFormat[];
 extern char sSidekickBallDotFormat[];
-extern u8 gSidekickBallPathPointData[];
+extern f32 gSidekickBallPathPointData[];
 
 #define SIDEKICKBALL_MESSAGE_PLAYER_GRAB 0x100010
 
@@ -449,7 +449,7 @@ void SidekickBall_init(GameObject* obj) {
     mainSetBits(GAMEBIT_ITEM_TrickyBall_Usable, 0);
 }
 
-u8 gSidekickBallPathPointData[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+f32 gSidekickBallPathPointData[3] = {0.0f, 0.0f, 0.0f};
 
 ObjectDescriptor gSidekickBallObjDescriptor = {
     0,                                             /* reserved0 */

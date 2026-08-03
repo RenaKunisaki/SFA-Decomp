@@ -1126,7 +1126,7 @@ void DR_EarthWarrior_init(GameObject* obj, DREarthWarriorPlacement* def)
     state->sub.maxSpeed = 4.32f;
     state->sub.energy = def->energyCapacity;
     state->sub.moveTable = (const s16*)base->moveTable;
-    state->sub.configRow = (const EWSpeedRange*)base->configRow;
+    state->sub.configRow = base->configRow;
     {
         f32 v = 1.0f;
         state->sub.unk834 = v;

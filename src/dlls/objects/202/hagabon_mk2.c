@@ -102,23 +102,16 @@ static inline int hoodedZyck_getAngleDelta(GameObject* obj, GameObject* target)
     return d;
 }
 
-extern u8 gHagabonMK2ModelChain0BoneIds[];
+extern s32 gHagabonMK2ModelChain0BoneIds[];
 
-extern u8 gHagabonMK2ModelChain1BoneIds[];
+extern s32 gHagabonMK2ModelChain1BoneIds[];
 
-extern u8 gHagabonMK2ModelChain2BoneIds[];
+extern s32 gHagabonMK2ModelChain2BoneIds[];
 
-extern u8 gHagabonMK2ModelChain3BoneIds[];
+extern s32 gHagabonMK2ModelChain3BoneIds[];
 
-extern u8 gHagabonMK2ModelChain4BoneIds[];
+extern s32 gHagabonMK2ModelChain4BoneIds[];
 
-typedef struct CrawlerModelChainList
-{
-    u8* modelIds;
-    s32 count;
-} CrawlerModelChainList;
-
-STATIC_ASSERT(sizeof(CrawlerModelChainList) == 8);
 
 #define FIRECRAWLER_OBJFLAG_RENDERED     0x800
 #define FIRECRAWLER_OBJFLAG_PARENT_SLACK 0x1000
@@ -174,15 +167,15 @@ static inline void crawler_createEngineLight(GameObject* obj, u8* state)
 
 int gHagabonMK2CurveInitData[2] = {2, 3};
 
-CrawlerModelChainList gHagabonMK2ModelChain0 = {gHagabonMK2ModelChain0BoneIds, 6};
+ObjModelChainDesc gHagabonMK2ModelChain0 = {gHagabonMK2ModelChain0BoneIds, 6};
 
-CrawlerModelChainList gHagabonMK2ModelChain1 = {gHagabonMK2ModelChain1BoneIds, 6};
+ObjModelChainDesc gHagabonMK2ModelChain1 = {gHagabonMK2ModelChain1BoneIds, 6};
 
-CrawlerModelChainList gHagabonMK2ModelChain2 = {gHagabonMK2ModelChain2BoneIds, 6};
+ObjModelChainDesc gHagabonMK2ModelChain2 = {gHagabonMK2ModelChain2BoneIds, 6};
 
-CrawlerModelChainList gHagabonMK2ModelChain3 = {gHagabonMK2ModelChain3BoneIds, 6};
+ObjModelChainDesc gHagabonMK2ModelChain3 = {gHagabonMK2ModelChain3BoneIds, 6};
 
-CrawlerModelChainList gHagabonMK2ModelChain4 = {gHagabonMK2ModelChain4BoneIds, 5};
+ObjModelChainDesc gHagabonMK2ModelChain4 = {gHagabonMK2ModelChain4BoneIds, 5};
 
 u8 gCrawlerSeqTable[] = {
     0x40, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x3F, 0x80, 0x00, 0x00, 0x00, 0x00,
@@ -191,22 +184,17 @@ u8 gCrawlerSeqTable[] = {
     0x00, 0x00, 0x02, 0x04, 0x05, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
 };
 
-u8 gHagabonMK2ModelChain0BoneIds[0x18] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x03,
-                         0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x06};
+s32 gHagabonMK2ModelChain0BoneIds[6] = {1, 2, 3, 4, 5, 6};
 
-u8 gHagabonMK2ModelChain1BoneIds[0x18] = {0x00, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x0d, 0x00, 0x00, 0x00, 0x0e,
-                         0x00, 0x00, 0x00, 0x0f, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x11};
+s32 gHagabonMK2ModelChain1BoneIds[6] = {12, 13, 14, 15, 16, 17};
 
-u8 gHagabonMK2ModelChain2BoneIds[0x18] = {0x00, 0x00, 0x00, 0x12, 0x00, 0x00, 0x00, 0x13, 0x00, 0x00, 0x00, 0x14,
-                         0x00, 0x00, 0x00, 0x15, 0x00, 0x00, 0x00, 0x16, 0x00, 0x00, 0x00, 0x17};
+s32 gHagabonMK2ModelChain2BoneIds[6] = {18, 19, 20, 21, 22, 23};
 
-u8 gHagabonMK2ModelChain3BoneIds[0x18] = {0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x19, 0x00, 0x00, 0x00, 0x1a,
-                         0x00, 0x00, 0x00, 0x1b, 0x00, 0x00, 0x00, 0x1c, 0x00, 0x00, 0x00, 0x1d};
+s32 gHagabonMK2ModelChain3BoneIds[6] = {24, 25, 26, 27, 28, 29};
 
-u8 gHagabonMK2ModelChain4BoneIds[0x14] = {0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00,
-                         0x00, 0x09, 0x00, 0x00, 0x00, 0x0a, 0x00, 0x00, 0x00, 0x0b};
+s32 gHagabonMK2ModelChain4BoneIds[5] = {7, 8, 9, 10, 11};
 
-void* gCrawlerModelChainIds[] = {
+ObjModelChainDesc* gCrawlerModelChainIds[] = {
     &gHagabonMK2ModelChain0, &gHagabonMK2ModelChain1, &gHagabonMK2ModelChain2, &gHagabonMK2ModelChain3, &gHagabonMK2ModelChain4,
 };
 
