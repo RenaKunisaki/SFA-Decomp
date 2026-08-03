@@ -1768,6 +1768,29 @@ for exactly two objects and neither needs it. The other 36 are load-bearing, sev
 different object.** Score equality does not establish inertness and object equality does not
 establish it either unless the comparison includes relocations — see §20.
 
+### The same question on the flag axis: 50 of 284 overrides do nothing
+
+`configure.py` carries **29 distinct cflag sets for `src/dlls/` alone** and 23 for `src/main/`, a
+zoo no 2002 build had. Every object whose cflags differ from its **library default**
+(`cflags_dll_noopt` for lib `main`, `cflags_base` for a `DolphinLib`) — 284 of them — was rebuilt
+under that default with its own `mw_version` held fixed, and compared with `obj_equal`. **50 are
+inert**, 49 of which carry the flags on the `Object()` line and were stripped; the 50th
+(`dolphin/vi/vi.c`) takes them from its library, so the object-level pass cannot reach it.
+
+Removing all 49 changes **zero bytes in zero objects** — the tree-wide `obj_equal` diff after both
+this and the version pass still reports 1013 compared / 2 differ / 0 missing / 0 new, and the two
+are the `.comment` rows of the version pass. Among the 49: `-inline noauto` on eleven units that
+have no auto-inlinable callee, `noloopinvariants` on nine with no loop-invariant to hoist,
+`nocse`/`nostrength` on nine more, `-use_lmw_stmw on` on three SDK units, `-sdata 16` on
+`GXDisplayList`, `-inline all -char signed` on the two `si` units, and `cflags_base` (i.e. dropping
+`-opt nopeephole,noschedule` entirely) on four small `dlls/engine` units.
+
+**Beware the modal-set trap.** Taking the *most common* flag set of a source directory as the
+default is wrong for `src/main/`, whose modal set is `cflags_dll_noopt_noautoinline` — not the
+library default. Audited that way the answer comes out 53 inert, and five of those rows say
+"adding `-inline noauto` is inert", which is not the same claim and is not a licence to delete
+anything. **Take the default from `configure.py`'s library declaration, never from a histogram.**
+
 ### Correction to A78's `hw_break`
 
 A78 recorded that `musyx/runtime/hw_break.c` has PROGBITS byte-identical under `GC/1.2.5n` and
