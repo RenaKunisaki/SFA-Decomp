@@ -64,7 +64,10 @@ typedef struct DbStealerwormControl
     u8 msgAdvance; /* set to advance to / pop the next queued message next tick */
     u8 unk35[3];
     f32 spawnAccumulator; /* 0x38: accumulates on worm move-done; when over threshold, triggers a spawn-search and subtracts the threshold */
-    int savedTargetObj; /* cached target-object handle (pointer-spelled; NULL-checked) */
+    union {
+        int savedTargetObj; /* cached target-object handle */
+        struct GameObject* savedTargetObject;
+    };
     u8 unk40[4];
     u8 flags44; /* bits 0x10/0x20 */
     u8 unk45[3];
