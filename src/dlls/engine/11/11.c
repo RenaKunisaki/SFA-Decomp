@@ -1572,10 +1572,13 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* context, int unused, int vertexCount,
     {
         for (i = 0, off = i; i < 3; off += 4, i++)
         {
-            u8* dstc = *(u8**)((u8*)arr[slot] + 0x84 + off);
-            int j;
-            int bias = 0;
             s16* sd;
+            int j;
+            int bias;
+            u8* dstc;
+
+            dstc = *(u8**)((u8*)arr[slot] + 0x84 + off);
+            bias = 0;
             j = 0;
             sd = colorData;
             for (; j < colorCount; j++)

@@ -855,9 +855,12 @@ void mapLoadUnloadObjects(int flag)
             s16 id = *idPtr;
             if (id >= 0 && id < 80 && *(void**)(base + (0x83A8 + id * 4)) != 0)
             {
-                s16 dup = 0;
-                s16* w = list;
+                s16* w;
+                s16 dup;
                 int j2;
+
+                dup = 0;
+                w = list;
                 for (j2 = 0; j2 < count; j2++)
                 {
                     if (*w == *(s16*)(void*)idPtr)
@@ -926,9 +929,13 @@ void mapLoadUnloadObjects(int flag)
                 }
                 if (obj->anim.romDefNo == SHADER_SNOWBIKE_OBJ)
                 {
-                    int slotId = obj->anim.mapEventSlot;
-                    s16 j3 = 0;
-                    s16* w2 = list;
+                    s16 j3;
+                    int slotId;
+                    s16* w2;
+
+                    slotId = obj->anim.mapEventSlot;
+                    j3 = 0;
+                    w2 = list;
                     for (; j3 < count; j3++)
                     {
                         if (slotId == *w2)
@@ -985,9 +992,13 @@ void mapLoadUnloadObjects(int flag)
                             s16 lid = list[i];
                             if (bit >= 0)
                             {
-                                MapRomListPage* pg = *(MapRomListPage**)(base + (0x83A8 + lid * 4));
-                                int ix2 = bit >> 3;
-                                int msk = 1 << (bit & 7);
+                                int msk;
+                                int ix2;
+                                MapRomListPage* pg;
+
+                                pg = *(MapRomListPage**)(base + (0x83A8 + lid * 4));
+                                ix2 = bit >> 3;
+                                msk = 1 << (bit & 7);
                                 *(s8*)&pg->loadedObjectBits[ix2] = pg->loadedObjectBits[ix2] & ~msk;
                                 *(s8*)&pg->loadedObjectBits[ix2] = pg->loadedObjectBits[ix2] | msk;
                             }
@@ -1075,9 +1086,13 @@ void mapLoadUnloadObjects(int flag)
                         {
                             if (bit >= 0)
                             {
-                                char* pg3 = ((char**)(base + 0x83A8))[mid2];
-                                int ix3 = bit >> 3;
-                                int msk3 = 1 << (bit & 7);
+                                int msk3;
+                                int ix3;
+                                char* pg3;
+
+                                pg3 = ((char**)(base + 0x83A8))[mid2];
+                                ix3 = bit >> 3;
+                                msk3 = 1 << (bit & 7);
                                 *(s8*)(*(int*)(pg3 + 0x10) + ix3) = *(u8*)(*(int*)(pg3 + 0x10) + ix3) & ~msk3;
                                 *(s8*)(*(int*)(pg3 + 0x10) + ix3) = *(u8*)(*(int*)(pg3 + 0x10) + ix3) | msk3;
                             }
