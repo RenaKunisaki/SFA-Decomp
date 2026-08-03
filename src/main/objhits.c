@@ -70,12 +70,6 @@ extern ObjHitsPriorityWorkSlot* gObjHitsPriorityHitStates;
 extern void* gObjHitsWorkBuffer;
 extern f32 gObjHitsResponseDominanceRatio;
 
-typedef struct ObjHitsVec3 {
-    f32 x;
-    f32 y;
-    f32 z;
-} ObjHitsVec3;
-
 extern f32 gObjHitsPriorityHitTickDelta;
 static inline ObjHitsModelBank* ObjHits_GetActiveModel(int obj) {
     ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
@@ -107,9 +101,9 @@ int ObjHits_CollectSkeletonHitsXZ(f32* point, f32 radius, ObjHitsSkeletonJointDa
     float jointLength;
     float inverseJointLength;
     float distanceMagnitude;
-    ObjHitsVec3 jointPos;
-    ObjHitsVec3 parentPos;
-    ObjHitsVec3 axisDir;
+    Vec jointPos;
+    Vec parentPos;
+    Vec axisDir;
     float axial;
     float distSq;
     float radSum;
@@ -244,9 +238,9 @@ int ObjHits_CollectSkeletonHits3D(f32* point, f32 radius, ObjHitsSkeletonJointDa
     float broadPhaseLimit;
     float inverseJointLength;
     float distanceMagnitude;
-    ObjHitsVec3 jointPos;
-    ObjHitsVec3 parentPos;
-    ObjHitsVec3 axisDir;
+    Vec jointPos;
+    Vec parentPos;
+    Vec axisDir;
     float axial;
     float distSq;
     float radSum;
@@ -365,14 +359,14 @@ int ObjHits_CalcSkeletonResponseXZ(f32* pos, f32 radius, GameObject* obj, ObjHit
     float tdiff;
     struct {
         float out[9];
-        ObjHitsVec3 accum;
+        Vec accum;
     } pj;
     float reflect[3];
     float normalOut[3];
-    ObjHitsVec3 normAccum;
-    ObjHitsVec3 diff;
-    ObjHitsVec3 move;
-    ObjHitsVec3 projPos;
+    Vec normAccum;
+    Vec diff;
+    Vec move;
+    Vec projPos;
 
     aPtr = &pj.out[9];
     saved = hits;
@@ -486,14 +480,14 @@ int ObjHits_CalcSkeletonResponse3D(f32* pos, f32 radius, GameObject* obj, ObjHit
     float* pb;
     struct {
         float out[9];
-        ObjHitsVec3 accum;
+        Vec accum;
     } pj;
     float reflect[3];
     float normalOut[3];
-    ObjHitsVec3 normAccum;
-    ObjHitsVec3 diff;
-    ObjHitsVec3 move;
-    ObjHitsVec3 projPos;
+    Vec normAccum;
+    Vec diff;
+    Vec move;
+    Vec projPos;
 
     aPtr = &pj.out[9];
     saved = hits;
@@ -1787,10 +1781,10 @@ void ObjHits_CheckSkeletonPair(int objA, int objB, void* hits, void* scratchB, v
     f32 responseZ;
     ObjHitsSkeletonHit* bestHit;
     ObjHitsPriorityState* objBState;
-    ObjHitsVec3 point;
+    Vec point;
     f32 response[3];
-    ObjHitsVec3 point3D;
-    ObjHitsVec3 pointXZ;
+    Vec point3D;
+    Vec pointXZ;
 
     objBState = (ObjHitsPriorityState*)((GameObject*)objB)->anim.hitReactState;
     objAState = (ObjHitsPriorityState*)((GameObject*)objA)->anim.hitReactState;

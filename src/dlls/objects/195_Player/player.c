@@ -510,11 +510,6 @@ typedef struct
     u8 low : 5;
 } KnockBits;
 
-typedef struct
-{
-    f32 x, y, z;
-} VecXYZ;
-
 static inline void Player_ApplyStatusDamage(GameObject* obj, int param)
 {
     PlayerStatus* pc;

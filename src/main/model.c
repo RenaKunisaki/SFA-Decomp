@@ -2710,12 +2710,6 @@ void ObjModel_TouchModelCache(void)
     }
 }
 
-typedef struct
-{
-    u8 pad[0xc];
-    u8* buf;
-} AnimBufSel;
-
 void ObjModel_Release(u8* model)
 {
     u8* header;
@@ -3055,18 +3049,6 @@ void ObjModel_TransformVerticesWithTranslation(u8* m1, u8* m2, u8* src, int d1, 
         out += 3;
     }
 }
-
-typedef struct
-{
-    u8 _0[0xc];
-    int bufs[2];
-} MdlSelBufs;
-
-typedef struct
-{
-    u8 _0[0x34];
-    int vals[2];
-} ChF34;
 
 void ObjModel_TransformVerticesLinear(u8* m1, u8* m2, u8* src, int d1, int d2, int count)
 {
