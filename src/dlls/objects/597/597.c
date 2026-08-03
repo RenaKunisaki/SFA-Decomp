@@ -2441,7 +2441,7 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     {
         alloc = mmAlloc(36, 5, 0);
         memcpy(alloc, params, 36);
-        *(u8**)&obj->anim.placementData = alloc;
+        obj->anim.placementData = (s16*)alloc;
         obj->anim.flags |= OBJANIM_FLAG_OWNS_PLACEMENT_DATA;
         Obj_ClearModelSlotIndex(obj);
     }
