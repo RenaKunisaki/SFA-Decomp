@@ -678,6 +678,7 @@ void sceneDraw(void)
     char* q;
     int i;
     u8* cursor;
+    GameObject** deferred;
     GameObject* player;
     u8 flag;
     int t;
@@ -779,12 +780,12 @@ void sceneDraw(void)
         doHeatEffect(heatEffectIntensity & 0xff);
     }
     i = 0;
-    cursor = (u8*)(q + 0x4114);
+    deferred = (GameObject**)(q + 0x4114);
     for (; i < gLightmapDeferredObjectCount; i++)
     {
-        (*gModgfxInterface)->renderEffects(NULL, 0, 0, 1, (void*)*(u32*)cursor);
-        objRender(0, 0, 0, 0, (GameObject*)*(u32*)cursor, 1);
-        cursor += 4;
+        (*gModgfxInterface)->renderEffects(NULL, 0, 0, 1, *deferred);
+        objRender(0, 0, 0, 0, *deferred, 1);
+        deferred++;
     }
     renderParticles();
     renderSceneGeometry(1, gMapBlockDrawOrderBackToFront);
@@ -813,7 +814,7 @@ void sceneDraw(void)
     {
         i = 0;
         cursor = (u8*)player;
-        for (; i < ((GameObject*)player)->childCount; i++)
+        for (; i < player->childCount; i++)
         {
             GameObject* child = *(GameObject**)(cursor + 200);
             if (child->anim.classId == 45)
