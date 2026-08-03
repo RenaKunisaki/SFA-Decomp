@@ -1670,9 +1670,9 @@ int mapUnload(int mapId, int flags)
                                 }
                                 if (j <= 0x50 && j != 0x49 && j != 0x43 && j != 5)
                                 {
-                                    u32* slot = (u32*)((j << 2) + ((u32)&tbl->romList[0]));
-                                    mm_free((void*)*slot);
-                                    *slot = 0;
+                                    u32 slotAddr = (j << 2) + ((u32)&tbl->romList[0] + 0x6C08);
+                                    mm_free((void*)*(u32*)(slotAddr - 0x6C08));
+                                    *(u32*)(slotAddr - 0x6C08) = 0;
                                 }
                                 break;
                             }
@@ -1778,7 +1778,8 @@ int mergeTableFiles(void* table, int id, int idx, int count_)
     {
         int* w1 = p1;
         int* dst = (int*)tbl;
-        int v;
+        int va;
+        int vb;
         for (; count > 0; count--)
         {
             if (!e1 && *w1 == -1)
@@ -1789,14 +1790,14 @@ int mergeTableFiles(void* table, int id, int idx, int count_)
             {
                 e2 = 1;
             }
-            if (!e1 && (v = *w1, v != -1) && (v & 0x80000000))
+            if (!e1 && (va = *w1, va != -1) && (va & 0x80000000))
             {
-                *dst = v & 0x7fffffff;
+                *dst = va & 0x7fffffff;
                 *dst = *dst | 0x40000000;
             }
-            else if (!e2 && (v = *p2, v != -1) && (v & 0x80000000))
+            else if (!e2 && (vb = *p2, vb != -1) && (vb & 0x80000000))
             {
-                *dst = v;
+                *dst = vb;
             }
             else if (!e1 && *w1 != 0)
             {
@@ -1821,20 +1822,21 @@ int mergeTableFiles(void* table, int id, int idx, int count_)
         int* w1 = p1;
         int* dst = (int*)tbl;
         int* w2 = p2;
-        int v;
+        int va;
+        int vb;
         for (; count > 0; count--)
         {
-            if (!e1 && (v = *w1, v != -1) && (v & 0x10000000))
+            if (!e1 && (va = *w1, va != -1) && (va & 0x10000000))
             {
-                *dst = v;
+                *dst = va;
                 if (p2 != NULL && *w2 == -1)
                 {
                     e2 = 1;
                 }
             }
-            else if (!e2 && (v = *w2, v != -1) && (v & 0x10000000))
+            else if (!e2 && (vb = *w2, vb != -1) && (vb & 0x10000000))
             {
-                *dst = (v & 0xffffff) | 0x20000000;
+                *dst = (vb & 0xffffff) | 0x20000000;
                 if (p1 != NULL && *w1 == -1)
                 {
                     e1 = 1;
@@ -1872,7 +1874,8 @@ int mergeTableFiles(void* table, int id, int idx, int count_)
     {
         int* w1 = p1;
         int* dst = (int*)tbl;
-        int v;
+        int va;
+        int vb;
         for (; count > 0; count--)
         {
             if (!e1 && *w1 == -1)
@@ -1885,13 +1888,13 @@ int mergeTableFiles(void* table, int id, int idx, int count_)
                 *dst = 0;
                 e2 = 1;
             }
-            else if (!e1 && (v = *w1, v != -1) && (v & 0x80000000))
+            else if (!e1 && (va = *w1, va != -1) && (va & 0x80000000))
             {
-                *dst = v;
+                *dst = va;
             }
-            else if (!e2 && (v = *p2, v != -1) && (v & 0x80000000))
+            else if (!e2 && (vb = *p2, vb != -1) && (vb & 0x80000000))
             {
-                *dst = (v & 0x7fffffff) | 0x20000000;
+                *dst = (vb & 0x7fffffff) | 0x20000000;
             }
             else if (!e1 && *w1 != 0)
             {
@@ -1915,7 +1918,8 @@ int mergeTableFiles(void* table, int id, int idx, int count_)
     {
         int* w1 = p1;
         int* dst = (int*)tbl;
-        int v;
+        int va;
+        int vb;
         for (; count > 0; count--)
         {
             if (!e1 && *w1 == -1)
@@ -1928,13 +1932,13 @@ int mergeTableFiles(void* table, int id, int idx, int count_)
                 *dst = 0;
                 e2 = 1;
             }
-            else if (!e1 && (v = *w1, v != -1) && (v & 0x80000000))
+            else if (!e1 && (va = *w1, va != -1) && (va & 0x80000000))
             {
-                *dst = v;
+                *dst = va;
             }
-            else if (!e2 && (v = *p2, v != -1) && (v & 0x80000000))
+            else if (!e2 && (vb = *p2, vb != -1) && (vb & 0x80000000))
             {
-                *dst = (v & 0x7fffffff) | 0x20000000;
+                *dst = (vb & 0x7fffffff) | 0x20000000;
             }
             else if (!e1 && *w1 != 0)
             {
@@ -1959,7 +1963,8 @@ int mergeTableFiles(void* table, int id, int idx, int count_)
         int* w1 = p1;
         int* w2 = p2;
         int* dst = (int*)tbl;
-        int v;
+        int va;
+        int vb;
         for (; count > 0; count--)
         {
             if (!e1 && *w1 == -1)
@@ -1970,13 +1975,13 @@ int mergeTableFiles(void* table, int id, int idx, int count_)
             {
                 e2 = 1;
             }
-            if (!e1 && (v = *w1, v != -1) && (v & 0x10000000))
+            if (!e1 && (va = *w1, va != -1) && (va & 0x10000000))
             {
-                *dst = v;
+                *dst = va;
             }
-            else if (!e2 && (v = *w2, v != -1) && (v & 0x10000000))
+            else if (!e2 && (vb = *w2, vb != -1) && (vb & 0x10000000))
             {
-                *dst = (v & 0xffffff) | 0x20000000;
+                *dst = (vb & 0xffffff) | 0x20000000;
             }
             else if (!e1 && p1 != NULL)
             {
