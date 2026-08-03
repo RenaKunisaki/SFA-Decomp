@@ -77,7 +77,6 @@ u8 gGameTextFontIsSjis;
 
 void gameTextFinalizeLoad(GameTextLoadSlot* loadSlot);
 
-extern GXColor gGameTextClearColor;
 SubtitleCmd* subtitleParseControlCmds(char* str, int* count);
 
 typedef struct GameTextTableHeader

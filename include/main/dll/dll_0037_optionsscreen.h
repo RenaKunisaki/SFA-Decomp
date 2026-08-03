@@ -4,6 +4,7 @@
 #include "main/dll/savedata_struct.h"
 
 extern SaveData* gOptionsSaveData;
+extern u8 gOptionsRequestedPanel;
 
 void OptionsScreen_render(int arg);
 void OptionsScreen_initialise(void);

@@ -74,5 +74,6 @@ extern GXFifoObj* gGxFifoObj;
 extern OSThread* gVideoWaitThread;
 extern OSStopwatch gFrameStopwatch;
 extern struct RingBufferQueue gVideoFlipQueue;
+extern u8 gLoadingScreenTextures[];
 
 #endif /* MAIN_PI_DOLPHIN_H_ */

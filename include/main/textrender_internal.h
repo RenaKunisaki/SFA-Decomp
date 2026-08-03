@@ -201,5 +201,6 @@ extern u16 gGameTextSjisGlyphTable[];
 extern char sGameTextMapPathFormat[];
 extern int gGameTextFontTexRowPitch;
 extern TextFont gGameTextCharsets[];
+extern struct _GXColor gGameTextClearColor;
 
 #endif /* MAIN_TEXTRENDER_INTERNAL_H_ */

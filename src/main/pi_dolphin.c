@@ -736,7 +736,6 @@ char sMapAssetPathFormats[0x78] =
     "%s/animcurv.bin\0%s/animcurv.tab\0%s/voxmap.bin\0\0\0warlock/voxmap.bin\0\0%s/voxmap.tab\0\0"
     "\0%s/mod%d.zlb.bin\0\0\0\0%s/mod%d.tab";
 void gxSetGPMetricsEnabled(int);
-extern u8 gLoadingScreenTextures[];
 
 
 void* mapLoadDataFile(int mapId, int fileId)
@@ -3982,7 +3981,6 @@ void tvInit(void)
 
 extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
 
-extern u8 enableDebugText;
 
 void gpuErrorHandler(u32 retraceCount);
 void videoSwapFrameBuffers(u32 retraceCount);

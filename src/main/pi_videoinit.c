@@ -67,7 +67,6 @@
 #include "dolphin/os/OSThread.h"
 #include "dolphin/vi/vifuncs.h"
 
-extern u8 gLoadingScreenTextures[];
 
 void videoSwapFrameBuffers(u32 retraceCount);
 void gpuErrorHandler(u32 retraceCount);

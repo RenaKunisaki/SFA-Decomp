@@ -12,6 +12,7 @@
 #include "main/dll/FRONT/title_menu.h"
 #include "main/texture.h"
 #include "main/mm.h"
+#include "main/debug.h"
 #include "main/dll/FRONT/dll_39.h"
 #include "main/dll/dll_02C0_front_api.h"
 #include "main/dll/front_game_text_box_api.h"
@@ -53,7 +54,6 @@
 #define SECONDS_PER_HOUR    3600
 #define SECONDS_PER_MINUTE  60
 
-extern u8 enableDebugText;
 extern void* gSaveSelectTextures[4];
 
 void saveFileSelect_checkCheatCodes(void)

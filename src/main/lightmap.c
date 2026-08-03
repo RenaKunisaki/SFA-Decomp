@@ -77,7 +77,6 @@ extern u32 renderFlags;
 extern f32 gLightmapDegToBamScale;
 
 extern u8 gMapBlockCount; /* count of allocated blocks */
-extern EnvironmentUpdateInterface** lbl_803DCAB0;
 
 
 volatile PPCWGPipe GXWGFifo : (0xCC008000);
@@ -929,9 +928,9 @@ void updateEnvironment(int mode)
         }
 
         loadNextMap();
-        if (lbl_803DCAB0 != NULL)
+        if (gEnvironmentUpdateInterface != NULL)
         {
-            (*lbl_803DCAB0)->update();
+            (*gEnvironmentUpdateInterface)->update();
         }
         gMinimapInterface->vtable->frameStart();
 
