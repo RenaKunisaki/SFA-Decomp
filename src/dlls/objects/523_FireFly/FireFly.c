@@ -14,8 +14,6 @@
 #include "dlls/object_descriptor.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/curve_eval.h"
-#include "main/dll/LGT/LGTcontrollight.h"
-#include "main/dll/boulder.h"
 #include "main/dll/dll_020B_firefly.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/dll/partfx_interface.h"
@@ -50,30 +48,30 @@ int firefly_animEventCallback(GameObject* obj)
     return 0;
 }
 
-void firefly_initFlightRec(GameObject* obj, LgtFireFlyRec* record)
+void firefly_initFlightRec(GameObject* obj, FireFlyState* record)
 {
-    record->src0X = obj->anim.localPosX;
-    record->src0Y = obj->anim.localPosY;
-    record->src0Z = obj->anim.localPosZ;
-    record->src1X = obj->anim.localPosX;
-    record->src1Y = obj->anim.localPosY;
-    record->src1Z = obj->anim.localPosZ;
-    record->src2X = obj->anim.localPosX;
-    record->src2Y = obj->anim.localPosY;
-    record->src2Z = obj->anim.localPosZ;
-    record->src3X = obj->anim.localPosX;
-    record->src3Y = obj->anim.localPosY;
-    record->src3Z = obj->anim.localPosZ;
-    record->baseX = 0.01f;
-    record->baseY = 0.0275f;
-    record->baseZ = 1.0f;
-    record->unk68 = 0;
+    record->splineX[0] = obj->anim.localPosX;
+    record->splineY[0] = obj->anim.localPosY;
+    record->splineZ[0] = obj->anim.localPosZ;
+    record->splineX[1] = obj->anim.localPosX;
+    record->splineY[1] = obj->anim.localPosY;
+    record->splineZ[1] = obj->anim.localPosZ;
+    record->splineX[2] = obj->anim.localPosX;
+    record->splineY[2] = obj->anim.localPosY;
+    record->splineZ[2] = obj->anim.localPosZ;
+    record->splineX[3] = obj->anim.localPosX;
+    record->splineY[3] = obj->anim.localPosY;
+    record->splineZ[3] = obj->anim.localPosZ;
+    record->splineSpeed = 0.01f;
+    record->proximityAlpha = 0.0275f;
+    record->splineT = 1.0f;
+    record->pathAge = 0;
     record->unk67 = 0;
     record->angleStep = randomGetRange(FIREFLY_ANGLE_STEP_MIN, FIREFLY_ANGLE_STEP_MAX);
     record->angle = randomGetRange(0, FIREFLY_ANGLE_INIT_MAX);
     record->ampMax = FIREFLY_AMP_MAX;
-    record->unk66 = 4;
-    record->radiusMin = 50.0f;
+    record->kind = 4;
+    record->playerRadius = 50.0f;
     record->radius = 40.0f;
     record->posX = obj->anim.localPosX;
     record->posY = obj->anim.localPosY;
@@ -82,7 +80,7 @@ void firefly_initFlightRec(GameObject* obj, LgtFireFlyRec* record)
     record->unk78 = 1200.0f;
 }
 
-void firefly_pickWanderTarget(GameObject* obj, LgtFireFlyRec* record)
+void firefly_pickWanderTarget(GameObject* obj, FireFlyState* record)
 {
     struct
     {
@@ -95,23 +93,23 @@ void firefly_pickWanderTarget(GameObject* obj, LgtFireFlyRec* record)
         f32 scratch3;
     } rot;
 
-    record->offX = 0.0f;
+    record->targetX = 0.0f;
     if (record->firstFrame != 0)
     {
-        record->offY = (f32)(s32)record->ampMax;
+        record->targetY = (f32)(s32)record->ampMax;
         record->firstFrame = 0;
     }
     else
     {
-        record->offY = (f32)(s32)randomGetRange(0, record->ampMax);
+        record->targetY = (f32)(s32)randomGetRange(0, record->ampMax);
     }
     if (record->radius < 21.0f)
     {
-        record->offZ = 0.0f;
+        record->targetZ = 0.0f;
     }
     else
     {
-        record->offZ = record->radius -
+        record->targetZ = record->radius -
                        (f32)(s32)randomGetRange(FIREFLY_RADIUS_MARGIN, (s16)(s32)record->radius);
     }
     record->angle += (s16)randomGetRange(FIREFLY_ANGLE_ADVANCE_MIN, FIREFLY_ANGLE_ADVANCE_MAX);
@@ -122,27 +120,27 @@ void firefly_pickWanderTarget(GameObject* obj, LgtFireFlyRec* record)
     rot.rotY = 0;
     rot.rotX = 0;
     rot.rotZ = record->angle;
-    vecRotateZXY((s16*)&rot, &record->offX);
-    record->offX += record->posX;
-    record->offY += record->posY;
-    record->offZ += record->posZ;
+    vecRotateZXY((s16*)&rot, &record->targetX);
+    record->targetX += record->posX;
+    record->targetY += record->posY;
+    record->targetZ += record->posZ;
 }
 
-void firefly_shiftPathHistory(GameObject* obj, BoulderShakeRec* record)
+void firefly_shiftPathHistory(GameObject* obj, FireFlyState* record)
 {
-    record->histX0 = record->histX1;
-    record->histY0 = record->histY1;
-    record->histZ0 = record->histZ1;
-    record->histX1 = record->histX2;
-    record->histY1 = record->histY2;
-    record->histZ1 = record->histZ2;
-    record->histX2 = record->histX3;
-    record->histY2 = record->histY3;
-    record->histZ2 = record->histZ3;
-    record->amplitude = 0.00015f * (f32)(s32)randomGetRange(0xa0, 0xb4);
-    record->histX3 = record->liveX;
-    record->histY3 = record->liveY;
-    record->histZ3 = record->liveZ;
+    record->splineX[0] = record->splineX[1];
+    record->splineY[0] = record->splineY[1];
+    record->splineZ[0] = record->splineZ[1];
+    record->splineX[1] = record->splineX[2];
+    record->splineY[1] = record->splineY[2];
+    record->splineZ[1] = record->splineZ[2];
+    record->splineX[2] = record->splineX[3];
+    record->splineY[2] = record->splineY[3];
+    record->splineZ[2] = record->splineZ[3];
+    record->splineSpeed = 0.00015f * (f32)(s32)randomGetRange(0xa0, 0xb4);
+    record->splineX[3] = record->targetX;
+    record->splineY[3] = record->targetY;
+    record->splineZ[3] = record->targetZ;
 }
 
 s16 gFireFlyDespawnThreshold = 0xAA;
@@ -192,7 +190,7 @@ void firefly_activeTick(GameObject* obj)
         }
         else
         {
-            firefly_pickWanderTarget(obj, (LgtFireFlyRec*)state);
+            firefly_pickWanderTarget(obj, state);
         }
         state->splineX[0] = state->splineX[1];
         state->splineY[0] = state->splineY[1];
@@ -397,7 +395,7 @@ void firefly_init(GameObject* obj, FireFlyMapData* mapData)
     FireFlyState* state;
 
     state = (obj)->extra;
-    firefly_initFlightRec(obj, (LgtFireFlyRec*)state);
+    firefly_initFlightRec(obj, state);
     (obj)->anim.alpha = 0;
     (obj)->animEventCallback = firefly_animEventCallback;
     ObjMsg_AllocQueue(obj, 1);

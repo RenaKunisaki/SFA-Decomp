@@ -25,8 +25,7 @@
 #include "main/objseq.h"
 #include "main/objtype.h"
 #include "main/dll/dll_0284_shopitem.h"
-#include "main/dll/LGT/LGTcontrollight.h"
-#include "main/dll/boulder.h"
+#include "main/dll/dll_020B_firefly.h"
 #include "main/dll/tricky_api.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/gameloop_api.h"
@@ -239,9 +238,9 @@ int shopitem_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
             }
             else
             {
-                firefly_pickWanderTarget(obj, (LgtFireFlyRec*)sub);
+                firefly_pickWanderTarget(obj, (FireFlyState*)sub);
             }
-            firefly_shiftPathHistory(obj, (BoulderShakeRec*)sub);
+            firefly_shiftPathHistory(obj, (FireFlyState*)sub);
         }
     }
         {
@@ -398,9 +397,9 @@ void shopitem_update(GameObject* obj)
                     }
                     else
                     {
-                        firefly_pickWanderTarget(obj, (LgtFireFlyRec*)state);
+                        firefly_pickWanderTarget(obj, (FireFlyState*)state);
                     }
-                    firefly_shiftPathHistory(obj, (BoulderShakeRec*)state);
+                    firefly_shiftPathHistory(obj, (FireFlyState*)state);
                 }
                 (obj)->anim.localPosX =
                     Curve_EvalBSpline(s->controlX, s->splineT, 0);
@@ -448,7 +447,7 @@ void shopitem_init(GameObject* obj, ShopItemDef* data)
     switch ((obj)->anim.romDefNo)
     {
     case SHOPITEM_SEQ_BSPLINE:
-        firefly_initFlightRec(obj, (LgtFireFlyRec*)state);
+        firefly_initFlightRec(obj, (FireFlyState*)state);
         break;
     case SHOPITEM_SEQ_AMBIENT:
         (*gPartfxInterface)->spawnObject((void*)obj, SHOPITEM_PARTFX_AMBIENT, NULL, 4, -1, NULL);
