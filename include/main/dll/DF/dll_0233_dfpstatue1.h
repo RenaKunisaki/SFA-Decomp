@@ -1,5 +1,5 @@
-#ifndef MAIN_DLL_CRATE2_H_
-#define MAIN_DLL_CRATE2_H_
+#ifndef MAIN_DLL_DF_DLL_0233_DFPSTATUE1_H_
+#define MAIN_DLL_DF_DLL_0233_DFPSTATUE1_H_
 
 #include "types.h"
 #include "main/objseq.h"
@@ -30,6 +30,7 @@ STATIC_ASSERT(offsetof(DfpStatue1MapData, effectPairCount) == 0x19);
 STATIC_ASSERT(offsetof(DfpStatue1MapData, triggerSfxId) == 0x1E);
 STATIC_ASSERT(offsetof(DfpStatue1MapData, loopSfxId) == 0x20);
 
+u32 dfpstatue1_SeqFn(int obj, u32 unused, ObjSeqState *animUpdate);
 void dfpstatue1_updateState(GameObject *obj);
 
 extern char sDfperchwitchInitNoLongerSupported[];
@@ -56,4 +57,4 @@ void DFP_Statue1_init(GameObject *obj, DfpStatue1MapData *mapData);
 void DFP_Statue1_release(void);
 void DFP_Statue1_initialise(void);
 
-#endif /* MAIN_DLL_CRATE2_H_ */
+#endif /* MAIN_DLL_DF_DLL_0233_DFPSTATUE1_H_ */

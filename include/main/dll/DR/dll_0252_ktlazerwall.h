@@ -47,6 +47,7 @@ int KT_Lazerwall_getObjectTypeId(void);
 void KT_Lazerwall_free(GameObject* obj);
 void KT_Lazerwall_render(GameObject* obj);
 void KT_Lazerwall_hitDetect(void);
+void KT_Lazerwall_spawnEnergyArc(GameObject* obj, f32 scale, int angle);
 void KT_Lazerwall_update(GameObject* obj);
 void KT_Lazerwall_init(GameObject* obj, KtlazerwallPlacement* placement);
 void KT_Lazerwall_release(void);

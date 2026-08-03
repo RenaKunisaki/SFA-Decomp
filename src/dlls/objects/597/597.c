@@ -23,9 +23,8 @@
 #include "main/camera.h"
 #include "main/camera_interface.h"
 #include "main/checkpoint_interface.h"
-#include "main/dll/DR/DRcloudcage.h"
 #include "main/dll/DR/DRpickup.h"
-#include "main/dll/DR/drcloudcage_internal.h"
+#include "main/dll/snowbike_internal.h"
 #include "main/dll/SP/dll_0287_spscarab.h"
 #include "main/dll/dll_0015_curves.h"
 #include "main/dll/dll_0255_snowbike.h"
@@ -107,13 +106,13 @@ int gSnowBikeBoostFxDuration = 60;
 int gSnowBikeHardCollisionFxDuration = 20;
 f32 gSnowBikeAirDrainRate = 4.7f;
 s16 gSnowBikeWrongWayAngleThreshold = 0x4000;
-f32 gDrCloudCageRouteDistGate = 2000.0f;
+f32 gSnowBikeRouteDistGate = 2000.0f;
 char sSnowBikeVelDebugFmt[] = "vel %f\n";
 
 /* Trail renderer used by the SnowBike effects below. */
 
 
-f32 gDrCloudCageWindVolume;
+f32 gSnowBikeWindVolume;
 Texture* sSnowBikeTrailTexture;
 
 #define GXWGFifo (*(volatile PPCWGPipe*)0xCC008000)
@@ -207,44 +206,44 @@ void SnowBike_DrawTrails(int p1, char* table)
  * Cloud-cage trail and audio effects used by the SnowBike.
  *
  * Provides three routines for the vehicle's trail, sound, and pitch state:
- *   drcloudcage_updateTrails  builds and fades the swirling cloud-trail ribbons. Each of the
+ *   SnowBike_UpdateTrails  builds and fades the swirling cloud-trail ribbons. Each of the
  *                three emitters casts a transformed segment, ray-tests it
  *                (trackGetHeight, mask 0x20), and when it strikes ground
  *                inserts a new fully-opaque point pair at the head of one of the
  *                nine trail buffers; every existing pair's alpha decays by
  *                timeDelta and exhausted trails are freed.
- *   drcloudcage_updateEngineFx  drives the wind/engine sfx channels (8,1,2,4) by distance and
+ *   SnowBike_UpdateEngineFx  drives the wind/engine sfx channels (8,1,2,4) by distance and
  *                rotZ, clamps each channel volume, and spawns two light pulses;
- *                then advances the trails via drcloudcage_updateTrails.
- *   drcloudcage_getRouteIntensity  returns a distance/route-rank weighted scalar (pitch/intensity)
+ *                then advances the trails via SnowBike_UpdateTrails.
+ *   SnowBike_GetRouteIntensity  returns a distance/route-rank weighted scalar (pitch/intensity)
  *                from the checkpoint route rank, falling back to player distance
  *                when no rank gate (gSnowBikeLeaderRouteRank) is set.
  *
  * State is addressed through raw byte offsets into the owning object's extra
- * block; trail buffers begin at DRCLOUDCAGE_TRAILS_OFFSET (DRCLOUDCAGE_TRAIL_COUNT
- * records of DRCLOUDCAGE_TRAIL_STRIDE bytes), with the three active head-trail
+ * block; trail buffers begin at SNOWBIKE_TRAILS_OFFSET (SNOWBIKE_TRAIL_COUNT
+ * records of SNOWBIKE_TRAIL_STRIDE bytes), with the three active head-trail
  * pointers immediately following at +0x510/+0x514/+0x518.
  */
 
 /* Shared route-rank state used by the trail, pitch, and vehicle routines. */
-struct DRCloudCagePoints;
+struct SnowBikeTrailPoints;
 
-#define DRCLOUDCAGE_TRAIL_COUNT       9
-#define DRCLOUDCAGE_TRAIL_STRIDE      8
-#define DRCLOUDCAGE_TRAILS_OFFSET     0x4c8
-#define DRCLOUDCAGE_PAIR_SIZE         0x10
-#define DRCLOUDCAGE_TRAIL_FLAG_ACTIVE 1
+#define SNOWBIKE_TRAIL_COUNT       9
+#define SNOWBIKE_TRAIL_STRIDE      8
+#define SNOWBIKE_TRAILS_OFFSET     0x4c8
+#define SNOWBIKE_PAIR_SIZE         0x10
+#define SNOWBIKE_TRAIL_FLAG_ACTIVE 1
 
-typedef struct DRCloudCagePoints
+typedef struct SnowBikeTrailPoints
 {
     f32 m[18];
-} DRCloudCagePoints;
+} SnowBikeTrailPoints;
 
-const DRCloudCagePoints gDrCloudCagePointTemplate = {
+const SnowBikeTrailPoints gSnowBikeTrailPointTemplate = {
     {-6.0f, 1.0f, 15.0f, 6.0f, 1.0f, 15.0f, -7.5f, 1.0f, 15.0f, -4.0f, 1.0f,
      15.0f, 4.0f, 1.0f, 15.0f, 7.5f, 1.0f, 15.0f}};
 
-void drcloudcage_updateTrails(GameObject* obj, int state)
+void SnowBike_UpdateTrails(GameObject* obj, int state)
 {
     f32 endZ;
     f32 endY;
@@ -255,13 +254,13 @@ void drcloudcage_updateTrails(GameObject* obj, int state)
     TrackGroundHit** hits;
     MatrixTransform transform;
     f32 matrix[16];
-    DRCloudCagePoints localPoints;
+    SnowBikeTrailPoints localPoints;
     u8* p;
     int trailIndex;
-    DRCloudCageTrail* trail;
+    SnowBikeTrail* trail;
     int pairIndex;
     u8* points;
-    DRCloudCagePointPair* pair;
+    SnowBikeTrailPointPair* pair;
     s32 a;
     f32 fade;
     int copyOffset;
@@ -274,7 +273,7 @@ void drcloudcage_updateTrails(GameObject* obj, int state)
     f32* pEndY;
     f32* pEndX;
     int endpointIndex;
-    DRCloudCageTrail* selectedTrail;
+    SnowBikeTrail* selectedTrail;
     int activeIndex;
     int nextOffset;
     int scanIndex;
@@ -290,17 +289,17 @@ void drcloudcage_updateTrails(GameObject* obj, int state)
     u32 baseOffset;
     u32 baseOffset2;
 
-    localPoints = gDrCloudCagePointTemplate;
+    localPoints = gSnowBikeTrailPointTemplate;
 
-    for (trailIndex = 0, p = (u8*)state; trailIndex < DRCLOUDCAGE_TRAIL_COUNT;
-         p += DRCLOUDCAGE_TRAIL_STRIDE, trailIndex++)
+    for (trailIndex = 0, p = (u8*)state; trailIndex < SNOWBIKE_TRAIL_COUNT;
+         p += SNOWBIKE_TRAIL_STRIDE, trailIndex++)
     {
-        trail = (DRCloudCageTrail*)(p + DRCLOUDCAGE_TRAILS_OFFSET);
-        if (trail->flags & DRCLOUDCAGE_TRAIL_FLAG_ACTIVE)
+        trail = (SnowBikeTrail*)(p + SNOWBIKE_TRAILS_OFFSET);
+        if (trail->flags & SNOWBIKE_TRAIL_FLAG_ACTIVE)
         {
             pairIndex = trail->count - 2;
             points = (u8*)trail->points;
-            pair = (DRCloudCagePointPair*)((u8*)trail->points + pairIndex * DRCLOUDCAGE_PAIR_SIZE);
+            pair = (SnowBikeTrailPointPair*)((u8*)trail->points + pairIndex * SNOWBIKE_PAIR_SIZE);
             fade = 8.0f;
             for (; pairIndex >= 0; pair--, pairIndex -= 2)
             {
@@ -329,7 +328,7 @@ void drcloudcage_updateTrails(GameObject* obj, int state)
             }
 
             pairIndex = trail->count - 2;
-            pair = (DRCloudCagePointPair*)(points + pairIndex * DRCLOUDCAGE_PAIR_SIZE);
+            pair = (SnowBikeTrailPointPair*)(points + pairIndex * SNOWBIKE_PAIR_SIZE);
             for (; pairIndex >= 0; pair--, pairIndex -= 2)
             {
                 if (pairIndex >= 2)
@@ -353,10 +352,10 @@ void drcloudcage_updateTrails(GameObject* obj, int state)
              * stay raw: the spawn loop below walks them via a running `slot`
              * base (slot += 4), so naming them as fixed struct fields shifts
              * the walker's addressing/CSE. */
-            if ((trail != *(DRCloudCageTrail**)(state + 0x510)) && (trail != *(DRCloudCageTrail**)(state + 0x514)) &&
-                (trail != *(DRCloudCageTrail**)(state + 0x518)) && (trail->count == 0))
+            if ((trail != *(SnowBikeTrail**)(state + 0x510)) && (trail != *(SnowBikeTrail**)(state + 0x514)) &&
+                (trail != *(SnowBikeTrail**)(state + 0x518)) && (trail->count == 0))
             {
-                trail->flags &= ~DRCLOUDCAGE_TRAIL_FLAG_ACTIVE;
+                trail->flags &= ~SNOWBIKE_TRAIL_FLAG_ACTIVE;
             }
         }
     }
@@ -383,7 +382,7 @@ void drcloudcage_updateTrails(GameObject* obj, int state)
         transform.z = obj->anim.worldPosZ;
         transform.rotX = obj->anim.rotX;
         transform.rotY = obj->anim.rotY;
-        transform.rotZ = (s16)(obj->anim.rotZ + ((DRCloudCageState*)state)->rotZOffset);
+        transform.rotZ = (s16)(obj->anim.rotZ + ((SnowBikeStateView*)state)->rotZOffset);
         transform.scale = scaleV;
         setMatrixFromObjectPos(matrix, &transform);
 
@@ -421,37 +420,37 @@ void drcloudcage_updateTrails(GameObject* obj, int state)
             }
         }
 
-        if (!((DRCloudCageState*)state)->stateFlags.hidden && hitDetected)
+        if (!((SnowBikeStateView*)state)->stateFlags.hidden && hitDetected)
         {
-            selectedTrail = *(DRCloudCageTrail**)(slot + 0x510);
+            selectedTrail = *(SnowBikeTrail**)(slot + 0x510);
             if (selectedTrail == NULL)
             {
-                for (scanIndex = 0; scanIndex < DRCLOUDCAGE_TRAIL_COUNT; scanIndex++)
+                for (scanIndex = 0; scanIndex < SNOWBIKE_TRAIL_COUNT; scanIndex++)
                 {
                     selectedTrail =
-                        (DRCloudCageTrail*)(state + scanIndex * DRCLOUDCAGE_TRAIL_STRIDE + DRCLOUDCAGE_TRAILS_OFFSET);
-                    if (!(selectedTrail->flags & DRCLOUDCAGE_TRAIL_FLAG_ACTIVE))
+                        (SnowBikeTrail*)(state + scanIndex * SNOWBIKE_TRAIL_STRIDE + SNOWBIKE_TRAILS_OFFSET);
+                    if (!(selectedTrail->flags & SNOWBIKE_TRAIL_FLAG_ACTIVE))
                     {
                         break;
                     }
                 }
-                if (scanIndex >= DRCLOUDCAGE_TRAIL_COUNT)
+                if (scanIndex >= SNOWBIKE_TRAIL_COUNT)
                 {
                     break;
                 }
-                selectedTrail->flags |= DRCLOUDCAGE_TRAIL_FLAG_ACTIVE;
+                selectedTrail->flags |= SNOWBIKE_TRAIL_FLAG_ACTIVE;
                 selectedTrail->count = 0;
-                *(DRCloudCageTrail**)(slot + 0x510) = selectedTrail;
+                *(SnowBikeTrail**)(slot + 0x510) = selectedTrail;
             }
             else
             {
                 copyIndex = selectedTrail->count - 1;
-                copyOffset = copyIndex * DRCLOUDCAGE_PAIR_SIZE;
+                copyOffset = copyIndex * SNOWBIKE_PAIR_SIZE;
                 while (copyIndex >= 0)
                 {
-                    memcpy((u8*)selectedTrail->points + (copyIndex + 2) * DRCLOUDCAGE_PAIR_SIZE,
-                           (u8*)selectedTrail->points + copyOffset, DRCLOUDCAGE_PAIR_SIZE);
-                    copyOffset -= DRCLOUDCAGE_PAIR_SIZE;
+                    memcpy((u8*)selectedTrail->points + (copyIndex + 2) * SNOWBIKE_PAIR_SIZE,
+                           (u8*)selectedTrail->points + copyOffset, SNOWBIKE_PAIR_SIZE);
+                    copyOffset -= SNOWBIKE_PAIR_SIZE;
                     copyIndex--;
                 }
             }
@@ -464,30 +463,30 @@ void drcloudcage_updateTrails(GameObject* obj, int state)
             selectedTrail->points[0].endZ = endZ;
             selectedTrail->points[0].startAlpha = 0xff;
             selectedTrail->points[0].endAlpha = 0xff;
-            selectedTrail->points[0].startColorByte = ((DRCloudCageState*)state)->trailColorByte;
-            selectedTrail->points[0].endColorByte = ((DRCloudCageState*)state)->trailColorByte;
+            selectedTrail->points[0].startColorByte = ((SnowBikeStateView*)state)->trailColorByte;
+            selectedTrail->points[0].endColorByte = ((SnowBikeStateView*)state)->trailColorByte;
             selectedTrail->count += 2;
-            ((DRCloudCageState*)state)->lastSpawnPosX = obj->anim.worldPosX;
-            ((DRCloudCageState*)state)->lastSpawnPosY = obj->anim.worldPosY;
-            ((DRCloudCageState*)state)->lastSpawnPosZ = obj->anim.worldPosZ;
+            ((SnowBikeStateView*)state)->lastSpawnPosX = obj->anim.worldPosX;
+            ((SnowBikeStateView*)state)->lastSpawnPosY = obj->anim.worldPosY;
+            ((SnowBikeStateView*)state)->lastSpawnPosZ = obj->anim.worldPosZ;
         }
         else
         {
-            *(DRCloudCageTrail**)(slot + 0x510) = 0;
+            *(SnowBikeTrail**)(slot + 0x510) = 0;
         }
     }
 }
 
-typedef struct DRCloudCagePulseParams
+typedef struct SnowBikePulseParams
 {
     u8 pad[8];
     f32 unk8;
     f32 unkC;
     f32 unk10;
     f32 unk14;
-} DRCloudCagePulseParams;
+} SnowBikePulseParams;
 
-void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 localVelZ, int intensity, u8* unused,
+void SnowBike_UpdateEngineFx(GameObject* obj, void* state, f32 localVelZ, int intensity, u8* unused,
                                 u8 channelFlags)
 {
     f32 clamped;
@@ -496,7 +495,7 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 localVelZ, int
     int vol;
     f32 channelVol;
     f32 channelVol4;
-    DRCloudCagePulseParams pulse;
+    SnowBikePulseParams pulse;
 
     clamped =
         (localVelZ < 0.0f) ? 0.0f : ((localVelZ > 70.0f) ? 70.0f : localVelZ);
@@ -504,20 +503,20 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 localVelZ, int
     {
         if (Sfx_IsPlayingFromObjectChannel(obj, 8))
         {
-            gDrCloudCageWindVolume = 11.6f * clamped;
-            if (gDrCloudCageWindVolume < 0.0f)
+            gSnowBikeWindVolume = 11.6f * clamped;
+            if (gSnowBikeWindVolume < 0.0f)
             {
-                gDrCloudCageWindVolume = -gDrCloudCageWindVolume;
+                gSnowBikeWindVolume = -gSnowBikeWindVolume;
             }
-            if (gDrCloudCageWindVolume < 40.0f)
+            if (gSnowBikeWindVolume < 40.0f)
             {
-                gDrCloudCageWindVolume = 40.0f;
+                gSnowBikeWindVolume = 40.0f;
             }
-            if (gDrCloudCageWindVolume > 200.0f)
+            if (gSnowBikeWindVolume > 200.0f)
             {
-                gDrCloudCageWindVolume = 200.0f;
+                gSnowBikeWindVolume = 200.0f;
             }
-            if (((DRCloudCageState*)state)->distanceGate < 18.0f)
+            if (((SnowBikeStateView*)state)->distanceGate < 18.0f)
             {
                 vol = (int)(30.0f * clamped);
                 if (vol < 0)
@@ -534,31 +533,31 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 localVelZ, int
                 vol = 0;
             }
             Sfx_SetObjectChannelVolume(obj, 8, vol & 0xff,
-                                       0.1f + gDrCloudCageWindVolume / 70.0f);
+                                       0.1f + gSnowBikeWindVolume / 70.0f);
         }
     }
     if (channelFlags & 2)
     {
         if (Sfx_IsPlayingFromObjectChannel(obj, 1))
         {
-            if (((DRCloudCageState*)state)->distanceGate < 18.0f)
+            if (((SnowBikeStateView*)state)->distanceGate < 18.0f)
             {
                 windVol = 0.0f;
                 if (windVol != clamped)
                 {
                     windVol = clamped * (f32)obj->anim.rotZ / 30000.0f;
                 }
-                gDrCloudCageWindVolume = windVol;
+                gSnowBikeWindVolume = windVol;
                 fv = (f32)(f64)windVol;
                 if (fv < 0.0f)
                 {
-                    gDrCloudCageWindVolume = -fv;
+                    gSnowBikeWindVolume = -fv;
                 }
                 else if (fv > 1.0f)
                 {
-                    gDrCloudCageWindVolume = 1.0f;
+                    gSnowBikeWindVolume = 1.0f;
                 }
-                vol = (int)(127.0f * gDrCloudCageWindVolume);
+                vol = (int)(127.0f * gSnowBikeWindVolume);
                 if ((f32)vol > 127.0f)
                 {
                     vol = 0x7f;
@@ -567,72 +566,72 @@ void drcloudcage_updateEngineFx(GameObject* obj, void* state, f32 localVelZ, int
                 {
                     vol = 0;
                 }
-                Sfx_SetObjectChannelVolume(obj, 1, vol & 0xff, 0.1f + gDrCloudCageWindVolume);
+                Sfx_SetObjectChannelVolume(obj, 1, vol & 0xff, 0.1f + gSnowBikeWindVolume);
             }
         }
     }
     if (channelFlags & 4)
     {
-        Sfx_PlayFromObject(obj, ((DRCloudCageState*)state)->windSfxId);
+        Sfx_PlayFromObject(obj, ((SnowBikeStateView*)state)->windSfxId);
         Sfx_PlayFromObject(obj, SFXTRIG_tr_gal_rumblelp11);
         if (intensity > 5)
         {
-            ((DRCloudCageState*)state)->channel2Vol = ((DRCloudCageState*)state)->channel2Vol + timeDelta;
+            ((SnowBikeStateView*)state)->channel2Vol = ((SnowBikeStateView*)state)->channel2Vol + timeDelta;
         }
         else
         {
-            if (((DRCloudCageState*)state)->channel2Vol > 40.0f)
+            if (((SnowBikeStateView*)state)->channel2Vol > 40.0f)
             {
-                ((DRCloudCageState*)state)->channel2Vol =
-                    -(1.5f * timeDelta - ((DRCloudCageState*)state)->channel2Vol);
+                ((SnowBikeStateView*)state)->channel2Vol =
+                    -(1.5f * timeDelta - ((SnowBikeStateView*)state)->channel2Vol);
             }
         }
-        if (((DRCloudCageState*)state)->channel2Vol > 70.0f)
+        if (((SnowBikeStateView*)state)->channel2Vol > 70.0f)
         {
-            ((DRCloudCageState*)state)->channel2Vol = 70.0f;
+            ((SnowBikeStateView*)state)->channel2Vol = 70.0f;
         }
-        if (((DRCloudCageState*)state)->channel2Vol < 45.0f)
+        if (((SnowBikeStateView*)state)->channel2Vol < 45.0f)
         {
-            ((DRCloudCageState*)state)->channel2Vol = 45.0f;
+            ((SnowBikeStateView*)state)->channel2Vol = 45.0f;
         }
-        channelVol = ((DRCloudCageState*)state)->channel2Vol;
+        channelVol = ((SnowBikeStateView*)state)->channel2Vol;
         ((void (*)(GameObject*, u32, u8, f32))Sfx_SetObjectChannelVolume)(obj, 2, channelVol, channelVol / 256.0f + 0.3f);
         if (intensity > 5)
         {
-            ((DRCloudCageState*)state)->channel4Vol = 60.0f + intensity;
+            ((SnowBikeStateView*)state)->channel4Vol = 60.0f + intensity;
         }
         else
         {
-            if (((DRCloudCageState*)state)->channel4Vol > 60.0f)
+            if (((SnowBikeStateView*)state)->channel4Vol > 60.0f)
             {
-                ((DRCloudCageState*)state)->channel4Vol =
-                    -(0.5f * timeDelta - ((DRCloudCageState*)state)->channel4Vol);
+                ((SnowBikeStateView*)state)->channel4Vol =
+                    -(0.5f * timeDelta - ((SnowBikeStateView*)state)->channel4Vol);
             }
         }
-        if (((DRCloudCageState*)state)->channel4Vol > 80.0f)
+        if (((SnowBikeStateView*)state)->channel4Vol > 80.0f)
         {
-            ((DRCloudCageState*)state)->channel4Vol = 80.0f;
+            ((SnowBikeStateView*)state)->channel4Vol = 80.0f;
         }
-        if (((DRCloudCageState*)state)->channel4Vol < 65.0f)
+        if (((SnowBikeStateView*)state)->channel4Vol < 65.0f)
         {
-            ((DRCloudCageState*)state)->channel4Vol = 65.0f;
+            ((SnowBikeStateView*)state)->channel4Vol = 65.0f;
         }
-        channelVol4 = ((DRCloudCageState*)state)->channel4Vol;
+        channelVol4 = ((SnowBikeStateView*)state)->channel4Vol;
         ((void (*)(GameObject*, u32, u8, f32))Sfx_SetObjectChannelVolume)(obj, 4, channelVol4, channelVol4 / 100.0f);
         pulse.unkC = -5.3f;
         pulse.unk10 = 4.4f;
         pulse.unk14 = 24.0f;
         pulse.unk8 = 0.0f;
-        objfx_spawnLightPulse(obj, 0.5f, 2, 0, 1, ((DRCloudCageState*)state)->channel4Vol / 250.0f,
+        objfx_spawnLightPulse(obj, 0.5f, 2, 0, 1, ((SnowBikeStateView*)state)->channel4Vol / 250.0f,
                               &pulse);
         pulse.unkC = 5.3f;
-        objfx_spawnLightPulse(obj, 0.5f, 2, 0, 1, ((DRCloudCageState*)state)->channel4Vol / 250.0f,
+        objfx_spawnLightPulse(obj, 0.5f, 2, 0, 1, ((SnowBikeStateView*)state)->channel4Vol / 250.0f,
                               &pulse);
     }
-    drcloudcage_updateTrails(obj, (int)state);
+    SnowBike_UpdateTrails(obj, (int)state);
 }
 
-f32 drcloudcage_getRouteIntensity(GameObject* obj, int state)
+f32 SnowBike_GetRouteIntensity(GameObject* obj, int state)
 {
     f32 result;
     f32 d;
@@ -661,26 +660,26 @@ f32 drcloudcage_getRouteIntensity(GameObject* obj, int state)
             d = templateMetric - stateMetric;
             d = (d >= 0.0f) ? d : -d;
         }
-        if (d <= ((DRCloudCageState*)state)->distNear)
+        if (d <= ((SnowBikeStateView*)state)->distNear)
         {
-            result = ((DRCloudCageState*)state)->valNear;
+            result = ((SnowBikeStateView*)state)->valNear;
         }
-        else if (d >= ((DRCloudCageState*)state)->distFar)
+        else if (d >= ((SnowBikeStateView*)state)->distFar)
         {
-            result = ((DRCloudCageState*)state)->valFar;
+            result = ((SnowBikeStateView*)state)->valFar;
         }
         else
         {
-            f32 ratio = (d - ((DRCloudCageState*)state)->distNear) /
-                        (((DRCloudCageState*)state)->distFar - ((DRCloudCageState*)state)->distNear);
-            d = ((DRCloudCageState*)state)->valNear;
-            result = ratio * (((DRCloudCageState*)state)->valFar - d) + d;
+            f32 ratio = (d - ((SnowBikeStateView*)state)->distNear) /
+                        (((SnowBikeStateView*)state)->distFar - ((SnowBikeStateView*)state)->distNear);
+            d = ((SnowBikeStateView*)state)->valNear;
+            result = ratio * (((SnowBikeStateView*)state)->valFar - d) + d;
         }
-        if (((DRCloudCageState*)state)->routeGateActive == 0)
+        if (((SnowBikeStateView*)state)->routeGateActive == 0)
         {
             d = stateMetric - templateMetric;
             d = (d >= 0.0f) ? d : -d;
-            if (d > gDrCloudCageRouteDistGate)
+            if (d > gSnowBikeRouteDistGate)
             {
                 result = 0.0f;
             }
@@ -810,7 +809,7 @@ int SnowBike_UpdateSwingBlend(GameObject* obj, SnowBikeState* state)
     }
 
     {
-        f32 ang = drcloudcage_getRouteIntensity(o, (int)state);
+        f32 ang = SnowBike_GetRouteIntensity(o, (int)state);
         ang = -ang;
         if (s->localVelZ < ang || yawDelta > SNOWBIKE_SWING_ANGLE_RETURN_LIMIT || yawDelta < -SNOWBIKE_SWING_ANGLE_RETURN_LIMIT)
         {
@@ -848,7 +847,7 @@ int SnowBike_UpdateAttachedPosition(GameObject* obj, SnowBikeState* state)
                 s->localVelX = zero;
                 s->localVelY = zero;
             }
-            s->localVelZ = -drcloudcage_getRouteIntensity(obj, (int)state);
+            s->localVelZ = -SnowBike_GetRouteIntensity(obj, (int)state);
             hitResult = (*gCheckpointInterface)
                             ->advanceRoute((u8*)state, &s->routeState, -s->localVelZ * timeDelta, s->unk05D, 1, 0);
             (*gCheckpointInterface)->getRouteHeading(obj, &s->routeState);
@@ -889,7 +888,7 @@ int SnowBike_UpdateAttachedPosition(GameObject* obj, SnowBikeState* state)
     }
 
     hitResult = (*gCheckpointInterface)
-                    ->advanceRoute((u8*)state, &s->routeState, timeDelta * drcloudcage_getRouteIntensity(obj, (int)state), s->unk05D,
+                    ->advanceRoute((u8*)state, &s->routeState, timeDelta * SnowBike_GetRouteIntensity(obj, (int)state), s->unk05D,
                                    1, 0);
     (*gCheckpointInterface)->getRouteHeading(obj, &s->routeState);
     (*gCheckpointInterface)->queueRouteRankItem(&s->rankItem);
@@ -1194,7 +1193,7 @@ int SnowBike_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
             st->stickY = 0x46;
         }
 
-        drcloudcage_updateEngineFx((GameObject*)obj, (void*)state, st->localVelZ,
+        SnowBike_UpdateEngineFx((GameObject*)obj, (void*)state, st->localVelZ,
                                    (int)(850.0f * -st->engineFxLevel), (u8*)(state + 0x461), 4);
     }
 
@@ -2410,7 +2409,7 @@ void SnowBike_update(GameObject* obj)
             objApplyVelocity(obj);
         }
         SnowBike_UpdateAirMeter((int)obj, (int)state);
-        drcloudcage_updateEngineFx(obj, state, s->localVelZ,
+        SnowBike_UpdateEngineFx(obj, state, s->localVelZ,
                                    (int)(850.0f * -s->engineFxLevel), state + 0x461, 7);
         SnowBike_UpdateCollisionResponse(obj, (int)state);
         obj->anim.rotX = s->yaw;

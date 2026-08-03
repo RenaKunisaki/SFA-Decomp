@@ -40,16 +40,16 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 
-union SClanternAnimEvents {
+union WarpStoneAnimEvents {
     ObjAnimEventList list;
     u8 pad[0x20];
-} gSClanternObjAnimEvents;
+} gWarpStoneObjAnimEvents;
 extern int lbl_803DC050;
 
 /*
  * scchieflightfoot - Thorntail dust/sand effect spawner.
  *
- * Provides SHthorntail_updateDustEffects, called by the WarpStone sequence
+ * Provides warpstone_updateDustEffects, called by the WarpStone sequence
  * handler. While the runtime's dust state is ACTIVE, the free-running
  * state->dustEffectTimer advances by timeDelta each frame and sweeps through
  * phases keyed off the
@@ -63,14 +63,14 @@ extern int lbl_803DC050;
  * the tuning floats. All effects are parented to the player object.
  */
 
-typedef struct SHthorntailDustEffectParams {
+typedef struct WarpStoneDustEffectParams {
     s16 flags;
     s16 count;
     s16 effectType;
     s16 radius;
     f32 scale;
     Vec position;
-} SHthorntailDustEffectParams;
+} WarpStoneDustEffectParams;
 
 #define DUST_PUFF_EFFECT_ID             0x7ca
 #define DUST_CLOUD_EFFECT_ID            0x7d2
@@ -97,11 +97,11 @@ ObjectDescriptor gWarpStoneObjDescriptor = {
     warpstone_getExtraSize,
 };
 
-void SHthorntail_updateDustEffects(GameObject* obj) {
+void warpstone_updateDustEffects(GameObject* obj) {
     void* playerObj;
     WarpStoneState* state;
     int burstCount;
-    SHthorntailDustEffectParams effectParams;
+    WarpStoneDustEffectParams effectParams;
 
     playerObj = Obj_GetPlayerObject();
     state = obj->extra;
@@ -149,22 +149,22 @@ void SHthorntail_updateDustEffects(GameObject* obj) {
 
 /*
  * sclantern - hanging lantern objects used in SharpClaw-themed areas.
- * SClantern_advanceAnimEvents drives the animation each frame: it fires
+ * warpstone_advanceAnimEvents drives the animation each frame: it fires
  * spark particle SFX at left/right attachment points (path points 0 and 1)
  * on events 1-4, and plays a swing SFX on event 9. Sparks are suppressed
- * during the early frames of move SCLANTERN_SPARK_SUPPRESS_MOVE (0x1b).
+ * during the early frames of move WARPSTONE_SPARK_SUPPRESS_MOVE (0x1b).
  * warpstoneProbePlayerAnimState probes the current player's anim-state flags.
  */
 
-#define SCLANTERN_EVENT_LEFT_SPARK_A  1
-#define SCLANTERN_EVENT_RIGHT_SPARK_A 2
-#define SCLANTERN_EVENT_LEFT_SPARK_B  3
-#define SCLANTERN_EVENT_RIGHT_SPARK_B 4
-#define SCLANTERN_EVENT_LANTERN_SWING 9
-#define SCLANTERN_SPARK_SFX_ID        0x415
-#define SCLANTERN_SPARK_SUPPRESS_MOVE 0x1b
+#define WARPSTONE_EVENT_LEFT_SPARK_A  1
+#define WARPSTONE_EVENT_RIGHT_SPARK_A 2
+#define WARPSTONE_EVENT_LEFT_SPARK_B  3
+#define WARPSTONE_EVENT_RIGHT_SPARK_B 4
+#define WARPSTONE_EVENT_LANTERN_SWING 9
+#define WARPSTONE_SPARK_SFX_ID        0x415
+#define WARPSTONE_SPARK_SUPPRESS_MOVE 0x1b
 
-u32 SClantern_advanceAnimEvents(int obj, f32 moveStepScale) {
+u32 warpstone_advanceAnimEvents(int obj, f32 moveStepScale) {
     u32 advanceResult;
     GameObject* lantern;
     int pointIndex;
@@ -175,28 +175,28 @@ u32 SClantern_advanceAnimEvents(int obj, f32 moveStepScale) {
 
     pointIndex = 0;
     lantern = (GameObject*)obj;
-    gSClanternObjAnimEvents.list.triggerCount = 0;
-    gSClanternObjAnimEvents.list.rootCurveValid = 0;
-    advanceResult = ObjAnim_AdvanceCurrentMove((int)obj, moveStepScale, timeDelta, &gSClanternObjAnimEvents.list);
-    if (gSClanternObjAnimEvents.list.rootCurveValid != 0) {
-        lantern->anim.rotX += gSClanternObjAnimEvents.list.rootPitch;
+    gWarpStoneObjAnimEvents.list.triggerCount = 0;
+    gWarpStoneObjAnimEvents.list.rootCurveValid = 0;
+    advanceResult = ObjAnim_AdvanceCurrentMove((int)obj, moveStepScale, timeDelta, &gWarpStoneObjAnimEvents.list);
+    if (gWarpStoneObjAnimEvents.list.rootCurveValid != 0) {
+        lantern->anim.rotX += gWarpStoneObjAnimEvents.list.rootPitch;
     }
     i = 0;
-    while (i < gSClanternObjAnimEvents.list.triggerCount) {
-        switch (gSClanternObjAnimEvents.list.triggeredIds[i]) {
-        case SCLANTERN_EVENT_LEFT_SPARK_A:
+    while (i < gWarpStoneObjAnimEvents.list.triggerCount) {
+        switch (gWarpStoneObjAnimEvents.list.triggeredIds[i]) {
+        case WARPSTONE_EVENT_LEFT_SPARK_A:
             pointIndex = 1;
             break;
-        case SCLANTERN_EVENT_RIGHT_SPARK_A:
+        case WARPSTONE_EVENT_RIGHT_SPARK_A:
             pointIndex = 2;
             break;
-        case SCLANTERN_EVENT_LEFT_SPARK_B:
+        case WARPSTONE_EVENT_LEFT_SPARK_B:
             pointIndex = 1;
             break;
-        case SCLANTERN_EVENT_RIGHT_SPARK_B:
+        case WARPSTONE_EVENT_RIGHT_SPARK_B:
             pointIndex = 2;
             break;
-        case SCLANTERN_EVENT_LANTERN_SWING:
+        case WARPSTONE_EVENT_LANTERN_SWING:
             Sfx_PlayFromObject(obj, SFXTRIG_swapstone_move_short);
             break;
         case 0:
@@ -211,9 +211,9 @@ u32 SClantern_advanceAnimEvents(int obj, f32 moveStepScale) {
     }
     if (pointIndex != 0) {
         ObjPath_GetPointWorldPosition((GameObject*)obj, pointIndex - 1, &posX, &posY, &posZ, 0);
-        if (!((lantern->anim.currentMove == SCLANTERN_SPARK_SUPPRESS_MOVE) &&
+        if (!((lantern->anim.currentMove == WARPSTONE_SPARK_SUPPRESS_MOVE) &&
               (lantern->anim.currentMoveProgress < 0.8f))) {
-            Sfx_PlayAtPositionFromObject(obj, posX, posY, posZ, SCLANTERN_SPARK_SFX_ID);
+            Sfx_PlayAtPositionFromObject(obj, posX, posY, posZ, WARPSTONE_SPARK_SFX_ID);
         }
     }
     return advanceResult;
@@ -446,7 +446,7 @@ int warpstone_SeqFn(GameObject* obj, u32 unused, int animObj) {
         }
     }
 
-    SHthorntail_updateDustEffects(obj);
+    warpstone_updateDustEffects(obj);
     return 0;
 }
 
@@ -542,7 +542,7 @@ void warpstone_update(int obj) {
         *(int*)state = 0;
     }
 
-    advanceResult = SClantern_advanceAnimEvents(obj, 0.0055555557f);
+    advanceResult = warpstone_advanceAnimEvents(obj, 0.0055555557f);
     if (((GameObject*)obj)->anim.currentMove == 0) {
         if (randomChanceOneIn(100) != 0) {
             objSoundStartTimed((GameObject*)obj, (ObjSoundState*)(state + offsetof(WarpStoneState, soundState)), 0xab,

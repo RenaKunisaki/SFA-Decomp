@@ -3096,7 +3096,7 @@ int playerState35(GameObject* obj, int state)
             ((PlayerState*)state)->baddie.moveEventFlags |= 1;
             doRumble(5.0f);
             Sfx_PlayFromObject(obj, SFXTRIG_staff_rapidfire);
-            cfPrisonGuard_setGameBitMirror(gPlayerInteractTarget, 0);
+            staffactivated_setGameBitMirror(gPlayerInteractTarget, 0);
         }
         if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
         {
@@ -3126,7 +3126,7 @@ int playerState35(GameObject* obj, int state)
             ((PlayerState*)state)->baddie.moveEventFlags |= 1;
             doRumble(5.0f);
             Sfx_PlayFromObject(obj, SFXTRIG_staff_rapidfire);
-            cfPrisonGuard_setGameBitMirror(gPlayerInteractTarget, 1);
+            staffactivated_setGameBitMirror(gPlayerInteractTarget, 1);
         }
         if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
         {
@@ -3145,7 +3145,7 @@ int playerState35(GameObject* obj, int state)
         }
         break;
     default:
-        if (cfPrisonGuard_isGameBitMirrorSet(gPlayerInteractTarget) != 0)
+        if (staffactivated_isGameBitMirrorSet(gPlayerInteractTarget) != 0)
         {
             ObjAnim_SetCurrentMove((int)obj, 0xe1, 0.0f, 0);
         }
@@ -3191,7 +3191,7 @@ int playerState34(GameObject* obj, int state)
     case 0xdd:
         if (obj->anim.currentMoveProgress > 0.25f)
         {
-            cfPrisonGuard_setLiftHeight(gPlayerInteractTarget, 0);
+            staffactivated_setLiftHeight(gPlayerInteractTarget, 0);
         }
         if (obj->anim.currentMoveProgress > 0.6f &&
             (((PlayerState*)state)->baddie.moveEventFlags & 1) == 0)
@@ -3263,7 +3263,7 @@ int playerStateStaffLiftRock(int obj, int state, f32 fv)
     {
         int flags;
         setAButtonIcon(2);
-        cfPrisonGuard_setLiftHeight(gPlayerInteractTarget, 0);
+        staffactivated_setLiftHeight(gPlayerInteractTarget, 0);
         flags = inner->buttonsJustPressed;
         if ((flags & 0x100) != 0)
         {
@@ -3305,7 +3305,7 @@ int playerStateStaffLiftRock(int obj, int state, f32 fv)
                                    (u16)(inner->characterId == 0 ? SFXTRIG_impact3 : SFXTRIG_literun116));
                 gPlayerStaffSfxTimer = (f32)(int)randomGetRange(0xa, 0x12);
             }
-            switch (cfPrisonGuard_getPullRateMode(gPlayerInteractTarget))
+            switch (staffactivated_getPullRateMode(gPlayerInteractTarget))
             {
             case 2:
                 gPlayerLiftRockPullAccum += 11.0f;
@@ -3327,7 +3327,7 @@ int playerStateStaffLiftRock(int obj, int state, f32 fv)
             gPlayerLiftRockPullAccum = -400.0f;
         }
         {
-            f32 lh = (f32)(int)cfPrisonGuard_getLiftHeight(gPlayerInteractTarget);
+            f32 lh = (f32)(int)staffactivated_getLiftHeight(gPlayerInteractTarget);
             count = (int)(lh + gPlayerLiftRockPullAccum);
         }
         if (count <= 0)
@@ -3354,11 +3354,11 @@ int playerStateStaffLiftRock(int obj, int state, f32 fv)
             ObjAnim_SetMoveProgress((ObjAnimComponent*)obj,
                                     prog + (f32)(int)randomGetRange(-0x64, 0x64) / 20000.0f);
         }
-        cfPrisonGuard_setLiftHeight(gPlayerInteractTarget, count);
+        staffactivated_setLiftHeight(gPlayerInteractTarget, count);
         break;
     }
     case 0xd0:
-        cfPrisonGuard_setLiftHeight(gPlayerInteractTarget, 0x800);
+        staffactivated_setLiftHeight(gPlayerInteractTarget, 0x800);
         if (*(s8*)&((PlayerState*)state)->baddie.moveDone != 0)
         {
             Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_menuups16k);
@@ -3367,7 +3367,7 @@ int playerStateStaffLiftRock(int obj, int state, f32 fv)
         }
         break;
     case 0xb2:
-        cfPrisonGuard_setLiftHeight(gPlayerInteractTarget, 0x800);
+        staffactivated_setLiftHeight(gPlayerInteractTarget, 0x800);
         if ((inner->buttonsJustPressed & PAD_BUTTON_B) != 0)
         {
             buttonDisable(0, PAD_BUTTON_B);

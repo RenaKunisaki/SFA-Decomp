@@ -24,7 +24,7 @@ typedef struct SnowBikeRouteFlags {
  * Offsets recovered from SnowBike_init/SnowBike_update derefs; the
  * 0x178..0x3DC block is the gPathControlInterface curves-collision state
  * and the 0x428 byte carries the SnowBikeFlags bitfield overlay. */
-typedef struct DRCloudCagePointPair
+typedef struct SnowBikeTrailPointPair
 {
     f32 startX;
     f32 startY;
@@ -38,15 +38,15 @@ typedef struct DRCloudCagePointPair
     s16 endAlpha;
     u8 endColorByte;
     u8 pad1F;
-} DRCloudCagePointPair;
+} SnowBikeTrailPointPair;
 
-typedef struct DRCloudCageTrail
+typedef struct SnowBikeTrail
 {
-    DRCloudCagePointPair* points;
+    SnowBikeTrailPointPair* points;
     s16 count;
     u8 flags;
     u8 pad07;
-} DRCloudCageTrail;
+} SnowBikeTrail;
 
 typedef struct SnowBikeState {
     s16 savedRotX;          /* 0x000: saved anim.rotX on mount (restored on dismount) */
@@ -133,7 +133,7 @@ typedef struct SnowBikeState {
     };
     u8 pad429[0x3];
     int linkedObj;             /* 0x42c: linked object */
-    f32 engineFxLevel;      /* 0x430: scaled down on each collision impact; negated and scaled to form the drcloudcage_updateEngineFx intensity argument */
+    f32 engineFxLevel;      /* 0x430: scaled down on each collision impact; negated and scaled to form the SnowBike_UpdateEngineFx intensity argument */
     u8 bikeType;              /* 0x434: bike kind */
     u8 bikeVariant;              /* 0x435: variant */
     u8 pad436[0x2];
@@ -173,8 +173,8 @@ typedef struct SnowBikeState {
     f32 airMeterCurrent;             /* 0x4bc */
     f32 airDrainRate;             /* 0x4c0 */
     f32 airMeterRefillTimer; /* 0x4c4: counts down by rate*timeDelta (clamped [0,K]); while non-zero, refills airMeterCurrent */
-    DRCloudCageTrail trails[9]; /* 0x4c8: cloud-trail records (drcloudcage_updateTrails walks them by raw stride) */
-    DRCloudCageTrail* activeTrails[3]; /* 0x510: the three head-trail slots (accessed raw - the spawn loop walks them via a running slot base) */
+    SnowBikeTrail trails[9]; /* 0x4c8: cloud-trail records (SnowBike_UpdateTrails walks them by raw stride) */
+    SnowBikeTrail* activeTrails[3]; /* 0x510: the three head-trail slots (accessed raw - the spawn loop walks them via a running slot base) */
     f32 homePosX;             /* 0x51c: home X */
     f32 homePosY;             /* 0x520: home Y */
     f32 homePosZ;             /* 0x524: home Z */
@@ -217,7 +217,7 @@ STATIC_ASSERT(offsetof(SnowBikeState, collisionBounceScale) == 0x4AC);
 STATIC_ASSERT(offsetof(SnowBikeState, unk530) == 0x530);
 STATIC_ASSERT(offsetof(SnowBikeState, haloPitchDrift) == 0x594);
 
-extern f32 gDrCloudCageRouteDistGate;
+extern f32 gSnowBikeRouteDistGate;
 
 void SnowBike_update(GameObject* obj);
 void SnowBike_resetToRomListPosition(GameObject* obj);
@@ -242,5 +242,9 @@ void SnowBike_initialise(void);
 
 int SnowBike_UpdateSwingBlend(GameObject* obj, SnowBikeState* state);
 int SnowBike_UpdateAttachedPosition(GameObject* obj, SnowBikeState* state);
+void SnowBike_UpdateTrails(GameObject* obj, int state);
+void SnowBike_UpdateEngineFx(GameObject* obj, void* state, f32 distanceScale, int intensity, u8* unused,
+                             u8 channelFlags);
+f32 SnowBike_GetRouteIntensity(GameObject* obj, int state);
 
 #endif /* MAIN_DLL_DLL_0255_SNOWBIKE_H_ */

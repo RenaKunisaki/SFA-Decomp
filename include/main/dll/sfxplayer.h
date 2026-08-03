@@ -14,31 +14,18 @@ typedef struct SfxplayerStateFlags {
 } SfxplayerStateFlags;
 
 typedef struct SfxplayerState {
-  union {
-    s16 eventId;
-    s16 completionEventId;
-    s16 unused0;
-  };
+  s16 eventId;
   union {
     s16 config20;
     s16 activationEventId;
-    s16 effectSfxBaseId;
   };
   union {
     s16 unk4;
     s16 variantSfxTimer;
   };
-  union {
-    struct {
-      u8 config19;
-      u8 ringCount;
-    };
-    u8 unused6[2];
-  };
-  union {
-    SfxplayerStateFlags flags;
-    u8 effectFlags;
-  };
+  u8 config19;
+  u8 ringCount;
+  SfxplayerStateFlags flags;
 } SfxplayerState;
 
 extern int gSfxplayerEffectHandles[8];

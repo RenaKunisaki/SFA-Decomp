@@ -11,7 +11,7 @@
  * tracks the firing/lightning state, with extra[1] holding the previous
  * frame's flags so sfx fire on edges.
  *
- * ktrexfloorswitch_spawnEnergyArc is invoked with THIS object (its
+ * KT_Lazerwall_spawnEnergyArc is invoked with THIS object (its
  * 'runtime' overlays KtlazerwallState, where 0x10 is the bolt pointer -
  * distinct from ktrexfloorswitch's flags byte at the same offset).
  */
@@ -24,7 +24,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/DR/dll_0252_ktlazerwall.h"
 
-void ktrexfloorswitch_spawnEnergyArc(GameObject* obj, f32 scale, int angle)
+void KT_Lazerwall_spawnEnergyArc(GameObject* obj, f32 scale, int angle)
 {
     KtlazerwallState* state = obj->extra;
     Vec3f pos;
@@ -141,7 +141,7 @@ void KT_Lazerwall_update(GameObject* obj)
     {
         mainSetBits(placement->activeBit, 1);
         state->flags |= KT_LAZERWALL_FLAG_TRIGGERED | KT_LAZERWALL_FLAG_BOLT_ACTIVE;
-        ktrexfloorswitch_spawnEnergyArc(obj, 230.0f, 120);
+        KT_Lazerwall_spawnEnergyArc(obj, 230.0f, 120);
         (*gPartfxInterface)->spawnObject((void*)obj, 1150, NULL, 2, -1, NULL);
         for (i = 10; i != 0; i--)
         {

@@ -22,6 +22,8 @@ STATIC_ASSERT(offsetof(Dll2A3State, spinRateZ) == 0x08);
 extern int gDll2A3InstanceCount;
 extern int gDll2A3UpdatedThisFrame;
 
+void dll_2A3_setLifetime(GameObject* obj, int lifetime);
+void dll_2A3_setVelocity(GameObject* obj, Vec3f* velocity);
 int dll_2A3_getExtraSize_ret_12(void);
 int dll_2A3_getObjectTypeId(void);
 void dll_2A3_free(void);

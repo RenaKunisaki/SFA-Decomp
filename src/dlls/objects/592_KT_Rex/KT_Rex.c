@@ -42,7 +42,6 @@
 #include "main/camera_shake_api.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/model.h"
-#include "string.h"
 
 GroundBaddieState* gKTRexRuntime;
 KTRexArenaState* gKTRexState;

@@ -3,31 +3,30 @@
  * GameBits from sequence events, while the object update keeps the statue's
  * looped sound alive and stops it once the sequence has completed.
  */
-#include "main/dll/crate2.h"
-#include "main/dll/crate.h"
+#include "main/dll/DF/dll_0233_dfpstatue1.h"
 #include "main/gamebits.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 
-#define SFXPLAYER_EVENT_ACTIVATE       1
-#define SFXPLAYER_EVENT_DEACTIVATE     2
-#define SFXPLAYER_EVENT_VARIANT        3
-#define SFXPLAYER_VARIANT_TIMER_FRAMES 0x96
+#define DFP_STATUE1_EVENT_ACTIVATE       1
+#define DFP_STATUE1_EVENT_DEACTIVATE     2
+#define DFP_STATUE1_EVENT_VARIANT        3
+#define DFP_STATUE1_VARIANT_TIMER_FRAMES 0x96
 
-#define SFXPLAYER_BASE_VARIANT_A 0x672
-#define SFXPLAYER_BASE_VARIANT_B 0x673
-#define SFXPLAYER_BASE_VARIANT_C 0x674
-#define SFXPLAYER_BASE_VARIANT_D 0x675
+#define DFP_STATUE1_BASE_VARIANT_A 0x672
+#define DFP_STATUE1_BASE_VARIANT_B 0x673
+#define DFP_STATUE1_BASE_VARIANT_C 0x674
+#define DFP_STATUE1_BASE_VARIANT_D 0x675
 
-#define GAMEBIT_SFXPLAYER_VARIANT_A 0x66e
-#define GAMEBIT_SFXPLAYER_VARIANT_B 0x66f
-#define GAMEBIT_SFXPLAYER_VARIANT_C 0x670
-#define GAMEBIT_SFXPLAYER_VARIANT_D 0x9f5
+#define GAMEBIT_DFP_STATUE1_VARIANT_A 0x66e
+#define GAMEBIT_DFP_STATUE1_VARIANT_B 0x66f
+#define GAMEBIT_DFP_STATUE1_VARIANT_C 0x670
+#define GAMEBIT_DFP_STATUE1_VARIANT_D 0x9f5
 
-u32 sfxplayer_updateState(int obj, u32 unused, ObjSeqState* animUpdate)
+u32 dfpstatue1_SeqFn(int obj, u32 unused, ObjSeqState* animUpdate)
 {
     int event;
-    SfxplayerState* state;
+    DfpStatue1State* state;
     int i;
 
     state = ((GameObject*)obj)->extra;
@@ -38,31 +37,31 @@ u32 sfxplayer_updateState(int obj, u32 unused, ObjSeqState* animUpdate)
         event = animUpdate->eventIds[i];
         switch (event)
         {
-        case SFXPLAYER_EVENT_ACTIVATE:
-            mainSetBits(state->effectSfxBaseId + 5, 1);
+        case DFP_STATUE1_EVENT_ACTIVATE:
+            mainSetBits(state->loopSfxId + 5, 1);
             break;
-        case SFXPLAYER_EVENT_DEACTIVATE:
-            mainSetBits(state->effectSfxBaseId + 5, 0);
-            state->effectFlags = 1;
+        case DFP_STATUE1_EVENT_DEACTIVATE:
+            mainSetBits(state->loopSfxId + 5, 0);
+            state->stateFlags = 1;
             break;
-        case SFXPLAYER_EVENT_VARIANT:
-            switch (state->effectSfxBaseId)
+        case DFP_STATUE1_EVENT_VARIANT:
+            switch (state->loopSfxId)
             {
-            case SFXPLAYER_BASE_VARIANT_A:
-                mainSetBits(GAMEBIT_SFXPLAYER_VARIANT_A, 1);
-                state->variantSfxTimer = SFXPLAYER_VARIANT_TIMER_FRAMES;
+            case DFP_STATUE1_BASE_VARIANT_A:
+                mainSetBits(GAMEBIT_DFP_STATUE1_VARIANT_A, 1);
+                state->loopSfxStopTimer = DFP_STATUE1_VARIANT_TIMER_FRAMES;
                 break;
-            case SFXPLAYER_BASE_VARIANT_B:
-                mainSetBits(GAMEBIT_SFXPLAYER_VARIANT_B, 1);
-                state->variantSfxTimer = SFXPLAYER_VARIANT_TIMER_FRAMES;
+            case DFP_STATUE1_BASE_VARIANT_B:
+                mainSetBits(GAMEBIT_DFP_STATUE1_VARIANT_B, 1);
+                state->loopSfxStopTimer = DFP_STATUE1_VARIANT_TIMER_FRAMES;
                 break;
-            case SFXPLAYER_BASE_VARIANT_C:
-                mainSetBits(GAMEBIT_SFXPLAYER_VARIANT_C, 1);
-                state->variantSfxTimer = SFXPLAYER_VARIANT_TIMER_FRAMES;
+            case DFP_STATUE1_BASE_VARIANT_C:
+                mainSetBits(GAMEBIT_DFP_STATUE1_VARIANT_C, 1);
+                state->loopSfxStopTimer = DFP_STATUE1_VARIANT_TIMER_FRAMES;
                 break;
-            case SFXPLAYER_BASE_VARIANT_D:
-                mainSetBits(GAMEBIT_SFXPLAYER_VARIANT_D, 1);
-                state->variantSfxTimer = SFXPLAYER_VARIANT_TIMER_FRAMES;
+            case DFP_STATUE1_BASE_VARIANT_D:
+                mainSetBits(GAMEBIT_DFP_STATUE1_VARIANT_D, 1);
+                state->loopSfxStopTimer = DFP_STATUE1_VARIANT_TIMER_FRAMES;
                 break;
             }
             break;
@@ -100,17 +99,17 @@ void dfpstatue1_updateState(GameObject* obj)
             state->loopSfxStopTimer = 0;
             switch (state->loopSfxId)
             {
-            case 0x672:
-                mainSetBits(0x66e, 0);
+            case DFP_STATUE1_BASE_VARIANT_A:
+                mainSetBits(GAMEBIT_DFP_STATUE1_VARIANT_A, 0);
                 break;
-            case 0x673:
-                mainSetBits(0x66f, 0);
+            case DFP_STATUE1_BASE_VARIANT_B:
+                mainSetBits(GAMEBIT_DFP_STATUE1_VARIANT_B, 0);
                 break;
-            case 0x674:
-                mainSetBits(0x670, 0);
+            case DFP_STATUE1_BASE_VARIANT_C:
+                mainSetBits(GAMEBIT_DFP_STATUE1_VARIANT_C, 0);
                 break;
-            case 0x675:
-                mainSetBits(0x9f5, 0);
+            case DFP_STATUE1_BASE_VARIANT_D:
+                mainSetBits(GAMEBIT_DFP_STATUE1_VARIANT_D, 0);
                 break;
             }
         }
@@ -149,7 +148,7 @@ void DFP_Statue1_init(GameObject* obj, DfpStatue1MapData* mapData)
     s16 yaw = (s16)(mapData->yawByte << 8);
 
     obj->anim.rotX = yaw;
-    obj->animEventCallback = sfxplayer_updateState;
+    obj->animEventCallback = dfpstatue1_SeqFn;
     state->effectPairCount = mapData->effectPairCount;
     state->triggerSfxId = mapData->triggerSfxId;
     state->loopSfxId = mapData->loopSfxId;

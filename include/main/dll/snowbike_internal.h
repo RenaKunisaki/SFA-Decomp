@@ -1,23 +1,23 @@
-#ifndef MAIN_DLL_DR_DRCLOUDCAGE_INTERNAL_H_
-#define MAIN_DLL_DR_DRCLOUDCAGE_INTERNAL_H_
+#ifndef MAIN_DLL_SNOWBIKE_INTERNAL_H_
+#define MAIN_DLL_SNOWBIKE_INTERNAL_H_
 
 #include "global.h"
 
-typedef struct DRCloudCageStateFlags
+typedef struct SnowBikeStateViewFlags
 {
     u8 hidden : 1;
     u8 rest : 7;
-} DRCloudCageStateFlags;
-STATIC_ASSERT(sizeof(DRCloudCageStateFlags) == 1);
+} SnowBikeStateViewFlags;
+STATIC_ASSERT(sizeof(SnowBikeStateViewFlags) == 1);
 
 /*
- * DRCloudCageState - file-local overlay of the DR_CloudRunner cage object's
- * extra block (obj+0xB8). Only the scalar fields this DLL reads/writes are
+ * SnowBikeStateView - file-local overlay of this DLL's own SnowBikeState
+ * extra block. Only the scalar fields this DLL reads/writes are
  * named; the rest is padding. state is passed as a raw int handle, so it is
  * cast to this type per-access (byte-neutral) rather than retyped as a
  * pointer, which would perturb cross-function base CSE.
  */
-typedef struct DRCloudCageState
+typedef struct SnowBikeStateView
 {
     u8 pad00[0x18];
     f32 distFar;  /* 0x18: d >= distFar clamps result to valFar */
@@ -31,7 +31,7 @@ typedef struct DRCloudCageState
     s32 rotZOffset; /* 0x410: added to obj rotZ before matrix build */
     u8 pad414[0x424 - 0x414];
     f32 distanceGate;                 /* 0x424: distance below which wind/engine sfx play */
-    DRCloudCageStateFlags stateFlags; /* 0x428: bit0 hidden */
+    SnowBikeStateViewFlags stateFlags; /* 0x428: bit0 hidden */
     u8 pad429[0x434 - 0x429];
     u8 routeGateActive; /* 0x434: 0 => route-distance gate applies */
     u8 pad435[0x440 - 0x435];
@@ -42,15 +42,15 @@ typedef struct DRCloudCageState
     f32 lastSpawnPosX; /* 0x51C: obj world position at last trail spawn */
     f32 lastSpawnPosY; /* 0x520 */
     f32 lastSpawnPosZ; /* 0x524 */
-} DRCloudCageState;
-STATIC_ASSERT(offsetof(DRCloudCageState, distFar) == 0x18);
-STATIC_ASSERT(offsetof(DRCloudCageState, channel4Vol) == 0x3F4);
-STATIC_ASSERT(offsetof(DRCloudCageState, rotZOffset) == 0x410);
-STATIC_ASSERT(offsetof(DRCloudCageState, distanceGate) == 0x424);
-STATIC_ASSERT(offsetof(DRCloudCageState, stateFlags) == 0x428);
-STATIC_ASSERT(offsetof(DRCloudCageState, routeGateActive) == 0x434);
-STATIC_ASSERT(offsetof(DRCloudCageState, windSfxId) == 0x440);
-STATIC_ASSERT(offsetof(DRCloudCageState, trailColorByte) == 0x4B4);
-STATIC_ASSERT(offsetof(DRCloudCageState, lastSpawnPosX) == 0x51C);
+} SnowBikeStateView;
+STATIC_ASSERT(offsetof(SnowBikeStateView, distFar) == 0x18);
+STATIC_ASSERT(offsetof(SnowBikeStateView, channel4Vol) == 0x3F4);
+STATIC_ASSERT(offsetof(SnowBikeStateView, rotZOffset) == 0x410);
+STATIC_ASSERT(offsetof(SnowBikeStateView, distanceGate) == 0x424);
+STATIC_ASSERT(offsetof(SnowBikeStateView, stateFlags) == 0x428);
+STATIC_ASSERT(offsetof(SnowBikeStateView, routeGateActive) == 0x434);
+STATIC_ASSERT(offsetof(SnowBikeStateView, windSfxId) == 0x440);
+STATIC_ASSERT(offsetof(SnowBikeStateView, trailColorByte) == 0x4B4);
+STATIC_ASSERT(offsetof(SnowBikeStateView, lastSpawnPosX) == 0x51C);
 
-#endif /* MAIN_DLL_DR_DRCLOUDCAGE_INTERNAL_H_ */
+#endif /* MAIN_DLL_SNOWBIKE_INTERNAL_H_ */

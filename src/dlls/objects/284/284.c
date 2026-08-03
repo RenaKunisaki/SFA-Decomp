@@ -108,7 +108,7 @@ void staffactivated_updateLiftHeight(GameObject* obj, StaffActivatedState* state
     ObjAnim_SetMoveProgress(&obj->anim, state->liftHeight / 2048.0f);
 }
 
-void cfPrisonGuard_setGameBitMirror(GameObject* obj, u8 enabled) {
+void staffactivated_setGameBitMirror(GameObject* obj, u8 enabled) {
     StaffActivatedPlacement* placement = (StaffActivatedPlacement*)obj->anim.placementData;
     StaffActivatedState* state = obj->extra;
     if (enabled != 0) {
@@ -120,7 +120,7 @@ void cfPrisonGuard_setGameBitMirror(GameObject* obj, u8 enabled) {
     }
 }
 
-int cfPrisonGuard_isGameBitMirrorSet(GameObject* obj) {
+int staffactivated_isGameBitMirrorSet(GameObject* obj) {
     StaffActivatedState* state = obj->extra;
     return state->flags.gameBitMirror;
 }
@@ -202,7 +202,7 @@ void staffactivated_spawnMapEventDebris(GameObject* obj) {
     }
 }
 
-u32 cfPrisonGuard_getPullRateMode(GameObject* obj) {
+u32 staffactivated_getPullRateMode(GameObject* obj) {
     u32 sizeVariant;
 
     sizeVariant = ((StaffActivatedPlacement*)obj->anim.placementData)->sizeVariant;
@@ -255,12 +255,12 @@ void staffactivated_calcInteractionTargetXZ(GameObject* obj, f32* outX, f32* out
     }
 }
 
-u32 cfPrisonGuard_getLiftHeight(GameObject* obj) {
+u32 staffactivated_getLiftHeight(GameObject* obj) {
     StaffActivatedState* state = obj->extra;
     return state->liftHeight;
 }
 
-void cfPrisonGuard_setLiftHeight(GameObject* obj, int height) {
+void staffactivated_setLiftHeight(GameObject* obj, int height) {
     StaffActivatedState* state = obj->extra;
     state->liftHeight = height;
     state->liftReset = 1;
