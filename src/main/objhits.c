@@ -2706,7 +2706,7 @@ void ObjHits_RefreshObjectState(GameObject* object) {
         hitState->primaryRadius = obj->modelInstance->primaryHitboxRadius;
         hitState->primaryCapsuleOffsetA = obj->modelInstance->primaryCapsuleOffsetA;
         hitState->primaryCapsuleOffsetB = obj->modelInstance->primaryCapsuleOffsetB;
-        *(s8*)&hitState->stateIndex = (s8)(int)obj->modelInstance->hitboxStateIndex;
+        hitState->stateIndex = (s8)(int)obj->modelInstance->hitboxStateIndex;
         hitState->capsuleScale = OBJHITBOX_DEFAULT_CAPSULE_SCALE;
         hitState->primaryRadiusSquared = (float)(s32)hitState->primaryRadius * (float)(s32)hitState->primaryRadius;
         hitState->secondaryShapeFlags = obj->modelInstance->secondaryHitboxShapeFlags;
