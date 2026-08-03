@@ -54,13 +54,13 @@ STATIC_ASSERT(offsetof(TrickyCompanionInterface, getCurrentCommandType) == 0x48)
 void trickyReportError(const char* fmt, ...);
 void trickyDebugPrint(const char* fmt, ...);
 u8* Tricky_findNearestGroup4BObject(GameObject* obj, TrickyState* state);
-void tricky_attachToWalkGroup(GameObject* obj, int state);
-void tricky_stateIdleWander(GameObject* obj, int state);
+void tricky_attachToWalkGroup(GameObject* obj, TrickyState* state);
+void tricky_stateIdleWander(GameObject* obj, TrickyState* state);
 int Tricky_requestMoveToObject(GameObject* obj, GameObject* targetObj);
-void Tricky_commandPlayBall(int* obj, int commandEnabled, int targetObj);
+void Tricky_commandPlayBall(int* obj, int commandEnabled, GameObject* targetObj);
 void sideCommandEnable(GameObject* obj, GameObject* targetObj, int commandKind, int commandType);
-int Tricky_updateSideCommandPrompts(int obj);
-void Tricky_free(int obj, int shouldKeepFlameChildren);
+int Tricky_updateSideCommandPrompts(GameObject* obj);
+void Tricky_free(GameObject* obj, int shouldKeepFlameChildren);
 void Tricky_init(GameObject* obj);
 int tricky_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void Tricky_update(int obj);
