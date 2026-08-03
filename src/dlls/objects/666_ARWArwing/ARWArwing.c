@@ -1324,9 +1324,9 @@ void arwarwing_initAttachments(GameObject* obj, ArwingState* state)
         {
             state->velZ = c6F78;
         }
-        *(s16*)&state->projLifetime = 0x28;
+        state->projLifetime = 0x28;
         state->projSpeed = lbl_803E6FE0;
-        *(s16*)&state->fireDelay = 0x6;
+        state->fireDelay = 0x6;
         state->bombProjectileParam = 0x5a;
         state->bombProjectileLifetime = 25.0f;
         state->bombFireDelay = 0xc;
@@ -1336,7 +1336,7 @@ void arwarwing_initAttachments(GameObject* obj, ArwingState* state)
         state->wingVec[2] = objFindJointPoseVector(obj, 2);
         state->wingVec[3] = objFindJointPoseVector(obj, 3);
         state->wingFlexScale = 0.5f;
-        *(s16*)&state->enginePitch = 0xaf;
+        state->enginePitch = 0xaf;
         state->maxHealth = ((PlayerStatus*)charState)->maxHealth;
         state->health = state->maxHealth;
         state->bobSpeedThreshold = 0.1f;
@@ -1737,8 +1737,8 @@ void arwarwing_update(GameObject* obj)
         arwarwing_readControls(obj, state);
         if (((obj)->anim.flags & OBJANIM_FLAG_HIDDEN) != 0)
         {
-            *(s16*)&state->inputFlags2 = 0;
-            *(s16*)&state->inputFlags = 0;
+            state->inputFlags2 = 0;
+            state->inputFlags = 0;
             state->thrusterL->anim.flags |= OBJANIM_FLAG_HIDDEN;
             state->thrusterR->anim.flags |= OBJANIM_FLAG_HIDDEN;
         }
