@@ -464,7 +464,7 @@ int RomCurve_initFromCurveId(RomCurveWalker* state, GameObject* unusedObj, int s
         stateBytes = (char*)state;
         if (state->reverse != 0)
         {
-            *(s32*)&state->nodeA0 = Objfsa_FindRomCurveById(startCurveId);
+            state->nodeA0 = (void*)Objfsa_FindRomCurveById(startCurveId);
             nextId = RomCurve_pickRandomControlPointId_2A(state->nodeA0);
             if (nextId == -1)
             {
@@ -474,7 +474,7 @@ int RomCurve_initFromCurveId(RomCurveWalker* state, GameObject* unusedObj, int s
         }
 
         currentCurve = Objfsa_FindRomCurveById(startCurveId);
-        *(s32*)&state->nodeA0 = currentCurve;
+        state->nodeA0 = (void*)currentCurve;
         if (currentCurve == 0)
         {
             state->nodeA0 = NULL;
@@ -495,7 +495,7 @@ int RomCurve_initFromCurveId(RomCurveWalker* state, GameObject* unusedObj, int s
         }
 
         nextCurve = Objfsa_FindRomCurveById(nextId);
-        *(s32*)&state->nodeA4 = nextCurve;
+        state->nodeA4 = (void*)nextCurve;
         if (nextCurve == 0)
         {
             state->nodeA4 = NULL;
@@ -614,7 +614,7 @@ int RomCurve_goNextPointIndexed(RomCurveWalker* state, int pickIdx)
     if (nextId != -1)
     {
         nextCurve = Objfsa_FindRomCurveById(nextId);
-        *(s32*)&state->nodeA4 = nextCurve;
+        state->nodeA4 = (void*)nextCurve;
         if (state->nodeA4 != NULL)
         {
             if (state->reverse != 0)
@@ -773,7 +773,7 @@ u8 RomCurve_goNextPoint(RomCurveWalker* state)
     {
         nextCurve = Objfsa_FindRomCurveById(neighborId);
 
-        *(s32*)&state->nodeA4 = nextCurve;
+        state->nodeA4 = (void*)nextCurve;
         if (state->nodeA4 != NULL)
         {
             if (state->reverse != 0)
@@ -832,7 +832,7 @@ int RomCurve_initCurve(RomCurveWalker* state, GameObject* obj, int* curveTypes, 
     {
         if (state->reverse != 0)
         {
-            *(s32*)&state->nodeA0 = Objfsa_FindRomCurveById(curveId);
+            state->nodeA0 = (void*)Objfsa_FindRomCurveById(curveId);
             nextId = RomCurve_pickRandomControlPointId_2A(state->nodeA0);
             if (nextId == -1)
             {
@@ -842,7 +842,7 @@ int RomCurve_initCurve(RomCurveWalker* state, GameObject* obj, int* curveTypes, 
         }
 
         currentCurve = Objfsa_FindRomCurveById(curveId);
-        *(s32*)&state->nodeA0 = currentCurve;
+        state->nodeA0 = (void*)currentCurve;
         if (currentCurve == 0)
         {
             state->nodeA0 = NULL;
@@ -863,7 +863,7 @@ int RomCurve_initCurve(RomCurveWalker* state, GameObject* obj, int* curveTypes, 
         }
 
         nextCurve = Objfsa_FindRomCurveById(nextId);
-        *(s32*)&state->nodeA4 = nextCurve;
+        state->nodeA4 = (void*)nextCurve;
         if (nextCurve == 0)
         {
             state->nodeA4 = NULL;
