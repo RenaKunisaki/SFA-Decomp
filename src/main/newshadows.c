@@ -144,7 +144,7 @@ void blendTextures(Texture* src1, Texture* src2, f32 blend, Texture* dst)
                     tileColumnOffset = (j >> 2) * 0x20;
                     pa += h;
                     pa += tileColumnOffset;
-                    rowDataOffset = (int)wd * w * 2;
+                    rowDataOffset = w * (int)wd * 2;
                     pa += rowDataOffset;
                     pixelA = READ_TEXTURE_U16(pa + 0x60);
                     redA = (pixelA & 0xf800) >> 8;

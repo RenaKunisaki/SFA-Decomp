@@ -3031,9 +3031,9 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                         prevDX = trailPrevX - slot->posX.value;
                         prevDY = trailPrevY - slot->posY.value;
                         prevDZ = trailPrevZ - slot->posZ.value;
-                        workA = prevDY * dirZ - prevDZ * dirY;
+                        workA = dirZ * prevDY - prevDZ * dirY;
                         workB = -(prevDX * dirZ - prevDZ * dirX);
-                        attractRatio = prevDX * dirY - prevDY * dirX;
+                        attractRatio = dirY * prevDX - prevDY * dirX;
                         normSq = attractRatio * attractRatio + (workA * workA + workB * workB);
                         if (0.0f != normSq)
                         {

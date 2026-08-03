@@ -41,6 +41,54 @@ NUM = re.compile(r"(?:0[xX][0-9a-fA-F]+|\d+\.?\d*(?:[eE][-+]?\d+)?)[fFuUlL]*")
 BAD = re.compile(r"\+\+|--|\bsizeof\b")
 
 
+import semantic_equivalence as _sem
+
+
+def _candidate_spans(s, lo, hi, ls, re_):
+    """Enclosing regions to try, innermost first.
+
+    The proof needs a region that PARSES as an expression on the before side.
+    A statement usually does; an `if (...)` condition only does once the
+    keyword and its parentheses are stripped, so the enclosing parenthesised
+    groups are offered first.
+    """
+    spans = []
+    depth, k = 0, ls - 1
+    while k >= lo and len(spans) < 4:
+        if s[k] in ")]}":
+            depth += 1
+        elif s[k] in "([{":
+            if depth == 0:
+                e = match_paren(s, k)
+                if e - 1 >= re_:
+                    spans.append((k + 1, e - 1))
+            else:
+                depth -= 1
+        k -= 1
+    a = max(s.rfind(ch, lo, ls) for ch in ";{}")
+    b = min((p for p in (s.find(ch, re_, hi) for ch in ";{}") if p >= 0),
+            default=hi)
+    spans.append((lo if a < 0 else a + 1, b))
+    return spans
+
+
+def _prove_statement(src, out, ls, re_, body):
+    """Re-parse the enclosing expression on both sides and prove the identity."""
+    delta = len(out) - len(src)
+    decls = src[body[0]:body[1]]
+    ids = frozenset(_sem.TypeOracle(decls).kind)
+    last = _sem.Verdict(False, "no enclosing region could be parsed")
+    for a, b in _candidate_spans(src, body[0], body[1], ls, re_):
+        before, after = src[a:b], out[a:b + delta]
+        v = _sem.prove(before, after, decl_text=decls, known_ids=ids)
+        if v.ok:
+            return v
+        if not v.reason.startswith("PARSE"):
+            return v
+        last = v
+    return last
+
+
 def match_paren(s, i):
     d = 0
     while i < len(s):
@@ -259,6 +307,15 @@ def main():
         strip = lambda t: sorted(t.replace(" ", "").replace("\n", "").replace("\t", ""))
         if strip(out) != strip(src):
             raise SystemExit(f"REFUSED site {n}: not a pure transposition")
+        # A transposition of the CHARACTERS is not a transposition of the
+        # MEANING.  This tool once turned `verts + j * 12` into
+        # `(j + verts) * 12` -- a permutation of the file by every check above,
+        # and a different computation -- so the enclosing statement is now
+        # re-parsed on both sides and the rewrite must be PROVED an identity.
+        # The guards in sites() are heuristics; this is the gate.
+        v = _prove_statement(src, out, ls, re_, body)
+        if not v.ok:
+            raise SystemExit(f"REFUSED site {n}: {v}")
         return out
 
     rebuild(unit["object"], a.version)

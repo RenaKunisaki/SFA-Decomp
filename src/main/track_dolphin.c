@@ -1938,7 +1938,7 @@ int trackResolveSurfacePenetration(f32* a, f32* b, f32* c, f32* p, f32 f1p, f32 
             {
                 f32 normalX = p[0];
                 f32 normalZ = p[2];
-                y = y - (p[3] + (b[2] * normalZ + (b[0] * normalX + b[1] * p[1])));
+                y = y - (p[3] + (b[2] * normalZ + (normalX * b[0] + b[1] * p[1])));
                 if (y > 0.0f)
                 {
                     f32 px = normalX * normalX;
@@ -1961,7 +1961,7 @@ int trackResolveSurfacePenetration(f32* a, f32* b, f32* c, f32* p, f32 f1p, f32 
                 b[0] -= f1p * p[0];
                 b[1] -= f1p * p[1];
                 b[2] -= f1p * p[2];
-                t = y - (p[3] + (b[2] * p[2] + (b[0] * p[0] + b[1] * p[1])));
+                t = y - (p[3] + (b[2] * p[2] + (b[1] * p[1] + b[0] * p[0])));
                 b[0] += t * p[0];
                 b[1] += t * p[1];
                 b[2] += t * p[2];
@@ -1981,7 +1981,7 @@ int trackResolveSurfacePenetration(f32* a, f32* b, f32* c, f32* p, f32 f1p, f32 
                 b[0] -= f1p * p[0];
                 b[1] -= f1p * p[1];
                 b[2] -= f1p * p[2];
-                t = y - (p[3] + (b[2] * p[2] + (b[0] * p[0] + b[1] * p[1])));
+                t = y - (p[3] + (b[2] * p[2] + (b[1] * p[1] + b[0] * p[0])));
                 b[0] += t * p[0];
                 b[1] += t * p[1];
                 b[2] += t * p[2];
@@ -1993,7 +1993,7 @@ int trackResolveSurfacePenetration(f32* a, f32* b, f32* c, f32* p, f32 f1p, f32 
             {
                 f32 normalX = p[0];
                 f32 normalZ = p[2];
-                y = y - (p[3] + (b[2] * normalZ + (b[0] * normalX + b[1] * p[1])));
+                y = y - (p[3] + (b[2] * normalZ + (normalX * b[0] + b[1] * p[1])));
                 if (y > 0.0f)
                 {
                     f32 px = normalX * normalX;
