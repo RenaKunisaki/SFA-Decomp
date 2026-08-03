@@ -47,9 +47,6 @@ STATIC_ASSERT(offsetof(LazerwallCurveNode, z) == 0x10);
 STATIC_ASSERT(offsetof(LazerwallCurveNode, type) == 0x19);
 STATIC_ASSERT(offsetof(LazerwallCurveNode, rotZ) == 0x2c);
 
-/* timer object's query slot (vtable+0x54): fills elapsed/now/limit outparams */
-typedef void (*TimerQueryFn)(int timer, int* elapsed, int* now, int* limit);
-
 struct GameObject;
 
 int TREX_Lazerwall_popQueuedState(struct GameObject* obj, struct BaddieState* baddie);

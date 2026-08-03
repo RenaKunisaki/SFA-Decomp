@@ -48,6 +48,20 @@ STATIC_ASSERT(offsetof(DrshackleState, pathPointA) == 0x1B);
 STATIC_ASSERT(offsetof(DrshackleState, pathPointB) == 0x1C);
 STATIC_ASSERT(sizeof(DrshackleState) == 0x20);
 
+/* gDrShackleObjDescriptor from slot02 onwards: the export table other objects
+   reach through obj->anim.dll. */
+typedef struct DrshackleInterface
+{
+    void* pad00[8];
+    void (*renderAtPathPoint)(GameObject* shackle, void* owner, int pathPoint, int p2, int p3, int p4, int p5);
+    int (*getAttachSlot)(GameObject* shackle);
+} DrshackleInterface;
+
+#define DRSHACKLE_INTERFACE(shackle) ((DrshackleInterface*)*((GameObject*)(shackle))->anim.dll)
+
+STATIC_ASSERT(offsetof(DrshackleInterface, renderAtPathPoint) == 0x20);
+STATIC_ASSERT(offsetof(DrshackleInterface, getAttachSlot) == 0x24);
+
 extern int gDrShackleRotZOffset;
 extern int lbl_803DDD70;
 

@@ -47,6 +47,21 @@ STATIC_ASSERT(offsetof(WallAnimatorState, pad05) == 0x05);
 STATIC_ASSERT(sizeof(WallAnimatorState) == 0x08);
 
 u8 WallAnimator_getEnergyCost(GameObject* obj);
+/* gWallAnimatorObjDescriptor from slot02 onwards: the export table other
+   objects reach through obj->anim.dll. */
+typedef struct WallAnimatorInterface {
+    void* pad00[8];
+    f32 (*applyImpact)(GameObject* obj, GameObject* target);
+    u8 (*isComplete)(GameObject* obj);
+    int (*getEnergyCost)(GameObject* obj);
+} WallAnimatorInterface;
+
+#define WALL_ANIMATOR_INTERFACE(wall) ((WallAnimatorInterface*)*((GameObject*)(wall))->anim.dll)
+
+STATIC_ASSERT(offsetof(WallAnimatorInterface, applyImpact) == 0x20);
+STATIC_ASSERT(offsetof(WallAnimatorInterface, isComplete) == 0x24);
+STATIC_ASSERT(offsetof(WallAnimatorInterface, getEnergyCost) == 0x28);
+
 u8 WallAnimator_isComplete(GameObject* obj);
 f32 WallAnimator_applyImpact(GameObject* obj, GameObject* target);
 int WallAnimator_getExtraSize(void);

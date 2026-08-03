@@ -37,6 +37,17 @@ STATIC_ASSERT(offsetof(Dim2ConveyorState, directionSwapTimer) == 0x0C);
 STATIC_ASSERT(offsetof(Dim2ConveyorState, musicHoldTimer) == 0x10);
 STATIC_ASSERT(sizeof(Dim2ConveyorState) == 0x14);
 
+/* gDIM2ConveyorObjDescriptor from slot02 onwards: the export table the player
+   reaches through obj->anim.dll on a conveyor surface. */
+typedef struct Dim2ConveyorInterface {
+    void* pad00[8];
+    void (*getScrollVector)(GameObject* obj, GameObject* caller, f32 unused, f32* outX, f32* outZ);
+} Dim2ConveyorInterface;
+
+#define DIM2_CONVEYOR_INTERFACE(conveyor) ((Dim2ConveyorInterface*)*((GameObject*)(conveyor))->anim.dll)
+
+STATIC_ASSERT(offsetof(Dim2ConveyorInterface, getScrollVector) == 0x20);
+
 void dim2conveyor_getScrollVector(GameObject* obj, GameObject* caller, f32 unused, f32* outX, f32* outZ);
 int dim2conveyor_getExtraSize(void);
 int dim2conveyor_getObjectTypeId(void);

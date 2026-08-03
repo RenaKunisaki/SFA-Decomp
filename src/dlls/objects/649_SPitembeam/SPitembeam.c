@@ -11,15 +11,9 @@
  */
 #include "main/objtexture.h"
 #include "main/objtype.h"
+#include "main/dll/SP/dll_0285_spshop.h"
 #include "main/dll/SP/dll_0289_spitembeam.h"
 #include "dlls/object_descriptor.h"
-
-/* slots on the shop object's interface vtable (obj+0x68) queried per item */
-enum
-{
-    SHOP_IFACE_IS_AVAILABLE = 10,
-    SHOP_IFACE_IS_BOUGHT = 11
-};
 
 /* texture-scroll wrap (1/4 of the 0x1000 fixed-point texcoord range) */
 #define SPITEMBEAM_SCROLL_STEP 8
@@ -65,10 +59,10 @@ void spitembeam_update(GameObject* obj)
     }
     else
     {
-        if (((int (*)(int*, s16))(**(int***)((char*)shop + 0x68))[SHOP_IFACE_IS_AVAILABLE])(
-                shop, ((SpitembeamPlacement*)def)->itemIndex) == 0 ||
-            ((int (*)(int*, s16))(**(int***)((char*)shop + 0x68))[SHOP_IFACE_IS_BOUGHT])(
-                shop, ((SpitembeamPlacement*)def)->itemIndex) != 0)
+        if (SHOP_INTERFACE(shop)->isItemAvailable((GameObject*)shop,
+                                                  ((SpitembeamPlacement*)def)->itemIndex) == 0 ||
+            SHOP_INTERFACE(shop)->isItemBought((GameObject*)shop,
+                                               ((SpitembeamPlacement*)def)->itemIndex) != 0)
         {
             obj->anim.flags = (s16)(obj->anim.flags | OBJANIM_FLAG_HIDDEN);
             obj->objectFlags =

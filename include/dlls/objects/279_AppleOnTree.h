@@ -105,6 +105,19 @@ STATIC_ASSERT(offsetof(AppleOnTreeState, pickupMessageValue) == 0x5E);
 STATIC_ASSERT(offsetof(AppleOnTreeState, pickupMessageArgument) == 0x60);
 STATIC_ASSERT(sizeof(AppleOnTreeState) == APPLE_ON_TREE_STATE_SIZE);
 
+/* gAppleOnTreeObjDescriptor from slot02 onwards: the export table other
+   objects reach through obj->anim.dll. */
+typedef struct AppleOnTreeInterface {
+    void* pad00[9];
+    void (*setPosition)(GameObject* obj, f32* position);
+    int (*getAnimState)(GameObject* obj);
+} AppleOnTreeInterface;
+
+#define APPLE_ON_TREE_INTERFACE(apple) ((AppleOnTreeInterface*)*((GameObject*)(apple))->anim.dll)
+
+STATIC_ASSERT(offsetof(AppleOnTreeInterface, setPosition) == 0x24);
+STATIC_ASSERT(offsetof(AppleOnTreeInterface, getAnimState) == 0x28);
+
 void AppleOnTree_setPosition(GameObject* obj, f32* position);
 void appleontree_knockLoose(GameObject* obj, int message);
 void appleontree_handleCollectableHit(GameObject* obj);

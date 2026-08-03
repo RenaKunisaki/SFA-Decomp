@@ -5,6 +5,7 @@
  * the object; the first impact also notifies the active SharpClaw.
  */
 #include "dlls/objects/471_DIM2SnowBal.h"
+#include "dlls/objects/472_DIM2PathGen.h"
 
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/curve.h"
@@ -88,11 +89,11 @@ void dim2snowball_update(GameObject* obj) {
     }
 
     if ((state->flags & DIM2_SNOWBALL_FLAG_PATH_INITIALIZED) == 0) {
-        int* pathGenerator = (int*)state->pathGenerator;
+        GameObject* pathGenerator = (GameObject*)state->pathGenerator;
 
-        state->path.count =
-            (*(int (**)(int*, void*, void*, void*, void*))(**(int**)((char*)pathGenerator + 0x68) + 0x20))(
-                pathGenerator, &state->path.px, &state->path.py, &state->path.pz, &state->pathNodeData);
+        state->path.count = DIM2_PATH_GENERATOR_INTERFACE(pathGenerator)
+                                ->getCurveVals(pathGenerator, &state->path.px, &state->path.py, &state->path.pz,
+                                               &state->pathNodeData);
         state->path.dir = 0;
         state->path.eval = Curve_EvalHermite;
         state->path.coeffFn = Curve_BuildHermiteCoeffs;

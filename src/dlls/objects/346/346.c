@@ -14,9 +14,6 @@
 #include "track/intersect_api.h"
 
 #define EXPLODABLE_FRAGMENT_SETUP_MODE           5
-#define EXPLODABLE_FRAGMENT_VTABLE_STATUS_OFFSET 0x20
-#define EXPLODABLE_FRAGMENT_STATUS_SETTLED       0
-#define EXPLODABLE_FRAGMENT_STATUS_FREE          2
 #define EXPLODABLE_RECIPE_FLAG_HIDE_OBJECT       0x01
 #define EXPLODABLE_LAUNCH_FLAG_VELOCITY_X        0x01
 #define EXPLODABLE_LAUNCH_FLAG_VELOCITY_Z        0x02
@@ -267,15 +264,14 @@ void explodable_update(GameObject* obj) {
             do {
                 fragmentObject = (int)((ExplodableState*)childSlotAddress)->children[0];
                 if ((void*)fragmentObject != NULL) {
-                    fragmentStatus = (*(VtableFn*)(*(int*)*(int*)(fragmentObject + 0x68) +
-                                                   EXPLODABLE_FRAGMENT_VTABLE_STATUS_OFFSET))(fragmentObject);
+                    fragmentStatus = EXPLODED_INTERFACE(fragmentObject)->getPhase((GameObject*)fragmentObject);
                     switch (fragmentStatus) {
-                    case EXPLODABLE_FRAGMENT_STATUS_FREE:
+                    case EXPLODED_PHASE_EXPIRED:
                         mainSetBits(placement->doneGameBit, TRUE);
                         Obj_FreeObject(((ExplodableState*)childSlotAddress)->children[0]);
                         ((ExplodableState*)childSlotAddress)->children[0] = NULL;
                         break;
-                    case EXPLODABLE_FRAGMENT_STATUS_SETTLED:
+                    case EXPLODED_PHASE_IDLE:
                         mainSetBits(placement->doneGameBit, TRUE);
                         if ((state->completedFragmentMask & (1 << fragmentIndex)) == 0) {
                             state->completedFragmentMask |= 1 << fragmentIndex;

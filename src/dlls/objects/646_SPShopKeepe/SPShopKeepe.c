@@ -34,27 +34,12 @@
 #include "main/screen_transition.h"
 #include "main/objtype.h"
 #include "main/vecmath.h"
+#include "main/dll/SP/dll_0285_spshop.h"
 #include "main/dll/SP/dll_0286_spshopkeeper.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
-
-typedef struct ShopKeeperShopInterface
-{
-    void* pad00[12];
-    int (*getItemMinPrice)(GameObject* shop, int slot);
-    void* pad34;
-    int (*getItemPrice)(GameObject* shop, int slot);
-    void* pad3C[2];
-    int (*getItemIndex)(GameObject* shop);
-} ShopKeeperShopInterface;
-
-STATIC_ASSERT(offsetof(ShopKeeperShopInterface, getItemMinPrice) == 0x30);
-STATIC_ASSERT(offsetof(ShopKeeperShopInterface, getItemPrice) == 0x38);
-STATIC_ASSERT(offsetof(ShopKeeperShopInterface, getItemIndex) == 0x44);
-
-#define SHOPKEEPER_SHOP_INTERFACE(shop) (*(ShopKeeperShopInterface**)((GameObject*)(shop))->anim.dll)
 
 void ShopKeeper_spawnScarabs(GameObject* obj, int state, int count);
 int ShopKeeper_getExtraSize(void);
@@ -245,8 +230,7 @@ int TREX_Lazerwall_updateTimedChallenge(GameObject* obj)
     state->popStateEnabled = 0;
     ObjHits_DisableObject(obj);
 
-    (*(TimerQueryFn*)(*(int*)*(int*)(state->timerObj + 0x68) + 0x54))(
-        state->timerObj, &elapsed, &now, &limit);
+    SHOP_INTERFACE(state->timerObj)->func17((GameObject*)state->timerObj, &elapsed, &now, &limit);
 
     now = now - elapsed;
 
@@ -481,7 +465,7 @@ int DRlaserturret_startLinkedTarget(GameObject* obj)
         int* target;
         mainSetBits(DR_LASERTURRET_GAMEBIT_LINK_STARTED, 1);
         target = state->linkedTarget;
-        (**(VtableFn***)((char*)target + 0x68))[0x24 / 4](target, 1, 2);
+        SHOP_INTERFACE(target)->playSequence((GameObject*)target, 1, 2);
     }
     return DR_LASERTURRET_STATE_LINKED_TARGET;
 }
@@ -604,7 +588,7 @@ int DRlaserturret_handlePromptChoice(GameObject* obj, void* param2, int dispatch
         if ((s8)nudge == 1)
         {
             int* target = state->linkedTarget;
-            (**(VtableFn***)((char*)target + 0x68))[0x48 / 4](target, cv);
+            SHOP_INTERFACE(target)->buyItem((GameObject*)target, cv);
         }
         return nudge == 1;
     case DR_LASERTURRET_PROMPT_MAX_NUDGE:
@@ -626,7 +610,7 @@ void DRlaserturret_startTimedChallenge(GameObject* obj)
         setTrickyHudShowNearestInfo(1);
         mainSetBits(DR_LASERTURRET_GAMEBIT_TIMER_STARTED, 1);
         target = state->linkedTarget;
-        (**(VtableFn***)((char*)target + 0x68))[0x4c / 4](target, state->digitCount);
+        SHOP_INTERFACE(target)->func15((GameObject*)target, state->digitCount);
         gTitleMenuControlInterfaceCopy->vtable->func04(NULL, 0xf5, 0, 0, 0);
     }
     else
@@ -724,15 +708,15 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
     {
         if (seq->movementState != 0)
         {
-            slot = SHOPKEEPER_SHOP_INTERFACE(((ShopkeeperState*)state)->vendorObj)
+            slot = SHOP_INTERFACE(((ShopkeeperState*)state)->vendorObj)
                        ->getItemIndex((GameObject*)((ShopkeeperState*)state)->vendorObj);
             if (slot != -1)
             {
                 ((ShopkeeperState*)state)->price =
-                    (s16)SHOPKEEPER_SHOP_INTERFACE(((ShopkeeperState*)state)->vendorObj)
+                    (s16)SHOP_INTERFACE(((ShopkeeperState*)state)->vendorObj)
                         ->getItemPrice((GameObject*)((ShopkeeperState*)state)->vendorObj, slot);
                 ((ShopkeeperState*)state)->minPrice =
-                    (s16)SHOPKEEPER_SHOP_INTERFACE(((ShopkeeperState*)state)->vendorObj)
+                    (s16)SHOP_INTERFACE(((ShopkeeperState*)state)->vendorObj)
                         ->getItemMinPrice((GameObject*)((ShopkeeperState*)state)->vendorObj, slot);
                 ((ShopkeeperState*)state)->priceShown = ((ShopkeeperState*)state)->price;
                 ((ShopkeeperState*)state)->unk9D2 = 0;
@@ -752,7 +736,7 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
             seq->movementState = 0;
             seq->conditionCallback = (ObjAnimSequenceConditionCallback)DRlaserturret_handlePromptChoice;
         }
-        if (SHOPKEEPER_SHOP_INTERFACE(((ShopkeeperState*)state)->vendorObj)
+        if (SHOP_INTERFACE(((ShopkeeperState*)state)->vendorObj)
                 ->getItemIndex((GameObject*)((ShopkeeperState*)state)->vendorObj) != -1)
         {
             setAButtonIcon(0x12);

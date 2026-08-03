@@ -58,6 +58,7 @@
 #include "main/vecmath_distance_api.h"
 #include "main/audio/sfx.h"
 #include "dlls/objects/243_flameblast.h"
+#include "dlls/objects/312_GroundAnima.h"
 #include "main/dll/tumbleweedbush.h"
 #include "main/audio/sfx_looped_object_api.h"
 #include "main/dll/player_target.h"
@@ -6088,8 +6089,8 @@ void trickyDigTunnel(u8* obj, u8* state)
                 objSoundStartTimed((GameObject*)obj, &((TrickyState*)ptr)->soundState, 0x360, 0x500, -1, 0);
             }
         }
-        spd = ((f32(**)(u8*, u8*))(**(u8***)((u8*)((TrickyState*)state)->followObj + 0x68)))[8](
-            (u8*)((TrickyState*)state)->followObj, obj);
+        spd = GROUND_ANIMATOR_INTERFACE(((TrickyState*)state)->followObj)
+                  ->applyPress(((TrickyState*)state)->followObj, (GameObject*)obj);
         ((GameObject*)obj)->anim.localPosX =
             ((TrickyState*)state)->dirX * spd + ((RomCurveDef*)((TrickyState*)state)->scratch700.ptr)->x;
         ((GameObject*)obj)->anim.localPosZ =
@@ -6102,9 +6103,8 @@ void trickyDigTunnel(u8* obj, u8* state)
         {
             trickyTurnTowardYaw(obj, getAngle(-vx, -vz));
         }
-        if (((u8(**)(u8*))(**(u8***)((u8*)((TrickyState*)state)->followObj + 0x68)))[9](
-                (u8*)((TrickyState*)state)->followObj) !=
-            0)
+        if (GROUND_ANIMATOR_INTERFACE(((TrickyState*)state)->followObj)
+                ->isFullySunk(((TrickyState*)state)->followObj) != 0)
         {
             {
                 int linkId;
@@ -6328,10 +6328,10 @@ void tricky_stateFindSecretDig(u8* obj, u8* state)
             ((TrickyState*)state)->scratch710.f *= 100.0f;
             trickyPlayWhineSfx(0x360, obj);
         }
-        spd = ((f32(**)(u8*, u8*))(**(u8***)(pc + 0x68)))[8](pc, obj);
+        spd = GROUND_ANIMATOR_INTERFACE(pc)->applyPress((GameObject*)pc, (GameObject*)obj);
         ((GameObject*)obj)->anim.localPosX = ((TrickyState*)state)->scratch704.f - ((TrickyState*)state)->dirX * spd;
         ((GameObject*)obj)->anim.localPosZ = ((TrickyState*)state)->scratch708.f - ((TrickyState*)state)->dirZ * spd;
-        if (((u8(**)(u8*))(**(u8***)(pc + 0x68)))[9](pc) != 0)
+        if (GROUND_ANIMATOR_INTERFACE(pc)->isFullySunk((GameObject*)pc) != 0)
         {
             Sfx_RemoveLoopedObjectSound((u32)obj, SFXTRIG_trwhin1);
             **(u8**)state -= 4;

@@ -15,6 +15,19 @@ typedef struct DfpLevelControlPlacement
 STATIC_ASSERT(offsetof(DfpLevelControlPlacement, mode) == 0x1A);
 STATIC_ASSERT(sizeof(DfpLevelControlPlacement) == 0x1C);
 
+/* gDFP_LevelControlObjDescriptor from slot02 onwards: the export table other
+   objects reach through obj->anim.dll. */
+typedef struct DfpLevelControlInterface
+{
+    void* pad00[8];
+    void (*copyPuzzleValues)(GameObject* controller, u8* out);
+} DfpLevelControlInterface;
+
+#define DFP_LEVEL_CONTROL_INTERFACE(controller) \
+    ((DfpLevelControlInterface*)*((GameObject*)(controller))->anim.dll)
+
+STATIC_ASSERT(offsetof(DfpLevelControlInterface, copyPuzzleValues) == 0x20);
+
 extern ObjectDescriptor11 gDFP_LevelControlObjDescriptor;
 extern s16 gDFPLevelControlPuzzleValues[10];
 

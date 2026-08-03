@@ -75,6 +75,19 @@ STATIC_ASSERT(offsetof(GroundAnimatorState, pad2E) == 0x2E);
 STATIC_ASSERT(sizeof(GroundAnimatorState) == 0x30);
 
 u8 GroundAnimator_getMagicCaveIndex(GameObject* obj);
+/* gGroundAnimatorObjDescriptor from slot02 onwards: the export table Tricky
+   reaches through obj->anim.dll while digging. */
+typedef struct GroundAnimatorInterface {
+    void* pad00[8];
+    f32 (*applyPress)(GameObject* obj, GameObject* sidekick);
+    u8 (*isFullySunk)(GameObject* obj);
+} GroundAnimatorInterface;
+
+#define GROUND_ANIMATOR_INTERFACE(digSite) ((GroundAnimatorInterface*)*((GameObject*)(digSite))->anim.dll)
+
+STATIC_ASSERT(offsetof(GroundAnimatorInterface, applyPress) == 0x20);
+STATIC_ASSERT(offsetof(GroundAnimatorInterface, isFullySunk) == 0x24);
+
 u8 GroundAnimator_isFullySunk(GameObject* obj);
 f32 GroundAnimator_applyPress(GameObject* obj, GameObject* sidekick);
 int GroundAnimator_getExtraSize(void);

@@ -51,6 +51,7 @@
 #define OBJ_YAW_DELTA_RETURNS_S16
 #include "main/obj_query.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/dll_00E2_staff_api.h"
 #include "main/dll/dll_0242_dbstealerworm.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "string.h"
@@ -206,7 +207,7 @@ int dbstealerworm_stateHandlerB06(GameObject* obj, BaddieState* baddie)
         }
         if (sub->msgSlotIndex == -1 && (ptr = *(char**)&sub->savedTargetObj) != NULL)
         {
-            if ((**(int (**)(char*))(*(int*)(*(int*)(ptr + 0x68)) + 0x20))(ptr) == 0)
+            if (DB_STEALERWORM_INTERFACE(ptr)->getControlMode((GameObject*)ptr) == 0)
             {
                 sub->savedTargetObj = 0;
                 sub->msgAdvance = 1;
@@ -732,8 +733,8 @@ int dbstealerworm_stateHandlerA0C(GameObject* obj, BaddieState* baddie, f32 t)
                 *(int*)&baddie->targetObj = best;
                 if (randomGetRange(0, n) == 0)
                 {
-                    if ((**(int (**)(int, int, int))(*(int*)(*(int*)(best + 0x68)) + 0x24))(best, 0x82,
-                                                                                            sub->linkedObj) != 0)
+                    if (DB_STEALERWORM_INTERFACE(best)
+                            ->handleMessage((GameObject*)best, 0x82, (int*)sub->linkedObj) != 0)
                     {
                         sub->savedTargetObj = 0;
                         objs = (int*)sub->msgStack;
@@ -822,7 +823,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, BaddieState* baddie, f32 t)
     {
         if (((GameObject*)*objs)->anim.romDefNo == DBSTEALERWORM_SEQID)
         {
-            tmpB = (**(int (**)(int, int, int))(*(int*)(*(int*)(*objs + 0x68)) + 0x24))(*objs, 0x83, 0);
+            tmpB = DB_STEALERWORM_INTERFACE(*objs)->handleMessage((GameObject*)*objs, 0x83, NULL);
             if ((u32)tmpB == q)
             {
                 found = 1;
@@ -1109,7 +1110,7 @@ int dbstealerworm_stateHandlerA09(GameObject* obj, BaddieState* baddie)
     bs->animSpeedB = resetValue;
     {
         void* p2d0 = *(void**)&bs->targetObj;
-        if (p2d0 == NULL || (**(int (**)(void*))(*(int*)(*(int*)((char*)p2d0 + 0x68)) + 0x20))(p2d0) == 0)
+        if (p2d0 == NULL || DB_STEALERWORM_INTERFACE(p2d0)->getControlMode((GameObject*)p2d0) == 0)
         {
             sub_40c->msgAdvance = 1;
         }
@@ -1628,7 +1629,7 @@ int dbstealerworm_stateHandlerA05(GameObject* obj, BaddieState* baddie)
             sub_40c->linkedObj = 0;
         }
         player_c8 = *(int*)&((GameObject*)Obj_GetPlayerObject())->childObjs[0];
-        result = (**(int (**)(int))(*(int*)(*(int*)(player_c8 + 0x68)) + 0x44))(player_c8);
+        result = STAFF_INTERFACE(player_c8)->getHitReactValue((GameObject*)player_c8);
         if (result != 0)
         {
             Sfx_PlayFromObject(obj, gDbStealerwormSfxIds[randomGetRange(3, 4)]);

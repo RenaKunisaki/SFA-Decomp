@@ -36,6 +36,18 @@ typedef struct Dim2SnowBallState {
     u8 unknownAD[3];
 } Dim2SnowBallState;
 
+/* gDIM2SnowBallObjDescriptor from slot02 onwards: the export table other
+   objects reach through obj->anim.dll. DIM2PathGen re-seeds a pooled
+   snowball by re-entering its init slot. */
+typedef struct Dim2SnowBallInterface {
+    void* pad00;
+    void (*init)(GameObject* obj, Dim2SnowBallPlacement* placement, int reinit);
+} Dim2SnowBallInterface;
+
+#define DIM2_SNOW_BALL_INTERFACE(snowball) ((Dim2SnowBallInterface*)*((GameObject*)(snowball))->anim.dll)
+
+STATIC_ASSERT(offsetof(Dim2SnowBallInterface, init) == 0x04);
+
 STATIC_ASSERT(offsetof(Dim2SnowBallPlacement, base) == 0x00);
 STATIC_ASSERT(offsetof(Dim2SnowBallPlacement, targetObjectId) == 0x14);
 STATIC_ASSERT(offsetof(Dim2SnowBallPlacement, rotationXByte) == 0x18);

@@ -12,6 +12,20 @@ struct GameObject;
 #define DBWORM_FLAG14_FX_DUST 0x2 /* emit the small dust burst (partfx 0x345) */
 #define DBWORM_FLAG14_FX_SPRAY 0x4 /* emit the large spray burst (partfx 0x343 x10) */
 
+/* gDBstealerwormObjDescriptor from slot02 onwards: the export table sibling
+   worms reach through obj->anim.dll. */
+typedef struct DbStealerwormInterface
+{
+    void* pad00[8];
+    int (*getControlMode)(struct GameObject* worm);
+    int (*handleMessage)(struct GameObject* worm, u8 msg, int* out);
+} DbStealerwormInterface;
+
+#define DB_STEALERWORM_INTERFACE(worm) ((DbStealerwormInterface*)*((struct GameObject*)(worm))->anim.dll)
+
+STATIC_ASSERT(offsetof(DbStealerwormInterface, getControlMode) == 0x20);
+STATIC_ASSERT(offsetof(DbStealerwormInterface, handleMessage) == 0x24);
+
 typedef struct DbStealerwormScriptStep
 {
     int code;

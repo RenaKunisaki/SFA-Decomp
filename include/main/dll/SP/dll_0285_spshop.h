@@ -36,6 +36,45 @@ typedef struct ShopItemRow
     s16 textId;    /* 0xa */
 } ShopItemRow;
 
+/* gShopObjDescriptor from slot02 onwards: the export table other objects reach
+   through obj->anim.dll. */
+typedef struct ShopInterface
+{
+    void* pad00[8];
+    s32 (*getStateField0)(GameObject* shop);
+    void (*playSequence)(GameObject* shop, int playSequence, int sequenceIndex);
+    int (*isItemAvailable)(GameObject* shop, int slot);
+    int (*isItemBought)(GameObject* shop, int slot);
+    int (*getItemMinPrice)(GameObject* shop, int slot);
+    int (*getItemSpecialPrice)(GameObject* shop, int slot);
+    int (*getItemPrice)(GameObject* shop, int slot);
+    int (*getItemTextId)(GameObject* shop, int slot);
+    void (*setItemIndex)(GameObject* shop, int slot);
+    s32 (*getItemIndex)(GameObject* shop);
+    void (*buyItem)(GameObject* shop, int price);
+    void (*func15)(GameObject* shop, int v);
+    void (*func16)(GameObject* shop, int delta3, int delta2);
+    void (*func17)(GameObject* shop, int* out_b3, int* out_b2, int* out_b4);
+} ShopInterface;
+
+#define SHOP_INTERFACE(shop) ((ShopInterface*)*((GameObject*)(shop))->anim.dll)
+
+STATIC_ASSERT(offsetof(ShopInterface, getStateField0) == 0x20);
+STATIC_ASSERT(offsetof(ShopInterface, playSequence) == 0x24);
+STATIC_ASSERT(offsetof(ShopInterface, isItemAvailable) == 0x28);
+STATIC_ASSERT(offsetof(ShopInterface, isItemBought) == 0x2C);
+STATIC_ASSERT(offsetof(ShopInterface, getItemMinPrice) == 0x30);
+STATIC_ASSERT(offsetof(ShopInterface, getItemSpecialPrice) == 0x34);
+STATIC_ASSERT(offsetof(ShopInterface, getItemPrice) == 0x38);
+STATIC_ASSERT(offsetof(ShopInterface, getItemTextId) == 0x3C);
+STATIC_ASSERT(offsetof(ShopInterface, setItemIndex) == 0x40);
+STATIC_ASSERT(offsetof(ShopInterface, getItemIndex) == 0x44);
+STATIC_ASSERT(offsetof(ShopInterface, buyItem) == 0x48);
+STATIC_ASSERT(offsetof(ShopInterface, func15) == 0x4C);
+STATIC_ASSERT(offsetof(ShopInterface, func16) == 0x50);
+STATIC_ASSERT(offsetof(ShopInterface, func17) == 0x54);
+STATIC_ASSERT(sizeof(ShopInterface) == 0x58);
+
 void shop_func17(GameObject* obj, int* out_b3, int* out_b2, int* out_b4);
 void shop_func16(GameObject* obj, int p2, int p3);
 void shop_func15(GameObject* obj, int v);

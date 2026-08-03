@@ -69,6 +69,18 @@ STATIC_ASSERT(offsetof(Dim2PathGeneratorState, pointCount) == 0x9A6);
 STATIC_ASSERT(offsetof(Dim2PathGeneratorState, flags) == 0x9A7);
 STATIC_ASSERT(sizeof(Dim2PathGeneratorState) == 0x9A8);
 
+/* gDIM2PathGeneratorObjDescriptor from slot02 onwards: the export table other
+   objects reach through obj->anim.dll. */
+typedef struct Dim2PathGeneratorInterface {
+    void* pad00[8];
+    int (*getCurveVals)(GameObject* generator, f32** outPathX, f32** outPathY, f32** outPathZ, u8** outPathNodeData);
+} Dim2PathGeneratorInterface;
+
+#define DIM2_PATH_GENERATOR_INTERFACE(generator) \
+    ((Dim2PathGeneratorInterface*)*((GameObject*)(generator))->anim.dll)
+
+STATIC_ASSERT(offsetof(Dim2PathGeneratorInterface, getCurveVals) == 0x20);
+
 u8 DIM2PathGenerator_getCurveVals(GameObject* obj, int** outPathX, int** outPathY, int** outPathZ,
                                   int** outPathNodeData);
 int DIM2PathGenerator_getExtraSize(void);

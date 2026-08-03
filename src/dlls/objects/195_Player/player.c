@@ -30,6 +30,8 @@
 #include "dlls/objects/229_Shield.h"
 #include "dlls/objects/284.h"
 #include "dlls/objects/315_WallAnimato.h"
+#include "dlls/objects/332.h"
+#include "dlls/objects/469_DIM2Conveyo.h"
 #include "dlls/objects/328_CFGuardian.h"
 #include "dlls/objects/437.h"
 #include "dlls/objects/488_SB_Galleon.h"
@@ -4994,8 +4996,8 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
         if (*(s16*)((char*)path + 0x44) == 0x2d)
         {
             objSetAnimField48to0((GameObject*)path);
-            (*(void (*)(int, int)) * (int*)(*(int*)(*(int*)((char*)path + 0x68)) + 0x38))(
-                path, *(u8*)((inner->moveSlots + 0x5c) + (u32)inner->moveSlotIndex * 0xb0));
+            STAFF_INTERFACE(path)->func10((GameObject*)path,
+                                          *(u8*)((inner->moveSlots + 0x5c) + (u32)inner->moveSlotIndex * 0xb0));
             (*(void (*)(int, f32, f32)) * (int*)(*(int*)(*(int*)((char*)path + 0x68)) + 0x4c))(
                 path, *(f32*)((inner->moveSlots + 0x48) + (u32)inner->moveSlotIndex * 0xb0),
                 *(f32*)((inner->moveSlots + 0x4c) + (u32)inner->moveSlotIndex * 0xb0));
@@ -6491,8 +6493,8 @@ int playerState19(GameObject* obj, int state)
     obj->anim.velocityY = 0.0f;
     if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedA != 0)
     {
-        (*(void (*)(int, void*, void*, void*))(*(int*)(*(int*)*(int*)((char*)sub + 0x68) + 0x28)))(
-            sub, (char*)obj + 0xc, (char*)obj + 0x10, (char*)obj + 0x14);
+        VEHICLE_INTERFACE(sub)->getRiderPosition((GameObject*)sub, (f32*)((char*)obj + 0xc),
+                                                 (f32*)((char*)obj + 0x10), (f32*)((char*)obj + 0x14));
         switch (*(s16*)((char*)sub + 0x46))
         {
         case 0x38c:
@@ -6503,9 +6505,8 @@ int playerState19(GameObject* obj, int state)
             (*gCameraInterface)->loadTriggeredCamAction(0, 1, 0);
             break;
         }
-        kind = (*(int (*)(int))(*(int*)(*(int*)*(int*)((char*)sub + 0x68) + 0x30)))(sub);
-        (*(void (*)(int, int))(*(int*)(*(int*)*(int*)((char*)sub + 0x68) + 0x3c)))(
-            sub, VEHICLE_Dismounting);
+        kind = VEHICLE_INTERFACE(sub)->getDismountSide((GameObject*)sub);
+        VEHICLE_INTERFACE(sub)->setMountState((GameObject*)sub, VEHICLE_Dismounting);
         switch (kind)
         {
         case 1:
@@ -6550,7 +6551,7 @@ int playerState19(GameObject* obj, int state)
         *(s16*)vec = (f32) * (s16*)((char*)sub + 0x2) * t;
         *(s16*)((char*)vec + 0x4) = (f32) * (s16*)((char*)sub + 0x4) * t;
     }
-    (*(void (*)(int, f32*, f32*, f32*))(*(int*)(*(int*)*(int*)((char*)sub + 0x68) + 0x34)))(sub, &cam[0], &cam[1],
+    VEHICLE_INTERFACE(sub)->getCameraPosition((GameObject*)sub, &cam[0], &cam[1],
                                                                                             &cam[2]);
     {
         f32 w = obj->anim.currentMoveProgress;
@@ -6592,7 +6593,7 @@ int playerState19(GameObject* obj, int state)
         ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 1);
         ObjAnim_WriteStateWord(&obj->anim, OBJANIM_STATE_INDEX_CURRENT,
                                OBJANIM_STATE_WORD_EVENT_COUNTDOWN, 0);
-        (*(void (*)(int, int))(*(int*)(*(int*)*(int*)((char*)sub + 0x68) + 0x3c)))(sub, VEHICLE_NoRider);
+        VEHICLE_INTERFACE(sub)->setMountState((GameObject*)sub, VEHICLE_NoRider);
         playerRefreshCollisionState(obj, (int)inner, 7);
         ObjHits_EnableObject(obj);
         inner->focusObject = NULL;
@@ -6656,7 +6657,7 @@ int playerStateOnBike(GameObject* obj, int state)
     }
     else
     {
-        ret = (*(f32 (*)(int, f32*))(*(int*)((char*)*(int*)*(int*)((char*)sub + 0x68) + 0x44)))((int)sub, &out);
+        ret = VEHICLE_INTERFACE(sub)->getNormalizedSpeed((GameObject*)sub, &out);
         if (out <= 1.0f)
         {
             ((PlayerState*)state)->baddie.moveSpeed = out;
@@ -6668,7 +6669,7 @@ int playerStateOnBike(GameObject* obj, int state)
     }
     if ((inner->moveSequenceFlags & 0x1) != 0)
     {
-        (*(void (*)(int, f32*, int*))(*(int*)((char*)*(int*)*(int*)((char*)sub + 0x68) + 0x40)))((int)sub, &a, &b);
+        VEHICLE_INTERFACE(sub)->getPlayerAnim((GameObject*)sub, &a, &b);
         blend = (int)(16384.0f * a);
         if (blend < 0)
         {
@@ -6685,7 +6686,7 @@ int playerStateOnBike(GameObject* obj, int state)
     }
     else if ((inner->moveSequenceFlags & 0x8) != 0)
     {
-        (*(void (*)(int, f32*, int*))(*(int*)((char*)*(int*)*(int*)((char*)sub + 0x68) + 0x40)))((int)sub, &c, &d);
+        VEHICLE_INTERFACE(sub)->getPlayerAnim((GameObject*)sub, &c, &d);
         *(u32*)&((PlayerState*)inner)->flags360 |= 0x2000000LL;
         inner->headYaw = (s16)d;
         inner->bodyLeanAngle = (s16)c;
@@ -6699,7 +6700,7 @@ int playerStateOnBike(GameObject* obj, int state)
         ObjAnim_WriteStateWord(&obj->anim, OBJANIM_STATE_INDEX_ACTIVE, OBJANIM_STATE_WORD_PREV_EVENT_STATE,
                                0);
     }
-    if ((*(int (*)(int, int))(*(int*)((char*)*(int*)*(int*)((char*)sub + 0x68) + 0x2c)))((int)sub, (int)obj) != 0)
+    if (VEHICLE_INTERFACE(sub)->canDismount((GameObject*)sub, obj) != 0)
     {
         ((PlayerState*)state)->baddie.stateHandler = 0;
         return 0x1a;
@@ -6794,9 +6795,8 @@ int playerStateMountBike(GameObject* obj, int state, f32 fv)
             break;
         }
         {
-            int t = (*(int (*)(int))(*(int*)(*(int*)(*(int*)((char*)sub + 0x68)) + 0x24)))(sub);
-            (*(void (*)(int, int))(*(int*)(*(int*)(*(int*)((char*)sub + 0x68)) + 0x3c)))(
-                sub, VEHICLE_Mounting);
+            int t = VEHICLE_INTERFACE(sub)->getMountSide((GameObject*)sub);
+            VEHICLE_INTERFACE(sub)->setMountState((GameObject*)sub, VEHICLE_Mounting);
             switch (t)
             {
             case 1:
@@ -6816,8 +6816,7 @@ int playerStateMountBike(GameObject* obj, int state, f32 fv)
             joint, 0, 0, 0.0f, obj->anim.rootMotionScale, j0, (s16*)scratch);
         ObjModel_SampleJointTransform(
             joint, 0, 0, 1.0f, obj->anim.rootMotionScale, j1, (s16*)scratch);
-        (*(void (*)(int, void*, void*, void*))(*(int*)(*(int*)(*(int*)((char*)sub + 0x68)) + 0x28)))(
-            sub, &wpos[0], &wpos[1], &wpos[2]);
+        VEHICLE_INTERFACE(sub)->getRiderPosition((GameObject*)sub, &wpos[0], &wpos[1], &wpos[2]);
         wpos[0] = wpos[0] - obj->anim.localPosX;
         wpos[1] = wpos[1] - obj->anim.localPosY;
         wpos[2] = wpos[2] - obj->anim.localPosZ;
@@ -6839,8 +6838,7 @@ int playerStateMountBike(GameObject* obj, int state, f32 fv)
             obj->anim.currentMoveProgress * inner->warpDeltaY + inner->warpStartY;
         obj->anim.localPosZ =
             obj->anim.currentMoveProgress * inner->warpDeltaZ + inner->warpStartZ;
-        (*(void (*)(int, void*, void*, void*))(*(int*)(*(int*)(*(int*)((char*)sub + 0x68)) + 0x34)))(
-            sub, &wpos[0], &wpos[1], &wpos[2]);
+        VEHICLE_INTERFACE(sub)->getCameraPosition((GameObject*)sub, &wpos[0], &wpos[1], &wpos[2]);
         (*gCameraInterface)
             ->overridePos(
                 obj->anim.currentMoveProgress * (wpos[0] - inner->warpStartX) + inner->warpStartX,
@@ -6850,7 +6848,7 @@ int playerStateMountBike(GameObject* obj, int state, f32 fv)
     if (*(s8*)&((PlayerState*)state)->baddie.moveJustStartedA == 0 &&
         *(s8*)&((PlayerState*)state)->baddie.moveDone != 0) {
         ObjAnim_SetCurrentMove((int)obj, *(s16*)inner->moveSequence, 0.0f, 1);
-        (*(void (*)(int, int))(*(int*)(*(int*)(*(int*)((char*)sub + 0x68)) + 0x3c)))(sub, VEHICLE_Mounted);
+        VEHICLE_INTERFACE(sub)->setMountState((GameObject*)sub, VEHICLE_Mounted);
         if (arrayIndexOf((int*)(base + 0x160), 4, *(s16*)((char*)sub + 0x46)) != -1)
         {
             ((PlayerState*)state)->baddie.stateHandler = (int)playerStagedClearActiveMove;
@@ -11272,7 +11270,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
             ok2 = 1;
             if ((u32)t8 != 0)
             {
-                if ((*(u8 (*)(int)) * (int*)((char*)*(int*)*(int*)(t8 + 0x68) + 0x24))(t8) == 0)
+                if (WALL_ANIMATOR_INTERFACE(t8)->isComplete((GameObject*)t8) == 0)
                 {
                     ok2 = 0;
                 }
@@ -11335,7 +11333,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
         for (; candidateIndex < focusCandidateCount; candidateIndex++)
         {
             int candidate = *focusCandidates;
-            if ((*(int (*)(int, int)) * (int*)((char*)*(int*)*(int*)(candidate + 0x68) + 0x20))(candidate, obj) != 0)
+            if (VEHICLE_INTERFACE(candidate)->canMount((GameObject*)candidate, (GameObject*)obj) != 0)
             {
                 ((PlayerState*)state)->focusObject = (GameObject*)candidate;
                 return 0xa;
@@ -12021,7 +12019,7 @@ void playerRestoreAfterSequence(GameObject* obj, int p2, int p3)
         found = (void*)objGetNearestTypeTo(BABYCLOUDRUNNER_OBJGROUP, obj, &dist);
         if (found != NULL)
         {
-            (*(void (*)(void*))(*(int*)((char*)*(int*)*(int*)((char*)found + 0x68) + 0x24)))(found);
+            BABY_CLOUD_RUNNER_INTERFACE(found)->tryCapture(found);
         }
         ObjLink_DetachChild(obj, (GameObject*)gPlayerChildObject);
         Obj_FreeObject((GameObject*)gPlayerChildObject);
@@ -12263,8 +12261,7 @@ void playerSyncTransformToFocusObject(int p1, int p2, int p3, int p4, int p5, in
                 }
             }
         }
-        (*(void (*)(int, int, int, int, int, int))(*(int*)((char*)*(int*)*(int*)((char*)p3 + 0x68) + 0x10)))(
-            p3, p4, p5, p6, p7, -1);
+        VEHICLE_INTERFACE(p3)->render((GameObject*)p3, p4, p5, p6, p7, -1);
         ((GameObject*)p1)->anim.previousWorldPosX = ((GameObject*)p1)->anim.worldPosX;
         ((GameObject*)p1)->anim.previousWorldPosY = ((GameObject*)p1)->anim.worldPosY;
         ((GameObject*)p1)->anim.previousWorldPosZ = ((GameObject*)p1)->anim.worldPosZ;
@@ -12272,7 +12269,7 @@ void playerSyncTransformToFocusObject(int p1, int p2, int p3, int p4, int p5, in
         ((GameObject*)p1)->anim.previousLocalPosY = ((GameObject*)p1)->anim.localPosY;
         ((GameObject*)p1)->anim.previousLocalPosZ = ((GameObject*)p1)->anim.localPosZ;
     }
-    (*(void (*)(int, f32*, f32*, f32*))(*(int*)((char*)*(int*)*(int*)((char*)p3 + 0x68) + 0x28)))(p3, &a, &b, &c);
+    VEHICLE_INTERFACE(p3)->getRiderPosition((GameObject*)p3, &a, &b, &c);
     ((GameObject*)p1)->anim.localPosX = a;
     ((GameObject*)p1)->anim.localPosY = b;
     ((GameObject*)p1)->anim.localPosZ = c;
@@ -12281,7 +12278,7 @@ void playerSyncTransformToFocusObject(int p1, int p2, int p3, int p4, int p5, in
         (((GameObject*)p1)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0)
     {
         flag = 1;
-        (*(void (*)(int, int, int*))(*(int*)((char*)*(int*)*(int*)((char*)p3 + 0x68) + 0x54)))(p3, 2, &d);
+        VEHICLE_INTERFACE(p3)->getLookTargetYaw((GameObject*)p3, 2, &d);
         angle = (s16)(((PlayerState*)p2)->targetYaw - (u16)d);
         if (angle > 0x8000)
         {
@@ -12291,10 +12288,10 @@ void playerSyncTransformToFocusObject(int p1, int p2, int p3, int p4, int p5, in
         {
             angle = angle + 0xFFFF;
         }
-        (*(void (*)(int, int, int*))(*(int*)((char*)*(int*)*(int*)((char*)p3 + 0x68) + 0x54)))(p3, 3, &e);
+        VEHICLE_INTERFACE(p3)->getLookTargetYaw((GameObject*)p3, 3, &e);
         clamped = (angle < (s16)-e) ? (s16)-e : ((angle > (s16)e) ? (s16)e : angle);
         ((PlayerState*)p2)->targetYaw = (s16)d + clamped;
-        (*(void (*)(int, int, int*))(*(int*)((char*)*(int*)*(int*)((char*)p3 + 0x68) + 0x54)))(p3, 4, &flag);
+        VEHICLE_INTERFACE(p3)->getLookTargetYaw((GameObject*)p3, 4, &flag);
         if (flag != 0)
         {
             ((GameObject*)p1)->anim.rotY = ((GameObject*)p3)->anim.rotY;
@@ -12460,8 +12457,8 @@ void staffShootFireball(GameObject* obj, int state, f32 unused)
             ((ObjPlacement*)setup)->posY = *(f32*)((char*)slot + 0x10);
             ((ObjPlacement*)setup)->posZ = *(f32*)((char*)slot + 0x14);
         }
-        *(s8*)((char*)setup + 0x19) = (s8)(*(int (*)(void*))(
-            *(int*)((char*)*(int*)(*(int*)((char*)gPlayerPathObject + 0x68)) + 0x44)))(gPlayerPathObject);
+        *(s8*)((char*)setup + 0x19) =
+            (s8)STAFF_INTERFACE(gPlayerPathObject)->getHitReactValue((GameObject*)gPlayerPathObject);
         if (((PlayerState*)state)->baddie.targetObj == NULL)
         {
             *(s16*)((char*)setup + 0x1a) = 1;
@@ -16107,8 +16104,8 @@ void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt)
             found = (void*)objGetNearestTypeTo(CFGUARDIAN_OBJECT_GROUP, obj, queryParams);
             if (found != 0)
             {
-                (*(void (*)(int, int, f32, f32*, f32*))(*(int*)(*(int*)(*(int*)((char*)found + 0x68)) + 0x20)))(
-                    (int)found, (int)obj, lbl_803E7EE0, &pushX, &pushZ);
+                DIM2_CONVEYOR_INTERFACE(found)
+                    ->getScrollVector((GameObject*)found, (GameObject*)obj, lbl_803E7EE0, &pushX, &pushZ);
             }
             break;
         case SURFACE_LAVA:
@@ -16972,7 +16969,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                     ((PlayerState*)inner)->unk6AC = ((PlayerState*)inner)->savedPosY;
                     ((PlayerState*)inner)->unk6B0 = ((PlayerState*)inner)->savedPosZ;
                     va = (int)((PlayerState*)inner)->focusObject;
-                    (*(void (*)(int, int)) * (int*)((char*)*(int*)(*(int*)(va + 0x68)) + 0x3c))(va, VEHICLE_Mounted);
+                    VEHICLE_INTERFACE(va)->setMountState((GameObject*)va, VEHICLE_Mounted);
                     ((GameObject*)obj)->anim.flags |= 8;
                     ((GameObject*)obj)->anim.modelState->flags |= OBJ_MODEL_STATE_SHADOW_FADE_OUT;
                     ((GameObject*)obj)->anim.modelState->shadowAlphaStep = 0;
@@ -17368,7 +17365,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
     }
     {
         int g = (int)((PlayerState*)inner)->focusObject;
-        if ((u32)g != 0 && (*(int (*)(int)) * (int*)((char*)*(int*)(*(int*)(g + 0x68)) + 0x38))(g) == 2)
+        if ((u32)g != 0 && VEHICLE_INTERFACE(g)->getMountState((GameObject*)g) == 2)
         {
             seq->flags &= ~3;
         }
@@ -17568,8 +17565,7 @@ void playerRenderFuzz(GameObject* obj, int p2, int fuzzPass)
             arrayIndexOf(lbl_803DC6C4, 2, inner->baddie.controlMode) != -1)
         {
             int p = (int)inner->focusObject;
-            (*(void (*)(int, f32))(*(int*)((char*)*(int*)*(int*)((char*)p + 0x68) + 0x50)))(
-                p, obj->anim.modelInstance->rootMotionScaleBase);
+            VEHICLE_INTERFACE(p)->handleRiderScale((GameObject*)p, obj->anim.modelInstance->rootMotionScaleBase);
         }
     }
     if ((*(u32*)&((PlayerState*)inner)->flags360 & 0x8000000) != 0)
@@ -17655,7 +17651,7 @@ void playerRender(int obj, int a, int b, int c, int d, int flag)
             {
                 char* held = (char*)((PlayerState*)inner)->focusObject;
                 ObjDef* mi = ((GameObject*)obj)->anim.modelInstance;
-                (*(void (*)(char*, f32)) * (int*)(*(int*)(*(int*)(held + 0x68)) + 0x50))(held, mi->rootMotionScaleBase);
+                VEHICLE_INTERFACE(held)->handleRiderScale((GameObject*)held, mi->rootMotionScaleBase);
             }
         }
         if ((*(u32*)&((PlayerState*)inner)->flags360 & 0x8000000) != 0)
@@ -17738,9 +17734,8 @@ void playerRender(int obj, int a, int b, int c, int d, int flag)
                 {
                     *(s16*)(int)((PlayerState*)in2)->heldObj = ((PlayerState*)in2)->targetYaw;
                 }
-                (*(void (*)(int, int, int, int, int, int)) *
-                 (int*)(*(int*)(*(int*)((char*)(int)((PlayerState*)in2)->heldObj + 0x68)) + 0x10))(
-                    (int)((PlayerState*)in2)->heldObj, 0, 0, 0, 0, -1);
+                VEHICLE_INTERFACE(((PlayerState*)in2)->heldObj)
+                    ->render((GameObject*)((PlayerState*)in2)->heldObj, 0, 0, 0, 0, -1);
             }
         }
         if (((PlayerState*)inner)->knockbackTimer > 0.0f || (((PlayerState*)inner)->pendingFxFlags & 2) != 0)
@@ -17955,8 +17950,8 @@ void playerDoHitDetection(int obj)
             ((((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0 ||
              arrayIndexOf(lbl_803DC6C4, 2, ((PlayerState*)inner)->baddie.controlMode) != -1))
         {
-            (*(void (*)(int, f32*, f32*, f32*))(*(int*)(*(int*)(*(int*)((int)((PlayerState*)inner)->focusObject + 0x68)) +
-                                                        0x34)))((int)((PlayerState*)inner)->focusObject, &x, &y, &z);
+            VEHICLE_INTERFACE(((PlayerState*)inner)->focusObject)
+                ->getCameraPosition((GameObject*)((PlayerState*)inner)->focusObject, &x, &y, &z);
             (*gCameraInterface)->overridePos(x, y, z);
             playerSyncTransformToFocusObject(obj, inner, (int)((PlayerState*)inner)->focusObject, 0, 0, 0, 0, 0);
         }

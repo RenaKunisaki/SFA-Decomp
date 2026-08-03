@@ -38,6 +38,7 @@
 #include "main/objprint_anim_api.h"
 #include "main/objprint_character_api.h"
 #include "main/objprint_sound_api.h"
+#include "main/dll/DR/dll_026E_drshackle.h"
 #include "main/dll/dll_0282_barrelgener.h"
 #include "game/objects/object.h"
 #include "main/objhits.h"
@@ -1023,10 +1024,10 @@ void HighTop_render(void* obj, int p2, int p3, int p4, int p5, char visible)
             int** t = (int**)objGetAllOfType(55, &count);
             for (i = 0, list = t; i < count; i++)
             {
-                int idx = (*(int (**)(int*))((char*)**(int***)((char*)*list + 0x68) + 0x24))(*list);
-                void (*dispatch)(int*, void*, int, int, int, int, int) =
-                    *(void (**)(int*, void*, int, int, int, int, int))((char*)**(int***)((char*)*list + 0x68) + 0x20);
-                dispatch(*list, obj, gHighTopTuning.shacklePathPoints[idx], p2, p3, p4, p5);
+                int idx = DRSHACKLE_INTERFACE(*list)->getAttachSlot((GameObject*)*list);
+                void (*dispatch)(GameObject*, void*, int, int, int, int, int) =
+                    DRSHACKLE_INTERFACE(*list)->renderAtPathPoint;
+                dispatch((GameObject*)*list, obj, gHighTopTuning.shacklePathPoints[idx], p2, p3, p4, p5);
                 list++;
             }
         }

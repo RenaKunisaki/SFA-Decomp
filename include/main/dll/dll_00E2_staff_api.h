@@ -6,6 +6,39 @@
 
 extern ObjectDescriptor23 gStaffObjDescriptor;
 
+/* gStaffObjDescriptor from slot02 onwards: the export table other objects
+   reach through the player's staff child object (childObjs[0])->anim.dll. */
+typedef struct StaffInterface
+{
+    void* pad00[8];
+    void (*func0A)(void);
+    void (*func0B)(void);
+    void (*updateSwipe)(GameObject* staff, int p4, int p5);
+    void (*hitDetectGeometry)(GameObject* staff);
+    void (*func0E)(void);
+    void (*func0F)(void);
+    void (*func10)(GameObject* staff, s32 value);
+    void (*setHitReactValue)(GameObject* staff, s32 value);
+    void (*addHitReactValue)(GameObject* staff, s32 delta);
+    int (*getHitReactValue)(GameObject* staff);
+    void (*getHitGeometryPoints)(GameObject* staff, f32* outA, f32* outB);
+    void (*startSwipe)(GameObject* staff, s16 index, f32 arg2, f32 arg3);
+    s32 (*getSwipeTextureIndex)(GameObject* staff);
+} StaffInterface;
+
+#define STAFF_INTERFACE(staff) ((StaffInterface*)*((GameObject*)(staff))->anim.dll)
+
+STATIC_ASSERT(offsetof(StaffInterface, updateSwipe) == 0x28);
+STATIC_ASSERT(offsetof(StaffInterface, hitDetectGeometry) == 0x2C);
+STATIC_ASSERT(offsetof(StaffInterface, func10) == 0x38);
+STATIC_ASSERT(offsetof(StaffInterface, setHitReactValue) == 0x3C);
+STATIC_ASSERT(offsetof(StaffInterface, addHitReactValue) == 0x40);
+STATIC_ASSERT(offsetof(StaffInterface, getHitReactValue) == 0x44);
+STATIC_ASSERT(offsetof(StaffInterface, getHitGeometryPoints) == 0x48);
+STATIC_ASSERT(offsetof(StaffInterface, startSwipe) == 0x4C);
+STATIC_ASSERT(offsetof(StaffInterface, getSwipeTextureIndex) == 0x50);
+STATIC_ASSERT(sizeof(StaffInterface) == 0x54);
+
 void objSetAnimField48to0(GameObject* obj);
 void playerRenderQuakeSpell(GameObject* obj);
 void staffUpdateAttackEffects(GameObject* obj, GameObject* player);

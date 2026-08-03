@@ -7,6 +7,7 @@
  * requiredScore); a wrong zone trips game bit 0x5e5 to reset.
  */
 #include "main/dll_000A_expgfx.h"
+#include "main/dll/DF/dll_0229_dfplevelcontrol.h"
 #include "main/dll/baddie/dll_022F_dfpfloorbar.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/mapEvent.h"
@@ -150,8 +151,8 @@ void DFP_Floorbar_update(GameObject* obj)
     }
 
     {
-        int objPtr = (int)state->linkedObject;
-        (*(VtableFn*)(**(int**)(objPtr + 0x68) + 0x20))(objPtr, gDfpfloorbarModeTable);
+        GameObject* objPtr = (GameObject*)state->linkedObject;
+        DFP_LEVEL_CONTROL_INTERFACE(objPtr)->copyPuzzleValues(objPtr, gDfpfloorbarModeTable);
     }
 
     state->requiredScore = gDfpfloorbarModeTable[state->modeIndex];

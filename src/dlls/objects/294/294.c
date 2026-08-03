@@ -51,6 +51,7 @@
 #include "main/render_lactions_api.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/dll/dll_0126_trigger.h"
 #include "main/dll/dll_02B5_timer.h"
 #include "main/dll/headdisplay.h"
@@ -802,7 +803,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
             if ((void*)t != NULL) {
                 switch (p[2]) {
                 case 0:
-                    (*(VtableFn*)(**(int**)(t + 0x68) + 0x3c))(t);
+                    TRICKY_INTERFACE(t)->requestRecall((GameObject*)t);
                     break;
                 case 1:
                     Obj_FreeObject(getTrickyObject());
@@ -813,7 +814,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
                         t2 = (int)objGetNearestTypeTo(TRICKY_TARGET_OBJGROUP_FALLBACK, (GameObject*)t, 0);
                     }
                     if ((void*)t2 != NULL) {
-                        (*(VtableFn*)(**(int**)(t + 0x68) + 0x38))(t, t2);
+                        TRICKY_INTERFACE(t)->requestMoveToObject((GameObject*)t, (GameObject*)t2);
                     }
                     break;
                 case 3:

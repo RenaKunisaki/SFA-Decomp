@@ -12,6 +12,17 @@ typedef enum ExplodedPhase {
     EXPLODED_PHASE_EXPIRED = 2,
 } ExplodedPhase;
 
+/* gExplodedObjDescriptor from slot02 onwards: the export table the spawning
+   object reaches through obj->anim.dll. */
+typedef struct ExplodedInterface {
+    void* pad00[8];
+    int (*getPhase)(GameObject* obj);
+} ExplodedInterface;
+
+#define EXPLODED_INTERFACE(fragment) ((ExplodedInterface*)*((GameObject*)(fragment))->anim.dll)
+
+STATIC_ASSERT(offsetof(ExplodedInterface, getPhase) == 0x20);
+
 typedef struct ExplodedPlacement {
     ObjPlacement base;
     u8 modelBankIndex;
