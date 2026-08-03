@@ -95,6 +95,7 @@ struct GameObject {
         dim2prisonmammoth_updateModelChain). */
 };
 
+STATIC_ASSERT(offsetof(GameObject, anim) == 0x00);
 STATIC_ASSERT(offsetof(GameObject, anim.worldPosX) == 0x18);
 STATIC_ASSERT(offsetof(GameObject, objectFlags) == 0xB0);
 

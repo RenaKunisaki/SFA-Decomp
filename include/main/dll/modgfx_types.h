@@ -176,6 +176,7 @@ typedef struct ModgfxVertexGroupCmd
     s16* indices; /* vertex indices, stride 2 */
     s16 indexCount;
 } ModgfxVertexGroupCmd;
+STATIC_ASSERT(offsetof(ModgfxVertexGroupCmd, valueX) == 0x04);
 
 typedef struct ModgfxActiveEffect
 {

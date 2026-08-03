@@ -153,6 +153,7 @@ typedef struct ObjHitsSweepEntry
     float minX;
     GameObject* obj;
 } ObjHitsSweepEntry;
+STATIC_ASSERT(offsetof(ObjHitsSweepEntry, obj) == 0x08);
 
 typedef struct ObjHitsPriorityWorkSlot
 {

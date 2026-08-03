@@ -178,6 +178,7 @@ typedef struct ModelFileHeader {
 #define OBJMODEL_BUFFER_FLAG_TEXTURES_LOADED 0x40
 
 STATIC_ASSERT(offsetof(ModelFileHeader, modelId) == 0x04);
+STATIC_ASSERT(offsetof(ModelFileHeader, jointData) == 0x3C);
 STATIC_ASSERT(offsetof(ModelFileHeader, textureIds) == 0x20);
 STATIC_ASSERT(offsetof(ModelFileHeader, blendAnimEntries) == 0xC8);
 STATIC_ASSERT(offsetof(ModelFileHeader, textureCount) == 0xF2);

@@ -198,6 +198,8 @@ typedef struct EnemyState {
 } EnemyState;
 
 STATIC_ASSERT(sizeof(EnemyState) == 0x370);
+STATIC_ASSERT(offsetof(EnemyState, flags) == 0x004);
+STATIC_ASSERT(offsetof(EnemyState, unk2C4) == 0x2C4);
 STATIC_ASSERT(offsetof(EnemyState, spawnRotY) == 0x19C);
 STATIC_ASSERT(offsetof(EnemyState, nearestSpecialDeltaY) == 0x1B8);
 STATIC_ASSERT(offsetof(EnemyState, pathStep) == 0x2FC);

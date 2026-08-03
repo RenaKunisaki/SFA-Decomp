@@ -58,6 +58,7 @@ typedef struct RcpDistortSlot
     u8 mode;       // 0x1b
 } RcpDistortSlot;
 STATIC_ASSERT(sizeof(RcpDistortSlot) == 0x1c);
+STATIC_ASSERT(offsetof(RcpDistortSlot, model) == 0x04);
 STATIC_ASSERT(offsetof(RcpDistortSlot, params) == 0x10);
 STATIC_ASSERT(offsetof(RcpDistortSlot, group) == 0x1a);
 STATIC_ASSERT(offsetof(RcpDistortSlot, mode) == 0x1b);
