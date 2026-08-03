@@ -30,6 +30,8 @@ here that the target section already says.
 | **The defining TU proposes, the reading TU disposes**, and a declaration can only move into a header that can NAME the type - type visibility, not the include, is the constraint. Extern arrays stay UNSIZED. | §13 | See §13; every rule there was established md5-identical over all 1013 source objects. |
 | **The gate blind spots, and why md5-of-every-`.o` dominates.** Demotion blinds the DOL gate; `matched_code`/`matched_functions` are threshold counters; a pool rotation inside an already-NonMatching unit is free on every score axis. | `docs/purge_campaign_audit.md`, "Three sensor blind spots"; the docstring of `tools/score_delta_gate.py` | `4461d0aa45` moved neither counter and still took a function 99.981 -> 94.212; `5d467157cb`/`f5fe00213f`/`620b69dc2d` lost 144/60/16 B at `dfuzzy +0.000000`, zero regressions, zero demotions. The pool word-diff catches the third class; md5 of every `.o` catches all four *and* the score-neutral ones (class #70 renumbering), which no score can see. |
 | **The toolchain caps and the never-touch islands.** Bank on sight; do not re-probe. | §5 | Per-class detail in the memory topic files. |
+| **Every sub-100 code row is one of three kinds, and the kinds are decidable without reading any source.** Same opcode sequence, different registers = colouring. Same opcode multiset, different sequence = order. Different multiset = a different operation, which only the source text chooses. | §14 | `tools/a71_mnhist_scan.py` + the partition in §14 over all 213 sub-100 rows at `97746b6bd3`: **136 colouring / 10 order / 67 operation**, no fourth kind and no reloc-only row. |
+| **The sign-in-the-constant class is EMPTY outside `trig`.** The `A + -C` recovery does not generalise; nothing else in the tree holds a value at retail's opposite sign. | §14 | `tools/a71_signscan.py` over all 1050 units: **0** units hold a mirror-signed float, and the opcode partition finds **0** `fnmsubs`/`fnmadds`/`fsubs`-for-`fmadds` rows outside the three never-touch PS islands. |
 
 ## 1. Target-unmerged dot-compare (purge-priced)
 
@@ -1276,3 +1278,73 @@ believing only because it was checked: all 1013 objects came out md5-unchanged i
 the 18 macros a file genuinely needs (`PAD_BUTTON_*`, `RENDERFLAG_*`, `TEXT_CTRL_*`, `*_OBJGROUP`)
 were kept rather than assumed redundant. "Byte-identical by construction" earns the full gate, not
 an exemption from it.
+
+## 14. Re-sweep of the sub-100 code frontier against the post-convergence laws (measured 2026-08-03)
+
+The code axis was declared converged before most of the current law set existed. This section is
+the one re-opening, run at `97746b6bd3` with the `A + -C`, per-symbol and source-text-order lenses.
+It reports a partition, two emptiness results and two re-priced rows. The verdict: **convergence
+stands** — every row the new lenses reach was already banked, and the two whose mechanism the new
+lenses genuinely corrected are still priced.
+
+### The partition, and why it is worth having
+
+`tools/a71_mnhist_scan.py` compares a function's normalised target and current instruction streams
+three ways instead of one. That splits every sub-100 row into exactly three kinds:
+
+| Kind | Test | Rows |
+|---|---|---|
+| colouring | opcode SEQUENCE identical, registers differ | 136 |
+| order | opcode MULTISET identical, sequence differs | 10 |
+| operation | opcode multiset differs | 67 |
+
+There is no fourth kind, and no row is reloc-only. The test is cheap, needs no source, and answers
+the question that decides whether a row is worth opening at all: a colouring row is #108/#82 by
+construction and no source edit reaches it, whereas an operation row is asking the code generator
+for something the source text chose. Of the 67 operation rows, 5 are the never-touch islands
+(the three `ObjModel_Transform*`, `zlbDecompress`, `modelApplyBoneTransform`), 13 are the closed
+zero-weld `li`-vs-`mr` cap of §5, and the rest are the already-banked §1-§4b rows. Exactly two of
+the 213 had no prior mechanism on record, both `li`-vs-`mr`.
+
+### Emptiness result 1: the sign-in-the-constant class does not generalise
+
+`tools/a71_signscan.py` reads the f32 and f64 words of every unit's pool sections on both sides and
+reports any value one side holds at the other's opposite sign. Over all 1050 units the answer is
+**zero**. The opcode partition agrees from the other direction: no row outside the PS islands emits
+`fnmsubs`/`fnmadds`/`fsubs` where retail emits `fmadds`/`fmsubs`/`fadds`. `trig` was the whole
+class, and `e173a2c951` closed it.
+
+### Emptiness result 2: the load-order flip has one live site, and it is priced
+
+`tools/invcmp_scan.py` finds three functions; two are never-touch islands. The third is
+`dlls/engine/6` `sky2_run`, and its banked description — "the ENTIRE residual is ONE `fneg`/`lfs`
+schedule swap, 8 spellings inert" — is **refuted**. The residual is an operand-order row: retail
+compares `best.x` against a once-loaded zero and skips with `ble-`, we load the zero first and skip
+with `bge-`. Rewriting `if (zero < best.x)` as `if (best.x > zero)` reproduces retail's compare
+exactly, both `fcmpo`/`ble-` pairs collapse into the matched region — and the surrounding scratch
+FPRs rotate f1<->f2 across ten `fmadds`, so the row measures **99.65298 -> 99.49717**. Dropping the
+`zero` temp for a bare `0.0f` gives the identical 99.49717 (MWCC interns the load either way), and
+hoisting the `zero = 0.0f;` initialiser above the search loop gives the identical 99.49717 again —
+which is the statement-order law stated as a measurement: **a dead initialiser move is inert.**
+The row is priced by #82, not by the operator.
+
+### The ternary's arm order is real, reachable, and still priced
+
+`454_DIMCannon` `DIMCannon_updateAim` is the same story on the order axis. Retail's clamp emits
+`ble-` to the assignment plus a `b` over it and leaves the result in the variable's own saved `f31`;
+ours emits `bge-` and lands the result in scratch `f3`. Retail's spelling is the one its own sibling
+two lines later already uses, `(distSq > 10.0f) ? distSq : 10.0f`, and writing it that way does make
+the `ble-` match — but MWCC then folds the `b` away and still targets `f3`, so the whole downstream
+chain diverges: **99.76923 -> 99.28205**. The in-place `if (distSq < 10.0f) { distSq = 10.0f; }`
+keeps the variable in `f31` and costs more still, **98.82051**. Both spellings are more faithful
+readings of the target than the baseline and both lose; the baseline stays.
+
+### What this says about the frontier
+
+Three of the new laws fired on real rows and none of them paid. The pattern in all three is the
+same and is worth stating once: **the new lenses locate mechanisms the old ones could not name, and
+the located mechanism is downstream of a register decision that no source edit reaches.** A row
+whose residual survives a correct operator is a colouring row wearing an operator's clothes. The
+136 colouring rows never needed re-opening, the 10 order rows are all §2/§3/§6-banked, and the 67
+operation rows are the banked §1-§4b set plus two `li`-vs-`mr`. Re-open a row only when a lens finds
+a mechanism *and* the mechanism's fix does not have to survive an allocator.
