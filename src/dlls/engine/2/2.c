@@ -637,7 +637,7 @@ typedef struct ObjSeqAnimPlacement
 {
     ObjPlacement base;
     s16 animDataIndex;
-    s16 unk1A;
+    s16 sequenceGameBit;
     s16 targetType;
     u8 pad1E;
     s8 slot;
@@ -645,7 +645,7 @@ typedef struct ObjSeqAnimPlacement
     u8 unk21;
     s8 startOnLoad;
     u8 pad23;
-    u8 unk24;
+    u8 positionDamping;
     u8 pad25[3];
 } ObjSeqAnimPlacement;
 
@@ -672,13 +672,13 @@ typedef struct ObjSeqStreamMapEntry
 STATIC_ASSERT(sizeof(ObjSeqStreamMapEntry) == 8);
 
 STATIC_ASSERT(offsetof(ObjSeqAnimPlacement, animDataIndex) == 0x18);
-STATIC_ASSERT(offsetof(ObjSeqAnimPlacement, unk1A) == 0x1A);
+STATIC_ASSERT(offsetof(ObjSeqAnimPlacement, sequenceGameBit) == 0x1A);
 STATIC_ASSERT(offsetof(ObjSeqAnimPlacement, targetType) == 0x1C);
 STATIC_ASSERT(offsetof(ObjSeqAnimPlacement, slot) == 0x1F);
 STATIC_ASSERT(offsetof(ObjSeqAnimPlacement, unk20) == 0x20);
 STATIC_ASSERT(offsetof(ObjSeqAnimPlacement, unk21) == 0x21);
 STATIC_ASSERT(offsetof(ObjSeqAnimPlacement, startOnLoad) == 0x22);
-STATIC_ASSERT(offsetof(ObjSeqAnimPlacement, unk24) == 0x24);
+STATIC_ASSERT(offsetof(ObjSeqAnimPlacement, positionDamping) == 0x24);
 STATIC_ASSERT(sizeof(ObjSeqAnimPlacement) == 0x28);
 STATIC_ASSERT(sizeof(ObjSeqAnimDataHeader) == 8);
 
@@ -1220,7 +1220,7 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
                 playerSetOverrideParentSlack(player);
             }
             setup->animDataIndex = packed | (idx & 0xf);
-            setup->unk1A = -1;
+            setup->sequenceGameBit = -1;
             if (idx != 0)
             {
                 if (gObjSeqCamPosOverridePending != 0 && setup->base.objectId == OBJSEQ_ANIMCAMERA_OBJ)
@@ -1245,7 +1245,7 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
             }
             setup->slot = slot;
             setup->startOnLoad = 1;
-            setup->unk24 = (walk2->flags & 0xf00) >> 8;
+            setup->positionDamping = (walk2->flags & 0xf00) >> 8;
             setup->base.color[0] = 2;
             setup->base.color[1] = 1;
             if (srcSeq != NULL)

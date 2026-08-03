@@ -80,7 +80,7 @@ typedef struct SnowBikeState {
     u8 unk058;              /* 0x058 */
     u8 pad059[0x3];
     u8 routeFilter;         /* 0x05c: checkpoint route filter from object params */
-    u8 unk05D;              /* 0x05d */
+    u8 routeMode;           /* 0x05d: advanceRoute mode argument, from object params */
     u8 pad05E[0x2];
     s16 *gameBitPtr;        /* 0x060: points to a pair of GameBit ids */
     u8 pad064[0x1];

@@ -661,7 +661,7 @@ void AppleOnTree_init(GameObject* obj, AppleOnTreePlacement* placement) {
         progress = (f32)placement->landedEndFraction / 100.0f;
         state->landedEnd = progress + state->fallEnd;
         state->fadeEnd = (f32)placement->fadeEndFraction / 100.0f;
-        state->waterAcceleration = (f32)placement->unk25 / 100.0f;
+        state->waterAcceleration = (f32)placement->waterAccelerationPercent / 100.0f;
         state->waterAcceleration *= 2.0f;
         state->fallScale = 1.0f;
         state->healthRestore = 0;

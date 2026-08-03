@@ -19,7 +19,7 @@ typedef struct AppleOnTreePlacement {
     u8 fallEndFraction;     /* 0x22 */
     u8 landedEndFraction;   /* 0x23 */
     u8 fadeEndFraction;     /* 0x24 */
-    s8 unk25;               /* 0x25 */
+    s8 waterAccelerationPercent; /* 0x25 */
     s16 despawnGameBit;     /* 0x26: or -1 */
 } AppleOnTreePlacement;
 
@@ -67,7 +67,7 @@ STATIC_ASSERT(offsetof(AppleOnTreePlacement, ripeEndFraction) == 0x21);
 STATIC_ASSERT(offsetof(AppleOnTreePlacement, fallEndFraction) == 0x22);
 STATIC_ASSERT(offsetof(AppleOnTreePlacement, landedEndFraction) == 0x23);
 STATIC_ASSERT(offsetof(AppleOnTreePlacement, fadeEndFraction) == 0x24);
-STATIC_ASSERT(offsetof(AppleOnTreePlacement, unk25) == 0x25);
+STATIC_ASSERT(offsetof(AppleOnTreePlacement, waterAccelerationPercent) == 0x25);
 STATIC_ASSERT(offsetof(AppleOnTreePlacement, despawnGameBit) == 0x26);
 STATIC_ASSERT(sizeof(AppleOnTreePlacement) == APPLE_ON_TREE_PLACEMENT_SIZE);
 

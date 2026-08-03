@@ -95,7 +95,7 @@
 typedef struct
 {
     f32 animSpeed; /* 0x0 */
-    u32 unk4;      /* 0x4 */
+    u32 sequenceDriven; /* 0x4 */
     u8 anim;       /* 0x8 */
     u8 next;       /* 0x9 */
     u8 alt;        /* 0xa */
@@ -190,7 +190,7 @@ void guardClaw_update(GameObject* obj, u8* state)
     flags = ((EnemyState*)state)->controlFlags;
     if (flags & BADDIE_CONTROL_JUST_TRIGGERED)
     {
-        if (gSeq11EStateTable[((EnemyState*)state)->userData1].unk4 != 0)
+        if (gSeq11EStateTable[((EnemyState*)state)->userData1].sequenceDriven != 0)
         {
             ((EnemyState*)state)->controlFlags = flags | (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
         }

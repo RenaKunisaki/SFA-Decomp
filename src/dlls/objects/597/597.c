@@ -719,7 +719,7 @@ f32 SnowBike_GetRouteIntensity(GameObject* obj, int state)
 
 STATIC_ASSERT(offsetof(SnowBikeState, posSnapshotX) == 0x0C);
 STATIC_ASSERT(offsetof(SnowBikeState, routeState) == 0x28);
-STATIC_ASSERT(offsetof(SnowBikeState, unk05D) == 0x5D);
+STATIC_ASSERT(offsetof(SnowBikeState, routeMode) == 0x5D);
 STATIC_ASSERT(offsetof(SnowBikeState, attachment) == 0x178);
 STATIC_ASSERT(offsetof(SnowBikeState, collisionFxTimer) == 0x3E4);
 STATIC_ASSERT(offsetof(SnowBikeState, yawCurrent) == 0x40C);
@@ -767,7 +767,7 @@ int SnowBike_UpdateSwingBlend(GameObject* obj, SnowBikeState* state)
         fade = 0.0f;
     }
 
-    hitResult = (*gCheckpointInterface)->advanceRoute((u8*)state, &s->routeState, fade, s->unk05D, 1, 0);
+    hitResult = (*gCheckpointInterface)->advanceRoute((u8*)state, &s->routeState, fade, s->routeMode, 1, 0);
 
     (*gCheckpointInterface)->getRouteHeading((GameObject*)obj, &s->routeState);
 
@@ -849,7 +849,7 @@ int SnowBike_UpdateAttachedPosition(GameObject* obj, SnowBikeState* state)
             }
             s->localVelZ = -SnowBike_GetRouteIntensity(obj, (int)state);
             hitResult = (*gCheckpointInterface)
-                            ->advanceRoute((u8*)state, &s->routeState, -s->localVelZ * timeDelta, s->unk05D, 1, 0);
+                            ->advanceRoute((u8*)state, &s->routeState, -s->localVelZ * timeDelta, s->routeMode, 1, 0);
             (*gCheckpointInterface)->getRouteHeading(obj, &s->routeState);
             (*gCheckpointInterface)->queueRouteRankItem(&s->rankItem);
             if (hitResult != 0)
@@ -888,7 +888,7 @@ int SnowBike_UpdateAttachedPosition(GameObject* obj, SnowBikeState* state)
     }
 
     hitResult = (*gCheckpointInterface)
-                    ->advanceRoute((u8*)state, &s->routeState, timeDelta * SnowBike_GetRouteIntensity(obj, (int)state), s->unk05D,
+                    ->advanceRoute((u8*)state, &s->routeState, timeDelta * SnowBike_GetRouteIntensity(obj, (int)state), s->routeMode,
                                    1, 0);
     (*gCheckpointInterface)->getRouteHeading(obj, &s->routeState);
     (*gCheckpointInterface)->queueRouteRankItem(&s->rankItem);
@@ -2465,7 +2465,7 @@ void SnowBike_init(GameObject* obj, SnowBikePlacement* params, int flag)
     s->checkpointIndexB = -1;
     s->checkpointIndexC = -1;
     s->routeFilter = params->param1c;
-    s->unk05D = params->param1d;
+    s->routeMode = params->param1d;
     s->posSnapshotX = obj->anim.localPosX;
     s->posSnapshotY = obj->anim.localPosY;
     s->posSnapshotZ = obj->anim.localPosZ;

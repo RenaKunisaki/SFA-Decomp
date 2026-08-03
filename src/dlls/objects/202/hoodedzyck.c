@@ -275,7 +275,7 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
         tgtA[1] = 5.0f + obj->anim.localPosY;
         tgtA[2] = -(10.0f * cosA - obj->anim.localPosZ);
         noHit = !(u8)trackGetLineIntersect(posA, tgtA, 0.0f, 3, (TrackBBoxHit*)bufA, obj,
-                                        ((EnemyState*)state)->unk261, -1, 0xff, 0);
+                                        ((EnemyState*)state)->bboxTraceFlags, -1, 0xff, 0);
         ang =
             getAngle(
                 obj->anim.localPosX - ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosX,
@@ -325,7 +325,7 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
                     tgtB[1] = 5.0f + obj->anim.localPosY;
                     tgtB[2] = -(10.0f * cosB - obj->anim.localPosZ);
                     if ((u8)trackGetLineIntersect(posB, tgtB, 0.0f, 3, (TrackBBoxHit*)bufB, obj,
-                                               ((EnemyState*)state)->unk261, -1, 0xff, 0) == 0)
+                                               ((EnemyState*)state)->bboxTraceFlags, -1, 0xff, 0) == 0)
                     {
                         if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
                         {

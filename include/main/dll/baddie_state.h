@@ -80,7 +80,7 @@ typedef struct BaddieState {
     u8 unk25C[0x25F - 0x25C];
     s8 physicsActive; /* enables the free-fall physics path: gravity integration (velY -= g*dt), floor bounce response; set when thrown/spat */
     s8 contactSfxFlags; /* bit 0x10 allows contact sfx while contactSfxMuted is set (intersect.c) */
-    u8 unk261[0x262 - 0x261];
+    u8 bboxTraceFlags; /* bbox trace filter handed to trackGetLineIntersect */
     u8 groundContact; /* nonzero while the actor is resting on a surface this frame; the shared controller and player.c re-derive velocity from the position delta when it or surfaceFlags bit 2 is set */
     u8 unk263;
 /* surfaceFlags bit: a floor was found within the ground-probe distance. Set and

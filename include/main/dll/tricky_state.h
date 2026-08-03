@@ -161,7 +161,7 @@ typedef struct TrickyState {
     u8 pad1BC[0x25F - 0x1BC];
     s8 physicsActive; /* same actor-record slot as BaddieState.physicsActive (free-fall physics enable) */
     u8 unk260;
-    u8 unk261;
+    u8 bboxTraceFlags; /* same actor-record slot as BaddieState.bboxTraceFlags */
     u8 pad262[0x264 - 0x262];
     u8 surfaceFlags; /* TRICKY_SURFACE_FLAG_* (HAS_NEARBY_FLOOR etc.) */
     u8 pad265[0x290 - 0x265];
