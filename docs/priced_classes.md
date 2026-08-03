@@ -33,6 +33,7 @@ here that the target section already says.
 | **Every sub-100 code row is one of three kinds, and the kinds are decidable without reading any source.** Same opcode sequence, different registers = colouring. Same opcode multiset, different sequence = order. Different multiset = a different operation, which only the source text chooses. | §14 | `tools/a71_mnhist_scan.py` + the partition in §14 over all 213 sub-100 rows at `97746b6bd3`: **136 colouring / 10 order / 67 operation**, no fourth kind and no reloc-only row. |
 | **The order bucket is not a third kind.** Every "order" row is one (at most two) instructions out of place inside a register permutation, so open one only when the slid instruction is the one the source text names. | §15 | All 10 order rows of §14 worked one at a time: mnemonic-sequence delta is 1 for eight of them and 2 for the other two. One paid (`renderShadows` 99.69954 -> 99.71494, the two squares of a magnitude named in retail's order); the nine that did not slid a parameter home, a rematerialised constant, a LICM hoist or a scheduler's delay-slot filler. |
 | **The carve's symbol table is an oracle no score reads.** `.bss` order is free evidence of the source's use order (§11), and a name that contradicts the carve at the same offset is a naming defect that every gate is blind to. | §16 | `tools/bss_order_scan.py` over all 1013 source objects: **21** `.bss` sections ordered differently than the carve and **109** name divergences. Exactly ONE object says `lbl_` where the carve has a recovered name — `597.c`'s `lbl_803E5AE0`, already `sSnowBikePathPointParams` in `config/GSAE01/symbols.txt`: renaming it is byte-identical across all five sections, deleting it costs `matched_data` −396 and `matched_code` −1364. |
+| **`.bss` allocates at the first use that FOLLOWS the definition** — and an object with no use after its definition is allocated at end of TU, in reverse definition order. Refines the `.bss` row above: definition order is inert only among definitions that all precede their uses. **A NonMatching unit is linked from the carve, so its `.bss` order is invisible; a Matching one is linked from our object, and a permuted `.bss` moves every DOL word that names it.** | §17 | A six-case probe battery under the live flag sets, then all 21 mis-ordered sections closed by moving definitions past their last use: `bss_order_scan` 21 -> 0, section contents identical over all 1013 objects, `complete_units` 910 -> 914. |
 | **The sign-in-the-constant class is EMPTY outside `trig`.** The `A + -C` recovery does not generalise; nothing else in the tree holds a value at retail's opposite sign. | §14 | `tools/a71_signscan.py` over all 1050 units: **0** units hold a mirror-signed float, and the opcode partition finds **0** `fnmsubs`/`fnmadds`/`fsubs`-for-`fmadds` rows outside the three never-touch PS islands. |
 
 ## 1. Target-unmerged dot-compare (purge-priced)
@@ -1508,3 +1509,94 @@ the regex excludes `union` and `[` and nothing else. Three of the other five `LB
 baseline rows are the same misclassification (`engine/7`'s three `const SnowVec3`, each read into
 a different destination, each a distinct 12-byte `.rodata` object); only `engine/21`'s and
 `Baddie`'s `const f32 lbl_... = 0.0f;` are the scalar shape the ban was written for.
+
+## 17. Where `.bss` allocates, and why it is worth `complete_units` (measured 2026-08-02)
+
+Section 11 measures that `.bss` layout is first-use order and that declaration order is inert.
+Both halves are true and neither is the whole law: `main/mm.c` defines its three `.bss` objects
+at lines 360/372/374 after `extern` declarations at 181/302, uses them first at 193/315/522, and
+lays them out in **definition** order — which no reading of "first-use order" produces, and which
+survives swapping the two definitions unchanged.
+
+### The law
+
+Measured with a six-case probe battery compiled through the real command line (both live flag
+sets agree; `/private/tmp/a74probe/`):
+
+| probe | layout |
+|---|---|
+| definitions `A B C` at the top, uses `A B C` in three functions | `A B C` |
+| definitions `A B C`, uses `C B A` | `C B A` |
+| externs at the top, uses `A B C`, definitions `A B C` at the bottom | `C B A` |
+| each definition placed immediately *after* its own use | `C B A` |
+| `A` used then defined; `B`, `C` defined then used | `B C A` |
+| `sizeof(B)` before the uses; separately, `int* pB = B;` before the uses | `A B C` — neither allocates |
+| a use of `B` inside an **uncalled static function** above the others | `B A C` |
+
+So: an object is allocated at the **first use that follows its definition**; an object with no
+such use is allocated at end of translation unit, and those come out in **reverse definition
+order**, after every allocated one. The front end's position is what counts, not the code
+generator's — an uncalled (or inlined) static's body allocates where it is written, while
+`sizeof` and a `.data` pointer initialiser do not allocate at all. Section 11's intra-expression
+depth rule survives unchanged (`A[1]+B[2]+C[3]` gives `A C B`).
+
+### It is not a compiler-version artifact
+
+83 source objects share two or more `.bss` symbols with the carve; 62 already agree. Every other
+section agrees everywhere (`.data` 290/290, `.sbss` 159/159, `.sdata` 123/123, `.sdata2` 32/32,
+`.rodata` 28/28). Among the units that agree, `main/thp/THPRead.o` and `main/audio_stream.o` are
+the specimens: their queue objects are declared `extern` where the types are, defined at the
+bottom of the file, and come out in reverse definition order — the law's second clause,
+reproduced by our compiler and matching retail. The tree already carries the shape; it was simply
+not carried where it was needed.
+
+### What the 21 rows were, and what closed them
+
+Each of `tools/bss_order_scan.py`'s 21 rows is a TU that defines the objects above the code
+instead of below it. Moving the smallest sufficient set of definitions past their last use (an
+`extern` left behind only where no header already declares the object) reproduces the carve's
+order **exactly** in all 21, from one moved definition (`track_dolphin`, `model`, `53`, `203`,
+`DBstealerwo`) to seventeen (`engine/0`). `engine/2` needed no move at all: its fifteen
+definitions already sit at the bottom of the file in the carve's order, which is precisely
+backwards — reversing that block put all fifteen where the carve has them. Every edit is
+byte-neutral by construction: `objdump -s` over all 1013 objects against a pristine build of the
+parent gives 0 differ / 0 missing / 0 new.
+
+### The payoff, and the control that proves it
+
+A NonMatching unit is linked from the retail carve, so its `.bss` order cannot reach the DOL —
+which is why this axis has no score. A **Matching** unit is linked from our own object, and a
+permuted `.bss` moves every DOL word that references it. `main/objlib` is the control: at
+100.00000 fuzzy it stayed NonMatching for exactly this reason, and it is now measured, not
+inferred — with the parent's `objlib.c` and `Object(Matching, ...)` the forced link **FAILS** the
+sha1; with the two definitions moved it passes.
+
+  objlib, textrender_drawbox, thp/dll_3b, objects/203   NonMatching -> Matching
+  complete_units 910 -> 914 of 1050, tree 99.81614 / 2517640 / 1203321 flat
+
+`main/audio.c` is the fifth 100.00000 candidate and does not flip: its `.bss` order is fixed too,
+but our `.data` is `0xe6b` bytes against the carve's `0xe70`. The carve carries a five-byte
+`gap_07_802C5D73_data` after `sMidiWadPath` that our last string does not produce, and
+`section_alignments` does not reach it — that tail is the remaining blocker, not the `.bss`.
+
+### `.sbss` is the same law with the uses removed
+
+`.sbss` layout is reverse declaration order, and 159 of 159 units already agree — but a `static`
+declared *below* the file's `.sbss` block takes slot 0 and pushes every global down one word.
+`main/model.c` was the one instance: `sGQR7Config` at line 100 against the block at 32-40. The
+carve puts a 4-byte `gap_10_803DCB6C_sbss` — an object dtk cannot name because it is a local — at
+the end, which is that static in retail's build. Declaring it first puts it last and lands all
+nine globals on the carve's offsets (name divergences 105 -> 96; the one row left in that unit is
+the unnameable local itself).
+
+### What is left on the axis
+
+`bss_order_scan` is at **0** order divergences and **96** name divergences. Of those 96, 64 are
+`.sdata2` and 28 are `ours=<a local static or an unrecovered lbl_> vs retail=gap_*` — benign by
+construction, since dtk cannot name a local. The inverse sweep asked for by §16 (we name it,
+the carve says `lbl_`) is **68 rows and is the const-recovery lane's**: they are its pool anchors
+(`gTumbleweedBushRenderScale`, `gDFropenodeOneHundredth`, `sFireFlyDespawnDelay`, ...), the same
+population as `banned_shapes_check`'s 19 `SINGLE_ELEM_CONST_ARRAY` regrowth rows, and not a
+naming defect to be "fixed" by another lane. Only **two** rows are the §16 direction — `597.c`'s
+`lbl_803E5AE0` (owner-hot) and `model.o`'s `.sbss`, closed above.
+
