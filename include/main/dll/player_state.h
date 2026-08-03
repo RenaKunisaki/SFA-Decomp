@@ -49,7 +49,7 @@ typedef enum SurfaceType {
     SURFACE_ICE           = 0x0D, /* slippery velSmoothRateBase */
     SURFACE_WATER         = 0x0E,
     SURFACE_LAVA          = 0x1A, /* periodic burn damage */
-    SURFACE_CONVEYOR      = 0x1D, /* pushes toward CFGUARDIAN_OBJGROUP */
+    SURFACE_CONVEYOR      = 0x1D, /* pushes along the nearest conveyor's scroll vector */
     SURFACE_METAL         = 0x22
 } SurfaceType;
 

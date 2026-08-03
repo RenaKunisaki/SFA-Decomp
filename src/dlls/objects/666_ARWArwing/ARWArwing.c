@@ -94,7 +94,7 @@ typedef struct ArwInitCfgAB
     int b;
 } ArwInitCfgAB;
 
-#define ARWARWING_OBJGROUP 0x26
+#define PLAYER_VEHICLE_OBJGROUP 0x26
 
 #define ARWARWING_CHILD_OBJ_LASERSHOT      0x604
 #define ARWARWING_CHILD_OBJ_BOMB_PROJECTILE 0x605
@@ -1616,7 +1616,7 @@ void arwarwing_free(GameObject* obj)
 {
     ArwingState* state = (obj)->extra;
 
-    objFreeObjectType((int)obj, ARWARWING_OBJGROUP);
+    objFreeObjectType((int)obj, PLAYER_VEHICLE_OBJGROUP);
     gArwing = NULL;
     if (state->light != NULL)
     {
@@ -1829,7 +1829,7 @@ void arwarwing_init(GameObject* obj)
     (*gPathControlInterface)->init(pathBlock, 4, 0x1040006, 1);
     (*gPathControlInterface)->setup(pathBlock, 3, gArwingPathSetupData, sArwingPathSpeeds, &cfg);
     (*gPathControlInterface)->attachObject((void*)obj, pathBlock);
-    objAddObjectType((int)obj, ARWARWING_OBJGROUP);
+    objAddObjectType((int)obj, PLAYER_VEHICLE_OBJGROUP);
     gArwing = obj;
     ObjHits_SetTargetMask(obj, 1);
     state->fullLoadout = 1;

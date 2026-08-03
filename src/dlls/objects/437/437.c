@@ -14,7 +14,6 @@
 #include "dlls/objects/229_Shield.h"
 #include "dlls/objects/284.h"
 #include "dlls/objects/315_WallAnimato.h"
-#include "dlls/objects/328_CFGuardian.h"
 #include "dlls/objects/437.h"
 #include "main/dll/dll_000D_playershadow.h"
 #include "main/dll/dll_01B5_lightfoot.h"

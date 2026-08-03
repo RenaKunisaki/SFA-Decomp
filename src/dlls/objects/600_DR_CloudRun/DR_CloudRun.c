@@ -268,7 +268,7 @@ void DR_CloudRunner_fireProjectile(GameObject* obj)
 }
 
 #define DRCLOUDRUNNER_OBJGROUP           0xa
-#define ARWARWING_OBJGROUP               0x26
+#define PLAYER_VEHICLE_OBJGROUP               0x26
 #define DRCLOUDRUNNER_AIRMETER_BGTEXTURE 0x5de /* HUD air-meter background texture id */
 
 
@@ -1076,7 +1076,7 @@ void DR_CloudRunner_free(GameObject* obj)
     CloudRunnerState* inner = (obj)->extra;
     mainSetBits(0x7aa, inner->airTimeRemaining);
     objFreeObjectType((int)obj, DRCLOUDRUNNER_OBJGROUP);
-    objFreeObjectType((int)obj, ARWARWING_OBJGROUP);
+    objFreeObjectType((int)obj, PLAYER_VEHICLE_OBJGROUP);
     (*gGameUIInterface)->airMeterShutdown();
 }
 
@@ -1304,7 +1304,7 @@ void DR_CloudRunner_init(GameObject* obj, int def)
     DR_CloudRunner_setupPath(obj, (CloudRunnerState*)inner, ((ByteFlags*)&((CloudRunnerState*)inner)->flagsBC0)->b20);
     dll_2E_initState(obj, &((CloudRunnerState*)inner)->moveLib, -0x11c7, 0x1555, 1);
     dll_2E_setReattackDelay((MoveLibState*)(inner + 0x4c4), 0x12c, 0x78);
-    objAddObjectType((int)obj, ARWARWING_OBJGROUP);
+    objAddObjectType((int)obj, PLAYER_VEHICLE_OBJGROUP);
     ((ByteFlags*)&((CloudRunnerState*)inner)->flagsBC0)->b01 = 0;
 }
 

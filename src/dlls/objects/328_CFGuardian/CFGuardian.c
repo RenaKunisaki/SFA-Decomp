@@ -32,6 +32,7 @@
 #include "sys/objects/lifecycle.h"
 #include "track/intersect_api.h"
 
+#define CFGUARDIAN_AIRBORNE_OBJECT_GROUP      0x16
 #define CFGUARDIAN_TARGET_OBJECT_GROUP        3
 #define CFGUARDIAN_SEQUENCE_TABLE_ENTRY_COUNT 15
 #define CFGUARDIAN_MESSAGE_QUEUE_CAPACITY     4
@@ -509,7 +510,7 @@ int cfguardian_updateMain(GameObject* obj) {
                         homeDistY = state->home.y - obj->anim.localPosY;
                         homeDistY = (homeDistY >= 0.0f) ? homeDistY : -homeDistY;
                         if (homeDistY < 80.0f) {
-                            objAddObjectType((int)obj, CFGUARDIAN_OBJECT_GROUP);
+                            objAddObjectType((int)obj, CFGUARDIAN_AIRBORNE_OBJECT_GROUP);
                             state->questState = CFGUARDIAN_STATE_FLY_TO_TALK;
                             ObjAnim_SetCurrentMove((int)obj, CFGUARDIAN_MOVE_FLY, 0.0f, 0);
                         }
@@ -530,7 +531,7 @@ int cfguardian_updateMain(GameObject* obj) {
                     ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
                     ObjAnim_SetCurrentEventStepFrames((ObjAnimComponent*)obj, 0x32);
                     obj->anim.velocityY = 0.0f;
-                    objFreeObjectType((int)obj, CFGUARDIAN_OBJECT_GROUP);
+                    objFreeObjectType((int)obj, CFGUARDIAN_AIRBORNE_OBJECT_GROUP);
                     {
                         f32 zero = 0.0f;
                         obj->anim.velocityX = zero;

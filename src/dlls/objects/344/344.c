@@ -2,7 +2,6 @@
 
 #include "dlls/objects/344.h"
 
-#include "dlls/objects/328_CFGuardian.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "dolphin/mtx/vec.h"
 #include "main/audio/sfx_trigger_ids.h"
@@ -502,7 +501,7 @@ void gunpowderBarrel_free(GameObject* obj, int keepLinkedTimer) {
         }
     }
     objFreeObjectType((int)obj, GUNPOWDER_BARREL_OBJECT_GROUP);
-    objFreeObjectType((int)obj, CFGUARDIAN_OBJECT_GROUP);
+    objFreeObjectType((int)obj, GUNPOWDER_BARREL_LOOSE_OBJECT_GROUP);
     if (state->fuseFrames != 0) {
         (*gExpgfxInterface)->freeSource2((u32)obj);
     }
@@ -602,7 +601,7 @@ void gunpowderBarrel_hitDetect(int obj) {
 
         if (state->heldFlags.playerHeld != 0 && collision.hit.kind == 3) {
             gunpowderBarrel_setPlayerHeldState((GameObject*)obj, 0);
-            objFreeObjectType(obj, CFGUARDIAN_OBJECT_GROUP);
+            objFreeObjectType(obj, GUNPOWDER_BARREL_LOOSE_OBJECT_GROUP);
         } else {
             collisionNormal[0] = collision.hit.normalX;
             collisionNormal[1] = collision.hit.normalY;
@@ -702,7 +701,7 @@ void gunpowderBarrel_update(GameObject* obj) {
             case GUNPOWDER_BARREL_MESSAGE_PLAYER_RELEASED:
                 gunpowderBarrel_setPlayerHeldState(obj, 0);
                 if (messageArgument != 0) {
-                    objAddObjectType((u32)obj, CFGUARDIAN_OBJECT_GROUP);
+                    objAddObjectType((u32)obj, GUNPOWDER_BARREL_LOOSE_OBJECT_GROUP);
                 }
                 break;
             }
@@ -816,10 +815,10 @@ void gunpowderBarrel_update(GameObject* obj) {
                 obj->anim.localPosZ =
                     gGunpowderBarrelReleaseOffset * -mathCosf(3.1415927f * (f32)player->anim.rotX / 32768.0f) +
                     obj->anim.localPosZ;
-                objAddObjectType((int)obj, CFGUARDIAN_OBJECT_GROUP);
+                objAddObjectType((int)obj, GUNPOWDER_BARREL_LOOSE_OBJECT_GROUP);
             }
             /* Re-register after every release transition. */
-            objAddObjectType((int)obj, CFGUARDIAN_OBJECT_GROUP);
+            objAddObjectType((int)obj, GUNPOWDER_BARREL_LOOSE_OBJECT_GROUP);
         }
         gunpowderBarrel_updatePhysics(obj);
     } else {
@@ -828,7 +827,7 @@ void gunpowderBarrel_update(GameObject* obj) {
             if (state->linkedTimerObject != NULL) {
                 timer_forceStart(state->linkedTimerObject);
             }
-            objFreeObjectType((int)obj, CFGUARDIAN_OBJECT_GROUP);
+            objFreeObjectType((int)obj, GUNPOWDER_BARREL_LOOSE_OBJECT_GROUP);
         }
         state->heldByCarryInterface = 1;
         state->heldFlags.pendingThrowVelocityCapture = 1;
@@ -858,7 +857,7 @@ void gunpowderBarrel_init(GameObject* obj, GunpowderBarrelPlacement* placement) 
     ((GunpowderBarrelState*)obj->extra)->unknown07 |= 2;
     (*gCarryableInterface)->init(obj, state, GUNPOWDER_BARREL_CARRYABLE_MODE);
     objAddObjectType((int)obj, GUNPOWDER_BARREL_OBJECT_GROUP);
-    objAddObjectType((int)obj, CFGUARDIAN_OBJECT_GROUP);
+    objAddObjectType((int)obj, GUNPOWDER_BARREL_LOOSE_OBJECT_GROUP);
     ObjMsg_AllocQueue(obj, GUNPOWDER_BARREL_MESSAGE_QUEUE_CAPACITY);
     obj->userData2 = 0;
     state->homingHeadingA = 0;

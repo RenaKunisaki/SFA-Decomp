@@ -8,6 +8,7 @@
 
 typedef enum GunpowderBarrelObjectGroup {
     GUNPOWDER_BARREL_OBJECT_GROUP = 0x19,
+    GUNPOWDER_BARREL_LOOSE_OBJECT_GROUP = 0x16,
 } GunpowderBarrelObjectGroup;
 
 typedef struct GunpowderBarrelPlacement {

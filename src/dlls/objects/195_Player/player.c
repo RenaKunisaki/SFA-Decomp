@@ -32,7 +32,6 @@
 #include "dlls/objects/315_WallAnimato.h"
 #include "dlls/objects/332.h"
 #include "dlls/objects/469_DIM2Conveyo.h"
-#include "dlls/objects/328_CFGuardian.h"
 #include "dlls/objects/437.h"
 #include "dlls/objects/488_SB_Galleon.h"
 #include "dlls/objects/common/vehicle.h"
@@ -158,6 +157,7 @@ STATIC_ASSERT(sizeof(EmitPlane) == 0x10);
 
 /* the player object's own group (joined at init, left on free) */
 #define PLAYER_OBJGROUP 0x25
+#define CONVEYOR_SURFACE_OBJGROUP 0x16
 /* groups owned by other DLLs the player queries */
 #define BABYCLOUDRUNNER_OBJGROUP 0x20 /* DLL 0x14C babycloudrunner (secondary) */
 #define LANTERNFIREFLY_OBJGROUP  0x30 /* DLL 0x10C lanternfirefly */
@@ -16101,7 +16101,7 @@ void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt)
             break;
         case SURFACE_CONVEYOR:
             queryParams[0] = 500.0f;
-            found = (void*)objGetNearestTypeTo(CFGUARDIAN_OBJECT_GROUP, obj, queryParams);
+            found = (void*)objGetNearestTypeTo(CONVEYOR_SURFACE_OBJGROUP, obj, queryParams);
             if (found != 0)
             {
                 DIM2_CONVEYOR_INTERFACE(found)

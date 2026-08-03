@@ -93,7 +93,7 @@ static const HighTopPathParams sHighTopPathParams = {{1, 1, 1, 1}};
 
 #define HIGHTOP_OBJECT_TYPE_ID 0x43
 #define HIGHTOP_OBJGROUP       0xa
-#define ARWARWING_OBJGROUP     0x26
+#define PLAYER_VEHICLE_OBJGROUP     0x26
 
 
 int hightop_stateHandler10(GameObject* obj, HighTopRuntime* stateArg)
@@ -997,7 +997,7 @@ int HighTop_getObjectTypeId(void)
 
 void HighTop_free(int obj)
 {
-    objFreeObjectType(obj, ARWARWING_OBJGROUP);
+    objFreeObjectType(obj, PLAYER_VEHICLE_OBJGROUP);
     objFreeObjectType(obj, HIGHTOP_OBJGROUP);
     (*gGameUIInterface)->airMeterShutdown();
 }
@@ -1210,7 +1210,7 @@ void HighTop_init(GameObject* obj, HighTopPlacement* placement)
     {
         *(int*)&node->flags |= 0xa10;
     }
-    objAddObjectType((int)obj, ARWARWING_OBJGROUP);
+    objAddObjectType((int)obj, PLAYER_VEHICLE_OBJGROUP);
     objAddObjectType((int)obj, HIGHTOP_OBJGROUP);
     (*gPlayerInterface)->init(obj, runtime, 11, 1);
     runtime->baddie.gravity = 0.17f;

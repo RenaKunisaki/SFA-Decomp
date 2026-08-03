@@ -33,13 +33,13 @@ src/dlls/objects/226/226.c:445:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/226/226.c:446:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/237/237.c:71:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/279_AppleOnTree/AppleOnTree.c:67:UNCALLED_STATIC_FN
-src/dlls/objects/328_CFGuardian/CFGuardian.c:253:UNCALLED_STATIC_FN
+src/dlls/objects/328_CFGuardian/CFGuardian.c:254:UNCALLED_STATIC_FN
 src/dlls/objects/362_CRrockfall/CRrockfall.c:28:UNCALLED_STATIC_FN
 src/dlls/objects/425_BombPlant/BombPlant.c:97:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/429_SH_thorntai/SH_thorntai.c:919:UNCALLED_STATIC_FN
 src/dlls/objects/437/437.c:588:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/437/437.c:589:SINGLE_ELEM_CONST_ARRAY
-src/dlls/objects/437/437.c:590:SINGLE_ELEM_CONST_ARRAY
+src/dlls/objects/437/437.c:587:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/443_SC_totembon/SC_totembon.c:74:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/443_SC_totembon/SC_totembon.c:75:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/458_DIMExplosio/DIMExplosio.c:206:SINGLE_ELEM_CONST_ARRAY

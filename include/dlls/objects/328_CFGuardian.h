@@ -15,10 +15,6 @@ typedef struct RomCurveDef RomCurveDef;
 
 #define CFGUARDIAN_LINKED_OBJECT_COUNT 6
 
-typedef enum CfGuardianObjectGroup {
-    CFGUARDIAN_OBJECT_GROUP = 0x16,
-} CfGuardianObjectGroup;
-
 typedef struct CfGuardianPlacement {
     ObjPlacement base;
     s8 initialYaw;
