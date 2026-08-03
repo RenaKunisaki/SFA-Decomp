@@ -1,7 +1,6 @@
 #include "dlls/object_descriptor.h"
 #include "main/dll/ppcwgpipe_struct.h"
 #include "dolphin/mtx.h"
-#include "dolphin/TRK_MINNOW_DOLPHIN/MWTrace.h"
 #include "track/intersect_depth_state_api.h"
 #include "track/intersect_depth_read_api.h"
 #include "main/frame_timing.h"
@@ -5526,12 +5525,12 @@ void timeListDraw(int unused1, int unused2, int unused3)
             int mins;
             if (k == 0)
             {
-                MWTRACE(6);
+                gameTextSetWindowById(6);
                 gameTextShow(0x2fa);
             }
             else if (k == 3)
             {
-                MWTRACE(7);
+                gameTextSetWindowById(7);
                 gameTextShow(0x2fa);
             }
             mins = v / 6000;
@@ -5540,7 +5539,7 @@ void timeListDraw(int unused1, int unused2, int unused3)
             p++;
         }
     }
-    MWTRACE(0xff);
+    gameTextSetWindowById(0xff);
 }
 
 /* High-score screen: draws the 9-patch box

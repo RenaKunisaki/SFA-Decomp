@@ -1,6 +1,5 @@
 #include "dlls/object_descriptor.h"
 #include "dolphin/os/OSReport.h"
-#include "dolphin/TRK_MINNOW_DOLPHIN/MWTrace.h"
 #include "main/dll/dll_003C_link.h"
 #include "track/intersect_hud_api.h"
 #include "main/gametext_box_api.h"
@@ -451,7 +450,7 @@ void Link_render(void)
                     opacity = linkItemOpacity;
                 }
 
-                MWTRACE(drawItem->boxId);
+                gameTextSetWindowById(drawItem->boxId);
                 if (linkSelected == i)
                 {
                     alpha = opacity;
@@ -547,7 +546,7 @@ void Link_render(void)
         }
     }
 
-    MWTRACE(0xff);
+    gameTextSetWindowById(0xff);
 }
 
 u32 Link_update(void)

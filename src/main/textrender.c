@@ -410,6 +410,27 @@ static inline int ctrlCharLen(u32 c)
     return 0;
 }
 
+void gameTextSetWindowById(int boxId)
+{
+    int i = gGameTextCommandCount;
+    GameTextSlot* cmd;
+    void* box;
+
+    gGameTextCommandCount = i + 1;
+    cmd = &gGameTextCommandSlots[i];
+    if (boxId == 0xff)
+    {
+        box = NULL;
+    }
+    else
+    {
+        box = &gTextBoxes[boxId];
+    }
+    gCurTextBox = box;
+    cmd->opcode = 8;
+    cmd->arg0 = boxId;
+}
+
 void gameTextSetWindow(u8* textBox)
 {
     int i;
