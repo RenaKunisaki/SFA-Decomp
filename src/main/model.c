@@ -1160,7 +1160,7 @@ static void modelChainUpdateNodes(ObjModel* model, ModelFileHeader* file, ObjMod
         entry->nodes[i].pos.z = work.z;
     }
 }
-static void modelChainApplyDampingAndJitter(ObjModel* model, int unused, ObjModelChain* chain,
+static void modelChainApplyDampingAndJitter(ObjModel* model, ModelFileHeader* unused, ObjModelChain* chain,
                                            ObjModelChainEntry* entry)
 {
     Vec vec;
@@ -1214,7 +1214,7 @@ static void modelChainApplyDampingAndJitter(ObjModel* model, int unused, ObjMode
     }
 }
 
-static void modelChainInitNodesFromJoints(int* obj, int b, int* desc)
+static void modelChainInitNodesFromJoints(int* obj, ModelFileHeader* b, int* desc)
 {
     int i;
 
@@ -1228,9 +1228,9 @@ static void modelChainInitNodesFromJoints(int* obj, int b, int* desc)
         u32 n;
         int lim;
 
-        *(f32*)(entry + 0x18) = *(f32*)(*(int*)(b + 0x3c) + jointIdx * 0x1c + 4);
-        *(f32*)&((ObjModel*)entry)->vtxBuf[0] = *(f32*)(*(int*)(b + 0x3c) + jointIdx * 0x1c + 8);
-        *(f32*)&((ObjModel*)entry)->vtxBuf[1] = *(f32*)(*(int*)(b + 0x3c) + jointIdx * 0x1c + 0xc);
+        *(f32*)(entry + 0x18) = *(f32*)((int)b->jointData + jointIdx * 0x1c + 4);
+        *(f32*)&((ObjModel*)entry)->vtxBuf[0] = *(f32*)((int)b->jointData + jointIdx * 0x1c + 8);
+        *(f32*)&((ObjModel*)entry)->vtxBuf[1] = *(f32*)((int)b->jointData + jointIdx * 0x1c + 0xc);
 
         idx = jointIdx;
         hdr = *(u8**)obj;
@@ -1331,11 +1331,11 @@ void ObjModelChain_Update(int* model, int animState, ObjModelChain* chain, ObjMo
         {
             if (chain->firstUpdateDone == 0)
             {
-                modelChainInitNodesFromJoints(model, animState, (int*)((u8*)chain->entries + off));
+                modelChainInitNodesFromJoints(model, (ModelFileHeader*)animState, (int*)((u8*)chain->entries + off));
             }
             if (getHudHiddenFrameCount() == 0)
             {
-                modelChainApplyDampingAndJitter((ObjModel*)model, animState, chain,
+                modelChainApplyDampingAndJitter((ObjModel*)model, (ModelFileHeader*)animState, chain,
                                                 (ObjModelChainEntry*)((u8*)chain->entries + off));
                 modelChainUpdateNodes((ObjModel*)model, (ModelFileHeader*)animState, chain,
                                       (ObjModelChainEntry*)((u8*)chain->entries + off), callback, i);
@@ -2154,7 +2154,7 @@ void* animLoadFromTable(u8* hdr, int id, int idx, u8* out)
     }
     return buf;
 }
-void* loadAnimation(int hdr, s16 id, int b, u8* bufout)
+void* loadAnimation(ModelFileHeader* hdr, s16 id, int b, u8* bufout)
 {
     int tmp;
     int size;
@@ -2163,7 +2163,7 @@ void* loadAnimation(int hdr, s16 id, int b, u8* bufout)
     int i;
     u32 ftype;
 
-    if ((getLoadedFileFlags(0) & 0x100000) != 0 && (ftype = *(u16*)(hdr + 4)) != 1 && ftype != 3)
+    if ((getLoadedFileFlags(0) & 0x100000) != 0 && (ftype = hdr->modelId) != 1 && ftype != 3)
     {
         return 0;
     }

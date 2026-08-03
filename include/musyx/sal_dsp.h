@@ -10,7 +10,7 @@ extern u32 oldState;
 
 int salInitDsp(u32 flags);
 int salStartDsp(void);
-void salCtrlDsp(u32 dest);
+void salCtrlDsp(s16* dest);
 u32 salGetStartDelay(void);
 void hwInitIrq(void);
 void hwEnableIrq(void);

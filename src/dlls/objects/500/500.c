@@ -86,47 +86,47 @@ int dll500_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animUpdat
     return 0;
 }
 
-void dll500_update(int obj) {
+void dll500_update(GameObject* obj) {
     PartFxSpawnParams spawnParams;
     f32 playerDistance;
     int frameIndex;
 
     playerDistance = Vec_distance((void*)((int)Obj_GetPlayerObject() + offsetof(GameObject, anim.worldPosX)),
-                                  (void*)(obj + offsetof(GameObject, anim.worldPosX)));
-    if (Sfx_IsPlayingFromObjectChannel((GameObject*)obj, DLL1F4_OBJECT_SFX_CHANNEL) == 0) {
+                                  &obj->anim.worldPosX);
+    if (Sfx_IsPlayingFromObjectChannel(obj, DLL1F4_OBJECT_SFX_CHANNEL) == 0) {
         if (playerDistance < DLL1F4_OBJECT_SFX_RANGE) {
-            Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_mushdizzylp12);
+            Sfx_PlayFromObject(obj, SFXTRIG_mushdizzylp12);
         }
     } else if (playerDistance >= DLL1F4_OBJECT_SFX_RANGE) {
-        Sfx_StopObjectChannel((GameObject*)obj, DLL1F4_OBJECT_SFX_CHANNEL);
+        Sfx_StopObjectChannel(obj, DLL1F4_OBJECT_SFX_CHANNEL);
     }
 
-    if (((GameObject*)obj)->anim.romDefNo != DLL1F4_STATIC_SEQUENCE_ID) {
-        if (((GameObject*)obj)->userData2 == 0) {
-            ((GameObject*)obj)->userData2 = 1;
-            ObjAnim_SetMoveProgress((ObjAnimComponent*)obj, (f32)(s32)randomGetRange(DLL1F4_MOVE_PROGRESS_RANDOM_MIN,
+    if (obj->anim.romDefNo != DLL1F4_STATIC_SEQUENCE_ID) {
+        if (obj->userData2 == 0) {
+            obj->userData2 = 1;
+            ObjAnim_SetMoveProgress(&obj->anim, (f32)(s32)randomGetRange(DLL1F4_MOVE_PROGRESS_RANDOM_MIN,
                                                                                      DLL1F4_MOVE_PROGRESS_RANDOM_MAX) /
                                                                 DLL1F4_MOVE_PROGRESS_DIVISOR);
         }
-        ObjAnim_AdvanceCurrentMove(obj, DLL1F4_MOVE_SPEED, timeDelta, NULL);
+        ObjAnim_AdvanceCurrentMove((int)obj, DLL1F4_MOVE_SPEED, timeDelta, NULL);
     }
 
-    if ((((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0) {
+    if ((obj->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0) {
         spawnParams.scale = DLL1F4_PARTICLE_SCALE;
         spawnParams.arg3 = DLL1F4_PARTICLE_ARG3;
         spawnParams.posX = DLL1F4_PATH_POINT_X;
         spawnParams.posY = DLL1F4_PATH_POINT_Y;
         spawnParams.posZ = DLL1F4_PATH_POINT_Z;
-        ObjPath_GetPointWorldPosition((GameObject*)obj, DLL1F4_PATH_POINT_INDEX, &spawnParams.posX, &spawnParams.posY,
+        ObjPath_GetPointWorldPosition(obj, DLL1F4_PATH_POINT_INDEX, &spawnParams.posX, &spawnParams.posY,
                                       &spawnParams.posZ, 1);
-        if (((GameObject*)obj)->anim.parent != NULL) {
-            spawnParams.posX = spawnParams.posX - ((GameObject*)obj)->anim.worldPosX;
-            spawnParams.posY = spawnParams.posY - ((GameObject*)obj)->anim.worldPosY;
-            spawnParams.posZ = spawnParams.posZ - ((GameObject*)obj)->anim.worldPosZ;
+        if (obj->anim.parent != NULL) {
+            spawnParams.posX = spawnParams.posX - obj->anim.worldPosX;
+            spawnParams.posY = spawnParams.posY - obj->anim.worldPosY;
+            spawnParams.posZ = spawnParams.posZ - obj->anim.worldPosZ;
         } else {
-            spawnParams.posX = spawnParams.posX - ((GameObject*)obj)->anim.localPosX;
-            spawnParams.posY = spawnParams.posY - ((GameObject*)obj)->anim.localPosY;
-            spawnParams.posZ = spawnParams.posZ - ((GameObject*)obj)->anim.localPosZ;
+            spawnParams.posX = spawnParams.posX - obj->anim.localPosX;
+            spawnParams.posY = spawnParams.posY - obj->anim.localPosY;
+            spawnParams.posZ = spawnParams.posZ - obj->anim.localPosZ;
         }
         for (frameIndex = 0; frameIndex < framesThisStep; frameIndex++) {
             (*gPartfxInterface)

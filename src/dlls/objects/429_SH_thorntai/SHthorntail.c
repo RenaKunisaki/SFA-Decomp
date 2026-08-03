@@ -916,7 +916,7 @@ static void SHthorntail_applyGravity(GameObject* obj) {
     obj->anim.velocityY = -(0.17f * timeDelta - obj->anim.velocityY);
 }
 
-void SHthorntail_update(int obj) {
+void SHthorntail_update(GameObject* obj) {
     u8* stateTables;
     SHthorntailState* runtime;
     SHthorntailPlacement* config;
@@ -936,12 +936,12 @@ void SHthorntail_update(int obj) {
     SHthorntailTailSwingEffectScratch effectScratch;
 
     stateTables = (u8*)&gSHthorntailDataTables;
-    runtime = ((GameObject*)obj)->extra;
-    config = (SHthorntailPlacement*)((GameObject*)obj)->anim.placementData;
+    runtime = obj->extra;
+    config = (SHthorntailPlacement*)(obj)->anim.placementData;
     if (runtime->behaviorState == '\f') {
         if (runtime->effectTimer <= SHTHORNTAIL_TIMER_DONE_THRESHOLD) {
-            if ((((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0) {
-                ObjPath_GetPointWorldPosition((GameObject*)obj, 4, &effectScratch.position.x, &effectScratch.position.y,
+            if ((obj->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0) {
+                ObjPath_GetPointWorldPosition(obj, 4, &effectScratch.position.x, &effectScratch.position.y,
                                               &effectScratch.position.z, 0);
                 (*gPartfxInterface)
                     ->spawnObject((void*)obj, SHTHORNTAIL_PARTFX_TAILSWING, effectScratch.particleParams, 0x200001, -1,
@@ -959,45 +959,45 @@ void SHthorntail_update(int obj) {
     }
     val = 0x19;
     hitResult = runtime->hitReactState =
-        ObjHitReact_Update((GameObject*)obj, hitReactEntries, val, runtime->hitReactState, (float*)runtime->hitReactScratch);
+        ObjHitReact_Update(obj, hitReactEntries, val, runtime->hitReactState, (float*)runtime->hitReactScratch);
     if (hitResult == 0) {
-        mode = (*gMapEventInterface)->getMapAct((int)((GameObject*)obj)->anim.mapEventSlot);
+        mode = (*gMapEventInterface)->getMapAct((int)(obj)->anim.mapEventSlot);
         runtime->locomotionMode = mode;
         switch (config->controlMode) {
         case SHTHORNTAIL_CONTROL_MODE_LEVEL_0:
-            SHthorntail_updateLevelControlMode0((GameObject*)obj, runtime, config);
+            SHthorntail_updateLevelControlMode0(obj, runtime, config);
             break;
         case SHTHORNTAIL_CONTROL_MODE_LEVEL_1:
-            SHthorntail_updateLevelControlMode1((GameObject*)obj, runtime, config);
+            SHthorntail_updateLevelControlMode1(obj, runtime, config);
             break;
         case SHTHORNTAIL_CONTROL_MODE_ROOT_2:
-            SHthorntail_updateRootControlMode2((GameObject*)obj, runtime);
+            SHthorntail_updateRootControlMode2(obj, runtime);
             break;
         case SHTHORNTAIL_CONTROL_MODE_ROOT_3:
-            SHthorntail_updateRootControlMode3((GameObject*)obj, runtime);
+            SHthorntail_updateRootControlMode3(obj, runtime);
             break;
         }
         if ((SHTHORNTAIL_STATE_FLAGS(stateTables)[runtime->behaviorState] & SHTHORNTAIL_STATE_FLAG_STATUS_ACTIVE) !=
             0) {
-            ((GameObject*)obj)->anim.resetHitboxFlags |= SHTHORNTAIL_OBJECT_STATUS_ACTIVE;
+            obj->anim.resetHitboxFlags |= SHTHORNTAIL_OBJECT_STATUS_ACTIVE;
         } else {
-            ((GameObject*)obj)->anim.resetHitboxFlags &= ~SHTHORNTAIL_OBJECT_STATUS_ACTIVE;
-            ((GameObject*)obj)->anim.resetHitboxFlags &= ~SHTHORNTAIL_OBJECT_STATUS_FREEZE_FRAME;
+            obj->anim.resetHitboxFlags &= ~SHTHORNTAIL_OBJECT_STATUS_ACTIVE;
+            obj->anim.resetHitboxFlags &= ~SHTHORNTAIL_OBJECT_STATUS_FREEZE_FRAME;
         }
         if ((runtime->behaviorFlags & SHTHORNTAIL_FLAG_FREEZE_MOTION) != 0) {
             if (++runtime->freezeFrameCounter > 0xa) {
                 runtime->behaviorFlags = runtime->behaviorFlags & ~SHTHORNTAIL_FLAG_FREEZE_MOTION;
             } else {
-                ((GameObject*)obj)->anim.resetHitboxFlags |= SHTHORNTAIL_OBJECT_STATUS_FREEZE_FRAME;
+                obj->anim.resetHitboxFlags |= SHTHORNTAIL_OBJECT_STATUS_FREEZE_FRAME;
             }
         }
-        if ((int)((GameObject*)obj)->anim.currentMove !=
+        if ((int)(obj)->anim.currentMove !=
             SHTHORNTAIL_STATE_MOVE_IDS(stateTables)[runtime->behaviorState]) {
-            ObjAnim_SetCurrentMove(obj, SHTHORNTAIL_STATE_MOVE_IDS(stateTables)[runtime->behaviorState],
+            ObjAnim_SetCurrentMove((int)obj, SHTHORNTAIL_STATE_MOVE_IDS(stateTables)[runtime->behaviorState],
                                    SHTHORNTAIL_TIMER_DONE_THRESHOLD, 0);
-            runtime->storedFacingAngle = ((GameObject*)obj)->anim.rotX;
+            runtime->storedFacingAngle = obj->anim.rotX;
         }
-        val = ObjAnim_AdvanceCurrentMove(obj, SHTHORNTAIL_STATE_MOVE_STEP_SCALES(stateTables)[runtime->behaviorState],
+        val = ObjAnim_AdvanceCurrentMove((int)obj, SHTHORNTAIL_STATE_MOVE_STEP_SCALES(stateTables)[runtime->behaviorState],
                                          timeDelta, &animEvents);
         if (val != 0) {
             runtime->behaviorFlags = runtime->behaviorFlags | SHTHORNTAIL_FLAG_MOVE_COMPLETE;
@@ -1007,19 +1007,19 @@ void SHthorntail_update(int obj) {
         if ((SHTHORNTAIL_STATE_FLAGS(stateTables)[runtime->behaviorState] & SHTHORNTAIL_STATE_FLAG_APPLY_ROOT_MOTION) !=
             0) {
             if ((runtime->behaviorFlags & SHTHORNTAIL_FLAG_MOVE_COMPLETE) != 0) {
-                runtime->storedFacingAngle = ((GameObject*)obj)->anim.rotX;
+                runtime->storedFacingAngle = obj->anim.rotX;
             }
             negSinFacing = -mathSinf((3.1415927f * (f32)(s32)runtime->storedFacingAngle) / 32768.0f);
             negCosFacing = -mathCosf((3.1415927f * (f32)(s32)runtime->storedFacingAngle) / 32768.0f);
-            ((GameObject*)obj)->anim.localPosX =
-                negSinFacing * -animEvents.rootDeltaZ + ((GameObject*)obj)->anim.localPosX;
-            ((GameObject*)obj)->anim.localPosZ =
-                negCosFacing * -animEvents.rootDeltaZ + ((GameObject*)obj)->anim.localPosZ;
-            ((GameObject*)obj)->anim.localPosX =
-                negCosFacing * -animEvents.rootDeltaX + ((GameObject*)obj)->anim.localPosX;
-            ((GameObject*)obj)->anim.localPosZ =
-                negSinFacing * animEvents.rootDeltaX + ((GameObject*)obj)->anim.localPosZ;
-            ((GameObject*)obj)->anim.rotX += animEvents.rootPitch;
+            obj->anim.localPosX =
+                negSinFacing * -animEvents.rootDeltaZ + obj->anim.localPosX;
+            obj->anim.localPosZ =
+                negCosFacing * -animEvents.rootDeltaZ + obj->anim.localPosZ;
+            obj->anim.localPosX =
+                negCosFacing * -animEvents.rootDeltaX + obj->anim.localPosX;
+            obj->anim.localPosZ =
+                negSinFacing * animEvents.rootDeltaX + obj->anim.localPosZ;
+            obj->anim.rotX += animEvents.rootPitch;
         }
         for (i = 0, eventId = (s8*)&animEvents; i < animEvents.triggerCount; i = i + 1) {
             if (eventId[0x13] == '\0') {
@@ -1034,7 +1034,7 @@ void SHthorntail_update(int obj) {
             }
             eventId++;
         }
-        objAudioDispatchAnimEvents((GameObject*)obj, &animEvents, 8, runtime->renderPathPoints,
+        objAudioDispatchAnimEvents(obj, &animEvents, 8, runtime->renderPathPoints,
                                    runtime->moveScratch, 1.0f, 1.0f);
         if ((SHTHORNTAIL_STATE_FLAGS(stateTables)[runtime->behaviorState] &
              SHTHORNTAIL_STATE_FLAG_DISABLE_MOVE_CONTROL) != 0) {
@@ -1042,53 +1042,53 @@ void SHthorntail_update(int obj) {
         } else {
             runtime->movementControlFlags = runtime->movementControlFlags | 1;
         }
-        dll_2E_updateLookAt((GameObject*)obj, (MoveLibState*)runtime);
+        dll_2E_updateLookAt(obj, (MoveLibState*)runtime);
         if ((SHTHORNTAIL_STATE_FLAGS(stateTables)[runtime->behaviorState] & SHTHORNTAIL_STATE_FLAG_HEAVY_HIT_REACT) !=
             0) {
-            characterCloseEyes((GameObject*)obj, &runtime->eyeAnimState);
+            characterCloseEyes(obj, &runtime->eyeAnimState);
         } else {
-            characterDoEyeAnims((GameObject*)obj, &runtime->eyeAnimState);
+            characterDoEyeAnims(obj, &runtime->eyeAnimState);
         }
         runtime->behaviorFlags = runtime->behaviorFlags & ~2;
-        if (((runtime->behaviorFlags & 4) == 0) && (val = ObjTrigger_IsSet((GameObject*)obj), val != 0)) {
+        if (((runtime->behaviorFlags & 4) == 0) && (val = ObjTrigger_IsSet(obj), val != 0)) {
             uval = randomGetRange(1, (u32)*runtime->impactSfxTable);
             runtime->behaviorFlags = runtime->behaviorFlags | SHTHORNTAIL_FLAG_IMPACT_PENDING;
             (*gObjectTriggerInterface)->runSequence(runtime->impactSfxTable[uval], (void*)obj, -1);
         }
         if (config->leashRadius != '\0') {
-            leashDistance = getXZDistanceSquared(&((GameObject*)obj)->anim.worldPosX, (float*)&config->homePosition);
+            leashDistance = getXZDistanceSquared(&obj->anim.worldPosX, (float*)&config->homePosition);
             if ((leashDistance > (f32)(s32)((u32)config->leashRadius * (u32)config->leashRadius)) &&
-                (ref = ViewFrustum_IsSphereVisible((f32*)(obj + 0xC), ((GameObject*)obj)->anim.hitboxScale *
-                                                                          ((GameObject*)obj)->anim.rootMotionScale),
+                (ref = ViewFrustum_IsSphereVisible(&obj->anim.localPosX, obj->anim.hitboxScale *
+                                                                          obj->anim.rootMotionScale),
                  ref == 0)) {
-                ref = getAngle(((GameObject*)obj)->anim.localPosX - config->homePosition.x,
-                               ((GameObject*)obj)->anim.localPosZ - config->homePosition.z);
-                ((GameObject*)obj)->anim.rotX = ref;
+                ref = getAngle(obj->anim.localPosX - config->homePosition.x,
+                               obj->anim.localPosZ - config->homePosition.z);
+                obj->anim.rotX = ref;
             }
         }
         runtime->activeMoveValid = 1;
         activeConfigToken = gSHthorntailActiveConfigToken;
         if (activeConfigToken == SHTHORNTAIL_CONFIG_TOKEN_NONE) {
             gSHthorntailActiveConfigToken =
-                ((SHthorntailPlacement*)((GameObject*)obj)->anim.placementData)->configToken;
-            ((GameObject*)obj)->anim.velocityY = -(0.17f * timeDelta - ((GameObject*)obj)->anim.velocityY);
+                ((SHthorntailPlacement*)(obj)->anim.placementData)->configToken;
+            obj->anim.velocityY = -(0.17f * timeDelta - obj->anim.velocityY);
             (*gPathControlInterface)->update((void*)obj, runtime->moveScratch, timeDelta);
             (*gPathControlInterface)->apply((void*)obj, runtime->moveScratch);
             (*gPathControlInterface)->advance((void*)obj, runtime->moveScratch, timeDelta);
-            ((GameObject*)obj)->anim.rotY = runtime->moveControlPitch;
-            ((GameObject*)obj)->anim.rotZ = runtime->moveControlRoll;
+            obj->anim.rotY = runtime->moveControlPitch;
+            obj->anim.rotZ = runtime->moveControlRoll;
         } else {
             if ((u32)activeConfigToken ==
-                (u32)((SHthorntailPlacement*)((GameObject*)obj)->anim.placementData)->configToken) {
+                (u32)((SHthorntailPlacement*)(obj)->anim.placementData)->configToken) {
                 gSHthorntailActiveConfigToken = SHTHORNTAIL_CONFIG_TOKEN_NONE;
             }
             if (('\x02' <= runtime->behaviorState) && (runtime->behaviorState <= '\x06')) {
-                ((GameObject*)obj)->anim.velocityY = -(0.17f * timeDelta - ((GameObject*)obj)->anim.velocityY);
+                obj->anim.velocityY = -(0.17f * timeDelta - obj->anim.velocityY);
                 (*gPathControlInterface)->update((void*)obj, runtime->moveScratch, timeDelta);
                 (*gPathControlInterface)->apply((void*)obj, runtime->moveScratch);
                 (*gPathControlInterface)->advance((void*)obj, runtime->moveScratch, timeDelta);
-                ((GameObject*)obj)->anim.rotY = runtime->moveControlPitch;
-                ((GameObject*)obj)->anim.rotZ = runtime->moveControlRoll;
+                obj->anim.rotY = runtime->moveControlPitch;
+                obj->anim.rotZ = runtime->moveControlRoll;
             } else {
                 (*gPathControlInterface)->attachObject((void*)obj, runtime->moveScratch);
             }

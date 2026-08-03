@@ -424,7 +424,7 @@ void ObjModel_InitResourceCaches(void);
 void ObjModel_InitScratchBuffers(void);
 void ObjModel_TouchModelCache(void);
 void* loadModelInstance(int resourceId, int arg, void* buffer);
-void* loadAnimation(int hdr, s16 id, int b, u8* bufout);
+void* loadAnimation(ModelFileHeader* hdr, s16 id, int b, u8* bufout);
 
 int loadModelAndAnimTabs(void);
 void postRenderSetAlphaBlendState(void);

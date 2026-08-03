@@ -38,7 +38,7 @@ typedef union Dll0BDescriptorTable
 void modgfx_scrollTexCoords(PartfxEffectState* state, f32* in);
 void modgfx_captureFrameBaseVertices(PartfxEffectState* state);
 void modgfx_stepVertexColor(void* state, void* p, int reinit);
-void modgfx_stepPosition(PartfxEffectState* state, int cmd, int reinit);
+void modgfx_stepPosition(PartfxEffectState* state, ModgfxVertexGroupCmd* cmd, int reinit);
 void modgfx_stepS16VectorLerp(PartfxEffectState* state, f32* params, int reinit);
 void modgfx_stepVertexAlpha(PartfxEffectState* state, ModgfxVertexGroupCmd* command, int reinit, u8 channelIndex);
 void modgfx_stepVertexScale(PartfxEffectState* state, ModgfxVertexGroupCmd* command, int reinit, u8 channelIndex);
@@ -381,7 +381,7 @@ void modgfx_stepVertexColor(void* state, void* p, int reinit)
     }
 }
 
-void modgfx_stepPosition(PartfxEffectState* state, int cmd, int reinit)
+void modgfx_stepPosition(PartfxEffectState* state, ModgfxVertexGroupCmd* cmd, int reinit)
 {
 
     if (reinit == 1)
@@ -404,20 +404,20 @@ void modgfx_stepPosition(PartfxEffectState* state, int cmd, int reinit)
                 buf[0] = posBase;
                 buf[1] = posBase;
                 buf[2] = posBase;
-                vecRotateZXY(buf, (f32*)(cmd + 0x4));
+                vecRotateZXY(buf, &cmd->valueX);
             }
-            state->posStepX = ((ModgfxVertexGroupCmd*)cmd)->valueX;
-            state->posStepY = ((ModgfxVertexGroupCmd*)cmd)->valueY;
-            state->posStepZ = ((ModgfxVertexGroupCmd*)cmd)->valueZ;
+            state->posStepX = cmd->valueX;
+            state->posStepY = cmd->valueY;
+            state->posStepZ = cmd->valueZ;
         }
         else
         {
             state->posStepX =
-                ((ModgfxVertexGroupCmd*)cmd)->valueX / (f32)(s32)state->stageFrameCountdown;
+                cmd->valueX / (f32)(s32)state->stageFrameCountdown;
             state->posStepY =
-                ((ModgfxVertexGroupCmd*)cmd)->valueY / (f32)(s32)state->stageFrameCountdown;
+                cmd->valueY / (f32)(s32)state->stageFrameCountdown;
             state->posStepZ =
-                ((ModgfxVertexGroupCmd*)cmd)->valueZ / (f32)(s32)state->stageFrameCountdown;
+                cmd->valueZ / (f32)(s32)state->stageFrameCountdown;
         }
         state->drawPosX = state->drawPosX + state->posStepX;
         state->drawPosY = state->drawPosY + state->posStepY;

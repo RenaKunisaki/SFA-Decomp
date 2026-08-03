@@ -175,7 +175,7 @@ static void loadAsset(AssetReq* req)
         *(void**)req->dest = loadModelInstance(req->resourceId, req->argC, tmp);
         break;
     case 7:
-        *(void**)req->dest = loadAnimation(req->arg24, req->resourceId, (s16)req->argC, (u8*)req->arg20);
+        *(void**)req->dest = loadAnimation((ModelFileHeader*)req->arg24, req->resourceId, (s16)req->argC, (u8*)req->arg20);
         break;
     }
 }
