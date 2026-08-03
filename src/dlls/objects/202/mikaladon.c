@@ -128,6 +128,38 @@ void mikaladon_updateWhileFrozen(int obj, u8* state, GameObject* attacker, int m
     ((EnemyState*)state)->flags2E8 |= 0x8;
 }
 
+static void mikaladonRearmAmbientSfx(GameObject* obj, MikaladonState* state)
+{
+    state->actor.ambientSfxTimer -= timeDelta;
+    if (state->actor.ambientSfxTimer <= gMikaladonZero[0])
+    {
+        state->actor.ambientSfxTimer =
+            (f32)(int)randomGetRange(MIKALADON_AMBIENT_SFX_MIN_DELAY, MIKALADON_AMBIENT_SFX_MAX_DELAY);
+        Sfx_PlayFromObject(obj, SFXTRIG_id_31);
+    }
+}
+
+static void mikaladonDropPayload(GameObject* obj)
+{
+    MikaladonDropSetup* setup;
+    GameObject* spawned;
+
+    setup = (MikaladonDropSetup*)Obj_AllocObjectSetup(sizeof(MikaladonDropSetup), SEQOBJ11E_GCROBOT_DROP_OBJ);
+    setup->base.posX = obj->anim.localPosX;
+    setup->base.posY = MIKALADON_DROP_HEIGHT_OFFSET + obj->anim.localPosY;
+    setup->base.posZ = obj->anim.localPosZ;
+    setup->base.color[0] = 1;
+    setup->base.color[1] = 1;
+    setup->base.color[2] = 0xff;
+    setup->base.color[3] = 0xff;
+    spawned = loadObjectAtObject(obj, &setup->base);
+    if (spawned != NULL)
+    {
+        spawned->ownerObj = obj;
+        Sfx_PlayFromObject(obj, SFXTRIG_id_249);
+    }
+}
+
 void mikaladon_update(GameObject* obj, MikaladonState* state)
 {
     f32 y;
@@ -171,24 +203,7 @@ void mikaladon_update(GameObject* obj, MikaladonState* state)
                 state->actor.dropTimer = 0;
                 if (Obj_IsLoadingLocked() != 0)
                 {
-                    MikaladonDropSetup* setup;
-                    GameObject* spawned;
-
-                    setup = (MikaladonDropSetup*)Obj_AllocObjectSetup(sizeof(MikaladonDropSetup),
-                                                                     SEQOBJ11E_GCROBOT_DROP_OBJ);
-                    setup->base.posX = obj->anim.localPosX;
-                    setup->base.posY = MIKALADON_DROP_HEIGHT_OFFSET + obj->anim.localPosY;
-                    setup->base.posZ = obj->anim.localPosZ;
-                    setup->base.color[0] = 1;
-                    setup->base.color[1] = 1;
-                    setup->base.color[2] = 0xff;
-                    setup->base.color[3] = 0xff;
-                    spawned = loadObjectAtObject(obj, &setup->base);
-                    if (spawned != NULL)
-                    {
-                        spawned->ownerObj = obj;
-                        Sfx_PlayFromObject(obj, SFXTRIG_id_249);
-                    }
+                    mikaladonDropPayload(obj);
                 }
             }
         }
@@ -205,13 +220,7 @@ void mikaladon_update(GameObject* obj, MikaladonState* state)
     obj->anim.velocityY = oneOverTimeDelta * (y - obj->anim.localPosY);
     obj->anim.velocityZ = oneOverTimeDelta * (cosOut - obj->anim.localPosZ);
     baddieTurnTowardLookDir(obj, state, 0xf, 7.5f, 1.0f, 0);
-    state->actor.ambientSfxTimer -= timeDelta;
-    if (state->actor.ambientSfxTimer <= gMikaladonZero[0])
-    {
-        state->actor.ambientSfxTimer =
-            (f32)(int)randomGetRange(MIKALADON_AMBIENT_SFX_MIN_DELAY, MIKALADON_AMBIENT_SFX_MAX_DELAY);
-        Sfx_PlayFromObject(obj, SFXTRIG_id_31);
-    }
+    mikaladonRearmAmbientSfx(obj, state);
     state->actor.loopSfxTimer -= timeDelta;
     if (state->actor.loopSfxTimer <= gMikaladonZero[0])
     {

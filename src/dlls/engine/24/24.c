@@ -43,6 +43,10 @@ f32 gBoneParticleDriftVelocity[2] = {10.0f, 0.0f};
 
 
 
+static void boneParticleEffect_resetDrift(void) {
+    gBoneParticleDrift = 0.0f;
+}
+
 void boneParticleEffect_func08_nop(void) {
 }
 
