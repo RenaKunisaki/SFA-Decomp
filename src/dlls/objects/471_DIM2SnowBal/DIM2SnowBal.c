@@ -198,7 +198,7 @@ void dim2snowball_update(GameObject* obj) {
 
         if (hitState != NULL) {
             ((ObjHitsPriorityState*)hitState)->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
-            *(u8*)&((ObjHitsPriorityState*)hitState)->hitVolumePriority = 4;
+            ((ObjHitsPriorityState*)hitState)->hitVolumePriority = 4;
             ((ObjHitsPriorityState*)hitState)->hitVolumeId = 2;
             ((ObjHitsPriorityState*)hitState)->objectHitMask = 16;
             ((ObjHitsPriorityState*)hitState)->skeletonHitMask = 16;
@@ -214,7 +214,7 @@ void dim2snowball_init(GameObject* obj, Dim2SnowBallPlacement* placement) {
     state->flags = (u8)(state->flags | DIM2_SNOWBALL_FLAG_FADING_IN);
     placement->targetObjectId = -1;
     *(s16*)obj = (s16)((s32)placement->rotationXByte << 8);
-    *(s8*)&obj->anim.alpha = 0;
+    obj->anim.alpha = 0;
     {
         ObjModelState* modelState = obj->anim.modelState;
 
