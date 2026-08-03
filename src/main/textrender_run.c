@@ -205,6 +205,8 @@ int gameTextGetState(int i)
     return gGameTextCharsets[i].status;
 }
 
+char sGameTextMapPathFormat[] = "gametext/%s/%s.bin";
+
 void gameTextRun(void)
 {
     GameTextRuntime* runtime;
@@ -505,6 +507,8 @@ void gameTextRun(void)
     }
     gCurTextBox = NULL;
 }
+
+char sGameTextSequencePathFormat[] = "gametext/Sequences/%d_%s.bin";
 
 static inline u32 lookupSjisGlyph(int c)
 {

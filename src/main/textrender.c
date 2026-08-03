@@ -842,8 +842,6 @@ struct
     "<uninitialised>", "<loading>", "<file empty!>", "<no file!>", "<%d's not in %s>", "<%d, doesn't have phrase %d>",
 };
 
-char sGameTextMapPathFormat[] = "gametext/%s/%s.bin";
-
 static void translateToDinoLanguage(u8* str)
 {
     int byteOff = 0;
@@ -1079,17 +1077,6 @@ SubtitleCmd* subtitleParseControlCmds(char* str, int* count)
 GameTextLoadSlot curGameTexts[GAMETEXT_LOAD_SLOT_COUNT];
 
 TextFont gGameTextCharsets[0xA0 / sizeof(TextFont)];
-
-void* jumptable_802C9E84[16] = {
-    (void*)((u8*)gameTextRun + 0x54C), (void*)((u8*)gameTextRun + 0x3B8), (void*)((u8*)gameTextRun + 0x3C8),
-    (void*)((u8*)gameTextRun + 0x354), (void*)((u8*)gameTextRun + 0x388), (void*)((u8*)gameTextRun + 0x3DC),
-    (void*)((u8*)gameTextRun + 0x408), (void*)((u8*)gameTextRun + 0x418), (void*)((u8*)gameTextRun + 0x450),
-    (void*)((u8*)gameTextRun + 0x480), (void*)((u8*)gameTextRun + 0x490), (void*)((u8*)gameTextRun + 0x4AC),
-    (void*)((u8*)gameTextRun + 0x4BC), (void*)((u8*)gameTextRun + 0x4F0), (void*)((u8*)gameTextRun + 0x4C8),
-    (void*)((u8*)gameTextRun + 0x504),
-};
-
-char sGameTextSequencePathFormat[] = "gametext/Sequences/%d_%s.bin";
 
 int GameText_FindControlCodeArgs(u8* str, u32 target, int* out)
 {
