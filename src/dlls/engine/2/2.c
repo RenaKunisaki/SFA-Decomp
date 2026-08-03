@@ -4,7 +4,7 @@
 #include "main/dll/dll_0044_cameramodeviewfinder.h"
 #include "main/dll/dll_0047_cameramodepath.h"
 #include "main/dll/dll_0049_cameramodecombat.h"
-#include "main/dll/dll_004C_camDebug.h"
+#include "main/dll/dll_004C_cameramodefixed.h"
 #include "main/dll/dll_0053_cameramodecloudrunner.h"
 #include "main/dll/dll_0056_cameramodearwing.h"
 #include "main/dll/dll_0057_cameramodetitle.h"
@@ -740,7 +740,7 @@ f32 objCurveInterpolate(ObjCurveKey* keys, int count, int frame);
 #define OBJSEQ_CAMMODE_CAMTALK      0x45 /* dll_0045_camTalk */
 #define OBJSEQ_CAMMODE_STATIC       0x48 /* dll_0048_cameramodestatic */
 #define OBJSEQ_CAMMODE_SHIPBATTLE   0x4a /* dll_004A_cameramodeshipbattle */
-#define OBJSEQ_CAMMODE_CAMDEBUG     0x4c /* dll_004C_camDebug */
+#define OBJSEQ_CAMMODE_FIXED        0x4c /* dll_004C_cameramodefixed */
 
 extern char sObjLoadAnimdataNullACRomTabWarning[];
 
@@ -2117,7 +2117,7 @@ void ObjSeq_updateCamera(void)
                 cameraPose.fov = gObjSeqCameraFov;
             }
             (*gCameraInterface)
-                ->setMode(OBJSEQ_CAMMODE_CAMDEBUG, 0, 1, sizeof(CameraModeFixedPose), &cameraPose, model[0x24], 0xff);
+                ->setMode(OBJSEQ_CAMMODE_FIXED, 0, 1, sizeof(CameraModeFixedPose), &cameraPose, model[0x24], 0xff);
             gObjSeqCameraActive = 1;
         }
         else
@@ -2185,7 +2185,7 @@ void ObjSeq_updateCamera(void)
                     cameraPose.sequenceRotation.roll = gObjSeqSavedCamRoll;
                     cameraPose.fov = gObjSeqSavedCamFov;
                     (*gCameraInterface)
-                        ->setMode(OBJSEQ_CAMMODE_CAMDEBUG, 1, 0, sizeof(CameraModeFixedPose), &cameraPose, 0, 0xff);
+                        ->setMode(OBJSEQ_CAMMODE_FIXED, 1, 0, sizeof(CameraModeFixedPose), &cameraPose, 0, 0xff);
                     break;
                 case 0x45:
                     (*gCameraInterface)->setMode(OBJSEQ_CAMMODE_CAMTALK, 1, 0, 0, NULL, gObjSeqCamModeArgD, 0xff);

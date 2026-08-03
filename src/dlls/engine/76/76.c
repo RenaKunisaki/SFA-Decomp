@@ -1,7 +1,7 @@
 /*
  * DLL 76 / 0x4C.
  */
-#include "main/dll/dll_004C_camDebug.h"
+#include "main/dll/dll_004C_cameramodefixed.h"
 
 #include "main/object_transform.h"
 

@@ -43,7 +43,7 @@
 #include "main/dll/dll_003C_link_api.h"
 #include "main/dll/FRONT/dll_39.h"
 #include "main/objseq.h"
-#include "main/dll/FRONT/dll_0034_n_filemenu.h"
+#include "main/dll/FRONT/dll_0034_n_attractmode.h"
 #include "main/dll/dll_003D_titlemenuitem.h"
 #include "main/dll/dll_0057_cameramodetitle.h"
 #include "main/audio/sfx_trigger_ids.h"

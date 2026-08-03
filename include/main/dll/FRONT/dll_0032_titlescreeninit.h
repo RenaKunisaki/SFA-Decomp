@@ -1,5 +1,5 @@
-#ifndef MAIN_DLL_FRONT_N_RAREWARE_H_
-#define MAIN_DLL_FRONT_N_RAREWARE_H_
+#ifndef MAIN_DLL_FRONT_DLL_0032_TITLESCREENINIT_H_
+#define MAIN_DLL_FRONT_DLL_0032_TITLESCREENINIT_H_
 
 #include "types.h"
 
@@ -10,7 +10,5 @@ void TitleScreenInit_frameEnd(void);
 int TitleScreenInit_frameStart(void);
 void TitleScreenInit_release(void);
 void TitleScreenInit_initialise(void);
-void n_rareware_render(void);
-void n_rareware_frameEnd(void);
 
-#endif /* MAIN_DLL_FRONT_N_RAREWARE_H_ */
+#endif /* MAIN_DLL_FRONT_DLL_0032_TITLESCREENINIT_H_ */

@@ -1,5 +1,5 @@
-#ifndef MAIN_DLL_DLL_004C_CAMDEBUG_H_
-#define MAIN_DLL_DLL_004C_CAMDEBUG_H_
+#ifndef MAIN_DLL_DLL_004C_CAMERAMODEFIXED_H_
+#define MAIN_DLL_DLL_004C_CAMERAMODEFIXED_H_
 
 #include "global.h"
 #include "main/camera_object.h"
@@ -69,4 +69,4 @@ void CameraModeFixed_init(CameraObject* camera, int unused, const CameraModeFixe
 void CameraModeFixed_release(void);
 void CameraModeFixed_initialise(void);
 
-#endif /* MAIN_DLL_DLL_004C_CAMDEBUG_H_ */
+#endif /* MAIN_DLL_DLL_004C_CAMERAMODEFIXED_H_ */

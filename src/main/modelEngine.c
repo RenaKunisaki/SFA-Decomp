@@ -332,7 +332,7 @@
 #include "main/dll/dll_0049_cameramodecombat.h"
 #include "main/dll/dll_004A_cameramodeshipbattle.h"
 #include "main/dll/dll_004B_cameramodeclimb.h"
-#include "main/dll/dll_004C_camDebug.h"
+#include "main/dll/dll_004C_cameramodefixed.h"
 #include "main/dll/dll_004D_cameramodenpcspeak.h"
 #include "main/dll/dll_004E_cameramodeworldmap.h"
 #include "main/dll/dll_004F_cameramode.h"
