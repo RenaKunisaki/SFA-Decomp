@@ -253,7 +253,7 @@ extern void* gDREarthWarriorStateHandlers[4];
 extern void* gDREarthWarriorDefaultStateHandler;
 extern StaffCollisionInterface** gEarthWarriorResource;
 extern u8 gDREarthWarriorInitData[132];
-extern EWSpeedRange lbl_8033527C[6];
+extern EWSpeedRange gDREarthWarriorSpeedRows[6];
 extern u8 gDREarthWarriorRowIndices[960];
 extern const EWPathRange gDREarthWarriorLookInitData1;
 extern const EWPathRange gDREarthWarriorLookInitData2;

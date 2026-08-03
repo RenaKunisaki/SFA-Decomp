@@ -59,8 +59,8 @@ void DFP_Torch_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visibl
     struct
     {
         s32 out[2];
-        s16 g2[4];
-        s16 g1[4];
+        s16 gridEnd[4];
+        s16 gridStart[4];
         f32 b[3];
         f32 a[3];
         f32 d[3];
@@ -110,9 +110,9 @@ void DFP_Torch_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visibl
                 stk2.b[0] = stk2.b[0] + cam->x;
                 stk2.b[1] = stk2.b[1] + cam->y;
                 stk2.b[2] = stk2.b[2] + cam->z;
-                voxmaps_worldToGrid(stk2.a, stk2.g1);
-                voxmaps_worldToGrid(stk2.b, stk2.g2);
-                if (voxmaps_traceLine((VoxPos*)stk2.g1, (VoxPos*)stk2.g2, (VoxPos*)stk2.out, NULL, 0) == 0)
+                voxmaps_worldToGrid(stk2.a, stk2.gridStart);
+                voxmaps_worldToGrid(stk2.b, stk2.gridEnd);
+                if (voxmaps_traceLine((VoxPos*)stk2.gridStart, (VoxPos*)stk2.gridEnd, (VoxPos*)stk2.out, NULL, 0) == 0)
                 {
                     state->visibleLatch = 0;
                     (*gExpgfxInterface)->freeSource((u32)obj);

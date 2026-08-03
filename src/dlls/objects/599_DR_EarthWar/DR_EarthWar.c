@@ -86,7 +86,7 @@ void DR_EarthWarrior_feed(GameObject* obj, int mode)
         state->sub.energy += 4;
         objSoundStartTimed(obj, &state->modelSoundState, 0x291, 0x1000, -1, 1);
         state->sub.maxSpeed = 4.32f;
-        lbl_8033527C[4].maxSpeed = state->sub.maxSpeed;
+        gDREarthWarriorSpeedRows[4].maxSpeed = state->sub.maxSpeed;
         break;
     default:
         break;
@@ -533,7 +533,7 @@ int DR_EarthWarrior_stateHandler01(GameObject* obj, BaddieState* baddie)
         baddie->animSpeedC = 0.0f;
     }
     baddie->animSpeedA -= interpolate(baddie->animSpeedA, warrior->animSpeedASmoothing, timeDelta);
-    if (baddie->animSpeedA <= lbl_8033527C[1].minSpeed)
+    if (baddie->animSpeedA <= gDREarthWarriorSpeedRows[1].minSpeed)
     {
         baddie->animSpeedA = 0.0f;
     }
@@ -1200,7 +1200,7 @@ u8 gDREarthWarriorInitData[132] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x09, 0x00, 0x00, 0x00, 0x0A,
 };
 
-EWSpeedRange lbl_8033527C[6] = {
+EWSpeedRange gDREarthWarriorSpeedRows[6] = {
     {0.005f, 0.24000001f}, {0.192f, 1.2960001f}, {1.248f, 2.256f},
     {2.2080002f, 3.408f},  {3.3600001f, 4.32f},  {4.3f, 4.32f},
 };
