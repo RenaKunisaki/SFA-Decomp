@@ -225,7 +225,7 @@ int dll_CE_checkDeathState(GameObject* obj, GroundBaddieState* state) {
         (*gPlayerInterface)->setState(obj, state, 6);
         state->baddie.targetObj = 0;
         state->baddie.physicsActive = 0;
-        *(s8*)&state->baddie.hasTarget = 0;
+        state->baddie.hasTarget = 0;
         ObjHits_DisableObject(obj);
         obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     } else if (state->baddie.moveDone != '\0') {
@@ -474,7 +474,7 @@ int dll_CE_updateSubmergeState(GameObject* obj, GroundBaddieState* state) {
         ObjAnim_SetCurrentMove((int)obj, 8, 0.0f, 0);
         state->baddie.targetObj = 0;
         state->baddie.physicsActive = 0;
-        *(s8*)&state->baddie.hasTarget = 0;
+        state->baddie.hasTarget = 0;
         objectState->targetState = 0;
         if ((control->coordinationFlags & DLL_CE_COORDINATION_HIDDEN) == 0) {
             obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
