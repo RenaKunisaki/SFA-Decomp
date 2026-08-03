@@ -955,11 +955,11 @@ void* mmInitRegion(u8* buf, int size, int numSlots)
     freePtr = (int)buf + slotsBytes;
     if (freePtr & 0x1f)
     {
-        *(int*)&slot->loc = (freePtr & ~0x1f) + 0x20;
+        slot->loc = (void*)((freePtr & ~0x1f) + 0x20);
     }
     else
     {
-        *(int*)&slot->loc = freePtr;
+        slot->loc = (void*)freePtr;
     }
     slot->size = after;
     slot->type = 0;
