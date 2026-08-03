@@ -32,8 +32,8 @@ typedef struct AndrossHandState
     f32 zSpringVelocity;   /* 0x1C */
     s16 shotTimer;         /* 0x20 */
     u8 sideFlag;           /* 0x22: setup[0x1B], left/right hand select */
-    s8 handState;          /* 0x23: read signed, written via *(u8*)& */
-    s8 prevState;          /* 0x24: read signed, written via *(u8*)& */
+    s8 handState;          /* 0x23 */
+    s8 prevState;          /* 0x24: latches handState as a raw byte to detect a state change */
     u8 health;             /* 0x25 */
     u8 hitCooldown;        /* 0x26 */
     u8 startupDelay;       /* 0x27 */

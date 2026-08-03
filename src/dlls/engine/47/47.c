@@ -30,7 +30,7 @@ typedef struct CarryableUpdateHeldState
 {
     u8 pad0[0x2 - 0x0];
     s16 unk2;
-    u8 pad4[0x5 - 0x4];
+    u8 unk4;
     s8 carryState;
     u8 isHeld;
     u8 flags;
@@ -288,7 +288,7 @@ void Carryable_init(GameObject* obj, void* state, int arg2)
     objAddObjectType((int)obj, CARRYABLE_OBJGROUP);
     s->unk2 = 0;
     s->carryState = CARRY_STATE_RESTING;
-    s->pad4[0] = 0;
+    s->unk4 = 0;
     s->isHeld = 0;
     (obj)->userData2 = 0;
 }

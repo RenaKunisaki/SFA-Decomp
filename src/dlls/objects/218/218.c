@@ -181,10 +181,10 @@ void pollenfragment_update(GameObject* obj)
     {
         s16toFloat(&extra->deathTimer, 0x78);
     }
-    if (*(void**)&obj->ownerObj != NULL)
+    if (obj->ownerObj != NULL)
     {
         extra->ownerObj = *(int*)&obj->ownerObj;
-        *(int*)&obj->ownerObj = 0;
+        obj->ownerObj = NULL;
     }
     if ((extra->def)->timed)
     {

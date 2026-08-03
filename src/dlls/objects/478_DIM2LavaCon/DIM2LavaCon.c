@@ -66,7 +66,7 @@ void dim2lavacontrol_tickCountdown(GameObject* obj) {
         if ((s32)state->countdown > 0) {
             state->countdown -= 1;
             if (state->countdown == 0) {
-                state->statusFlags = (s8)(*(u8*)&state->statusFlags | DIM2_LAVA_CONTROL_STATE_FLAG_COUNTDOWN_COMPLETE);
+                state->statusFlags |= DIM2_LAVA_CONTROL_STATE_FLAG_COUNTDOWN_COMPLETE;
                 mainSetBits(placement->completionGameBit, 1);
             }
         }
@@ -179,22 +179,22 @@ void dim2lavacontrol_init(GameObject* obj, const Dim2LavaControlPlacementView* p
 
     state = obj->extra;
     state->countdown = (s8)placement->countdownInitialValue;
-    state->savedCountdown = *(u8*)&state->countdown;
+    state->savedCountdown = state->countdown;
     if (mainGetBit(placement->completionGameBit) != 0) {
         gameBitState = DIM2_LAVA_CONTROL_STATE_FLAG_COUNTDOWN_COMPLETE;
     } else {
         gameBitState = 0;
     }
 
-    state->statusFlags = (s8)(*(u8*)&state->statusFlags | gameBitState);
+    state->statusFlags |= gameBitState;
     state->musicTriggerId = MUSICTRIG_WLC_Chambers;
     state->phase = DIM2_LAVA_CONTROL_PHASE_WAIT;
     if ((state->statusFlags & DIM2_LAVA_CONTROL_STATE_FLAG_COUNTDOWN_COMPLETE) != 0) {
-        *(u8*)&state->countdown = DIM2_LAVA_CONTROL_HEAT_TARGET_COMPLETE_INDEX;
+        state->countdown = DIM2_LAVA_CONTROL_HEAT_TARGET_COMPLETE_INDEX;
         state->heatEffectAlpha = gDim2LavaHeatAlphaTargets[DIM2_LAVA_CONTROL_HEAT_TARGET_COMPLETE_INDEX];
         setHeatEffectParams(gDim2LavaHeatAlphaTargets[DIM2_LAVA_CONTROL_HEAT_TARGET_COMPLETE_INDEX], 1.0f);
     } else {
-        *(u8*)&state->countdown = DIM2_LAVA_CONTROL_HEAT_TARGET_COUNTDOWN_INDEX;
+        state->countdown = DIM2_LAVA_CONTROL_HEAT_TARGET_COUNTDOWN_INDEX;
         state->heatEffectAlpha = gDim2LavaHeatAlphaTargets[DIM2_LAVA_CONTROL_HEAT_TARGET_COUNTDOWN_INDEX];
         setHeatEffectParams(gDim2LavaHeatAlphaTargets[DIM2_LAVA_CONTROL_HEAT_TARGET_COUNTDOWN_INDEX], 1.0f);
     }

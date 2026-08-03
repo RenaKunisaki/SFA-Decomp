@@ -120,7 +120,7 @@ void TexScroll2_update(GameObject* obj) {
     ident = placement->base.ident;
     if (ident == TEXSCROLL2_GAME_BIT_GATED_IDENT_A || ident == TEXSCROLL2_GAME_BIT_GATED_IDENT_B) {
         if (block != NULL) {
-            if (mainGetBit(state->gameBit) != *(u32*)&state->previousGameBitValue && state->needsApply == 0) {
+            if (mainGetBit(state->gameBit) != state->previousGameBitValue && state->needsApply == 0) {
                 TexScroll2_applyMapTextureScroll(obj, state);
                 state->needsApply = 0;
             }

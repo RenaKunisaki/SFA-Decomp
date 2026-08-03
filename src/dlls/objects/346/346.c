@@ -197,7 +197,7 @@ void explodable_computeFragmentLaunch(GameObject* obj, int chunkAddress, int pla
                 chunk->height = height;
             }
         }
-        *(u32*)&chunk->launchDelayBase = placement->launchDelayBase;
+        chunk->launchDelayBase = placement->launchDelayBase;
         if (placement->launchDelayBase != 0) {
             chunk->launchDelay = (int)(placement->launchDelayBase * (randomGetRange(0, 100) + 100)) / 200;
         } else {

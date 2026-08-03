@@ -128,7 +128,7 @@ void VFP_MiniFire_update(GameObject* obj)
         linkedGfx->objectHitMask = 0x10;
         linkedGfx->skeletonHitMask = 0x10;
     }
-    if (((void*)linkedGfx != NULL && *(void**)&linkedGfx->lastHitObject != NULL) ||
+    if (((void*)linkedGfx != NULL && linkedGfx->lastHitObject != 0) ||
         ((obj)->anim.localPosY < state->baseY && state->burstStarted == 0))
     {
         state->burstStarted = 1;

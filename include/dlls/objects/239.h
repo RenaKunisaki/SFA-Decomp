@@ -71,7 +71,7 @@ typedef struct PushableObjectDef {
     ObjPlacement base; /* 0x00 */
     s16 gameBit;       /* 0x18 */
     s16 gameBit2;      /* 0x1A */
-    void* unk1C;       /* 0x1C */
+    s32 unk1C;         /* 0x1C */
     u16 scaleRaw;      /* 0x20 */
     u8 rotXByte;       /* 0x22 */
     s8 requiredHitId;  /* 0x23: triggering hit-region ID; -1 = none */

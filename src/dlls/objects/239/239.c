@@ -1256,7 +1256,7 @@ void pushable_init(GameObject* obj, PushableObjectDef* setup) {
     state->pointCount = 0;
     activeModelSlot = (int*)((ObjAnimComponent*)obj)->banks[((ObjAnimComponent*)obj)->bankIndex];
     model = (ModelFileHeader*)*activeModelSlot;
-    state->unkB0 = *(int*)&setup->unk1C;
+    state->unkB0 = setup->unk1C;
     state->scale = (f32) * &setup->scaleRaw / PUSHABLE_SCALE_DENOM;
     state->scale = state->scale * obj->anim.modelInstance->rootMotionScaleBase;
     state->cullDistance = state->scale * (f32)modelFileHeaderGetCullDistance((ModelFileHeader*)*activeModelSlot) +
