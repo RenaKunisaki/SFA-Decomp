@@ -135,11 +135,11 @@ void WallAnimator_update(GameObject* obj) {
     }
 }
 
-void WallAnimator_init(int objAddress, WallAnimatorPlacement* placement) {
+void WallAnimator_init(GameObject* objAddress, WallAnimatorPlacement* placement) {
     WallAnimatorState* state;
 
-    state = ((GameObject*)objAddress)->extra;
-    ((GameObject*)objAddress)->anim.rotX = placement->initialRotX;
+    state = objAddress->extra;
+    objAddress->anim.rotX = placement->initialRotX;
     objAddObjectType(objAddress, WALL_ANIMATOR_GROUP_CLIMBABLE);
     objAddObjectType(objAddress, WALL_ANIMATOR_GROUP_SECONDARY);
     if (mainGetBit((int)placement->completionBit) != 0) {

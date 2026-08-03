@@ -62,13 +62,13 @@ void sc_cloudrunnera_render(GameObject* obj, int renderArg2, int renderArg3, int
 void sc_cloudrunnera_hitDetect(void) {
 }
 
-void sc_cloudrunnera_update(int obj) {
+void sc_cloudrunnera_update(GameObject* obj) {
     int eventIndex;
-    ObjSeqState* sequence = ((GameObject*)obj)->extra;
+    ObjSeqState* sequence = obj->extra;
     ScCloudrunnerAPlacement* placement;
     int objectIndex, objectCount;
 
-    placement = (ScCloudrunnerAPlacement*)((GameObject*)obj)->anim.placementData;
+    placement = (ScCloudrunnerAPlacement*)(obj)->anim.placementData;
     if (placement == NULL) {
         return;
     }
@@ -76,7 +76,7 @@ void sc_cloudrunnera_update(int obj) {
         return;
     }
     objectIndex = (*gObjectTriggerInterface)->update((u8*)obj, (f32)(u32)framesThisStepUnclamped);
-    if (objectIndex != 0 && ((GameObject*)obj)->seqIndex == SC_CLOUDRUNNER_A_SEQUENCE_PENDING) {
+    if (objectIndex != 0 && obj->seqIndex == SC_CLOUDRUNNER_A_SEQUENCE_PENDING) {
         int sequenceOwner;
         register s32 slot = sequence->slot;
         int* objects;
@@ -111,7 +111,7 @@ void sc_cloudrunnera_update(int obj) {
             ((GameObject*)sequenceOwner)->seqIndex = SC_CLOUDRUNNER_A_SEQUENCE_NONE;
             (*gObjectTriggerInterface)->endSequence(sequenceSlotCopy);
         }
-        ((GameObject*)obj)->seqIndex = SC_CLOUDRUNNER_A_SEQUENCE_NONE;
+        obj->seqIndex = SC_CLOUDRUNNER_A_SEQUENCE_NONE;
     }
 
     for (eventIndex = 0; eventIndex < sequence->eventCount; eventIndex++) {
@@ -120,7 +120,7 @@ void sc_cloudrunnera_update(int obj) {
             CmbSrcMapData* setup;
             GameObject* child;
 
-            if (((GameObject*)obj)->childObjs[0] != NULL) {
+            if (obj->childObjs[0] != NULL) {
                 break;
             }
             if (Obj_IsLoadingLocked() == 0) {
@@ -142,24 +142,24 @@ void sc_cloudrunnera_update(int obj) {
             setup->flags = CMBSRC_MAP_START_ACTIVE;
             setup->behaviorFlags = 0;
             child =
-                objSetupObject(&setup->base, SC_CLOUDRUNNER_A_CHILD_SETUP_FLAGS, ((GameObject*)obj)->anim.mapEventSlot,
-                                SC_CLOUDRUNNER_A_NO_OBJECT_INDEX, ((GameObject*)obj)->anim.parent);
+                objSetupObject(&setup->base, SC_CLOUDRUNNER_A_CHILD_SETUP_FLAGS, obj->anim.mapEventSlot,
+                                SC_CLOUDRUNNER_A_NO_OBJECT_INDEX, obj->anim.parent);
             child->anim.flags = (s16)(child->anim.flags | OBJANIM_FLAG_HIDDEN);
-            ObjLink_AttachChild((GameObject*)obj, child, 0);
+            ObjLink_AttachChild(obj, child, 0);
             Sfx_PlayFromObject(obj, SFXTRIG_en_cvdrip1c);
             break;
         }
         case SC_CLOUDRUNNER_A_EVENT_DEACTIVATE_CHILD: {
-            if (((GameObject*)obj)->childObjs[0] != NULL) {
-                cmbsrc_setExternalActive((GameObject*)((GameObject*)obj)->childObjs[0], 0);
+            if (obj->childObjs[0] != NULL) {
+                cmbsrc_setExternalActive((GameObject*)(obj)->childObjs[0], 0);
             }
             break;
         }
         case SC_CLOUDRUNNER_A_EVENT_REMOVE_CHILD: {
-            GameObject* child = ((GameObject*)obj)->childObjs[0];
+            GameObject* child = obj->childObjs[0];
 
             if (child != NULL) {
-                ObjLink_DetachChild((GameObject*)obj, child);
+                ObjLink_DetachChild(obj, child);
                 Obj_FreeObject(child);
             }
             break;
@@ -167,14 +167,14 @@ void sc_cloudrunnera_update(int obj) {
         }
     }
     {
-        GameObject* child = ((GameObject*)obj)->childObjs[0];
+        GameObject* child = obj->childObjs[0];
 
         if (child != NULL) {
-            child->anim.rotZ = ((GameObject*)obj)->anim.rotZ;
-            ((GameObject*)((GameObject*)obj)->childObjs[0])->anim.rotY =
-                (s16)(((GameObject*)obj)->anim.rotY + SC_CLOUDRUNNER_A_CHILD_YAW_OFFSET);
-            ((GameObject*)((GameObject*)obj)->childObjs[0])->anim.rotX =
-                (s16)(((GameObject*)obj)->anim.rotX + SC_CLOUDRUNNER_A_CHILD_PITCH_OFFSET);
+            child->anim.rotZ = obj->anim.rotZ;
+            ((GameObject*)(obj)->childObjs[0])->anim.rotY =
+                (s16)(obj->anim.rotY + SC_CLOUDRUNNER_A_CHILD_YAW_OFFSET);
+            ((GameObject*)(obj)->childObjs[0])->anim.rotX =
+                (s16)(obj->anim.rotX + SC_CLOUDRUNNER_A_CHILD_PITCH_OFFSET);
         }
     }
 }

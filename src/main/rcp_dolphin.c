@@ -45,7 +45,7 @@ GXColor gRcpDistortMatColor = {0xff, 0xff, 0xff, 0xff};
 typedef struct RcpDistortSlot
 {
     u8* texture;   // 0x00
-    int model;     // 0x04
+    GameObject* model; // 0x04
     int unk8;      // 0x08
     u8 colR;       // 0x0c
     u8 colG;       // 0x0d
@@ -89,7 +89,7 @@ static inline void gxLoadObjectLights(GameObject* model, ModelLightStruct** ligh
     modelLightChannels_applyGXControls();
 }
 
-static int Rcp_SetupDistortionLights(int model, f32* params);
+static int Rcp_SetupDistortionLights(GameObject* model, f32* params);
 
 static void Rcp_DrawWarpDistortionMesh(f32 a, f32 b) /* params unused; callers pass (i*32, 0.0f) */
 {
@@ -168,7 +168,7 @@ static void Rcp_DrawWarpDistortionMesh(f32 a, f32 b) /* params unused; callers p
     }
     GXCallDisplayList(gRcpWarpDistortDisplayList, gRcpWarpDistortListSize);
 }
-static int Rcp_SetupDistortionLights(int model, f32* params)
+static int Rcp_SetupDistortionLights(GameObject* model, f32* params)
 {
     ModelLightStruct* la;
     ModelLightStruct* lb;
@@ -183,22 +183,22 @@ static int Rcp_SetupDistortionLights(int model, f32* params)
     modelLightChannel_configure(2, 0, 0);
     modelLightStruct_setSpecularAttenuation(la, params[0], 0.0f);
     modelLightStruct_setSpecularColor(la, 0xff, 0, 0, 0xff);
-    modelLightStruct_loadChannelLight(0, la, (GameObject*)model);
+    modelLightStruct_loadChannelLight(0, la, model);
     modelLightStruct_setSpecularAttenuation(la, params[1], 0.0f);
     modelLightStruct_setSpecularColor(la, 0, 0, 0xff, 0xff);
-    modelLightStruct_loadChannelLight(0, la, (GameObject*)model);
+    modelLightStruct_loadChannelLight(0, la, model);
     modelLightStruct_setAngularAttenuation(la, 1.5f, 0.0f, 0.0f);
-    modelLightStruct_loadChannelLight(2, la, (GameObject*)model);
+    modelLightStruct_loadChannelLight(2, la, model);
     modelLightChannel_configure(1, 1, 0);
     modelLightChannel_configure(3, 0, 0);
     modelLightStruct_setSpecularAttenuation(lb, params[0], 0.0f);
     modelLightStruct_setSpecularColor(lb, 0xff, 0, 0, 0xff);
-    modelLightStruct_loadChannelLight(1, lb, (GameObject*)model);
+    modelLightStruct_loadChannelLight(1, lb, model);
     modelLightStruct_setSpecularAttenuation(lb, params[1], 0.0f);
     modelLightStruct_setSpecularColor(lb, 0, 0, 0xff, 0xff);
-    modelLightStruct_loadChannelLight(1, lb, (GameObject*)model);
+    modelLightStruct_loadChannelLight(1, lb, model);
     modelLightStruct_setAngularAttenuation(lb, 0.5f, 0.0f, 0.0f);
-    modelLightStruct_loadChannelLight(3, lb, (GameObject*)model);
+    modelLightStruct_loadChannelLight(3, lb, model);
     modelLightChannels_applyGXControls();
     modelLightStruct_setAngularAttenuation(la, 1.0f, 0.0f, 0.0f);
     modelLightStruct_setAngularAttenuation(lb, 1.0f, 0.0f, 0.0f);
@@ -247,7 +247,7 @@ void Rcp_UpdateDistortionTextures(void)
     int clearSlot;
     u8 group;
     int k;
-    int model[1];
+    GameObject* model[1];
     u8* tex;
 
     Rcp_SetupDistortionRenderState();
@@ -312,7 +312,7 @@ void Rcp_UpdateDistortionTextures(void)
         {
             model[0] = ((RcpDistortSlot*)slots[0])[i].model;
             skyApplyLightSlot(2 - (i - 3));
-            gxLoadObjectLights((GameObject*)model[0], lights);
+            gxLoadObjectLights(model[0], lights);
             lightGetColor(0, &outColor.r, &outColor.g, &outColor.b);
             GXSetChanAmbColor(GX_COLOR0, outColor);
             Rcp_DrawWarpDistortionMesh((f32)(i * 0x20), 0.0f);

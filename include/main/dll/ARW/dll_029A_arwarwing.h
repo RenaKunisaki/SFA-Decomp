@@ -112,7 +112,7 @@ void arwarwing_upgradeLaserLevel(GameObject* arwing);
 int arwarwing_isExplodingOrWarping(GameObject* arwing);
 int arwarwing_isBarrelRolling(GameObject* arwing);
 int arwarwing_isDead(GameObject* arwing);
-void arwarwing_updateRollAndEngine(int obj, ArwingState* state);
+void arwarwing_updateRollAndEngine(GameObject* obj, ArwingState* state);
 void arwarwing_clearAimSnapshot(GameObject* obj);
 void arwarwing_initAttachments(GameObject* obj, ArwingState* state);
 void arwarwing_spawnBomb(GameObject* obj, ArwingState* state, int side);

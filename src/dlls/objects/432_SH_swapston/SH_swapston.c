@@ -329,7 +329,7 @@ int warpstone_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animObj) {
     child = *(int*)state;
     if ((void*)child != NULL) {
         ObjAnim_AdvanceCurrentMove(
-            child, (obj)->anim.currentMoveProgress - ((GameObject*)child)->anim.currentMoveProgress, timeDelta, NULL);
+            child, obj->anim.currentMoveProgress - ((GameObject*)child)->anim.currentMoveProgress, timeDelta, NULL);
     }
 
     animUpdate->conditionCallback = (ObjAnimSequenceConditionCallback)warpstone_testEvent;
@@ -457,7 +457,7 @@ int warpstone_getObjectTypeId(void) {
 }
 
 void warpstone_free(GameObject* obj, int mode) {
-    int* state = (obj)->extra;
+    int* state = obj->extra;
     if (*(void**)state != NULL && mode == 0) {
         ObjLink_DetachChild(obj, (GameObject*)state[0]);
         Obj_FreeObject((GameObject*)state[0]);
@@ -486,7 +486,7 @@ void warpstone_render(GameObject* obj, int renderArg2, int renderArg3, int rende
 }
 
 void warpstone_hitDetect(GameObject* obj) {
-    int* state = (obj)->extra;
+    int* state = obj->extra;
     PartFxSpawnParams lightParams;
 
     if (ObjHits_GetPriorityHitWithPosition(obj, 0, 0, 0, &lightParams.posX, &lightParams.posY, &lightParams.posZ) != 0) {
@@ -523,7 +523,7 @@ typedef struct WarpStoneFlags {
 s16 gWarpStoneHeadPitchOffset;
 s16 gWarpStoneYawBias;
 
-void warpstone_update(int obj) {
+void warpstone_update(GameObject* obj) {
     int state;
     int child;
     int advanceResult;
@@ -532,22 +532,22 @@ void warpstone_update(int obj) {
     int yawDelta;
     int moveId;
 
-    state = (int)((GameObject*)obj)->extra;
+    state = (int)(obj)->extra;
     child = *(int*)state;
     if ((void*)child != NULL) {
-        ObjLink_DetachChild((GameObject*)obj, (GameObject*)child);
+        ObjLink_DetachChild(obj, (GameObject*)child);
         Obj_FreeObject(*(GameObject**)state);
         *(int*)state = 0;
     }
 
-    advanceResult = warpstone_advanceAnimEvents((GameObject*)obj, 0.0055555557f);
-    if (((GameObject*)obj)->anim.currentMove == 0) {
+    advanceResult = warpstone_advanceAnimEvents(obj, 0.0055555557f);
+    if (obj->anim.currentMove == 0) {
         if (randomChanceOneIn(100) != 0) {
-            objSoundStartTimed((GameObject*)obj, (ObjSoundState*)(state + offsetof(WarpStoneState, soundState)), 0xab,
+            objSoundStartTimed(obj, (ObjSoundState*)(state + offsetof(WarpStoneState, soundState)), 0xab,
                                -0x100, -1, 0);
         }
         if (randomChanceOneIn(500) != 0) {
-            objSoundStartTimed((GameObject*)obj, (ObjSoundState*)(state + offsetof(WarpStoneState, soundState)), 0x417,
+            objSoundStartTimed(obj, (ObjSoundState*)(state + offsetof(WarpStoneState, soundState)), 0x417,
                                -0x500, -1, 0);
         }
     }
@@ -565,14 +565,14 @@ void warpstone_update(int obj) {
     if (((WarpStoneFlags*)(state + offsetof(WarpStoneState, behaviorFlags)))->lookAtPlayer != 0) {
         target = Obj_GetPlayerObject();
     } else {
-        target = objGetNearestTypeTo(WARPSTONE_TARGET_OBJECT_GROUP, (GameObject*)obj, 0);
+        target = objGetNearestTypeTo(WARPSTONE_TARGET_OBJECT_GROUP, obj, 0);
     }
 
-    ((GameObject*)obj)->anim.localPosY += gWarpStoneHeadAimHeightOffset;
+    obj->anim.localPosY += gWarpStoneHeadAimHeightOffset;
     characterAimHeadAtTarget((GameObject*)(obj), (void*)target, (void*)(state + offsetof(WarpStoneState, headAimState)),
                              0x23, 1, gWarpStoneHeadAimMode);
     modelVec = objFindJointPoseVector((GameObject*)(obj), 0);
-    ((GameObject*)obj)->anim.localPosY -= gWarpStoneHeadAimHeightOffset;
+    obj->anim.localPosY -= gWarpStoneHeadAimHeightOffset;
 
     if (modelVec != NULL) {
         modelVec[1] = modelVec[1] + gWarpStoneHeadPitchOffset;
@@ -582,7 +582,7 @@ void warpstone_update(int obj) {
 
     if (advanceResult != 0) {
         ((WarpStoneFlags*)(state + offsetof(WarpStoneState, behaviorFlags)))->sfxFired = 0;
-        yawDelta = Obj_GetYawDeltaToObject((GameObject*)obj, target, NULL);
+        yawDelta = Obj_GetYawDeltaToObject(obj, target, NULL);
         yawDelta = (s16)(yawDelta - gWarpStoneYawBias);
         {
             int mag = yawDelta - 0x8000;
@@ -599,24 +599,24 @@ void warpstone_update(int obj) {
                 } else {
                     moveId = 0x18;
                 }
-                if (((GameObject*)obj)->anim.currentMove != moveId) {
-                    ObjAnim_SetCurrentMove(obj, moveId, 0.0f, 0);
+                if (obj->anim.currentMove != moveId) {
+                    ObjAnim_SetCurrentMove((int)obj, moveId, 0.0f, 0);
                 }
-            } else if (((GameObject*)obj)->anim.currentMove != 0) {
-                ObjAnim_SetCurrentMove(obj, 0, 0.0f, 0);
+            } else if (obj->anim.currentMove != 0) {
+                ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
                 Sfx_StopFromObject(obj, SFXTRIG_swapstone_move_long);
             } else if (randomChanceOneIn(gWarpStoneMumbleChance) != 0) {
                 Sfx_PlayFromObject(obj, SFXTRIG_swapstone_mumble);
-                ObjAnim_SetCurrentMove(obj, 0x1b, 0.0f, 0);
+                ObjAnim_SetCurrentMove((int)obj, 0x1b, 0.0f, 0);
             } else if (randomChanceOneIn(gWarpStoneYawnChance) != 0) {
                 Sfx_PlayFromObject(obj, SFXTRIG_swapstone_move_long);
-                ObjAnim_SetCurrentMove(obj, 0x1a, 0.0f, 0);
+                ObjAnim_SetCurrentMove((int)obj, 0x1a, 0.0f, 0);
             }
         }
     }
 
-    objSoundUpdateMouth((GameObject*)obj, (ObjSoundState*)(state + offsetof(WarpStoneState, soundState)));
-    characterDoEyeAnims((GameObject*)obj, (void*)(state + offsetof(WarpStoneState, eyeAnimState)));
+    objSoundUpdateMouth(obj, (ObjSoundState*)(state + offsetof(WarpStoneState, soundState)));
+    characterDoEyeAnims(obj, (void*)(state + offsetof(WarpStoneState, eyeAnimState)));
     if (mainGetBit(GAMEBIT_SH_SawWarpStoneIntro) == 0) {
         ((WarpStoneState*)state)->activated = 0;
     }
@@ -624,29 +624,29 @@ void warpstone_update(int obj) {
         return;
     }
 
-    switch (((GameObject*)obj)->anim.currentMove) {
+    switch (obj->anim.currentMove) {
     case 0x17:
     case 0x19:
-        if (((GameObject*)obj)->anim.currentMoveProgress > 0.5f) {
+        if (obj->anim.currentMoveProgress > 0.5f) {
             Sfx_PlayFromObject(obj, SFXTRIG_swapstone_move_long);
             ((WarpStoneFlags*)(state + offsetof(WarpStoneState, behaviorFlags)))->sfxFired = 1;
         }
         break;
     case 0x16:
     case 0x18:
-        if (((GameObject*)obj)->anim.currentMoveProgress > 0.5f) {
+        if (obj->anim.currentMoveProgress > 0.5f) {
             Sfx_PlayFromObject(obj, SFXTRIG_swapstone_move_short_2bc);
             ((WarpStoneFlags*)(state + offsetof(WarpStoneState, behaviorFlags)))->sfxFired = 1;
         }
         break;
     case 0x1a:
-        if (((GameObject*)obj)->anim.currentMoveProgress > 0.6f) {
+        if (obj->anim.currentMoveProgress > 0.6f) {
             Sfx_PlayFromObject(obj, SFXTRIG_swapstone_yawn);
             ((WarpStoneFlags*)(state + offsetof(WarpStoneState, behaviorFlags)))->sfxFired = 1;
         }
         break;
     case 0x1b:
-        if (((GameObject*)obj)->anim.currentMoveProgress > 0.25f) {
+        if (obj->anim.currentMoveProgress > 0.25f) {
             Sfx_PlayFromObject(obj, SFXTRIG_swapstone_move_short);
             ((WarpStoneFlags*)(state + offsetof(WarpStoneState, behaviorFlags)))->sfxFired = 1;
         }

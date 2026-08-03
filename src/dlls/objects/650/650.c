@@ -143,13 +143,13 @@ ObjectDescriptor gEarthWalkerObjDescriptor = {
 
 
 
-void earthwalker_update(int obj)
+void earthwalker_update(GameObject* obj)
 {
-    GameObject* ewObj = (GameObject*)obj;
+    GameObject* ewObj = obj;
     EarthWalkerState* ewState = ewObj->extra;
     int prevAnim;
 
-    if ((ewState->hitReactState = ObjHitReact_Update((GameObject*)obj, gEarthWalkerHitReactEntries, 1, ewState->hitReactState,
+    if ((ewState->hitReactState = ObjHitReact_Update(obj, gEarthWalkerHitReactEntries, 1, ewState->hitReactState,
                                                      &ewState->hitReactStepScale)) != 0)
     {
         return;
@@ -159,25 +159,25 @@ void earthwalker_update(int obj)
     {
         if (ewObj->anim.currentMove != 0x203)
         {
-            ObjAnim_SetCurrentMove(obj, 0x203, gEarthWalkerMoveStartProgress, 0);
+            ObjAnim_SetCurrentMove((int)obj, 0x203, gEarthWalkerMoveStartProgress, 0);
         }
     }
     else
     {
         if (ewObj->anim.currentMove != 2)
         {
-            ObjAnim_SetCurrentMove(obj, 2, gEarthWalkerMoveStartProgress, 0);
+            ObjAnim_SetCurrentMove((int)obj, 2, gEarthWalkerMoveStartProgress, 0);
         }
     }
 
     prevAnim = ewState->animPhase;
-    dll_2E_updateLookAt((GameObject*)obj, (MoveLibState*)ewState);
+    dll_2E_updateLookAt(obj, (MoveLibState*)ewState);
     if (ewState->encounterType >= 4 && ewState->encounterType <= 7 && prevAnim != 1 && ewState->animPhase == 1)
     {
-        Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_mammoth);
+        Sfx_PlayFromObject(obj, SFXTRIG_mammoth);
     }
 
-    characterDoEyeAnims((GameObject*)obj, &ewState->eyeAnimState);
+    characterDoEyeAnims(obj, &ewState->eyeAnimState);
     if (ewState->flags & 1)
     {
         return;

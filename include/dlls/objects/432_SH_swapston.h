@@ -65,7 +65,7 @@ int warpstone_getObjectTypeId(void);
 void warpstone_free(GameObject* obj, int mode);
 void warpstone_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void warpstone_hitDetect(GameObject* obj);
-void warpstone_update(int obj);
+void warpstone_update(GameObject* obj);
 void warpstone_init(GameObject* obj, const WarpStonePlacement* placement);
 void warpstone_release(void);
 void warpstone_initialise(void);

@@ -68,7 +68,7 @@ int WallAnimator_getExtraSize(void);
 void WallAnimator_free(GameObject* obj);
 void WallAnimator_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void WallAnimator_update(GameObject* obj);
-void WallAnimator_init(int objAddress, WallAnimatorPlacement* placement);
+void WallAnimator_init(GameObject* objAddress, WallAnimatorPlacement* placement);
 
 extern ObjectDescriptor14 gWallAnimatorObjDescriptor;
 
