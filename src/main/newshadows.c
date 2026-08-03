@@ -764,8 +764,8 @@ void renderShadows(int unused0, int unused1, int unused2)
             dirZ = -vAz;
             gNewShadowLightAngleX = (u16)getAngle(dirX, vAz);
             {
-                f32 sqB = vAz * vAz;
                 f32 sqA = vAx * vAx;
+                f32 sqB = vAz * vAz;
                 gNewShadowLightAngleY = (u16)getAngle(sqrtf(sqA + sqB), vAy) - 0x3fc8;
             }
             slot->pitch = gNewShadowLightAngleY;
