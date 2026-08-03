@@ -5,9 +5,9 @@ src/dlls/engine/15/15.c:134:SINGLE_ELEM_CONST_ARRAY
 src/dlls/engine/20_Hcurves/Hcurves.c:1207:UNCALLED_STATIC_FN
 src/dlls/engine/20_Hcurves/Hcurves_romcurve.c:83:UNCALLED_STATIC_FN
 src/dlls/engine/21/21.c:1769:LBL_CONST_DEF
+src/dlls/engine/7/7.c:720:LBL_CONST_DEF
+src/dlls/engine/7/7.c:721:LBL_CONST_DEF
 src/dlls/engine/7/7.c:722:LBL_CONST_DEF
-src/dlls/engine/7/7.c:723:LBL_CONST_DEF
-src/dlls/engine/7/7.c:724:LBL_CONST_DEF
 src/dlls/objects/195_Player/player.c:1360:UNCALLED_STATIC_FN
 src/dlls/objects/195_Player/player.c:1378:UNCALLED_STATIC_FN
 src/dlls/objects/196_Tricky/tricky.c:1120:UNCALLED_STATIC_FN
@@ -18,7 +18,7 @@ src/dlls/objects/196_Tricky/tricky.c:618:UNCALLED_STATIC_FN
 src/dlls/objects/196_Tricky/tricky.c:903:UNCALLED_STATIC_FN
 src/dlls/objects/196_Tricky/tricky.c:917:UNCALLED_STATIC_FN
 src/dlls/objects/201_Baddie/Baddie.c:206:SINGLE_ELEM_CONST_ARRAY
-src/dlls/objects/201_Baddie/Baddie.c:3099:LBL_CONST_DEF
+src/dlls/objects/201_Baddie/Baddie.c:3098:LBL_CONST_DEF
 src/dlls/objects/202/hagabon_mk2.c:147:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/202/hagabon_mk2.c:149:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/202/hagabon_mk2.c:151:SINGLE_ELEM_CONST_ARRAY
