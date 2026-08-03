@@ -118,7 +118,7 @@ int collectible_getHitRegionId(GameObject* obj) {
         f32 worldX = obj->anim.worldPosX;
         f32 worldY = obj->anim.worldPosY;
         f32 worldZ = obj->anim.worldPosZ;
-        *(u32*)&state->hitRegionId = (u16)ObjHitRegion_FindContainingId(worldX, worldY, worldZ);
+        state->hitRegionId = (u16)ObjHitRegion_FindContainingId(worldX, worldY, worldZ);
     }
     return state->hitRegionId;
 }
@@ -636,9 +636,9 @@ void collectible_init(GameObject* obj, CollectibleSetup* setup) {
     }
     state->hideGameBit = setup->hideGameBit;
     if (state->hideGameBit != COLLECTIBLE_NO_GAME_BIT) {
-        *(u32*)&obj->userData1 = mainGetBit(state->hideGameBit);
+        obj->userData1 = mainGetBit(state->hideGameBit);
     } else {
-        *(u32*)&obj->userData1 = 0;
+        obj->userData1 = 0;
     }
     if (obj->userData1 == 0) {
         modelData = obj->anim.modelInstance->extraSetupData;
