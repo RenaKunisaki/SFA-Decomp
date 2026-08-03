@@ -33,8 +33,9 @@ Nine pattern classes, each carrying its citation:
                   to force a pool symbol. Write the plain literal instead.
                   NOTE: an lbl_-named ARRAY or struct table is NOT this ban -- it
                   is real data whose name has not been recovered yet. Only scalar
-                  definitions are flagged, and --strict-lbl additionally reports
-                  arrays as naming debt (informational, never gating).
+                  definitions are flagged (an aggregate is told apart by its brace
+                  initialiser), and --strict-lbl additionally reports arrays and
+                  struct tables as naming debt (informational, never gating).
   SINGLE_ELEM_CONST_ARRAY
                   const T name[1] = {...} whose only reads are name[0] -- a
                   one-element array written to pin a pool slot. Two-pass: the
@@ -122,13 +123,18 @@ RE_REGISTER_ASM = re.compile(r"\bregister\b[^;]*\basm\s*\(")
 # file-scope (column 0) volatile object of floating-point type
 RE_VOLATILE_DECL = re.compile(
     r"^(?:extern\s+)?volatile\s+(?:const\s+)?(?:f32|f64|float|double)\b")
-# scalar lbl_ const definition: no '[' before '=' -> not an array/table
+# scalar lbl_ const definition: no '[' before '=' -> not an array, and no
+# brace initialiser after it -> not a struct table either. Both of those are
+# real data whose name has not been recovered, which this class exempts.
 RE_LBL_SCALAR = re.compile(
     r"^\s*(?:static\s+)?const\s+(?!union\b)[A-Za-z_]\w*\s*\*?\s*"
-    r"(lbl_[0-9A-Fa-f]{8})\s*=")
-RE_LBL_UNION = re.compile(r"^\s*(?:static\s+)?const\s+union\b[^;]*?(lbl_[0-9A-Fa-f]{8})\s*=")
+    r"(lbl_[0-9A-Fa-f]{8})\s*=(?!\s*\{)")
+# the union disguise, including the inline `const union { f32 f; } lbl_ = ...`
+# form whose member list carries a ';' of its own
+RE_LBL_UNION = re.compile(r"^\s*(?:static\s+)?const\s+union\b.*?(lbl_[0-9A-Fa-f]{8})\s*=")
 RE_LBL_ARRAY = re.compile(
-    r"^\s*(?:static\s+)?const\s+[A-Za-z_]\w*\s*\*?\s*(lbl_[0-9A-Fa-f]{8})\s*\[")
+    r"^\s*(?:static\s+)?const\s+[A-Za-z_]\w*\s*\*?\s*(lbl_[0-9A-Fa-f]{8})"
+    r"\s*(?:\[|=\s*\{)")
 RE_ONE_ELEM = re.compile(
     r"^\s*(?:static\s+)?const\s+[A-Za-z_]\w*\s*\*?\s*([A-Za-z_]\w*)\s*\[\s*1\s*\]\s*=")
 # A function DEFINITION at column 0: a return type, then the name and '(', with

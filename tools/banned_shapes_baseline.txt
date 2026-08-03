@@ -5,9 +5,6 @@ src/dlls/engine/15/15.c:134:SINGLE_ELEM_CONST_ARRAY
 src/dlls/engine/20_Hcurves/Hcurves.c:1207:UNCALLED_STATIC_FN
 src/dlls/engine/20_Hcurves/Hcurves_romcurve.c:83:UNCALLED_STATIC_FN
 src/dlls/engine/21/21.c:1769:LBL_CONST_DEF
-src/dlls/engine/7/7.c:720:LBL_CONST_DEF
-src/dlls/engine/7/7.c:721:LBL_CONST_DEF
-src/dlls/engine/7/7.c:722:LBL_CONST_DEF
 src/dlls/objects/195_Player/player.c:1360:UNCALLED_STATIC_FN
 src/dlls/objects/195_Player/player.c:1378:UNCALLED_STATIC_FN
 src/dlls/objects/196_Tricky/tricky.c:1120:UNCALLED_STATIC_FN
@@ -26,7 +23,7 @@ src/dlls/objects/202/mikaladon.c:94:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/202/mikaladon.c:96:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/202/vambat.c:101:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/202/vambat.c:99:SINGLE_ELEM_CONST_ARRAY
-src/dlls/objects/203/203.c:206:SINGLE_ELEM_CONST_ARRAY
+src/dlls/objects/203/203.c:205:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/213_Kaldachom/Kaldachom.c:503:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/226/226.c:444:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/226/226.c:445:SINGLE_ELEM_CONST_ARRAY
@@ -57,9 +54,8 @@ src/dlls/objects/521_WM_LevelCon/WM_LevelCon.c:84:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/521_WM_LevelCon/WM_LevelCon.c:85:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/521_WM_LevelCon/WM_LevelCon.c:86:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/521_WM_LevelCon/WM_LevelCon.c:87:SINGLE_ELEM_CONST_ARRAY
-src/dlls/objects/578_DBstealerwo/DBstealerwo.c:2261:SINGLE_ELEM_CONST_ARRAY
+src/dlls/objects/578_DBstealerwo/DBstealerwo.c:2260:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/589_BossDrakor/BossDrakor.c:230:SINGLE_ELEM_CONST_ARRAY
-src/dlls/objects/597/597.c:71:LBL_CONST_DEF
 src/dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c:1239:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c:1240:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/599_DR_EarthWar/DR_EarthWar.c:134:UNCALLED_STATIC_FN
