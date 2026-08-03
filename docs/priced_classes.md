@@ -26,7 +26,8 @@ here that the target section already says.
 | **`.sdata2` scores all-or-nothing per section, so a partial fix is worth strictly less than zero.** Removing five of a section's words rotates the whole pool. | §6b, §8; `docs/source_shape_levers.md` "a section scores ALL-OR-NOTHING" | `4461d0aa45`: `trig` `.sdata2` 100.0 -> 61.458 at *unchanged section size*, unit `matched_data` 192 -> 0. |
 | **A value can carry its own sign.** Retail stores `-C` in the pool and adds; spelling the same polynomial as `A - C` mints words retail never had and emits `fnmsubs` for `fmadds`. | §6b (standing verdict) | 44 sites in `src/main/trig.c` rewritten `A + -C`: tree 99.811966 -> 99.815640, `.text` 95.926 -> 99.975, `.sdata2` 61.458 -> 93.750, all eight sin/cos functions back to their pre-purge figures to the digit, 0 REGRESSED. An operator deleted, no shape added. |
 | **Restore is not declare.** If the pool's value *multiset* already matches and only the positions are wrong, you are looking at a deleted function, not a missing constant - MWCC interns plain literals across a TU, so restoring a body mints nothing new. | `docs/purge_campaign_audit.md`, "The recovery law" | `997e72e3e1`: `tricky` differed in zero words and 101 of 102 positions, `player` in zero words and 8 of 196; restoring seven deleted bodies took `matched_data` +1192 with both pools byte-identical to the carve. Where the TU *also* carries a one-element anchor minting the same value, delete the anchor (`558c86a421`). |
-| **Price the opaque-extern crutch PER SYMBOL, not per unit**, and use the oracle before assuming one: a never-defined extern is a crutch only if retail's own split object defines the symbol; a carve-blob symbol is faithful. | §9, §9b, §10b | The `nm` oracle over retail's split objects; `engine/5`'s lone missing word is the priced crutch - defining it buys +176 data and costs `renderSunAndMoon` 99.476 -> 98.214, a net tree loss. |
+| **Price the opaque-extern crutch PER SYMBOL, not per unit**, and use the oracle before assuming one: a never-defined extern is a crutch only if retail's own split object defines the symbol; a carve-blob symbol is faithful. | §9, §9b, §10b | The `nm` oracle over retail's split objects. `engine/5` used to be the specimen here ("+176 data costs `renderSunAndMoon` 99.476 -> 98.214, a net tree loss") and is now the counter-example: 99.476 was bought by an extern nothing defined, and §18's cure takes the same +176 at 96.828 -> **98.840**. |
+| **A crutch that blocks a sink is a CODE row wearing a pool row's clothes**, and the cure is to delete the single-def/single-use temp, not to hide the constant from it. A price is only valid against the baseline it was measured at. | §18 | `engine/5` `renderSunAndMoon` 96.828 -> 98.840 with `.sdata2` 100.0 (`5bf6287066`); `engine/68` `firstPersonDoControls` stays 100.0 with `.sdata2` byte-identical, +128 data (`ab2a7a3016`), a row §8 had priced at 128 B. `tools/fwdsub_scan.py` (35 sites, every curable one already at 100), `tools/crutch_sink_scan.py` (45 pins, 40 load-bearing, 5 not), `tools/ledger_baseline_audit.py`. |
 | **The defining TU proposes, the reading TU disposes**, and a declaration can only move into a header that can NAME the type - type visibility, not the include, is the constraint. Extern arrays stay UNSIZED. | §13 | See §13; every rule there was established md5-identical over all 1013 source objects. |
 | **The gate blind spots, and why md5-of-every-`.o` dominates.** Demotion blinds the DOL gate; `matched_code`/`matched_functions` are threshold counters; a pool rotation inside an already-NonMatching unit is free on every score axis. | `docs/purge_campaign_audit.md`, "Three sensor blind spots"; the docstring of `tools/score_delta_gate.py` | `4461d0aa45` moved neither counter and still took a function 99.981 -> 94.212; `5d467157cb`/`f5fe00213f`/`620b69dc2d` lost 144/60/16 B at `dfuzzy +0.000000`, zero regressions, zero demotions. The pool word-diff catches the third class; md5 of every `.o` catches all four *and* the score-neutral ones (class #70 renumbering), which no score can see. |
 | **The toolchain caps and the never-touch islands.** Bank on sight; do not re-probe. | §5 | Per-class detail in the memory topic files. |
@@ -301,7 +302,20 @@ so its 14.634 is pure source-text order. Reproduce the original loss with
 
 The last 192 bytes of `trig` `.sdata2` are section 10's problem, not this one: retail interned
 `fsin16Approx`'s cosine coefficients before its sine ones, and the case reorder that reproduces
-it (reaching 100.0, +192) moves the emitted blocks and costs that function 98.152 -> 94.667.
+it moves the emitted blocks and costs that function 94.667.
+
+**RE-PRICED at `739030b8ce` (A77).** Both figures in the sentence above were measured against the
+post-purge state and neither survives it. The `A + -C` recovery took `trig` `.sdata2` from 0 to
+**93.75**, so the case reorder is worth **+12 bytes, not +192** — five words differ, all of them a
+rotation of one group past the other (`0.99999f, -2.8707542e-10f, 1.3332733e-20f` ahead of
+`0.000023945184f, -2.2078018e-15f`), and `tools/pool_value_sequence.py` reads DIFF 0, so the values
+and the request order are already retail's. And the cost is now measured from **99.9697**, not
+98.152: swapping the first two case arms of `fsin16Approx` gives `.sdata2` **93.75 -> 100.0** with
+`fsin16Approx` **99.9697 -> 94.667**, unit `.text` 99.975464 -> 99.43865 — about **-14 bytes of
+matched_code for +12 of matched_data**, and one function off 100.0. STILL DECLINED, and now for
+the opposite reason: the gain shrank by 16x while the cost grew. Do not re-probe; the arms are
+laid out in source order, not in case-value order, which was the only hypothesis that could have
+made it free.
 
 ## Related recurring REGRESSION class (fixable — not priced, listed so windows get scanned)
 
@@ -448,7 +462,7 @@ do not re-survey it.
 | unit | gap | mechanism | probe result |
 | --- | --- | --- | --- |
 | `679_ARWProximit` | 64 | retail mints `0.0f, 100.0f, 127.0f` ahead of `arwproximit_render`'s `1.0f`; all three are read only from inside `arwproximit_update` | 1-element-array form gives **120/120 data, all 9 functions still 100.0** — and trips `banned_shapes_check` as regrowth. RECOVERED in `015b98abbd`; measured price before that was 64 B |
-| `engine/68` | 128 | **not** a wrong constant: retail's `120.0f` at `.sdata2+0x44` is a plain literal of `firstPersonDoControls`, minted between `15360.0f` (0x40) and `16.0f` (0x48) | plain literal makes `.sdata2` byte-identical (64/192 -> **192/192**) but drops `firstPersonDoControls` 100.0 -> 94.512; tree 99.811676 -> 99.809730. PRICED 128 B |
+| `engine/68` | 128 | **not** a wrong constant: retail's `120.0f` at `.sdata2+0x44` is a plain literal of `firstPersonDoControls`, minted between `15360.0f` (0x40) and `16.0f` (0x48) | **RECOVERED at `ab2a7a3016` — see §18.** The 94.512 below is real and reproduces at today's baseline, but it prices the wrong variable: every probe here varied how the CONSTANT is spelled, and the sink needs a single-use TEMP. Delete the temp and the plain literal is free. Was: plain literal makes `.sdata2` byte-identical (64/192 -> **192/192**) but drops `firstPersonDoControls` 100.0 -> 94.512; tree 99.811676 -> 99.809730 |
 | `engine/7` | 232 | one missing 4-byte mint cascades: retail mints a `1.0f` at 0x0c as a front-end literal of `lightningGetRemainingFraction`, after its `0.0f` and before its two bias doubles. Ours has only the `0.0f`, so 0x0c stays a hole, every later slot shifts 4, and a second hole opens at 0x84 | the missing `1.0f` emits no code in retail's `fn1` either — recovering it needs a phantom minter. DECLINE |
 | `237`, `704`, `model`/`modellight`, `213_Kaldachom`, `279_AppleOnTree`, `597`, `195_Player`, `intersect_render`, `main/object` | 88-784 | same class; several heads are led by a bias double, which cannot be declared at all | not probed individually — the class verdict covers them |
 
@@ -596,8 +610,17 @@ scale = 1.0f - scale;
 matched_data **1203257 -> 1203433 (+176)**, `renderSunAndMoon` 99.476 -> 98.018. The `-(x - 1.0f)`
 spelling of the same split is worse (97.608), and a *named* second temp (`riseScale`) does not
 work at all — it changes the liveness, the sink returns and the pool goes back to three wrong
-words. Left unlanded: it trades 0.00098 fuzzy for 176 bytes and one opaque extern, and that is
-the owner's trade, not a lane's.
+words.
+
+**OVERTURNED and LANDED at `5bf6287066` (A76); baseline note added at `739030b8ce` (A77).** Every
+figure above is measured against **99.476**, and 99.476 was a score the undefined
+`extern const f32 gSkySunMoonRiseScale` was buying. `73abfd6123` had to delete that extern because
+no TU defined it and the unit could not link, which put the honest baseline at **96.828** — so the
+"price" was never a price. The landed spelling is not a second temp and not a split statement: it
+is **one variable doing both jobs**, clamped and then scaled in place, which deletes the single-use
+temp the sink needs rather than trying to hide the constant from it. `renderSunAndMoon`
+**96.827515 -> 98.839836**, `.sdata2` **95.454544 -> 100.0**, matched_data **+176**. The row is
+closed on both axes at once. The general form is §18.
 
 ### Do not re-survey
 
@@ -1600,3 +1623,96 @@ population as `banned_shapes_check`'s 19 `SINGLE_ELEM_CONST_ARRAY` regrowth rows
 naming defect to be "fixed" by another lane. Only **two** rows are the §16 direction — `597.c`'s
 `lbl_803E5AE0` (owner-hot) and `model.o`'s `.sbss`, closed above.
 
+
+## 18. Forward substitution: when a "pool crutch" is really a code row (measured 2026-08-03, A77)
+
+A76 landed `engine/5` `renderSunAndMoon` by deleting a temp. §9 had priced the same slot for a
+year of lanes as an opaque-extern crutch. The two readings are not variants of each other, and the
+difference is worth stating as a law because it re-opened a second row the same day.
+
+### The mechanism
+
+MWCC's `-opt propagation` sinks a local that is **defined once and read once** into its single use,
+and it will move that computation past intervening calls and stores when every operand is
+register-resident — another local, or a literal it can see. It will not move it when an operand is
+a memory reference a call might clobber, which is why an `extern const f32` nobody defines, or a
+1-element `const` pin, "fixes" the code: the opacity is doing the work, not the value.
+
+One sink produces three residuals that read as unrelated defects:
+
+* the defining arithmetic instruction appears at the **store site**, not where the source writes it;
+* the callee-saved FPR/GPR the source would give the temp goes to the **other** local, because the
+  temp no longer spans the calls;
+* and the **pool rotates**, because literal words mint at emission and a sunk expression mints late.
+
+### The two cures, and which one every earlier lane missed
+
+The crutch cures the *third* symptom by making the operand opaque. That is why it is banned and why
+it never quite fits: it buys the code at the cost of a pool word in the wrong slot. The other cure
+is plain C — **reuse one local for both roles, so there is no single-use temp to sink**:
+
+| row | crutch spelling | plain literal | plain literal + one local |
+|---|---|---|---|
+| `engine/5` `renderSunAndMoon` | 99.476 (undefined extern; unit could not link) | 96.828 | **98.840**, `.sdata2` 100.0, +176 data |
+| `engine/68` `firstPersonDoControls` | 100.0, `.sdata2` 96.875 | 94.512 | **100.0**, `.sdata2` byte-identical, +128 data |
+
+`engine/68` is the sharper specimen because §8 had *already named the mechanism* — "being an opaque
+global it blocks `-opt propagation` from sinking the single-use temp `spinI` past the
+`camera->anim.rotX` store" — and still priced the row, because every probe it ran varied **how the
+constant is spelled** (file-scope `const` 94.512, function-local `static const` 94.512,
+`const f32 X[1]` 100.0 but at the wrong slot). None varied the temp. Retail's registers say plainly
+which variable is which: `lwz r5,20(r1)` holds the `fctiwz` result at full width across the store
+and `extsh r4,r0` narrows only after the `subf`, so the int web carries the subtraction and the
+`s16` takes the narrowed result. Merging into the `s16` instead is 99.590 — one misplaced `extsh`.
+
+### The scans, and what they found
+
+`tools/fwdsub_scan.py` finds the source shape directly: a def-use *region* (not a whole-variable
+count — `scale` had two) whose value reaches exactly one read, with a call that **closes** before
+that read, at the same brace depth, over arithmetic on locals and literals only. It carries the
+A76 fix as a positive control and the post-fix source as a negative control, and it reaches 210 of
+210 sub-100 bodies. Tree-wide result: **35 sites, and every curable one is already at 100.0** —
+the merged spelling is universal in `src/`, so there is no second `engine/5`.
+
+`tools/crutch_sink_scan.py` is the half that matters, because a crutch site is invisible to the
+first scan by construction (its operand *is* the blocking memory reference). It asks of every unit
+carrying a 1-element pin whether that pin is buying pool position: pool byte-identical means the
+pin is load-bearing, and pool still wrong means the pin's only job is opacity — the job §18 removes.
+**45 units carry a pin; 40 are load-bearing; 5 are not.** `engine/68` was one. Of the other four,
+`engine/7`, `203` and `521_WM_LevelCon` are short a trailing zero word (§8's phantom-minter DECLINE,
+not this class) and `main/vecmath`'s pin sits at the correct slot — its pool defect is an unrelated
+`0.0f`/`1.0f` head swap and `mtxRotateByVec3s` is a #82 FPR permutation. So the class is closed at
+two members, both paid.
+
+`tools/order_bucket_scan.py` re-derives §15's bucket at the current tip and names the slid opcode:
+**11 rows, 4 slide an opcode the source text names**, and all four are §15's own adjudications
+(`renderShadows` paid, `gameTextFinalizeLoad` and `staffUpdateSegmentTransforms` priced,
+`boxBlurTexture` colouring). The eleventh row is `704` `titleScreenDrawMenuFrame`, whose slid
+opcode is an `lfs` — not source-nameable, consistent with A76 pricing it.
+
+### The audit law this generalises to
+
+**A price is only valid against the baseline it was measured at.** A69 priced `engine/5` at
+99.476 -> 98.214 and called it a net tree loss; 99.476 was bought by an extern that did not exist,
+the honest baseline was 96.828, and the ruling inverted with no new idea. `tools/ledger_baseline_audit.py`
+reads every figure this file quotes for a named function, attributes it to the nearest preceding
+name inside the same sentence, and compares it to the current score. Run it before trusting any
+row here, and stamp the baseline sha on any row you re-measure.
+
+### Standing note on `musyx/runtime/voice` (probed 2026-08-03, DECLINED)
+
+`voice.c` defines seven `.bss` objects `static` while `include/musyx/{vid_init,voice_conv}.h`
+declare three of them `extern`, so `vid_init.c`, `voice_id.c` and `voice_conv.c` compile against a
+symbol nothing exports and the unit cannot be flipped to Matching. **Do not resolve this by
+exporting the statics.** The `.bss` order is a positive oracle and it says internal linkage:
+retail's `voice.o` lays the seven out in `voice.c`'s **definition** order, which is exactly what
+all-`static` produces (`bss_order_scan` clean, unit 100.0). Exporting all seven switches MWCC to
+**first-use** order — an order retail does not have — for `synthInitAllocationAids` 100.0 -> 99.966
+and unit 100.0 -> 99.99183; A75's 76.196 was the *mixed* case (3 of 7 exported, so two groups,
+locals first). Since our `.text` is byte-identical to retail's, retail's first-use order is ours,
+so if retail's objects had been external its `.bss` would be in the order we get when we export
+them. It is not. The defect is therefore a **translation-unit boundary**, not a linkage keyword:
+`vid_init.c`, `vid_get.c`, `voice_id.c`, `voice.c` and `voice_conv.c` occupy one contiguous
+`.text` run (`0x80278F0C`-`0x8027A4E0`) and two adjacent `.sbss` runs that a single TU would emit
+as one, so the candidate fix is a five-way unit merge in `config/GSAE01/splits.txt`, not a change
+to `voice.c`.
