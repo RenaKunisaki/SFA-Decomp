@@ -120,9 +120,9 @@ static inline ExpgfxSlot* Expgfx_GetSlot(int poolIndex, int slotIndex)
     return (ExpgfxSlot*)(gExpgfxSlotPoolBases[poolIndex] + slotIndex * EXPGFX_SLOT_SIZE);
 }
 
-static inline ExpgfxBounds* Expgfx_GetBoundsTemplate(int templateIndex)
+static inline ExpgfxPlaneOffsets* Expgfx_GetPlaneOffsets(int setIndex)
 {
-    return &((ExpgfxBounds*)gExpgfxStaticData)[templateIndex];
+    return &((ExpgfxPlaneOffsets*)gExpgfxStaticData)[setIndex];
 }
 
 #define EXPGFX_POOL_ACTIVE_MASK_PTR(runtime, poolIndex) \
@@ -3514,11 +3514,11 @@ int expgfx_func09(void)
 void expgfx_renderSourcePools(int sourceId, int sourceMode)
 {
     ExpgfxRuntimeDataLayout* runtime;
-    ExpgfxBounds* boundsTemplate;
+    ExpgfxPlaneOffsets* planeOffsets;
     s8* poolActiveCounts;
     u32* poolSourceIds;
     u8* poolSourceModes;
-    u8* poolBoundsTemplateIds;
+    u8* poolPlaneOffsetSetIds;
     ExpgfxBounds* poolBounds;
     u32* slotPoolBases;
     int poolIndex;
@@ -3528,7 +3528,7 @@ void expgfx_renderSourcePools(int sourceId, int sourceMode)
     poolActiveCounts = runtime->poolActiveCounts;
     poolSourceIds = runtime->poolSourceIds;
     poolSourceModes = runtime->poolSourceModes;
-    poolBoundsTemplateIds = runtime->poolBoundsTemplateIds;
+    poolPlaneOffsetSetIds = runtime->poolPlaneOffsetSetIds;
     poolBounds = runtime->poolBounds;
     slotPoolBases = runtime->slotPoolBases;
 
@@ -3537,11 +3537,11 @@ void expgfx_renderSourcePools(int sourceId, int sourceMode)
         if ((*poolActiveCounts != 0) && (*poolSourceIds == sourceId) &&
             (*poolSourceModes == sourceMode + EXPGFX_POOL_SOURCE_MODE_SOURCE_OFFSET))
         {
-            boundsTemplate = Expgfx_GetBoundsTemplate(*poolBoundsTemplateIds);
+            planeOffsets = Expgfx_GetPlaneOffsets(*poolPlaneOffsetSetIds);
             if ((u8)frustumTestAabbWithPlaneOffsets(poolBounds->minX - playerMapOffsetX,
                                                     poolBounds->maxX - playerMapOffsetX, poolBounds->minY,
                                                     poolBounds->maxY, poolBounds->minZ - playerMapOffsetZ,
-                                                    poolBounds->maxZ - playerMapOffsetZ, &boundsTemplate->minX) != 0)
+                                                    poolBounds->maxZ - playerMapOffsetZ, planeOffsets->offsets) != 0)
             {
                 drawGlow(*slotPoolBases, poolIndex);
             }
@@ -3549,7 +3549,7 @@ void expgfx_renderSourcePools(int sourceId, int sourceMode)
         poolActiveCounts++;
         poolSourceIds++;
         poolSourceModes++;
-        poolBoundsTemplateIds++;
+        poolPlaneOffsetSetIds++;
         poolBounds++;
         slotPoolBases++;
         poolIndex++;
@@ -3967,18 +3967,18 @@ static inline void renderParticlesBody(void)
     register s16* poolSlotTypeIds;
     u32* poolSourceIds;
     ExpgfxBounds* poolBounds;
-    u8* poolBoundsTemplateIds;
+    u8* poolPlaneOffsetSetIds;
     u8* poolSourceModes;
     s8* poolActiveCounts;
     ExpgfxPoolSourcePosition* sourcePosition;
-    ExpgfxBounds* boundsTemplate;
+    ExpgfxPlaneOffsets* planeOffsets;
 
     runtime = EXPGFX_RUNTIME_DATA;
     currentMatrix = Camera_GetViewMatrix();
     poolIndex = 0;
     poolActiveCounts = runtime->poolActiveCounts;
     poolSourceModes = runtime->poolSourceModes;
-    poolBoundsTemplateIds = runtime->poolBoundsTemplateIds;
+    poolPlaneOffsetSetIds = runtime->poolPlaneOffsetSetIds;
     poolBounds = runtime->poolBounds;
     poolSourceIds = runtime->poolSourceIds;
     poolSlotTypeIds = gExpgfxStaticPoolSlotTypeIds;
@@ -3987,11 +3987,11 @@ static inline void renderParticlesBody(void)
     {
         if ((*poolActiveCounts != 0) && (*poolSourceModes == EXPGFX_POOL_SOURCE_MODE_STANDALONE))
         {
-            boundsTemplate = Expgfx_GetBoundsTemplate(*poolBoundsTemplateIds);
+            planeOffsets = Expgfx_GetPlaneOffsets(*poolPlaneOffsetSetIds);
             if ((u8)frustumTestAabbWithPlaneOffsets(
                     (double)(poolBounds->minX - playerMapOffsetX), (double)(poolBounds->maxX - playerMapOffsetX),
                     (double)poolBounds->minY, (double)poolBounds->maxY, (double)(poolBounds->minZ - playerMapOffsetZ),
-                    (double)(poolBounds->maxZ - playerMapOffsetZ), &boundsTemplate->minX) != 0)
+                    (double)(poolBounds->maxZ - playerMapOffsetZ), planeOffsets->offsets) != 0)
             {
                 sourcePosition = (ExpgfxPoolSourcePosition*)*poolSourceIds;
                 if (sourcePosition != (ExpgfxPoolSourcePosition*)0x0)
@@ -4016,7 +4016,7 @@ static inline void renderParticlesBody(void)
         }
         poolActiveCounts = poolActiveCounts + 1;
         poolSourceModes = poolSourceModes + 1;
-        poolBoundsTemplateIds = poolBoundsTemplateIds + 1;
+        poolPlaneOffsetSetIds = poolPlaneOffsetSetIds + 1;
         poolBounds = poolBounds + 1;
         poolSourceIds = poolSourceIds + 1;
         poolSlotTypeIds = poolSlotTypeIds + 1;
@@ -4247,7 +4247,7 @@ void expgfx_updateFrameState(int sourceMode, int sourceId)
     return;
 }
 
-int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slotType, int boundsTemplateId)
+int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slotType, int planeOffsetSetId)
 {
     u32 behaviorFlags;
     ExpgfxSlot* slot;
@@ -4553,7 +4553,7 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
             {
                 runtime->poolSourceModes[modePoolIndex]++;
             }
-            runtime->poolBoundsTemplateIds[modePoolIndex] = (u8)boundsTemplateId;
+            runtime->poolPlaneOffsetSetIds[modePoolIndex] = (u8)planeOffsetSetId;
         }
 
         DCFlushRange(slot, EXPGFX_SLOT_SIZE);

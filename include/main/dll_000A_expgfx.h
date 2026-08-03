@@ -29,7 +29,7 @@ void expgfx_resetAllPools(void);
 void expgfx_updateFrameState(int sourceMode,int sourceId);
 struct ExpgfxSpawnConfig;
 int expgfx_addremove(struct ExpgfxSpawnConfig *config, int preferredPoolIndex, int slotType,
-                     int boundsTemplateId);
+                     int planeOffsetSetId);
 void expgfx_onMapSetup(void);
 void expgfx_release(void);
 void expgfx_initialise(void);
