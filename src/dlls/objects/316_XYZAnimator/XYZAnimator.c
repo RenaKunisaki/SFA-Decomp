@@ -34,6 +34,7 @@ f32 XyzAnimator_getCoordinate(GameObject* obj, u8 coordinate) {
 }
 
 void XyzAnimator_captureGeometry(XyzAnimatorPlacement* placement, XyzAnimatorState* state, int blockAddress) {
+    Vec3s* vertex;
     int vertexDataOffset[1];
     int groupDataOffset[1];
     int triangleDataOffset[1];
@@ -42,9 +43,10 @@ void XyzAnimator_captureGeometry(XyzAnimatorPlacement* placement, XyzAnimatorSta
     int triangleEnd;
     u16* mapEntry;
     int t;
+    int dataOffset;
+    int index;
     int boundsBufferOffset[1];
     int displayListIndex[1];
-    Vec3s* vertex;
     MapBlockData* blockData = (MapBlockData*)blockAddress;
 
     vertexDataOffset[0] = 0;
@@ -63,22 +65,16 @@ void XyzAnimator_captureGeometry(XyzAnimatorPlacement* placement, XyzAnimatorSta
             triangle = *mapEntry;
             vertexDataOffset[0] = triangleDataOffset[0];
             for (; triangle < triangleEnd; triangle++) {
-                int vertex1Offset;
                 mapEntry = mapBlockGetPolygon((int*)blockAddress, triangle);
-                vertex = (Vec3s*)(blockData->vertices + (u32)*mapEntry * 6);
-                *(s16*)(state->geometryBuffer + vertexDataOffset[0]) = vertex->x;
-                *(s16*)(state->geometryBuffer + vertexDataOffset[0] + 2) = vertex->y;
-                *(s16*)(state->geometryBuffer + vertexDataOffset[0] + 4) = vertex->z;
-                vertex1Offset = vertexDataOffset[0] + 6;
-                vertex = (Vec3s*)(blockData->vertices + mapEntry[1] * 6);
-                *(s16*)(state->geometryBuffer + vertex1Offset) = vertex->x;
-                *(s16*)(state->geometryBuffer + vertex1Offset + 2) = vertex->y;
-                *(s16*)(state->geometryBuffer + vertex1Offset + 4) = vertex->z;
-                t = vertex1Offset + 6;
-                vertex = (Vec3s*)(blockData->vertices + mapEntry[2] * 6);
-                *(s16*)(state->geometryBuffer + t) = vertex->x;
-                *(s16*)(state->geometryBuffer + t + 2) = vertex->y;
-                *(s16*)(state->geometryBuffer + t + 4) = vertex->z;
+                dataOffset = vertexDataOffset[0];
+                for (index = 3; index != 0; index--) {
+                    vertex = (Vec3s*)(blockData->vertices + (u32)*mapEntry * 6);
+                    *(s16*)(state->geometryBuffer + dataOffset) = vertex->x;
+                    *(s16*)(state->geometryBuffer + dataOffset + 2) = vertex->y;
+                    *(s16*)(state->geometryBuffer + dataOffset + 4) = vertex->z;
+                    dataOffset += 6;
+                    mapEntry++;
+                }
                 vertexDataOffset[0] += 0x12;
                 triangleDataOffset[0] += 0x12;
             }
