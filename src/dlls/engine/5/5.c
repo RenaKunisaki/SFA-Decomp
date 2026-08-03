@@ -285,9 +285,11 @@ void loadSunAndMoon(void)
 
 f32 gSkySunDirection[] = {0.0f, 1.0f, 0.0f};
 
-f32 gSkyMoonDirection[] = {
-    0.0f,   1.0f,   0.0f,   80.0f, 120.0f, 165.0f, 120.0f, 80.0f,  80.0f,
-    100.0f, 125.0f, 100.0f, 80.0f, 255.0f, 220.0f, 190.0f, 220.0f, 255.0f,
+f32 gSkyMoonDirection[] = {0.0f, 1.0f, 0.0f};
+
+f32 sSkyUnusedColors[] = {
+    80.0f,  120.0f, 165.0f, 120.0f, 80.0f,  80.0f, 100.0f, 125.0f,
+    100.0f, 80.0f,  255.0f, 220.0f, 190.0f, 220.0f, 255.0f,
 };
 
 u8 gSkyColorBlendTable[248] = {

@@ -13,6 +13,11 @@ name: main
 # containing vidListNodes storage rather than by this symbol directly.
 force_active:
   - voicePrioritySortLinks
+  # dlls/objects/599_DR_EarthWar/DR_EarthWar.c: the retail link retained these
+  # two unreferenced .data tables that follow gDREarthWarriorRowIndices;
+  # dropping them would shorten .data and shift every later .data address.
+  - lbl_803352D0
+  - lbl_80335310
   # dlls/engine/21/21.c: the retail link retained this unreferenced .sdata2
   # zero atom at the tail of the pool; dropping it would shorten the pool and
   # shift every later SDA2 reference.
