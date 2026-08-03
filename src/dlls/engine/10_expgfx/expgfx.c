@@ -96,9 +96,6 @@ typedef struct ExpgfxBillboardAngles
 #define EXPGFX_BOUNDS_INIT_MAX -3.4028235e38f
 #define EXPGFX_U16_TO_UNIT_SCALE (1.0f / 65535.0f)
 
-extern int gExpgfxSlotType1Count;
-extern int gExpgfxSlotType1Average;
-
 static inline ExpgfxTableEntry* Expgfx_GetTableEntry(int tableIndex)
 {
     return &gExpgfxTableEntries[tableIndex];

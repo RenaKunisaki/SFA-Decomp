@@ -65,7 +65,6 @@
 GameObject* gObjHitsActiveHitVolumeObjects[OBJHITS_ACTIVE_HIT_VOLUME_OBJECT_COUNT] = {NULL};
 ObjHitsSweepEntry* gObjHitsSweepEntryPtrs[OBJHITS_SWEEP_ENTRY_CAPACITY];
 extern ObjHitsSweepEntry gObjHitsSweepEntries[OBJHITS_SWEEP_ENTRY_CAPACITY];
-extern ObjHitsContactScratchEntry gObjHitsContactScratch[OBJHITS_CONTACT_SCRATCH_COUNT];
 extern ObjHitsPriorityWorkSlot* gObjHitsPriorityHitStates;
 extern void* gObjHitsWorkBuffer;
 extern f32 gObjHitsResponseDominanceRatio;

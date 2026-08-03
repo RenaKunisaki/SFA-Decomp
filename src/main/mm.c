@@ -297,7 +297,7 @@ int testAndSet_onlyUseHeaps1and2(int v)
     }
 }
 
-extern MmRegion gMmRegionTable[0xA0 / sizeof(MmRegion)];
+extern MmRegion gMmRegionTable[MM_REGION_CAPACITY];
 
 int testAndSet_onlyUseHeap3(int v)
 {
@@ -354,8 +354,6 @@ int roundUpTo8(int x)
     }
     return x;
 }
-
-extern MmRegion gMmRegionTable[MM_REGION_CAPACITY];
 
 int roundUpTo16(int x)
 {
