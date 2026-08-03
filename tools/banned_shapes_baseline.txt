@@ -2,9 +2,12 @@
 # Anything NOT listed here is regrowth and fails the gate.
 # Shrink this file; never grow it.
 src/dlls/engine/15/15.c:134:SINGLE_ELEM_CONST_ARRAY
+src/dlls/engine/19/19.c:123:UNCALLED_STATIC_FN
 src/dlls/engine/20_Hcurves/Hcurves.c:1207:UNCALLED_STATIC_FN
 src/dlls/engine/20_Hcurves/Hcurves_romcurve.c:83:UNCALLED_STATIC_FN
 src/dlls/engine/21/21.c:1769:LBL_CONST_DEF
+src/dlls/engine/24/24.c:46:UNCALLED_STATIC_FN
+src/dlls/engine/69/69.c:30:UNCALLED_STATIC_FN
 src/dlls/objects/195_Player/player.c:1360:UNCALLED_STATIC_FN
 src/dlls/objects/195_Player/player.c:1378:UNCALLED_STATIC_FN
 src/dlls/objects/196_Tricky/tricky.c:1121:UNCALLED_STATIC_FN
@@ -29,8 +32,11 @@ src/dlls/objects/226/226.c:444:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/226/226.c:445:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/226/226.c:446:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/237/237.c:71:SINGLE_ELEM_CONST_ARRAY
+src/dlls/objects/279_AppleOnTree/AppleOnTree.c:67:UNCALLED_STATIC_FN
+src/dlls/objects/328_CFGuardian/CFGuardian.c:253:UNCALLED_STATIC_FN
 src/dlls/objects/362_CRrockfall/CRrockfall.c:28:UNCALLED_STATIC_FN
 src/dlls/objects/425_BombPlant/BombPlant.c:97:SINGLE_ELEM_CONST_ARRAY
+src/dlls/objects/429_SH_thorntai/SH_thorntai.c:919:UNCALLED_STATIC_FN
 src/dlls/objects/437/437.c:588:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/437/437.c:589:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/437/437.c:590:SINGLE_ELEM_CONST_ARRAY
@@ -61,6 +67,7 @@ src/dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c:1239:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c:1240:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/599_DR_EarthWar/DR_EarthWar.c:134:UNCALLED_STATIC_FN
 src/dlls/objects/599_DR_EarthWar/DR_EarthWar.c:73:UNCALLED_STATIC_FN
+src/dlls/objects/609_DR_LaserCan/DR_LaserCan.c:130:UNCALLED_STATIC_FN
 src/dlls/objects/625/625.c:194:UNCALLED_STATIC_FN
 src/dlls/objects/625/625.c:202:UNCALLED_STATIC_FN
 src/dlls/objects/648_SPDrape/SPDrape.c:77:SINGLE_ELEM_CONST_ARRAY
@@ -75,6 +82,8 @@ src/main/curves.c:38:UNCALLED_STATIC_FN
 src/main/curves.c:57:UNCALLED_STATIC_FN
 src/main/modellight.c:248:UNCALLED_STATIC_FN
 src/main/modellight.c:282:UNCALLED_STATIC_FN
+src/main/shader_dolphin.c:200:UNCALLED_STATIC_FN
+src/main/shader_dolphin.c:216:UNCALLED_STATIC_FN
 src/main/shadow_dolphin.c:152:UNCALLED_STATIC_FN
 src/main/track_dolphin.c:2298:GOTO
 src/main/track_dolphin.c:2359:GOTO

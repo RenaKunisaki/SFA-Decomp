@@ -127,6 +127,10 @@ STATIC_ASSERT(offsetof(DrLaserCannonState, flags) == DR_LASERCANNON_STATE_FLAGS)
 STATIC_ASSERT(offsetof(DrLaserCannonState, bobPhase) == DR_LASERCANNON_STATE_BOB_PHASE);
 STATIC_ASSERT(sizeof(DrLaserCannonState) == DR_LASERCANNON_EXTRA_SIZE);
 
+static f32 drlasercannon_aimStepFraction(s16 step, s16 limit) {
+    return (f32)step / (f32)limit;
+}
+
 static const f32 gLaserCannonAngleRateScale = 32768.0f / 180.0f;
 
 int drlasercannon_aimAtTarget(GameObject* self, GameObject* target, DrLaserCannonAim* out, int maxRate, f32* eyePos)

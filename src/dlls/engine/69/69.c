@@ -27,6 +27,10 @@ void CameraModeTalk_free(void) {
     gCameraModeTalkState = NULL;
 }
 
+static void CameraModeTalk_resetSmoothing(CameraModeTalkState* state) {
+    state->smoothedYawOffset = 0.0f;
+}
+
 void CameraModeTalk_update(CameraObject* camera) {
     f32 rollSmoothing;
     f32 rollStep;
@@ -88,9 +92,9 @@ void CameraModeTalk_update(CameraObject* camera) {
         state = gCameraModeTalkState;
         heightT = -state->heightInput / 6.0f;
         followTermA = 0.2f;
-        followTermB = 25.0f;
+        followTermB = 50.0f;
         heightT = (heightT < 0.0f) ? 0.0f : ((heightT > 1.0f) ? 1.0f : heightT);
-        state->followDistance += followTermA * ((followTermB * heightT + 50.0f) - state->followDistance);
+        state->followDistance += followTermA * ((25.0f * heightT + followTermB) - state->followDistance);
         followDist = gCameraModeTalkState->followDistance;
         followTermA = followDist * sinPitch;
         followTermB = followDist * cosPitch;
