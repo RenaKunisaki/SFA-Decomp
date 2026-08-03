@@ -308,6 +308,47 @@ block (shared by `pushable`/`flameblast`/`wmobjcreator`) became `VecRotateZXYArg
 `MAIN_DLL_<NAME>_STRUCT_H_`, `#include "types.h"`. Only edit the *one* file you own to
 use it; note the others can adopt it later (one owner per `.c`).
 
+### 8b. When a per-DLL clone is NOT scaffolding — the divergence discriminator
+
+§8 lifts a shape that sibling files share. The inverse question — the tree holds hundreds
+of `<Dll>Xxx` types whose siblings look identical, so which of them are one type the
+decomp copied N times, and which are N types retail really declared? — is **adjudicated
+and closed**. Do not re-open it per family.
+
+**Rank by BODY, never by offsets.** A `STATIC_ASSERT` census sees names and offsets but
+not field *types*, so it both over- and under-counts: it called the 43 `<Dll>Interface`
+types identical when 13 distinct `spawn` signatures live behind that one `{0x00, 0x04,
+size 0x08}` shape. Expand each member's local `typedef`s and compare the resulting text.
+
+**The discriminator is whether the FAMILY diverges anywhere.**
+
+- *Family diverges ⇒ faithful, and identical members are coincidence.* The `<Dll>`
+  descriptor/interface types are each one DLL's own export table, carrying that DLL's own
+  recovered slot signatures: among the modgfx DLLs, 14 distinct `ResourceDescriptor`
+  bodies and sizes split 50 × 0x20 / 28 × 0x24 / 1 × 0x48. The 24 `Proj*ResourceDescriptor`
+  types agree on everything only because all 24 projectile DLLs are stubs; the same family
+  holds `projgfx_funcs` as an `ObjectDescriptor11`. Collapsing those onto the generic
+  `ObjectDescriptor4` in `dlls/object_descriptor.h` would *delete* recovered knowledge
+  (`unsupported` back to `slot03`) — the named per-DLL descriptor is the recovery's
+  product, not its residue. Same verdict for `<Dll>EffectResourceView` and the placement
+  clones: those describe one DLL's own baked blob, and two effects with equal vertex and
+  colour counts coincide without sharing anything.
+- *Zero divergence across the whole family, and the shape is a **format** rather than one
+  file's layout ⇒ scaffolding.* Exactly one arm in the tree qualified:
+  `<Dll>EffectVertex`, 71 copies, one body, the format the modgfx engine imposes on every
+  baked effect resource. `git log -S` showed them arriving one per commit, and both
+  alternatives a 2002 tree could have used — a shared header or a code generator — give
+  all 71 the *same* name, whereas ours were named for our own DLL numbering. Collapsed
+  onto `ModgfxEffectVertex` in the shared `main/dll/modgfx_types.h` (`1476aef86e`),
+  byte-identical over all 1013 source objects.
+
+**A redundant declaration is not always free, and neither is a comparison.** Price a
+collapse by `objdump -s` over every object, not by the score: a TU that reached a
+declaration *only* through the header you are emptying will change. Strip objdump's
+path header before hashing — comparing a saved `.o` against a rebuilt one at a different
+path makes an identical object read as different, which is how a free removal in
+`Baddie.c` first looked load-bearing.
+
 ### 9. Move codegen pragmas out of the file into `configure.py`
 
 In-file `#pragma peephole/scheduling/opt_common_subs off` are really **per-TU compiler
