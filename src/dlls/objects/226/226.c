@@ -476,7 +476,6 @@ void staffDrawQuakeSpellRing(void) {
         GXDrawTorus(((StaffQuakeSpellState*)gStaffQuakeSpellState)->radius, 10, 20);
     }
 }
-void staffDrawSwipe(GameObject* obj, StaffState* swipe);
 
 void staffDrawSwipe(GameObject* obj, StaffState* swipe) {
     StaffSwipeSlot* swp;

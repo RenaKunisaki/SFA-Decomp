@@ -129,7 +129,6 @@ static inline void DFropenode_applyRopeSway(DFropenodeRope* rope) {
 /*
  * Integrate the spring forces attached to every unlocked rope node.
  */
-void DFropenode_integrateRopeNodes(DFropenodeRope* rope);
 void DFropenode_integrateRopeNodes(DFropenodeRope* rope) {
     DFropenodeRopeNode* part;
     int j;

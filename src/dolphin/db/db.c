@@ -12,8 +12,6 @@ void DBInit(void) {
   DBVerbose = TRUE;
 }
 
-void __DBExceptionDestinationAux(void);
-
 void __DBExceptionDestinationAux(void) {
   u32* contextAddr = (void*)0x00C0;
   OSContext* context = (OSContext*)OSPhysicalToCached(*contextAddr);

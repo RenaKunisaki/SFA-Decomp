@@ -1031,7 +1031,6 @@ void baddie_updateSightQuadrants(GameObject* obj, EnemyState* state, f32 radius)
     }
 }
 
-void Tricky_applyFloorResponse(GameObject* obj, int state);
 void Tricky_applyFloorResponse(GameObject* obj, int state)
 {
     f32 nearestFloorY;

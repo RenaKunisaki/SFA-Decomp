@@ -669,7 +669,6 @@ static inline int seqPairVal(SeqSortPair* pair)
     return pair->val;
 }
 
-void seqPairTableSort(SeqSortPair* arr, int n);
 void seqPairTableSort(SeqSortPair* arr, int n)
 {
     int key;

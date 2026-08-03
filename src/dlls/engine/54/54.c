@@ -85,8 +85,6 @@ void EnterSaveNameScreen_frameEnd(void)
 #define ENTER_SAVE_NAME_SFX_DELETE   0x419
 #define ENTER_SAVE_NAME_SFX_TYPE     0x41A
 
-u32 EnterSaveNameScreen_run(void);
-
 u32 EnterSaveNameScreen_run(void)
 {
     s8 stickX;
@@ -276,13 +274,11 @@ u32 EnterSaveNameScreen_run(void)
     return 0;
 }
 
-void EnterSaveNameScreen_release(void);
 void EnterSaveNameScreen_release(void)
 {
     gTitleMenuLinkInterface->vtable->free();
 }
 
-void EnterSaveNameScreen_initialise(void);
 void EnterSaveNameScreen_initialise(void)
 {
     int i;

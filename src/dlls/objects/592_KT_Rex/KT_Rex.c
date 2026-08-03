@@ -166,8 +166,6 @@ int ktrex_shouldAdvanceArenaPhase(void)
     return 0;
 }
 
-void ktrex_spawnRandomEnergyArc(GameObject* obj, int angle, f32 arcLen, int slot);
-
 void ktrex_spawnRandomEnergyArc(GameObject* obj, int angle, f32 arcLen, int slot)
 {
     int* model;

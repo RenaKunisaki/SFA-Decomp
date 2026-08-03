@@ -395,7 +395,6 @@ ObjTextureRuntimeSlot* objFindTexture(GameObject* obj, int target, int unusedMat
     return result;
 }
 
-void objGetJointWorldPosition(GameObject* obj, int key, f32* outPosition);
 void objGetJointWorldPosition(GameObject* obj, int key, f32* outPosition) {
     int* table;
     int i;
@@ -423,7 +422,6 @@ void objGetJointWorldPosition(GameObject* obj, int key, f32* outPosition) {
     outPosition[2] += playerMapOffsetZ;
 }
 
-s16* objFindJointPoseVector(GameObject* obj, int key);
 s16* objFindJointPoseVector(GameObject* obj, int key) {
     int vecOffset;
     int jointData;
@@ -451,8 +449,6 @@ s16* objFindJointPoseVector(GameObject* obj, int key) {
     }
     return result;
 }
-
-void characterDoEyeMovements(GameObject* obj, CharacterEyeAnimState* state, f32 unused);
 
 void characterDoEyeMovements(GameObject* obj, CharacterEyeAnimState* state, f32 unused) {
     ObjTextureRuntimeSlot* foundA;
@@ -752,7 +748,6 @@ static void characterHeadLookIdle(GameObject* obj, CharacterEyeAnimState* curve,
     }
 }
 
-void characterHeadLookRelax(GameObject* obj, void* state);
 void characterHeadLookRelax(GameObject* obj, void* state) {
     s16* found;
 
@@ -928,7 +923,6 @@ s16 objJointTracksAimAtTarget(GameObject* obj, GameObject* target, f32* pos, u8*
     return src[0];
 }
 
-int characterTrackJointList(GameObject* objArg, int* keyList, int countArg, u8* p4Arg);
 int characterTrackJointList(GameObject* objArg, int* keyList, int countArg, u8* p4Arg) {
     int* keys;
     int i;
@@ -955,7 +949,6 @@ int characterTrackJointList(GameObject* objArg, int* keyList, int countArg, u8* 
     return (count * 2 - total) == 0;
 }
 
-void objJointTracksSetAngles(u8* channelData, int count, s16 yaw, s16 pitch);
 void objJointTracksSetAngles(u8* channelData, int count, s16 yaw, s16 pitch) {
     ObjJointTrackPair* tracks = (ObjJointTrackPair*)channelData;
 
@@ -983,7 +976,6 @@ void objModelClearJointVectors(GameObject* obj) {
     }
 }
 
-void characterClampJointVecs(GameObject* obj, int* keys, int count, int lo, int hi);
 void characterClampJointVecs(GameObject* obj, int* keys, int count, int lo, int hi) {
     s16* found;
     int idx;
@@ -1018,7 +1010,6 @@ void characterClampJointVecs(GameObject* obj, int* keys, int count, int lo, int 
     }
 }
 
-void characterDecayJointVecs(GameObject* obj, int* keys, int count);
 void characterDecayJointVecs(GameObject* obj, int* keys, int count) {
     s16* found;
     int idx;
@@ -1034,7 +1025,6 @@ void characterDecayJointVecs(GameObject* obj, int* keys, int count) {
     }
 }
 
-void objJointTracksCaptureCurrentAngles(GameObject* obj, int* keys, int count, u8* out);
 void objJointTracksCaptureCurrentAngles(GameObject* obj, int* keys, int count, u8* out) {
     s16* found;
     int idx;
@@ -1262,7 +1252,6 @@ void characterHeadLookCalm(GameObject* obj, s16* state, f32 value) {
     }
 }
 
-void objSetGlowColor(int red, int green, int blue, u8 alpha);
 void objSetGlowColor(int red, int green, int blue, u8 alpha) {
     gObjGlowColorRed = red;
     gObjGlowColorGreen = green;
@@ -1271,7 +1260,6 @@ void objSetGlowColor(int red, int green, int blue, u8 alpha) {
     gObjGlowColorAlpha = alpha;
 }
 
-void objSetColorFilter(s16 a, s16 b, s16 c);
 void objSetColorFilter(s16 a, s16 b, s16 c) {
     gObjColorFilterRed = a;
     gObjColorFilterGreen = b;
@@ -1281,7 +1269,6 @@ void objSetColorFilter(s16 a, s16 b, s16 c) {
 
 #define OBJPRINT_ATTACH_POINTS(staff) ((char*)OBJPRINT_MODEL_INSTANCE(staff)->attachPoints)
 
-void staffUpdateSegmentTransforms(int staffArg, GameObject* objArg, int modelArg, int a, int b, int c);
 void staffUpdateSegmentTransforms(int staffArg, GameObject* objArg, int modelArg, int a, int b, int c) {
     f32 va[3];
     Vec vb;
@@ -1386,7 +1373,6 @@ void objRenderModelAndHitVolumes(GameObject* obj, int p2, int p3, int p4, int p5
     }
 }
 
-void objSetModelMatrixOverride(f32* matrix);
 void objSetModelMatrixOverride(f32* matrix) {
     gObjModelMatrixOverride = matrix;
 }
@@ -1448,12 +1434,11 @@ void objRender(int a, int b, int c, int d, GameObject* obj, int flag) {
         walk += 4;
     }
 }
-int objGetAlphaCompareThreshold(void);
+
 int objGetAlphaCompareThreshold(void) {
     return gObjAlphaCompareThreshold;
 }
 
-void objSetAlphaCompareThreshold(u8 x);
 void objSetAlphaCompareThreshold(u8 x) {
     gObjAlphaCompareThreshold = x;
 }

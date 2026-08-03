@@ -1403,7 +1403,6 @@ void setupQuakeSpellRingGxState(u8 alpha)
     GXSetCullMode(GX_CULL_BACK);
 }
 
-void setupAdditiveTintedTexture(void* texture, u32* colorA, u32* colorB);
 void setupAdditiveTintedTexture(void* texture, u32* colorA, u32* colorB)
 {
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
@@ -3128,7 +3127,6 @@ void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void gxSetOpaqueZWriteMode(void);
 void gxSetOpaqueZWriteMode(void)
 {
     if ((u32)gGxZModeCompareEnable != 1 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 1 || gGxZModeValid == 0)
@@ -3249,7 +3247,6 @@ void gxSetAlphaBlendZTest(void)
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void gxSetDebugTextMode(void);
 void gxSetDebugTextMode(void)
 {
     GXSetCullMode(GX_CULL_NONE);
@@ -3284,7 +3281,6 @@ void gxSetDebugTextMode(void)
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void gxTevModulateRasStage(void);
 void gxTevModulateRasStage(void)
 {
     GXSetTevOrder(gTevStageCursor, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
@@ -3299,7 +3295,6 @@ void gxTevModulateRasStage(void)
     gTevChanCount += 1;
 }
 
-void gxTevRasTimesColor1Stage(void);
 void gxTevRasTimesColor1Stage(void)
 {
     GXSetTevOrder(gTevStageCursor, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
@@ -3345,7 +3340,6 @@ void gxTevAddColor1Stage(void)
     gTevChanCount += 1;
 }
 
-void gxTevPassRasStage(void);
 void gxTevPassRasStage(void)
 {
     GXSetTevOrder(gTevStageCursor, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
@@ -3374,7 +3368,6 @@ void gxTevModulateColor1Stage(void)
     gTevChanCount += 1;
 }
 
-void gxTevAddTextureFrameBlendStages(void);
 void gxTevAddTextureFrameBlendStages(void)
 {
     GXSetTevOrder(gTevStageCursor, gTevTexCoordCursor, gTevTexMapCursor, GX_COLOR_NULL);
@@ -3462,7 +3455,6 @@ void gxTevTextureTimesRasStage(void)
  * stage that K-multiplies the tint over the existing color, advancing
  * gTevStageCursor (TEV stage cursor) and gTevStageCount (stage count).
  */
-void gxTevCommitStages(void);
 void gxTevCommitStages(void)
 {
     GXColor c;
@@ -3502,7 +3494,6 @@ void gxTevCommitStages(void)
     }
 }
 
-void gxTevResetStages(void);
 void gxTevResetStages(void)
 {
     gTevIndStageCount = 0;
@@ -4461,7 +4452,6 @@ void setupWaterReflectionTev(int handle1, int handle2)
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void setupReflectionIndirectTev(u8 flag);
 void setupReflectionIndirectTev(u8 flag)
 {
     f32 mtx[6];

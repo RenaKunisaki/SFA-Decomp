@@ -13,7 +13,6 @@ void OSResetStopwatch(OSStopwatch* sw) {
     sw->max = 0;
 }
 
-void SystemCallVector(void);
 asm void SystemCallVector(void) {
 entry __OSSystemCallVectorStart
     nofralloc

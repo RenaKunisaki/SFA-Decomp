@@ -817,7 +817,6 @@ static int objShouldLoad(ObjPlacement* placement, s8 viewSlot, int mapEventGroup
     }
     return 0;
 }
-void mapLoadUnloadObjects(int flag);
 
 void mapLoadUnloadObjects(int flag)
 {
