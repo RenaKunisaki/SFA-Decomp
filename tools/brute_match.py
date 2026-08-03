@@ -241,7 +241,14 @@ def fuzzy_measure(unit: dict, symbol: str, version: str,
             continue
         for f in (u.get("functions") or []):
             if f["name"] == symbol:
-                return float(f["fuzzy_match_percent"])
+                # objdiff OMITS fuzzy_match_percent when it is 0.0, so a
+                # variant that drops the function to zero has no key at all --
+                # three rows in the tree are already in that state.  Reading it
+                # unguarded raised KeyError out of the measure call and killed
+                # the sweep mid-run, and a sweep that dies part-way reads
+                # exactly like a sweep that finished and found nothing.  The
+                # absent key means 0.0, which is also the right ranking.
+                return float(f.get("fuzzy_match_percent") or 0.0)
         return -1.0
     return -1.0
 

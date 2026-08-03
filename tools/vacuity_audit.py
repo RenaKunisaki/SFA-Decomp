@@ -494,6 +494,69 @@ def family_build(unit_object, verbose):
           % ("held" if saw else "BLIND"))
     direct_build(unit_object, "GSAE01")
 
+    # THE PATH THE SWEEPERS ACTUALLY TAKE.  Neither surface above is it: every
+    # sweeper calls `brute_match.rebuild`, which does the obj/->src/ rewrite and
+    # an env override of its own before it ever reaches direct_build.  The BUILD
+    # family passed for months while the CLI was a no-op precisely because it
+    # controlled a surface no caller used, so this half mutates the SOURCE and
+    # requires the object to move -- the only question that distinguishes a
+    # build tool from a program that does nothing.
+    import brute_match as _bm                                 # noqa: E402
+    _cfg = json.load(open(os.path.join(REPO, "build", "GSAE01", "config.json")))
+    _name = next((u["name"] for u in _cfg["units"]
+                  if u["object"].replace("\\", "/") == unit_object), None)
+    src_c = os.path.join(REPO, "src", _name.replace("\\", "/")) if _name else None
+    if src_c and os.path.exists(src_c):
+        with open(src_c, "rb") as fh:
+            pristine = fh.read()
+        try:
+            with open(src_c, "wb") as fh:
+                fh.write(pristine + b"\nint _vacuityProbeFn(int x) { return x * 37 + 11; }\n")
+            moved = _bm.rebuild(unit_object, "GSAE01") and md5(src_o) != before
+            with open(src_c, "wb") as fh:
+                fh.write(pristine + b"\nthis is not C;\n")
+            refused = _bm.rebuild(unit_object, "GSAE01") is False
+        finally:
+            with open(src_c, "wb") as fh:
+                fh.write(pristine)
+            _bm.rebuild(unit_object, "GSAE01")
+        restored = os.path.exists(src_o) and md5(src_o) == before
+        for ok_, msg in ((moved, "brute_match.rebuild (the CALLER path) sees a source change"),
+                         (refused, "...and returns False when the source cannot compile"),
+                         (restored, "...and the restored source rebuilds the original bytes")):
+            bad += not ok_
+            print("  [%s] %s" % ("held" if ok_ else "VACUOUS", msg))
+
+    # objdiff OMITS fuzzy_match_percent at 0.0.  `unitfuzzy`'s CLI reads it with
+    # a default; `fuzzy_measure`, which is the API every sweep ranks on, did not
+    # -- so a variant that zeroed the function raised KeyError and killed the
+    # sweep, and an aborted sweep reads exactly like an exhausted one.  Same
+    # shape as the direct_build defect with the surfaces swapped.
+    _real_measure = unitfuzzy.measure
+    unitfuzzy.measure = lambda unit, version: {"functions": [{"name": "probeSym"}]}
+    try:
+        try:
+            got = _bm.fuzzy_measure({"object": unit_object, "name": "x"},
+                                    "probeSym", "GSAE01", retries=1)
+            handled = isinstance(got, float)
+        except Exception:
+            handled = False
+        # ABLATION: the pre-fix unguarded read must still blow up, or the
+        # tolerance above is somebody else's doing.
+        try:
+            u_ = unitfuzzy.measure(None, None)
+            float(u_["functions"][0]["fuzzy_match_percent"])
+            ablated_raises = False
+        except KeyError:
+            ablated_raises = True
+    finally:
+        unitfuzzy.measure = _real_measure
+    for ok_, msg in ((handled, "fuzzy_measure survives an OMITTED fuzzy key (a 0.0 row) "
+                               "instead of killing the sweep"),
+                     (ablated_raises, "...and ablating the guard raises KeyError again")):
+        bad += not ok_
+        print("  [%s] %s" % ("held" if ok_ else "VACUOUS", msg))
+
     rep = json.load(open(os.path.join(REPO, "build", "GSAE01",
                                       "report.json")))
     cfg = json.load(open(os.path.join(REPO, "build", "GSAE01",
