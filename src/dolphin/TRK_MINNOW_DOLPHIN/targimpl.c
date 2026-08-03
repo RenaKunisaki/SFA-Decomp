@@ -678,31 +678,31 @@ static asm void TRKExceptionHandler(u16 r3){
 	stw r3, TRKExceptionStatus.exceptionInfo.PC(r2)
 	lhz r3, TRKExceptionStatus.exceptionInfo.exceptionID(r2)
 	cmpwi r3, 0x200
-	beq LAB_00010ba4
+	beq advance_pc
 	cmpwi r3, 0x300
-	beq LAB_00010ba4
+	beq advance_pc
 	cmpwi r3, 0x400
-	beq LAB_00010ba4
+	beq advance_pc
 	cmpwi r3, 0x600
-	beq LAB_00010ba4
+	beq advance_pc
 	cmpwi r3, 0x700
-	beq LAB_00010ba4
+	beq advance_pc
 	cmpwi r3, 0x800
-	beq LAB_00010ba4
+	beq advance_pc
 	cmpwi r3, 0x1000
-	beq LAB_00010ba4
+	beq advance_pc
 	cmpwi r3, 0x1100
-	beq LAB_00010ba4
+	beq advance_pc
 	cmpwi r3, 0x1200
-	beq LAB_00010ba4
+	beq advance_pc
 	cmpwi r3, 0x1300
-	beq LAB_00010ba4
-	b LAB_00010bb0
-LAB_00010ba4:
+	beq advance_pc
+	b exception_exit
+advance_pc:
 	mfsrr0 r3
 	addi r3, r3, 0x4
 	mtsrr0 r3
-LAB_00010bb0:
+exception_exit:
 	lis r2, gTRKExceptionStatus@h
 	ori r2, r2, gTRKExceptionStatus@l
 	li r3, 0x1

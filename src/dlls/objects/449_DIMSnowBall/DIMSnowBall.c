@@ -65,7 +65,7 @@ void dimsnowball_update(GameObject* obj) {
     u8* model;
     f32 dy2;
     f32 dy1;
-    f32 v24;
+    f32 velocityX;
 
     ap = idx;
     ap = x;
@@ -173,10 +173,10 @@ void dimsnowball_update(GameObject* obj) {
     if (((DimSnowBallState*)state)->jingleCooldown > 0) {
         ((DimSnowBallState*)state)->jingleCooldown -= frames;
     }
-    v24 = obj->anim.velocityX;
+    velocityX = obj->anim.velocityX;
     dy2 = DIM_SNOWBALL_ROTATION_SCALE;
     obj->anim.rotY = -(dy2 * -obj->anim.velocityZ - (f32)obj->anim.rotY);
-    obj->anim.rotZ = -(dy2 * v24 - (f32)obj->anim.rotZ);
+    obj->anim.rotZ = -(dy2 * velocityX - (f32)obj->anim.rotZ);
     model = *(u8**)&obj->anim.hitReactState;
     if (model != NULL) {
         ((ObjHitsPriorityState*)model)->flags |= OBJHITS_PRIORITY_STATE_ENABLED;

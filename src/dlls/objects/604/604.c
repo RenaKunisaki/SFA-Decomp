@@ -369,10 +369,10 @@ int snowclaw_animEventCallback(GameObject* obj, int a2, ObjSeqState* seq)
     s->mountAlpha = 0xff;
     if (sub != 0)
     {
-        s16 v6 = ((GameObject*)sub)->anim.flags;
-        if (v6 & OBJANIM_FLAG_HIDDEN)
+        s16 animFlags = ((GameObject*)sub)->anim.flags;
+        if (animFlags & OBJANIM_FLAG_HIDDEN)
         {
-            ((GameObject*)sub)->anim.flags = v6 & ~OBJANIM_FLAG_HIDDEN;
+            ((GameObject*)sub)->anim.flags = animFlags & ~OBJANIM_FLAG_HIDDEN;
             SNOWCLAW_MOUNT_INTERFACE(sub)->setRiderMode((GameObject*)sub, 2);
         }
     }

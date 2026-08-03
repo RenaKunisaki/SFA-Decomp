@@ -396,7 +396,7 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
     u8* state = obj->extra;
     GameObject* player = Obj_GetPlayerObject();
     int hit;
-    int v28;
+    int sphereIndex;
     int v24;
     GameObject* hitObject;
     f32 posX;
@@ -449,8 +449,8 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
     {
         return 0;
     }
-    hit = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &v28, (u32*)&v24, &posX, &posY, &posZ);
-    ((GroundBaddieState*)state)->lastHitSphereIndex = v28;
+    hit = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &sphereIndex, (u32*)&v24, &posX, &posY, &posZ);
+    ((GroundBaddieState*)state)->lastHitSphereIndex = sphereIndex;
     if (hit != 0)
     {
         if (hitPosOut != NULL)

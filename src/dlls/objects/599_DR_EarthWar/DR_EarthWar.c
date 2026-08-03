@@ -469,8 +469,8 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, EarthWarriorState* controlle
         }
         warrior->soundId = (warrior->attackStage > 3) ? 0xa : 8;
         {
-            f32 v294 = controllerState->baddie.animSpeedC;
-            if (v294 < (&warrior->configRow[0].minSpeed)[i2])
+            f32 animSpeedC = controllerState->baddie.animSpeedC;
+            if (animSpeedC < (&warrior->configRow[0].minSpeed)[i2])
             {
                 if (warrior->attackPhase == 4)
                 {
@@ -485,7 +485,7 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, EarthWarriorState* controlle
                     warrior->attackPhase -= 4;
                 }
             }
-            else if (v294 >= (&warrior->configRow[0].maxSpeed)[i2])
+            else if (animSpeedC >= (&warrior->configRow[0].maxSpeed)[i2])
             {
                 if (warrior->attackPhase < 0x14)
                 {
@@ -493,7 +493,7 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, EarthWarriorState* controlle
                     {
                         blend = 0.85f;
                     }
-                    if (v294 < warrior->animSpeedMax)
+                    if (animSpeedC < warrior->animSpeedMax)
                     {
                         warrior->attackPhase += 4;
                     }

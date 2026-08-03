@@ -167,7 +167,7 @@ u32 adsrHandle(ADSR_VARS* adsr, u16* out1, u16* out2)
 {
     int ret = 0;
     int m = adsr->mode;
-    int v8;
+    int volume;
     int idx;
     u16 outVal;
 
@@ -176,9 +176,9 @@ u32 adsrHandle(ADSR_VARS* adsr, u16* out1, u16* out2)
     case ADSR_MODE_LINEAR:
         if (adsr->state != ADSR_STATE_HOLD)
         {
-            v8 = *(int*)&adsr->currentVolume;
-            *(int*)&adsr->currentVolume = v8 + *(int*)&adsr->currentDelta;
-            outVal = v8 >> 16;
+            volume = *(int*)&adsr->currentVolume;
+            *(int*)&adsr->currentVolume = volume + *(int*)&adsr->currentDelta;
+            outVal = volume >> 16;
             *out1 = outVal;
             if (*(int*)&adsr->currentDelta >= 0)
             {
@@ -206,10 +206,10 @@ u32 adsrHandle(ADSR_VARS* adsr, u16* out1, u16* out2)
     {
         if (adsr->state != ADSR_STATE_HOLD)
         {
-            v8 = *(int*)&adsr->currentVolume;
+            volume = *(int*)&adsr->currentVolume;
             if (adsr->aMode == ADSR_ATTACK_MODE_LINEAR && adsr->state == ADSR_STATE_DECAY)
             {
-                *(int*)&adsr->currentVolume = v8 + *(int*)&adsr->currentDelta;
+                *(int*)&adsr->currentVolume = volume + *(int*)&adsr->currentDelta;
             }
             else
             {
@@ -222,16 +222,16 @@ u32 adsrHandle(ADSR_VARS* adsr, u16* out1, u16* out2)
                 }
                 *(int*)&adsr->currentVolume = voiceAdsrVolumeTable[idx] << 16;
             }
-            outVal = v8 >> 16;
+            outVal = volume >> 16;
             *out1 = outVal;
-            if (*(int*)&adsr->currentVolume - v8 >= 0)
+            if (*(int*)&adsr->currentVolume - volume >= 0)
             {
-                outVal = (*(int*)&adsr->currentVolume - v8) >> 21;
+                outVal = (*(int*)&adsr->currentVolume - volume) >> 21;
                 *out2 = outVal;
             }
             else
             {
-                outVal = -(-(*(int*)&adsr->currentVolume - v8) >> 21);
+                outVal = -(-(*(int*)&adsr->currentVolume - volume) >> 21);
                 *out2 = outVal;
             }
             if (--*(int*)&adsr->cnt == 0)
