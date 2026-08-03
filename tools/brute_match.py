@@ -964,6 +964,18 @@ def main():
     held: dict[int, tuple] = {}
     cur_fz, cur_px = base_fz, base_proxy
     results = []          # (fuzzy, proxy, reg, block_index, order)
+    # PLANNED IS NOT SWEPT.  The variant plan is syntactic: it permutes the
+    # declaration TEXT and does not look at initialisers, so on a block whose
+    # declarations initialise from each other (`float y = f(&bits); float y2 =
+    # y * y;`) most orderings are use-before-declaration and do not compile.
+    # Those are skipped, correctly -- but a summary that reports the PLANNED
+    # count makes such a row read as "N orderings, inert" when its legal
+    # neighbourhood was smaller, and sometimes empty.  Measured over the 201
+    # sub-100 rows: 68 of them carry at least one initialiser that reads
+    # another declaration in the same block, 213 declarations in all, and nine
+    # rows (the trig family, mathTanf) have NO legal reordering whatsoever.
+    # So both numbers are reported, always.
+    n_built = n_failed = 0
     t0 = time.time()
     stop = False
 
@@ -992,8 +1004,10 @@ def main():
                     break
                 res = trial({**held, bi: order})
                 if res is None:
+                    n_failed += 1
                     print(f"[b{bi} {vi:3d}] BUILD FAIL {list(order)}")
                     continue
+                n_built += 1
                 fz, px, reg = res
                 results.append((fz, px, reg, bi, order))
                 flag = ""
@@ -1042,6 +1056,11 @@ def main():
     finally:
         # never leave a permutation on disk while deciding
         src_file.write_bytes(original)
+
+    print(f"\n# orderings BUILT {n_built}, rejected by the compiler "
+          f"{n_failed} (planned {total}) -- a row whose declarations "
+          f"initialise from each other has a smaller legal neighbourhood than "
+          f"the plan, and 'planned' is never the swept count")
 
     print("\n# ranked by FUZZY (top 12):")
     for fz, px, reg, bi, order in sorted(results, key=lambda r: (-r[0], -r[1]))[:12]:
