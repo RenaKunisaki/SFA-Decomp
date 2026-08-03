@@ -1163,11 +1163,10 @@ static void modelLoadMtxsToGx(int obj, int* model, MtxBitStream* bs, f32* mtx)
             {
                 u32 w;
                 int pos = bs->pos;
-                int off = pos >> 3;
-                u8* p = (u8*)(off + (int)bs->data);
-                w = p[0];
-                w |= p[1] << 8;
-                w |= p[2] << 16;
+                u32 pAddr = (pos >> 3) + ((u32)bs->data + 1);
+                w = *(u8*)(pAddr - 1);
+                w |= *(u8*)pAddr << 8;
+                w |= *(u8*)(pAddr + 1) << 16;
                 bs->pos = pos + 8;
                 idx = (w >> (pos & 7)) & 0xff;
             }
@@ -1244,11 +1243,10 @@ static void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* 
             {
                 u32 w;
                 int pos = bs->pos;
-                int off = pos >> 3;
-                u8* p = (u8*)(off + (int)bs->data);
-                w = p[0];
-                w |= p[1] << 8;
-                w |= p[2] << 16;
+                u32 pAddr = (pos >> 3) + ((u32)bs->data + 1);
+                w = *(u8*)(pAddr - 1);
+                w |= *(u8*)pAddr << 8;
+                w |= *(u8*)(pAddr + 1) << 16;
                 bs->pos = pos + 8;
                 idx = (w >> (pos & 7)) & 0xff;
             }
@@ -2486,10 +2484,10 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
         {
             u32 w;
             int pos = bs.pos;
-            u8* p = (u8*)((pos >> 3) + (int)bs.data);
-            w = p[0];
-            w |= p[1] << 8;
-            w |= p[2] << 16;
+            u32 pAddr = (pos >> 3) + ((u32)bs.data + 1);
+            w = *(u8*)(pAddr - 1);
+            w |= *(u8*)pAddr << 8;
+            w |= *(u8*)(pAddr + 1) << 16;
             bs.pos = pos + 4;
             op4 = (w >> (pos & 7)) & 0xf;
         }
@@ -2504,10 +2502,10 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
             {
                 u32 w;
                 int pos = bs.pos;
-                u8* p = (u8*)((pos >> 3) + (int)bs.data);
-                w = p[0];
-                w |= p[1] << 8;
-                w |= p[2] << 16;
+                u32 pAddr = (pos >> 3) + ((u32)bs.data + 1);
+                w = *(u8*)(pAddr - 1);
+                w |= *(u8*)pAddr << 8;
+                w |= *(u8*)(pAddr + 1) << 16;
                 bs.pos = pos + 1;
                 GXSetVtxDesc(GX_VA_POS, (((int)(w >> (pos & 7)) & 1) ? GX_INDEX16 : GX_INDEX8));
             }
@@ -2911,10 +2909,10 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
         {
             u32 w;
             int pos = bs.pos;
-            u8* p = (u8*)((pos >> 3) + (int)bs.data);
-            w = p[0];
-            w |= p[1] << 8;
-            w |= p[2] << 16;
+            u32 pAddr = (pos >> 3) + ((u32)bs.data + 1);
+            w = *(u8*)(pAddr - 1);
+            w |= *(u8*)pAddr << 8;
+            w |= *(u8*)(pAddr + 1) << 16;
             bs.pos = pos + 4;
             op4 = (w >> (pos & 7)) & 0xf;
         }
@@ -2935,10 +2933,10 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
             {
                 u32 w;
                 int pos = bs.pos;
-                u8* p = (u8*)((pos >> 3) + (int)bs.data);
-                w = p[0];
-                w |= p[1] << 8;
-                w |= p[2] << 16;
+                u32 pAddr = (pos >> 3) + ((u32)bs.data + 1);
+                w = *(u8*)(pAddr - 1);
+                w |= *(u8*)pAddr << 8;
+                w |= *(u8*)(pAddr + 1) << 16;
                 bs.pos = pos + 6;
                 idx = (w >> (pos & 7)) & 0x3f;
                 op = (int*)ObjModel_GetRenderOp((ModelFileHeader*)m, idx);
@@ -2952,10 +2950,10 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
                 u8* dl;
                 u32 w;
                 int pos = bs.pos;
-                u8* p = (u8*)((pos >> 3) + (int)bs.data);
-                w = p[0];
-                w |= p[1] << 8;
-                w |= p[2] << 16;
+                u32 pAddr = (pos >> 3) + ((u32)bs.data + 1);
+                w = *(u8*)(pAddr - 1);
+                w |= *(u8*)pAddr << 8;
+                w |= *(u8*)(pAddr + 1) << 16;
                 bs.pos = pos + 8;
                 dl = modelFileGetDisplayList(m, (w >> (pos & 7)) & 0xff);
                 GXCallDisplayList(*(void**)dl, *(u16*)(dl + 4));
