@@ -128,6 +128,8 @@
 #include "main/rcp_dolphin_api.h"
 #include "main/dll/dll_0017_savegame_api.h"
 
+#define CLAMP_EXPR(value, low, high) ((value) < (low) ? (low) : ((value) > (high) ? (high) : (value)))
+
 #undef BADDIE_MOVE_STATUS_SIGNED
 
 typedef struct PlayerSeqPlacement {
@@ -13080,44 +13082,36 @@ void playerUpdateLookAndLean(GameObject* obj, BaddieState* baddie, PlayerState* 
     }
     player->headPitch = (f32)(int)player->headPitch + interpolate((f32)(int)d, 0.15f, timeDelta);
     near = playerFindNearestLookTarget(obj);
-    if ((u32)near != 0 && (player->flags3F0.b80) == 0 && (player->flags3F0.b40) == 0 &&
-        (player->flags3F0.b10) == 0 && (player->flags3F0.b20) == 0) {
-        int gd = (u16)getAngle(-(*(f32*)((char*)near + 0xc) - obj->anim.localPosX),
-                               -(*(f32*)((char*)near + 0x14) - obj->anim.localPosZ)) -
-                 (u16)player->targetYaw;
+    if ((u32)near != 0 && (player->flags3F0.b80) == 0 && (player->flags3F0.b40) == 0 && (player->flags3F0.b10) == 0 &&
+        (player->flags3F0.b20) == 0) {
         f32 t;
         f32 f5;
-        if (gd > 0x8000) {
-            gd -= 0xffff;
+        g = getAngle(-(*(f32*)((char*)near + 0xc) - obj->anim.localPosX),
+                     -(*(f32*)((char*)near + 0x14) - obj->anim.localPosZ)) &
+            0xffff;
+        g -= (u16)player->targetYaw;
+        if (g > 0x8000) {
+            g -= 0xffff;
         }
-        if (gd < -0x8000) {
-            gd += 0xffff;
+        if (g < -0x8000) {
+            g += 0xffff;
         }
         t = 1.0f - (baddie->animSpeedC - 0.4f) / (player->maxSpeed - 0.4f);
         f5 = 40.0f * ((t < 0.0f) ? 0.0f : ((t > 1.0f) ? 1.0f : t)) + 45.0f;
-        g = (int)(((f32)(int)gd < 182.0f * -f5) ? 182.0f * -f5
-                                                : (((f32)(int)gd > 182.0f * f5) ? 182.0f * f5 : (f32)(int)gd));
+        g = CLAMP_EXPR((f32)(int)g, 182.0f * -f5, 182.0f * f5);
     } else {
         g = 0;
     }
     {
-        int r0;
+        int turnRate;
         if (!(((u32)player->flags3F1.b20) || (player->flags3F0.b10))) {
-            r0 = player->targetYawRate;
+            turnRate = player->targetYawRate;
         } else {
-            r0 = 0;
+            turnRate = 0;
         }
-        if (r0 < -0x28) {
-            r0 = -0x28;
-        } else if (r0 > 0x28) {
-            r0 = 0x28;
-        }
-        g += r0 * 0xb6;
-        if (g < -0x3ffc) {
-            g = -0x3ffc;
-        } else if (g > 0x3ffc) {
-            g = 0x3ffc;
-        }
+        turnRate = CLAMP_EXPR(turnRate, -0x28, 0x28);
+        g += turnRate * 0xb6;
+        g = CLAMP_EXPR(g, -0x3ffc, 0x3ffc);
         g = g - (u16)player->bodyLeanAngle;
         if (g > 0x8000) {
             g -= 0xffff;
@@ -13126,25 +13120,21 @@ void playerUpdateLookAndLean(GameObject* obj, BaddieState* baddie, PlayerState* 
             g += 0xffff;
         }
         g *= 0.15f;
-        if (g < -0x16c) {
-            g = -0x16c;
-        } else if (g > 0x16c) {
-            g = 0x16c;
-        }
+        g = CLAMP_EXPR(g, -0x16c, 0x16c);
         player->bodyLeanAngle =
             (f32)(int)g * timeDelta + (f32)(int)*(s16*)((char*)player + offsetof(PlayerState, bodyLeanAngle));
         player->bodyLeanHalf = player->bodyLeanAngle / 2;
     }
     {
-        int k = (int)(182.0f * (10.0f * -turnInput));
-        k -= (u16)player->headYaw;
-        if (k > 0x8000) {
-            k -= 0xffff;
+        int headYawDelta = (int)(182.0f * (10.0f * -turnInput));
+        headYawDelta -= (u16)player->headYaw;
+        if (headYawDelta > 0x8000) {
+            headYawDelta -= 0xffff;
         }
-        if (k < -0x8000) {
-            k += 0xffff;
+        if (headYawDelta < -0x8000) {
+            headYawDelta += 0xffff;
         }
-        player->headYaw = *(s16*)((char*)player + offsetof(PlayerState, headYaw)) + k;
+        player->headYaw = *(s16*)((char*)player + offsetof(PlayerState, headYaw)) + headYawDelta;
     }
 }
 
