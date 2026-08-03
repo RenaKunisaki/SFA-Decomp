@@ -224,8 +224,8 @@ void dim2prisonmammoth_update(GameObject* obj) {
         state->baddie.moveInputX = fz;
         state->baddie.moveInputZ = fz;
     }
-    *(s32*)&state->baddie.pressedButtons = 0;
-    *(s32*)&state->baddie.heldButtons = 0;
+    state->baddie.pressedButtons = 0;
+    state->baddie.heldButtons = 0;
     state->baddie.cameraYaw = 0;
     state->baddie.flags0 |= 0x400000;
     (*gPlayerInterface)
