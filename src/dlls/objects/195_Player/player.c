@@ -16703,7 +16703,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
             seq->movementState = 5;
             {
                 int mv;
-                if (*(u32*)&((PlayerState*)inner)->heldObj != 0)
+                if ((u32)((PlayerState*)inner)->heldObj != 0)
                 {
                     mv = 8;
                 }

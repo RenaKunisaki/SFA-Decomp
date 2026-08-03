@@ -183,16 +183,16 @@ void SnowBike_DrawTrails(int p1, char* table)
             {
                 GXBegin(GX_QUADS, GX_VTXFMT2, 4);
                 shPos3f32(verts[0] - playerMapOffsetX, verts[0 + 1], verts[0 + 2] - playerMapOffsetZ);
-                shColor4u8(*(u8*)&r, *(u8*)&g, *(u8*)&b, (u8) * (s16*)((char*)verts + 0xc));
+                shColor4u8(r, g, b, (u8) * (s16*)((char*)verts + 0xc));
                 shTexCoord2f32(texS, texS);
                 shPos3f32(verts[4] - playerMapOffsetX, verts[4 + 1], verts[4 + 2] - playerMapOffsetZ);
-                shColor4u8(*(u8*)&r, *(u8*)&g, *(u8*)&b, (u8) * (s16*)((char*)verts + 0x1c));
+                shColor4u8(r, g, b, (u8) * (s16*)((char*)verts + 0x1c));
                 shTexCoord2f32(texT, texS);
                 shPos3f32(verts[0xc] - playerMapOffsetX, verts[0xc + 1], verts[0xc + 2] - playerMapOffsetZ);
-                shColor4u8(*(u8*)&r, *(u8*)&g, *(u8*)&b, (u8) * (s16*)((char*)verts + 0x3c));
+                shColor4u8(r, g, b, (u8) * (s16*)((char*)verts + 0x3c));
                 shTexCoord2f32(texT, texS);
                 shPos3f32(verts[8] - playerMapOffsetX, verts[8 + 1], verts[8 + 2] - playerMapOffsetZ);
-                shColor4u8(*(u8*)&r, *(u8*)&g, *(u8*)&b, (u8) * (s16*)((char*)verts + 0x2c));
+                shColor4u8(r, g, b, (u8) * (s16*)((char*)verts + 0x2c));
                 shTexCoord2f32(texS, texS);
                 verts += 8;
                 j += 2;
@@ -1148,7 +1148,7 @@ int SnowBike_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
     f64 ySpeed;
     f64 zSpeed;
 
-    state = *(int*)&obj->extra;
+    state = (int)obj->extra;
     st = (SnowBikeState*)state;
     seq->freeCallback = (ObjAnimSequenceFreeCallback)SnowBike_onSeqFree;
     ObjHits_DisableObject(obj);
@@ -1825,12 +1825,12 @@ typedef struct
 
 s32 SnowBike_getRouteRank(GameObject* obj)
 {
-    return (*gCheckpointInterface)->getRouteRank((CheckpointRankItem*)(*(int*)&obj->extra + 0x28));
+    return (*gCheckpointInterface)->getRouteRank((CheckpointRankItem*)((int)obj->extra + 0x28));
 }
 
 s32 SnowBike_isAtRankGate(GameObject* obj)
 {
-    int result = (*gCheckpointInterface)->getRouteRank((CheckpointRankItem*)(*(int*)&obj->extra + 0x28));
+    int result = (*gCheckpointInterface)->getRouteRank((CheckpointRankItem*)((int)obj->extra + 0x28));
     if (result == 3)
     {
         if (gSnowBikeLeaderRouteRank == -1)
@@ -1851,7 +1851,7 @@ void SnowBike_func16(void)
 
 void SnowBike_resetToRomListPosition(GameObject* obj)
 {
-    int state = *(int*)&obj->extra;
+    int state = (int)obj->extra;
     int* table;
     SnowBikeRomListItem* found;
     f32 zero;
@@ -1894,7 +1894,7 @@ s32 SnowBike_getRacePosition(GameObject* obj)
 
 f32 SnowBike_func13(GameObject* obj, f32* out)
 {
-    int state = *(int*)&obj->extra;
+    int state = (int)obj->extra;
     f32 speed;
     *out = 5.0f;
     speed = sqrtf(((SnowBikeState*)state)->localVelZ * ((SnowBikeState*)state)->localVelZ +
@@ -1910,7 +1910,7 @@ f32 SnowBike_func13(GameObject* obj, f32* out)
 
 void SnowBike_getPlayerAnim(GameObject* obj, f32* outFloat, s32* outBool)
 {
-    int state = *(int*)&obj->extra;
+    int state = (int)obj->extra;
     f32 value;
     *outFloat = ((SnowBikeState*)state)->unk414 / 400.0f;
     value = *outFloat;
@@ -1920,7 +1920,7 @@ void SnowBike_getPlayerAnim(GameObject* obj, f32* outFloat, s32* outBool)
 
 void SnowBike_setMountState(GameObject* obj, int type)
 {
-    int state = *(int*)&obj->extra;
+    int state = (int)obj->extra;
     u32 bit;
     ((SnowBikeState*)state)->riderMode = type;
     if (type == 2)
@@ -1947,7 +1947,7 @@ s32 SnowBike_getMountState(GameObject* obj)
 
 void SnowBike_getCameraPosition(GameObject* obj, f32* x, f32* y, f32* z)
 {
-    int state = *(int*)&obj->extra;
+    int state = (int)obj->extra;
     ((SnowBikeState*)state)->mountPosX = obj->anim.localPosX;
     ((SnowBikeState*)state)->mountPosY = obj->anim.localPosY;
     ((SnowBikeState*)state)->mountPosZ = obj->anim.localPosZ;
@@ -1968,7 +1968,7 @@ int SnowBike_canDismount(void)
 
 void SnowBike_getRiderPosition(GameObject* obj, f32* x, f32* y, f32* z)
 {
-    int state = *(int*)&obj->extra;
+    int state = (int)obj->extra;
     *x = ((SnowBikeState*)state)->modelMtxPosX;
     *y = ((SnowBikeState*)state)->modelMtxPosY;
     *z = ((SnowBikeState*)state)->modelMtxPosZ;
@@ -1981,7 +1981,7 @@ u8 SnowBike_getMountSide(GameObject* obj)
 
 u32 SnowBike_canMount(GameObject* obj)
 {
-    int state = *(int*)&obj->extra;
+    int state = (int)obj->extra;
     u32 bit = (((SnowBikeState*)state)->flags428 >> 1) & 1;
     if (bit != 0)
     {
@@ -2007,7 +2007,7 @@ void SnowBike_free(GameObject* obj)
     u32 bit;
     int state;
 
-    state = *(int*)&obj->extra;
+    state = (int)obj->extra;
     objFreeObjectType((int)obj, SNOWBIKE_OBJGROUP);
     i = 0;
     p = (char*)state;

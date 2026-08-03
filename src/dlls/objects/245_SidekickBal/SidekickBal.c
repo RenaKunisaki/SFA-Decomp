@@ -230,7 +230,7 @@ void SidekickBall_update(GameObject* obj) {
     int trickyFlagsMask;
     int triggered;
 
-    state = (SidekickBallState*)*(int*)&obj->extra;
+    state = (SidekickBallState*)(int)obj->extra;
     obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
     state->onPathPoint = 0;
 

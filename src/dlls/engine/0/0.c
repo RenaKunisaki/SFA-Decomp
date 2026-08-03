@@ -4433,7 +4433,7 @@ void pauseMenuCreateHeads(void)
                 ((GameObject*)gHeadDisplayModelObjs[i])->anim.localPosZ = (-5.0f);
                 ((GameObject*)gHeadDisplayModelObjs[i])->anim.rotX = 0x7447;
                 ((GameObject*)gHeadDisplayModelObjs[i])->anim.rootMotionScale = 0.07f;
-                if (*(u32*)&((GameObject*)gHeadDisplayModelObjs[i])->anim.placementData > 0x90000000u)
+                if ((u32)((GameObject*)gHeadDisplayModelObjs[i])->anim.placementData > 0x90000000u)
                 {
                     *(u32*)&((GameObject*)gHeadDisplayModelObjs[i])->anim.placementData = 0;
                 }
@@ -8328,7 +8328,7 @@ s16 GameUI_getSubpageGamebit(void)
 /* Signed-byte getter for cMenuState. */
 s32 CMenu_GetState(void)
 {
-    return *(s8*)&cMenuState;
+    return cMenuState;
 }
 s32 GameUI_isOneOfItemsBeingUsed(s32* arr, int count)
 {
@@ -9019,7 +9019,7 @@ void GameUI_initialise(void)
     res = getScreenResolution();
     *(int*)&gGameUiScreenWidthOffset = res;
     height = res >> 16;
-    *(int*)&gGameUiScreenHeightOffset = height;
+    gGameUiScreenHeightOffset = height;
     width = res & 0xffff;
     *(int*)&gGameUiScreenWidthOffset = width;
     gGameUiScreenWidthOffset = width - 320;

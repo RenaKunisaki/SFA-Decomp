@@ -603,7 +603,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
                         s->targetZ = s->targetZ * blendA + ((GameObject*)obj)->anim.localPosZ * blendB;
                     }
                 }
-                if ((s->reattackDelayBase != -1) && (target == *(u32*)&s->lastTarget))
+                if ((s->reattackDelayBase != -1) && (target == (u32)s->lastTarget))
                 {
                     ival = -framesThisStep + s->reattackTimer;
                     s->reattackTimer = ival;
@@ -630,7 +630,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
                 {
                     s->reattackTimer = s->reattackDelayBase;
                 }
-                if ((target != *(u32*)&s->lastTarget) && (target != 0))
+                if ((target != (u32)s->lastTarget) && (target != 0))
                 {
                     if (((GameObject*)target)->anim.hitReactState != NULL)
                     {
@@ -668,7 +668,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
                 if (((0x5555 < ival) || (target == 0)) ||
                     (Vec_distance(&obj->anim.worldPosX, &((GameObject*)target)->anim.worldPosX) > s->lookAtMaxDistance))
                 {
-                    if ((s->phase != MOVELIB_PHASE_IDLE) || ((target == 0 && (*(u32*)&s->lastTarget != 0))))
+                    if ((s->phase != MOVELIB_PHASE_IDLE) || ((target == 0 && ((u32)s->lastTarget != 0))))
                     {
                         objJointTracksCaptureCurrentAngles(obj, (int*)seqHandle, (u32)s->pointCount, s->animChannels);
                         s->setupFlag = 10;
@@ -678,7 +678,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
                 }
                 else
                 {
-                    if ((target != *(u32*)&s->lastTarget) || (s->phase == MOVELIB_PHASE_IDLE))
+                    if ((target != (u32)s->lastTarget) || (s->phase == MOVELIB_PHASE_IDLE))
                     {
                         objJointTracksCaptureCurrentAngles(obj, (int*)seqHandle, (u32)s->pointCount, s->animChannels);
                         s->setupFlag = 1;

@@ -2344,7 +2344,7 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
         if (((ModelFileHeader*)m)->animationCount != 0 && !(((ModelFileHeader*)m)->flags & 2) &&
             ((ModelFileHeader*)m)->jointCount != 0)
         {
-            if (*(u32*)&((ModelFileHeader*)m)->vertexAnimEntries != 0)
+            if ((u32)((ModelFileHeader*)m)->vertexAnimEntries != 0)
             {
                 PSMTXIdentity((MtxPtr)im);
                 ObjModel_UpdateAnimMatrices((ObjModel*)am, (ModelFileHeader*)m, (GameObject*)obj, im);
@@ -2414,7 +2414,7 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
     modelRenderInstrsState_init((ModelRenderInstrsState*)&bs, ((ModelFileHeader*)m)->instrs,
                                 ((ModelFileHeader*)m)->instrsBitLenWords << 3,
                                 ((ModelFileHeader*)m)->instrsBitLenWords << 3);
-    if (*(u32*)&((ModelFileHeader*)m)->vertexAnimEntries != 0)
+    if ((u32)((ModelFileHeader*)m)->vertexAnimEntries != 0)
     {
         PSMTXConcat((MtxPtr)vm, (MtxPtr)wm, (MtxPtr)cm);
         GXLoadPosMtxImm((const f32 (*)[4])cm, gObjGxPosMtxIdTable[9]);
@@ -2661,7 +2661,7 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
         if (((ModelFileHeader*)m)->animationCount != 0 && !(((ModelFileHeader*)m)->flags & 2) &&
             ((ModelFileHeader*)m)->jointCount != 0)
         {
-            if (*(u32*)&((ModelFileHeader*)m)->vertexAnimEntries != 0)
+            if ((u32)((ModelFileHeader*)m)->vertexAnimEntries != 0)
             {
                 PSMTXIdentity((MtxPtr)im);
                 ObjModel_UpdateAnimMatrices((ObjModel*)am, (ModelFileHeader*)m, (GameObject*)obj, im);
@@ -2781,7 +2781,7 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
         f32 inv = 1.0f / ((GameObject*)obj)->anim.rootMotionScale;
         PSMTXScale((MtxPtr)sm, inv, inv, inv);
     }
-    if (*(u32*)&((ModelFileHeader*)m)->vertexAnimEntries != 0)
+    if ((u32)((ModelFileHeader*)m)->vertexAnimEntries != 0)
     {
         if (fuzzPass || fuzzShadowPass || (passMaskCopy & 8))
         {

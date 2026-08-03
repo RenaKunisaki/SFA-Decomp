@@ -538,7 +538,7 @@ void textureFree(Texture* tex)
                     iter = next;
                 }
                 if (((Texture*)tex)->preloaded != 0)
-                    findSomething((void*)*(int*)&((Texture*)tex)->tmemAddr);
+                    findSomething((void*)(int)((Texture*)tex)->tmemAddr);
                 if (((Texture*)tex)->cached == 0)
                     mm_free(tex);
                 gLoadedTextures[i].key = -1;
