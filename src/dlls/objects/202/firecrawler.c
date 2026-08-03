@@ -106,7 +106,7 @@ static inline int hoodedZyck_getAngleDelta(GameObject* obj, GameObject* target)
 #define FIRECRAWLER_OBJFLAG_PARENT_SLACK 0x1000
 #define FIREHOLE_OBJ_ID                  0x710 /* FireHole child spawned by firecrawler (firepipe DLL 0x273) */
 
-#define FIRECRAWLER_PROJECTILE_OBJ       0x869 /* retail "FireCrawler..." (DLL 0xD7 kaldachompspit) */
+#define FIRECRAWLER_PROJECTILE_OBJ       0x869 /* retail "FireCrawler..." (DLL 0xD7 kaldachomspit) */
 
 /* crawler-family enemy anim.romDefNos (docblock table: romDefNo -> enemy name) */
 

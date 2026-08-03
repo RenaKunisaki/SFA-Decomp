@@ -5,23 +5,23 @@
 #include "game/objects/object_fwd.h"
 #include "main/modellight_api.h"
 
-typedef struct KaldaChompSpitState {
+typedef struct KaldachomSpitState {
     ModelLightStruct* light; /* 0x00 */
-} KaldaChompSpitState;
+} KaldachomSpitState;
 
-STATIC_ASSERT(offsetof(KaldaChompSpitState, light) == 0x0);
-STATIC_ASSERT(sizeof(KaldaChompSpitState) == 0x4);
+STATIC_ASSERT(offsetof(KaldachomSpitState, light) == 0x0);
+STATIC_ASSERT(sizeof(KaldachomSpitState) == 0x4);
 
-int KaldaChompSpit_getExtraSize(void);
-int KaldaChompSpit_getObjectTypeId(void);
-void KaldaChompSpit_free(GameObject* obj);
-void KaldaChompSpit_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible);
-void KaldaChompSpit_hitDetect(GameObject* obj);
-void KaldaChompSpit_update(GameObject* obj);
-void KaldaChompSpit_init(GameObject* obj);
-void KaldaChompSpit_release(void);
-void KaldaChompSpit_initialise(void);
+int KaldachomSpit_getExtraSize(void);
+int KaldachomSpit_getObjectTypeId(void);
+void KaldachomSpit_free(GameObject* obj);
+void KaldachomSpit_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible);
+void KaldachomSpit_hitDetect(GameObject* obj);
+void KaldachomSpit_update(GameObject* obj);
+void KaldachomSpit_init(GameObject* obj);
+void KaldachomSpit_release(void);
+void KaldachomSpit_initialise(void);
 
-extern ObjectDescriptor gKaldaChompSpitObjDescriptor;
+extern ObjectDescriptor gKaldachomSpObjDescriptor;
 
 #endif /* DLLS_OBJECTS_215_H_ */

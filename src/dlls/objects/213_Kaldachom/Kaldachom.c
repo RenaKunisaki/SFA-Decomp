@@ -232,7 +232,7 @@ int kaldachom_stateHandlerA07(GameObject* obj, GroundBaddieState* state) {
         int eventFlags = state->baddie.eventFlags;
         if ((eventFlags & KALDACHOM_EVENT_MOUTH_LINK) != 0) {
             state->baddie.eventFlags = eventFlags & ~KALDACHOM_EVENT_MOUTH_LINK;
-            kaldachompme_setLinkedMouthMode(obj, KALDACHOMPME_LINKED_MODE_MOVE_1);
+            kaldachomme_setLinkedMouthMode(obj, KALDACHOMME_LINKED_MODE_MOVE_1);
         }
     }
     control = objectState->control;
@@ -359,7 +359,7 @@ int kaldachom_stateHandlerA01(GameObject* obj, GroundBaddieState* state) {
     }
     if ((s32)(state->baddie.eventFlags & KALDACHOM_EVENT_MOUTH_LINK) != 0) {
         state->baddie.eventFlags &= ~KALDACHOM_EVENT_MOUTH_LINK;
-        kaldachompme_setLinkedMouthMode(obj, KALDACHOMPME_LINKED_MODE_MOVE_1);
+        kaldachomme_setLinkedMouthMode(obj, KALDACHOMME_LINKED_MODE_MOVE_1);
     }
     return 0;
 }
@@ -372,7 +372,7 @@ int kaldachom_stateHandlerA00(GameObject* obj, GroundBaddieState* state) {
             ObjAnim_SetCurrentMove((int)obj, 4, 0.0f, 0);
             state->baddie.moveDone = 0;
         }
-        kaldachompme_setLinkedMouthMode(obj, KALDACHOMPME_LINKED_MODE_MOVE_0);
+        kaldachomme_setLinkedMouthMode(obj, KALDACHOMME_LINKED_MODE_MOVE_0);
         state->baddie.physicsActive = 1;
         mainSetBits(objectState->gameBitB, 1);
         obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;

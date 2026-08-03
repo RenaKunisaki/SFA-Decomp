@@ -1,5 +1,5 @@
 /*
- * KaldaChompMe object (DLL slot 214).
+ * KaldachomMe object (DLL slot 214).
  *
  * Drives a linked mouth animation toward a requested progress and selects
  * linked mouth objects from the owning Kaldachom's placement ID.
@@ -9,25 +9,25 @@
 #include "main/object_render.h"
 #include "sys/objects.h"
 
-ObjectDescriptor gKaldaChompMeObjDescriptor = {
+ObjectDescriptor gKaldachomMeObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)KaldaChompMe_initialise,
-    (ObjectDescriptorCallback)KaldaChompMe_release,
+    (ObjectDescriptorCallback)KaldachomMe_initialise,
+    (ObjectDescriptorCallback)KaldachomMe_release,
     0,
-    (ObjectDescriptorCallback)KaldaChompMe_init,
-    (ObjectDescriptorCallback)KaldaChompMe_update,
-    (ObjectDescriptorCallback)KaldaChompMe_hitDetect,
-    (ObjectDescriptorCallback)KaldaChompMe_render,
-    (ObjectDescriptorCallback)KaldaChompMe_free,
-    (ObjectDescriptorCallback)KaldaChompMe_getObjectTypeId,
-    KaldaChompMe_getExtraSize,
+    (ObjectDescriptorCallback)KaldachomMe_init,
+    (ObjectDescriptorCallback)KaldachomMe_update,
+    (ObjectDescriptorCallback)KaldachomMe_hitDetect,
+    (ObjectDescriptorCallback)KaldachomMe_render,
+    (ObjectDescriptorCallback)KaldachomMe_free,
+    (ObjectDescriptorCallback)KaldachomMe_getObjectTypeId,
+    KaldachomMe_getExtraSize,
 };
 
-void kaldachompme_setLinkedMouthMode(GameObject* obj, KaldaChompMeLinkedMode mode) {
-    KaldaChompMeState* state;
+void kaldachomme_setLinkedMouthMode(GameObject* obj, KaldachomMeLinkedMode mode) {
+    KaldachomMeState* state;
     GameObject* linkedObj;
 
     if (obj == NULL) {
@@ -79,13 +79,13 @@ void kaldachompme_setLinkedMouthMode(GameObject* obj, KaldaChompMeLinkedMode mod
     state = linkedObj->extra;
     if (state != NULL) {
         switch (mode) {
-        case KALDACHOMPME_LINKED_MODE_MOVE_0:
+        case KALDACHOMME_LINKED_MODE_MOVE_0:
             state->targetProgress = 1.0f;
             state->progress = 0.0f;
             state->step = 0.025f;
             state->moveId = 0;
             break;
-        case KALDACHOMPME_LINKED_MODE_MOVE_1:
+        case KALDACHOMME_LINKED_MODE_MOVE_1:
             state->targetProgress = 1.0f;
             state->progress = 0.0f;
             state->step = 0.025f;
@@ -95,33 +95,33 @@ void kaldachompme_setLinkedMouthMode(GameObject* obj, KaldaChompMeLinkedMode mod
     }
 }
 
-int KaldaChompMe_getExtraSize(void) {
-    return sizeof(KaldaChompMeState);
+int KaldachomMe_getExtraSize(void) {
+    return sizeof(KaldachomMeState);
 }
 
-int KaldaChompMe_getObjectTypeId(void) {
+int KaldachomMe_getObjectTypeId(void) {
     return 0;
 }
 
-void KaldaChompMe_free(GameObject* obj) {
+void KaldachomMe_free(GameObject* obj) {
     (void)obj;
 }
 
-void KaldaChompMe_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
+void KaldachomMe_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
     if (visible != 0) {
         objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);
     }
 }
 
-void KaldaChompMe_hitDetect(GameObject* obj) {
+void KaldachomMe_hitDetect(GameObject* obj) {
     (void)obj;
 }
 
-void KaldaChompMe_update(GameObject* obj) {
+void KaldachomMe_update(GameObject* obj) {
     f32 target;
     f32 current;
     f32 step;
-    KaldaChompMeState* state;
+    KaldachomMeState* state;
 
     state = obj->extra;
     current = state->progress;
@@ -145,7 +145,7 @@ void KaldaChompMe_update(GameObject* obj) {
     ObjAnim_SetCurrentMove((int)obj, state->moveId, state->progress, 0);
 }
 
-void KaldaChompMe_init(GameObject* obj, KaldaChompMePlacement* placement) {
+void KaldachomMe_init(GameObject* obj, KaldachomMePlacement* placement) {
     obj->anim.rotZ = (s16)(placement->rotZByte << 8);
     obj->anim.rotY = (s16)(placement->rotYByte << 8);
     obj->anim.rotX = (s16)(placement->rotXByte << 8);
@@ -153,8 +153,8 @@ void KaldaChompMe_init(GameObject* obj, KaldaChompMePlacement* placement) {
     ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
 }
 
-void KaldaChompMe_release(void) {
+void KaldachomMe_release(void) {
 }
 
-void KaldaChompMe_initialise(void) {
+void KaldachomMe_initialise(void) {
 }

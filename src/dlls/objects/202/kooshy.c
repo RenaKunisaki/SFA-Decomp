@@ -86,7 +86,7 @@
 #define MAGICPLANT_OBJFLAG_PARENT_SLACK 0x1000
 
 /* Spit projectile spawned by kooshy_spawnProjectile; retail OBJECTS.bin name
-   "KaldachomSp" (DLL 0xD7 kaldachompspit), shared with the snowworm spitter. */
+   "KaldachomSp" (DLL 0xD7 kaldachomspit), shared with the snowworm spitter. */
 
 #define KALDACHOM_SPIT_OBJ 0x51b
 

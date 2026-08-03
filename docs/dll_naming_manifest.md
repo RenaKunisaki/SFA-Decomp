@@ -34,8 +34,8 @@ which now carries prose evidence notes, so they have been dropped.
 | current path already canonical | 684 |
 | proposal still differs | 21 |
 | name-conflicts (disambiguated) | 0 |
-| naming contradictions (appendix) | 18 |
-| naming contradictions arbitrated and renamed (appendix) | 7 |
+| naming contradictions (appendix) | 0 |
+| naming contradictions arbitrated (appendix) | 25 |
 | unit-owned headers recorded (appendix) | 109 |
 
 Expansion status over the 705 rows: NO-RETAIL-NAME 287, COMPLETE 263, CONFIRMED 81, RAW 62, GUESSED 7, DOL-RECOVERED 5
@@ -265,7 +265,7 @@ any of them is acted on.
 | 0x0D4 | SkeetlaWall | COMPLETE | dlls/objects/212_SkeetlaWall/SkeetlaWall.c | = (canonical) | — |
 | 0x0D5 | Kaldachom | COMPLETE | dlls/objects/213_Kaldachom/Kaldachom.c | = (canonical) | — |
 | 0x0D6 | KaldachomMe | COMPLETE | dlls/objects/214_KaldachomMe/KaldachomMe.c | = (canonical) | — |
-| 0x0D7 | kaldachompspit (+KaldachomSp, FireCrawler) | GUESSED | dlls/objects/215/215.c | = (canonical) | — |
+| 0x0D7 | kaldachomspit (+KaldachomSp, FireCrawler) | GUESSED | dlls/objects/215/215.c | = (canonical) | — |
 | 0x0D8 | PinPonSpike | CONFIRMED | dlls/objects/216_PinPonSpike/PinPonSpike.c | = (canonical) | — |
 | 0x0D9 | Pollen | COMPLETE | dlls/objects/217_Pollen/Pollen.c | = (canonical) | — |
 | 0x0DA | PollenFragment (+DRHomingMis) | CONFIRMED | dlls/objects/218/218.c | = (canonical) | — |
@@ -610,8 +610,8 @@ any of them is acted on.
 | 0x22D | DFP_seqpoin | COMPLETE | dlls/objects/557_DFP_seqpoin/DFP_seqpoin.c | = (canonical) | Exact recovered retail basename |
 | 0x22E | — | COMPLETE | dlls/objects/558/558.c | = (canonical) | No recovered retail basename |
 | 0x22F | DFP_floorba | COMPLETE | dlls/objects/559_DFP_floorba/DFP_floorba.c | = (canonical) | Exact recovered retail basename |
-| 0x230 | DFP_wallbar | COMPLETE | dlls/objects/560_DFP_wallbar/DFP_wallbar.c | = (canonical) | Exact recovered retail basename; internal chuka_* symbols retained |
-| 0x231 | DFP_ForceAw | COMPLETE | dlls/objects/561_DFP_ForceAw/DFP_ForceAw.c | = (canonical) | Exact recovered retail basename; confirmed combined TU |
+| 0x230 | DFP_wallbar | COMPLETE | dlls/objects/560_DFP_wallbar/DFP_wallbar.c | = (canonical) | Exact recovered retail basename; internal chuka_* symbols retained — `chuka` is the TU's retail source basename (`dll/baddie/chuka.c`, debug filename evidence) |
+| 0x231 | DFP_ForceAw | COMPLETE | dlls/objects/561_DFP_ForceAw/DFP_ForceAw.c | = (canonical) | Exact recovered retail basename; confirmed combined TU — `TrickyCurve` is the TU's retail source basename (`dll/TrickyCurve.c`, covering 0x231+0x232) |
 | 0x232 | DFP_RotateP | COMPLETE | dlls/objects/562_DFP_RotateP/DFP_RotateP.c | = (canonical) | Exact recovered retail basename; confirmed combined TU |
 | 0x233 | DFP_Statue1 | COMPLETE | dlls/objects/563_DFP_Statue1/DFP_Statue1.c | = (canonical) | Exact recovered retail basename; confirmed combined TU |
 | 0x234 | DFP_PerchSw | COMPLETE | dlls/objects/564_DFP_PerchSw/DFP_PerchSw.c | = (canonical) | Exact recovered retail basename; diagnostic string follows descriptor in retail data order |
@@ -762,33 +762,17 @@ any of them is acted on.
 
 ## Appendix: naming contradictions
 
-Dlls whose hosted fn symbols carry a prefix matching NONE of the
-dll's retail def names (evidence only — symbol naming vs retail truth
-needs human arbitration before any rename). `cross-dll` = the prefix
-matches ANOTHER dll's retail name (strong mislabel evidence);
-`unrelated` = matches nothing — a mislabel OR a deliberate
-descriptive family name (e.g. `collectible`, `softbody`).
-
-| dll | retail name(s) | dominant fn prefix | class | host |
-|---|---|---|---|---|
-| 0x0D6 | KaldachomMe | `kaldachompme_*` | cross-dll (names dll 0x0D5) | dlls/objects/214_KaldachomMe/KaldachomMe.c |
-| 0x0D7 | KaldachomSp, FireCrawler | `kaldachompspit_*` | cross-dll (names dll 0x0D5) | dlls/objects/215/215.c |
-| 0x11C | LINKStaffLe, StaffAction, StaffBoostP, StaffBoulde, StaffLeverO, StaffLeverT | `staffactivated_*` | cross-dll (names dll 0x0E2) | dlls/objects/284/284.c |
-| 0x230 | DFP_wallbar | `chuka_*` | cross-dll (names dll 0x0CD) | dlls/objects/560_DFP_wallbar/DFP_wallbar.c |
-| 0x231 | DFP_ForceAw | `TrickyCurve_*` | cross-dll (names dll 0x0C4) | dlls/objects/561_DFP_ForceAw/DFP_ForceAw.c |
-| 0x294 | WCMoonTempl, WCSunTemple | `wctemple_*` | cross-dll (names dll 0x0FB,0x110,0x112,0x296,0x297) | dlls/objects/660/660.c |
-| 0x2BD | Androssleft, Androssrigh | `androsshand_*` | cross-dll (names dll 0x2BC) | dlls/objects/701/701.c |
-| 0x0C9 | GuardClaw, GCRobotPatr, Vambat, Firebat, HagabonMK2, Mikaladon, SpittingEba, MutatedEba, snowworm, snowworm_ba, Whirlpool, Rachnop, PinPon, WB, Weevil, BattleDroid, Kooshy, HoodedZyck, FireCrawler, RedEye, ShadowHunte, SwampStride, sharpclawSn, sharpclawGr, sharpclawSo, sharpclawCo, sharpclawAs, sharpclawSh, BossGeneral | `enemy_*` | unrelated | dlls/objects/201_Baddie/Baddie.c |
-| 0x0ED | CFCloudCalP, CFPickKryst, CFPowerCrys, CFPowerRoom, CFExplosive, CF_ChestSpe, WCSunStone, WCMoonStone, WCGoldTrexT, WCSilverTre, DIMBridgeCo, DIMShackleK, DIMAlpineRo, DIMTruthHor, DIM2CellKey, DIM2SilverK, DIM2GoldKey, CCfireCryst, CCgoldbar, NW_SmallSca, NW_trickyba, NW_alpinero, SH_MediumSc, SH_LargeSca, SH_MMPkey, SH_NWkey, SC_block_tr, SC_block_sq, SC_block_ci, SB_Key, SB_Spellsto, WM_MediumSc, WM_consoles, GM_TokenPic, PadlockKey, GuardPass, Spellstone, EnergyEgg, Apple, MoonSeedCol, WM_PureMagi | `collectible_*` | unrelated | dlls/objects/237/237.c |
-| 0x108 | EndObject | `Dummy108_*` | unrelated | dlls/objects/264_EndObject/EndObject.c |
-| 0x10E | DieDuster, DieFox, DieKrystal | `deathseq_*` | unrelated | dlls/objects/270/270.c |
-| 0x11A | DRDebrisGir, DRDebrisPip, LINKSnowTre, LINKSnowLog, nw_testobj, SC_DummyTri, SC_DummySqu, SC_DummyCir, SC_throne, AlienTreePa, SnowBush, SnowLog, SulphurCrys, CobwebCorne, CobwebCeili, CobwebEdge, GrassWeedCl, GrassSupaCh, FernBush, FernCurly, WaterLillyF | `decoration11a_*` | unrelated | dlls/objects/282/282.c |
-| 0x1BD | SC_paypoint, SPWell | `paymentkiosk_*` | unrelated | dlls/objects/445/445.c |
-| 0x237 | DFPSpPl | `laserObj_*` | unrelated | dlls/objects/567_DFPSpPl/DFPSpPl.c |
-| 0x238 | LINKA_levco | `fireObj_*` | unrelated | dlls/objects/568_LINKA_levco/LINKA_levco.c |
-| 0x284 | SPFruitSmal, SPEggSmall, SPFruitLarg, SPEggLarge, SPBombSpore, SPMoonSeed, SPLantern, SPBlueArtef, SPBlueMushr, SPSwapGift, SPPda, SPBinocular, SPFireFly, SPFuelCell, SPSidekickB, SPDusterHol, SPStaffHitB, SPMapTTH, SPMapMMP, SPMapLF, SPMapCRF, SPMapDIM, SPMapWC, SPMapDR, SPMapKP, SPMapOFP, SPMapSW, SPMapVFP, SPMapCC, SPReplayDis | `shopitem_*` | unrelated | dlls/objects/644/644.c |
-| 0x2AD | LINKSnowGra, SH_YellowWh, SH_BlueWhit, SH_RedYello, SH_BlueFlow, WM_drape, DFSH_Spirit, BlueFernFlo, WhiteFernFl, YellowFernF, AlienSpore, BlueFlowerP, BlueWhiteFl, RedYellowFl, YellowWhite, BullRush, BullRushClu, LongGrassCl, DragonRockG, AlienGrassC, SnowGrass, SnowBullrus, HangingPlan, WaterLillyL | `softbody_*` | unrelated | dlls/objects/685/685.c |
-| 0x2C0 | FrontFox, FrontPeppy, FrontSlippy, FrontRob, FrontFalco, FrontPilots, FrontPlanet | `titlescreen_*` | unrelated | dlls/objects/704/704.c |
+All 18 rows this appendix once carried (7 `cross-dll`, 11 `unrelated`)
+have been arbitrated; every decision, with its evidence, is in the
+arbitrated table below. The census classes were: `cross-dll` = the
+dominant fn prefix matches ANOTHER dll's retail name (strong mislabel
+evidence); `unrelated` = matches nothing — a mislabel OR a deliberate
+descriptive family name. The arbitration found the cross-dll class was
+almost entirely false alarms: two rows were a misspelling of the dll's
+OWN retail name, two were retail SOURCE basenames recovered from the
+debug build's filename list, and three were apt family/export names
+whose prefix merely collided with alias strings in other dlls' def
+lists. No hosted-function misattribution was found.
 
 ## Appendix: arbitrated naming contradictions (decided and renamed)
 
@@ -842,6 +826,53 @@ One `Dim2Icicle` name remains and is deliberate: `gDim2IcicleLightDuration`
 object emits that pool word anonymously — so a rename there would move a
 `symbols.txt` line with no source counterpart. It is left for whenever the pool
 word acquires a spelling.
+
+### Second wave: the remaining 18 census rows
+
+The same discriminator was applied to the 7 `cross-dll` rows and the 11
+`unrelated` rows still in the census. Reference counts are retail-carve
+relocations (the `pairing_check.py --refs` measure); "self-referenced"
+means every reloc naming the function comes from the hosting unit's own
+carved object (descriptor installs included). Retail OBJECTS.bin name
+fields are the spelling authority; `docs/orig/source_gap_packet_briefs/`
+(debug-build source-filename evidence) and `docs/boundary_audit.md` are
+the source-basename authority.
+
+| dll | old brand | new brand | evidence | verdict |
+|---|---|---|---|---|
+| 0x0D6 KaldachomMe | `kaldachompme_*`, `KaldaChompMe_*` | `kaldachomme_*`, `KaldachomMe_*` | The census "cross-dll (names 0x0D5)" flag was a parse artifact of a misspelling, not a misattribution: retail OBJECTS.bin spells the family `Kaldachom`/`KaldachomMe`/`KaldachomSp` (no "p" — the `KaldaChomp` spelling matches the community wiki DLL list, `docs/wiki/DLLs.md`, not retail). Attribution is correct — the nine callbacks are installed by the unit's own descriptor and self-referenced, and `kaldachomme_setLinkedMouthMode` is a genuine export consumed only by parent dll 0x0D5 (3 relocs from 213_Kaldachom), the mouth-link API a parent jaw would drive. Renamed for spelling only, including `KALDACHOMME_LINKED_MODE_*` and the `KaldachomMe*` types. | own name misspelled — renamed |
+| 0x0D7 KaldachomSp | `kaldachompspit_*`, `KaldaChompSpit_*` | `kaldachomspit_*`, `KaldachomSpit_*` | Same misspelling parse artifact. `kaldachomspit_burst` is self-referenced (x3); the nine callbacks are the unit's own descriptor set. The brand is 0x0D7's OWN retail name `KaldachomSp` (11-char truncation, expansion "Spit" GUESSED) plus the wiki "p". Renamed for spelling only; the manifest expansion row was corrected with it. | own name misspelled — renamed |
+| 0x11C (Staff* six) | `staffactivated_*` | (name kept) | Apt family name, not a mislabel of dll 0x0E2: the descriptor callback set (`init`/`update`/`free`/`render`/`getExtraSize`/`getObjectTypeId`) plus `updateLiftHeight` is self-referenced, and the eight-function accessor API (`get/setLiftHeight`, `getMode`, `getPullRateMode`, `calcInteractionTargetXZ`, `set/isGameBitMirror*`, `spawnMapEventDebris`) is referenced exclusively by 195_Player — the staff wielder driving staff-ACTIVATED objects (LINKStaffLe, StaffAction, StaffBoostP, StaffBoulde, StaffLeverO/T). Dll 0x0E2 (the staff item itself; debug filename list has only `dll/dll_E2.c` for it) references none of them. | confirmed apt |
+| 0x230 DFP_wallbar | `chuka_*` | (name kept) | `chuka` is the RETAIL SOURCE basename for this TU: the debug build's filename list carries `chuka.c` (global-unique, `dll/baddie/chuka.c` — briefs 06/07), and `docs/boundary_audit.md` places 0x230's TU exactly there (0x8020637C boundary anim.c→chuka.c; neighbouring 0x22F DFP_floorba sits at the chuka.c→chukachuck.c boundary — the matching floor bar). All ten functions self-referenced/self-installed. No live collision: dll 0x0CD's code is entirely `IceBall_*`; `ChukaChuck` is merely a def name handled there. | confirmed apt (retail source name) |
+| 0x231 DFP_ForceAw | `TrickyCurve_*` | (name kept) | `TrickyCurve` is the retail source basename: `dll/TrickyCurve.c` appears in the debug filename list covering 0x231+0x232 (boundary_audit: the 0x232 TU transitions TrickyCurve.c→sfxplayer.c at 0x80207CE4, so 0x231 lies wholly inside TrickyCurve.c). Distinct file from `dll/tricky.c` (dll 0x0C4 Tricky). All fourteen functions self-referenced. | confirmed apt (retail source name) |
+| 0x294 (WC temples) | `wctemple_*` | (name kept) | Apt family name for the DLL's own two retail defs WCMoonTempl + WCSunTemple; all nine functions self-referenced. The census cross-dll flag arose only from `WCTemple*` alias strings inside other multi-object DLLs' def lists (0x0FB/0x110/0x112/0x296/0x297), none of which reference these functions. | confirmed apt |
+| 0x2BD (Andross hands) | `androsshand_*` | (name kept) | Apt family name for the DLL's own defs Androssleft + Androssrigh. `spawnShot`/`handleDamage` self-referenced; `androsshand_setState` is a legitimate hosted export consumed x18 by sibling 0x2BC (700_Andross) — the boss core driving its hands, exactly the sibling-consumer pattern the discriminator accepts. | confirmed apt |
+| 0x0C9 (29 enemies) | `enemy_*` | (name kept) | Deliberate generic-framework family name: the unit hosts 29 enemy retail defs (GuardClaw … BossGeneral); no single def name could brand the shared code. | confirmed apt |
+| 0x0ED (41 collectibles) | `collectible_*` | (name kept) | Same pattern over 41 collectible defs (keys, scarabs, Spellstone, EnergyEgg, …). | confirmed apt |
+| 0x108 EndObject | `Dummy108_*` | `EndObject_*` (already done) | Stale row: the unit was renamed to `EndObject_*`, matching its retail def, before this wave; `Dummy108` no longer exists in symbols or source. | resolved earlier |
+| 0x10E (Die* three) | `deathseq_*` (now `DeathSeq_*`) | (name kept) | Apt family name for DieDuster/DieFox/DieKrystal — the death-sequence objects. | confirmed apt |
+| 0x11A (21 props) | `decoration11a_*` | (name kept) | Apt slot-suffixed family name for a 21-def decoration grab-bag (debris, snow trees, cobwebs, ferns, …). | confirmed apt |
+| 0x1BD SC_paypoint, SPWell | `paymentkiosk_*` (now `PaymentKiosk_*`) | (name kept) | Apt: both defs are scarab-payment stations. | confirmed apt |
+| 0x237 DFPSpPl | `laserObj_*` | `DFPSpPl_*` (already done) | Stale row: renamed to the retail def before this wave; only the `LaserObjectMapData` type name recalls the old brand. | resolved earlier |
+| 0x238 LINKA_levco | `fireObj_*` | `LinkALevControl_*` (already done) | Stale row: renamed to the retail def before this wave. | resolved earlier |
+| 0x284 (30 shop items) | `shopitem_*` | (name kept) | Apt family name over the SP* shop stock defs. | confirmed apt |
+| 0x2AD (24 plants) | `softbody_*` (now `SoftBody_*`) | (name kept) | Apt: the unit is the soft-body plant/cloth simulation over 24 flora/drape defs. | confirmed apt |
+| 0x2C0 (Front* seven) | `titlescreen_*` (now `titleScreen*`) | (name kept) | Apt: the seven Front* defs are the title-screen pilots/planet. | confirmed apt |
+
+Second-wave data-symbol renames (spelling only, applied to all four region
+`symbols.txt` files at each region's own address; every referencing unit holds
+its exact pre-rename `report.json` score):
+
+| dll | old symbol | new symbol | section | GSAE01 | GSAE01_rev1 | GSAJ01 | GSAP01 |
+|---|---|---|---|---|---|---|---|
+| 0x0D6 | `gKaldaChompOne` | `gKaldachomOne` | `.sdata2` | 0x803E30D0 | 0x803E3D68 | 0x803E31F0 | 0x803E4AB0 |
+| 0x0D6 | `gKaldaChompZero` | `gKaldachomZero` | `.sdata2` | 0x803E30D4 | 0x803E3D6C | 0x803E31F4 | 0x803E4AB4 |
+| 0x0D6 | `gKaldaChompLinkedMouthStep` | `gKaldachomLinkedMouthStep` | `.sdata2` | 0x803E30D8 | 0x803E3D70 | 0x803E31F8 | 0x803E4AB8 |
+
+The two descriptors landed with the wave: `gKaldachomMeObjDescriptor`
+(`.data` 0x80320458) and `gKaldachomSpObjDescriptor` (`.data` 0x80320490),
+including their two reference lines in `src/main/modelEngine.c`'s
+resource-descriptor table.
 
 ## Appendix: canonical-format files whose proposal differs
 
