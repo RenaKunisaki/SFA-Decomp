@@ -56,13 +56,19 @@ Notes:
     whole run and a hard kill is repaired on the next invocation, so a killed
     sweep can never leave the target file mid-permutation.
 
-WHY NESTED SCOPES MATTER: the saved-GPR band is filled r31-downward in two
-phases -- webs that never reach a loop header go first, in reverse
-first-definition order, then everything else in DECLARATION order.  A local
-declared inside a loop body is exactly the kind of web that phase split makes
-order-sensitive, and it is exactly what this tool used to skip.  Any historical
+WHY NESTED SCOPES MATTER: declaration order is the key to register assignment,
+and a local declared inside a loop body is a declaration like any other -- it
+just is not in the block this tool used to look at.  Any historical
 "declaration order is inert" verdict for a function with inner-scope
 declarations was measured against the top-level block only and is void.
+
+(A "two-phase saved band" was once asserted here as the mechanism.  It has been
+REFUTED by measurement and must not be reinstated: the saved band is contiguous
+and monotone downward, and the FPR band has no separate law.)
+
+WHY A CAP IS NOT A ZERO: an 81-item block is 3240 swaps before a single move,
+so any run under a cap -- or under one --strategy -- leaves most of the block
+unvisited.  A row swept that way is UNSWEPT, not inert.
 """
 from __future__ import annotations
 

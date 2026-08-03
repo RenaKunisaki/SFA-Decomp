@@ -153,7 +153,13 @@ RE_GOTO = re.compile(r"(?<![\w.>])goto\s+[A-Za-z_]\w*\s*;")
 # attribute is an evasion path, while global.h's own `#define` of it is not a use.
 RE_DECLSPEC = re.compile(r"__declspec\s*\(\s*section\b|\bSECTION_(?:DATA|INIT)\b")
 RE_DEFINE = re.compile(r"^\s*#\s*define\b")
-RE_VOLATILE_CAST = re.compile(r"\*\s*\(\s*volatile\b")
+# Either the immediate-deref form `*(volatile T*)&x` or the pointer form
+# `volatile T *p = (volatile T *)&x;`, which launders the same hack through a
+# named pointer and which the deref-only pattern could never see.  There are
+# zero instances of the pointer form in game code, so the widening costs no
+# baseline entries -- but a zero that no pattern could ever have disturbed is
+# not evidence, which is the whole point of the per-class controls below.
+RE_VOLATILE_CAST = re.compile(r"\*\s*\(\s*volatile\b|\(\s*volatile\b[^)]*\*\s*\)\s*&")
 RE_REGISTER_ASM = re.compile(r"\bregister\b[^;]*\basm\s*\(")
 # file-scope (column 0) volatile object of floating-point type
 RE_VOLATILE_DECL = re.compile(
@@ -187,7 +193,8 @@ RE_FN_DEF = re.compile(
 # write-gather pipe, rather than the address of a C object.
 RE_HW_ADDR = re.compile(r"0x[Cc][Cc][0-9A-Fa-f]{5}")
 RE_PIPE = re.compile(r"WG(?:Pipe|Fifo)", re.I)
-RE_ADDR_OF_OBJECT = re.compile(r"\*\s*\(\s*volatile\b[^)]*\)\s*&")
+RE_ADDR_OF_OBJECT = re.compile(r"\*\s*\(\s*volatile\b[^)]*\)\s*&"
+                               r"|\(\s*volatile\b[^)]*\*\s*\)\s*&")
 
 
 def is_c_source(path):
@@ -548,6 +555,41 @@ def self_test():
     got = {h[2] for h in sdk}
     for cls in ("PRAGMA", "GOTO", "DECLSPEC_SECTION"):
         chk("pattern fires on SDK corpus: %s" % cls, cls in got)
+
+    # POSITIVE, PER CLASS, SYNTHETIC. Five of the nine classes report ZERO on
+    # game code, and a zero is only evidence if the pattern could have fired.
+    # PRAGMA and DECLSPEC_SECTION are covered by the SDK corpus above and
+    # VOLATILE_DECL by its own regex probes, but VOLATILE_PUN and REGISTER_ASM
+    # had no control at all: their regexes could have rotted to never match and
+    # nothing here or in the baseline would have moved. Every class now carries
+    # a synthetic instance, so no class can report a silent zero.
+    def fires(cls, line):
+        return cls in {h[2] for h in scan_file("src/main/_probe.c", line)}
+
+    for cls, line in (
+            ("PRAGMA", "#pragma peephole off"),
+            ("GOTO", "    goto done;"),
+            ("DECLSPEC_SECTION",
+             '__declspec(section ".sdata2") const f32 k = 1.0f;'),
+            ("VOLATILE_PUN", "    *(volatile f32*)&sBlocker = x;"),
+            ("VOLATILE_PUN",
+             "    volatile f32 *q = (volatile f32 *)&sTable[i];"),
+            ("VOLATILE_DECL", "volatile f32 gBlocker = 0.0f;"),
+            ("REGISTER_ASM", 'register int unused asm("r14");'),
+            ("REGISTER_ASM", 'static register void *sPin asm ("r31");'),
+            ("LBL_CONST_DEF", "const f32 lbl_803E1234 = 1.0f;")):
+        chk("pattern fires on a synthetic %s" % cls, fires(cls, line),
+            line.strip()[:44])
+
+    # ...and the matching NEGATIVES for the two newly-controlled classes, so the
+    # widening that closed the pointer-form pun cannot start swallowing the
+    # genuine hardware volatiles it is carved around.
+    chk("genuine hardware volatile write not flagged as a pun",
+        not fires("VOLATILE_PUN", "    *(volatile u32*)0xCC008000 = v;"))
+    chk("write-gather pipe not flagged as a pun",
+        not fires("VOLATILE_PUN", "    WGPipe.u32 = v;"))
+    chk("a plain register local is not a register-asm reservation",
+        not fires("REGISTER_ASM", "    register int i = 0;"))
 
     # POSITIVE: the historical purge corpus at pre-hack-purge.
     try:

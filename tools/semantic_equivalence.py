@@ -585,6 +585,130 @@ def differential(a: Node, sa: str, b: Node, sb: str, trials: int = 256,
     return True, f"{trials} trials x 2 models agree"
 
 
+# --------------------------------------------- independent purity signal
+
+# Side-effect tokens.  An assignment is any `=` that is not part of a
+# comparison; `++`/`--` are unconditional; a comma at expression level
+# sequences.  Kept as raw token text so this shares nothing with the parser's
+# node kinds or with cexpr.is_pure.
+_SIDE_EFFECT_PUNCT = frozenset({
+    "++", "--", "=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=",
+    "<<=", ">>=", ",",
+})
+
+# `sizeof(T)`/`offsetof(T,f)` and a cast's type name are the `identifier (`
+# shapes that are NOT calls.  A cast spells the identifier AFTER the paren, so
+# only these two (and the caller's declared type names) need excusing.
+_NOT_A_CALL = frozenset({"sizeof", "offsetof"})
+
+# Tokens whose POSITION carries no meaning.  Parentheses, brackets and the `!`
+# a ternary flip introduces are structure: every rewrite adds and drops them,
+# so an "inversion" against one of them says nothing about evaluation order.
+# Ordering is judged over operands (id/num/str/chr) and the side-effect tokens
+# themselves.
+_STRUCTURAL = frozenset({"(", ")", "[", "]", "!", "?", ":", "~"})
+
+
+def moved_span_impurity(before: str, after: str,
+                        known_types: FrozenSet[str] = frozenset()):
+    """Does this rewrite move a token that has a side effect?
+
+    THE POINT OF THIS FUNCTION IS THAT IT SHARES NOTHING WITH THE PROVER.
+    Purity is otherwise decided by `cexpr.is_pure`, and `tools/expr_sweep.py`
+    calls the SAME predicate to decide whether to GENERATE a rewrite at all --
+    so on the one question "may these two operands trade places", generator and
+    prover agree by construction.  Corrupt `is_pure` and the differential
+    evaluator does not save you: it evaluates each spelling with its OWN fresh
+    Evaluator, so a discarded `i++` and a memoized `f(x)` read the same on both
+    sides.  Mutation-proved: with `is_pure` forced to True, `f(x) + y ->
+    y + f(x)` and `i++ + n -> n + i++` are both blessed.
+
+    This signal works on the raw token SEQUENCE and defines "moved" as an
+    INVERSION: two tokens whose relative order differs between the two
+    spellings.  (An equal-block diff is not enough -- in `f(x) + y` ->
+    `y + f(x)` difflib keeps `f ( x )` as the matched block and reports only
+    `+ y` as changed, so the call reads as stationary while it demonstrably
+    crossed an operand.)  Tokens are identified by (kind, text, occurrence),
+    which needs no parse.  If either member of an inverted pair carries a side
+    effect or is a call, refuse.
+
+    Conservative by design: it can refuse a legal rewrite whose operands merely
+    straddle a call, and a refusal is a coverage loss, never a wrong answer.
+
+    Returns None when clean, else a short reason string.
+    """
+    try:
+        ta = [t for t in tokenize(before) if t.kind != "eof"]
+        tb = [t for t in tokenize(after) if t.kind != "eof"]
+    except ParseError:
+        return None
+
+    def impure(toks):
+        """Index -> reason, for tokens whose movement is observable.
+
+        A `,` inside parentheses is an ARGUMENT SEPARATOR, not the sequencing
+        operator; only a top-level comma sequences.
+        """
+        out = {}
+        depth = 0
+        for i, t in enumerate(toks):
+            if t.text in "([":
+                depth += 1
+            elif t.text in ")]":
+                depth -= 1
+            if t.text in _SIDE_EFFECT_PUNCT and not (t.text == "," and depth):
+                out[i] = "`%s` has a side effect" % t.text
+            elif (t.kind == "id" and t.text not in _NOT_A_CALL
+                  and t.text not in known_types
+                  and i + 1 < len(toks) and toks[i + 1].text == "("):
+                out[i] = "`%s(` is a call" % t.text
+        return out
+
+    def keyed(toks):
+        """(index, identity) for every ordering-relevant token."""
+        seen = {}
+        out = []
+        for i, t in enumerate(toks):
+            if t.text in _STRUCTURAL:
+                continue
+            k = (t.kind, t.text)
+            seen[k] = seen.get(k, 0) + 1
+            out.append((i, (k[0], k[1], seen[k])))
+        return out
+
+    ka, kb = keyed(ta), keyed(tb)
+    pos_b = {k: n for n, (_i, k) in enumerate(kb)}
+    imp = impure(ta)
+    # Only tokens present on BOTH sides can be said to have moved relative to
+    # each other; a rewrite legitimately invents a `!` and moves parentheses.
+    common = [(i, pos_b[k]) for i, k in ka if k in pos_b]
+
+    def alternatives(p, q):
+        """Do these two source positions sit in different ternary parts?
+
+        `c ? a : b` and `!c ? b : a` evaluate the same arm for the same input,
+        so an arm swap never changes what runs -- two tokens separated by a
+        `?` or `:` are alternatives, not a sequence.
+        """
+        lo, hi = (p, q) if p < q else (q, p)
+        return any(t.text in ("?", ":") for t in ta[lo + 1:hi])
+
+    for x in range(len(common)):
+        ia, ib = common[x]
+        for y in range(x + 1, len(common)):
+            ja, jb = common[y]
+            if (ja > ia) == (jb > ib):
+                continue                      # relative order preserved
+            if alternatives(ia, ja):
+                continue
+            for idx in (ia, ja):
+                if idx in imp:
+                    return ("%s and it crossed `%s`"
+                            % (imp[idx],
+                               ta[ja if idx == ia else ia].text))
+    return None
+
+
 # ------------------------------------------------------------------- driver
 
 
@@ -624,6 +748,14 @@ def prove(before: str, after: str, decl_text: str = "",
         return Verdict(False, "operand tokens are not invariant "
                               "(lost %s, gained %s)" %
                               (_minus(la, lb), _minus(lb, la)))
+
+    # ---- A THIRD SIGNAL THAT USES NEITHER THE PARSER NOR is_pure.
+    # See moved_span_impurity: purity is the one judgement the generator and
+    # the prover make with the SAME predicate, and the differential evaluator
+    # cannot back it up.
+    imp = moved_span_impurity(before, after, known_types)
+    if imp is not None:
+        return Verdict(False, "impure operand moved: " + imp)
 
     oracle = TypeOracle(decl_text)
     ids = frozenset(oracle.names()) | frozenset(known_ids)
@@ -825,9 +957,159 @@ def self_test(verbose: bool = True) -> int:
     return 1 if bad else 0
 
 
+# ------------------------------------------------------- mutation controls
+#
+# A control suite that passes is worth nothing until a MUTATION proves it could
+# have failed.  Each entry below deliberately corrupts one part of the model
+# this tool reasons with and names the controls that must then be rejected
+# anyway.  Two of the three axes were already backstopped by the differential
+# evaluator; PURITY was not, and that is what `moved_span_impurity` is for.
+
+MUTATIONS = {
+    # (patch, probes) -- probes are (before, after, kwargs); every one of them
+    # is a TRUE rewrite under the corrupted model and a FALSE one in real C, so
+    # the tool must still reject all of them.
+    "purity": (
+        "cexpr.is_pure forced to True -- the predicate the GENERATOR "
+        "(expr_sweep) and this PROVER both consult",
+        [("f(x) + y", "y + f(x)", {}),
+         ("i++ + n", "n + i++", {}),
+         ("f(a) * b", "b * f(a)", {}),
+         ("obj->update(dt) + n", "n + obj->update(dt)", {})],
+    ),
+    "commutative": (
+        "'-', '/' and '<<' added to COMMUTATIVE",
+        [("a - b", "b - a", {}), ("a / b", "b / a", {}),
+         ("a << b", "b << a", {})],
+    ),
+    "relflip": (
+        "RELATIONAL_FLIP made the identity map",
+        [("x < y", "y < x", {}), ("x <= y", "y <= x", {})],
+    ),
+    "assoc": (
+        "'-' added to ASSOCIATIVE_INT",
+        [("i - j - k", "i - (j - k)",
+          {"decl_text": "int i; int j; int k;", "allow_assoc": True})],
+    ),
+    # The one component EVERY signal here shares: structural proof, differential
+    # evaluation, the leaf-token invariant, the purity scan and the round trip
+    # all start from `cexpr.tokenize`.  Probed rather than fixed: a tokenizer
+    # that loses an operator does NOT agree with itself quietly, it fails to
+    # parse, and the suite collapses.  The axis is checked by whole-suite
+    # ablation rather than per-probe, because "rejected" for the wrong reason
+    # would otherwise read as a pass.
+    "tokenizer": ("cexpr.tokenize drops every `*` -- the ONE component every "
+                  "signal in this file shares", "suite"),
+}
+
+
+def _apply_mutation(name):
+    """Corrupt the model in place; return a restore callable."""
+    import cexpr
+    g = globals()
+    if name == "purity":
+        old_c, old_g = cexpr.is_pure, g["is_pure"]
+        cexpr.is_pure = lambda *_a, **_k: True
+        g["is_pure"] = cexpr.is_pure
+
+        def undo():
+            cexpr.is_pure = old_c
+            g["is_pure"] = old_g
+        return undo
+    if name == "commutative":
+        old = g["COMMUTATIVE"]
+        g["COMMUTATIVE"] = old | {"-", "/", "<<"}
+        return lambda: g.__setitem__("COMMUTATIVE", old)
+    if name == "relflip":
+        old = g["RELATIONAL_FLIP"]
+        g["RELATIONAL_FLIP"] = {k: k for k in old}
+        return lambda: g.__setitem__("RELATIONAL_FLIP", old)
+    if name == "assoc":
+        old = g["ASSOCIATIVE_INT"]
+        g["ASSOCIATIVE_INT"] = old | {"-"}
+        return lambda: g.__setitem__("ASSOCIATIVE_INT", old)
+    if name == "tokenizer":
+        import cexpr as _c
+        real = _c.tokenize
+        blind = lambda src, *a, **k: [t for t in real(src, *a, **k)
+                                      if t.text != "*"]        # noqa: E731
+        _c.tokenize = blind
+        g["tokenize"] = blind
+
+        def undo_t():
+            _c.tokenize = real
+            g["tokenize"] = real
+        return undo_t
+    raise SystemExit("unknown mutation: " + name)
+
+
+def mutation_test(names=None, verbose: bool = True) -> int:
+    """Corrupt the model and require this tool to scream anyway.
+
+    Each axis is run TWICE: once with the independent backstop active (the
+    tool must still reject), and once with it disabled (the tool must then
+    ACCEPT).  The second half is what makes the first half mean something --
+    without it a probe could be passing for some reason unrelated to the
+    mutation, which is exactly how a vacuous control looks from outside.
+    """
+    bad = 0
+    g = globals()
+    for name in (names or sorted(MUTATIONS)):
+        why, probes = MUTATIONS[name]
+        print("\n--- MUTATION %s: %s ---" % (name, why))
+        undo = _apply_mutation(name)
+        if probes == "suite":
+            try:
+                try:
+                    n = self_test(verbose=False)
+                except Exception as exc:
+                    n = 1
+                    print("  the control suite RAISED (%s)" % type(exc).__name__)
+                ok = n != 0
+                bad += not ok
+                print("  [%s] the whole control suite fails under this mutation"
+                      % ("held" if ok else "*** UNAFFECTED -- VACUOUS ***"))
+            finally:
+                undo()
+            continue
+        try:
+            for before, after, kw in probes:
+                v = prove(before, after, **kw)
+                ok = not v.ok
+                bad += not ok
+                print("  [%s] %-34r -> %-30r  %s"
+                      % ("held" if ok else "*** BLESSED ***", before, after,
+                         v.reason[:70]))
+            # ablation: with the backstop removed the mutation must bite,
+            # or the probe above proved nothing about the backstop.
+            real = g["moved_span_impurity"] if name == "purity" else None
+            if real is not None:
+                g["moved_span_impurity"] = lambda *_a, **_k: None
+                try:
+                    bit = [prove(b, a, **k).ok for b, a, k in probes]
+                finally:
+                    g["moved_span_impurity"] = real
+                n = sum(bit)
+                print("  ablation: with the independent signal removed, %d/%d "
+                      "probes are BLESSED %s"
+                      % (n, len(probes),
+                         "(the mutation is real)" if n else
+                         "*** the mutation changes nothing -- vacuous ***"))
+                if not n:
+                    bad += 1
+        finally:
+            undo()
+    print("\nmutation controls: %s" % ("ALL HELD" if not bad
+                                       else "%d FAILURE(S)" % bad))
+    return 1 if bad else 0
+
+
 def main() -> int:
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--self-test", action="store_true")
+    ap.add_argument("--mutate", nargs="*", metavar="AXIS",
+                    help="corrupt the model on the named axes (default: all) "
+                         "and require this tool to reject anyway")
     ap.add_argument("-q", "--quiet", action="store_true")
     ap.add_argument("--before")
     ap.add_argument("--after")
@@ -835,6 +1117,8 @@ def main() -> int:
     ap.add_argument("--assoc", action="store_true")
     ap.add_argument("--trials", type=int, default=256)
     a = ap.parse_args()
+    if a.mutate is not None:
+        return mutation_test(a.mutate or None, not a.quiet)
     if a.self_test:
         return self_test(not a.quiet)
     if not (a.before and a.after):

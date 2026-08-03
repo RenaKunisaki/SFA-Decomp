@@ -15,6 +15,9 @@ import os
 import re
 import subprocess
 import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from scope_guard import require_nonempty
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OBJDUMP = os.path.join(ROOT, 'build/binutils/powerpc-eabi-objdump')
@@ -46,6 +49,7 @@ def text_functions(obj_path):
 
 def scan(filters=()):
     config = json.load(open(os.path.join(ROOT, 'objdiff.json')))
+    require_nonempty(filters, [u['name'] for u in config['units']])
     hits = []
     scanned = 0
     for unit in config['units']:

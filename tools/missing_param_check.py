@@ -427,9 +427,10 @@ def selftest():
 
     # (symbol, param text to delete, register that should then be missing)
     cases = [
-        ("walkGroupFn_800db3e4", "u32 currentWalkGroupIndex", ["r5"]),
+        ("Objfsa_GetWalkGroupIndexForMove",
+         "u32 currentWalkGroupIndex", ["r5"]),
         ("moonSeedBush_init", "const MoonSeedBushPlacement* placement", ["r4"]),
-        ("dll_CB_moveHandler0", "u8* obj", ["r4"]),
+        ("dll_CB_moveHandler0", "GameObject* obj", ["r4"]),
         # variadic tail: dropping `...` must resurrect the whole ABI tail
         ("debugPrintfxy", "...",
          ["f1", "f2", "f3", "f4", "f5", "f6", "f7", "f8",
@@ -438,7 +439,14 @@ def selftest():
     scratch = os.environ.get("TMPDIR", "/tmp")
     for sym, param, want_missing in cases:
         if sym not in idx:
-            print("  [SKIP] %s not in report index" % sym)
+            # NOT a skip.  A control whose subject has been renamed out from
+            # under it has stopped controlling anything, and the only tell is
+            # this line -- which is why it must fail rather than inform.
+            # `walkGroupFn_800db3e4` sat here as a silent SKIP after it was
+            # renamed to Objfsa_GetWalkGroupIndexForMove, and it took the
+            # over-report meta-control down with it (3 of 4) while the tool
+            # still exited 0.
+            expect("control subject %s is present" % sym, "MISSING", "present")
             continue
         e = dict(idx[sym], sym=sym)
         base = check(e, tds)
@@ -455,8 +463,13 @@ def selftest():
         raw = split_params(text[ps:pe])
         kept = [p for p in raw if p != param]
         if len(kept) == len(raw):
-            expect("  ...FAULT INJECTED (param %r removed)" % param,
-                   "not-injected", "injected")
+            # The parameter SPELLING drifted (a type was recovered, a name was
+            # changed) and the injection silently became a no-op.  Same rot as
+            # a renamed subject: it must fail, not inform.  `dll_CB_moveHandler0`
+            # sat here as `u8* obj` long after the parameter became
+            # `GameObject* obj`.
+            expect("  ...FAULT INJECTED (param %r removed; declared: %s)"
+                   % (param, " | ".join(raw)), "not-injected", "injected")
             continue
         broken = text[:ps] + ", ".join(kept) + text[pe:]
         p = os.path.join(scratch, "mpc_selftest_%s.c" % sym)
@@ -506,7 +519,8 @@ def selftest():
             e = dict(idx[sym], sym=sym)
             if incoming_regs(e["obj"], sym):
                 over += 1
-    expect("unguarded screen would over-report all controls", over, len(cases))
+    expect("unguarded screen would over-report all controls", over,
+           len([c for c in cases if c[0] in idx]))
 
     print("SELFTEST %s" % ("PASS" if ok else "FAIL"))
     return ok

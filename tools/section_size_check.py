@@ -35,6 +35,9 @@ import os
 import re
 import subprocess
 import sys
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from scope_guard import require_nonempty
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OBJDUMP = os.path.join(ROOT, 'build/binutils/powerpc-eabi-objdump')
@@ -74,6 +77,7 @@ def main():
     show_pad = '--all' in sys.argv[1:]
     filters = argv
     units = json.load(open(os.path.join(ROOT, 'objdiff.json')))['units']
+    require_nonempty(filters, [u.get('name', '') for u in units])
     scanned = bad = 0
     for u in units:
         name = u.get('name', '')
