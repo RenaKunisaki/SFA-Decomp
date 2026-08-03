@@ -3397,11 +3397,6 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
 }
 
 u8 gExpgfxRuntimeData[0x980];
-ExpgfxTableEntry gExpgfxTableEntries[0x550 / sizeof(ExpgfxTableEntry)];
-ObjAnimComponent* gExpgfxTrackedPoolSourceIds[0x50];
-u64 gExpgfxTrackedSourceFrameMasks[0xB0 / sizeof(u64)];
-u32 gExpgfxSlotActiveMasks[0x50];
-u32 gExpgfxSlotPoolBases[0x50];
 
 char sExpgfxMismatchInAddRemove[] = "expgfx.c: mismatch in add/remove in exptab\n";
 
@@ -4703,3 +4698,9 @@ void expgfx_initialise(void)
     memset(runtime->expTab, 0, EXPGFX_EXPTAB_BYTES);
     return;
 }
+
+u32 gExpgfxSlotPoolBases[0x50];
+u32 gExpgfxSlotActiveMasks[0x50];
+u64 gExpgfxTrackedSourceFrameMasks[0xB0 / sizeof(u64)];
+ObjAnimComponent* gExpgfxTrackedPoolSourceIds[0x50];
+ExpgfxTableEntry gExpgfxTableEntries[0x550 / sizeof(ExpgfxTableEntry)];

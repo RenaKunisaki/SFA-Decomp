@@ -1622,18 +1622,18 @@ void hudDrawAirMeter(void)
     GXSetScissor(sc0, sc1, sc2, sc3);
 }
 
-int gNpcDialoguePhraseState[6];
-int gHudTimedElementTexSlot[6];
-GameObject* gGameUiHudAnimObjects[6];
-GameObject* gHeadDisplayModelObjs[6];
-GameObject* gCMenuRingObjs[3];
-GameObject* gCMenuRingFrontObjs[3];
-void* gCMenuRingIconTextures[7];
-int gCMenuRingIconActiveFlags[7];
-HudItemInfoPopup gHudItemInfoPopup;
-int lbl_803A9364[13];
+extern int gNpcDialoguePhraseState[6];
+extern int gHudTimedElementTexSlot[6];
+extern GameObject* gGameUiHudAnimObjects[6];
+extern GameObject* gHeadDisplayModelObjs[6];
+extern GameObject* gCMenuRingObjs[3];
+extern GameObject* gCMenuRingFrontObjs[3];
+extern void* gCMenuRingIconTextures[7];
+extern int gCMenuRingIconActiveFlags[7];
+extern HudItemInfoPopup gHudItemInfoPopup;
+extern int lbl_803A9364[13];
 
-char lbl_803A8830[0x120];
+extern char lbl_803A8830[0x120];
 void GameUI_airMeterRun(int v)
 {
     int clamped;
@@ -1983,7 +1983,7 @@ void GameUI_showItemInfoPopupByTexture(s16 textureId, int displayDuration, int i
     gHudItemInfoPopup.alpha = 0.0f;
 }
 
-f32 lbl_803A8950[0x18];
+extern f32 lbl_803A8950[0x18];
 
 void GameUI_showItemInfoPopup(s16 itemGamebit, int displayDuration, int itemCount)
 {
@@ -9018,11 +9018,11 @@ void GameUI_initialise(void)
     airMeter = 0;
 }
 
-Texture* hudTextures[102];
-s16 lbl_803A8B48[0x98];
-u8 gCMenuItemEnabledTable[0x3C0];
-int gCMenuItemTargetTable[0xBA];
-int lbl_803A9320[0x11];
+extern Texture* hudTextures[102];
+extern s16 lbl_803A8B48[0x98];
+extern u8 gCMenuItemEnabledTable[0x3C0];
+extern int gCMenuItemTargetTable[0xBA];
+extern int lbl_803A9320[0x11];
 
 int gPauseMenuSavedTextDir;
 int gGameUiCurHintTextMap;
@@ -9189,3 +9189,21 @@ u8 gPauseMenuScarabCapacity;
 int gLastTaskHintId;
 u8* gDummy39Texture;
 u8 gDummy39Countdown;
+
+int gNpcDialoguePhraseState[6];
+int gHudTimedElementTexSlot[6];
+GameObject* gGameUiHudAnimObjects[6];
+GameObject* gHeadDisplayModelObjs[6];
+GameObject* gCMenuRingObjs[3];
+GameObject* gCMenuRingFrontObjs[3];
+void* gCMenuRingIconTextures[7];
+int gCMenuRingIconActiveFlags[7];
+HudItemInfoPopup gHudItemInfoPopup;
+int lbl_803A9364[13];
+int lbl_803A9320[0x11];
+int gCMenuItemTargetTable[0xBA];
+u8 gCMenuItemEnabledTable[0x3C0];
+s16 lbl_803A8B48[0x98];
+Texture* hudTextures[102];
+f32 lbl_803A8950[0x18];
+char lbl_803A8830[0x120];

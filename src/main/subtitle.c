@@ -16,8 +16,6 @@ SubtitleCmd* subtitleParseControlCmds(char* str, int* count);
 static void subtitleBuildLineTable(void);
 
 void* gSubtitleLineTable[0x100];
-char* gSubtitleLineStrs[0x100];
-f32 gSubtitleLineTimes[0x100];
 
 void subtitleUpdateAndDraw(int unused) {
     int savedCharset;
@@ -212,3 +210,6 @@ static void subtitleBuildLineTable(void) {
         gameTextSetCharset(savedCharset, 1);
     }
 }
+
+f32 gSubtitleLineTimes[0x100];
+char* gSubtitleLineStrs[0x100];

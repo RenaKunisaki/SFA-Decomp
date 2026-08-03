@@ -83,8 +83,6 @@ extern int gTexIndMtxTable[];
 extern u8 gLightmapDrawQueue[];
 #define FRUSTUM_PLANE_COUNT 5
 u8 gRcpPendingWarpDest[0x10];
-FrustumPlane gViewFrustumPlanes[FRUSTUM_PLANE_COUNT];
-FrustumPlane gPlayerRelativeFrustumPlanes[FRUSTUM_PLANE_COUNT];
 extern GXColor gTexShaderFogColor;
 extern GXColor gTexLightmapFogColor;
 
@@ -1803,3 +1801,6 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
     }
     return grp;
 }
+
+FrustumPlane gViewFrustumPlanes[FRUSTUM_PLANE_COUNT];
+FrustumPlane gPlayerRelativeFrustumPlanes[FRUSTUM_PLANE_COUNT];

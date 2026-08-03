@@ -2241,7 +2241,7 @@ Shader* ObjModel_GetRenderOp(ModelFileHeader* model, int renderOpIndex)
     return &model->renderOps[renderOpIndex];
 }
 
-u8* gModelCacheBuffersA[4];
+extern u8* gModelCacheBuffersA[4];
 u8* gModelCacheBuffersB[6];
 
 u16 modelFileHeaderGetCullDistance(ModelFileHeader* modelFile)
@@ -3211,3 +3211,5 @@ int ObjModel_GetUnpackedResourceSize(u8* resource, int baseSize)
 Vec gModelJitterAxis = { 1.0f, 0.0f, 0.0f };
 
 char sModelAnimationBufferOverflowWarning[] = "Warning: Model animation buffer overflow!! size=%d\n";
+
+u8* gModelCacheBuffersA[4];

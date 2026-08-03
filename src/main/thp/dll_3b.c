@@ -32,10 +32,6 @@
  */
 #define THP_FRAME_HEADER_SIZE 8
 
-AttractMovieAudioMessageStorage gAttractMovieAudioDecodeContext;
-OSMessageQueue gAttractMovieDecodedAudioQueue;
-AttractMovieFreeQueueAndStack gAttractMovieFreeAudioQueueAndStack;
-AttractMovieDecodeThread gAttractMovieAudioDecodeThread;
 s32 gAttractMovieAudioThreadActive;
 
 void* PopDecodedAudioBuffer(int flags)
@@ -191,3 +187,8 @@ BOOL CreateAudioDecodeThread(OSPriority priority, void* param)
     gAttractMovieAudioThreadActive = 1;
     return 1;
 }
+
+AttractMovieDecodeThread gAttractMovieAudioDecodeThread;
+AttractMovieFreeQueueAndStack gAttractMovieFreeAudioQueueAndStack;
+OSMessageQueue gAttractMovieDecodedAudioQueue;
+AttractMovieAudioMessageStorage gAttractMovieAudioDecodeContext;

@@ -31,7 +31,6 @@
 #define DLL_CB_SUBMODE_TARGET               2
 
 DllCBStateHandler gDllCBStateHandlers[6];
-DllCBMoveHandler gDllCBMoveHandlers[4];
 
 int dll_CB_stateHandler5(GameObject* obj, GroundBaddieState* state) {
     GroundBaddieState* objectState;
@@ -489,3 +488,4 @@ ObjectDescriptor12 gDllCBObjDescriptor = {
     (ObjectDescriptorCallback)dll_CB_handleMessage,
 };
 
+DllCBMoveHandler gDllCBMoveHandlers[4];

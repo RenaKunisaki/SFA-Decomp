@@ -357,7 +357,7 @@ int roundUpTo8(int x)
     return x;
 }
 
-MmRegion gMmRegionTable[MM_REGION_CAPACITY];
+extern MmRegion gMmRegionTable[MM_REGION_CAPACITY];
 
 int roundUpTo16(int x)
 {
@@ -369,7 +369,7 @@ int roundUpTo16(int x)
     return x;
 }
 
-DeferredFree gMmDeferredFreeStack[MM_DEFERRED_FREE_CAPACITY];
+extern DeferredFree gMmDeferredFreeStack[MM_DEFERRED_FREE_CAPACITY];
 
 MmStore* gMmStoreArray[MM_STORE_COUNT];
 
@@ -1171,3 +1171,6 @@ char sMmAllocFreeMessageBlock[] = {
     0x6F, 0x75, 0x6E, 0x64, 0x20, 0x66, 0x6F, 0x72, 0x20, 0x61, 0x6C, 0x6C, 0x6F, 0x63, 0x61, 0x74, 0x69, 0x6F, 0x6E,
     0x2E, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
+
+MmRegion gMmRegionTable[MM_REGION_CAPACITY];
+DeferredFree gMmDeferredFreeStack[MM_DEFERRED_FREE_CAPACITY];

@@ -92,7 +92,6 @@ GlyphResource802CA100 gGameTextBoxEdgeTexSrc = {
 };
 
 Texture* gGameTextBoxFrameTextures[5];
-Texture* gSubtitleBoxTextures[3];
 
 static void gameTextDrawBoxEdges(u16* strPtr, int boxId, u8* box);
 
@@ -394,3 +393,5 @@ static void gameTextDrawBoxEdges(u16* strPtr, int boxId, u8* box) {
     drawScaledTexture(gGameTextBoxEdgeTexture, midX, midY, alpha, 0x100, halfW + gGameTextBoxInset,
                       halfH + gGameTextBoxInset, 3);
 }
+
+Texture* gSubtitleBoxTextures[3];

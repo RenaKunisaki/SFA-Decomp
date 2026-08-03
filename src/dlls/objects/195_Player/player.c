@@ -5770,9 +5770,6 @@ int gPlayerHeldObject;
 int gPlayerPendingHealth;
 int gPlayerModelChain;
 
-int gPlayerStateHandlers[66];
-f32 gPlayerMoveRootHeights[16];
-LightmapVertex gPlayerHudVtxBuf[8];
 PartFxSpawnParams gPlayerPartFxParams;
 
 int playerState1D(int obj, PlayerState* state, f32 fv)
@@ -18598,3 +18595,7 @@ void playerInitFuncPtrs(void)
     p[65] = (int)playerState41;
     gPlayerDefaultStateHandler = (int)playerStateNoOp;
 }
+
+int gPlayerStateHandlers[66];
+f32 gPlayerMoveRootHeights[16];
+LightmapVertex gPlayerHudVtxBuf[8];

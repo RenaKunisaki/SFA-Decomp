@@ -122,12 +122,12 @@ static void vecGetRanges(f32* pts, f32* base, f32 scale, int* out);
 static int objShadowGetFadedAlpha(GameObject* obj, u8 param);
 
 
-f32 gShadowVolumeBoxCorners[0x19];
+extern f32 gShadowVolumeBoxCorners[0x19];
 f32 gPrevSunDir[3];
 
-u8 gShadowDrawScratch[0x5DC0];
+extern u8 gShadowDrawScratch[0x5DC0];
 
-f32 lbl_8038D77C[0x18];
+extern f32 lbl_8038D77C[0x18];
 
 static inline void GXPosition3s16(const int x, const int y, const int z)
 {
@@ -1028,3 +1028,7 @@ void initTextures(void)
     a[23] = 55.0f;
     allocLotsOfTextures();
 }
+
+f32 gShadowVolumeBoxCorners[0x19];
+f32 lbl_8038D77C[0x18];
+u8 gShadowDrawScratch[0x5DC0];

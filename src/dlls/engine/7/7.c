@@ -704,13 +704,13 @@ void snowFreeSnowCloud(int cloudId)
         gNewClouds[i] = NULL;
     }
 }
-NewCloud* gNewClouds[8];
+extern NewCloud* gNewClouds[8];
 
 void dll_07_func0A_nop(void)
 {
 }
 
-WindSource gNewCloudWindSources[NEWCLOUD_WIND_SOURCE_COUNT];
+extern WindSource gNewCloudWindSources[NEWCLOUD_WIND_SOURCE_COUNT];
 
 typedef struct
 {
@@ -962,7 +962,7 @@ int snowPrintSnowCloud(int arg, int cloudId)
     return 0;
 }
 
-f32 lbl_8039A8F0[4];
+extern f32 lbl_8039A8F0[4];
 
 extern char sSnowCloudErrorMessageBlock[];
 
@@ -2283,3 +2283,7 @@ char sSnowCloudErrorMessageBlock[] =
     0x61, 0x76, 0x61, 0x69, 0x6C, 0x61, 0x62, 0x6C, 0x65, 0x0A, 0x00, 0x00,
 };
 char sSnowKillSnowCloudInvalidCloudId[] = "!!! Error non-existant cloud id - %i - in snowKillSnowCloud\n";
+
+f32 lbl_8039A8F0[4];
+WindSource gNewCloudWindSources[NEWCLOUD_WIND_SOURCE_COUNT];
+NewCloud* gNewClouds[8];

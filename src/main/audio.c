@@ -99,8 +99,6 @@ int gAudioArqRequestIndex;
 
 AudioArqRequestEntry gAudioArqRequests[0x300 / sizeof(AudioArqRequestEntry)];
 ReverbState gAudioReverbSettings;
-u32 gAudioAramBlock[0x2C / sizeof(u32)];
-MusicChannel gMusicChannels[0x240 / sizeof(MusicChannel)];
 
 const SalHooks gAudioMemHooks = {_audioAlloc, audioFree};
 
@@ -1616,3 +1614,6 @@ MusicTrackSlot sMusicTrackTable[] = {
 
 char sMidiWadLoadedCallbackLoadError[] = "MIDIWADLoadedCallback load error\n";
 char sMidiWadPath[] = "audio/midi.wad";
+
+MusicChannel gMusicChannels[0x240 / sizeof(MusicChannel)];
+u32 gAudioAramBlock[0x2C / sizeof(u32)];

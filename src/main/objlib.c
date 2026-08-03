@@ -75,7 +75,7 @@ typedef struct ObjectTypeIndexTable {
 STATIC_ASSERT(sizeof(ObjectTypeIndexTable) == 0x58);
 
 u32 gObjectTypeList[OBJTYPE_LIST_MAX];
-ObjectTypeIndexTable gObjectTypeIndices;
+extern ObjectTypeIndexTable gObjectTypeIndices;
 
 typedef struct ObjContactCallbackEntry {
     GameObject* objA;
@@ -96,7 +96,7 @@ typedef struct ObjHitRegionPlacement {
 STATIC_ASSERT(offsetof(ObjHitRegionPlacement, id) == 0x18);
 STATIC_ASSERT(offsetof(ObjHitRegionPlacement, yaw) == 0x20);
 
-ObjContactCallbackEntry gObjContactCallbacks[0xC0 / sizeof(ObjContactCallbackEntry)];
+extern ObjContactCallbackEntry gObjContactCallbacks[0xC0 / sizeof(ObjContactCallbackEntry)];
 extern u8 gObjectTypeListCount;
 extern int gObjContactCallbackCount;
 #define OBJMSG_QUEUE_OFFSET        0xdc
@@ -1128,3 +1128,6 @@ u32 ObjHitRegion_FindContainingId(f32 x, f32 y, f32 z) {
     }
     return hitId & 0xffff;
 }
+
+ObjContactCallbackEntry gObjContactCallbacks[0xC0 / sizeof(ObjContactCallbackEntry)];
+ObjectTypeIndexTable gObjectTypeIndices;

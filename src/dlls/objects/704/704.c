@@ -326,7 +326,7 @@ void titleScreenShowCopyright(u8 arg)
     }
 }
 
-void* gTitleScreenTextures[TITLE_SCREEN_TEXTURE_COUNT];
+extern void* gTitleScreenTextures[TITLE_SCREEN_TEXTURE_COUNT];
 
 void titleScreenDrawMenuFrame(int alpha, int hideHighlight, u32 showArrows)
 {
@@ -469,7 +469,7 @@ void titleScreenDrawMenuFrame(int alpha, int hideHighlight, u32 showArrows)
     }
 }
 
-u8 gTitleScreenMtx[0x34];
+extern u8 gTitleScreenMtx[0x34];
 
 /* Sets the name-entry text scroll offsets (x is applied in 4-px steps). */
 void nameEntrySetScroll(u32 a, u32 b)
@@ -975,7 +975,7 @@ void titleScreenSetMenuActive(s8 arg)
     gTitleScreenMenuActive = arg;
 }
 
-u8 gTitleScreenSfxFlagGrid[0x48];
+extern u8 gTitleScreenSfxFlagGrid[0x48];
 
 /* Two-byte state push (no equality check): copy gTitleScreenMenuSelection to
  * gTitleScreenPrevMenuSelection and write new value. */
@@ -1094,3 +1094,7 @@ ObjectDescriptor10WithPadding gTitleScreenObjDescriptor = {
     },
     0,
 };
+
+u8 gTitleScreenMtx[0x34];
+void* gTitleScreenTextures[TITLE_SCREEN_TEXTURE_COUNT];
+u8 gTitleScreenSfxFlagGrid[0x48];

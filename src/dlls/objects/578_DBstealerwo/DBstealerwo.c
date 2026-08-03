@@ -333,7 +333,6 @@ STATIC_ASSERT(sizeof(DbWormEffectSpawnWork) == 0x18);
 
 DbWormEffectSpawnWork gDbWormEffectSpawnWork;
 int gDBStealerWormStateHandlersB[7];
-int gDBStealerWormStateHandlersA[17];
 
 extern int gDbStealerwormDeathFootstepSfx[];
 extern int gDbStealerwormBurrowFootstepSfx[];
@@ -2596,3 +2595,5 @@ u32 gDBstealerwormObjDescriptor[39] = {0x00000000,
                                        0x48414e43,
                                        0x45202569,
                                        0x200a0000};
+
+int gDBStealerWormStateHandlersA[17];

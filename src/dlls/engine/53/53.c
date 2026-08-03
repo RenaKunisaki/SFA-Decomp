@@ -267,7 +267,6 @@ u8 saveFileSelect_saveDirty;
 s8 saveFileSelect_currentSlotIndex;
 void* gSaveSelectCachedText;
 extern void* lbl_8031A804[4];
-void* gSaveSelectTextures[4];
 extern SaveSelectPanel gSaveSelectPanels[];
 extern u8 lbl_8031A7F8[];
 static void saveSelectGoToChapterSelect(void);
@@ -1080,3 +1079,5 @@ void* SaveSelectScreen_funcs[10] = {(void*)0x00000000,      (void*)0x00000000,  
                           SaveSelectScreen_render};
 char sFrontendTimeFormat[14] = "%3d:%02d:%02d";
 char sSaveGameBinPathFormat[] = "/savegame/save%d.bin";
+
+void* gSaveSelectTextures[4];

@@ -181,7 +181,7 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
                                  GameObject* target, s8 lineMask, s8 segment, s8 yTolerance,
                                  GameObject* sourceObj);
 
-u8 gTrackGridOrigin[0x104];
+extern u8 gTrackGridOrigin[0x104];
 
 TrackBlockDescriptor gTrackBlockDescriptors[20];
 
@@ -3563,3 +3563,5 @@ void trackInitCollisionBuffers(void)
     mapBlockFlag = 0;
     gIntersectRebuildRequested = 0;
 }
+
+u8 gTrackGridOrigin[0x104];

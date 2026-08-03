@@ -146,10 +146,10 @@ const Vec3f gSaveGameDefaultPosition = {
 
 void loadMapForCurrentSaveGame(void);
 
-u8 gSaveGameData[SAVEGAME_LIVE_BUFFER_SIZE];
-u8 saveData[SAVE_DATA_SIZE];
+extern u8 gSaveGameData[SAVEGAME_LIVE_BUFFER_SIZE];
+extern u8 saveData[SAVE_DATA_SIZE];
 u32 gMapObjGroupStatuses[SAVEGAME_MAP_COUNT];
-u8 gExtendedMapActLookup[SAVEGAME_EXTENDED_MAP_COUNT];
+extern u8 gExtendedMapActLookup[SAVEGAME_EXTENDED_MAP_COUNT];
 
 MapBitTransient gTransientMapBits[SAVEGAME_TRANSIENT_MAP_BIT_COUNT];
 
@@ -1301,3 +1301,7 @@ void* SaveGame_funcs[56] = {(void*)0x00000000,
                           (void*)0x00000000,
                           (void*)0x00000000,
                           (void*)0x00000000};
+
+u8 gSaveGameData[SAVEGAME_LIVE_BUFFER_SIZE];
+u8 saveData[SAVE_DATA_SIZE];
+u8 gExtendedMapActLookup[SAVEGAME_EXTENDED_MAP_COUNT];

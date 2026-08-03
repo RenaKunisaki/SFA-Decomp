@@ -5685,20 +5685,20 @@ void ObjSeq_addBgCmd(int index, int xrot, int yrot)
     gObjSeqBgCmds[gObjSeqBgCmdCount++ * 3 + 1] = shortXrot;
 }
 u8 gObjSeqRuntimeBuffer[0x2A80];
-s16 gObjSeqBgCmds[0x5A];
-u8 lbl_8039944C[0xA0];
-f32 objSeqOverridePos[0x259];
-u8 lbl_80399E50[0x58];
-u8 objSeqXrotChanged[0x58];
-s16 objSeqXrotValues[0x156];
-f32 gObjSeqSlotStreamTimeTable[0x81];
-s16 gObjSeqSlotSeqIdTable[0x56];
-s8 gObjSeqBoolFlags[0x58];
-s8 gObjSeqCondFlags[0x58];
-s8 gObjSeqSlotResults[0xB0];
-ObjSeqBgCmd gObjSeqDeferredCmds[0x50 / sizeof(ObjSeqBgCmd)];
-s8 gObjSeqJumpLatch[0x58];
 int gObjSeqPreemptList[40][2];
+s8 gObjSeqJumpLatch[0x58];
+ObjSeqBgCmd gObjSeqDeferredCmds[0x50 / sizeof(ObjSeqBgCmd)];
+s8 gObjSeqSlotResults[0xB0];
+s8 gObjSeqCondFlags[0x58];
+s8 gObjSeqBoolFlags[0x58];
+s16 gObjSeqSlotSeqIdTable[0x56];
+f32 gObjSeqSlotStreamTimeTable[0x81];
+s16 objSeqXrotValues[0x156];
+u8 objSeqXrotChanged[0x58];
+u8 lbl_80399E50[0x58];
+f32 objSeqOverridePos[0x259];
+u8 lbl_8039944C[0xA0];
+s16 gObjSeqBgCmds[0x5A];
 
 
 #define OBJSEQ_SLOT_COUNT 85
