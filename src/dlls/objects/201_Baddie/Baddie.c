@@ -209,11 +209,6 @@ void baddie_updateEngagementState(GameObject* obj, EnemyState* sub);
 void baddieTurnTowardTarget(GameObject* node, EnemyState* sub);
 void baddie_decodePlayerAttackFlags(EnemyState* state, u32 flags, f32 f, u16 hitStunFrames);
 void Tricky_findNearbyFloorHeights(GameObject* obj, int state, f32* nearestFloorY, f32* nearestSpecialY);
-typedef struct
-{
-    f32 x, y, z;
-} TrickyVec3;
-
 
 void Tricky_resumeAfterCommand(GameObject* obj, int state)
 {
@@ -1952,7 +1947,7 @@ int enemy_findNearbyEnemies(GameObject* obj, f32 radius, u8 flags, int max, Enem
     int i;
     f32 distSquared;
     int count;
-    TrickyVec3 d;
+    Vec d;
     void* dp = &d;
 
     cur[0] = 0;

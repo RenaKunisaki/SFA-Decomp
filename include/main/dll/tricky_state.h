@@ -73,13 +73,6 @@ typedef struct TrickyCommand
     u8 pad7;
 } TrickyCommand;
 
-typedef struct TrickyPoint3
-{
-    f32 x;
-    f32 y;
-    f32 z;
-} TrickyPoint3;
-
 typedef struct TrickyJumpArc
 {
     f32 duration;  /* 0x64: horizontal distance / lbl_803E24A4 */
@@ -155,14 +148,14 @@ typedef struct TrickyState {
     f32 prevLocalPosY;
     f32 prevLocalPosZ;
     s16 patch[4]; /* curve-walk patch values (dll_DF trickyUpdateMovementState) */
-    TrickyPoint3 patchTargets[4];
+    Vec patchTargets[4];
     u16 activeWalkGroup; /* current active walk-group id (getPatchGroup/walkGroupFn arg; tracked vs targetWg) */
     s16 linkedWalkGroup; /* walk-group/patch id linked to activeWalkGroup: set to the intersected walk-group product, compared == targetWg/getPatchGroup results, cleared to 0 (trickyfollow/tricky_substates) */
-    TrickyPoint3 linkedPatchPos;
+    Vec linkedPatchPos;
     f32 homePosX; /* home position, init from obj world pos */
     f32 homePosY;
     f32 homePosZ;
-    TrickyPoint3 patchExitPos;
+    Vec patchExitPos;
     u32 pathControlFlags; /* head word of the embedded gPathControlInterface record */
     u8 pathControlData[0x1B8 - 0xFC]; /* embedded gPathControlInterface record (0xF8..0x1B8) */
     f32 nearestSpecialDeltaY; /* signed dy to the nearest special-surface (type 0xe) floor hit */

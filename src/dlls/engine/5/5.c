@@ -97,9 +97,9 @@ u16 gSkySunAlpha;
 extern f32 gSkyOverrideLightDirection[];
 extern const f32 lbl_803DF058;
 extern const f32 gSkySunMoonRiseScale;
-STATIC_ASSERT(sizeof(SkyVec3) == 0xC);
-const SkyVec3 gSkyBaseSunDirection = {0.0f, 0.0f, 4600.0f};
-const SkyVec3 gSkyBaseMoonDirection = {0.0f, 0.0f, 4600.0f};
+STATIC_ASSERT(sizeof(Vec) == 0xC);
+const Vec gSkyBaseSunDirection = {0.0f, 0.0f, 4600.0f};
+const Vec gSkyBaseMoonDirection = {0.0f, 0.0f, 4600.0f};
 extern int lbl_803E8458;
 int skyReservedReturnZeroB(void)
 {
@@ -1324,8 +1324,8 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
     SkyRotQ q1;
     f32 moonTC;
     f32 vec[3];
-    SkyVec3 sunDir;
-    SkyVec3 moonDir;
+    Vec sunDir;
+    Vec moonDir;
     int v;
     Camera* cam;
     f32 far;

@@ -8,11 +8,6 @@
 
 typedef struct Texture Texture;
 
-typedef struct SkyVec3
-{
-    f32 x, y, z;
-} SkyVec3;
-
 typedef struct SkyRotQ
 {
     s16 rx, ry, rz;

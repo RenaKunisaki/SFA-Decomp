@@ -52,11 +52,11 @@ u8 gSky2RunFirstTime = 1;
 #define SKY_CHILD_OBJ_MOON           0x62c /* spawned into gSkyMoonObject */
 #define SKY_TEXTURE_SKY              0x5fa /* gSkySkyTexture */
 extern u8 gSkyConfigFieldIndices[];
-STATIC_ASSERT(sizeof(SkyVec3) == 0xC);
+STATIC_ASSERT(sizeof(Vec) == 0xC);
 extern u16 lbl_803E8460;
 extern u8 lbl_803E8462;
 extern f32 lbl_8039A7B8[];
-const SkyVec3 sSky2BestWeightsInit = {-1000.0f, -1000.0f, -1000.0f};
+const Vec sSky2BestWeightsInit = {-1000.0f, -1000.0f, -1000.0f};
 
 
 void skyGetCurrentAmbientAndLightColors(u8* ambientRed, u8* ambientGreen, u8* ambientBlue, u8* lightRed, u8* lightGreen,
@@ -474,7 +474,7 @@ void sky2_run(void)
 {
     SkyRotQ q;
     f32 vec[3];
-    SkyVec3 best;
+    Vec best;
     f32 height;
     SkyBestIdx idx;
     u8 red;

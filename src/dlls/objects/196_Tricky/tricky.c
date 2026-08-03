@@ -2111,9 +2111,9 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
             if (wgi.patchMask & (u8)mask)
             {
                 *(s16*)(sref + 152) = *(u16*)(wref + 2);
-                *(f32*)(tref + 160) = ((TrickyPoint3*)target)->x;
-                *(f32*)(tref + 164) = ((TrickyPoint3*)target)->y;
-                *(f32*)(tref + 168) = ((TrickyPoint3*)target)->z;
+                *(f32*)(tref + 160) = ((Vec*)target)->x;
+                *(f32*)(tref + 164) = ((Vec*)target)->y;
+                *(f32*)(tref + 168) = ((Vec*)target)->z;
             }
         }
     }
@@ -2135,9 +2135,9 @@ int trickyUpdateMovementState(GameObject* obj, f32 vel, TrickyState* state)
                 if ((wgProd == *ids) && (((1 << i) & wgi.patchMask) != 0))
                 {
                     state->linkedWalkGroup = link;
-                    state->linkedPatchPos.x = ((TrickyPoint3*)target)->x;
-                    state->linkedPatchPos.y = ((TrickyPoint3*)target)->y;
-                    state->linkedPatchPos.z = ((TrickyPoint3*)target)->z;
+                    state->linkedPatchPos.x = ((Vec*)target)->x;
+                    state->linkedPatchPos.y = ((Vec*)target)->y;
+                    state->linkedPatchPos.z = ((Vec*)target)->z;
                 }
             }
         }
