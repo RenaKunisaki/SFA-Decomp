@@ -80,7 +80,7 @@ int grimble_stateHandlerB03(GameObject* obj, GroundBaddieState* state) {
     return 1;
 }
 
-int scarab_updateProximityGate(GameObject* obj, GroundBaddieState* state) {
+int grimble_stateHandlerB02(GameObject* obj, GroundBaddieState* state) {
     GameObject* target;
     f32 dx;
     f32 dz;
@@ -821,7 +821,7 @@ void grimble_initialiseStateHandlerTables(void) {
     gGrimbleStateHandlersA[9] = grimble_stateHandlerA09;
     gGrimbleStateHandlersB[0] = grimble_stateHandlerB00;
     gGrimbleStateHandlersB[1] = grimble_stateHandlerB01;
-    gGrimbleStateHandlersB[2] = scarab_updateProximityGate;
+    gGrimbleStateHandlersB[2] = grimble_stateHandlerB02;
     gGrimbleStateHandlersB[3] = grimble_stateHandlerB03;
     gGrimbleStateHandlersB[4] = grimble_stateHandlerB04;
     gGrimbleStateHandlersB[5] = grimble_stateHandlerB05;
