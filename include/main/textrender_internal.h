@@ -127,15 +127,9 @@ typedef struct
     GameTextLoadRequest requests[GAMETEXT_PENDING_SOURCE_COUNT];
 } GameTextLoadState;
 
-typedef struct GlyphResource802CA100 {
-    u16 rows0[320];
-    void* embedded;
-    u16 rows1[78];
-} GlyphResource802CA100;
-
 extern s16 gGameTextBoxTexAssets;
 extern u16 gGameTextBoxCornerTexSrc[256];
-extern GlyphResource802CA100 gGameTextBoxEdgeTexSrc;
+extern u16 gGameTextBoxEdgeTexSrc[400];
 extern Texture* gGameTextBoxCornerTexture;
 extern Texture* gGameTextBoxBgTexture;
 extern Texture* gGameTextBoxEdgeTexture;
