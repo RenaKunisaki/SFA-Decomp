@@ -8,7 +8,7 @@
 extern "C" {
 #endif
 
-u32 TRKTargetTranslate(u32 param_0);
+u32 TRKTargetTranslate(u32 addr);
 void TRK__read_aram(register u32 param_1, register u32 param_2, u32* param_3);
 void TRK__write_aram(register u32 param_1, register u32 param_2, u32* param_3);
 

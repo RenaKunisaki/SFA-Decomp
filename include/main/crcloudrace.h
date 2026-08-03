@@ -67,8 +67,8 @@ extern ObjectDescriptor gCrCloudRaceObjDescriptor;
 int crcloudrace_getExtraSize(void);
 int crcloudrace_getObjectTypeId(void);
 void crcloudrace_free(void);
-void crcloudrace_render(u32 param_1,u32 param_2,u32 param_3,
-                        u32 param_4,u32 param_5,char visible);
+void crcloudrace_render(u32 obj,u32 p2,u32 p3,
+                        u32 p4,u32 p5,char visible);
 void crcloudrace_hitDetect(void);
 void crcloudrace_update(GameObject *obj);
 void crcloudrace_init(GameObject *obj);

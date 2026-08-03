@@ -55,7 +55,7 @@ int firepipe_getExtraSize(void);
 u32 firepipe_stateCallback(GameObject *obj);
 int firepipe_getObjectTypeId(void);
 void firepipe_free(GameObject *obj);
-void firepipe_render(GameObject *obj, int param_2, int param_3, int param_4, int param_5, char param_6);
+void firepipe_render(GameObject *obj, int p1, int p2, int p3, int p4, char visible);
 void firepipe_update(GameObject *obj);
 void firepipe_init(GameObject *obj, FirePipeMapData *mapData);
 

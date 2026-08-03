@@ -170,7 +170,7 @@ STATIC_ASSERT(offsetof(CurvesCollisionState, activeTimer) == 0x264);
 int RomCurve_projectPointToAdjacentWindow(int* curveIds, f32 x, f32 y, f32 z, f32* outLateralOffset,
                                           f32* outVerticalOffset, f32* outPhase);
 int curves_isPointInsideLoop(int curveId, f32 x, f32 y, f32 z, f32* outDistance);
-int curves_findNearestOfType16(f32 x, f32 y, f32 z, int param_4);
+int curves_findNearestOfType16(f32 x, f32 y, f32 z, int queryAll);
 int RomCurve_func13(u32 curveId, int typeFilter, int matchValue, int* outLink);
 int RomCurve_findLinkTowardNearestOfType(RomCurveDef* curve, int typeFilter, int actionFilter, int* previousCurveId);
 int RomCurve_getRandomLinkedOfTypes(RomCurveDef* curve, int* types, int typeCount, int* previousLinkId);
@@ -197,7 +197,7 @@ void RomCurve_release(void);
 void curves_countRandomPoints(GameObject* obj, CurvesCollisionState* state);
 void curves_resolveSingleTrace(GameObject* obj, CurvesCollisionState* state);
 void curves_resolveAveragedSegments(GameObject* obj, CurvesCollisionState* state);
-void curves_updateSurfaceTilt(short* param_1, int param_2);
+void curves_updateSurfaceTilt(short* obj, int state);
 void curves_snapToNearestSurface(GameObject* obj, CurvesCollisionState* state);
 void curves_resolveWaterFloorCeiling(GameObject* obj, CurvesCollisionState* state);
 void curves_updateLocalPointCollision(GameObject* obj, CurvesCollisionState* state);
@@ -212,7 +212,7 @@ void curves_updateQueryBounds(GameObject* obj, CurvesCollisionState* state, f32 
 void curves_setLocalPointCollisionEx(CurvesCollisionState* state, int pointCount, f32* localPointPositions,
                                      f32* localPointRadii, int primaryHitType, int secondaryHitType);
 void curves_clear(CurvesCollisionState* state, int updateMode, u32 flags, int subtype);
-void saveFileStruct_setCheatActive(u8 param_1, u8 param_2);
+void saveFileStruct_setCheatActive(u8 optionIndex, u8 active);
 
 /* extern-cleanup: defining-file public prototypes */
 void* getLastSavedGameTexts(void);

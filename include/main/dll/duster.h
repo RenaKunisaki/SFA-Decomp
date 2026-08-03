@@ -11,11 +11,11 @@ void rachnopUpdateIdle(GameObject* obj, int state);
 void spittingEbaUpdateIdle(GameObject* obj, int state);
 void spittingEbaUpdateEngaged(GameObject* obj, int state);
 
-void rachnopInit(u32 param_1,int param_2);
+void rachnopInit(u32 unused,int state);
 void spittingEbaSpawnPollen(GameObject* obj,int state);
-void spittingEbaUpdateTimeOfDay(int param_9,int param_10);
-void spittingEbaInit(u32 param_1,int param_2);
-void wbInit(u32 param_1,int param_2);
+void spittingEbaUpdateTimeOfDay(int obj,int state);
+void spittingEbaInit(u32 unused,int state);
+void wbInit(u32 unused,int state);
 
 enum
 {

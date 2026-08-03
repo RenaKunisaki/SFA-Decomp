@@ -65,8 +65,8 @@ void ProximityMine_expire(struct GameObject *obj);
 int ProximityMine_getExtraSize(void);
 int ProximityMine_getObjectTypeId(void);
 void ProximityMine_free(struct GameObject *obj);
-void ProximityMine_render(struct GameObject *obj,u32 param_2,u32 param_3,
-                          u32 param_4,u32 param_5);
+void ProximityMine_render(struct GameObject *obj,u32 p2,u32 p3,
+                          u32 p4,u32 p5);
 void ProximityMine_hitDetect(struct GameObject *obj);
 void ProximityMine_update(struct GameObject *obj);
 void ProximityMine_init(struct GameObject *obj,ProximityMineDef *def);

@@ -70,7 +70,7 @@ static u16 TRK_saved_exceptionID;
 
 void __TRK_set_MSR(register u32 msr);
 u32 __TRK_get_MSR();
-void TRK_ppc_memcpy(register void* dest, register const void* src, register int n, register u32 param_4, register u32 param_5);
+void TRK_ppc_memcpy(register void* dest, register const void* src, register int n, register u32 destMsr, register u32 srcMsr);
 
 /**
  * @note Address: TODO
@@ -195,7 +195,7 @@ DSError TRKValidMemory32(const void* addr, size_t length, ValidMemoryOptions rea
  * @note Size: TODO
  */
 #ifdef __MWERKS__ // clang-format off
-static asm void TRK_ppc_memcpy(register void* dest, register const void* src, register int n, register u32 param_4, register u32 param_5){
+static asm void TRK_ppc_memcpy(register void* dest, register const void* src, register int n, register u32 destMsr, register u32 srcMsr){
 	#define msr		r8
 	#define byte	r9
 	#define count	r10
@@ -208,12 +208,12 @@ static asm void TRK_ppc_memcpy(register void* dest, register const void* src, re
 		cmpw count, n
 		beq out_loop
 
-		mtmsr param_5
+		mtmsr srcMsr
 		sync
 
 		lbzx byte, count, src
 
-		mtmsr param_4
+		mtmsr destMsr
 		sync
 
 		stbx byte, count, dest
@@ -237,7 +237,7 @@ DSError TRKTargetAccessMemory(void* data, u32 start, size_t* length, MemoryAcces
 	DSError error;
 	u32 savedMsr;
 	void* addr;
-	u32 param4;
+	u32 targetMsr;
 	TRKExceptionStatus tempExceptionStatus = gTRKExceptionStatus;
 	gTRKExceptionStatus.exceptionDetected  = FALSE;
 
@@ -248,12 +248,12 @@ DSError TRKTargetAccessMemory(void* data, u32 start, size_t* length, MemoryAcces
 		*length = 0;
 	} else {
 		savedMsr  = __TRK_get_MSR();
-		param4 = savedMsr | gTRKCPUState.Extended1.MSR & 0x10;
+		targetMsr = savedMsr | gTRKCPUState.Extended1.MSR & 0x10;
 
 		if (read) {
-			TRK_ppc_memcpy(data, addr, *length, savedMsr, param4);
+			TRK_ppc_memcpy(data, addr, *length, savedMsr, targetMsr);
 		} else {
-			TRK_ppc_memcpy(addr, data, *length, param4, savedMsr);
+			TRK_ppc_memcpy(addr, data, *length, targetMsr, savedMsr);
 			TRK_flush_cache(addr, *length);
 			if ((void*)start != addr) {
 				TRK_flush_cache((void*)start, *length);

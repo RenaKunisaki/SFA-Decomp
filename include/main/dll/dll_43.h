@@ -4,6 +4,6 @@
 #include "ghidra_import.h"
 #include "main/dll/FRONT/title_menu.h"
 
-void saveSelectSetSlot(int param_1, int param_2);
+void saveSelectSetSlot(int slot, int value);
 
 #endif /* MAIN_DLL_DLL_43_H_ */

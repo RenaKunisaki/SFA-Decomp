@@ -52,7 +52,7 @@ void doHeatEffect(u8 alpha);
 void renderMotionBlur(f32 alpha);
 void doBlurFilter(f32 wx, f32 wy, f32 wz, u8 param4, u8 param5);
 void setupWaterReflectionTev(int handle1, int handle2);
-void setupReflectionDistortTev(int param_1);
+void setupReflectionDistortTev(int texHandle);
 void setupReflectionBumpDistortTev(void* texture);
 void setupWaterCausticTev(void);
 void loadReflectionTexMtxs(void);
