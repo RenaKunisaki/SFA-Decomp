@@ -956,7 +956,7 @@ void gameTextBuildSystemFontAtlas(void)
                 {
                     int k;
                     dst = (u8*)charset->textures[0] + (j2 << 5);
-                    dst += row * gGameTextFontTexRowPitch;
+                    dst += gGameTextFontTexRowPitch * row;
                     for (k = 0; k < 8; k++)
                     {
                         *(u32*)(dst + 0x60 + k * 4) = *src++;

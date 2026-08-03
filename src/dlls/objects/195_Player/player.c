@@ -11732,7 +11732,7 @@ int playerBuildWallTransitionProbe(GameObject* obj, char* cam, f32* out, f32* ve
                         best = dy;
                         bi = i2;
                     }
-                    if ((*pp)->normalY > 0.707f && dy >= 0.0f && (best2 < 0.0f || dy < best2))
+                    if ((*pp)->normalY > 0.707f && dy >= 0.0f && (best2 < 0.0f || best2 > dy))
                     {
                         best2 = dy;
                     }
@@ -16644,7 +16644,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
             }
             ObjPath_GetPointWorldPosition((GameObject*)obj, 5, &px, &py, &pz, 0);
             dx = ((GameObject*)obj)->anim.worldPosX - npos[0];
-            dy = (((PlayerState*)inner)->pathBearingEyeY + ((GameObject*)obj)->anim.worldPosY) - npos[1];
+            dy = (((GameObject*)obj)->anim.worldPosY + ((PlayerState*)inner)->pathBearingEyeY) - npos[1];
             dz = ((GameObject*)obj)->anim.worldPosZ - npos[2];
             {
                 s16 ang = (s16)getAngle(dx, dz);

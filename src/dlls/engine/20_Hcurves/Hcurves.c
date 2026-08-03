@@ -1378,10 +1378,10 @@ void Objfsa_UpdateWalkGroupPatches(void)
                         if (wg->patchIndices[slot] == 0)
                         {
                             back = 0;
-                            if (linked->linkIds[0] != curve->id &&
-                                (back = 1, linked->linkIds[1] != curve->id) &&
-                                (back = 2, linked->linkIds[2] != curve->id) &&
-                                (back = 3, linked->linkIds[3] != curve->id))
+                            if (curve->id != linked->linkIds[0] &&
+                                (back = 1, curve->id != linked->linkIds[1]) &&
+                                (back = 2, curve->id != linked->linkIds[2]) &&
+                                (back = 3, curve->id != linked->linkIds[3]))
                             {
                                 back = 4;
                             }

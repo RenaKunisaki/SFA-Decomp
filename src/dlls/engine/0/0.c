@@ -3214,9 +3214,9 @@ void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
                 GXSetScissor(0, 0, 0x280, 0x1E0);
                 sprintf(label.text, lbl_803DBB58, gCMenuItemIcons[iconIndex]);
                 gameTextSetColor(0, 0, 0, fadedAlpha & 0xFF);
-                gameTextShowStr(label.text, 0x93, 0x247, 0x2B + (rowOffset + gCMenuScrollTimer));
+                gameTextShowStr(label.text, 0x93, 0x247, 0x2B + (gCMenuScrollTimer + rowOffset));
                 gameTextSetColor(0xFF, 0xFF, 0xFF, (u8)fadedAlpha);
-                gameTextShowStr(label.text, 0x93, 0x246, 0x2A + (rowOffset + gCMenuScrollTimer));
+                gameTextShowStr(label.text, 0x93, 0x246, 0x2A + (gCMenuScrollTimer + rowOffset));
             }
         }
         drawTexture(((CMenuHud*)base)->textures1C0[0x21], 537.0f, 175.0f,
