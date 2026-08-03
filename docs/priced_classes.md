@@ -1716,3 +1716,157 @@ them. It is not. The defect is therefore a **translation-unit boundary**, not a 
 `.text` run (`0x80278F0C`-`0x8027A4E0`) and two adjacent `.sbss` runs that a single TU would emit
 as one, so the candidate fix is a five-way unit merge in `config/GSAE01/splits.txt`, not a change
 to `voice.c`.
+
+## 19. The compiler-invocation audit: what the declared compiler is worth, tree-wide (measured 2026-08-03, A79)
+
+A78 removed three `mw_version="GC/2.0"` overrides from `musyx`, a library whose own declared
+compiler is `GC/1.2.5n`, and asked whether the rest of the tree carries the same defect. It does
+not, and the emptiness is worth as much as the three rows were: **no unit anywhere in the tree is
+held back by its declared compiler version or its optimisation level.**
+
+### The two sweeps, and their emptiness result
+
+Baseline `2567e1014f` (99.815420 / 2517640 / 1204625 / 920 of 1050). The frontier is **87 units**
+with `fuzzy < 100`, not 207 — **207 is the count of sub-100 FUNCTIONS**, spread across those 87
+units. Every brief that says "the 207 sub-100 units" is miscounting; check `report.json` before
+sizing a sweep from it.
+
+* **Compiler version.** Every one of the 87 was rebuilt under each of `GC/2.0`, `GC/1.3`,
+  `GC/1.3.2`, `GC/1.2.5n`, `GC/1.2.5` other than its own — **333 probes, 0 wins**, 112 rows exactly
+  equal (`GC/1.3` and `GC/1.3.2` are indistinguishable from `GC/2.0` on most game units).
+* **Optimisation level.** The same 87 under `-O0`, `-O1`, `-O2`, `-O3`, `-O4`, `-O4,p`, `-O3,p`,
+  `-O2,p` appended — **663 probes, 0 wins**.
+
+996 probes, every one gated on the compiler's exit code, and not a single unit improves. A78's
+musyx matrix showed how violent a level change is (`vid_init` 100.0 -> 22.065 at `-O2`); the
+result here is that the violence is all downside. **The flag axis is closed for the code frontier.
+Do not re-run it.**
+
+### The one class that did pay: the inert version override
+
+The productive question is not "is there a better compiler" but "**is the declared one doing
+anything at all**". Every per-object `mw_version` that differs from its library's default was
+rebuilt under the library default and the two objects compared with `tools/obj_equal.py` — contents,
+relocations and symbol table, not score. **42 overrides audited, 6 inert**: the library's own
+compiler produces an object identical but for `.comment`, a non-allocated section that never
+reaches the DOL.
+
+| unit | declared | library default | verdict |
+| --- | --- | --- | --- |
+| `dlls/objects/437/437.c` | GC/1.3 | GC/2.0 | inert (`.comment` only) |
+| `dolphin/MSL_C/PPCEABI/bare/H/common_float_tables.c` | GC/1.3 | GC/1.2.5n | inert (`.comment` only) |
+| `dolphin/MSL_C/PPCEABI/bare/H/rand.c` | GC/1.1 | GC/1.2.5n | inert (whole file byte-identical) |
+| `dolphin/MSL_C/PPCEABI/bare/H/exponentialsf.c` | GC/1.1 | GC/1.2.5n | inert (whole file byte-identical) |
+| `dolphin/TRK_MINNOW_DOLPHIN/mainloop.c` | GC/1.3.2 | GC/1.3 | inert (whole file byte-identical) |
+| `dolphin/TRK_MINNOW_DOLPHIN/dispatch.c` | GC/1.3.2 | GC/1.3 | inert (whole file byte-identical) |
+
+Removing all six drops `GC/1.1` from the project's compiler requirements entirely — it was declared
+for exactly two objects and neither needs it. The other 36 are load-bearing, several violently so
+(`s_frexp` 100.0 -> 50.657, `printf` 100.0 -> 72.736, `WORLDplanet` 99.480 -> 82.101).
+
+**Law: a declared compiler version is evidence only if the library's own compiler produces a
+different object.** Score equality does not establish inertness and object equality does not
+establish it either unless the comparison includes relocations — see §20.
+
+### Correction to A78's `hw_break`
+
+A78 recorded that `musyx/runtime/hw_break.c` has PROGBITS byte-identical under `GC/1.2.5n` and
+differs only in relocations. **It does not.** Re-measured twice, under `GC/1.2.5n` the `.text` is
+80 bytes in both but its md5 differs: the object is an `r3`/`r4` permutation of the `GC/2.0` one
+(`mulli r4,r3,244` becomes `mulli r3,r3,244` and the whole dependent chain follows). Its override
+is load-bearing for an ordinary reason. The lesson A78 drew from it is still right, and §20 gives
+it a counter-example that actually holds.
+
+### The relocation-offset fingerprint is a dtk artifact, not evidence
+
+`R_PPC_EMB_SDA21` fixups land on the instruction word under `GC/2.0` and on its low halfword under
+`GC/1.2.5n`/`GC/1.3`, which looks like a free tree-wide oracle for "was this unit built by the
+right compiler": scan every source object against its retail counterpart and read off the
+disagreements. **It is not an oracle.** All 1045 objects under `build/GSAE01/obj/` carry a
+`.note.split` section — they are dtk reconstructions carved out of the DOL, so their relocation
+tables are synthesised by dtk and uniformly land on the word. The scan reports 113 "mismatches",
+every one of them a unit legitimately built by an older compiler. **Any oracle read off the carved
+objects' relocations measures dtk, not retail.** The fingerprint is still sound between two of
+*our own* builds, where `tools/obj_equal.py` already reports it.
+
+## 20. Section contents do not certify an object: the relocation gate (measured 2026-08-03, A79)
+
+Every lane in this fleet has been clearing object-level work with a section-content md5 (`secmd5`,
+`objdump -s` with the path header stripped). That check is blind to an entire kind of change,
+because a relocatable object is contents **plus** a relocation table **plus** a symbol table, and
+the field a relocation patches is zero in the object either way.
+
+### The hole, with a control that reproduces from the tree
+
+Rename one file-local function — `heapSpawnSlot` -> `heapSpawnSlotRenamed` in `src/main/mm.c`, two
+occurrences, no other edit — and rebuild:
+
+* section contents: **zero differences**. `secmd5` reports the object identical.
+* relocations: one entry in `.text` at offset 4388 changes its target symbol name.
+* symbol table: one name gone, one name added.
+
+The object genuinely changed and every gate this project runs says it did not. The same shape
+covers the whole **#70 reloc-NAME-at-equal-ADDRESS** class, which the ledger has been calling
+score-neutral on the strength of "prove `objdump -s` identical" — that proof does not reach the
+relocation table, so #70 rows have been cleared by a check that cannot see the thing they change.
+It also covers the naming lane's standing claim of "byte-identical over all 1013 objects": a rename
+*must* move relocations, so contents-identity is the wrong invariant to quote for it.
+
+### `tools/obj_equal.py`
+
+Compares two ELF32-BE PowerPC objects, or two trees of them (`--tree DIR_A DIR_B`), on:
+
+* **contents** — md5 per allocated/PROGBITS section, `NOBITS` by size;
+* **relocations** — per target section, each entry normalised to
+  `(offset, type, addend, symbol identity)` where the symbol is identified by **name**, or by
+  section for `STT_SECTION` entries, so symbol-index churn is ignored;
+* **symbols** — name -> (section, value, size, info), so symbol-table *ordering* is ignored but
+  a rename, a binding change or a size change is not.
+
+`--self-test` runs three controls and exits non-zero on any failure:
+
+1. **negative** — an object against a byte-identical copy under a different filename: must report
+   `EQUAL` (the check must not be trigger-happy about paths or ordering);
+2. **positive, contents** — two genuinely different objects: must report a `CONTENT` difference;
+3. **positive, relocations only** — one relocation in a real tree object repointed at a different
+   existing symbol, PROGBITS untouched: must report **contents identical and a `RELOC` difference**.
+   This is the class control 1 and 2 cannot distinguish, and the class `secmd5` cannot see.
+
+The real-world positive control is the `mm.c` rename above; the real-world negative control used
+in this lane's own landing is the six inert compiler overrides of §19, where the tool correctly
+reports 1013 objects compared, 2 differing, and both only in `.comment`.
+
+**Gate object-level work on `obj_equal.py`, not on section contents.** A change that is genuinely
+free will pass both; a change that is only apparently free will pass one.
+
+### The `vecmath` #70 re-attack, priced and declined
+
+`src/main/vecmath.c` declares `extern f32 lbl_803DE7C0;` and reads it at two sites as a zero.
+The symbol resolves to vecmath's own `.sdata2` offset 0 — the file declares its own leading pool
+word as an extern. Our pool and retail's hold the **same 18 words**; only positions 0 and 1 are
+swapped (ours `1.0f, 0.0f`, retail `0.0f, 1.0f`), and `.sdata2` scores all-or-nothing per section,
+so the unit sits at `matched_data` **0 of 72** while every function but `mtxRotateByVec3s` is
+100.0. `interpolate` is the first function in `.text` and emits its `1.0f` first — in retail's own
+instruction sequence, which we reproduce exactly — so under emission order the zero must be minted
+by something *ahead of* `interpolate`. Four spellings, all re-measured at `2567e1014f`:
+
+| spelling | `matched_data` | unit fuzzy | `matched_code` | note |
+| --- | --- | --- | --- | --- |
+| production (`extern f32 lbl_803DE7C0`) | 0/72 | 99.80268 | 4268 | baseline |
+| hoisted `f32 result = 0.0f;` in `interpolate` | **72/72** | 99.55801 | 4172 | `interpolate` 100.0 -> **87.083** |
+| `const f32 kZero = 0.0f;` at top, uses renamed | 0/72 | 99.60931 | 3680 | pool grows to **80 B**, duplicate zero at 0x08 |
+| every `0.0f` in the file replaced by `kZero` | 0/72 | 99.60931 | 3680 | still 80 B — a zero is minted elsewhere |
+| forward `extern const f32 kZero;`, defined at end | 0/72 | 99.80268 | 4268 | **code-neutral**, but the word lands at index 3 |
+
+The hoisted spelling is the only one that reaches 72/72 and it costs **96 `matched_code`**;
+MWCC will not sink the initialiser back into the branch arm under any flag — ten `-opt` variants
+(`propagation`, `nopropagation`, `lifetimes`, `nolifetimes`, `nocse`, `nodeadcode`,
+`noloopinvariants`, `peephole`, `schedule`, and dropping `nostrength`) all leave `interpolate` at
+87.083. A78's cure — an uncalled `static` helper ahead of `interpolate` that mints the word and
+lets `interpolate`'s literal dedup to it — reaches 72/72 at zero code cost but is a **phantom
+literal-minter**, and the ban is on the shape. **DECLINED at a measured price of +72 `matched_data`
+for -96 `matched_code`.** The carve boundary is not the culprit: `gameloop_main.c`'s `.sdata2` ends
+at `0x803DE7BC` and vecmath's starts at the next 8-aligned address `0x803DE7C0`, which its two
+embedded doubles require, so there is no word to reattribute. The only legal improvement available
+is cosmetic — the forward-`extern const` spelling retires the `lbl_<hex>` crutch at exactly zero
+cost in both directions — and it belongs to the const lane, not here.
