@@ -384,6 +384,79 @@ a *non-volatile* object at that address instead. Unifying them costs `expgfx` 99
 (`PPCWGPipe` with `u64`/`s64` in `GXVert.h`, `PPCWGPipe2`, `ExpgfxWGPipe`) are load-bearing;
 leave them.
 
+### 8d. The dead-declaration census, and why most of it is not actionable
+
+§8c compared bodies. This compares **referent counts**: every `typedef`, tag, enum
+constant, `#define`, file-local static and prototype in `src/` and `include/`, against how
+often its name occurs anywhere else. 21479 declarations, 4085 with zero referents. Almost
+none of that is residue, and the split is the useful part.
+
+**The tell is the SIGNATURE, not the name.** 57 `FUN_<addr>` prototypes and 4
+`modgfx_*ActiveEffect*` prototypes carried the Ghidra register-slot shape —
+`u64 param_1, double param_2, … u32 param_16`, the eight GPR argument slots spelled as
+parameters. That shape is a machine artefact; it cannot be 2002 text under any reading, and
+none of the 61 had a definition or a caller. The addresses carried nothing either: 54 of 57
+resolve to no symbol (DLL entries are load-time addresses), and the 3 that resolve are stale
+duplicates of functions already recovered under real names. Deleted. Contrast
+`trackDolphin_buildSweptBounds`, which has real parameter names and merely lacks a user —
+plausible text, kept. Contrast `ModgfxActiveEffect`, the struct those 4 prototypes name:
+named fields at recovered offsets is recovery product for a module not yet decompiled.
+
+**A typedef written in a `.c` and never used is residue by construction.** It was live when
+the body was first written and was orphaned when the body was rewritten. All four
+game-code instances went: `VecXYZ` (player.c) and model.c's `AnimBufSel` / `MdlSelBufs` /
+`ChF34`, the last three pad-offset overlay scaffolds (`u8 _0[0x34]`) from the raw-pointer
+rewrite. The same reasoning removed `lightmap_internal.h`'s `F64Cvt` pun union and
+`expgfx_internal.h`'s 12-macro alias block — that block's own comment claimed the arrays
+were "still linker-backed by recovered addresses", and the 8 `DAT_xxxxxxxx` symbols it
+expanded to were declared nowhere in the tree.
+
+**A zero-referent declaration in a HEADER is weak evidence and usually a decline.** Headers
+legitimately carry declarations the current TU set does not use. Declined with reasons:
+`CameraMode54ResourceId` and `CameraMode55ResourceId` (a 12-header family where every
+camera-mode DLL carries the same single-member resource-id enum and 10 of 12 have live
+users — the two dead ones are the two DLLs nothing references yet);
+`ObjectDescriptor4WithPadding` (member of the regular `ObjectDescriptor<N>WithPadding`
+family); `TitleMenuControl` (the one-vtable-pointer wrapper is a house pattern, cf.
+`CamcontrolHandler`); `NewShadowVector2`.
+
+**1477 dead `#define`s and enum constants in game code, and ZERO of them carry a
+placeholder tell.** Every one is a properly named semantic constant, usually a member of a
+documented group whose siblings are used (`WCPUSHBLOCK_STATE_*`, `QUESTWELL_*`,
+`GFLEVELCON_CHILD_OBJ_*`). No discriminator separates residue from authentic here, because
+writing a field's full bit list and using two of them is normal C. **Do not re-run this
+axis.** Likewise the 31 zero-reference file-local statics: the `s*Unused*` /
+`lbl_803DC1B4` ones are deliberate `.bss` layout placeholders and the uncalled static
+*functions* exist in the retail binary, so both are load-bearing.
+
+**Census false positives worth knowing.** A tag can be alive while the name looks dead:
+`union SClanternAnimEvents` defines `gSClanternObjAnimEvents` in the same statement;
+`struct TrickyRewardSpawnTail` is a function-local tag declaring `rewardTail`;
+`CamcontrolHandlerVTable` is used by `CamcontrolHandler` and its `STATIC_ASSERT`.
+
+### 8e. §8c's two discriminators run past structs
+
+Over scalar typedefs, function-pointer typedefs, enums and macro constants.
+
+**MWCC tolerates an identical typedef redefinition, so the test for "was the name already
+in scope" is the deletion itself.** Eight `src/main` files each carried their own
+`typedef f32 Mtx[3][4];` — the SDK's exact spelling from `dolphin/mtx.h`, which four of them
+include in the same file. All eight compile with the local copy removed, so in all eight the
+real `Mtx` was already in scope: discriminator #1 fires on every one. All byte-identical.
+
+**The measured negative that bounds it:** `zlb.c`'s private
+`typedef unsigned char u8/u16/u32` **fails to compile** when removed — the names are
+genuinely not otherwise in scope. zlb is third-party inflate carrying its own types; keep.
+Same verdict for `lightmap.c`'s 5 `RENDERFLAG_*` and `gametext_tail.c`'s 2 `TEXT_CTRL_*`:
+both fail to compile without the local copies, so collapsing onto the shared header costs a
+priced `#include`. Module-local constants are normal 2002 practice.
+
+**The enum axis is closed and empty.** 22 classes agree on a value set, but grouped by
+CONSTANT NAMES the collision count is **0**. Two enums agreeing on `(0,1,2,3)` share no
+information — the same decline as §8c's tiny struct shapes. The fn-ptr axis is dominated by
+the 39 `Dll<NN>SpawnFn` and 4 `<Dll>StateHandler` families (§8b, retired) and by
+per-interface vocabularies (`Sky*Fn`, `Camera*Fn`, `Projgfx*Fn`), all kept by #2.
+
 ### 9. Move codegen pragmas out of the file into `configure.py`
 
 In-file `#pragma peephole/scheduling/opt_common_subs off` are really **per-TU compiler
