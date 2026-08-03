@@ -45,7 +45,7 @@ s16 gDll79EvenVertexIndices[4] = {0, 2, 4, 6};
 extern u32 gDll79EffectResourceData[];
 
 s16 dll_79_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)(int)gDll79EffectResourceData;
     GfxCmd* commandCursor;
     GfxCmd* commands;

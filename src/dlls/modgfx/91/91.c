@@ -72,7 +72,7 @@ s16 dll_5B_spawnModelEffects(GameObject* sourceObj, int effectId, PartFxSpawnPar
                              int unusedModelId, const Dll5BSpawnCountRange* countRange) {
     Dll5BSpawnCountRange spawnCountRange;
     Dll5BPartFxSpawnParams partFxParams;
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     Dll5BEffectResourceView* resources[1];
     GfxCmd* commandCursor;
     ObjModel* model;

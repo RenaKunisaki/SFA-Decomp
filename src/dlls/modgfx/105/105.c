@@ -44,7 +44,7 @@ u32 gDll69EffectResourceData[sizeof(Dll69EffectResourceView) / sizeof(u32)] = {
 
 s16 dll_69_spawnEffect(GameObject* sourceObj, int variant, void* spawnParams, u32 spawnFlags, int unusedArg4,
                        Dll69EffectParams* overrideParams) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     GfxCmd* command;
     GfxCmd* entries;
     u8* resourceData = (u8*)(int)gDll69EffectResourceData;

@@ -56,7 +56,7 @@ s16 gDll63EffectResourceData[sizeof(Dll63EffectResourceView) / sizeof(s16)] = {
 
 s16 dll_63_spawnEffect(GameObject* sourceObj, int variant, void* spawnParams, u32 spawnFlags, int unusedModelId,
                        void* unusedParams) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)gDll63EffectResourceData;
     Dll63EffectResourceView* resource = (Dll63EffectResourceView*)resourceData;
     Dll63EffectVertex* vertex;

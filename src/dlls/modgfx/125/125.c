@@ -74,7 +74,7 @@ int gDll7DSpawnCounter;
 s16 dll_7D_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags, u32 unused,
                        f32* scaleOverride) {
     s16 handle;
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)(int)gDll7DEffectResourceData;
     f32 scale = 1.0f;
     GfxCmd* commands;

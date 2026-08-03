@@ -46,7 +46,7 @@ u8 gDll8EEffectSpawnResource[8] = {0, 0, 0, 1, 0, 2, 0, 0};
 u8 gDll8EEffectTexture[8] = {0, 0, 0, 1, 0, 2, 0, 0};
 
 void dll_8E_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     GfxCmd* command;
     GfxCmd* commands = packet.entries;
     s16* sequenceParams;
@@ -170,7 +170,7 @@ void dll_8E_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* s
     packet.sequenceParams[4] = sequenceParams[4];
     packet.sequenceParams[5] = sequenceParams[5];
     packet.sequenceParams[6] = sequenceParams[6];
-    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxPointerSpawnPacket, entries));
+    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxSpawnPacket, entries));
     packet.flags = 0x4000410;
     packet.flags |= spawnFlags;
     if ((packet.flags & 1) != 0) {

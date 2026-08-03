@@ -54,7 +54,7 @@ u32 gDll64EffectResourceData[sizeof(Dll64EffectResourceView) / sizeof(u32)] = {
 };
 
 void dll_64_spawnEffect(GameObject* sourceObj, int variant, void* spawnParams, u32 spawnFlags) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u32 effectScaleTenths;
     u8* resourceData = (u8*)(int)gDll64EffectResourceData;
 

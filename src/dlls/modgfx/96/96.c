@@ -54,7 +54,7 @@ u32 gDll60EffectResourceData[sizeof(Dll60EffectResourceView) / sizeof(u32)] = {
 };
 
 void dll_60_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)(int)gDll60EffectResourceData;
     GfxCmd* commandCursor;
     GfxCmd* commands;
@@ -177,7 +177,7 @@ void dll_60_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* s
     packet.sequenceParams[4] = *(s16*)&resourceData[offsetof(Dll60EffectResourceView, sequenceParams[4])];
     packet.sequenceParams[5] = *(s16*)&resourceData[offsetof(Dll60EffectResourceView, sequenceParams[5])];
     packet.sequenceParams[6] = *(s16*)&resourceData[offsetof(Dll60EffectResourceView, sequenceParams[6])];
-    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxPointerSpawnPacket, entries));
+    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxSpawnPacket, entries));
     packet.flags = 0x1000000;
     packet.flags |= spawnFlags;
     if ((packet.flags & 1) != 0) {

@@ -70,7 +70,7 @@ u8 gDll81EffectResourceData[sizeof(Dll81EffectResourceView)] = {
 
 s16 dll_81_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags, int owner,
                        int unused) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)(int)gDll81EffectResourceData;
     f32 verticalStep = -3.0f;
     GfxCmd* commandCursor;

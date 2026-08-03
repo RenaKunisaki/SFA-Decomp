@@ -78,7 +78,7 @@ u8 gDll82EffectResourceData[sizeof(Dll82EffectResourceView)] = {
 
 void dll_82_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags, int modelId,
                         void* extraArg) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)(int)gDll82EffectResourceData;
     GfxCmd* commands;
     f32 originOffset = 0.0f;

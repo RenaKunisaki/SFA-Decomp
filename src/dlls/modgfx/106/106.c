@@ -54,7 +54,7 @@ u32 gDll6AEffectResourceData[sizeof(Dll6AEffectResourceView) / sizeof(u32)] = {
 
 s16 dll_6A_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags,
                        int unusedArg4, void* unusedArg5) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)(int)gDll6AEffectResourceData;
     GfxCmd* commands = packet.entries;
 

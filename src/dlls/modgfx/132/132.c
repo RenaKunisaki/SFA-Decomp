@@ -59,7 +59,7 @@ extern u8 gDll84EffectResourceData[sizeof(Dll84EffectResourceView)];
 
 s16 dll_84_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags, int owner,
                        void* unused) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)(int)gDll84EffectResourceData;
     GfxCmd* commands = packet.entries;
 

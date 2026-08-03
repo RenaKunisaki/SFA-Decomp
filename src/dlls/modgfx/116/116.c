@@ -67,7 +67,7 @@ u32 gDll74EffectResourceData[sizeof(Dll74EffectResourceView) / sizeof(u32)] = {
 };
 
 void dll_74_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     GfxCmd* commandCursor;
     u8* resourceData = (u8*)(int)gDll74EffectResourceData;
     GfxCmd* commands = packet.entries;

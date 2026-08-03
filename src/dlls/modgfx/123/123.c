@@ -45,7 +45,7 @@ STATIC_ASSERT(sizeof(Dll7BEffectResourceView) == 0x134);
 extern u8 gDll7BEffectResourceData[];
 
 void dll_7B_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)(int)gDll7BEffectResourceData;
     GfxCmd* commandCursor;
     GfxCmd* commands = packet.entries;

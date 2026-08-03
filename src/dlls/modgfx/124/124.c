@@ -79,7 +79,7 @@ u8 gFoodbagEffectResourceTable[sizeof(Dll7CEffectResourceView)] = {
 };
 
 void dll_7C_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = gFoodbagEffectResourceTable;
     GfxCmd* commands = packet.entries;
     GfxCmd* commandCursor = &commands[1];

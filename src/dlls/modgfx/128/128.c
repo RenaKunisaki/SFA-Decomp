@@ -50,7 +50,7 @@ u8 gDll80EffectResourceData[sizeof(Dll80EffectResourceView)] = {
     0, 4,   0,   5,   0, 6,   0,   7,   0,   0,   0, 15,  0,   0,   0, 0,   0,   0,   0, 0,  0, 0,   0,   0};
 
 void dll_80_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = gDll80EffectResourceData;
     GfxCmd* commands = packet.entries;
     GfxCmd* commandCursor;

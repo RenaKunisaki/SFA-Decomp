@@ -43,7 +43,7 @@ STATIC_ASSERT(sizeof(Dll8DEffectResourceView) == 0xC0);
 extern u8 gDll8DEffectResourceData[sizeof(Dll8DEffectResourceView)];
 
 s16 dll_8D_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)(int)gDll8DEffectResourceData;
     GfxCmd* command;
     GfxCmd* commands;
@@ -357,7 +357,7 @@ s16 dll_8D_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* sp
     packet.sequenceParams[4] = *(s16*)&resourceData[offsetof(Dll8DEffectResourceView, sequenceParams[4])];
     packet.sequenceParams[5] = *(s16*)&resourceData[offsetof(Dll8DEffectResourceView, sequenceParams[5])];
     packet.sequenceParams[6] = *(s16*)&resourceData[offsetof(Dll8DEffectResourceView, sequenceParams[6])];
-    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxPointerSpawnPacket, entries));
+    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxSpawnPacket, entries));
     packet.flags = 0x4000000;
     packet.flags |= spawnFlags;
     if ((packet.flags & 1) != 0) {

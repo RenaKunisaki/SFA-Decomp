@@ -78,7 +78,7 @@ u8 gDll8CEffectResourceData[sizeof(Dll8CEffectResourceView)] = {
     60,  0,   1,   0,   60,  0,   0,   0,   0};
 
 void dll_8C_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = gDll8CEffectResourceData;
     GfxCmd* commands = packet.entries;
     GameObject* anchorObj = sourceObj;
@@ -229,7 +229,7 @@ void dll_8C_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* s
     packet.sequenceParams[4] = *(s16*)&resourceData[offsetof(Dll8CEffectResourceView, sequenceParams[4])];
     packet.sequenceParams[5] = *(s16*)&resourceData[offsetof(Dll8CEffectResourceView, sequenceParams[5])];
     packet.sequenceParams[6] = *(s16*)&resourceData[offsetof(Dll8CEffectResourceView, sequenceParams[6])];
-    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxPointerSpawnPacket, entries));
+    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxSpawnPacket, entries));
     packet.flags = 0xC0400C0;
     packet.flags |= spawnFlags;
     if ((packet.flags & 1) != 0) {

@@ -76,7 +76,7 @@ const Dll9ASequenceTemplate gDll9ASequenceTemplate = {
 
 void dll_9A_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
     Dll9ASequence sequence;
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     GfxCmd* commandCursor;
     GfxCmd* commands;
     f32 rotationZ;
@@ -236,7 +236,7 @@ void dll_9A_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* s
     packet.sequenceParams[4] = sequence.sequenceParams[4];
     packet.sequenceParams[5] = sequence.sequenceParams[5];
     packet.sequenceParams[6] = sequence.sequenceParams[6];
-    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxPointerSpawnPacket, entries));
+    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxSpawnPacket, entries));
     packet.flags = 0x4000400;
     packet.flags |= spawnFlags;
     if ((packet.flags & 1) != 0) {

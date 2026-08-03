@@ -60,7 +60,7 @@ s16 gDll90VertexIndices[4] = {10, 12, 14, 16};
 extern u8 gDll90EffectResourceData[sizeof(Dll90EffectResourceView)];
 
 void dll_90_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)(int)gDll90EffectResourceData;
     GfxCmd* commands = packet.entries;
 

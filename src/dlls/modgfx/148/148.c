@@ -28,7 +28,7 @@ extern u32 gDll94EffectResourceData[sizeof(Dll94EffectResource) / sizeof(u32)];
 
 void dll_94_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags, int unused,
                         f32* scaleOverride) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     Dll94EffectResource* resource[1];
     GfxCmd* commands;
     f32 scale;
@@ -130,7 +130,7 @@ void dll_94_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* s
     packet.sequenceParams[4] = resource[0]->sequenceParams[4];
     packet.sequenceParams[5] = resource[0]->sequenceParams[5];
     packet.sequenceParams[6] = resource[0]->sequenceParams[6];
-    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxPointerSpawnPacket, entries));
+    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxSpawnPacket, entries));
     packet.flags = 0x4000410;
     packet.flags |= spawnFlags;
     if ((packet.flags & 1) != 0) {

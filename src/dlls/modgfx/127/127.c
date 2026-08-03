@@ -69,7 +69,7 @@ u8 gDll7FEffectResourceData[sizeof(Dll7FEffectResourceView)] = {
     0, 6,   0,   7,   0,   0,   0,   60,  0,   30,  0, 1,   0,   1,   0, 0,   0,   0,   0,   0};
 
 void dll_7F_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = gDll7FEffectResourceData;
     GfxCmd* commandCursor;
     GfxCmd* commands = packet.entries;
