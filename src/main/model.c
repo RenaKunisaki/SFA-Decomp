@@ -104,7 +104,6 @@ static inline void* modelGetBoneMtx(ObjModel* model, int idx);
 void ObjModel_TransformVerticesWithTranslation(u8* m1, u8* m2, u8* src, int d1, int d2, int count);
 void ObjModel_TransformVerticesLinear(u8* m1, u8* m2, u8* src, int d1, int d2, int count);
 void ObjModel_TransformQuadVerticesLinear(u8* m1, u8* m2, u8* src, int d1, int d2, int count);
-static u32 sGQR6Config;
 static u32 sGQR7Config;
 
 void modelApplyBoneTransform(u8* p, u8* out, u16 n, u8** pd, u8** pe, int f, u16 pos)
@@ -3144,7 +3143,6 @@ void ObjModel_TransformQuadVerticesLinear(u8* m1, u8* m2, u8* src, int d1, int d
 
 void setGQR6(u32 v)
 {
-    sGQR6Config = v;
 }
 
 void setGQR7(u32 v)
