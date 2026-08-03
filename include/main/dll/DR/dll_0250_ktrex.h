@@ -34,8 +34,7 @@ typedef struct KTRexWork
 typedef struct KtrexPlacement
 {
     u8 pad0[0x38];
-    f32 laneSpeed;
-    u8 pad3C[4];
+    f32 laneSpeeds[3];
 } KtrexPlacement;
 
 typedef struct KtrexState

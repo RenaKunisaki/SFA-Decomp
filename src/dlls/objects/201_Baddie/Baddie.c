@@ -1868,9 +1868,9 @@ int enemy_SeqFn(GameObject* node, int unused, ObjSeqState* animUpdate)
             break;
         case 2:
             if (node->anim.romDefNo == ENEMY_BOSSGENERAL_OBJ)
-                *(u16*)(sub + 0x2b6) = 0x7a5;
+                ((EnemyState*)sub)->weaponRomDefNo = 0x7a5;
             else
-                *(u16*)(sub + 0x2b6) = 0x33;
+                ((EnemyState*)sub)->weaponRomDefNo = 0x33;
             break;
         case 3:
             (*gObjectTriggerInterface)->setCamVars(CAMERA_MODE_COMBAT_RESOURCE_ID, 4, (int)node, 0x3c);

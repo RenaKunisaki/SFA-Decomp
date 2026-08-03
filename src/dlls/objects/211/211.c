@@ -1191,7 +1191,9 @@ void dll_D3_hitDetect_nop(void)
 typedef struct DllD3Placement
 {
     ObjPlacement base;
-    u8 pad18[0x2E - 0x18];
+    u8 pad18[0x2B - 0x18];
+    u8 startControlMode; /* 0x2B: nonzero spawns the chest in control mode 1 */
+    u8 pad2C[0x2E - 0x2C];
     s8 seqIndex;
     u8 pad2F[0x30 - 0x2F];
 } DllD3Placement;
@@ -1383,7 +1385,7 @@ void dll_D3_init(GameObject* obj, int def, int flag)
     extra->scriptTargetZ = (obj)->anim.localPosZ;
 
     ObjAnim_SetCurrentMove((int)obj, 0, fz, 0);
-    if (*(u8*)(def + 0x2b) == 0)
+    if (((DllD3Placement*)def)->startControlMode == 0)
     {
         ftag = 0;
     }

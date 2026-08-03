@@ -1353,7 +1353,7 @@ void sharpClawInit(int obj, u8* state)
     case 314:
         if ((s8)setup->unk27 != 0)
         {
-            *(s16*)(state + 0x2b6) = 51;
+            ((EnemyState*)state)->weaponRomDefNo = 51;
         }
         ((EnemyState*)state)->sightRange = 110.0f;
         ((EnemyState*)state)->current = 40;
@@ -1362,7 +1362,7 @@ void sharpClawInit(int obj, u8* state)
     case 17:
         if ((s8)setup->unk27 != 0)
         {
-            *(s16*)(state + 0x2b6) = 51;
+            ((EnemyState*)state)->weaponRomDefNo = 51;
         }
         ((EnemyState*)state)->sightRange = 110.0f;
         ((EnemyState*)state)->current = 40;
@@ -1371,7 +1371,7 @@ void sharpClawInit(int obj, u8* state)
     case 1505:
         if ((s8)setup->unk27 != 0)
         {
-            *(s16*)(state + 0x2b6) = 1529;
+            ((EnemyState*)state)->weaponRomDefNo = 1529;
         }
         ((EnemyState*)state)->sightRange = 110.0f;
         ((EnemyState*)state)->current = 50;
@@ -1380,7 +1380,7 @@ void sharpClawInit(int obj, u8* state)
     case 1463:
         if ((s8)setup->unk27 != 0)
         {
-            *(s16*)(state + 0x2b6) = 1530;
+            ((EnemyState*)state)->weaponRomDefNo = 1530;
         }
         ((EnemyState*)state)->sightRange = 120.0f;
         ((EnemyState*)state)->current = 50;
@@ -1389,7 +1389,7 @@ void sharpClawInit(int obj, u8* state)
     case 1464:
         if ((s8)setup->unk27 != 0)
         {
-            *(s16*)(state + 0x2b6) = 1534;
+            ((EnemyState*)state)->weaponRomDefNo = 1534;
         }
         ((EnemyState*)state)->sightRange = 110.0f;
         ((EnemyState*)state)->current = 60;
@@ -1398,7 +1398,7 @@ void sharpClawInit(int obj, u8* state)
     case 1465:
         if ((s8)setup->unk27 != 0)
         {
-            *(s16*)(state + 0x2b6) = 51;
+            ((EnemyState*)state)->weaponRomDefNo = 51;
         }
         ((EnemyState*)state)->sightRange = 110.0f;
         ((EnemyState*)state)->current = 1;
@@ -1407,7 +1407,7 @@ void sharpClawInit(int obj, u8* state)
     case 1958:
         if ((s8)setup->unk27 != 0)
         {
-            *(s16*)(state + 0x2b6) = 1957;
+            ((EnemyState*)state)->weaponRomDefNo = 1957;
         }
         ((EnemyState*)state)->sightRange = 110.0f;
         ((EnemyState*)state)->current = 160;

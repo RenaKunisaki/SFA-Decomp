@@ -549,7 +549,7 @@ void pushable_resolveCollisions(GameObject* obj, PushableState* state) {
     memcpy(state->cornerWorld, worldPoints, state->pointCount * sizeof(Vec3f));
 }
 
-u32 pushable_SeqFn(GameObject* obj, s16* referenceTransform, ObjSeqState* animUpdate) {
+u32 pushable_SeqFn(GameObject* obj, MatrixTransform* referenceTransform, ObjSeqState* animUpdate) {
     u32 gameBitValue;
     GameObject* player;
     PushableState* state;
@@ -567,24 +567,24 @@ u32 pushable_SeqFn(GameObject* obj, s16* referenceTransform, ObjSeqState* animUp
     if ((s8)animUpdate->movementState != 0) {
         if ((s8)animUpdate->movementState != 2) {
             animUpdate->posOffsetScale = PUSHABLE_UNIT_SCALE;
-            animUpdate->posOffsetX = obj->anim.localPosX - *(f32*)(referenceTransform + 6);
-            animUpdate->posOffsetY = obj->anim.localPosY - *(f32*)(referenceTransform + 8);
-            animUpdate->posOffsetZ = obj->anim.localPosZ - *(f32*)(referenceTransform + 10);
-            animUpdate->rotOffsetX = obj->anim.rotX - (u16)*referenceTransform;
+            animUpdate->posOffsetX = obj->anim.localPosX - referenceTransform->x;
+            animUpdate->posOffsetY = obj->anim.localPosY - referenceTransform->y;
+            animUpdate->posOffsetZ = obj->anim.localPosZ - referenceTransform->z;
+            animUpdate->rotOffsetX = obj->anim.rotX - (u16)referenceTransform->rotX;
             if (0x8000 < animUpdate->rotOffsetX) {
                 animUpdate->rotOffsetX = animUpdate->rotOffsetX - 0xffff;
             }
             if (animUpdate->rotOffsetX < -0x8000) {
                 animUpdate->rotOffsetX = animUpdate->rotOffsetX + 0xffff;
             }
-            animUpdate->rotOffsetY = obj->anim.rotY - (u16)referenceTransform[1];
+            animUpdate->rotOffsetY = obj->anim.rotY - (u16)referenceTransform->rotY;
             if (0x8000 < animUpdate->rotOffsetY) {
                 animUpdate->rotOffsetY = animUpdate->rotOffsetY - 0xffff;
             }
             if (animUpdate->rotOffsetY < -0x8000) {
                 animUpdate->rotOffsetY = animUpdate->rotOffsetY + 0xffff;
             }
-            animUpdate->rotOffsetZ = (u16)referenceTransform[2] - (u16)obj->anim.rotZ;
+            animUpdate->rotOffsetZ = (u16)referenceTransform->rotZ - (u16)obj->anim.rotZ;
             if (0x8000 < animUpdate->rotOffsetZ) {
                 animUpdate->rotOffsetZ = animUpdate->rotOffsetZ - 0xffff;
             }

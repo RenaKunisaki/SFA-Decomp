@@ -844,14 +844,14 @@ void player_updateVel(char* p, char* obj, void* stateFns)
                 ((GameObject*)p)->anim.velocityX * fsin - ((GameObject*)p)->anim.velocityZ * fcos;
             ((BaddieState*)obj)->animSpeedA =
                 -((GameObject*)p)->anim.velocityZ * fsin - ((GameObject*)p)->anim.velocityX * fcos;
-            if (((s32)(s8) * (obj + 0x34c) & 4) != 0)
+            if ((((BaddieState*)obj)->movementFlags & 4) != 0)
             {
                 vx = ((GameObject*)p)->anim.velocityX * ((GameObject*)p)->anim.velocityX;
                 vz = ((GameObject*)p)->anim.velocityZ * ((GameObject*)p)->anim.velocityZ;
                 ((BaddieState*)obj)->animSpeedC = sqrtf(vx + vz);
             }
         }
-        *(s8*)(obj + 0x34c) = 0;
+        ((BaddieState*)obj)->movementFlags = 0;
         *(u32*)obj |= 0x80000;
         gPlayerMoveVelHandled = 1;
         lbl_803DD44F = 0;
@@ -936,7 +936,7 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
     ((BaddieState*)state)->stateTag = 0;
     gPlayerMoveVelHandled = 0;
     *(u32*)state &= 0xfff7ffff;
-    *(u8*)(state + 0x34c) = 0;
+    ((BaddieState*)state)->movementFlags = 0;
     lbl_803DD44F = 0;
 
     playerRunStateMachine((GameObject*)pos, (BaddieState*)state, dt, (PlayerStateFn*)stateFns);

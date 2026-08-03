@@ -37,6 +37,7 @@
 #include "main/shader_api.h"
 #include "main/vecmath.h"
 #include "main/dll/path_control_interface.h"
+#include "main/dll/player_state.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/headdisplay.h"
 #include "game/objects/object.h"
@@ -1336,7 +1337,7 @@ void arwarwing_initAttachments(GameObject* obj, ArwingState* state)
         state->wingVec[3] = objFindJointPoseVector(obj, 3);
         state->wingFlexScale = 0.5f;
         *(s16*)&state->enginePitch = 0xaf;
-        state->maxHealth = *(u8*)(charState + 0x1);
+        state->maxHealth = ((PlayerStatus*)charState)->maxHealth;
         state->health = state->maxHealth;
         state->bobSpeedThreshold = 0.1f;
         state->bobRotZRate = (c6EF0 = 250.0f);

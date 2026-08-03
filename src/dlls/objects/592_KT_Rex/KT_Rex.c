@@ -480,7 +480,7 @@ int ktrex_stateHandlerA05(GameObject* obj, GroundBaddieState* runtime)
         (*gPlayerInterface)->setState(obj, runtime, 1);
         gKTRexState->laneIndex = 1;
         p = (char*)p + gKTRexState->laneIndex * 4;
-        runtime->baddie.animSpeedC = ((KtrexPlacement*)p)->laneSpeed / 1000.0f;
+        runtime->baddie.animSpeedC = ((KtrexPlacement*)p)->laneSpeeds[0] / 1000.0f;
     }
     if (RandomTimer_UpdateRangeTrigger(&gKTRexState->breathSfxTimer, 2.0f, 4.0f) != 0)
     {
