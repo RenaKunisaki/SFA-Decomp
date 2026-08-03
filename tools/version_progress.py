@@ -247,6 +247,7 @@ def build_boundary_map(
     target_dol: DolFile,
     source_functions: list[FunctionSymbol],
     matches: dict[int, FunctionSymbol],
+    target_all_symbol_span_index: dict[str, tuple[list[int], list[int]]],
 ) -> tuple[dict[int, int], dict[int, int]]:
     """Map split boundaries using direct binary anchors and stable corridors."""
 
@@ -304,6 +305,11 @@ def build_boundary_map(
                     == target_words[
                         target_index_value : target_index_value + context_words
                     ]
+                    and not boundary_crosses_symbol(
+                        target_all_symbol_span_index,
+                        section,
+                        target_range.address + target_index_value * 4,
+                    )
                 ):
                     candidates.append(target_index_value)
             if context_words <= source_index <= len(source_words):
@@ -319,6 +325,11 @@ def build_boundary_map(
                     == target_words[
                         target_index_value : target_index_value + context_words
                     ]
+                    and not boundary_crosses_symbol(
+                        target_all_symbol_span_index,
+                        section,
+                        target_range.address + (target_index_value + context_words) * 4,
+                    )
                 ):
                     candidates.append(target_index_value + context_words)
             if candidates and len(set(candidates)) == 1:
@@ -388,6 +399,7 @@ def build_all_boundary_maps(
     target_dol: DolFile,
     source_functions: list[FunctionSymbol],
     matches: dict[int, FunctionSymbol],
+    target_all_symbol_span_index: dict[str, tuple[list[int], list[int]]],
 ) -> tuple[dict[str, dict[int, int]], dict[str, tuple[int, int]]]:
     boundaries_by_section: dict[str, set[int]] = defaultdict(set)
     for split in source_splits:
@@ -406,6 +418,7 @@ def build_all_boundary_maps(
             target_dol,
             source_functions,
             matches,
+            target_all_symbol_span_index,
         )
         result[section] = inferred
         anchor_counts[section] = (
@@ -572,61 +585,88 @@ def snap_symbol_boundaries(
                 for span in section_target_spans
                 if span.start < target_boundary < span.end
             ]
-            if len(crossing) != 1:
-                continue
-            target_span = crossing[0]
-            target_signature = normalized_span_signature(target_dol, target_span)
-            named_homolog = any(
-                source_span.name == target_span.name
-                and (
-                    source_span.start == source_boundary
-                    or source_span.end == source_boundary
-                )
-                for source_span in section_source_spans
-            )
-            weak_zero_extended_tail = any(
-                weak_symbol_name(source_span.name)
-                and source_span.end == source_boundary
-                and 0 < target_span.size - source_span.size <= 8
-                and target_signature[: source_span.size]
-                == normalized_span_signature(source_dol, source_span)
-                and not any(target_signature[source_span.size :])
-                for source_span in section_source_spans
-            )
-            if (
-                not weak_symbol_name(target_span.name)
-                and not named_homolog
-                and not weak_zero_extended_tail
-            ):
-                continue
             candidates: list[int] = []
-            for source_span in section_source_spans:
-                source_signature = normalized_span_signature(source_dol, source_span)
-                if source_span.end == source_boundary:
-                    candidate = target_span.end
-                elif source_span.start == source_boundary:
-                    candidate = target_span.start
-                else:
-                    continue
-                exact = (
-                    source_span.size == target_span.size
-                    and source_signature == target_signature
+            target_span: SymbolSpan | None = None
+            if len(crossing) == 1:
+                target_span = crossing[0]
+                target_signature = normalized_span_signature(target_dol, target_span)
+                named_homolog = any(
+                    source_span.name == target_span.name
+                    and (
+                        source_span.start == source_boundary
+                        or source_span.end == source_boundary
+                    )
+                    for source_span in section_source_spans
                 )
-                zero_extended_tail = (
-                    candidate == target_span.end
+                weak_zero_extended_tail = any(
+                    weak_symbol_name(source_span.name)
+                    and source_span.end == source_boundary
                     and 0 < target_span.size - source_span.size <= 8
-                    and target_signature[: source_span.size] == source_signature
+                    and target_signature[: source_span.size]
+                    == normalized_span_signature(source_dol, source_span)
                     and not any(target_signature[source_span.size :])
+                    for source_span in section_source_spans
                 )
-                if exact or zero_extended_tail:
-                    candidates.append(candidate)
+                if (
+                    weak_symbol_name(target_span.name)
+                    or named_homolog
+                    or weak_zero_extended_tail
+                ):
+                    for source_span in section_source_spans:
+                        source_signature = normalized_span_signature(
+                            source_dol, source_span
+                        )
+                        if source_span.end == source_boundary:
+                            candidate = target_span.end
+                        elif source_span.start == source_boundary:
+                            candidate = target_span.start
+                        else:
+                            continue
+                        exact = (
+                            source_span.size == target_span.size
+                            and source_signature == target_signature
+                        )
+                        zero_extended_tail = (
+                            candidate == target_span.end
+                            and 0 < target_span.size - source_span.size <= 8
+                            and target_signature[: source_span.size] == source_signature
+                            and not any(target_signature[source_span.size :])
+                        )
+                        if exact or zero_extended_tail:
+                            candidates.append(candidate)
+
+            # Interpolation can land inside the symbol after the real TU edge.
+            # When one complete source symbol touching that edge has exactly one
+            # normalized target homolog, its corresponding edge is stronger
+            # evidence than the inferred address.
+            if not candidates and section not in {"bss", "sbss"}:
+                exact_matches: list[int] = []
+                for source_span in section_source_spans:
+                    if (
+                        source_span.end != source_boundary
+                        or source_span.size < 32
+                        or weak_symbol_name(source_span.name)
+                    ):
+                        continue
+                    source_signature = normalized_span_signature(
+                        source_dol, source_span
+                    )
+                    for homolog in section_target_spans:
+                        if (
+                            source_span.size == homolog.size
+                            and source_signature
+                            == normalized_span_signature(target_dol, homolog)
+                        ):
+                            exact_matches.append(homolog.end)
+                if len(exact_matches) == 1:
+                    candidates = exact_matches
             if len(set(candidates)) == 1:
                 candidate = candidates[0]
                 proposals[(section, source_boundary)] = candidate
                 # The source may leave a short zero alignment tail after the
                 # symbol while the target folds that tail into an expanded
                 # object.  Move the following boundary with the proven edge.
-                if candidate == target_span.end:
+                if target_span is not None and candidate == target_span.end:
                     ordered_source = sorted(section_map)
                     boundary_index = bisect.bisect_right(
                         ordered_source, source_boundary
@@ -715,7 +755,7 @@ def port_coherent_units(
     target_dol: DolFile,
     source_detailed_spans: dict[str, tuple[SymbolSpan, ...]],
     target_detailed_spans: dict[str, tuple[SymbolSpan, ...]],
-) -> tuple[list[PortedRange], dict[str, int], int, dict[str, tuple[str, ...]]]:
+) -> tuple[list[PortedRange], dict[str, int], int, int, dict[str, tuple[str, ...]]]:
     source_by_section: dict[str, list[FunctionSymbol]] = defaultdict(list)
     target_by_section: dict[str, list[FunctionSymbol]] = defaultdict(list)
     for function in source_functions:
@@ -727,8 +767,97 @@ def port_coherent_units(
     for split in source_splits:
         by_unit[split.unit].append(split)
 
+    target_exact_span_index: dict[
+        str, dict[tuple[int, bytes], list[SymbolSpan]]
+    ] = defaultdict(lambda: defaultdict(list))
+    for section, spans in target_detailed_spans.items():
+        if section in CODE_SECTIONS or section in {"bss", "sbss"}:
+            continue
+        for span in spans:
+            try:
+                signature = normalized_span_signature(target_dol, span)
+            except ValueError:
+                continue
+            target_exact_span_index[section][(span.size, signature)].append(span)
+
+    source_exact_split_spans: dict[tuple[str, str, int], tuple[SymbolSpan, bytes]] = {}
+    exact_splits_by_section: dict[
+        str, list[tuple[SplitRange, SymbolSpan, bytes]]
+    ] = defaultdict(list)
+    for split in source_splits:
+        if (
+            split.start == split.end
+            or split.section in CODE_SECTIONS
+            or split.section in {"bss", "sbss"}
+        ):
+            continue
+        exact_spans = [
+            span
+            for span in source_detailed_spans.get(split.section, ())
+            if span.start == split.start and span.end == split.end
+        ]
+        if len(exact_spans) != 1:
+            continue
+        span = exact_spans[0]
+        signature = normalized_span_signature(source_dol, span)
+        key = (split.unit, split.section, split.start)
+        source_exact_split_spans[key] = (span, signature)
+        exact_splits_by_section[split.section].append((split, span, signature))
+
+    # Individual descriptor shapes are often repeated.  A contiguous sequence
+    # of complete split-owned symbols can still be globally unique, proving the
+    # per-split ranges on either side of a target-only insertion.
+    exact_chain_overrides: dict[tuple[str, str, int], SymbolSpan] = {}
+    for section, entries in exact_splits_by_section.items():
+        entries.sort(key=lambda item: item[0].start)
+        runs: list[list[tuple[SplitRange, SymbolSpan, bytes]]] = []
+        run: list[tuple[SplitRange, SymbolSpan, bytes]] = []
+        for entry in entries:
+            if run and run[-1][0].end != entry[0].start:
+                runs.append(run)
+                run = []
+            run.append(entry)
+        if run:
+            runs.append(run)
+        target_spans = target_detailed_spans.get(section, ())
+        target_signatures: list[bytes | None] = []
+        for span in target_spans:
+            try:
+                target_signatures.append(normalized_span_signature(target_dol, span))
+            except ValueError:
+                target_signatures.append(None)
+        for run in runs:
+            for length in range(len(run), 1, -1):
+                for run_start in range(len(run) - length + 1):
+                    chain = run[run_start : run_start + length]
+                    keys = [(item[0].unit, section, item[0].start) for item in chain]
+                    if any(key in exact_chain_overrides for key in keys):
+                        continue
+                    matches: list[tuple[SymbolSpan, ...]] = []
+                    for target_start in range(len(target_spans) - length + 1):
+                        homologs = target_spans[target_start : target_start + length]
+                        if any(
+                            before.end != after.start
+                            for before, after in zip(homologs, homologs[1:])
+                        ):
+                            continue
+                        if all(
+                            source_span.size == target_span.size
+                            and source_signature
+                            == target_signatures[target_start + index]
+                            for index, (
+                                (_, source_span, source_signature),
+                                target_span,
+                            ) in enumerate(zip(chain, homologs))
+                        ):
+                            matches.append(homologs)
+                    if len(matches) == 1:
+                        for key, homolog in zip(keys, matches[0]):
+                            exact_chain_overrides[key] = homolog
+
     rejected: dict[str, int] = defaultdict(int)
     rejected_units: dict[str, set[str]] = defaultdict(set)
+    exact_symbol_range_remaps = 0
     accepted: list[PortedRange] = []
     for unit, ranges in by_unit.items():
         candidates: list[PortedRange] = []
@@ -745,7 +874,42 @@ def port_coherent_units(
             if target_start >= target_end:
                 reason = "invalid target range"
                 break
-            size_drift = split.end - split.start != target_end - target_start
+            source_size = split.end - split.start
+            target_size = target_end - target_start
+            if split.section not in CODE_SECTIONS and split.section not in {
+                "bss",
+                "sbss",
+            }:
+                key = (split.unit, split.section, split.start)
+                chain_homolog = exact_chain_overrides.get(key)
+                source_exact = source_exact_split_spans.get(key)
+                if chain_homolog is not None:
+                    target_exact_spans = [chain_homolog]
+                elif source_exact is not None:
+                    source_span, signature = source_exact
+                    local_homologs = [
+                        span
+                        for span in target_detailed_spans.get(split.section, ())
+                        if span.start == target_start
+                        and span.end == target_start + source_span.size
+                        and normalized_span_signature(target_dol, span) == signature
+                    ]
+                    if len(local_homologs) == 1:
+                        target_exact_spans = local_homologs
+                    else:
+                        target_exact_spans = target_exact_span_index.get(
+                            split.section, {}
+                        ).get((source_span.size, signature), [])
+                else:
+                    target_exact_spans = []
+                if len(target_exact_spans) == 1:
+                    homolog = target_exact_spans[0]
+                    if target_start != homolog.start or target_end != homolog.end:
+                        exact_symbol_range_remaps += 1
+                    target_start = homolog.start
+                    target_end = homolog.end
+                    target_size = source_size
+            size_drift = source_size != target_size
             spans = (
                 target_all_symbol_spans
                 if size_drift or split.section in CODE_SECTIONS
@@ -780,41 +944,54 @@ def port_coherent_units(
     # object before auditing auto-unit alignment.  This is linker padding, not
     # a standalone translation unit.
     extensions: dict[tuple[str, str, int], int] = {}
-    by_section: dict[str, list[PortedRange]] = defaultdict(list)
-    for item in accepted:
-        by_section[item.source.section].append(item)
-    for section, ranges in by_section.items():
-        ranges.sort(key=lambda item: item.target_start)
+    next_source_range: dict[tuple[str, str, int], SplitRange] = {}
+    source_ranges_by_section: dict[str, list[SplitRange]] = defaultdict(list)
+    for split in source_splits:
+        if split.start != split.end:
+            source_ranges_by_section[split.section].append(split)
+    for section, ranges in source_ranges_by_section.items():
+        ranges.sort(key=lambda item: item.start)
         for before, after in zip(ranges, ranges[1:]):
-            source_gap = after.source.start - before.source.end
-            target_gap = after.target_start - before.target_end
-            if not (0 < source_gap == target_gap <= 7):
-                continue
-            if before.target_end % 4 == 0:
-                continue
-            if symbol_overlaps_range(
-                source_detailed_spans,
-                section,
-                before.source.end,
-                after.source.start,
-                semantic_only=True,
-            ) or symbol_overlaps_range(
-                target_detailed_spans,
-                section,
-                before.target_end,
-                after.target_start,
-                semantic_only=True,
-            ):
-                continue
-            if not gap_is_zero(
-                source_dol, section, before.source.end, after.source.start
-            ) or not gap_is_zero(
-                target_dol, section, before.target_end, after.target_start
-            ):
-                continue
-            extensions[
-                (before.source.unit, section, before.source.start)
-            ] = after.target_start
+            next_source_range[(before.unit, section, before.start)] = after
+    for before in accepted:
+        section = before.source.section
+        after = next_source_range.get(
+            (before.source.unit, section, before.source.start)
+        )
+        if after is None:
+            continue
+        target_after_start = boundary_maps.get(section, {}).get(after.start)
+        if target_after_start is None:
+            continue
+        source_gap = after.start - before.source.end
+        target_gap = target_after_start - before.target_end
+        if not (0 < source_gap == target_gap <= 7):
+            continue
+        if before.target_end % 4 == 0:
+            continue
+        if symbol_overlaps_range(
+            source_detailed_spans,
+            section,
+            before.source.end,
+            after.start,
+            semantic_only=True,
+        ) or symbol_overlaps_range(
+            target_detailed_spans,
+            section,
+            before.target_end,
+            target_after_start,
+            semantic_only=True,
+        ):
+            continue
+        if not gap_is_zero(
+            source_dol, section, before.source.end, after.start
+        ) or not gap_is_zero(
+            target_dol, section, before.target_end, target_after_start
+        ):
+            continue
+        extensions[
+            (before.source.unit, section, before.source.start)
+        ] = target_after_start
     folded_padding_ranges = len(extensions)
     accepted = [
         replace(
@@ -895,6 +1072,7 @@ def port_coherent_units(
         accepted,
         dict(sorted(rejected.items())),
         folded_padding_ranges,
+        exact_symbol_range_remaps,
         {
             reason: tuple(sorted(units))
             for reason, units in sorted(rejected_units.items())
@@ -1190,18 +1368,19 @@ def main() -> int:
     matches = unique_function_matches(
         source_dol, source_functions, target_dol, target_functions
     )
+    source_symbol_spans = load_symbol_spans(source_root / "symbols.txt")
+    target_symbol_spans = load_symbol_spans(target_root / "symbols.txt")
+    target_named_symbol_span_index = symbol_span_index(target_symbol_spans)
+    target_all_symbol_span_index = symbol_span_index(
+        target_symbol_spans, include_address_symbols=True
+    )
     boundary_maps, anchor_counts = build_all_boundary_maps(
         source_splits,
         source_dol,
         target_dol,
         source_functions,
         matches,
-    )
-    source_symbol_spans = load_symbol_spans(source_root / "symbols.txt")
-    target_symbol_spans = load_symbol_spans(target_root / "symbols.txt")
-    target_named_symbol_span_index = symbol_span_index(target_symbol_spans)
-    target_all_symbol_span_index = symbol_span_index(
-        target_symbol_spans, include_address_symbols=True
+        target_all_symbol_span_index,
     )
     boundary_maps, snapped_boundaries = snap_symbol_boundaries(
         source_splits,
@@ -1213,7 +1392,13 @@ def main() -> int:
         target_named_symbol_span_index,
         target_all_symbol_span_index,
     )
-    ported, rejected, folded_padding_ranges, rejected_units = port_coherent_units(
+    (
+        ported,
+        rejected,
+        folded_padding_ranges,
+        exact_symbol_range_remaps,
+        rejected_units,
+    ) = port_coherent_units(
         source_splits,
         source_functions,
         target_functions,
@@ -1251,6 +1436,7 @@ def main() -> int:
         f"0x{data_bytes:X} target data bytes, "
         f"{mapped_symbols} symbol mappings, "
         f"{snapped_boundaries} proven symbol-edge snaps, "
+        f"{exact_symbol_range_remaps} exact symbol-range remaps, "
         f"{folded_padding_ranges} folded padding ranges"
     )
     for section, counts in anchor_counts.items():

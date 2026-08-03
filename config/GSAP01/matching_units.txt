@@ -9,6 +9,8 @@ Runtime.PPCEABI.H/global_destructor_chain.c
 Runtime.PPCEABI.H/mem_TRK.c
 Runtime.PPCEABI.H/runtime.c
 dlls/engine/12/12.c
+dlls/engine/16/16.c
+dlls/engine/18/18.c
 dlls/engine/25/25.c
 dlls/engine/36/36.c
 dlls/engine/37/37.c
@@ -751,6 +753,7 @@ main/curves.c
 main/gametext_measurebyid.c
 main/lightmap_initmapblocks.c
 main/obj_movelib.c
+main/objlib.c
 main/skystars.c
 main/thp/attractmovie.c
 main/thp/dll_3e.c

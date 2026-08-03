@@ -82,6 +82,12 @@ main/pad.c:
 	.sbss       start:0x803DE2C8 end:0x803DE310
 	.sdata2     start:0x803E00A8 end:0x803E00AC
 
+main/fileio.c:
+	.text       start:0x80015650 end:0x80015C00
+	.data       start:0x802C77E0 end:0x802C7814
+	.bss        start:0x8033B2B0 end:0x8033B2E0
+	.sbss       start:0x803DE310 end:0x803DE328
+
 main/gametext_measurebyid.c:
 	.text       start:0x800162C4 end:0x800163FC
 
@@ -90,6 +96,12 @@ main/gametext_tail.c:
 
 dolphin/TRK_MINNOW_DOLPHIN/MWTrace.c:
 	.text       start:0x8001741C end:0x8001746C
+
+main/textrender.c:
+	.text       start:0x8001746C end:0x800191FC
+	.data       start:0x802C96C0 end:0x802CB6A0
+	.bss        start:0x8033B2E0 end:0x8033CBA0
+	.sdata      start:0x803DCCD8 end:0x803DCDC0
 
 main/textrender_gettext.c:
 	.text       start:0x800191FC end:0x800199A8
@@ -585,6 +597,21 @@ dlls/engine/22/22.c:
 dlls/engine/4/4.c:
 	.text       start:0x800D82C8 end:0x800D838C
 	.data       start:0x80312B48 end:0x80312C08
+
+dlls/engine/15/15.c:
+	.text       start:0x800D838C end:0x800DA138
+	.data       start:0x80312C08 end:0x80312C80
+	.sbss       start:0x803DEDF0 end:0x803DEE18
+	.sdata2     start:0x803E1F38 end:0x803E1F90
+
+dlls/engine/16/16.c:
+	.text       start:0x800DA138 end:0x800DA220
+	.data       start:0x80312C80 end:0x80312CA8
+
+dlls/engine/18/18.c:
+	.text       start:0x800DA220 end:0x800DA254
+	.data       start:0x80312CA8 end:0x80312CE8
+	.sbss       start:0x803DEE18 end:0x803DEE20
 
 dlls/engine/20_Hcurves/Hcurves.c:
 	.text       start:0x800DA254 end:0x800DD9AC

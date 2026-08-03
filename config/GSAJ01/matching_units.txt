@@ -810,6 +810,7 @@ main/gametext_measurebyid.c
 main/lightmap_initmapblocks.c
 main/modellight.c
 main/obj_movelib.c
+main/objlib.c
 main/skystars.c
 main/textrender_drawbox.c
 main/textrender_gettext.c
