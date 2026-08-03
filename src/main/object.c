@@ -2139,14 +2139,19 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
         ObjAnim_LoadMoveEvents((u8*)obj, seq2, obj->objAnimEventTable, 0, 1);
         cursor += 0x50;
     }
-    if ((loadFlags & OBJLOAD_FLAG_WEAPON_DA) && *(void**)obj->models != NULL)
+    if (!(loadFlags & OBJLOAD_FLAG_WEAPON_DA) || *(void**)obj->models == NULL)
+    {
+        alignedCursor = cursor;
+    }
+    else
     {
         alignedCursor = roundUpTo4(cursor);
         obj->weaponDaTable = (ObjWeaponDaTable*)alignedCursor;
-        cursor = roundUpTo8(alignedCursor + 8);
-        obj->weaponDaTable->entries = (s16*)cursor;
-        cursor += 0x800;
+        alignedCursor = roundUpTo8(alignedCursor + 8);
+        obj->weaponDaTable->entries = (s16*)alignedCursor;
+        alignedCursor += 0x800;
     }
+    cursor = alignedCursor;
     if ((loadFlags & OBJLOAD_FLAG_HAS_SHADOW) && modelDef->shadowType != OBJ_SHADOW_TYPE_NONE)
     {
         cursor = shadowInit((GameObject*)obj, cursor, 0);
