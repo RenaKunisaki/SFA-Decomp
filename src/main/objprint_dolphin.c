@@ -304,7 +304,7 @@ extern u32 lbl_803DB470;
 extern int lbl_803DB498;
 extern int lbl_803DB49C;
 
-int objFuzzShellRenderCb(int obj, int* model, int ropIdx)
+int objFuzzShellRenderCb(GameObject* obj, int* model, int ropIdx)
 {
     Mtx mtx4;
     Mtx mtx3;
@@ -338,7 +338,7 @@ int objFuzzShellRenderCb(int obj, int* model, int ropIdx)
             return 0;
         }
         gObjFuzzPassActive = 1;
-        objFuzzSetupGxState((void*)obj);
+        objFuzzSetupGxState(obj);
         return 1;
     }
     gObjFuzzPassActive = 1;
@@ -355,7 +355,7 @@ int objFuzzShellRenderCb(int obj, int* model, int ropIdx)
     GXSetTevSwapMode(GX_TEVSTAGE0, GX_TEV_SWAP0, GX_TEV_SWAP0);
     GXSetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_FALSE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    v = ((GameObject*)obj)->sphereMapIntensity;
+    v = obj->sphereMapIntensity;
     kc.b = v;
     kc.g = v;
     kc.r = v;
@@ -424,7 +424,7 @@ int objFuzzShellRenderCb(int obj, int* model, int ropIdx)
     {
         ModelLightStruct* lt;
         kc2 = sObjFuzzDirLightEnvColor;
-        lt = objCreateLight((void*)obj, 0);
+        lt = objCreateLight(obj, 0);
         if (lt != NULL)
         {
             modelLightStruct_setLightKind(lt, MODEL_LIGHT_KIND_DIRECTIONAL);
@@ -434,7 +434,7 @@ int objFuzzShellRenderCb(int obj, int* model, int ropIdx)
             modelLightChannel_configure(2, 0, 0);
             GXSetChanAmbColor(GX_ALPHA0, *(GXColor*)&lbl_803DB470);
             GXSetChanMatColor(GX_ALPHA0, *(GXColor*)&lbl_803DB468);
-            modelLightStruct_loadChannelLight(2, lt, (GameObject*)obj);
+            modelLightStruct_loadChannelLight(2, lt, obj);
             modelLightChannels_applyGXControls();
             ModelLightStruct_free(lt);
         }

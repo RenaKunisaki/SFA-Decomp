@@ -2018,7 +2018,7 @@ int dbstealerworm_turnToFaceObjectVertical(GameObject* obj, GameObject* otherObj
 }
 
 
-void dbstealerworm_launchIceBall(GameObject* obj, int baddie)
+void dbstealerworm_launchIceBall(GameObject* obj, BaddieState* baddie)
 {
 
     ObjPlacement* setup;
@@ -2039,16 +2039,16 @@ void dbstealerworm_launchIceBall(GameObject* obj, int baddie)
         newObj = objSetupObject(setup, 5, (obj)->anim.mapEventSlot, -1, NULL);
         if (newObj != NULL)
         {
-            t = ((BaddieState*)baddie)->targetDistance / 200.0f;
+            t = baddie->targetDistance / 200.0f;
             dur = 50.0f * t;
             ((GameObject*)newObj)->anim.velocityX =
-                (((GameObject*)((BaddieState*)baddie)->targetObj)->anim.localPosX - (obj)->anim.localPosX) / dur;
+                (((GameObject*)baddie->targetObj)->anim.localPosX - (obj)->anim.localPosX) / dur;
             ((GameObject*)newObj)->anim.velocityY =
-                ((90.0f * t + ((GameObject*)((BaddieState*)baddie)->targetObj)->anim.localPosY) -
+                ((90.0f * t + ((GameObject*)baddie->targetObj)->anim.localPosY) -
                  (obj)->anim.localPosY) /
                 dur;
             ((GameObject*)newObj)->anim.velocityZ =
-                (((GameObject*)((BaddieState*)baddie)->targetObj)->anim.localPosZ - (obj)->anim.localPosZ) / dur;
+                (((GameObject*)baddie->targetObj)->anim.localPosZ - (obj)->anim.localPosZ) / dur;
             ((GameObject*)newObj)->ownerObj = obj;
         }
     }

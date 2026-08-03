@@ -23,9 +23,9 @@
 #define DRCLOUDPER_ACTIVE_CLOUD_GAMEBIT 0x7a9
 #define DRCLOUDPER_MAP_ANIM_EVENT       0x0c
 
-int DR_CloudPer_activate(int obj)
+int DR_CloudPer_activate(GameObject* obj)
 {
-    GameObject* cloud = (GameObject*)obj;
+    GameObject* cloud = obj;
     DrCloudPerSetup* setup = (DrCloudPerSetup*)cloud->anim.placementData;
     if (mainGetBit(setup->gameBit) == 0)
     {
@@ -33,17 +33,17 @@ int DR_CloudPer_activate(int obj)
     }
     mainSetBits(DRCLOUDPER_ACTIVE_CLOUD_GAMEBIT, setup->cloudIndex);
     (*gMapEventInterface)->setObjGroupStatus(cloud->anim.mapEventSlot, DRCLOUDPER_MAP_ANIM_EVENT, 1);
-    (*gObjectTriggerInterface)->runSequence(2, (void*)obj, -1);
+    (*gObjectTriggerInterface)->runSequence(2, obj, -1);
     return 1;
 }
 
-int DR_CloudPer_selectActiveCloud(int obj)
+int DR_CloudPer_selectActiveCloud(GameObject* obj)
 {
-    GameObject* cloud = (GameObject*)obj;
+    GameObject* cloud = obj;
     DrCloudPerSetup* setup = (DrCloudPerSetup*)cloud->anim.placementData;
 
     mainSetBits(DRCLOUDPER_ACTIVE_CLOUD_GAMEBIT, setup->cloudIndex);
-    (*gObjectTriggerInterface)->runSequence(1, (void*)obj, -1);
+    (*gObjectTriggerInterface)->runSequence(1, obj, -1);
     return 0;
 }
 

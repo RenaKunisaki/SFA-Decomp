@@ -17,7 +17,7 @@
 #include "main/object_render.h"
 #include "main/gamebits.h"
 
-typedef struct DfpfloorbarPlacement
+struct DfpfloorbarPlacement
 {
     u8 pad0[0xC - 0x0];
     f32 posY;
@@ -28,7 +28,7 @@ typedef struct DfpfloorbarPlacement
     s16 travelRange;       /* 0x1C: nonzero scales rootMotionScale */
     s16 triggerGameBit;    /* 0x1E */
     s16 completionGameBit; /* 0x20 */
-} DfpfloorbarPlacement;
+};
 
 /* anim.romDefNo of the puzzle controller object this bar links to (docblock:
  * "the puzzle controller object (romDefNo 0x431)"). */
@@ -221,10 +221,10 @@ void DFP_Floorbar_update(GameObject* obj)
     }
 }
 
-void DFP_Floorbar_init(GameObject* obj, int params)
+void DFP_Floorbar_init(GameObject* obj, DfpfloorbarPlacement* params)
 {
     DfpFloorbarState* state = obj->extra;
-    DfpfloorbarPlacement* placement = (DfpfloorbarPlacement*)params;
+    DfpfloorbarPlacement* placement = params;
 
     obj->anim.rotX = (s16)((s8)placement->rotXByte << 8);
     obj->animEventCallback = dfpfloorbar_SeqFn;

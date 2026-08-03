@@ -16,13 +16,13 @@ typedef struct VfpBlock1State
     s16 gameBitId;
 } VfpBlock1State;
 
-typedef struct VfpBlock1Placement
+struct VfpBlock1Placement
 {
     ObjPlacement base;
     s8 rotXByte;
     u8 pad19[5];
     s16 gameBitId;
-} VfpBlock1Placement;
+};
 
 int VFP_Block1_getExtraSize(void)
 {
@@ -67,9 +67,9 @@ void VFP_Block1_update(GameObject* obj)
     }
 }
 
-void VFP_Block1_init(GameObject* obj, int data)
+void VFP_Block1_init(GameObject* obj, VfpBlock1Placement* data)
 {
-    VfpBlock1Placement* def = (VfpBlock1Placement*)data;
+    VfpBlock1Placement* def = data;
     VfpBlock1State* state = obj->extra;
     obj->anim.rotX = (((s32)def->rotXByte) << 8);
     state->gameBitId = def->gameBitId;

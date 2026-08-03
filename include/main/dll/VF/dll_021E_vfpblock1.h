@@ -1,6 +1,8 @@
 #ifndef MAIN_DLL_VF_DLL_021E_VFPBLOCK1_H_
 #define MAIN_DLL_VF_DLL_021E_VFPBLOCK1_H_
 
+typedef struct VfpBlock1Placement VfpBlock1Placement;
+
 typedef struct GameObject GameObject;
 
 int VFP_Block1_getExtraSize(void);
@@ -9,7 +11,7 @@ void VFP_Block1_free(int obj);
 void VFP_Block1_render(void);
 void VFP_Block1_hitDetect(void);
 void VFP_Block1_update(GameObject* obj);
-void VFP_Block1_init(GameObject* obj, int data);
+void VFP_Block1_init(GameObject* obj, VfpBlock1Placement* data);
 void VFP_Block1_release(void);
 void VFP_Block1_initialise(void);
 

@@ -137,9 +137,9 @@ void VFPDragHead_update(GameObject* obj)
     }
 }
 
-void VFPDragHead_init(GameObject* obj, int data)
+void VFPDragHead_init(GameObject* obj, VfpDragHeadPlacement* data)
 {
-    VfpDragHeadPlacement* def = (VfpDragHeadPlacement*)data;
+    VfpDragHeadPlacement* def = data;
     VfpDragHeadState* state = (obj)->extra;
     if ((obj)->anim.romDefNo == 0x3c5)
     {

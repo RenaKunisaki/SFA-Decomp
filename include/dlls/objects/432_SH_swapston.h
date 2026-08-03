@@ -7,6 +7,8 @@
 #include "game/objects/object_setup.h"
 #include "main/objprint_sound_api.h"
 
+typedef struct ObjSeqState ObjSeqState;
+
 typedef struct WarpStonePlacement {
     ObjPlacement base;
     u8 unknown18[2];
@@ -57,7 +59,7 @@ u32 warpstone_advanceAnimEvents(int obj, f32 moveStepScale);
 u32 warpstoneProbePlayerAnimState(void);
 int warpstone_testEvent(u32 obj, u32 unused, int option);
 void warpstone_loadBaseUi(void);
-int warpstone_SeqFn(GameObject* obj, u32 unused, int animObj);
+int warpstone_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animObj);
 int warpstone_getExtraSize(void);
 int warpstone_getObjectTypeId(void);
 void warpstone_free(GameObject* obj, int mode);

@@ -314,12 +314,12 @@ void warpstone_loadBaseUi(void) {
     loadUiDll(0x1);
 }
 
-int warpstone_SeqFn(GameObject* obj, u32 unused, int animObj) {
+int warpstone_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animObj) {
     int state = (int)obj->extra;
     int i;
     int child;
     u8 command;
-    ObjSeqState* animUpdate = (ObjSeqState*)animObj;
+    ObjSeqState* animUpdate = animObj;
 
     if (animatedObjGetSeqId(animUpdate) == 0x35f) {
         ObjSeq_SetSlotValue(animUpdate, 0x2648);
@@ -358,7 +358,7 @@ int warpstone_SeqFn(GameObject* obj, u32 unused, int animObj) {
         animUpdate->movementState = 0;
 
         if (mainGetBit(((WarpStoneState*)state)->sequenceGameBit) != 0 &&
-            animatedObjGetSeqId((ObjSeqState*)animObj) == 0x35f) {
+            animatedObjGetSeqId(animObj) == 0x35f) {
             AudioStream_CancelPrepared();
             seqClearTaskTexts();
             AudioStream_Nop(0);

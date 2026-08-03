@@ -165,9 +165,9 @@ int ShopKeeper_state7Handler(void)
     return 0;
 }
 
-int ShopKeeper_popQueuedState(int objHandle, BaddieState* baddie)
+int ShopKeeper_popQueuedState(GameObject* objHandle, BaddieState* baddie)
 {
-    GameObject* obj = (GameObject*)objHandle;
+    GameObject* obj = objHandle;
     int state;
     f32 spawnParam;
     RingBufferQueue* stk;

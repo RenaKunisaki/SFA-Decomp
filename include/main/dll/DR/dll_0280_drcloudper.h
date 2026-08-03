@@ -22,8 +22,8 @@ typedef struct DrCloudPerSetup
     s16 gameBit;
 } DrCloudPerSetup;
 
-int DR_CloudPer_activate(int obj);
-int DR_CloudPer_selectActiveCloud(int obj);
+int DR_CloudPer_activate(GameObject* obj);
+int DR_CloudPer_selectActiveCloud(GameObject* obj);
 int DR_CloudPer_getExtraSize(void);
 int DR_CloudPer_getObjectTypeId(void);
 void DR_CloudPer_free(int obj);
