@@ -91,6 +91,32 @@ force_active:
   - lbl_803DB1EC
   - sAudioUnused0
   - sAudioUnused1
+  # Placeholders for retail objects the carve leaves unnamed, in units that are
+  # still NonMatching. Nothing references them, so mwld would dead-strip them
+  # the moment their unit is linked from our object, shortening .sbss/.sdata and
+  # moving _SDA_BASE_ for every TU. Arming them now keeps that flip cheap.
+  # dlls/engine/71/71.c
+  - lbl_803DD564
+  # dlls/engine/68/68.c
+  - lbl_803DD54C
+  # dlls/engine/2/2.c
+  - lbl_803DB74C
+  # dlls/engine/5/5.c
+  - sSkyUnusedD
+  # main/voxmaps.c
+  - lbl_803DC8E4
+  # main/pi_dolphin.c
+  - sPiUnused0
+  - sPiUnused2
+  - sPiUnused3
+  # dlls/objects/609_DR_LaserCan/DR_LaserCan.c
+  - lbl_803DDD6C
+  # dlls/objects/195_Player/player.c
+  - lbl_803DE4BC
+  # dlls/objects/454_DIMCannon/DIMCannon.c
+  - lbl_803DDB54
+  # dlls/objects/213_Kaldachom/Kaldachom.c
+  - lbl_803DDA9C
 
 # Path to the main.dol file.
 object: sys/main.dol

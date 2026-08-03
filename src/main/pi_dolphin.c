@@ -61,9 +61,9 @@
 #include "dolphin/os/OSThread.h"
 #include "main/asset_load.h"
 
-static u32 sPiUnused3;
+u32 sPiUnused3;
 void* lbl_803DCD10;
-static u32 sPiUnused2;
+u32 sPiUnused2;
 char* lbl_803DCD08;
 static u32 sPiUnused1;
 u8 lbl_803DCD00;
@@ -96,7 +96,7 @@ u8 gVideoRetracePending;
 u8 gPadReadReady;
 u8 gResetButtonPressState;
 int gRetraceCountSinceFlip;
-static u32 sPiUnused0;
+u32 sPiUnused0;
 int lbl_803DCC98;
 
 char sResourceFileNameSfxTab[] = "SFX.tab";

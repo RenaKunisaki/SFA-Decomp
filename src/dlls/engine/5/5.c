@@ -53,7 +53,7 @@ typedef struct SkyColor
     u8 a;
 } SkyColor;
 
-static u32 sSkyUnusedD;
+u32 sSkyUnusedD;
 SkyColor gSkyCurrentTextureColor;
 SkyColor gSkyCurrentAmbientColor;
 SkyColor gSkyCurrentLightColor;
