@@ -36,14 +36,14 @@ typedef union Dll0BDescriptorTable
     u64 align8;
 } Dll0BDescriptorTable;
 
-void modgfx_scrollTexCoords(ModgfxState* state, f32* in);
-void modgfx_captureFrameBaseVertices(ModgfxState* state);
+void modgfx_scrollTexCoords(PartfxEffectState* state, f32* in);
+void modgfx_captureFrameBaseVertices(PartfxEffectState* state);
 void modgfx_stepVertexColor(void* state, void* p, int reinit);
 void modgfx_stepPosition(int state, int cmd, int reinit);
-void modgfx_stepS16VectorLerp(ModgfxState* state, f32* params, int reinit);
-void modgfx_stepVertexAlpha(ModgfxState* state, ModgfxVertexGroupCmd* command, int reinit, u8 channelIndex);
-void modgfx_stepVertexScale(ModgfxState* state, ModgfxVertexGroupCmd* command, int reinit, u8 channelIndex);
-void modgfx_restoreBaseVertices(ModgfxState* state);
+void modgfx_stepS16VectorLerp(PartfxEffectState* state, f32* params, int reinit);
+void modgfx_stepVertexAlpha(PartfxEffectState* state, ModgfxVertexGroupCmd* command, int reinit, u8 channelIndex);
+void modgfx_stepVertexScale(PartfxEffectState* state, ModgfxVertexGroupCmd* command, int reinit, u8 channelIndex);
+void modgfx_restoreBaseVertices(PartfxEffectState* state);
 
 ModgfxPendingSpawn* gModgfxPendingSpawnStartCursor;
 ModgfxPendingSpawn* gModgfxPendingSpawnWriteCursor;
@@ -58,15 +58,6 @@ s16 gPartfxSequenceIdCounter;
 /* Object spawned to back a modgfx effect slot; retail OBJECTS.bin name
    "InvHit" (DLL 0xF1). */
 #define DLL0B_CHILD_OBJ_INVHIT 0x66
-
-STATIC_ASSERT(offsetof(ModgfxState, vertexBuffers) == 0x78);
-STATIC_ASSERT(offsetof(ModgfxState, alphaValues) == 0xAC);
-STATIC_ASSERT(offsetof(ModgfxState, blendColorR) == 0xBC);
-STATIC_ASSERT(offsetof(ModgfxState, vertexCount) == 0xEA);
-STATIC_ASSERT(offsetof(ModgfxState, posCurX) == 0x60);
-STATIC_ASSERT(offsetof(ModgfxState, activeChannel) == 0xFC);
-STATIC_ASSERT(offsetof(ModgfxState, rotStepZ) == 0x100);
-STATIC_ASSERT(offsetof(ModgfxState, rotOffsetZ) == 0x106);
 
 #define PARTFX_ACTIVE_EFFECT_COUNT 0x32
 
@@ -89,6 +80,8 @@ STATIC_ASSERT(offsetof(PartfxEffectState, renderScale) == 0xD4);
 STATIC_ASSERT(offsetof(PartfxEffectState, vertexCount) == 0xEA);
 STATIC_ASSERT(offsetof(PartfxEffectState, colorVertexCount) == 0xEC);
 STATIC_ASSERT(offsetof(PartfxEffectState, stageDurations) == 0xEE);
+STATIC_ASSERT(offsetof(PartfxEffectState, rotStepZ) == 0x100);
+STATIC_ASSERT(offsetof(PartfxEffectState, rotOffsetZ) == 0x106);
 STATIC_ASSERT(offsetof(PartfxEffectState, sequenceId) == 0x10C);
 STATIC_ASSERT(offsetof(PartfxEffectState, inlineData) == 0x12C);
 STATIC_ASSERT(offsetof(PartfxEffectState, activeVertexBufferIndex) == 0x130);
@@ -215,7 +208,7 @@ void dll_0B_beginSequence(int source, u8 mode, u8 flagByte, int word40, int word
 
 /* Per-bone particle vertex update + draw. */
 
-void modgfx_scrollTexCoords(ModgfxState* state, f32* in)
+void modgfx_scrollTexCoords(PartfxEffectState* state, f32* in)
 {
     int i;
     s32 dy, dx;
@@ -282,7 +275,7 @@ void modgfx_scrollTexCoords(ModgfxState* state, f32* in)
 
 void* gPartfxActiveEffects[0x32];
 
-void modgfx_captureFrameBaseVertices(ModgfxState* state)
+void modgfx_captureFrameBaseVertices(PartfxEffectState* state)
 {
     int i;
     ModgfxVertexData* dst;
@@ -290,7 +283,7 @@ void modgfx_captureFrameBaseVertices(ModgfxState* state)
     f32 f1;
     f32 f0;
     src = state->vertexBuffers[1 - state->activeVertexBufferIndex];
-    dst = state->baseVertexData;
+    dst = state->vertexBuffers[2];
     for (i = 0; i < state->vertexCount; i++)
     {
         dst->posX = src->posX;
@@ -321,7 +314,7 @@ void modgfx_captureFrameBaseVertices(ModgfxState* state)
 
 void modgfx_stepVertexColor(void* state, void* p, int reinit)
 {
-    u8* buf = ((u8**)((char*)state + 0x78))[((ModgfxState*)state)->activeVertexBufferIndex];
+    u8* buf = ((u8**)((char*)state + 0x78))[((PartfxEffectState*)state)->activeVertexBufferIndex];
     int j;
 
     if (reinit == 1)
@@ -329,63 +322,63 @@ void modgfx_stepVertexColor(void* state, void* p, int reinit)
         f32 tr = ((ModgfxVertexGroupCmd*)p)->valueX;
         f32 tg = ((ModgfxVertexGroupCmd*)p)->valueY;
         f32 tb = ((ModgfxVertexGroupCmd*)p)->valueZ;
-        if (((ModgfxState*)state)->blendFrameCount != 0)
+        if (((PartfxEffectState*)state)->stageFrameCountdown != 0)
         {
-            ((ModgfxState*)state)->blendColorR = (f32)(u32)buf[(((ModgfxVertexGroupCmd*)p)->indices)[0] * 16 + 0xc];
-            ((ModgfxState*)state)->blendColorG = (f32)(u32)buf[(((ModgfxVertexGroupCmd*)p)->indices)[0] * 16 + 0xd];
-            ((ModgfxState*)state)->blendColorB = (f32)(u32)buf[(((ModgfxVertexGroupCmd*)p)->indices)[0] * 16 + 0xe];
-            ((ModgfxState*)state)->blendColorStepR =
-                (tr - (f32)(u32)buf[(((ModgfxVertexGroupCmd*)p)->indices)[0] * 16 + 0xc]) / (f32) ((ModgfxState*)state)->blendFrameCount;
-            ((ModgfxState*)state)->blendColorStepG =
-                (tg - (f32)(u32)buf[(((ModgfxVertexGroupCmd*)p)->indices)[0] * 16 + 0xd]) / (f32) ((ModgfxState*)state)->blendFrameCount;
-            ((ModgfxState*)state)->blendColorStepB =
-                (tb - (f32)(u32)buf[(((ModgfxVertexGroupCmd*)p)->indices)[0] * 16 + 0xe]) / (f32) ((ModgfxState*)state)->blendFrameCount;
+            ((PartfxEffectState*)state)->blendColorR = (f32)(u32)buf[(((ModgfxVertexGroupCmd*)p)->indices)[0] * 16 + 0xc];
+            ((PartfxEffectState*)state)->blendColorG = (f32)(u32)buf[(((ModgfxVertexGroupCmd*)p)->indices)[0] * 16 + 0xd];
+            ((PartfxEffectState*)state)->blendColorB = (f32)(u32)buf[(((ModgfxVertexGroupCmd*)p)->indices)[0] * 16 + 0xe];
+            ((PartfxEffectState*)state)->blendColorStepR =
+                (tr - (f32)(u32)buf[(((ModgfxVertexGroupCmd*)p)->indices)[0] * 16 + 0xc]) / (f32) ((PartfxEffectState*)state)->stageFrameCountdown;
+            ((PartfxEffectState*)state)->blendColorStepG =
+                (tg - (f32)(u32)buf[(((ModgfxVertexGroupCmd*)p)->indices)[0] * 16 + 0xd]) / (f32) ((PartfxEffectState*)state)->stageFrameCountdown;
+            ((PartfxEffectState*)state)->blendColorStepB =
+                (tb - (f32)(u32)buf[(((ModgfxVertexGroupCmd*)p)->indices)[0] * 16 + 0xe]) / (f32) ((PartfxEffectState*)state)->stageFrameCountdown;
         }
         else
         {
-            ((ModgfxState*)state)->blendColorR = tr;
-            ((ModgfxState*)state)->blendColorG = tg;
-            ((ModgfxState*)state)->blendColorB = tb;
+            ((PartfxEffectState*)state)->blendColorR = tr;
+            ((PartfxEffectState*)state)->blendColorG = tg;
+            ((PartfxEffectState*)state)->blendColorB = tb;
             {
                 f32 z = MODGFX_ZERO;
-                ((ModgfxState*)state)->blendColorStepR = z;
-                ((ModgfxState*)state)->blendColorStepG = z;
-                ((ModgfxState*)state)->blendColorStepB = z;
+                ((PartfxEffectState*)state)->blendColorStepR = z;
+                ((PartfxEffectState*)state)->blendColorStepG = z;
+                ((PartfxEffectState*)state)->blendColorStepB = z;
             }
         }
     }
-    ((ModgfxState*)state)->blendColorR += ((ModgfxState*)state)->blendColorStepR;
-    ((ModgfxState*)state)->blendColorG += ((ModgfxState*)state)->blendColorStepG;
-    ((ModgfxState*)state)->blendColorB += ((ModgfxState*)state)->blendColorStepB;
-    if (((ModgfxState*)state)->blendColorR < MODGFX_ZERO)
+    ((PartfxEffectState*)state)->blendColorR += ((PartfxEffectState*)state)->blendColorStepR;
+    ((PartfxEffectState*)state)->blendColorG += ((PartfxEffectState*)state)->blendColorStepG;
+    ((PartfxEffectState*)state)->blendColorB += ((PartfxEffectState*)state)->blendColorStepB;
+    if (((PartfxEffectState*)state)->blendColorR < MODGFX_ZERO)
     {
-        ((ModgfxState*)state)->blendColorR = MODGFX_ZERO;
+        ((PartfxEffectState*)state)->blendColorR = MODGFX_ZERO;
     }
-    else if (((ModgfxState*)state)->blendColorR > 255.0f)
+    else if (((PartfxEffectState*)state)->blendColorR > 255.0f)
     {
-        ((ModgfxState*)state)->blendColorR = 255.0f;
+        ((PartfxEffectState*)state)->blendColorR = 255.0f;
     }
-    if (((ModgfxState*)state)->blendColorG < MODGFX_ZERO)
+    if (((PartfxEffectState*)state)->blendColorG < MODGFX_ZERO)
     {
-        ((ModgfxState*)state)->blendColorG = MODGFX_ZERO;
+        ((PartfxEffectState*)state)->blendColorG = MODGFX_ZERO;
     }
-    else if (((ModgfxState*)state)->blendColorG > 255.0f)
+    else if (((PartfxEffectState*)state)->blendColorG > 255.0f)
     {
-        ((ModgfxState*)state)->blendColorG = 255.0f;
+        ((PartfxEffectState*)state)->blendColorG = 255.0f;
     }
-    if (((ModgfxState*)state)->blendColorB < MODGFX_ZERO)
+    if (((PartfxEffectState*)state)->blendColorB < MODGFX_ZERO)
     {
-        ((ModgfxState*)state)->blendColorB = MODGFX_ZERO;
+        ((PartfxEffectState*)state)->blendColorB = MODGFX_ZERO;
     }
-    else if (((ModgfxState*)state)->blendColorB > 255.0f)
+    else if (((PartfxEffectState*)state)->blendColorB > 255.0f)
     {
-        ((ModgfxState*)state)->blendColorB = 255.0f;
+        ((PartfxEffectState*)state)->blendColorB = 255.0f;
     }
     for (j = 0; j < ((ModgfxVertexGroupCmd*)p)->indexCount; j++)
     {
-        buf[(((ModgfxVertexGroupCmd*)p)->indices)[j] * 16 + 0xc] = (int)((ModgfxState*)state)->blendColorR;
-        buf[(((ModgfxVertexGroupCmd*)p)->indices)[j] * 16 + 0xd] = (int)((ModgfxState*)state)->blendColorG;
-        buf[(((ModgfxVertexGroupCmd*)p)->indices)[j] * 16 + 0xe] = (int)((ModgfxState*)state)->blendColorB;
+        buf[(((ModgfxVertexGroupCmd*)p)->indices)[j] * 16 + 0xc] = (int)((PartfxEffectState*)state)->blendColorR;
+        buf[(((ModgfxVertexGroupCmd*)p)->indices)[j] * 16 + 0xd] = (int)((PartfxEffectState*)state)->blendColorG;
+        buf[(((ModgfxVertexGroupCmd*)p)->indices)[j] * 16 + 0xe] = (int)((PartfxEffectState*)state)->blendColorB;
     }
 }
 
@@ -394,10 +387,10 @@ void modgfx_stepPosition(int state, int cmd, int reinit)
 
     if (reinit == 1)
     {
-        s16* cf = ((ModgfxState*)state)->channelFrames;
-        if (cf[((ModgfxState*)state)->activeChannel] == 0)
+        s16* cf = ((PartfxEffectState*)state)->stageDurations;
+        if (cf[((PartfxEffectState*)state)->currentStage] == 0)
         {
-            int flags = ((ModgfxState*)state)->flags;
+            int flags = ((PartfxEffectState*)state)->flags;
             if ((flags & 0x4) != 0 || (flags & 0x80000) != 0)
             {
                 s16 buf[12];
@@ -408,54 +401,54 @@ void modgfx_stepPosition(int state, int cmd, int reinit)
                 fbuf[2] = fill;
                 fbuf[3] = fill;
                 fbuf[0] = MODGFX_ONE;
-                posBase = *((ModgfxState*)state)->unk04;
+                posBase = ((GameObject*)((PartfxEffectState*)state)->sourceObject)->anim.rotX;
                 buf[0] = posBase;
                 buf[1] = posBase;
                 buf[2] = posBase;
                 vecRotateZXY(buf, (f32*)(cmd + 0x4));
             }
-            ((ModgfxState*)state)->posStepX = ((ModgfxVertexGroupCmd*)cmd)->valueX;
-            ((ModgfxState*)state)->posStepY = ((ModgfxVertexGroupCmd*)cmd)->valueY;
-            ((ModgfxState*)state)->posStepZ = ((ModgfxVertexGroupCmd*)cmd)->valueZ;
+            ((PartfxEffectState*)state)->posStepX = ((ModgfxVertexGroupCmd*)cmd)->valueX;
+            ((PartfxEffectState*)state)->posStepY = ((ModgfxVertexGroupCmd*)cmd)->valueY;
+            ((PartfxEffectState*)state)->posStepZ = ((ModgfxVertexGroupCmd*)cmd)->valueZ;
         }
         else
         {
-            ((ModgfxState*)state)->posStepX =
-                ((ModgfxVertexGroupCmd*)cmd)->valueX / (f32)(s32)((ModgfxState*)state)->blendFrameCount;
-            ((ModgfxState*)state)->posStepY =
-                ((ModgfxVertexGroupCmd*)cmd)->valueY / (f32)(s32)((ModgfxState*)state)->blendFrameCount;
-            ((ModgfxState*)state)->posStepZ =
-                ((ModgfxVertexGroupCmd*)cmd)->valueZ / (f32)(s32)((ModgfxState*)state)->blendFrameCount;
+            ((PartfxEffectState*)state)->posStepX =
+                ((ModgfxVertexGroupCmd*)cmd)->valueX / (f32)(s32)((PartfxEffectState*)state)->stageFrameCountdown;
+            ((PartfxEffectState*)state)->posStepY =
+                ((ModgfxVertexGroupCmd*)cmd)->valueY / (f32)(s32)((PartfxEffectState*)state)->stageFrameCountdown;
+            ((PartfxEffectState*)state)->posStepZ =
+                ((ModgfxVertexGroupCmd*)cmd)->valueZ / (f32)(s32)((PartfxEffectState*)state)->stageFrameCountdown;
         }
-        ((ModgfxState*)state)->posCurX = ((ModgfxState*)state)->posCurX + ((ModgfxState*)state)->posStepX;
-        ((ModgfxState*)state)->posCurY = ((ModgfxState*)state)->posCurY + ((ModgfxState*)state)->posStepY;
-        ((ModgfxState*)state)->posCurZ = ((ModgfxState*)state)->posCurZ + ((ModgfxState*)state)->posStepZ;
+        ((PartfxEffectState*)state)->drawPosX = ((PartfxEffectState*)state)->drawPosX + ((PartfxEffectState*)state)->posStepX;
+        ((PartfxEffectState*)state)->drawPosY = ((PartfxEffectState*)state)->drawPosY + ((PartfxEffectState*)state)->posStepY;
+        ((PartfxEffectState*)state)->drawPosZ = ((PartfxEffectState*)state)->drawPosZ + ((PartfxEffectState*)state)->posStepZ;
     }
     else
     {
-        ((ModgfxState*)state)->posCurX =
-            ((ModgfxState*)state)->posStepX * gModgfxMotionStep + ((ModgfxState*)state)->posCurX;
-        ((ModgfxState*)state)->posCurY =
-            ((ModgfxState*)state)->posStepY * gModgfxMotionStep + ((ModgfxState*)state)->posCurY;
-        ((ModgfxState*)state)->posCurZ =
-            ((ModgfxState*)state)->posStepZ * gModgfxMotionStep + ((ModgfxState*)state)->posCurZ;
+        ((PartfxEffectState*)state)->drawPosX =
+            ((PartfxEffectState*)state)->posStepX * gModgfxMotionStep + ((PartfxEffectState*)state)->drawPosX;
+        ((PartfxEffectState*)state)->drawPosY =
+            ((PartfxEffectState*)state)->posStepY * gModgfxMotionStep + ((PartfxEffectState*)state)->drawPosY;
+        ((PartfxEffectState*)state)->drawPosZ =
+            ((PartfxEffectState*)state)->posStepZ * gModgfxMotionStep + ((PartfxEffectState*)state)->drawPosZ;
     }
 }
 
 /* Integer-vector lerp setup. On the reinit step, snap or step-interpolate the rotation offset triple
  * toward the rounded params, then advance it by the per-step delta. */
-void modgfx_stepS16VectorLerp(ModgfxState* state, f32* params, int reinit)
+void modgfx_stepS16VectorLerp(PartfxEffectState* state, f32* params, int reinit)
 {
     if (reinit == 1)
     {
         s16 tx = params[1];
         s16 ty = params[2];
         s16 tz = params[3];
-        if (state->blendFrameCount != 0)
+        if (state->stageFrameCountdown != 0)
         {
-            state->rotStepZ = (s16)((tx - state->rotOffsetZ) / state->blendFrameCount);
-            state->rotStepY = (s16)((ty - state->rotOffsetY) / state->blendFrameCount);
-            state->rotStepX = (s16)((tz - state->rotOffsetX) / state->blendFrameCount);
+            state->rotStepZ = (s16)((tx - state->rotOffsetZ) / state->stageFrameCountdown);
+            state->rotStepY = (s16)((ty - state->rotOffsetY) / state->stageFrameCountdown);
+            state->rotStepX = (s16)((tz - state->rotOffsetX) / state->stageFrameCountdown);
         }
         else
         {
@@ -472,17 +465,17 @@ void modgfx_stepS16VectorLerp(ModgfxState* state, f32* params, int reinit)
     state->rotOffsetX += state->rotStepX;
 }
 
-void modgfx_stepVertexAlpha(ModgfxState* state, ModgfxVertexGroupCmd* command, int reinit, u8 channelIndex)
+void modgfx_stepVertexAlpha(PartfxEffectState* state, ModgfxVertexGroupCmd* command, int reinit, u8 channelIndex)
 {
     int alphaIndex = channelIndex * 2;
     ModgfxVertexData* vertices = state->vertexBuffers[state->activeVertexBufferIndex];
-    ModgfxVertexData* baseVertices = state->baseVertexData;
+    ModgfxVertexData* baseVertices = state->vertexBuffers[2];
     int i;
 
     if (reinit == 1)
     {
         f32 target = command->valueX;
-        s16 frames = state->blendFrameCount;
+        s16 frames = state->stageFrameCountdown;
 
         if (frames != 0)
         {
@@ -518,7 +511,7 @@ void modgfx_stepVertexAlpha(ModgfxState* state, ModgfxVertexGroupCmd* command, i
     }
 }
 
-void modgfx_stepVertexScale(ModgfxState* state, ModgfxVertexGroupCmd* command, int reinit, u8 channelIndex)
+void modgfx_stepVertexScale(PartfxEffectState* state, ModgfxVertexGroupCmd* command, int reinit, u8 channelIndex)
 {
     int scaleIndex = channelIndex * 2;
     int i;
@@ -531,18 +524,18 @@ void modgfx_stepVertexScale(ModgfxState* state, ModgfxVertexGroupCmd* command, i
         f32 targetY = command->valueY;
         f32 targetZ = command->valueZ;
 
-        if (state->blendFrameCount != 0)
+        if (state->stageFrameCountdown != 0)
         {
             state->scaleVectors[scaleIndex + 1].x =
-                (targetX - state->scaleVectors[scaleIndex].x) / (f32)state->blendFrameCount;
+                (targetX - state->scaleVectors[scaleIndex].x) / (f32)state->stageFrameCountdown;
             state->scaleVectors[scaleIndex + 1].y =
-                (targetY - state->scaleVectors[scaleIndex].y) / (f32)state->blendFrameCount;
+                (targetY - state->scaleVectors[scaleIndex].y) / (f32)state->stageFrameCountdown;
             state->scaleVectors[scaleIndex + 1].z =
-                (targetZ - state->scaleVectors[scaleIndex].z) / (f32)state->blendFrameCount;
+                (targetZ - state->scaleVectors[scaleIndex].z) / (f32)state->stageFrameCountdown;
         }
         else
         {
-            baseVertices = state->baseVertexData;
+            baseVertices = state->vertexBuffers[2];
             vertices = state->vertexBuffers[state->activeVertexBufferIndex];
 
             for (i = 0; i < command->indexCount; i++)
@@ -563,7 +556,7 @@ void modgfx_stepVertexScale(ModgfxState* state, ModgfxVertexGroupCmd* command, i
     state->scaleVectors[scaleIndex].z += state->scaleVectors[scaleIndex + 1].z * gModgfxMotionStep;
 
     {
-        baseVertices = state->baseVertexData;
+        baseVertices = state->vertexBuffers[2];
         vertices = state->vertexBuffers[state->activeVertexBufferIndex];
 
         for (i = 0; i < command->indexCount; i++)
@@ -587,12 +580,12 @@ void modgfx_stepVertexScale(ModgfxState* state, ModgfxVertexGroupCmd* command, i
     }
 }
 
-void modgfx_restoreBaseVertices(ModgfxState* state)
+void modgfx_restoreBaseVertices(PartfxEffectState* state)
 {
     int i;
     ModgfxVertexData* src;
     ModgfxVertexData* dst = state->vertexBuffers[state->activeVertexBufferIndex];
-    src = state->baseVertexData;
+    src = state->vertexBuffers[2];
     for (i = 0; i < state->vertexCount; i++)
     {
         dst->posX = src->posX;
@@ -1273,13 +1266,13 @@ void dll_0B_updateActiveEffects(void)
                 ObjList_GetObjects(&objIdx, &objCount);
                 if (((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->modelOrResource & 0x2)
                 {
-                    modgfx_stepVertexScale((ModgfxState*)eff,
+                    modgfx_stepVertexScale((PartfxEffectState*)eff,
                                            (ModgfxVertexGroupCmd*)(PENDING_SPAWNS + emOff), active, scaleGroupIndex);
                     scaleGroupIndex++;
                 }
                 if (((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->modelOrResource & 0x4)
                 {
-                    modgfx_stepVertexAlpha((ModgfxState*)eff,
+                    modgfx_stepVertexAlpha((PartfxEffectState*)eff,
                                            (ModgfxVertexGroupCmd*)(PENDING_SPAWNS + emOff), active, alphaGroupIndex);
                     alphaGroupIndex++;
                 }

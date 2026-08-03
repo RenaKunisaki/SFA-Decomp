@@ -230,56 +230,6 @@ typedef struct ModgfxVertexData
     u8 alpha;
 } ModgfxVertexData;
 
-typedef struct ModgfxState
-{
-    u8 pad00[4];
-    s16* unk04; /* current vertex-index list */
-    u8 pad08[0x24 - 0x08];
-    f32 posStepX; /* 0x24: per-step vertex-position delta */
-    f32 posStepY;
-    f32 posStepZ;
-    /*
-     * Each vertex-scale channel occupies two consecutive vectors: its
-     * current XYZ scale followed by the per-frame XYZ step.
-     */
-    Vec3f scaleVectors[4];
-    f32 posCurX; /* 0x60: accumulated vertex-position offset */
-    f32 posCurY;
-    f32 posCurZ;
-    u8 pad6C[0x78 - 0x6C];
-    ModgfxVertexData* vertexBuffers[2];
-    ModgfxVertexData* baseVertexData;
-    u8 pad84[0xA4 - 0x84];
-    u32 flags;
-    u8 padA8[4];
-    /*
-     * As with scaleVectors, each alpha channel is a consecutive step/current
-     * pair selected by channel * 2.
-     */
-    f32 alphaValues[4];
-    f32 blendColorR; /* 0xBC: current blended vertex color */
-    f32 blendColorG;
-    f32 blendColorB;
-    f32 blendColorStepR; /* 0xC8 */
-    f32 blendColorStepG;
-    f32 blendColorStepB;
-    u8 padD4[0xEA - 0xD4];
-    s16 vertexCount;
-    u8 padEC[2];
-    s16 channelFrames[7]; /* 0xEE: per-channel remaining blend frames */
-    s16 activeChannel; /* 0xFC */
-    s16 blendFrameCount;
-    s16 rotStepZ;
-    s16 rotStepY;
-    s16 rotStepX;
-    s16 rotOffsetZ;
-    s16 rotOffsetY;
-    s16 rotOffsetX;
-    s16 effectId;
-    u8 pad10E[0x130 - 0x10E];
-    u8 activeVertexBufferIndex;
-} ModgfxState;
-
 typedef struct ModgfxVertexGroupCmd
 {
     u8 unk00[4];
@@ -400,7 +350,9 @@ typedef struct PartfxEffectState
     s16 stageDurations[PARTFX_STAGE_COUNT];
     s16 currentStage;
     s16 stageFrameCountdown;
-    u8 pad100[0x106 - 0x100];
+    s16 rotStepZ; /* 0x100: per-frame rotation delta added into rotOffset* */
+    s16 rotStepY;
+    s16 rotStepX;
     s16 rotOffsetZ;
     s16 rotOffsetY;
     s16 rotOffsetX;
