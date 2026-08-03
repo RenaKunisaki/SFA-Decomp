@@ -140,7 +140,6 @@ volatile PPCWGPipe GXWGFifo : (0xCC008000);
 extern u8 gTitleScreenSfxFlagGrid[0x48];
 extern u8 gTitleScreenMtx[0x34];
 extern TitleAnimMoves gTitleScreenAnimMoves[];
-extern f32 hudMatrix[4][4];
 
 void titleScreenPlayActorSfx(GameObject* obj, u8* arr)
 {

@@ -5,6 +5,8 @@
 #include "dolphin/gx/GXStruct.h"
 #include "track/intersect_hud_color_api.h"
 
+extern f32 hudMatrix[4][4];
+
 #ifdef INTERSECT_HUD_ALPHA_U8
 #define INTERSECT_HUD_ALPHA_TYPE u8
 #else
