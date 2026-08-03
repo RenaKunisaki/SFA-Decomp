@@ -4,7 +4,7 @@
  *
  * update overrides the cloud position, runs a one-shot env-fx and sky
  * setup the first frame, and drives several game-bit latches
- * (SCGameBitLatch_*). It watches two quads of "switch" game bits and a
+ * (GameBitLatch_*). It watches two quads of "switch" game bits and a
  * third quad: completing the first two quads sets a progress bit and
  * plays a stinger, any change within a quad plays a mutter cue, and a
  * change in the third quad arms a short countdown (unk4) that fires a
@@ -96,9 +96,9 @@ void drmusiccont_update(GameObject* obj)
         (obj)->userData1 = 1;
     }
 
-    SCGameBitLatch_Update(&state->gameBitLatch, 2, 0x1a7, 0x64b, 0xf0e, 0xe5);
-    SCGameBitLatch_UpdateInverted(&state->gameBitLatch, 1, -1, -1, 0xe26, 0xb8);
-    SCGameBitLatch_Update(&state->gameBitLatch, 4, -1, -1, 0xcbb, 0xc4);
+    GameBitLatch_Update(&state->gameBitLatch, 2, 0x1a7, 0x64b, 0xf0e, 0xe5);
+    GameBitLatch_UpdateInverted(&state->gameBitLatch, 1, -1, -1, 0xe26, 0xb8);
+    GameBitLatch_Update(&state->gameBitLatch, 4, -1, -1, 0xcbb, 0xc4);
 
     bitE30 = (u8)mainGetBit(0xe30);
     bitE31 = (u8)mainGetBit(0xe31);

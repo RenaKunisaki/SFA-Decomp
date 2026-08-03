@@ -18032,7 +18032,7 @@ void playerDoHitDetection(int obj)
         }
         {
             GameObject* g = getSbGalleon();
-            if (g != NULL && DBprotection_getCameraState(g) == 2)
+            if (g != NULL && SB_Galleon_getCameraState(g) == 2)
             {
                 ((GameObject*)obj)->anim.modelState->overrideWorldPosX =
                     ((GameObject*)obj)->anim.localPosX - *(f32*)((char*)g + 0xc);

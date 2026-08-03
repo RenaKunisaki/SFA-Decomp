@@ -4,13 +4,14 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "dlls/objects/430_SH_LevelCon.h"
+#include "main/sky.h"
 
 typedef struct LINKLevelControlState {
     s8 previousPlayerAreaCell;
     u8 pad01[0x03];
     int unknown04;
     int musicTriggerId;
-    SCGameBitLatchState musicLatch;
+    GameBitLatchState musicLatch;
 } LINKLevelControlState;
 
 STATIC_ASSERT(offsetof(LINKLevelControlState, previousPlayerAreaCell) == 0x00);

@@ -6,7 +6,7 @@
  * (SB_FireBall) along its rigging path and lobs projectiles at the
  * Cloudrunner on cue, advancing its animation each frame. State lives in the
  * SBShipHeadState extra block. The Galleon is queried through its anim.dll
- * vtable (slots 0x20/0x28/0x2c) and through DBprotection_getCameraState.
+ * vtable (slots 0x20/0x28/0x2c) and through SB_Galleon_getCameraState.
  */
 #include "dlls/objects/490_SB_ShipHead.h"
 
@@ -127,7 +127,7 @@ void SB_ShipHead_update(GameObject* obj) {
     if (galleon == 0) {
         return;
     }
-    cameraState = DBprotection_getCameraState(getSbGalleon());
+    cameraState = SB_Galleon_getCameraState(getSbGalleon());
     if (cameraState == 2) {
         if (Vec_distance(&player->anim.worldPosX, &object->anim.worldPosX) < gSbShipHeadHissSfxDistance) {
             Sfx_PlayFromObject((int)obj, SFXTRIG_en_trpopn_c_312);

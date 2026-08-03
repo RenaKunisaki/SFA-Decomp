@@ -5,6 +5,7 @@
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 #include "dlls/objects/430_SH_LevelCon.h"
+#include "main/sky.h"
 #include "main/objseq.h"
 
 typedef struct CCLevelControlPlacement {
@@ -18,7 +19,7 @@ STATIC_ASSERT(offsetof(CCLevelControlPlacement, unknown18) == 0x18);
 
 typedef struct CCLevelControlState {
     f32 textTimer;
-    SCGameBitLatchState gameBitLatch;
+    GameBitLatchState gameBitLatch;
     int musicTriggerId;
     int mapAct;
 } CCLevelControlState;

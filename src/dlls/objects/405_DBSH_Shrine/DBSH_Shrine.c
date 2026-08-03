@@ -252,9 +252,9 @@ void dbshShrine_update(GameObject* obj) {
     }
 
     dbshShrine_updateHoverMotion(obj);
-    SCGameBitLatch_Update(&state->gameBitLatch, 2, -1, -1, DBSH_SHRINE_GAMEBIT_APPROACH, 0xE);
-    SCGameBitLatch_UpdateInverted(&state->gameBitLatch, 1, -1, -1, GAMEBIT_SHRINE_MUSIC_LOCK, 8);
-    SCGameBitLatch_Update(&state->gameBitLatch, 4, -1, -1, GAMEBIT_SHRINE_MUSIC_LOCK, 0xC4);
+    GameBitLatch_Update(&state->gameBitLatch, 2, -1, -1, DBSH_SHRINE_GAMEBIT_APPROACH, 0xE);
+    GameBitLatch_UpdateInverted(&state->gameBitLatch, 1, -1, -1, GAMEBIT_SHRINE_MUSIC_LOCK, 8);
+    GameBitLatch_Update(&state->gameBitLatch, 4, -1, -1, GAMEBIT_SHRINE_MUSIC_LOCK, 0xC4);
 
     switch ((DBSHShrinePhase)state->phase) {
     case DBSH_SHRINE_PHASE_WAITING:

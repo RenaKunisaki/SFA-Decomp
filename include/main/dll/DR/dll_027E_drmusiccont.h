@@ -28,7 +28,7 @@ typedef struct DrMusicContFlags
 
 typedef struct DrmusiccontState
 {
-    SCGameBitLatchState gameBitLatch;
+    GameBitLatchState gameBitLatch;
     f32 stingerTimer;
     DrMusicContFlags flags;
 } DrmusiccontState;

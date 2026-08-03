@@ -60,7 +60,7 @@ void firstPersonPlaceCamera(GameObject* focus, int resetClamp) {
     }
     galleon = getSbGalleon();
     if (galleon != NULL) {
-        galleonState = DBprotection_getCameraState(galleon);
+        galleonState = SB_Galleon_getCameraState(galleon);
         if (galleonState == 2) {
             localOffset[0] = self->anim.worldPosX - galleon->anim.worldPosX;
             localOffset[1] = (gCameraModeViewfinderTargetHeight[0] + self->anim.worldPosY) - galleon->anim.worldPosY;

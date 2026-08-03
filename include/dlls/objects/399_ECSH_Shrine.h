@@ -31,7 +31,7 @@ typedef struct ECSHShrineState {
     u8 shuffleSfxPlayed;
     u8 introTextLatch;
     u8 unknown33;
-    SCGameBitLatchState gameBitLatch;
+    GameBitLatchState gameBitLatch;
 } ECSHShrineState;
 
 STATIC_ASSERT(offsetof(ECSHShrineState, light) == 0x00);

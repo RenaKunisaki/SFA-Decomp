@@ -1,7 +1,7 @@
 /*
  * DIM_LevelCo (DLL 0x1CD) - level-control object for Snowhorn Wastes 2.
  * Manages time-of-day music (day=0xC5, night=0xE2), map-event latching via
- * SCGameBitLatch_Update (8 latch bits controlling music triggers), environment
+ * GameBitLatch_Update (8 latch bits controlling music triggers), environment
  * fx for the lava area, an NPC dialogue trigger (game bits 0x3E2/0x3E3), and
  * initial level unlock.
  */
@@ -185,24 +185,24 @@ void dim_levelcontrol_update(GameObject* obj) {
             }
         }
     }
-    SCGameBitLatch_Update((SCGameBitLatchState*)&state->musicLatchMask, 1, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_01A7,
+    GameBitLatch_Update((GameBitLatchState*)&state->musicLatchMask, 1, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_01A7,
                           GAMEBIT_SH_Landed064B, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_0C1E, MUSICTRIG_drako_1);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&state->musicLatchMask, 2, GAMEBIT_SH_WarpStoneRelated01A8,
+    GameBitLatch_Update((GameBitLatchState*)&state->musicLatchMask, 2, GAMEBIT_SH_WarpStoneRelated01A8,
                           GAMEBIT_SH_Entered00C0, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_0C1F,
                           DIM_LEVEL_CONTROL_MUSICTRIG_0CF);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&state->musicLatchMask, 4, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_01BA,
+    GameBitLatch_Update((GameBitLatchState*)&state->musicLatchMask, 4, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_01BA,
                           GAMEBIT_IM_TrickyRelated01B9, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_0C20,
                           state->dayNightMusicTrigger);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&state->musicLatchMask, 8, -1, -1, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_0D8F,
+    GameBitLatch_Update((GameBitLatchState*)&state->musicLatchMask, 8, -1, -1, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_0D8F,
                           DIM_LEVEL_CONTROL_MUSICTRIG_0DC);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&state->musicLatchMask, 0x10, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_01A7,
+    GameBitLatch_Update((GameBitLatchState*)&state->musicLatchMask, 0x10, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_01A7,
                           GAMEBIT_SH_Landed064B, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_0C1E, MUSICTRIG_citytombs_ed);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&state->musicLatchMask, 0x20, GAMEBIT_SH_WarpStoneRelated01A8,
+    GameBitLatch_Update((GameBitLatchState*)&state->musicLatchMask, 0x20, GAMEBIT_SH_WarpStoneRelated01A8,
                           GAMEBIT_SH_Entered00C0, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_0C1F, MUSICTRIG_Teleport);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&state->musicLatchMask, 0x40, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_01BA,
+    GameBitLatch_Update((GameBitLatchState*)&state->musicLatchMask, 0x40, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_01BA,
                           GAMEBIT_IM_TrickyRelated01B9, DIM_LEVEL_CONTROL_LATCH_GAMEBIT_0C20,
                           DIM_LEVEL_CONTROL_MUSICTRIG_035);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&state->musicLatchMask, 0x100, -1, -1,
+    GameBitLatch_Update((GameBitLatchState*)&state->musicLatchMask, 0x100, -1, -1,
                           GAMEBIT_DIM_TriggerLostInBlizzard, DIM_LEVEL_CONTROL_MUSICTRIG_02B);
 }
 

@@ -10,7 +10,7 @@ struct ObjSeqState;
 typedef struct IMIceMountainState {
     u8 eventState;
     u8 pad01[0x03];
-    SCGameBitLatchState gameBitLatch;
+    GameBitLatchState gameBitLatch;
     s8 warpCountdown;
     u8 pad09;
     s16 musicTrack;

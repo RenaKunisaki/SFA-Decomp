@@ -86,7 +86,7 @@ typedef struct WcLevelControlState
     u8 mode;
     u8 previousMode;
     u8 pad0E[0x10 - 0x0E];
-    SCGameBitLatchState gameBitLatch;
+    GameBitLatchState gameBitLatch;
     WclevelcontFlags dialogueFlags;
     u8 pad15;
     u16 thorntailMusicId;

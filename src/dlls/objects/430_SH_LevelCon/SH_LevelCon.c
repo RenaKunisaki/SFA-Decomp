@@ -4,7 +4,7 @@
  *
  * SH_LevelControl_update is the area's per-frame script driver: it keeps
  * the day/night music in sync (SH_LevelControl_setMusic + the
- * SCGameBitLatch helpers), mirrors a set of game bits onto map-event
+ * GameBitLatch helpers), mirrors a set of game bits onto map-event
  * object-group statuses, and dispatches the active sub-event by the
  * map-event act: early cutscenes, the ThornTail egg events, the
  * timed "bloop" collection minigame (air meter), and the env-fx / sky
@@ -167,7 +167,7 @@ void SH_LevelControl_updateTotemPuzzleMapState(void* obj, void* state) {
     runtime->mapEventCountdown--;
 }
 
-void SCGameBitLatch_Update(SCGameBitLatchState* state, int mask, s16 clearIfSetBit, s16 clearIfClearBit, s16 latchBit,
+void GameBitLatch_Update(GameBitLatchState* state, int mask, s16 clearIfSetBit, s16 clearIfClearBit, s16 latchBit,
                            int musicId) {
     u8 clearIfSetBitValid = clearIfSetBit != -1;
     u8 clearIfClearBitValid = clearIfClearBit != -1;
@@ -209,10 +209,10 @@ void SCGameBitLatch_Update(SCGameBitLatchState* state, int mask, s16 clearIfSetB
     }
 }
 
-void SCGameBitLatch_UpdateInverted(SCGameBitLatchState* state, int mask, s16 clearIfSetBit, s16 clearIfClearBit,
+void GameBitLatch_UpdateInverted(GameBitLatchState* state, int mask, s16 clearIfSetBit, s16 clearIfClearBit,
                                    s16 latchBit, int musicId) {
     mainSetBits(latchBit, !mainGetBit(latchBit));
-    SCGameBitLatch_Update(state, mask, clearIfSetBit, clearIfClearBit, latchBit, musicId);
+    GameBitLatch_Update(state, mask, clearIfSetBit, clearIfClearBit, latchBit, musicId);
     mainSetBits(latchBit, !mainGetBit(latchBit));
 }
 
@@ -252,13 +252,13 @@ void SH_LevelControl_setMusic(short* obj) {
         if (mainGetBit(GAMEBIT_SH_Landed064B) != 0) {
             mainSetBits(GAMEBIT_KrazTest1Related0390, 1);
         }
-        SCGameBitLatch_Update((SCGameBitLatchState*)obj, 1, 0x1a7, GAMEBIT_SH_Landed064B, GAMEBIT_KrazTest1Related0372,
+        GameBitLatch_Update((GameBitLatchState*)obj, 1, 0x1a7, GAMEBIT_SH_Landed064B, GAMEBIT_KrazTest1Related0372,
                               obj[8]);
-        SCGameBitLatch_Update((SCGameBitLatchState*)obj, 2, GAMEBIT_SH_WarpStoneRelated01A8, GAMEBIT_SH_Entered00C0,
+        GameBitLatch_Update((GameBitLatchState*)obj, 2, GAMEBIT_SH_WarpStoneRelated01A8, GAMEBIT_SH_Entered00C0,
                               GAMEBIT_KrazTest1Related0390, obj[9]);
-        SCGameBitLatch_Update((SCGameBitLatchState*)obj, 4, -1, -1, 0x393, 0x36);
-        SCGameBitLatch_Update((SCGameBitLatchState*)obj, 8, -1, -1, 0xa32, 0x98);
-        SCGameBitLatch_Update((SCGameBitLatchState*)obj, 0x10, -1, -1, 0xbfe, 0xc3);
+        GameBitLatch_Update((GameBitLatchState*)obj, 4, -1, -1, 0x393, 0x36);
+        GameBitLatch_Update((GameBitLatchState*)obj, 8, -1, -1, 0xa32, 0x98);
+        GameBitLatch_Update((GameBitLatchState*)obj, 0x10, -1, -1, 0xbfe, 0xc3);
     }
 }
 

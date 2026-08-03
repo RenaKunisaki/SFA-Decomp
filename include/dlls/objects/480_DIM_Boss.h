@@ -219,12 +219,12 @@ int DIMbossHitDetect_trackTargetMove(GameObject* obj, int state, f32 weight);
 int DIMbossHitDetect_applyForwardMove(int* obj, u8* state, f32 weight);
 int DIMbossHitDetect_resetIdleMove(GameObject* obj, u8* state);
 
-void DIM2icicle_spawnBlueWhiteEffect(DIMbossEffectMarker* source, f32* velocity);
-void DIM2icicle_createStateLight(GameObject* obj, u8 isGreen);
-void DIM2icicle_updateBossSequenceEffects(GameObject* obj, DIMbossRuntime* runtime);
-void DIM2icicle_updateDarkIceMinesWarpAndEffects(GameObject* obj, DIMbossRuntime* runtime);
-void DIM2icicle_updateHitResponse(GameObject* obj, BaddieState* playerState);
-void DIM2icicle_updateCombatState(GameObject* obj, ObjSeqState* animUpdate, DIMbossRuntime* runtime,
+void DIMboss_spawnBlueWhiteEffect(DIMbossEffectMarker* source, f32* velocity);
+void DIMboss_createStateLight(GameObject* obj, u8 isGreen);
+void DIMboss_updateSequenceEffects(GameObject* obj, DIMbossRuntime* runtime);
+void DIMboss_updateWarpAndEffects(GameObject* obj, DIMbossRuntime* runtime);
+void DIMboss_updateHitResponse(GameObject* obj, BaddieState* playerState);
+void DIMboss_updateCombatState(GameObject* obj, ObjSeqState* animUpdate, DIMbossRuntime* runtime,
                                   DIMbossRuntime* updateRuntime);
 
 int DIMboss_updateState(GameObject* obj, u32 state, ObjSeqState* animUpdate);

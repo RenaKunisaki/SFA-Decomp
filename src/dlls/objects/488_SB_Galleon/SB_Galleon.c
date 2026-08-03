@@ -81,7 +81,7 @@ ObjectDescriptor15 gSB_GalleonObjDescriptor = {
     (ObjectDescriptorCallback)SB_Galleon_func0E,
 };
 
-void DBprotection_updateFlight(GameObject* obj) {
+void SB_Galleon_updateFlight(GameObject* obj) {
     ObjPlacement* spawnData;
     SBGalleonState* state;
     f32 tx;
@@ -702,7 +702,7 @@ void DBprotection_updateFlight(GameObject* obj) {
     }
 }
 
-void DBprotection_updateEnvfxGameBits(SBGalleonState* state) {
+void SB_Galleon_updateEnvfxGameBits(SBGalleonState* state) {
     GameObject* player;
     GameObject* effectObj;
 
@@ -748,11 +748,11 @@ void DBprotection_updateEnvfxGameBits(SBGalleonState* state) {
     }
 }
 
-int DBprotection_getCameraState(GameObject* obj) {
+int SB_Galleon_getCameraState(GameObject* obj) {
     return ((SBGalleonState*)obj->extra)->cameraState;
 }
 
-void DBprotection_updateShield(GameObject* obj) {
+void SB_Galleon_updateShield(GameObject* obj) {
     SBGalleonState* state;
     f32 angleSin;
 
@@ -767,7 +767,7 @@ void DBprotection_updateShield(GameObject* obj) {
         (*gScreenTransitionInterface)->start(0xa, 1);
     }
 
-    DBprotection_updateEnvfxGameBits(state);
+    SB_Galleon_updateEnvfxGameBits(state);
 
     if (gDBprotectionTransitionPending != 0 && (*gScreenTransitionInterface)->isFinished() != 0) {
         (*gScreenTransitionInterface)->step(0x50, 1);
@@ -1236,14 +1236,14 @@ void SB_Galleon_update(GameObject* obj) {
         }
         switch (state->cameraState) {
         case SBGALLEON_CAM_APPROACH:
-            DBprotection_updateFlight(obj);
+            SB_Galleon_updateFlight(obj);
             break;
         case SBGALLEON_CAM_START_INTRO:
             (*gObjectTriggerInterface)->runSequence(3, obj, -1);
             state->cameraState = SBGALLEON_CAM_SHIELD;
             break;
         case SBGALLEON_CAM_SHIELD:
-            DBprotection_updateShield(obj);
+            SB_Galleon_updateShield(obj);
             break;
         case SBGALLEON_CAM_END:
             (*gMapEventInterface)->setMapAct(SBGALLEON_MAP_PALACE, 1);
@@ -1252,7 +1252,7 @@ void SB_Galleon_update(GameObject* obj) {
             state->cameraState = SBGALLEON_CAM_DONE;
             break;
         }
-        SCGameBitLatch_Update((SCGameBitLatchState*)state->gameBitLatch, 1, -1, -1, 0xa71, 0xa4);
+        GameBitLatch_Update((GameBitLatchState*)state->gameBitLatch, 1, -1, -1, 0xa71, 0xa4);
     }
 }
 

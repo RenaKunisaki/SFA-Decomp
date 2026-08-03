@@ -397,8 +397,8 @@ void sc_levelcontrol_update(GameObject* obj) {
             Music_Trigger(MUSICTRIG_fox_arwing, 1);
         }
     }
-    SCGameBitLatch_Update(&state->musicLatches, 1, -1, -1, 0xe1e, MUSICTRIG_Teleport);
-    SCGameBitLatch_Update(&state->musicLatches, 2, -1, -1, GAMEBIT_SHRINE_MUSIC_LOCK, MUSICTRIG_PU3_Adventure_c4);
+    GameBitLatch_Update(&state->musicLatches, 1, -1, -1, 0xe1e, MUSICTRIG_Teleport);
+    GameBitLatch_Update(&state->musicLatches, 2, -1, -1, GAMEBIT_SHRINE_MUSIC_LOCK, MUSICTRIG_PU3_Adventure_c4);
     if ((state->animEventFlags & SC_LEVEL_CONTROL_ANIM_EVENT_FLAG_3_TRIGGERED) != 0) {
         mainSetBits(0x60e, 1);
         state->animEventFlags &= ~SC_LEVEL_CONTROL_ANIM_EVENT_FLAG_3_TRIGGERED;

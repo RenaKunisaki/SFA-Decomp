@@ -34,8 +34,9 @@ which now carries prose evidence notes, so they have been dropped.
 | current path already canonical | 684 |
 | proposal still differs | 21 |
 | name-conflicts (disambiguated) | 0 |
-| naming contradictions (appendix) | 19 |
-| unit-owned headers recorded (appendix) | 112 |
+| naming contradictions (appendix) | 18 |
+| naming contradictions arbitrated and renamed (appendix) | 7 |
+| unit-owned headers recorded (appendix) | 113 |
 
 Expansion status over the 705 rows: NO-RETAIL-NAME 288, COMPLETE 264, CONFIRMED 81, RAW 62, GUESSED 7, DOL-RECOVERED 3
 
@@ -650,7 +651,7 @@ any of them is acted on.
 | 0x256 | DIMSnowHorn1 | CONFIRMED | dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c | = (canonical) | Descriptor is followed by the retail-ordered `gDIMSnowHorn1ZeroOffset` constant |
 | 0x257 | DR_EarthWarrior | CONFIRMED | dlls/objects/599_DR_EarthWar/DR_EarthWar.c | = (canonical) | — |
 | 0x258 | DR_CloudRunner | CONFIRMED | dlls/objects/600_DR_CloudRun/DR_CloudRun.c | = (canonical) | Descriptor is followed by the retail-ordered `sOnCloudFormat` diagnostic string |
-| 0x259 | SB_Cloudrunner | CONFIRMED | dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c | = (canonical) | Complete DOL-confirmed TU including its three leading `WCPushBlock_*` helpers |
+| 0x259 | SB_Cloudrunner | CONFIRMED | dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c | = (canonical) | Complete DOL-confirmed TU including its three leading `SB_CloudRunner_*` ride helpers |
 | 0x25A | StaticCamera | CONFIRMED | dlls/objects/602_StaticCamer/StaticCamer.c | = (canonical) | — |
 | 0x25B | MSPlantingS | RAW | dlls/objects/603_MSPlantingS/MSPlantingS.c | = (canonical) | Complete DOL-confirmed 14-function TU |
 | 0x25C | — | NO-RETAIL-NAME | dlls/objects/604/604.c | = (canonical) | Complete exact SnowClaw-family TU; descriptor precedes the retail-ordered compiler jump table |
@@ -775,7 +776,6 @@ descriptive family name (e.g. `collectible`, `softbody`).
 | 0x11C | LINKStaffLe, StaffAction, StaffBoostP, StaffBoulde, StaffLeverO, StaffLeverT | `staffactivated_*` | cross-dll (names dll 0x0E2) | dlls/objects/284/284.c |
 | 0x230 | DFP_wallbar | `chuka_*` | cross-dll (names dll 0x0CD) | dlls/objects/560_DFP_wallbar/DFP_wallbar.c |
 | 0x231 | DFP_ForceAw | `TrickyCurve_*` | cross-dll (names dll 0x0C4) | dlls/objects/561_DFP_ForceAw/DFP_ForceAw.c |
-| 0x232 | DFP_RotateP | `sfxplayer_*` | cross-dll (names dll 0x133) | dlls/objects/562_DFP_RotateP/DFP_RotateP.c |
 | 0x294 | WCMoonTempl, WCSunTemple | `wctemple_*` | cross-dll (names dll 0x0FB,0x110,0x112,0x296,0x297) | dlls/objects/660/660.c |
 | 0x2BD | Androssleft, Androssrigh | `androsshand_*` | cross-dll (names dll 0x2BC) | dlls/objects/701/701.c |
 | 0x0C9 | GuardClaw, GCRobotPatr, Vambat, Firebat, HagabonMK2, Mikaladon, SpittingEba, MutatedEba, snowworm, snowworm_ba, Whirlpool, Rachnop, PinPon, WB, Weevil, BattleDroid, Kooshy, HoodedZyck, FireCrawler, RedEye, ShadowHunte, SwampStride, sharpclawSn, sharpclawGr, sharpclawSo, sharpclawCo, sharpclawAs, sharpclawSh, BossGeneral | `enemy_*` | unrelated | dlls/objects/201_Baddie/Baddie.c |
@@ -789,6 +789,40 @@ descriptive family name (e.g. `collectible`, `softbody`).
 | 0x284 | SPFruitSmal, SPEggSmall, SPFruitLarg, SPEggLarge, SPBombSpore, SPMoonSeed, SPLantern, SPBlueArtef, SPBlueMushr, SPSwapGift, SPPda, SPBinocular, SPFireFly, SPFuelCell, SPSidekickB, SPDusterHol, SPStaffHitB, SPMapTTH, SPMapMMP, SPMapLF, SPMapCRF, SPMapDIM, SPMapWC, SPMapDR, SPMapKP, SPMapOFP, SPMapSW, SPMapVFP, SPMapCC, SPReplayDis | `shopitem_*` | unrelated | dlls/objects/644/644.c |
 | 0x2AD | LINKSnowGra, SH_YellowWh, SH_BlueWhit, SH_RedYello, SH_BlueFlow, WM_drape, DFSH_Spirit, BlueFernFlo, WhiteFernFl, YellowFernF, AlienSpore, BlueFlowerP, BlueWhiteFl, RedYellowFl, YellowWhite, BullRush, BullRushClu, LongGrassCl, DragonRockG, AlienGrassC, SnowGrass, SnowBullrus, HangingPlan, WaterLillyL | `softbody_*` | unrelated | dlls/objects/685/685.c |
 | 0x2C0 | FrontFox, FrontPeppy, FrontSlippy, FrontRob, FrontFalco, FrontPilots, FrontPlanet | `titlescreen_*` | unrelated | dlls/objects/704/704.c |
+
+## Appendix: arbitrated naming contradictions (decided and renamed)
+
+Seven queued items were arbitrated against one discriminator:
+
+> A foreign-branded function referenced **only by its hosting unit** is a
+> misattribution. One referenced **only by the sibling DLL whose brand it
+> wears** is a legitimate hosted callback — retail routinely compiled an
+> object's callback into a neighbouring DLL's translation unit.
+
+Reference counts come from `python3 tools/pairing_check.py --refs <name>`;
+carve ranges from `config/GSAE01/splits.txt`. Every rename below was applied
+to all four region `symbols.txt` files and measured byte-neutral
+(`tools/unitfuzzy.py` unchanged on every referencing unit).
+
+| dll | old brand | new brand | evidence | verdict |
+|---|---|---|---|---|
+| 0x232 DFP_RotateP | `sfxplayer_*` | `DFP_RotateP_*` | All twelve functions are the object's own descriptor callback set (`init`/`update`/`free`/`render`/`hitDetect`/`release`/`initialise`/`getExtraSize`/`getObjectTypeId`) and every one is referenced only by its own unit. The real sfxPlayer is dll 0x133 at `.text` 0x80198194-0x80198A00 with a complete, disjoint `SfxPlayer_*` family and its own `SfxPlayerState`; 0x232's `getExtraSize` returns 0xA. No sibling reference exists in either direction. | misattribution — renamed |
+| 0x259 SB_Cloudrunner | `WCPushBlock_*` | `SB_CloudRunner_*` | The three helpers are self-referenced only. The unit's private `WCPushBlockState` view is field-for-field the unit's own `SBCloudRunnerState` (0x10 target object, 0x2C rotX accumulator, 0x2E rotZ accumulator, 0x60, 0x64, 0x65, 0x70 stick X, 0x78), i.e. a second view of the same 0x84-byte extra block. The real WCPushBlock (dll 0x290) is a tile-grid sliding puzzle block with `WCPushBlockRuntimeState`/`WCPushBlockSetup` and a `wcpushblock_*` family, shares no state, no data and no call edge, and is not a ride at all — so the source's "retooled from the WC push-block ride" note had no support and was removed as folklore. | misattribution — renamed |
+| 0x1E0 DIM_Boss | `DIM2icicle_*` | `DIMboss_*` | Six functions, self-referenced only, all taking `DIMbossRuntime*`/`DIMbossEffectMarker*`; the TU's own brand is `DIMboss_*`/`DIMbossAnim_*`/`DIMbossHitDetect_*` with `gDIM_BossObjDescriptor`. The whole `Dim2Icicle*` data family they use (`gDim2IcicleHitDescTemplate` 0x802C2348, `gDim2IcicleMeltEntries` 0x803259E0, `gDim2IcicleDustFxSource` 0x803AC97C, `gDim2IcicleHitFxBuffer` 0x803AC994, `gDim2IcicleHitCooldown` 0x803DDB8C) lies inside 0x1E0's own `.rodata`/`.data`/`.bss`/`.sbss` carve, not 0x1DD's. dll 0x1DD DIM2Icicle is a separate 0x414-byte TU at 0x801B93FC with its own `dim2icicle_*` family. | misattribution — renamed |
+| 0x1E8 SB_Galleon | `DBprotection_*` | `SB_Galleon_*` | `updateFlight`/`updateEnvfxGameBits`/`updateShield` are self-referenced only and operate on `SBGalleonState`. `getCameraState` was arbitrated separately because it is a genuine cross-DLL export (0x1E9 SB_Propelle, 0x1EA SB_ShipHead, `195_Player`, `engine/68`) — but the hosted-callback reading needs the referencing sibling to *be* the branded DLL, and the brand `DBprotectZo` is not a DLL at all: it is one of the 46 object defs handled by dll 0x12E (`302`, brand `CFLightWall_*`), whose code never calls it. Same verdict as the other three; all four callers are galleon consumers. | misattribution — renamed |
+| 0x1BC SC_totemstr | `platform1_control` | `sc_totemstrength_animEventCallback` | Self-referenced only (definition plus one `obj->animEventCallback =` install), body is entirely the LightFoot Test-of-Strength minigame over `ScTotemStrengthState`. The real platform1 is dll 0x23A (`570_DFP_Platfor`), a stub object whose retail `.rodata` string `"<platform1 draw>No Longer supported \n"` proves the name and whose own update slot is `platform1_controlUnsupported`. Renamed to match the direct sibling convention (`sc_totempuzzle_animEventCallback` in 0x1BA). | misattribution — renamed |
+| 0x1AE SH_LevelCon | `SCGameBitLatch_*` | `GameBitLatch_*` | Defined in the SH level-control TU and consumed by 23 units for `_Update` and 11 for `_UpdateInverted`, spanning CF, DIM, SH, CC, WC, NW, DIM2, IM, WM, LINK, LINKB, DR, CR, VFP, SC, DBSH, GPSH, ECSH, MMSH, MMP, DFP, SB and DFSH. The body is a generic game-bit latch with an optional `Music_Trigger` and a 4-byte mask state; `SC` names neither the host nor any dominant consumer (SC contributes 2 of the 90 relocs). `SCGameBitLatchState` renamed to `GameBitLatchState` with it. | generic helper — renamed |
+| — | `SkyEnvFxRampTables` | (name kept) | Declared in `include/dlls/objects/430_SH_LevelCon.h` but referenced only by dlls 0x172, 0x173 and 0x18B; SH_LevelCon spells the same four 28-entry ramps inline inside its own `ShLevelControlTables` at +0x24/+0x5C/+0x94/+0xCC. Header-home misplacement, not a naming error. Moved to `include/main/sky.h` beside its only consumer `skySetEnvFxRampTables`. | header rehomed |
+
+Deferred out of the same seven, still open:
+
+- **`gSfxplayerObjDescriptor` → `gDFP_RotatePObjDescriptor`** (dll 0x232). Blocked
+  only by its single reference from `src/main/modelEngine.c`; the descriptor is the
+  last symbol in the unit still carrying the wrong brand.
+- **The `gDim2Icicle*` data symbols in dll 0x1E0** (five entries) and
+  **`gDBprotectionTransitionPending` in dll 0x1E8**. Same verdict as their function
+  families, deferred because they are `.rodata`/`.data`/`.bss`/`.sbss` symbols and a
+  data-section rename pass is a separate change class.
 
 ## Appendix: canonical-format files whose proposal differs
 
@@ -927,6 +961,7 @@ more as they are recovered.
 | 0x209 | dlls/objects/521_WM_LevelCon/WM_LevelCon.c | include/dlls/objects/521_WM_LevelCon.h |
 | 0x20A | dlls/objects/522_WM_GeneralS/WM_GeneralS.c | include/dlls/objects/522_WM_GeneralS.h |
 | 0x22F | dlls/objects/559_DFP_floorba/DFP_floorba.c | include/main/dll/baddie/dll_022F_dfpfloorbar.h |
+| 0x232 | dlls/objects/562_DFP_RotateP/DFP_RotateP.c | include/dlls/objects/562_DFP_RotateP.h |
 | 0x235 | dlls/objects/565_DFP_TargetB/DFP_TargetB.c | include/main/dll/dll_0235_dfptargetblock.h |
 | 0x259 | dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c | include/main/dll/WC/dll_0259_sbcloudrunner.h |
 | 0x287 | dlls/objects/647_SPScarab/SPScarab.c | include/main/dll/SP/dll_0287_spscarab.h |

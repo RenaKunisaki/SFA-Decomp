@@ -10,6 +10,8 @@
 #include "main/map_load.h"
 #include "main/mm.h"
 #include "main/dll/savegame.h"
+#include "main/dll/savegame_env_api.h"
+#include "main/dll/player_state.h"
 #include "main/dll/player_status.h"
 #include "main/mapEventTypes.h"
 #include "dolphin/os/OSReboot.h"
@@ -38,7 +40,8 @@ typedef struct SaveGameTimeEntry
 
 typedef struct SaveGameData
 {
-    u8 pad0[0x1C - 0x0];
+    PlayerStatus characterStatus[2];
+    u8 pad18[0x1C - 0x18];
     char playerName[4];
     u8 currentCharacter;
     u8 newFileFlag;
@@ -57,13 +60,15 @@ typedef struct SaveGameData
     u8 pad564[0x684 - 0x564];
     SaveGameCharacterPosition characterPositions[2];
     s16 camActionNo;
-    u8 pad6A6[0x6EC - 0x6A6];
+    u8 pad6A6[0x6A8 - 0x6A6];
+    SaveGameEnvState env;
     s16 timeEntryCount; /* 0x6ec: number of valid entries in timeEntries */
     u8 pad6EE[0x6F0 - 0x6EE];
     SaveGameTimeEntry timeEntries[(0xF70 - 0x6F0) / 8]; /* 0x6f0: time-attack record table */
 } SaveGameData;
 
 STATIC_ASSERT(offsetof(SaveGameData, playerName) == 0x1C);
+STATIC_ASSERT(sizeof(((SaveGameData*)0)->characterStatus) == 0x18);
 STATIC_ASSERT(offsetof(SaveGameData, currentCharacter) == 0x20);
 STATIC_ASSERT(offsetof(SaveGameData, positions) == 0x168);
 STATIC_ASSERT(offsetof(SaveGameData, taskHintIds) == 0x558);
@@ -338,13 +343,13 @@ void gplaySaveGame(int param)
     {
         gSaveGameCurrentSlot = 0;
     }
-    if ((s8)gSaveGameWorkBuffer[0] < 1)
+    if (((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[0].health < 1)
     {
-        gSaveGameWorkBuffer[0] = 1;
+        ((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[0].health = 1;
     }
-    if ((s8)gSaveGameWorkBuffer[0xc] < 1)
+    if (((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[1].health < 1)
     {
-        gSaveGameWorkBuffer[0xc] = 1;
+        ((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[1].health = 1;
     }
     _saveGame((u8)gSaveGameCurrentSlot, gSaveGameWorkBuffer, saveData);
 }
@@ -371,13 +376,13 @@ void saveGame_save(void)
     {
         gSaveGameCurrentSlot = 0;
     }
-    if ((s8)gSaveGameWorkBuffer[0] < 1)
+    if (((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[0].health < 1)
     {
-        gSaveGameWorkBuffer[0] = 1;
+        ((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[0].health = 1;
     }
-    if ((s8)gSaveGameWorkBuffer[0xc] < 1)
+    if (((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[1].health < 1)
     {
-        gSaveGameWorkBuffer[0xc] = 1;
+        ((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[1].health = 1;
     }
     _saveGame((u8)gSaveGameCurrentSlot, gSaveGameWorkBuffer, saveData);
 }
@@ -504,32 +509,32 @@ s8 slot;
 
     save = gSaveGameData;
     save[SAVEGAME_CURRENT_CHARACTER_OFFSET] = 0;
-    save[0] = 0xc;
-    save[1] = 0xc;
-    *(u16*)(save + 6) = 0x19;
-    *(u16*)(save + 4) = 0;
-    save[0xa] = 1;
-    *(s8*)(save + 0x692) = -1;
-    save[0xc] = 0xc;
-    save[0xd] = 0xc;
-    *(u16*)(save + 0x12) = 0x19;
-    *(u16*)(save + 0x10) = 0;
-    save[0x16] = 1;
-    *(s8*)(save + 0x6a2) = -1;
+    ((SaveGameData*)save)->characterStatus[0].health = 0xc;
+    ((SaveGameData*)save)->characterStatus[0].maxHealth = 0xc;
+    ((SaveGameData*)save)->characterStatus[0].maxMagic = 0x19;
+    ((SaveGameData*)save)->characterStatus[0].magic = 0;
+    ((SaveGameData*)save)->characterStatus[0].healCountMax = 1;
+    ((SaveGameData*)save)->characterPositions[0].mapDataFileId = -1;
+    ((SaveGameData*)save)->characterStatus[1].health = 0xc;
+    ((SaveGameData*)save)->characterStatus[1].maxHealth = 0xc;
+    ((SaveGameData*)save)->characterStatus[1].maxMagic = 0x19;
+    ((SaveGameData*)save)->characterStatus[1].magic = 0;
+    ((SaveGameData*)save)->characterStatus[1].healCountMax = 1;
+    ((SaveGameData*)save)->characterPositions[1].mapDataFileId = -1;
     save[0x19] = 0x14;
     ((SaveGameData*)save)->camActionNo = -1;
-    *(f32*)(save + 0x6a8) = 4.3e+04f;
-    *(s16*)(save + 0x6ac) = -1;
-    *(s16*)(save + 0x6ae) = -1;
-    *(s16*)(save + 0x6b2) = -1;
-    *(s16*)(save + 0x6b4) = -1;
-    *(s16*)(save + 0x6b6) = -1;
-    *(s16*)(save + 0x6b8) = -1;
-    *(s16*)(save + 0x6ba) = -1;
-    *(s8*)(save + 0x6e9) = -1;
-    *(s8*)(save + 0x6ea) = -1;
-    *(s8*)(save + 0x6eb) = -1;
-    save[0x6e8] = 9;
+    ((SaveGameData*)save)->env.unk00 = 4.3e+04f;
+    ((SaveGameData*)save)->env.skyEnvfxActIds[0] = -1;
+    ((SaveGameData*)save)->env.skyEnvfxActIds[1] = -1;
+    ((SaveGameData*)save)->env.cloudActionEnvfxActId = -1;
+    ((SaveGameData*)save)->env.sky2EnvfxActId = -1;
+    ((SaveGameData*)save)->env.cloudEnvfxActIds[0] = -1;
+    ((SaveGameData*)save)->env.cloudEnvfxActIds[1] = -1;
+    ((SaveGameData*)save)->env.cloudEnvfxActIds[2] = -1;
+    ((SaveGameData*)save)->env.cloudStationary[0] = -1;
+    ((SaveGameData*)save)->env.cloudStationary[1] = -1;
+    ((SaveGameData*)save)->env.cloudStationary[2] = -1;
+    ((SaveGameData*)save)->env.envFlags = 9;
     save[0x23] = 0;
     save[SAVEGAME_NEW_FILE_FLAG_OFFSET] = 1;
 
@@ -897,8 +902,9 @@ void SaveGame_setMapActLut(int val, int idx)
 
 void updateSavedHealth(void)
 {
-    int idx = ((SaveGameData*)gSaveGameData)->currentCharacter * 12;
-    *((u8*)gSaveGameData + idx) = gSaveGameWorkBuffer[idx];
+    int idx = ((SaveGameData*)gSaveGameData)->currentCharacter;
+    ((SaveGameData*)gSaveGameData)->characterStatus[idx].health =
+        ((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[idx].health;
 }
 f32 SaveGame_getPlayTime(void)
 {
@@ -1119,10 +1125,10 @@ void SaveGame_gplayRestartPoint(f32* pos, s16 angle, int b691, int flag)
 
 void SaveGame_gplayGotoSavegame(void)
 {
-    if ((s8)gSaveGameWorkBuffer[0] < 1)
-        gSaveGameWorkBuffer[0] = 1;
-    if ((s8)gSaveGameWorkBuffer[0xc] < 1)
-        gSaveGameWorkBuffer[0xc] = 1;
+    if (((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[0].health < 1)
+        ((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[0].health = 1;
+    if (((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[1].health < 1)
+        ((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[1].health = 1;
     memcpy(gSaveGameData, gSaveGameWorkBuffer, SAVEGAME_ACTIVE_SIZE);
     loadMapForCurrentSaveGame();
 }

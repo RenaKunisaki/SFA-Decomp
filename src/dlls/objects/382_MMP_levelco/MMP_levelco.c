@@ -34,7 +34,7 @@
 #define MMP_LEVEL_CONTROL_TEXT_ID       0x34F
 #define MMP_LEVEL_CONTROL_TEXT_DURATION 300.0f
 
-SCGameBitLatchState gMMPLevelControlMusicLatch;
+GameBitLatchState gMMPLevelControlMusicLatch;
 f32 gMMPLevelControlTextCountdown;
 
 int mmpLevelControl_processAnimEvents(GameObject* obj, int unusedArg2, ObjSeqState* animUpdate) {
@@ -161,9 +161,9 @@ void mmpLevelControl_update(GameObject* obj) {
         obj->userData2 = 1;
     }
 
-    SCGameBitLatch_Update(&gMMPLevelControlMusicLatch, 1, -1, -1, MMP_LEVEL_CONTROL_GAMEBIT_MUSIC_LATCH_A,
+    GameBitLatch_Update(&gMMPLevelControlMusicLatch, 1, -1, -1, MMP_LEVEL_CONTROL_GAMEBIT_MUSIC_LATCH_A,
                           MUSICTRIG_WLC_Puzzle);
-    SCGameBitLatch_Update(&gMMPLevelControlMusicLatch, 2, -1, -1, GAMEBIT_SHRINE_MUSIC_LOCK,
+    GameBitLatch_Update(&gMMPLevelControlMusicLatch, 2, -1, -1, GAMEBIT_SHRINE_MUSIC_LOCK,
                           MUSICTRIG_PU3_Adventure_c4);
 }
 

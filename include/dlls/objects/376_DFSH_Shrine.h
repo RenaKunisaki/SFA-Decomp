@@ -23,7 +23,7 @@ typedef struct DFSHShrineState {
     ModelLightStruct* light;
     f32 rewardTimer;
     f32 idleChimeTimer;
-    SCGameBitLatchState musicLatch;
+    GameBitLatchState musicLatch;
     s16 startDelayFrames;
     s16 transitionTimer;
     u8 unknown14[0x1A - 0x14];

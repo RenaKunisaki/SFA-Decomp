@@ -260,8 +260,8 @@ void dfshShrine_update(int objArg) {
         mainSetBits(GAMEBIT_ITEM_DeletedSpell1D7, 1);
         gDFSHShrinePendingReward = 0;
     }
-    SCGameBitLatch_UpdateInverted(&state->musicLatch, 1, -1, -1, GAMEBIT_SHRINE_MUSIC_LOCK, 8);
-    SCGameBitLatch_Update(&state->musicLatch, 4, -1, -1, GAMEBIT_SHRINE_MUSIC_LOCK, MUSICTRIG_PU3_Adventure_c4);
+    GameBitLatch_UpdateInverted(&state->musicLatch, 1, -1, -1, GAMEBIT_SHRINE_MUSIC_LOCK, 8);
+    GameBitLatch_Update(&state->musicLatch, 4, -1, -1, GAMEBIT_SHRINE_MUSIC_LOCK, MUSICTRIG_PU3_Adventure_c4);
     if ((f32)(s32)state->transitionTimer > 0.0f) {
         state->transitionTimer = (f32)(s32)state->transitionTimer - timeDelta;
         if ((f32)(s32)state->transitionTimer <= 0.0f) {

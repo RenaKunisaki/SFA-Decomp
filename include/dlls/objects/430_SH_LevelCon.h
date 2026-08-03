@@ -4,9 +4,9 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 
-typedef struct SCGameBitLatchState {
+typedef struct GameBitLatchState {
     int activeMask;
-} SCGameBitLatchState;
+} GameBitLatchState;
 
 typedef struct ShLevelControlState {
     union {
@@ -37,8 +37,8 @@ typedef struct ShLevelControlState {
     };
 } ShLevelControlState;
 
-STATIC_ASSERT(sizeof(SCGameBitLatchState) == 0x04);
-STATIC_ASSERT(offsetof(SCGameBitLatchState, activeMask) == 0x00);
+STATIC_ASSERT(sizeof(GameBitLatchState) == 0x04);
+STATIC_ASSERT(offsetof(GameBitLatchState, activeMask) == 0x00);
 
 STATIC_ASSERT(sizeof(ShLevelControlState) == 0x14);
 STATIC_ASSERT(offsetof(ShLevelControlState, flags) == 0x00);
@@ -56,28 +56,15 @@ STATIC_ASSERT(offsetof(ShLevelControlState, thornTailState) == 0x06);
 STATIC_ASSERT(offsetof(ShLevelControlState, unknown08) == 0x08);
 STATIC_ASSERT(offsetof(ShLevelControlState, mapOverride) == 0x12);
 
-typedef struct SkyEnvFxRampTables {
-    s16 groupA[28];
-    s16 groupB[28];
-    s16 groupC[28];
-    s16 groupD[28];
-} SkyEnvFxRampTables;
-
-STATIC_ASSERT(offsetof(SkyEnvFxRampTables, groupA) == 0x00);
-STATIC_ASSERT(offsetof(SkyEnvFxRampTables, groupB) == 0x38);
-STATIC_ASSERT(offsetof(SkyEnvFxRampTables, groupC) == 0x70);
-STATIC_ASSERT(offsetof(SkyEnvFxRampTables, groupD) == 0xA8);
-STATIC_ASSERT(sizeof(SkyEnvFxRampTables) == 0xE0);
-
 struct ObjSeqState;
 
 int SH_LevelControl_getExtraSize(void);
 void SH_LevelControl_free(void);
 int SH_LevelControl_sequenceCallback(void* obj, void* unused, struct ObjSeqState* updateState);
 void SH_LevelControl_updateTotemPuzzleMapState(void* obj, void* state);
-void SCGameBitLatch_Update(SCGameBitLatchState* state, int mask, s16 clearIfSetBit, s16 clearIfClearBit, s16 latchBit,
+void GameBitLatch_Update(GameBitLatchState* state, int mask, s16 clearIfSetBit, s16 clearIfClearBit, s16 latchBit,
                            int musicId);
-void SCGameBitLatch_UpdateInverted(SCGameBitLatchState* state, int mask, s16 clearIfSetBit, s16 clearIfClearBit,
+void GameBitLatch_UpdateInverted(GameBitLatchState* state, int mask, s16 clearIfSetBit, s16 clearIfClearBit,
                                    s16 latchBit, int musicId);
 void SH_LevelControl_update(GameObject* obj);
 void SH_LevelControl_init(GameObject* obj);

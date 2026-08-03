@@ -22,7 +22,7 @@ typedef struct ScLevelControlState {
     f32 helpTextTimer;
     f32 exitTimer;
     f32 fadeTimer;
-    SCGameBitLatchState musicLatches;
+    GameBitLatchState musicLatches;
     u8 totemComboIndex;
     u8 animEventState;
     u8 playerMapCell;

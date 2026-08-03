@@ -237,9 +237,9 @@ void DFP_LevelControl_update(GameObject* obj)
     case 3:
         break;
     }
-    SCGameBitLatch_Update((SCGameBitLatchState*)state->gameBitLatches, 2, -1, -1, 0xdce, 0x95);
-    SCGameBitLatch_UpdateInverted((SCGameBitLatchState*)state->gameBitLatches, 4, -1, -1, 0xdce, 0x37);
-    SCGameBitLatch_UpdateInverted((SCGameBitLatchState*)state->gameBitLatches, 1, -1, -1, 0xdce, 0xe4);
+    GameBitLatch_Update((GameBitLatchState*)state->gameBitLatches, 2, -1, -1, 0xdce, 0x95);
+    GameBitLatch_UpdateInverted((GameBitLatchState*)state->gameBitLatches, 4, -1, -1, 0xdce, 0x37);
+    GameBitLatch_UpdateInverted((GameBitLatchState*)state->gameBitLatches, 1, -1, -1, 0xdce, 0xe4);
     mainSetBits(0xdcf, 0);
 }
 

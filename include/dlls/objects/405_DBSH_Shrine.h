@@ -26,7 +26,7 @@ typedef struct DBSHShrineFlags {
 
 typedef struct DBSHShrineState {
     ModelLightStruct* light;
-    SCGameBitLatchState gameBitLatch;
+    GameBitLatchState gameBitLatch;
     f32 idleSfxTimer;
     s16 unknown0C;
     s16 orbitPhaseA;

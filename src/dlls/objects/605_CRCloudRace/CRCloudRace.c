@@ -202,9 +202,9 @@ void crcloudrace_update(GameObject* obj)
     }
     crcloudrace_updateRaceState(obj);
     state->flags &= ~1;
-    SCGameBitLatch_Update((SCGameBitLatchState*)state->effect, 1, -1, -1, CRCLOUDRACE_GAMEBIT_START_LATCH_A,
+    GameBitLatch_Update((GameBitLatchState*)state->effect, 1, -1, -1, CRCLOUDRACE_GAMEBIT_START_LATCH_A,
                           CRCLOUDRACE_GAMEBIT_START_LATCH_B);
-    SCGameBitLatch_Update((SCGameBitLatchState*)state->effect, 2, -1, -1, CRCLOUDRACE_GAMEBIT_START_LATCH_A,
+    GameBitLatch_Update((GameBitLatchState*)state->effect, 2, -1, -1, CRCLOUDRACE_GAMEBIT_START_LATCH_A,
                           CRCLOUDRACE_GAMEBIT_START_LATCH_C);
     return;
 }

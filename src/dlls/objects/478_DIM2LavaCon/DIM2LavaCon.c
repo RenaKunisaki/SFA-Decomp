@@ -150,15 +150,15 @@ void dim2lavacontrol_update(GameObject* obj) {
         }
     }
 
-    SCGameBitLatch_Update(&state->musicLatch, DIM2_LAVA_CONTROL_LATCH_MUSIC_0DE, -1, -1, DIM2_LAVA_CONTROL_GAMEBIT_0D99,
+    GameBitLatch_Update(&state->musicLatch, DIM2_LAVA_CONTROL_LATCH_MUSIC_0DE, -1, -1, DIM2_LAVA_CONTROL_GAMEBIT_0D99,
                           DIM2_LAVA_CONTROL_MUSIC_TRIGGER_0DE);
-    SCGameBitLatch_Update(&state->musicLatch, DIM2_LAVA_CONTROL_LATCH_AREA_MUSIC, -1, -1,
+    GameBitLatch_Update(&state->musicLatch, DIM2_LAVA_CONTROL_LATCH_AREA_MUSIC, -1, -1,
                           DIM2_GAMEBIT_AREA_MUSIC_ACTIVE, state->musicTriggerId);
-    SCGameBitLatch_Update(&state->musicLatch, DIM2_LAVA_CONTROL_LATCH_CITY_TOMBS_MUSIC, -1, -1,
+    GameBitLatch_Update(&state->musicLatch, DIM2_LAVA_CONTROL_LATCH_CITY_TOMBS_MUSIC, -1, -1,
                           DIM2_LAVA_CONTROL_GAMEBIT_0F04, MUSICTRIG_citytombs);
-    SCGameBitLatch_UpdateInverted(&state->musicLatch, DIM2_LAVA_CONTROL_LATCH_MUSIC_02C_INVERTED, -1, -1,
+    GameBitLatch_UpdateInverted(&state->musicLatch, DIM2_LAVA_CONTROL_LATCH_MUSIC_02C_INVERTED, -1, -1,
                                   DIM2_LAVA_CONTROL_GAMEBIT_0F04, DIM2_LAVA_CONTROL_MUSIC_TRIGGER_02C);
-    SCGameBitLatch_Update(&state->musicLatch, DIM2_LAVA_CONTROL_LATCH_SHRINE_MUSIC, -1, -1, GAMEBIT_SHRINE_MUSIC_LOCK,
+    GameBitLatch_Update(&state->musicLatch, DIM2_LAVA_CONTROL_LATCH_SHRINE_MUSIC, -1, -1, GAMEBIT_SHRINE_MUSIC_LOCK,
                           MUSICTRIG_PU3_Adventure_c4);
 }
 

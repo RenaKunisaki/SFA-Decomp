@@ -491,11 +491,11 @@ void ecshShrine_update(GameObject* obj) {
     messageArgC = 0;
     while (ObjMsg_Pop(obj, (u32*)&messageArgA, (u32*)&messageArgB, (u32*)&messageArgC) != 0) {
     }
-    SCGameBitLatch_Update(&state->gameBitLatch, ECSH_SHRINE_STATE_FLAG_TEST_RUNNING, ECSH_SHRINE_NO_GAMEBIT,
+    GameBitLatch_Update(&state->gameBitLatch, ECSH_SHRINE_STATE_FLAG_TEST_RUNNING, ECSH_SHRINE_NO_GAMEBIT,
                           ECSH_SHRINE_NO_GAMEBIT, GAMEBIT_ECSH_TestObservRunning, MUSICTRIG_krazoa_doors_open);
-    SCGameBitLatch_UpdateInverted(&state->gameBitLatch, ECSH_SHRINE_STATE_FLAG_MUSIC_LATCH_01, ECSH_SHRINE_NO_GAMEBIT,
+    GameBitLatch_UpdateInverted(&state->gameBitLatch, ECSH_SHRINE_STATE_FLAG_MUSIC_LATCH_01, ECSH_SHRINE_NO_GAMEBIT,
                                   ECSH_SHRINE_NO_GAMEBIT, GAMEBIT_SHRINE_MUSIC_LOCK, MUSICTRIG_vfp_walkabout);
-    SCGameBitLatch_Update(&state->gameBitLatch, ECSH_SHRINE_STATE_FLAG_MUSIC_LATCH_10, ECSH_SHRINE_NO_GAMEBIT,
+    GameBitLatch_Update(&state->gameBitLatch, ECSH_SHRINE_STATE_FLAG_MUSIC_LATCH_10, ECSH_SHRINE_NO_GAMEBIT,
                           ECSH_SHRINE_NO_GAMEBIT, GAMEBIT_SHRINE_MUSIC_LOCK, MUSICTRIG_PU3_Adventure_c4);
     if (state->cooldownTimer > (zero = 0.0f)) {
         state->cooldownTimer = state->cooldownTimer - timeDelta;

@@ -132,20 +132,20 @@ void ccLevelControl_update(GameObject* obj) {
             }
         }
     }
-    SCGameBitLatch_Update(&state->gameBitLatch, CC_LEVEL_CONTROL_LATCH_FLAG_ALIEN_MUSIC, -1, -1,
+    GameBitLatch_Update(&state->gameBitLatch, CC_LEVEL_CONTROL_LATCH_FLAG_ALIEN_MUSIC, -1, -1,
                           CC_LEVEL_CONTROL_ALIEN_MUSIC_GAMEBIT, MUSICTRIG_mmpassalien);
-    SCGameBitLatch_Update(&state->gameBitLatch, CC_LEVEL_CONTROL_LATCH_FLAG_DAY_NIGHT, -1, -1,
+    GameBitLatch_Update(&state->gameBitLatch, CC_LEVEL_CONTROL_LATCH_FLAG_DAY_NIGHT, -1, -1,
                           CC_LEVEL_CONTROL_DAY_NIGHT_MUSIC_GAMEBIT, state->musicTriggerId);
-    SCGameBitLatch_Update(&state->gameBitLatch, CC_LEVEL_CONTROL_LATCH_FLAG_BLIZZARD, -1, -1,
+    GameBitLatch_Update(&state->gameBitLatch, CC_LEVEL_CONTROL_LATCH_FLAG_BLIZZARD, -1, -1,
                           CC_LEVEL_CONTROL_BLIZZARD_MUSIC_GAMEBIT, MUSICTRIG_blizzard);
-    SCGameBitLatch_Update(&state->gameBitLatch, CC_LEVEL_CONTROL_LATCH_FLAG_MUSIC_BF, -1, -1,
+    GameBitLatch_Update(&state->gameBitLatch, CC_LEVEL_CONTROL_LATCH_FLAG_MUSIC_BF, -1, -1,
                           CC_LEVEL_CONTROL_MUSIC_BF_GAMEBIT, CC_LEVEL_CONTROL_MUSIC_TRIGGER_BF);
-    SCGameBitLatch_Update(&state->gameBitLatch, CC_LEVEL_CONTROL_LATCH_FLAG_MUSIC_C0, -1, -1,
+    GameBitLatch_Update(&state->gameBitLatch, CC_LEVEL_CONTROL_LATCH_FLAG_MUSIC_C0, -1, -1,
                           CC_LEVEL_CONTROL_MUSIC_C0_GAMEBIT, CC_LEVEL_CONTROL_MUSIC_TRIGGER_C0);
-    SCGameBitLatch_Update(&state->gameBitLatch, CC_LEVEL_CONTROL_LATCH_FLAG_MUSIC_CD, -1, -1,
+    GameBitLatch_Update(&state->gameBitLatch, CC_LEVEL_CONTROL_LATCH_FLAG_MUSIC_CD, -1, -1,
                           CC_LEVEL_CONTROL_MUSIC_CD_GAMEBIT, CC_LEVEL_CONTROL_MUSIC_TRIGGER_CD);
     if (state->mapAct == CC_LEVEL_CONTROL_MAP_ACT_MUSIC_EA) {
-        SCGameBitLatch_UpdateInverted(&state->gameBitLatch, CC_LEVEL_CONTROL_LATCH_FLAG_MUSIC_EA, -1, -1,
+        GameBitLatch_UpdateInverted(&state->gameBitLatch, CC_LEVEL_CONTROL_LATCH_FLAG_MUSIC_EA, -1, -1,
                                       CC_LEVEL_CONTROL_MUSIC_EA_GAMEBIT, CC_LEVEL_CONTROL_MUSIC_TRIGGER_EA);
     }
     if (mainGetBit(CC_LEVEL_CONTROL_GROUP_1F_DISABLED_GAMEBIT) != 0 &&

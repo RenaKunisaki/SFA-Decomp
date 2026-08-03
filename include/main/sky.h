@@ -91,6 +91,19 @@ typedef struct SkyTimeBlend
     u8 texSel;        /* 0x251 */
 } SkyTimeBlend;
 
+typedef struct SkyEnvFxRampTables {
+    s16 groupA[28];
+    s16 groupB[28];
+    s16 groupC[28];
+    s16 groupD[28];
+} SkyEnvFxRampTables;
+
+STATIC_ASSERT(offsetof(SkyEnvFxRampTables, groupA) == 0x00);
+STATIC_ASSERT(offsetof(SkyEnvFxRampTables, groupB) == 0x38);
+STATIC_ASSERT(offsetof(SkyEnvFxRampTables, groupC) == 0x70);
+STATIC_ASSERT(offsetof(SkyEnvFxRampTables, groupD) == 0xA8);
+STATIC_ASSERT(sizeof(SkyEnvFxRampTables) == 0xE0);
+
 int skyGetDayNo(void);
 void skySetDayNo(int value);
 void skyRefreshPlayerEnvFx(void);

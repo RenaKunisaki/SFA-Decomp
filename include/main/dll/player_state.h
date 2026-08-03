@@ -14,7 +14,12 @@ typedef struct PlayerStatus {
     s16 magic;
     s16 maxMagic;
     u8 money;
+    u8 healCount;
+    u8 healCountMax; /* the pause-menu status line prints "x %d/%d" from this pair */
+    u8 padB;
 } PlayerStatus;
+
+STATIC_ASSERT(sizeof(PlayerStatus) == 12);
 
 /*
  * PlayerState - player.c's obj+0xB8 "inner" record. The head is the

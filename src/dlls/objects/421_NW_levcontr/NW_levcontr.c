@@ -184,10 +184,10 @@ void nwLevelControl_update(GameObject* obj) {
             }
         }
     }
-    SCGameBitLatch_Update((SCGameBitLatchState*)&state->flags, 8, -1, -1, 0x3a0, 0x35);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&state->flags, 0x10, -1, -1, 0x3a1, (int)state->dayNightMusicId);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&state->flags, 0x20, -1, -1, 0x393, 0x36);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&state->flags, 0x40, -1, -1, 0xcbb, 0xc4);
+    GameBitLatch_Update((GameBitLatchState*)&state->flags, 8, -1, -1, 0x3a0, 0x35);
+    GameBitLatch_Update((GameBitLatchState*)&state->flags, 0x10, -1, -1, 0x3a1, (int)state->dayNightMusicId);
+    GameBitLatch_Update((GameBitLatchState*)&state->flags, 0x20, -1, -1, 0x393, 0x36);
+    GameBitLatch_Update((GameBitLatchState*)&state->flags, 0x40, -1, -1, 0xcbb, 0xc4);
     timerActive = 0;
     gameBit = mainGetBit(GAMEBIT_SnowHornArtifact19F);
     rescueBit = mainGetBit(GAMEBIT_SnowHornArtifact19D);
@@ -195,7 +195,7 @@ void nwLevelControl_update(GameObject* obj) {
         timerActive = 1;
     }
     mainSetBits(0xf31, timerActive);
-    SCGameBitLatch_Update((SCGameBitLatchState*)&state->flags, 0x80, -1, -1, 0xf31,
+    GameBitLatch_Update((GameBitLatchState*)&state->flags, 0x80, -1, -1, 0xf31,
                           NW_LEVEL_CONTROL_TIMER_END_MUSIC_ID);
     gameBit = mainGetBit(0x398);
     if ((gameBit != 0) &&

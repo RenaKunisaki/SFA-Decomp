@@ -4,14 +4,11 @@
  * chase General Scales' galleon and shoot out its guns/propellers, and at
  * the end of the level it catches her after Scales throws her overboard and
  * carries her on to Krazoa Palace. The player mounts the bird, holds A to
- * fire a forward burst (WCPushBlock_SpawnFromPath), steers with the analog
+ * fire a forward burst (SB_CloudRunner_SpawnFromPath), steers with the analog
  * stick (padGetStickX/Y feed the yaw/pitch integrators in the steer update,
  * SB_CloudRunner_UpdateSteer), and the laser targets nearby objects
  * (SB_CloudRunner_HandlePriorityHit). The ride leans/banks via
- * WCPushBlock_UpdateRideTilt / WCPushBlock_UpdateCloudAction.
- *
- * The Cloudrunner was retooled from the WC ("warlock") push-block ride,
- * so the shared steering/burst helpers retain their WCPushBlock_* names.
+ * SB_CloudRunner_UpdateRideTilt / SB_CloudRunner_UpdateCloudAction.
  *
  * SB_CloudRunner_UpdateSteer (the analog-steer update) integrates the stick input into
  * the bird's body rotation and advances the flap animation; the two-op
@@ -21,7 +18,6 @@
 #include "sys/objects.h"
 #include "dolphin/mtx.h"
 #include "main/dll/cloudaction_interface.h"
-#include "main/dll/WC/WCpushblock.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/frame_timing.h"
 #include "main/dll/partfx_interface.h"
@@ -57,7 +53,7 @@ void SB_CloudRunner_onSeqFree(GameObject* obj)
 }
 
 
-typedef struct WCPushBlockObjectSetup
+typedef struct SBCloudRunnerBurstSetup
 {
     u8 pad0[4];
     u8 placementMode;
@@ -67,15 +63,15 @@ typedef struct WCPushBlockObjectSetup
     f32 x;
     f32 y;
     f32 z;
-} WCPushBlockObjectSetup;
+} SBCloudRunnerBurstSetup;
 
-struct WCPushBlockState
+struct SBCloudRunnerRideState
 {
     u8 pad0[0x10];
-    void* linkedPushBlock;
+    void* targetObj;
     u8 pad14[0x18];
     s16 cloudYawDrift;
-    s16 pushRoll;
+    s16 rotZAccum;
     u8 pad30[0x30];
     f32 liftAmount;
     u8 pad64;
@@ -89,23 +85,23 @@ struct WCPushBlockState
     f32 liftBase;
 };
 
-#define WCPUSHBLOCK_SPAWN_OBJECT_ID  0x119
-#define WCPUSHBLOCK_SPAWN_SETUP_SIZE 0x18
-#define WCPUSHBLOCK_SPAWN_PATH_POINT 4
-#define WCPUSHBLOCK_SPAWN_SFX        0x127
-#define WCPUSHBLOCK_SPAWN_IDLE_TIMER 0x5a
+#define SB_CLOUDRUNNER_SPAWN_OBJECT_ID  0x119
+#define SB_CLOUDRUNNER_SPAWN_SETUP_SIZE 0x18
+#define SB_CLOUDRUNNER_SPAWN_PATH_POINT 4
+#define SB_CLOUDRUNNER_SPAWN_SFX        0x127
+#define SB_CLOUDRUNNER_SPAWN_IDLE_TIMER 0x5a
 
-#define WCPUSHBLOCK_INPUT_SCALE       70
-#define WCPUSHBLOCK_PITCH_INPUT_SCALE 0x1770
-#define WCPUSHBLOCK_ROLL_INPUT_SCALE  0x2ee0
-#define WCPUSHBLOCK_ANGLE_DAMP_SHIFT  5
-#define WCPUSHBLOCK_MAX_PITCH         0x1f40
-#define WCPUSHBLOCK_MAX_ROLL          0x32c8
-#define WCPUSHBLOCK_RIDE_MOVE_ID      0xf
+#define SB_CLOUDRUNNER_INPUT_SCALE       70
+#define SB_CLOUDRUNNER_PITCH_INPUT_SCALE 0x1770
+#define SB_CLOUDRUNNER_ROLL_INPUT_SCALE  0x2ee0
+#define SB_CLOUDRUNNER_ANGLE_DAMP_SHIFT  5
+#define SB_CLOUDRUNNER_MAX_PITCH         0x1f40
+#define SB_CLOUDRUNNER_MAX_ROLL          0x32c8
+#define SB_CLOUDRUNNER_RIDE_MOVE_ID      0xf
 
-void WCPushBlock_SpawnFromPath(GameObject* path, u8* unusedState)
+void SB_CloudRunner_SpawnFromPath(GameObject* path, u8* unusedState)
 {
-    WCPushBlockObjectSetup* setup;
+    SBCloudRunnerBurstSetup* setup;
     GameObject* block;
     f32 outVec[3];
     MatrixTransform rotation;
@@ -115,7 +111,7 @@ void WCPushBlock_SpawnFromPath(GameObject* path, u8* unusedState)
         return;
     }
 
-    Sfx_PlayFromObject(0, WCPUSHBLOCK_SPAWN_SFX);
+    Sfx_PlayFromObject(0, SB_CLOUDRUNNER_SPAWN_SFX);
 
     rotation.x = 0.0f;
     rotation.y = 0.0f;
@@ -129,13 +125,13 @@ void WCPushBlock_SpawnFromPath(GameObject* path, u8* unusedState)
     outVec[2] = -80.0f;
     vecRotateZXY(&rotation.rotX, outVec);
 
-    setup = (WCPushBlockObjectSetup*)Obj_AllocObjectSetup(WCPUSHBLOCK_SPAWN_SETUP_SIZE,
-                                                          WCPUSHBLOCK_SPAWN_OBJECT_ID);
+    setup = (SBCloudRunnerBurstSetup*)Obj_AllocObjectSetup(SB_CLOUDRUNNER_SPAWN_SETUP_SIZE,
+                                                           SB_CLOUDRUNNER_SPAWN_OBJECT_ID);
     setup->linkA = 0xff;
     setup->linkB = 0xff;
     setup->placementMode = 2;
     setup->group = 1;
-    ObjPath_GetPointWorldPosition(path, WCPUSHBLOCK_SPAWN_PATH_POINT, &setup->x, &setup->y, &setup->z, 0);
+    ObjPath_GetPointWorldPosition(path, SB_CLOUDRUNNER_SPAWN_PATH_POINT, &setup->x, &setup->y, &setup->z, 0);
 
     block = (GameObject*)objSetupObject((ObjPlacement*)setup, 5, -1, -1, NULL);
     if (block == NULL)
@@ -158,14 +154,14 @@ void WCPushBlock_SpawnFromPath(GameObject* path, u8* unusedState)
     block->anim.velocityX = outVec[0];
     block->anim.velocityY = outVec[1];
     block->anim.velocityZ = outVec[2];
-    block->userData1 = WCPUSHBLOCK_SPAWN_IDLE_TIMER;
+    block->userData1 = SB_CLOUDRUNNER_SPAWN_IDLE_TIMER;
     block->userData2 = (int)path;
     block->anim.rotZ = 0;
     block->anim.rotY = 0;
     block->anim.rotX = 0;
 }
 
-void WCPushBlock_UpdateCloudAction(int obj, WCPushBlockState* state)
+void SB_CloudRunner_UpdateCloudAction(int obj, SBCloudRunnerRideState* state)
 {
     f32 angle;
     f32 rotorCos;
@@ -186,9 +182,9 @@ void WCPushBlock_UpdateCloudAction(int obj, WCPushBlockState* state)
     angle = (3.1415927f * state->rotorAngle) / 32768.0f;
     rotorSin = mathSinf(angle);
 
-    if (state->linkedPushBlock != NULL)
+    if (state->targetObj != NULL)
     {
-        targetLift = state->pushRoll / 1000.0f;
+        targetLift = state->rotZAccum / 1000.0f;
     }
     else
     {
@@ -214,7 +210,7 @@ void WCPushBlock_UpdateCloudAction(int obj, WCPushBlockState* state)
     (*gCloudActionInterface)->func12Nop(moveZ, moveX);
 }
 
-void WCPushBlock_UpdateRideTilt(GameObject* obj, WCPushBlockState* state)
+void SB_CloudRunner_UpdateRideTilt(GameObject* obj, SBCloudRunnerRideState* state)
 {
     int targetPitch;
     int targetRoll;
@@ -223,15 +219,15 @@ void WCPushBlock_UpdateRideTilt(GameObject* obj, WCPushBlockState* state)
     int pitch;
     int roll;
 
-    targetPitch = (-state->stickY * WCPUSHBLOCK_PITCH_INPUT_SCALE) / WCPUSHBLOCK_INPUT_SCALE;
-    targetRoll = (-state->stickX * WCPUSHBLOCK_ROLL_INPUT_SCALE) / WCPUSHBLOCK_INPUT_SCALE;
+    targetPitch = (-state->stickY * SB_CLOUDRUNNER_PITCH_INPUT_SCALE) / SB_CLOUDRUNNER_INPUT_SCALE;
+    targetRoll = (-state->stickX * SB_CLOUDRUNNER_ROLL_INPUT_SCALE) / SB_CLOUDRUNNER_INPUT_SCALE;
 
     {
         f32 t = (f32)(state->stickX << 3) / 3.0f;
         state->cloudYawDrift = (s16)(-(t * timeDelta - state->cloudYawDrift));
     }
     state->cloudYawDrift =
-        (s16)(state->cloudYawDrift - ((state->cloudYawDrift * framesThisStep) >> WCPUSHBLOCK_ANGLE_DAMP_SHIFT));
+        (s16)(state->cloudYawDrift - ((state->cloudYawDrift * framesThisStep) >> SB_CLOUDRUNNER_ANGLE_DAMP_SHIFT));
 
     pitchDelta = targetPitch - (u16)obj->anim.rotY;
     if (pitchDelta > 0x8000)
@@ -245,7 +241,7 @@ void WCPushBlock_UpdateRideTilt(GameObject* obj, WCPushBlockState* state)
 
     obj->anim.rotY = (s16)(0.05f * ((f32)pitchDelta * timeDelta) + (f32) * (s16*)(int)&obj->anim.rotY);
 
-    rollDelta = targetRoll - (u16)state->pushRoll;
+    rollDelta = targetRoll - (u16)state->rotZAccum;
     if (rollDelta > 0x8000)
     {
         rollDelta = (rollDelta - 0x10000) + 1;
@@ -255,36 +251,36 @@ void WCPushBlock_UpdateRideTilt(GameObject* obj, WCPushBlockState* state)
         rollDelta = (rollDelta + 0x10000) - 1;
     }
 
-    state->pushRoll = (s16)(0.05f * ((f32)rollDelta * timeDelta) + (f32) * (s16*)(int)&state->pushRoll);
+    state->rotZAccum = (s16)(0.05f * ((f32)rollDelta * timeDelta) + (f32) * (s16*)(int)&state->rotZAccum);
 
     pitch = obj->anim.rotY;
-    if (pitch < -WCPUSHBLOCK_MAX_PITCH)
+    if (pitch < -SB_CLOUDRUNNER_MAX_PITCH)
     {
-        pitch = -WCPUSHBLOCK_MAX_PITCH;
+        pitch = -SB_CLOUDRUNNER_MAX_PITCH;
     }
-    else if (pitch > WCPUSHBLOCK_MAX_PITCH)
+    else if (pitch > SB_CLOUDRUNNER_MAX_PITCH)
     {
-        pitch = WCPUSHBLOCK_MAX_PITCH;
+        pitch = SB_CLOUDRUNNER_MAX_PITCH;
     }
     obj->anim.rotY = pitch;
 
-    roll = state->pushRoll;
-    if (roll < -WCPUSHBLOCK_MAX_ROLL)
+    roll = state->rotZAccum;
+    if (roll < -SB_CLOUDRUNNER_MAX_ROLL)
     {
-        roll = -WCPUSHBLOCK_MAX_ROLL;
+        roll = -SB_CLOUDRUNNER_MAX_ROLL;
     }
-    else if (roll > WCPUSHBLOCK_MAX_ROLL)
+    else if (roll > SB_CLOUDRUNNER_MAX_ROLL)
     {
-        roll = WCPUSHBLOCK_MAX_ROLL;
+        roll = SB_CLOUDRUNNER_MAX_ROLL;
     }
-    state->pushRoll = roll;
+    state->rotZAccum = roll;
 
     obj->anim.rotX = (s16)(state->cloudYawDrift + 0x4000);
-    obj->anim.rotZ = state->pushRoll;
+    obj->anim.rotZ = state->rotZAccum;
 
-    if (obj->anim.currentMove != WCPUSHBLOCK_RIDE_MOVE_ID)
+    if (obj->anim.currentMove != SB_CLOUDRUNNER_RIDE_MOVE_ID)
     {
-        ObjAnim_SetCurrentMove((int)obj, WCPUSHBLOCK_RIDE_MOVE_ID, 0.0f, 0);
+        ObjAnim_SetCurrentMove((int)obj, SB_CLOUDRUNNER_RIDE_MOVE_ID, 0.0f, 0);
     }
 
     if (ObjAnim_AdvanceCurrentMove((int)obj, 0.015f, timeDelta, NULL) != 0)
@@ -515,7 +511,7 @@ void SB_CloudRunner_UpdateSteer(GameObject* obj, SBCloudRunnerState* state)
     }
     if (doSpawn)
     {
-        WCPushBlock_SpawnFromPath(obj, (u8*)state);
+        SB_CloudRunner_SpawnFromPath(obj, (u8*)state);
     }
 }
 
@@ -809,7 +805,7 @@ void SB_CloudRunner_update(GameObject* obj)
         SB_CloudRunner_HandlePriorityHit(obj, state);
         break;
     case RIDE_SUBSTATE_TILT:
-        WCPushBlock_UpdateRideTilt(obj, (WCPushBlockState*)state);
+        SB_CloudRunner_UpdateRideTilt(obj, (SBCloudRunnerRideState*)state);
         break;
     case RIDE_SUBSTATE_DISMOUNT_A:
     case RIDE_SUBSTATE_DISMOUNT_B:
@@ -829,7 +825,7 @@ void SB_CloudRunner_update(GameObject* obj)
     {
         state->rideFrames = 0;
     }
-    WCPushBlock_UpdateCloudAction((int)obj, (WCPushBlockState*)state);
+    SB_CloudRunner_UpdateCloudAction((int)obj, (SBCloudRunnerRideState*)state);
 }
 
 

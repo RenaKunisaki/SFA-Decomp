@@ -2000,8 +2000,6 @@ void skyLoadLights(void)
 void skyResetState(void)
 {
     u8* tex0;
-    int iofs;
-    int jofs;
     int i;
     int j;
 
@@ -2048,57 +2046,51 @@ void skyResetState(void)
     tex0 = *(u8**)gSkyState;
     ((SkyState*)gSkyState)->texture0 = textureAlloc(((Texture*)tex0)->width, ((Texture*)tex0)->height, 6, 0, 0, 1, 0, 1, 1);
     ((SkyState*)gSkyState)->texture1 = textureAlloc(((Texture*)tex0)->width, ((Texture*)tex0)->height, 6, 0, 0, 1, 0, 1, 1);
-    i = 0;
-    iofs = 0;
-    do
+    for (i = 0; i < 3; i++)
     {
-        jofs = 0;
         for (j = 0; j < 3; j++)
         {
-            *(f32*)(iofs + (int)gSkyState + jofs + 0x20) = 255.0f;
-            *(f32*)(iofs + (int)gSkyState + jofs + 0x24) = 255.0f;
-            *(f32*)(iofs + (int)gSkyState + jofs + 0x28) = 255.0f;
-            *(f32*)(iofs + (int)gSkyState + jofs + 0x2c) = 255.0f;
-            *(f32*)(iofs + (int)gSkyState + jofs + 0x30) = 255.0f;
-            *(f32*)(iofs + (int)gSkyState + jofs + 0x34) = 255.0f;
-            *(f32*)(iofs + (int)gSkyState + jofs + 0x38) = 255.0f;
-            jofs += 0x1c;
+            ((SkyState*)gSkyState)->lights[i].curves[j][0] = 255.0f;
+            ((SkyState*)gSkyState)->lights[i].curves[j][1] = 255.0f;
+            ((SkyState*)gSkyState)->lights[i].curves[j][2] = 255.0f;
+            ((SkyState*)gSkyState)->lights[i].curves[j][3] = 255.0f;
+            ((SkyState*)gSkyState)->lights[i].curves[j][4] = 255.0f;
+            ((SkyState*)gSkyState)->lights[i].curves[j][5] = 255.0f;
+            ((SkyState*)gSkyState)->lights[i].curves[j][6] = 255.0f;
         }
-        gSkyState[iofs + 0x74] = 0xff;
-        gSkyState[iofs + 0x75] = 0xff;
-        gSkyState[iofs + 0x76] = 0xff;
-        gSkyState[iofs + 0x78] = 0xff;
-        gSkyState[iofs + 0x79] = 0xff;
-        gSkyState[iofs + 0x7a] = 0xff;
-        gSkyState[iofs + 0x80] = 0xff;
-        gSkyState[iofs + 0x81] = 0xff;
-        gSkyState[iofs + 0x82] = 0xff;
-        gSkyState[iofs + 0x88] = 0xff;
-        gSkyState[iofs + 0x89] = 0xff;
-        gSkyState[iofs + 0x8a] = 0xff;
-        *(f32*)(gSkyState + iofs + 0x90) = 0.0f;
-        *(f32*)(gSkyState + iofs + 0x94) = (-1.0f);
-        *(f32*)(gSkyState + iofs + 0x98) = 0.0f;
-        *(f32*)(gSkyState + iofs + 0x9c) = 0.0f;
-        *(f32*)(gSkyState + iofs + 0xa0) = (-1.0f);
-        *(f32*)(gSkyState + iofs + 0xa4) = 0.0f;
-        ((SkyBlendStateFlags*)(gSkyState + iofs + 0xc1))->active = 0;
-        *(f32*)(gSkyState + iofs + 0xa8) = 0.2f;
-        *(f32*)(gSkyState + iofs + 0xac) = 1.0f;
-        *(f32*)(gSkyState + iofs + 0xb0) = 0.2f;
-        gSkyState[iofs + 0x7c] = 0xff;
-        gSkyState[iofs + 0x7d] = 0xff;
-        gSkyState[iofs + 0x7e] = 0xff;
-        gSkyState[iofs + 0x84] = 0xff;
-        gSkyState[iofs + 0x85] = 0xff;
-        gSkyState[iofs + 0x86] = 0xff;
-        gSkyState[iofs + 0x8c] = 0xff;
-        gSkyState[iofs + 0x8d] = 0xff;
-        gSkyState[iofs + 0x8e] = 0xff;
-        gSkyState[iofs + 0xc0] = 0x80;
-        iofs += 0xa4;
-        i++;
-    } while (i < 3);
+        ((SkyState*)gSkyState)->lights[i].blendTargetR = 0xff;
+        ((SkyState*)gSkyState)->lights[i].blendTargetG = 0xff;
+        ((SkyState*)gSkyState)->lights[i].blendTargetB = 0xff;
+        ((SkyState*)gSkyState)->lights[i].sunColorR = 0xff;
+        ((SkyState*)gSkyState)->lights[i].sunColorG = 0xff;
+        ((SkyState*)gSkyState)->lights[i].sunColorB = 0xff;
+        ((SkyState*)gSkyState)->lights[i].moonColorR = 0xff;
+        ((SkyState*)gSkyState)->lights[i].moonColorG = 0xff;
+        ((SkyState*)gSkyState)->lights[i].moonColorB = 0xff;
+        ((SkyState*)gSkyState)->lights[i].ambientR = 0xff;
+        ((SkyState*)gSkyState)->lights[i].ambientG = 0xff;
+        ((SkyState*)gSkyState)->lights[i].ambientB = 0xff;
+        ((SkyState*)gSkyState)->lights[i].directionX = 0.0f;
+        ((SkyState*)gSkyState)->lights[i].directionY = (-1.0f);
+        ((SkyState*)gSkyState)->lights[i].directionZ = 0.0f;
+        ((SkyState*)gSkyState)->lights[i].moonDirectionX = 0.0f;
+        ((SkyState*)gSkyState)->lights[i].moonDirectionY = (-1.0f);
+        ((SkyState*)gSkyState)->lights[i].moonDirectionZ = 0.0f;
+        ((SkyState*)gSkyState)->lights[i].flags.active = 0;
+        ((SkyState*)gSkyState)->lights[i].overrideDirectionX = 0.2f;
+        ((SkyState*)gSkyState)->lights[i].overrideDirectionY = 1.0f;
+        ((SkyState*)gSkyState)->lights[i].overrideDirectionZ = 0.2f;
+        ((SkyState*)gSkyState)->lights[i].overrideSunColorR = 0xff;
+        ((SkyState*)gSkyState)->lights[i].overrideSunColorG = 0xff;
+        ((SkyState*)gSkyState)->lights[i].overrideSunColorB = 0xff;
+        ((SkyState*)gSkyState)->lights[i].overrideMoonColorR = 0xff;
+        ((SkyState*)gSkyState)->lights[i].overrideMoonColorG = 0xff;
+        ((SkyState*)gSkyState)->lights[i].overrideMoonColorB = 0xff;
+        ((SkyState*)gSkyState)->lights[i].overrideAmbientR = 0xff;
+        ((SkyState*)gSkyState)->lights[i].overrideAmbientG = 0xff;
+        ((SkyState*)gSkyState)->lights[i].overrideAmbientB = 0xff;
+        ((SkyState*)gSkyState)->lights[i].blendAlpha = 0x80;
+    }
 }
 
 void skyUpdateEnvfxAct(int a, int b, u8* cfg)

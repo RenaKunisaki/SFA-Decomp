@@ -12,7 +12,7 @@
  *  - the spell-tablet ordered-sequence puzzle (VFP_LevelControl_updateSpellTabletPuzzle), which
  *    requires the four step bits to light in order and grants the
  *    "sequence done" bit when all four are set;
- *  - two music latches driven through SCGameBitLatch_Update.
+ *  - two music latches driven through GameBitLatch_Update.
  */
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
@@ -189,8 +189,8 @@ void VFP_LevelControl_update(GameObject* obj)
         break;
     }
 
-    SCGameBitLatch_Update((SCGameBitLatchState*)state->latch.raw, 1, -1, -1, GAMEBIT_VFP_LATCH, VFP_MUSIC_A);
-    SCGameBitLatch_Update((SCGameBitLatchState*)state->latch.raw, 2, -1, -1, GAMEBIT_VFP_LATCH, VFP_MUSIC_B);
+    GameBitLatch_Update((GameBitLatchState*)state->latch.raw, 1, -1, -1, GAMEBIT_VFP_LATCH, VFP_MUSIC_A);
+    GameBitLatch_Update((GameBitLatchState*)state->latch.raw, 2, -1, -1, GAMEBIT_VFP_LATCH, VFP_MUSIC_B);
 }
 
 void VFP_LevelControl_init(GameObject* obj, VfpLevelControlSetup* setup)

@@ -502,7 +502,7 @@ The remaining four in this section are **Lane B's measurements**.
 
 **The statement split does not generalise to pool-constant placement.** Splitting a statement to
 move where a constant is materialised is a real lever in its own right, but it is not a
-general-purpose placement knob. At `DBprotection_updateFlight` site 2 the statement was
+general-purpose placement knob. At `SB_Galleon_updateFlight` site 2 the statement was
 *already* split; merging it back **regressed 99.061 -> 99.009**. Before applying it, check
 whether the site is already at the setting you are about to "fix" — the same
 already-at-its-optimum trap as the abs spellings above.
@@ -785,7 +785,7 @@ context, or fragment mirage. Worth knowing before anyone re-derives it:
   `ObjSeq_onMapSetup` 99.79->80.26, `trickyFindReachableRouteIndex` 99.786->97.821. The
   high-water is a pre-merge/pre-split fragment score in all three; current is at or above
   the post-merge value. Read the claiming commit before building anything.
-- **A high-water can be below current.** `DBprotection_updateFlight` was already 99.707
+- **A high-water can be below current.** `SB_Galleon_updateFlight` was already 99.707
   against a 99.680 claim — a peer had fixed it. Re-read current before opening an entry.
 - **Restructured-context is stale-claim's common form.** `SaveGame_gplaySetObjGroupStatus`'s
   claim was a comma-order swap in a walking-pointer loop; the DLL rehome rewrote that loop
