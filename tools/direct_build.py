@@ -26,6 +26,7 @@ caller can switch to it unconditionally.
 from __future__ import annotations
 
 import subprocess
+import sys
 import threading
 from pathlib import Path
 
@@ -71,3 +72,28 @@ def direct_build(unit_object: str, version: str = "GSAE01") -> bool:
     r = subprocess.run(["bash", "--noprofile", "--norc", "-c", cmd],
                        cwd=REPO, capture_output=True, text=True)
     return r.returncode == 0 and out.is_file()
+
+
+def main(argv: list[str]) -> int:
+    """CLI: `python3 tools/direct_build.py <unit-object> [version]`.
+
+    This module used to be import-only and had NO entry point at all, so
+    running it from a shell did nothing and exited 0.  A caller that rebuilt
+    an object that way and then measured it read the PREVIOUS probe's object
+    and attributed its score to the source now on disk -- which is how this
+    lane once recorded a 98.458 for a variant that actually measures 98.204.
+    A build tool that silently builds nothing is worse than one that fails.
+    """
+    if not argv or argv[0] in ("-h", "--help"):
+        print(__doc__.strip().splitlines()[0])
+        print("usage: direct_build.py <build/<ver>/{obj,src}/<path>.o> [version]")
+        return 2
+    version = argv[1] if len(argv) > 1 else "GSAE01"
+    ok = direct_build(argv[0], version)
+    if not ok:
+        sys.stderr.write("direct_build: FAILED to build %s\n" % argv[0])
+    return 0 if ok else 1
+
+
+if __name__ == "__main__":
+    sys.exit(main(sys.argv[1:]))

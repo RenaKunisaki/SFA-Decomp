@@ -460,6 +460,28 @@ def family_build(unit_object, verbose):
     bad += not ok
     print("  [%s] direct_build reproduces ninja's object bytes  %s"
           % ("held" if ok else "DIVERGES", before[:12]))
+
+    # THE CLI IS A SEPARATE SURFACE.  direct_build was import-only, with no
+    # `__main__` at all: a shell caller got a silent no-op and exit 0, then
+    # measured whatever object the PREVIOUS probe had left behind.  So the CLI
+    # must (a) actually rebuild a deleted object, and (b) FAIL, not succeed,
+    # when it cannot -- the second half is the control, because a no-op passes
+    # (a) trivially once the object is already there.
+    dbp = os.path.join(REPO, "tools", "direct_build.py")
+    os.unlink(src_o)
+    rc_ok, _ = run([PY, dbp, unit_object])
+    built = os.path.exists(src_o) and md5(src_o) == before
+    ok = rc_ok == 0 and built
+    bad += not ok
+    print("  [%s] ...and its CLI rebuilds a DELETED object (rc=%s, rebuilt=%s)"
+          % ("held" if ok else "SILENT NO-OP", rc_ok, built))
+    rc_bad, _ = run([PY, dbp, "build/GSAE01/obj/main/__no_such_unit__.o"])
+    rc_none, _ = run([PY, dbp])
+    ok = rc_bad != 0 and rc_none != 0
+    bad += not ok
+    print("  [%s] ...and it reports FAILURE for a target it cannot build "
+          "(rc=%s) and for no argument at all (rc=%s)"
+          % ("held" if ok else "EXITS 0 ANYWAY", rc_bad, rc_none))
     # non-vacuity: the comparison must be able to see a difference at all
     with open(src_o, "r+b") as fh:
         fh.seek(0x30)
