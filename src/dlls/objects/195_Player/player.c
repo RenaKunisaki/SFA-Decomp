@@ -9138,10 +9138,9 @@ int playerState09(GameObject* obj, int state)
     return 0;
 }
 
-int playerState08(GameObject* obj, int state, f32 fv)
-{
+int playerState08(GameObject* obj, int state, f32 fv) {
     PlayerState* inner = obj->extra;
-    int c;
+    s8 c;
     int* list;
     int i;
     u8 buf[64];
@@ -9151,30 +9150,20 @@ int playerState08(GameObject* obj, int state, f32 fv)
     int cnt30;
 
     dist = 200.0f;
-    if (inner->curAnimId != 0x44)
-    {
-        if (((PlayerState*)inner)->heldObj != NULL)
-        {
-            c = (s8)playerCheckIfClimbingOntoWall((int)obj, (int)inner, state, buf, fv, 0x22);
+    if (inner->curAnimId != 0x44) {
+        if (((PlayerState*)inner)->heldObj != NULL) {
+            c = playerCheckIfClimbingOntoWall((int)obj, (int)inner, state, buf, fv, 0x22);
+        } else {
+            c = playerCheckIfClimbingOntoWall((int)obj, (int)inner, state, buf, fv, (u32)-0x141);
         }
-        else
-        {
-            c = (s8)playerCheckIfClimbingOntoWall((int)obj, (int)inner, state, buf, fv, (u32)-0x141);
-        }
-        if ((s8)c == -1)
-        {
+        if (c == -1) {
             inner->climbProbeResult = -1;
             inner->climbProbeStableCount = 0;
-        }
-        else if ((s8)c == inner->climbProbeResult)
-        {
-            if (++inner->climbProbeStableCount > 200)
-            {
+        } else if (c == inner->climbProbeResult) {
+            if (++inner->climbProbeStableCount > 200) {
                 inner->climbProbeStableCount = 200;
             }
-        }
-        else
-        {
+        } else {
             inner->climbProbeResult = c;
             inner->climbProbeStableCount = 0;
         }
