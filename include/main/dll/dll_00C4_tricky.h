@@ -5,8 +5,7 @@
 
 #define TRICKY_ITEM_ID_COUNT 5
 
-typedef struct TrickyItemIdList
-{
+typedef struct TrickyItemIdList {
     s32 ids[TRICKY_ITEM_ID_COUNT];
 } TrickyItemIdList;
 
@@ -23,8 +22,7 @@ extern ObjectDescriptor21 gTrickyObjDescriptor;
 
 /* gTrickyObjDescriptor from slot02 onwards: the export table other objects reach through
    obj->anim.dll. */
-typedef struct TrickyCompanionInterface
-{
+typedef struct TrickyCompanionInterface {
     void* pad00[8];
     int (*getAvailableCommands)(GameObject* tricky);
     int (*updateSideCommandPrompts)(GameObject* tricky);
@@ -58,13 +56,13 @@ void trickyDebugPrint(const char* fmt, ...);
 u8* Tricky_findNearestGroup4BObject(u8* obj, TrickyState* state);
 void tricky_attachToWalkGroup(GameObject* obj, int state);
 void tricky_stateIdleWander(GameObject* obj, int state);
-int Tricky_requestMoveToObject(int* obj, int targetObj);
+int Tricky_requestMoveToObject(GameObject* obj, GameObject* targetObj);
 void Tricky_commandPlayBall(int* obj, int commandEnabled, int targetObj);
 void sideCommandEnable(GameObject* obj, GameObject* targetObj, int commandKind, int commandType);
 int Tricky_updateSideCommandPrompts(int obj);
 void Tricky_free(int obj, int shouldKeepFlameChildren);
 void Tricky_init(GameObject* obj);
-int tricky_SeqFn(int obj, int unused, ObjSeqState* animUpdate);
+int tricky_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 void Tricky_update(int obj);
 void Tricky_render(GameObject* obj, int p2, int p3, int p4, int p5, char doRender);
 void Tricky_hitDetect(GameObject* obj);

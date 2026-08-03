@@ -3,7 +3,7 @@
 
 #include "global.h"
 
-void tricky_updateBallRoll(int obj, TrickyState* ball);
+void tricky_updateBallRoll(GameObject* obj, TrickyState* ball);
 void tricky_state04_nop(void);
 
 #endif /* MAIN_DLL_TRICKY_ROLLROUTE_H_ */

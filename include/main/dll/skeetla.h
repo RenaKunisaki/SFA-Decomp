@@ -7,8 +7,9 @@
 #include "main/dll/skeetla_route_api.h"
 #include "game/objects/object.h"
 
-typedef struct SkeetlaParticleSpawnArgs
-{
+typedef struct TrickyState TrickyState;
+
+typedef struct SkeetlaParticleSpawnArgs {
     s16 objectId;
     s16 pad0;
     u16 sourceId;
@@ -19,13 +20,13 @@ typedef struct SkeetlaParticleSpawnArgs
     f32 z;
 } SkeetlaParticleSpawnArgs;
 
-int trickyTurnTowardYaw(u8* obj, s16 targetYaw);
+int trickyTurnTowardYaw(GameObject* obj, s16 targetYaw);
 int moveTricky(GameObject* obj, f32* targetPos);
 void* trickyFindNearestLinkedRouteEntry(u8* context, u8* routeDef, int linkSelector, int routeFlagValue);
 void* trickyFindPathRouteEntry(u8* state, u32 route, int pathId);
 void* trickySelectRouteEntry(u8* state, u8* routeDef, u8 routeFlagValue);
-int trickyFindReachableRouteIndex(u8* state, void** routes, u8* routeFlags, int pathId);
-void trickyRankLinkedRouteCandidates(GameObject* obj, u8* outRouteFlags, s16 linkSelector, void** outRoutes);
+int trickyFindReachableRouteIndex(TrickyState* state, RomCurveDef** routes, u8* routeFlags, int pathId);
+void trickyRankLinkedRouteCandidates(GameObject* obj, u8* outRouteFlags, s16 linkSelector, RomCurveDef** outRoutes);
 void skeetla_spawnLinkedSparks(u8* obj);
 void trickyAdjustStepAroundPoint(f32* start, f32* end, f32* guardPoint, f32* center, f32 minDistance, f32 moveDistance);
 void trickyApplyObjectAvoidanceToStep(f32* start, f32* end, f32* guardPoint);

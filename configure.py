@@ -1346,7 +1346,7 @@ config.libs = [
 
             # dlls/objects
             Object(NonMatching, "dlls/objects/195_Player/player.c", mw_version="GC/1.3"),
-            Object(NonMatching, "dlls/objects/196_Tricky/tricky.c", cflags=[*cflags_base, "-opt", "nopeephole,noschedule,nopropagation,nodead", "-inline", "noauto"]),
+            Object(NonMatching, "dlls/objects/196_Tricky/tricky.c", cflags=cflags_dll_noopt_noprop_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/objects/197/197.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/198_AnimatedObj/AnimatedObj.c"),
             Object(MatchingFor("GSAE01"), "dlls/objects/199_DIM2RoofRub/DIM2RoofRub.c", cflags=cflags_dll_noopt_noprop),
