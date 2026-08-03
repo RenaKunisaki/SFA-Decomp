@@ -92,17 +92,14 @@ void worldobj_spawnGreatFoxEffects(GameObject* obj) {
     WorldObjEffectParams params;
     u8 i;
     f32 scale;
-    f32 offsetScale;
 
-    for (i = 0, offsetScale = 0.64f; i < GREAT_FOX_EFFECT_COUNT; i++) {
-        GreatFoxFxEntry* effect;
-
+    for (i = 0; i < GREAT_FOX_EFFECT_COUNT; i++) {
         scale = obj->anim.rootMotionScale;
-        effect = &gGreatFoxEffects[i];
-        params.offsetX = offsetScale * (scale * effect->offsetX);
-        params.offsetY = offsetScale * (scale * effect->offsetY);
-        params.offsetZ = offsetScale * (scale * effect->offsetZ);
-        objfx_spawnMaskedHitEffect(obj, scale * effect->effectScale, 3, effect->effectType, effect->mask, &params);
+        params.offsetX = 0.64f * (scale * gGreatFoxEffects[i].offsetX);
+        params.offsetY = 0.64f * (scale * gGreatFoxEffects[i].offsetY);
+        params.offsetZ = 0.64f * (scale * gGreatFoxEffects[i].offsetZ);
+        objfx_spawnMaskedHitEffect(obj, scale * gGreatFoxEffects[i].effectScale, 3, gGreatFoxEffects[i].effectType,
+                                   gGreatFoxEffects[i].mask, &params);
     }
     params.effectScale = -1.0f;
     params.offsetX = 0.64f * (-0.823f * obj->anim.rootMotionScale);
