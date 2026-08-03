@@ -1379,11 +1379,8 @@ dlls/engine/51/51.c:
 	.sbss       start:0x803DE278 end:0x803DE290
 	.sdata2     start:0x803E2988 end:0x803E2990
 
-n_attractmode.c:
-	.text       start:0x801163B8 end:0x80116858
-
-dlls/engine/52/52.c:
-	.text       start:0x80116858 end:0x801175B4
+dlls/engine/52_n_attractmode/n_attractmode.c:
+	.text       start:0x801163B8 end:0x801175B4
 	.data       start:0x8031AE28 end:0x8031B000
 	.sbss       start:0x803DE290 end:0x803DE2D8
 	.sdata2     start:0x803E2990 end:0x803E29B0

@@ -3,7 +3,6 @@
 
 #include "main/dll/dll_02C0_front_api.h"
 #include "main/texture.h"
-#include "main/dll/ppcwgpipe_struct.h"
 #include "main/camera_interface.h"
 #include "main/dll/tricky_state.h"
 #include "game/objects/object.h"

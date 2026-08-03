@@ -1196,7 +1196,7 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "dlls/engine/49/49.c", cflags=cflags_dll_noopt_noautoinline),
             Object(MatchingFor("GSAE01"), "dlls/engine/50/50.c", cflags=cflags_dll_noopt_nocse_noprop),
             Object(MatchingFor("GSAE01"), "dlls/engine/51/51.c"),
-            Object(MatchingFor("GSAE01"), "dlls/engine/52/52.c"),
+            Object(MatchingFor("GSAE01"), "dlls/engine/52_n_attractmode/n_attractmode.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "dlls/engine/53/53.c", cflags=cflags_dll_noopt_noinline, section_alignments={".data": 4}),
             Object(MatchingFor("GSAE01"), "dlls/engine/54/54.c", mw_version="GC/1.3"),
             Object(MatchingFor("GSAE01"), "dlls/engine/55/55.c", cflags=cflags_dll_noopt_noautoinline),
@@ -1929,7 +1929,6 @@ config.libs = [
             Object(MatchingFor("GSAE01"), "track/intersect_mtx44.c", cflags=cflags_dll_noopt_noautoinline),
             Object(NonMatching, "track/intersect_render.c", cflags=cflags_dll_noopt),
             Object(Matching, "track/intersect_memcard.c", cflags=cflags_dll_noopt_noautoinline),
-            Object(Matching, "n_attractmode.c"),
 
             # main/thp
             Object(Matching, "main/thp/dll_3b.c", cflags=cflags_dll_noopt_noinline),

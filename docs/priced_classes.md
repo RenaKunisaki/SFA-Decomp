@@ -1239,7 +1239,7 @@ up as a changed object immediately.
 At `cb88387945` the census reports 47 residual rows. Most are the tool's own spelling blindness
 (a typedef against its `struct` tag: `GXData*` vs `struct __GXData_struct*`,
 `FrontendSaveSlot*` vs `struct FrontendSaveSlot*`). The rest are the adjudicated pins —
-`renderFlags` (`int` in `tex_dolphin` only), `gLightmapDrawQueue`, `sNAttractModeStringBlock`,
+`renderFlags` (`int` in `tex_dolphin` only), `gLightmapDrawQueue`,
 `gAttractMoviePrepareReadyQueue`, `gTexIndMtxTable`, `gDll12Interface`, `aramNormalPriorityQueue`,
 `gSceneCamera`, `gGlowLightList` — which are load-bearing or priced below. **Do not "fix" a pin.**
 

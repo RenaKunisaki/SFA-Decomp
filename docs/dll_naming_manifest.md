@@ -29,8 +29,8 @@ which now carries prose evidence notes, so they have been dropped.
 | metric | count |
 |---|---|
 | manifest rows (descriptor slots 0x000-0x2C0) | 705 |
-| with retail def name(s) | 408 |
-| no retail name (infrastructure) | 297 |
+| with retail def name(s) | 409 |
+| no retail name (infrastructure) | 296 |
 | current path already canonical | 684 |
 | proposal still differs | 21 |
 | name-conflicts (disambiguated) | 0 |
@@ -38,7 +38,7 @@ which now carries prose evidence notes, so they have been dropped.
 | naming contradictions arbitrated and renamed (appendix) | 7 |
 | unit-owned headers recorded (appendix) | 113 |
 
-Expansion status over the 705 rows: NO-RETAIL-NAME 288, COMPLETE 264, CONFIRMED 81, RAW 62, GUESSED 7, DOL-RECOVERED 3
+Expansion status over the 705 rows: NO-RETAIL-NAME 287, COMPLETE 264, CONFIRMED 81, RAW 62, GUESSED 7, DOL-RECOVERED 4
 
 The 21 rows whose proposal still differs are all engine slots
 0x000-0x014, and every one of those proposals predates the move to the
@@ -102,7 +102,7 @@ any of them is acted on.
 | 0x031 | — | NO-RETAIL-NAME | dlls/engine/49/49.c | = (canonical) | Complete DOL-confirmed TU; map rows restored from DLL 60 |
 | 0x032 | — | NO-RETAIL-NAME | dlls/engine/50/50.c | = (canonical) | Complete DOL-confirmed TU; data tail restored from DLL 46 |
 | 0x033 | — | NO-RETAIL-NAME | dlls/engine/51/51.c | = (canonical) | Complete DOL-confirmed TU; data tail restored from DLL 46 |
-| 0x034 | — | NO-RETAIL-NAME | dlls/engine/52/52.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x034 | n_attractmode | DOL-RECOVERED | dlls/engine/52_n_attractmode/n_attractmode.c | = (canonical) | Complete DOL-confirmed TU; retail `OSPanic(__FILE__)` literal `n_attractmode.c` at 0x8031A38C sits in this TU's own string pool |
 | 0x035 | — | NO-RETAIL-NAME | dlls/engine/53/53.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x036 | — | NO-RETAIL-NAME | dlls/engine/54/54.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x037 | — | NO-RETAIL-NAME | dlls/engine/55/55.c | = (canonical) | Complete DOL-confirmed TU |

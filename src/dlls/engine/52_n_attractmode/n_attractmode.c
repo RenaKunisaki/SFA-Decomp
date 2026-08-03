@@ -24,6 +24,18 @@
 #include "main/model_engine.h"
 #include "main/dll/FRONT/dll_3B.h"
 #include "main/dll/dll_0037_optionsscreen.h"
+#include "dolphin/os.h"
+#include "dolphin/os/OSReport.h"
+#include "dolphin/vi.h"
+#include "main/dll/FRONT/dll_39.h"
+#include "main/dll/FRONT/dll_44.h"
+#include "main/dll/dll_3e_api.h"
+#include "main/pi_dolphin.h"
+#include "dolphin/os/OSCache.h"
+#include "dolphin/thp/THPDraw.h"
+#include "dolphin/thp/THPPlayer.h"
+#include "main/dll/FRONT/picmenu.h"
+#include "dlls/object_descriptor.h"
 
 u8 gTitleMenuPanelOpen;
 s8 gTitleMenuLoadDelay;
@@ -54,8 +66,318 @@ s32 gAttractMovieState;
 
 
 extern TitleMenuTextEntry gTitleMenuEntries[4];
-extern TitleMenuTextEntry sNAttractModeStringBlock[1];
+extern TitleMenuTextEntry gTitleMenuClosedPanelEntry[1];
 
+
+TitleMenuTextEntry gTitleMenuClosedPanelEntry[1] = {
+    {
+        0x036D,
+        0x0035,
+        320,
+        400,
+        0,
+        320,
+        400,
+        {0, 0},
+        -1,
+        0x00C8,
+        0x0280,
+        {0x00, 0x00},
+        -1,
+        -1,
+        -1,
+        -1,
+        -1,
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        0,
+        {0, 0, 0},
+    },
+};
+
+TitleMenuTextEntry gTitleMenuEntries[4] = {
+    {
+        0x0331,
+        0x0011,
+        320,
+        266,
+        0,
+        320,
+        180,
+        {0, 0},
+        -1,
+        0x0064,
+        0x0200,
+        {0x00, 0x00},
+        3,
+        1,
+        -1,
+        -1,
+        -1,
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        0,
+        {0, 0, 0},
+    },
+    {
+        0x035A,
+        0x0011,
+        320,
+        317,
+        0,
+        320,
+        187,
+        {0, 0},
+        -1,
+        0x008C,
+        0x0200,
+        {0x00, 0x00},
+        0,
+        2,
+        -1,
+        -1,
+        -1,
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        0,
+        {0, 0, 0},
+    },
+    {
+        0x035C,
+        0x0011,
+        320,
+        317,
+        0,
+        320,
+        187,
+        {0, 0},
+        -1,
+        0x00B4,
+        0x0200,
+        {0x00, 0x00},
+        1,
+        3,
+        -1,
+        -1,
+        -1,
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        0,
+        {0, 0, 0},
+    },
+    {
+        0x035B,
+        0x0011,
+        320,
+        368,
+        0,
+        320,
+        187,
+        {0, 0},
+        -1,
+        0x008C,
+        0x0200,
+        {0x00, 0x00},
+        2,
+        0,
+        -1,
+        -1,
+        -1,
+        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+        0,
+        {0, 0, 0},
+    },
+};
+ObjectDescriptor6 n_attractmode_funcs = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_6_SLOTS,
+    (ObjectDescriptorCallback)TitleMenu_initialise,
+    (ObjectDescriptorCallback)TitleMenu_release,
+    0,
+    (ObjectDescriptorCallback)TitleMenu_run,
+    (ObjectDescriptorCallback)TitleMenu_frameEnd,
+    (ObjectDescriptorCallback)TitleMenu_render,
+};
+
+void n_attractmode_releaseMovieBuffers(void)
+{
+    int freeDelay;
+
+    if (gAttractMovieState == NATTRACTMODE_MOVIE_STATE_PREPARED)
+    {
+        THPPlayerStop();
+        AttractMovie_CloseFile();
+        AttractMovieAudio_Shutdown();
+        freeDelay = mmSetFreeDelay(0);
+        if (gAttractMovieBuffer0 != 0)
+        {
+            mm_free(gAttractMovieBuffer0);
+            gAttractMovieBuffer0 = 0;
+        }
+        if (gAttractMovieBuffer1 != 0)
+        {
+            mm_free(gAttractMovieBuffer1);
+            gAttractMovieBuffer1 = 0;
+        }
+        if (gAttractMovieBuffer2 != 0)
+        {
+            mm_free(gAttractMovieBuffer2);
+            gAttractMovieBuffer2 = 0;
+        }
+        if (gAttractMovieBuffer3 != 0)
+        {
+            mm_free(gAttractMovieBuffer3);
+            gAttractMovieBuffer3 = 0;
+        }
+        if (gAttractMovieOptionalBuffer != 0)
+        {
+            mm_free(gAttractMovieOptionalBuffer);
+            gAttractMovieOptionalBuffer = 0;
+        }
+        if (gAttractMovieWorkBuffer != 0)
+        {
+            mm_free(gAttractMovieWorkBuffer);
+            gAttractMovieWorkBuffer = 0;
+        }
+        if (gAttractMovieScratchBuffer != 0)
+        {
+            mm_free(gAttractMovieScratchBuffer);
+            gAttractMovieScratchBuffer = 0;
+        }
+        mmSetFreeDelay(freeDelay);
+        gAttractMovieState = NATTRACTMODE_MOVIE_STATE_RELEASED;
+        gAttractMoviePreparePending = NATTRACTMODE_MOVIE_BUSY;
+    }
+    return;
+}
+
+void n_attractmode_prepareMovie(void)
+{
+    int ok;
+    int freeDelay;
+    int movieBuffer1Size;
+    int movieBuffer2Size;
+    int movieBuffer3Size;
+    u32 optionalBufferSize;
+    int workBufferSize;
+    u32 movieBuffer0Size[3];
+
+    gAttractMoviePreparePending = NATTRACTMODE_MOVIE_BUSY;
+    ok = AttractMovieAudio_Init(NATTRACTMODE_MOVIE_SETUP_ID);
+    if (ok != 0)
+    {
+        ok = movieLoad("starfox.thp", NATTRACTMODE_MOVIE_START_FRAME_DEFAULT);
+        if (ok == 0)
+        {
+            AttractMovieAudio_Shutdown();
+        }
+        else
+        {
+            THPPlayerGetVideoInfo(&gAttractMovieDims);
+            gAttractMovieOffsetX = ((u32)gRenderModeObj->fbWidth - gAttractMovieDims.width) >> 1;
+            gAttractMovieOffsetY = ((u32)gRenderModeObj->efbHeight - gAttractMovieDims.height) >> 1;
+            AttractMovie_GetBufferSizes(movieBuffer0Size, &movieBuffer1Size, &movieBuffer2Size, &movieBuffer3Size,
+                                        &optionalBufferSize, &workBufferSize);
+            gAttractMovieBuffer0 = mmAlloc(movieBuffer0Size[0], NATTRACTMODE_MOVIE_HEAP, 0);
+            gAttractMovieBuffer1 = mmAlloc(movieBuffer1Size, NATTRACTMODE_MOVIE_HEAP, 0);
+            gAttractMovieBuffer2 = mmAlloc(movieBuffer2Size, NATTRACTMODE_MOVIE_HEAP, 0);
+            gAttractMovieBuffer3 = mmAlloc(movieBuffer3Size, NATTRACTMODE_MOVIE_HEAP, 0);
+            if (optionalBufferSize != NATTRACTMODE_OPTIONAL_BUFFER_SIZE_NONE)
+            {
+                gAttractMovieOptionalBuffer = mmAlloc(optionalBufferSize, NATTRACTMODE_MOVIE_HEAP, 0);
+            }
+            else
+            {
+                gAttractMovieOptionalBuffer = 0;
+            }
+            gAttractMovieWorkBuffer = mmAlloc(workBufferSize, NATTRACTMODE_MOVIE_HEAP, 0);
+            gAttractMovieScratchBuffer = mmAlloc(NATTRACTMODE_WORK_BUFFER_SIZE, NATTRACTMODE_MOVIE_HEAP, 0);
+            if (((((gAttractMovieBuffer0 == 0) || (gAttractMovieBuffer1 == 0)) || (gAttractMovieBuffer2 == 0)) ||
+                 ((gAttractMovieBuffer3 == 0 || ((gAttractMovieOptionalBuffer == 0 &&
+                                                  (optionalBufferSize != NATTRACTMODE_OPTIONAL_BUFFER_SIZE_NONE)))))) ||
+                ((gAttractMovieWorkBuffer == 0 || (gAttractMovieScratchBuffer == 0))))
+            {
+                AttractMovieAudio_Shutdown();
+                freeDelay = mmSetFreeDelay(0);
+                if (gAttractMovieBuffer0 != 0)
+                {
+                    mm_free(gAttractMovieBuffer0);
+                    gAttractMovieBuffer0 = 0;
+                }
+                if (gAttractMovieBuffer1 != 0)
+                {
+                    mm_free(gAttractMovieBuffer1);
+                    gAttractMovieBuffer1 = 0;
+                }
+                if (gAttractMovieBuffer2 != 0)
+                {
+                    mm_free(gAttractMovieBuffer2);
+                    gAttractMovieBuffer2 = 0;
+                }
+                if (gAttractMovieBuffer3 != 0)
+                {
+                    mm_free(gAttractMovieBuffer3);
+                    gAttractMovieBuffer3 = 0;
+                }
+                if (gAttractMovieOptionalBuffer != 0)
+                {
+                    mm_free(gAttractMovieOptionalBuffer);
+                    gAttractMovieOptionalBuffer = 0;
+                }
+                if (gAttractMovieWorkBuffer != 0)
+                {
+                    mm_free(gAttractMovieWorkBuffer);
+                    gAttractMovieWorkBuffer = 0;
+                }
+                if (gAttractMovieScratchBuffer != 0)
+                {
+                    mm_free(gAttractMovieScratchBuffer);
+                    gAttractMovieScratchBuffer = 0;
+                }
+                mmSetFreeDelay(freeDelay);
+                OSReport("^^^^^^^^^^^^^^^^  malloc for movie failed\n");
+                printHeapStats(1);
+                defragMemory(0);
+                OSReport("^^^^^^^^^^^^^^^^  RESTRUCT for movie\n");
+                printHeapStats(1);
+            }
+            else
+            {
+                gAttractMoviePreparePending = NATTRACTMODE_MOVIE_READY;
+                DCInvalidateRange(gAttractMovieBuffer0, movieBuffer0Size[0]);
+                DCInvalidateRange(gAttractMovieBuffer1, movieBuffer1Size);
+                DCInvalidateRange(gAttractMovieBuffer2, movieBuffer2Size);
+                DCInvalidateRange(gAttractMovieBuffer3, movieBuffer3Size);
+                if (gAttractMovieOptionalBuffer != 0)
+                {
+                    DCInvalidateRange(gAttractMovieOptionalBuffer, optionalBufferSize);
+                }
+                DCInvalidateRange(gAttractMovieWorkBuffer, workBufferSize);
+                DCInvalidateRange(gAttractMovieScratchBuffer, NATTRACTMODE_WORK_BUFFER_SIZE);
+                AttractMovie_AssignBuffers(gAttractMovieBuffer0, gAttractMovieBuffer1, gAttractMovieBuffer2,
+                                           gAttractMovieBuffer3, gAttractMovieOptionalBuffer, gAttractMovieWorkBuffer);
+                ok = prepareAttractMode(0, 1);
+                if (ok == 0)
+                {
+                    OSPanic("n_attractmode.c", NATTRACTMODE_PREPARE_FAIL_LINE,
+                            "Fail to prepare\n");
+                }
+                THPPlayerPlay();
+                gAttractMovieState = NATTRACTMODE_MOVIE_STATE_PREPARED;
+                VIWaitForRetrace();
+                gAttractMovieRetraceCountdown = NATTRACTMODE_MOVIE_RETRACE_COUNTDOWN;
+                gAttractMovieIdleFrameCount = 0;
+                if ((int)gTitleMenuSelection == TITLE_MENU_ATTRACT_MOVIE_STATE)
+                {
+                    Movie_SetVolumeFade(NATTRACTMODE_MOVIE_VOLUME_TITLE, NATTRACTMODE_MOVIE_VOLUME_FADE_IMMEDIATE);
+                }
+                else
+                {
+                    Movie_SetVolumeFade(NATTRACTMODE_MOVIE_VOLUME_MUTED, NATTRACTMODE_MOVIE_VOLUME_FADE_IMMEDIATE);
+                }
+            }
+        }
+    }
+    return;
+}
 
 void TitleMenu_render(int obj)
 {
@@ -399,7 +721,7 @@ void TitleMenu_initialise(void)
     mode = getPrevUiDll();
     if (mode == 3)
     {
-        gTitleMenuLinkInterface->vtable->setup(sNAttractModeStringBlock, 1, 0, NULL, 0, 0, 0x14, 200, 0xff, 0xff, 0xff,
+        gTitleMenuLinkInterface->vtable->setup(gTitleMenuClosedPanelEntry, 1, 0, NULL, 0, 0, 0x14, 200, 0xff, 0xff, 0xff,
                                                0xff);
         gTitleMenuPanelOpen = 0;
     }
@@ -466,146 +788,3 @@ void TitleMenu_initialise(void)
     Sfx_SetObjectReverbPreset(0);
     gAttractMovieIdleFrameCount = 0;
 }
-
-TitleMenuTextEntry sNAttractModeStringBlock[1] = {
-    {
-        0x036D,
-        0x0035,
-        320,
-        400,
-        0,
-        320,
-        400,
-        {0, 0},
-        -1,
-        0x00C8,
-        0x0280,
-        {0x00, 0x00},
-        -1,
-        -1,
-        -1,
-        -1,
-        -1,
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        0,
-        {0, 0, 0},
-    },
-};
-
-TitleMenuTextEntry gTitleMenuEntries[4] = {
-    {
-        0x0331,
-        0x0011,
-        320,
-        266,
-        0,
-        320,
-        180,
-        {0, 0},
-        -1,
-        0x0064,
-        0x0200,
-        {0x00, 0x00},
-        3,
-        1,
-        -1,
-        -1,
-        -1,
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        0,
-        {0, 0, 0},
-    },
-    {
-        0x035A,
-        0x0011,
-        320,
-        317,
-        0,
-        320,
-        187,
-        {0, 0},
-        -1,
-        0x008C,
-        0x0200,
-        {0x00, 0x00},
-        0,
-        2,
-        -1,
-        -1,
-        -1,
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        0,
-        {0, 0, 0},
-    },
-    {
-        0x035C,
-        0x0011,
-        320,
-        317,
-        0,
-        320,
-        187,
-        {0, 0},
-        -1,
-        0x00B4,
-        0x0200,
-        {0x00, 0x00},
-        1,
-        3,
-        -1,
-        -1,
-        -1,
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        0,
-        {0, 0, 0},
-    },
-    {
-        0x035B,
-        0x0011,
-        320,
-        368,
-        0,
-        320,
-        187,
-        {0, 0},
-        -1,
-        0x008C,
-        0x0200,
-        {0x00, 0x00},
-        2,
-        0,
-        -1,
-        -1,
-        -1,
-        {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-        0,
-        {0, 0, 0},
-    },
-};
-typedef struct AttractModeResourceDescriptorLayout
-{
-    u32 reserved0;
-    u32 reserved1;
-    u32 reserved2;
-    u32 slotCountAndFlags;
-    void (*callbacks[6])(void);
-    char strings[0x84];
-} AttractModeResourceDescriptorLayout;
-
-AttractModeResourceDescriptorLayout n_attractmode_funcs = {
-    0,
-    0,
-    0,
-    0x00050000,
-    {
-        (void (*)(void))TitleMenu_initialise,
-        (void (*)(void))TitleMenu_release,
-        0,
-        (void (*)(void))TitleMenu_run,
-        (void (*)(void))TitleMenu_frameEnd,
-        (void (*)(void))TitleMenu_render,
-    },
-    "starfox.thp\000^^^^^^^^^^^^^^^^  malloc for movie failed\n\000\000"
-    "^^^^^^^^^^^^^^^^  RESTRUCT for movie\n\000\000\000"
-    "n_attractmode.c\000Fail to prepare\n",
-};

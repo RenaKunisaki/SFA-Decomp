@@ -415,7 +415,7 @@ missing reader.
   into `gTitleScreenPrevMenuActive`/`gTitleScreenPrevMenuSelection` before writing the new one;
   the current halves are live (3-4 loads each), the prev halves have zero loads — whatever
   consumed "return to previous menu" is gone.
-- **Attract-movie centering offsets** (`src/n_attractmode.c`): after `THPPlayerGetVideoInfo`,
+- **Attract-movie centering offsets** (`src/dlls/engine/52_n_attractmode/n_attractmode.c`): after `THPPlayerGetVideoInfo`,
   the attract-mode player computes `gAttractMovieOffsetX/Y = (framebuffer dim - movie dim) / 2`;
   zero loads — the movie is drawn without the centering the code still computes each boot.
 - **Orphaned init allocations**: three init-time `mmAlloc` results are stored to pointers with
