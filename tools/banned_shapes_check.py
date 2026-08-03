@@ -103,8 +103,18 @@ import subprocess
 import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SCAN_ROOTS = ["src/main", "src/track", "src/dlls"]
-EXEMPT_ROOTS = ["src/dolphin", "src/musyx", "src/Runtime.PPCEABI.H"]
+SCAN_ROOTS = ["src/main", "src/track", "src/dlls",
+              "include/main", "include/dlls", "include/game", "include/track",
+              "include/sys", "include/util",
+              "include/global.h", "include/types.h"]
+EXEMPT_ROOTS = ["src/dolphin", "src/musyx", "src/Runtime.PPCEABI.H",
+                "include/dolphin", "include/musyx", "include/GBA",
+                "include/OdemuExi2", "include/amcstubs",
+                "include/PowerPC_EABI_Support", "include/Runtime.PPCEABI.H",
+                "include/TRK_MINNOW_DOLPHIN",
+                "include/dolphin.h", "include/math.h", "include/stdarg.h",
+                "include/stddef.h", "include/stdlib.h", "include/string.h",
+                "include/__ppc_eabi_linker.h"]
 BASELINE = "tools/banned_shapes_baseline.txt"
 SYMBOLS = "config/GSAE01/symbols.txt"
 
@@ -121,9 +131,18 @@ CITE = {
     "UNCALLED_STATIC_FN": "CLAUDE.md Banned constructs: phantom literal-minter functions",
 }
 
+# An `extern T name[...];` declaration carries the symbol without using it. Counting
+# it as a read made the census read "used as a real array" (the name is not followed
+# by [0]) and, across files, as cross-TU linkage -- either way laundering a genuine
+# pool anchor straight out of the report.
+RE_EXTERN_DECL = re.compile(r"^\s*extern\b[^=]*;\s*$")
 RE_PRAGMA = re.compile(r"^\s*#\s*pragma\b")
 RE_GOTO = re.compile(r"(?<![\w.>])goto\s+[A-Za-z_]\w*\s*;")
-RE_DECLSPEC = re.compile(r"__declspec\s*\(\s*section\b")
+# Both the raw attribute and the two `include/global.h` shims that expand to it --
+# the ban is on APPLYING section forcing to an object, so a macro that spells the
+# attribute is an evasion path, while global.h's own `#define` of it is not a use.
+RE_DECLSPEC = re.compile(r"__declspec\s*\(\s*section\b|\bSECTION_(?:DATA|INIT)\b")
+RE_DEFINE = re.compile(r"^\s*#\s*define\b")
 RE_VOLATILE_CAST = re.compile(r"\*\s*\(\s*volatile\b")
 RE_REGISTER_ASM = re.compile(r"\bregister\b[^;]*\basm\s*\(")
 # file-scope (column 0) volatile object of floating-point type
@@ -167,7 +186,13 @@ def is_c_source(path):
 
 def walk(roots, base=REPO):
     for root in roots:
-        for dirpath, _dirs, files in os.walk(os.path.join(base, root)):
+        full = os.path.join(base, root)
+        if os.path.isfile(full):
+            # a root may name a single loose header (include/global.h)
+            if is_c_source(full):
+                yield os.path.relpath(full, base)
+            continue
+        for dirpath, _dirs, files in os.walk(full):
             for f in sorted(files):
                 if is_c_source(f):
                     p = os.path.join(dirpath, f)
@@ -190,7 +215,7 @@ def scan_file(rel, text, strict_lbl=False):
             hits.append((rel, n, "PRAGMA", raw.strip()))
         if RE_GOTO.search(line):
             hits.append((rel, n, "GOTO", raw.strip()))
-        if RE_DECLSPEC.search(line):
+        if RE_DECLSPEC.search(line) and not RE_DEFINE.match(line):
             hits.append((rel, n, "DECLSPEC_SECTION", raw.strip()))
         if RE_REGISTER_ASM.search(line):
             hits.append((rel, n, "REGISTER_ASM", raw.strip()))
@@ -249,6 +274,8 @@ def scan_one_elem(files, base=REPO):
                 if orel == rel and idx == n:
                     continue          # the definition itself
                 line = strip_line_comment(raw)
+                if RE_EXTERN_DECL.match(line):
+                    continue      # a declaration is neither a read nor linkage
                 for mm in re.finditer(r"\b" + re.escape(name) + r"\b", line):
                     rest = line[mm.end():]
                     if re.match(r"\s*\[\s*0\s*\]", rest):
@@ -567,6 +594,37 @@ def self_test():
                   and any(True for _ in walk([os.path.join("src", d)]))]
     chk("every C source directory under src/ is scanned or exempt",
         not unlabelled, ", ".join(unlabelled))
+
+    inc = os.path.join(REPO, "include")
+    unlabelled_inc = [d for d in sorted(os.listdir(inc))
+                      if os.path.isdir(os.path.join(inc, d))
+                      and os.path.join("include", d) not in covered
+                      and any(True for _ in walk([os.path.join("include", d)]))]
+    chk("every header directory under include/ is scanned or exempt",
+        not unlabelled_inc, ", ".join(unlabelled_inc))
+
+    loose_inc = [f for f in sorted(os.listdir(inc))
+                 if is_c_source(f)
+                 and os.path.isfile(os.path.join(inc, f))
+                 and os.path.join("include", f) not in covered]
+    chk("every loose header at include/ root is scanned or exempt",
+        not loose_inc, ", ".join(loose_inc))
+    chk("global.h's own #define of the section shim is not a use",
+        len(scan_file("h.h", '#define SECTION_DATA __declspec(section ".data")\n')) == 0)
+    chk("the section shim used on an object IS flagged",
+        [h[2] for h in scan_file("a.c", "SECTION_DATA int gThing;\n")] == ["DECLSPEC_SECTION"])
+
+    synth_fwd = {"a.c": ("void f(void) {\n"
+                         "    extern const f32 gSynthFwd[1];\n"
+                         "    use(gSynthFwd[0]);\n"
+                         "}\n"
+                         "const f32 gSynthFwd[1] = {0.25f};\n")}
+    chk("a forward extern declaration does not launder the definition",
+        len(scan_one_elem(synth_fwd)) == 1)
+    synth_hdr = {"a.c": "const f32 gSynthHdr[1] = {1.0f};\nvoid f(void){use(gSynthHdr[0]);}\n",
+                 "h.h": "extern const f32 gSynthHdr[1];\n"}
+    chk("a header declaration does not launder the definition",
+        len(scan_one_elem(synth_hdr)) == 1)
     return ok
 
 

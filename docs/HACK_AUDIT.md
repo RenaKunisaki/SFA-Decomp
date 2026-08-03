@@ -26,12 +26,20 @@ Residual classes whose only known cure is one of these banned constructs are cat
 with measured per-row prices and recognition tells, in `docs/priced_classes.md`.
 
 **The ban is now machine-enforced: `python3 tools/banned_shapes_check.py`.** It scans game code
-only (`src/main/`, `src/track/`, `src/dlls/` — the SDK under `src/dolphin/` is exempt by policy and
-legitimately carries all seven shapes), reports `file:line`, pattern class and the citation, and
+only — the sources under `src/main/`, `src/track/`, `src/dlls/` and the headers under
+`include/{main,dlls,game,track,sys,util}/`, since a banned shape is just as expressible in a header
+as in a `.c`; the SDK and vendor trees (`src/dolphin/`, `src/musyx/`, `src/Runtime.PPCEABI.H/` and
+their `include/` counterparts) are exempt by policy and legitimately carry all seven shapes. It
+reports `file:line`, pattern class and the citation, and
 exits nonzero on anything outside `tools/banned_shapes_baseline.txt`. The baseline records the 48
 instances standing at the 2026-08-01 audit; **shrink it, never grow it** — a new hit is regrowth and
-fails the gate. Two distinctions it draws deliberately, because both were re-litigated per wave
-before it existed: a `volatile` write through a hardware address (GX FIFO `0xCC008000`) or a
+fails the gate. It ignores `extern T name[...];` declaration lines when censusing reads: counting
+one as a read made a `const T x[1]` look like a real array (the name is not followed by `[0]`) and,
+across files, like cross-TU linkage, so a forward declaration laundered a genuine pool anchor out of
+the report. It also treats `include/global.h`'s `SECTION_DATA` / `SECTION_INIT` shims as the
+attribute they expand to, since a macro spelling `__declspec(section ...)` is otherwise a free
+evasion path -- but global.h's own `#define` of them is not a use. Two further distinctions it draws
+deliberately, because both were re-litigated per wave before it existed: a `volatile` write through a hardware address (GX FIFO `0xCC008000`) or a
 write-gather pipe is *genuine* and is not flagged, whereas `*(volatile T*)&object` is the banned
 pun; and an `lbl_`-named **scalar** const is the pool-reconstruction hack, while an `lbl_`-named
 **array** is real data with an unrecovered name (reported only under `--strict-lbl`, never gating).
