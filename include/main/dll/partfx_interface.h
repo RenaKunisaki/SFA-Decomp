@@ -5,6 +5,17 @@
 
 struct GameObject;
 
+typedef enum PartfxFlags {
+    PARTFXFLAG_NONE = 0x0,
+    PARTFXFLAG_1 = 0x1,
+    PARTFXFLAG_2 = 0x2,
+    PARTFXFLAG_4 = 0x4,
+    PARTFXFLAG_10 = 0x10,
+    PARTFXFLAG_800 = 0x800,
+    PARTFXFLAG_10000 = 0x10000,
+    PARTFXFLAG_200000 = 0x200000
+} PartfxFlags;
+
 typedef void (*EffectSpawnObjectFn)(void *obj, int effectId, void *params, int mode,
                                     int modelId, void *extraArg);
 typedef void (*EffectOnMapSetupFn)(void);

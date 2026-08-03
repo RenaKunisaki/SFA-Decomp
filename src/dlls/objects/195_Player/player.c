@@ -3707,6 +3707,7 @@ int playerState31(GameObject* obj, int p2)
 int playerState30(GameObject* obj, int state, f32 fv)
 {
     PlayerState* inner = obj->extra;
+    PartfxFlags spawnFlags;
     struct
     {
         u8 pad[6];
@@ -3740,10 +3741,11 @@ int playerState30(GameObject* obj, int state, f32 fv)
         }
         ObjPath_GetPointWorldPosition(gPlayerPathObject, 5, &pfx.x, &pfx.y, &pfx.z, 0);
         pfx.scale = 2.5f;
+        spawnFlags = PARTFXFLAG_200000;
         pfx.mode = 0;
-        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, 0x200001, -1, NULL);
+        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, spawnFlags + PARTFXFLAG_1, -1, NULL);
         pfx.mode = 1;
-        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, 0x200001, -1, NULL);
+        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, spawnFlags + PARTFXFLAG_1, -1, NULL);
         if ((inner->buttonsHeld & gPlayerHeldButtonMask) == 0 ||
             ((PlayerStatus*)((PlayerState*)obj->extra)->playerStatus)->magic == 0 || getCurSeqNo() != 0)
         {
@@ -3983,6 +3985,7 @@ int playerStateFireLaser(int obj, int state, f32 fv)
 int playerStateShootFireball(GameObject* obj, int state, f32 fv)
 {
     PlayerState* inner = obj->extra;
+    PartfxFlags spawnFlags;
     int r;
     f32 timer;
     struct
@@ -4043,10 +4046,11 @@ int playerStateShootFireball(GameObject* obj, int state, f32 fv)
         }
         ObjPath_GetPointWorldPosition(gPlayerPathObject, 5, &pfx.x, &pfx.y, &pfx.z, 0);
         pfx.scale = 2.5f;
+        spawnFlags = PARTFXFLAG_200000;
         pfx.mode = 0;
-        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, 0x200001, -1, NULL);
+        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, spawnFlags + PARTFXFLAG_1, -1, NULL);
         pfx.mode = 1;
-        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, 0x200001, -1, NULL);
+        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, spawnFlags + PARTFXFLAG_1, -1, NULL);
         if ((((PlayerState*)inner)->buttonsHeld & gPlayerHeldButtonMask) == 0 ||
             ((PlayerStatus*)((PlayerState*)obj->extra)->playerStatus)->magic == 0 || getCurSeqNo() != 0)
         {
@@ -4154,6 +4158,7 @@ int playerStateShootFireball(GameObject* obj, int state, f32 fv)
 int playerStateTryCastSpell(GameObject* obj, int state, f32 fv)
 {
     PlayerState* inner = obj->extra;
+    PartfxFlags spawnFlags;
     s16 deferredCmd;
     f32 timer;
     struct
@@ -4188,10 +4193,11 @@ int playerStateTryCastSpell(GameObject* obj, int state, f32 fv)
         }
         ObjPath_GetPointWorldPosition(gPlayerPathObject, 5, &pfx.x, &pfx.y, &pfx.z, 0);
         pfx.scale = 2.5f;
+        spawnFlags = PARTFXFLAG_200000;
         pfx.mode = 0;
-        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, 0x200001, -1, NULL);
+        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, spawnFlags + PARTFXFLAG_1, -1, NULL);
         pfx.mode = 1;
-        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, 0x200001, -1, NULL);
+        (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, spawnFlags + PARTFXFLAG_1, -1, NULL);
         if ((inner->buttonsHeld & gPlayerHeldButtonMask) == 0 ||
             ((PlayerStatus*)((PlayerState*)obj->extra)->playerStatus)->magic == 0 || getCurSeqNo() != 0)
         {
@@ -4316,6 +4322,7 @@ int playerStateTryCastSpell(GameObject* obj, int state, f32 fv)
 int playerStateAimStaff(int obj, int state, f32 fv)
 {
     PlayerState* inner = ((GameObject*)obj)->extra;
+    PartfxFlags spawnFlags;
     int r;
     f32 spin;
     PartFxSpawnParams pfx;
@@ -4425,10 +4432,13 @@ int playerStateAimStaff(int obj, int state, f32 fv)
             }
             ObjPath_GetPointWorldPosition(gPlayerPathObject, 5, &pfx.posX, &pfx.posY, &pfx.posZ, 0);
             pfx.scale = 2.5f;
-                pfx.arg3 = 0;
-            (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, 0x200001, -1, NULL);
+            spawnFlags = PARTFXFLAG_200000;
+            pfx.arg3 = 0;
+            (*gPartfxInterface)
+                ->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, spawnFlags + PARTFXFLAG_1, -1, NULL);
             pfx.arg3 = 1;
-            (*gPartfxInterface)->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, 0x200001, -1, NULL);
+            (*gPartfxInterface)
+                ->spawnObject((void*)gPlayerPathObject, 0x7f5, &pfx, spawnFlags + PARTFXFLAG_1, -1, NULL);
             if ((inner->buttonsHeld & gPlayerHeldButtonMask) == 0 ||
                 *(s16*)((char*)*(int*)((char*)(int)((GameObject*)obj)->extra + 0x35c) + 0x4) == 0 ||
                 getCurSeqNo() != 0)
@@ -4959,12 +4969,15 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
     {
         obj->anim.weaponDaTable = (void*)((inner->moveSlots + (u32)inner->moveSlotIndex * 0xb0) + 0x60);
         if (obj->anim.currentMove !=
-            gPlayerMoveSlotTable[((PlayerMoveSlot*)inner->moveSlots + (u32)inner->moveSlotIndex)->moveTableIndex])
-        {
+            gPlayerMoveSlotTable[*(s16*)(inner->moveSlots + offsetof(PlayerMoveSlot, moveTableIndex) +
+                                         (u32)inner->moveSlotIndex * sizeof(PlayerMoveSlot))]) {
             ObjAnim_SetCurrentMove(
                 (int)obj,
-                gPlayerMoveSlotTable[((PlayerMoveSlot*)inner->moveSlots + (u32)inner->moveSlotIndex)->moveTableIndex],
-                ((PlayerMoveSlot*)inner->moveSlots + (u32)inner->moveSlotIndex)->animSpeed, 0);
+                gPlayerMoveSlotTable[*(s16*)(inner->moveSlots + offsetof(PlayerMoveSlot, moveTableIndex) +
+                                             (u32)inner->moveSlotIndex * sizeof(PlayerMoveSlot))],
+                *(f32*)(inner->moveSlots + offsetof(PlayerMoveSlot, animSpeed) +
+                        (u32)inner->moveSlotIndex * sizeof(PlayerMoveSlot)),
+                0);
             ObjAnim_SetCurrentEventStepFrames(&obj->anim, 2);
         }
         ((PlayerState*)state)->baddie.moveChainFlags = ((PlayerState*)state)->baddie.moveChainFlags & ~0xef;
