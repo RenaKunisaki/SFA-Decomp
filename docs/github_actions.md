@@ -37,6 +37,10 @@ This repository will be used to build and store the CI build container.
 
 If everything is set up correctly, the workflow will build all versions on every push or pull request.
 
+The active matching target verifies its final linked binary before printing progress. Other
+configured versions are report-only: their `progress` target compiles all source and generates the
+objdiff report without forcing a full link, so the same matrix command can cover every version.
+
 ## decomp.dev
 
 Once the build workflow is running on the main branch, you can add your game to <https://decomp.dev>.

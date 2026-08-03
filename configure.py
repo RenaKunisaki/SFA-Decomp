@@ -198,6 +198,10 @@ if config.ninja_path is None:
     if ninja_path is not None:
         config.ninja_path = Path(ninja_path)
 config.progress = args.progress
+# Only the active EN target has a supported final link and checksum.  Regional
+# configurations still compile every source unit and generate objdiff progress
+# reports, but their progress target must not force an unsupported DOL link.
+config.progress_requires_link = config.version == "GSAE01"
 if not is_windows():
     config.wrapper = args.wrapper
 # Don't build asm unless we're --non-matching
