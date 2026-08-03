@@ -197,7 +197,7 @@ void dim2prisonmammoth_update(GameObject* obj) {
     obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
     if ((gPrisonMammothStateFlagsTable[state->baddie.controlMode] & DIM2_PRISON_MAMMOTH_STATE_FLAG_SKIP_HIT_REACT) ==
         0) {
-        state->hitReactState = ObjHitReact_Update((int)obj, gPrisonMammothHitReactEntry, 1, state->hitReactState,
+        state->hitReactState = ObjHitReact_Update(obj, gPrisonMammothHitReactEntry, 1, state->hitReactState,
                                                   &state->hitReactStepScale);
         if (state->hitReactState != 0) {
             characterHeadLookRelax(obj, &state->eyeAnim);

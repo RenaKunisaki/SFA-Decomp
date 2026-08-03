@@ -230,13 +230,13 @@ typedef struct EnemyTargetSearchResult {
 
 STATIC_ASSERT(sizeof(EnemyTargetSearchResult) == 8);
 
-void enemyObjAnimUpdate(short* obj, int state);
+void enemyObjAnimUpdate(short* obj, EnemyState* state);
 int enemy_SeqFn(GameObject* node, int unused, ObjSeqState* animUpdate);
 int enemy_findNearbyEnemies(GameObject* obj, f32 radius, u8 flags, int maxCount, EnemyTargetSearchResult* results);
-void tricky_handleDefeat(GameObject* obj, int state);
+void tricky_handleDefeat(GameObject* obj, EnemyState* state);
 void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit);
 int baddie_spawnRewardDrops(GameObject* obj, int state, int spawnBits, u32 useAltMode, u32 mode);
-void baddieInstantiateWeapon(GameObject* obj, int state);
+void baddieInstantiateWeapon(GameObject* obj, EnemyState* state);
 u8 baddie_canSeeTarget(GameObject* obj, EnemyState* state, void* from, void* to);
 void baddie_updateSightQuadrants(GameObject* obj, EnemyState* state, f32 radius);
 void enemy_setTrackedObj(GameObject* obj, GameObject* target);

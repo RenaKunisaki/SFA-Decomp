@@ -149,7 +149,7 @@ void earthwalker_update(int obj)
     EarthWalkerState* ewState = ewObj->extra;
     int prevAnim;
 
-    if ((ewState->hitReactState = ObjHitReact_Update(obj, gEarthWalkerHitReactEntries, 1, ewState->hitReactState,
+    if ((ewState->hitReactState = ObjHitReact_Update((GameObject*)obj, gEarthWalkerHitReactEntries, 1, ewState->hitReactState,
                                                      &ewState->hitReactStepScale)) != 0)
     {
         return;

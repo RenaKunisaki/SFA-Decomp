@@ -684,7 +684,7 @@ void NW_mammoth_update(GameObject* obj, int unusedArg) {
             hitReactEntries = &tables[0]->normalHitReactEntry;
         }
         state->hitReactState =
-            ObjHitReact_Update((int)obj, hitReactEntries, 1, state->hitReactState, &state->hitReactStepScale);
+            ObjHitReact_Update(obj, hitReactEntries, 1, state->hitReactState, &state->hitReactStepScale);
         if (state->hitReactState != 0) {
             characterHeadLookRelax(obj, &state->eyeAnim);
             characterDoEyeAnims(obj, &state->eyeAnim);

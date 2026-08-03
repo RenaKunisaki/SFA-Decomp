@@ -394,7 +394,7 @@ void dll_200_update(int objectHandle) {
     GameObject* obj = (GameObject*)objectHandle;
 
     state = obj->extra;
-    hitReactionActive = ObjHitReact_Update(objectHandle, gDll200HitReactTable, DLL200_HIT_REACT_ENTRY_COUNT,
+    hitReactionActive = ObjHitReact_Update(obj, gDll200HitReactTable, DLL200_HIT_REACT_ENTRY_COUNT,
                                            (u8)((state->behaviorMode & DLL200_BEHAVIOR_MODE_HIT_REACTING) ? 1 : 0),
                                            &state->hitReactStepScale);
     if (hitReactionActive != 0) {

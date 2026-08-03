@@ -1273,7 +1273,7 @@ void DIMSnowHorn1_update(GameObject* obj)
             arm = (ObjHitReactEntry*)(base + 0x6c);
         }
         ((DIMSnowHorn1State*)data)->hitReactState = ObjHitReact_Update(
-            (int)obj, arm, 1, ((DIMSnowHorn1State*)data)->hitReactState, &((DIMSnowHorn1State*)data)->hitReactStepScale);
+            obj, arm, 1, ((DIMSnowHorn1State*)data)->hitReactState, &((DIMSnowHorn1State*)data)->hitReactStepScale);
         if (((DIMSnowHorn1State*)data)->hitReactState != 0)
         {
             characterHeadLookRelax(obj, (void*)(data + 0x980));
