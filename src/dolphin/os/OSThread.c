@@ -1,4 +1,5 @@
 #include "dolphin/os/__os.h"
+#include "PowerPC_EABI_Support/Runtime/__ppc_eabi_linker.h"
 
 #define ENQUEUE_THREAD(thread, queue, link)       \
     do {                                          \
@@ -62,10 +63,6 @@
         }                                             \
         (queue)->head = __next;                       \
     } while(0);
-
-// defined in linkscript
-extern u8 _stack_end[];
-extern u8 _stack_addr[];
 
 static OSThreadQueue RunQueue[32];
 static OSThread IdleThread;

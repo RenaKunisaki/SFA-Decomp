@@ -9132,7 +9132,7 @@ s16 aButtonIcon;
 u8 gNpcDialogueDidFade;
 s8 gNpcDialogueActive;
 GameTextDef* gPauseMenuCurHintText;
-short gMinimapAreaNameAlpha;
+s16 gMinimapAreaNameAlpha;
 s8 gMinimapAreaNameActive;
 s16 gCMenuRingAngleTarget;
 s16 gCMenuRingAngle;

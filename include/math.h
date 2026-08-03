@@ -7,8 +7,8 @@
 #define _MATH_INLINE static inline
 #endif
 
-extern int __float_nan[];
-extern int __float_huge[];
+extern unsigned long __float_nan[];
+extern unsigned long __float_huge[];
 extern int __double_huge[];
 
 #define INFINITY (*(float*)__float_huge)

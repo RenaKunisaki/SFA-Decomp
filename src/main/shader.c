@@ -90,7 +90,6 @@ extern WarpVec gCameraPosByTransformSpace[];
 int lbl_803DB620 = -1;
 s8 gMapLayerOffsets[8] = {0, -2, -1, 1, 2, 0, 0, 0};
 f32 gMotionBlurAmount = 0.5f;
-extern int gMapBlockCellEntryTables[5];
 
 f32 gMapSavedPlayerOffsetX;
 f32 gMapSavedPlayerOffsetZ;
