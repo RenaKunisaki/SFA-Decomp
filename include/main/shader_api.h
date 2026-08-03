@@ -114,5 +114,14 @@ extern s8 curMapType;
 extern void* gHitsTab;
 extern int gLightmapDrawQueueCount;
 extern void* gCloudLayerTexture;
+extern u8* gMapInfoBuffer;
+extern int gMapsTab;
+extern u16* gTrkBlkTab;
+extern int gMapBlockCellEntryTables[];
+extern s8 gMapBlockDrawOrderFrontToBack[];
+extern s8 gMapBlockDrawOrderBackToFront[];
+extern int gMapBlockCellStateTables[];
+extern int gMapCurRomListSlot;
+extern int gHeatEffectFadeDirection;
 
 #endif /* MAIN_SHADER_API_H_ */

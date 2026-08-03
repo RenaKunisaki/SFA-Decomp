@@ -2938,11 +2938,11 @@ int gSunOcclusionSampleOffsets[10] = {
 /* Map-cell visit order for the opaque scene pass: outward from the two
    centre rows, i.e. front to back from a camera over the middle of the
    16x16 map-block grid. */
-u8 gMapBlockDrawOrderFrontToBack[16] = {7, 6, 5, 4, 3, 2, 1, 0, 8, 9, 10, 11, 12, 13, 14, 15};
+s8 gMapBlockDrawOrderFrontToBack[16] = {7, 6, 5, 4, 3, 2, 1, 0, 8, 9, 10, 11, 12, 13, 14, 15};
 
 /* Map-cell visit order for the two blended scene passes: inward from both
    edges, i.e. back to front. */
-u8 gMapBlockDrawOrderBackToFront[16] = {0, 15, 1, 14, 2, 13, 3, 12, 4, 11, 5, 10, 6, 9, 8, 7};
+s8 gMapBlockDrawOrderBackToFront[16] = {0, 15, 1, 14, 2, 13, 3, 12, 4, 11, 5, 10, 6, 9, 8, 7};
 
 struct
 {
@@ -3482,7 +3482,7 @@ MapRomListPage* gLoadedRomListPages[ROM_LIST_PAGE_COUNT];
 MapRomListIndex gMapRomListIndexes[120];
 s8* gMapBlockLayerTables[MAP_BLOCK_LAYER_COUNT];
 int gMapBlockCellEntryTables[5];
-u8 gMapBlockCellStateTables[0x14];
+int gMapBlockCellStateTables[5];
 BlockEntry gShaderRomListSlots[8];
 int gShaderMapRomBuffers[0x5];
 f32 distortionFilterVector[0x1c];

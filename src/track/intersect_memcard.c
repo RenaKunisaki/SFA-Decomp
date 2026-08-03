@@ -44,7 +44,6 @@ char sMemoryCardFileNameString[20] = "Star Fox Adventures";
 
 
 
-extern volatile s32 gSaveCardState;
 
 u8* gSaveCardImageBuffer;
 u8 gSaveCardFileOpen;

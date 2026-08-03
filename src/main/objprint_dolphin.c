@@ -751,7 +751,7 @@ volatile int gAssetLoadInFlightFlags;
 int gModelsArchiveLoadCount;
 s16 gDefragDelayFrames;
 u32 gRomListLoadInFlight;
-u32 gForceLoadImmediately;
+int gForceLoadImmediately;
 u32 lbl_803DCC6C;
 u32 lbl_803DCC68;
 
@@ -3568,7 +3568,7 @@ u8 gObjGxPosMtxIdTable[12] = {0x00, 0x03, 0x06, 0x09, 0x0C, 0x0F, 0x12, 0x15, 0x
 u8 gObjGxTexMtxIdTable[12] = {0x1E, 0x21, 0x24, 0x27, 0x2A, 0x2D, 0x30, 0x33, 0x36, 0x39, 0x00, 0x00};
 
 
-extern u32 gForceLoadImmediately;
+extern int gForceLoadImmediately;
 void clearForceLoadImmediately(void)
 {
     gForceLoadImmediately = 0x0;
@@ -4220,7 +4220,6 @@ void modelsTabReadCb(s32 result, DVDFileInfo* fileInfo)
 }
 
 
-extern int sMapFileNameIndexRemapTable[];
 
 static inline s32 mapCheckCurBlocksImpl(int v)
 {

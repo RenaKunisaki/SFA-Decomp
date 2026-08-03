@@ -62,5 +62,8 @@ extern volatile int gGpuStallRetraceCount;
 extern u8 gGxBreakPtEnabled;
 extern u8 gVideoBlackScreenFrameCount;
 extern u16 gGxDrawSyncToken;
+extern u32 gRomListLoadInFlight;
+extern int gForceLoadImmediately;
+extern int sMapFileNameIndexRemapTable[];
 
 #endif /* MAIN_PI_DOLPHIN_H_ */

@@ -19,7 +19,6 @@ f32 gEffect2ScrollPhaseA = 0.1f;
 f32 gEffect2ScrollPhaseB = 0.3f;
 
 PartFxSpawnParams gEffect2DefaultSpawnParams;
-extern int lbl_803DD2C4;
 
 s32 gEffect2TextureIdTable[4] = {0xDF, 0x1FC, 0x200, 0x1FB};
 ObjectDescriptor6 Effect2_funcs = {
