@@ -1535,17 +1535,19 @@ static inline void fillDiskTexture(void)
         for (; j < 0x20; j++)
         {
             int off;
+            int off2;
             f32 dx, dz, d2;
             base = (u8*)gNewShadowDiskTexture;
             off = lowoff + (j & 3) * 8;
-            off = off + (j >> 2) * 0x80 + 0x60;
+            off += (j >> 2) * 0x80;
+            off2 = off + 0x60;
             dx = cy * lbl_803DEDD0;
             dz = (f32)j - 16.0f;
             dz = dz * lbl_803DEDD0;
             dx = dx * lbl_803DEDF0;
             dz = dz * lbl_803DEDF0;
             d2 = dx * dx + dz * dz;
-            base[off] = 255.0f * ((d2 > 1.0f) ? 0.0f : (1.0f - d2));
+            base[off2] = 255.0f * ((d2 > 1.0f) ? 0.0f : (1.0f - d2));
         }
     }
 }
@@ -1568,10 +1570,12 @@ static inline void fillSmallDiskTexture(void)
         for (; j < 0x10; j++)
         {
             int off;
+            int off2;
             f32 dx, dz, d2;
             base = (u8*)gNewShadowSmallDiskTexture;
             off = lowoff + (j & 3) * 8;
-            off = off + (j >> 2) * 0x40 + 0x60;
+            off += (j >> 2) * 0x40;
+            off2 = off + 0x60;
             dx = cy * lbl_803DED40;
             dz = (f32)j - 8.0f;
             dz = dz * lbl_803DED40;
@@ -1586,7 +1590,7 @@ static inline void fillSmallDiskTexture(void)
             {
                 d2 = sqrtf(1.0f - d2);
             }
-            base[off] = 255.0f * d2;
+            base[off2] = 255.0f * d2;
         }
     }
 }
@@ -1630,11 +1634,13 @@ static inline void fillFalloffTexture(void)
         for (; j < 0x80; j++)
         {
             int off;
+            int off2;
             u8 val;
             f32 cx, dy, d2;
             base = (u8*)gNewShadowFalloffTexture;
             off = lowoff + (j & 3) * 8;
-            off = off + (j >> 2) * 0x200 + 0x60;
+            off += (j >> 2) * 0x200;
+            off2 = off + 0x60;
             dy = cy * lbl_803DEDE0;
             cx = ((f32)j - 64.0f) * lbl_803DEDE0;
             d2 = sqrtf(dy * dy + cx * cx);
@@ -1650,7 +1656,7 @@ static inline void fillFalloffTexture(void)
             {
                 val = 160.0f * (1.0f - (d2 - lbl_803DED38) / lbl_803DED38);
             }
-            base[off] = val;
+            base[off2] = val;
         }
     }
 }
@@ -1673,13 +1679,15 @@ static inline void fillLightningTexture(void)
         for (; j < 4; j++)
         {
             int off;
+            int off2;
             f32 v;
             base = (u8*)gNewShadowLightningTexture;
             off = lowoff + (j & 3) * 8;
-            off = off + (j >> 2) * 0x80 + 0x60;
+            off += (j >> 2) * 0x80;
+            off2 = off + 0x60;
             v = sqrtf(__fabsf(c0 * lbl_803DEDD0));
             v = sqrtf(v);
-            base[off] = 255.0f * (1.0f - v);
+            base[off2] = 255.0f * (1.0f - v);
         }
     }
 }
@@ -1704,10 +1712,12 @@ static inline void fillRingTexture(void)
         for (; j < 0x80; j++)
         {
             int off;
+            int off2;
             f32 cx, d2;
             base = (u8*)gNewShadowRingTexture;
             off = lowoff + (j & 3) * 8;
-            off = off + (j >> 2) * 0x200 + 0x60;
+            off += (j >> 2) * 0x200;
+            off2 = off + 0x60;
             cx = ((f32)j - 64.0f) * lbl_803DEDE0;
             d2 = sqrtf(cx * cx + cy2);
             if (d2 < 0.25f || d2 > 0.75f)
@@ -1727,7 +1737,7 @@ static inline void fillRingTexture(void)
                 }
                 d2 = sqrtf(d2);
             }
-            base[off] = 16.0f * d2;
+            base[off2] = 16.0f * d2;
         }
     }
 }
@@ -1921,16 +1931,18 @@ void allocLotsOfTextures(void)
         for (; j < 0x80; j++)
         {
             u8* base = (u8*)gNewShadowRadialTexture;
+            int off2;
             f32 cyScaled = cy * lbl_803DEDE0;
             off = lowoff + (j & 3) * 8;
-            off = off + (j >> 2) * 0x200 + 0x60;
+            off += (j >> 2) * 0x200;
+            off2 = off + 0x60;
             cx = __fabsf(((f32)j - 64.0f) * lbl_803DEDE0);
             cx = cx * cx;
             d2 = sqrtf(__fabsf(cyScaled) * __fabsf(cyScaled) + cx);
             v = 1.0f - d2;
             if (v < 0.0f)
                 v = 0.0f;
-            base[off] = 255.0f * v;
+            base[off2] = 255.0f * v;
         }
     }
     DCFlushRange((u8*)gNewShadowRadialTexture + 0x60, gNewShadowRadialTexture->dataSize);
