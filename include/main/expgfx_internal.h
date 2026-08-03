@@ -466,22 +466,6 @@ STATIC_ASSERT(offsetof(ExpgfxSlot, stateBits) == 0x8B);
 STATIC_ASSERT(offsetof(ExpgfxSlot, colorByte0) == 0x8C);
 STATIC_ASSERT(offsetof(ExpgfxSlot, renderX) == 0x90);
 
-/*
- * These arrays are still linker-backed by recovered addresses, but the pool
- * roles are stable enough to use semantic aliases across the expgfx corridor.
- */
-#define gExpgfxBoundsTemplates DAT_80310458
-#define gExpgfxSpawnConfig DAT_8039caf8
-#define gExpgfxInlineAttachedSource DAT_8039cb58
-#define gProjgfxDefaultAttachedSource DAT_8039cff8
-#define gExpgfxPoolSlotTypeIds gExpgfxSlotTypeIds
-#define gExpgfxPoolFrameFlags DAT_80310528
-#define gExpgfxPoolBounds DAT_8039b9b8
-#define gExpgfxPoolSourceIds gExpgfxSlotSourceIds
-#define gExpgfxPoolSourceModes DAT_8039c638
-#define gExpgfxPoolBoundsTemplateIds DAT_8039c7d8
-#define gExpgfxPoolActiveCounts gExpgfxSlotActiveCounts
-#define gExpgfxPoolActiveMasks gExpgfxSlotActiveMasks
 #define EXPGFX_STATIC_DATA ((ExpgfxStaticDataLayout *)gExpgfxStaticData)
 #define EXPGFX_RUNTIME_DATA ((ExpgfxRuntimeDataLayout *)gExpgfxRuntimeData)
 

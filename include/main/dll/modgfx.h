@@ -15,20 +15,6 @@ extern char sProjgfxSetzscaleDoNoLongerSupported[];
 
 #define PROJGFX_SPAWN_FLAG_USE_ATTACHED_SOURCE 0x200000
 
-
-void modgfx_releaseActiveEffectsByType(u64 param_1,u64 param_2,u64 param_3,
-                                       u64 param_4,u64 param_5,u64 param_6,
-                                       u64 param_7,u64 param_8,short param_9,
-                                       int param_10);
-void modgfx_releaseActiveEffectsByOwner(u64 param_1,u64 param_2,u64 param_3,
-                                        u64 param_4,u64 param_5,u64 param_6,
-                                        u64 param_7,u64 param_8,int param_9);
-void modgfx_releaseAllActiveEffects(u64 param_1,u64 param_2,u64 param_3,
-                                    u64 param_4,u64 param_5,u64 param_6,
-                                    u64 param_7,u64 param_8);
-void modgfx_resetActiveEffectRegistry(u64 param_1,u64 param_2,u64 param_3,
-                                      u64 param_4,u64 param_5,u64 param_6,
-                                      u64 param_7,u64 param_8);
 u32
 projgfx_spawnPresetEffect(int param_1,u32 param_2,ExpgfxAttachedSourceState *param_3,
                           u32 param_4,u8 param_5,u16 *param_6);
