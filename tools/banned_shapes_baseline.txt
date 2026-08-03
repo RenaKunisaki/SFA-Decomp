@@ -29,6 +29,7 @@ src/dlls/objects/226/226.c:444:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/226/226.c:445:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/226/226.c:446:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/237/237.c:71:SINGLE_ELEM_CONST_ARRAY
+src/dlls/objects/362_CRrockfall/CRrockfall.c:28:UNCALLED_STATIC_FN
 src/dlls/objects/425_BombPlant/BombPlant.c:97:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/437/437.c:588:SINGLE_ELEM_CONST_ARRAY
 src/dlls/objects/437/437.c:589:SINGLE_ELEM_CONST_ARRAY
