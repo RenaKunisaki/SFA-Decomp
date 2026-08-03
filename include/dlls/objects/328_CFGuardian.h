@@ -100,6 +100,6 @@ void cfguardian_init(GameObject* obj, CfGuardianPlacement* placement);
 void cfguardian_release(void);
 void cfguardian_initialise(void);
 
-extern ObjectDescriptor11 gCFGuardianObjDescriptor;
+extern ObjectDescriptor11ExtraSize gCFGuardianObjDescriptor;
 
 #endif /* DLLS_OBJECTS_328_CFGUARDIAN_H_ */

@@ -194,7 +194,7 @@ ObjectDescriptor14 gPushableObjDescriptor = {
     (ObjectDescriptorCallback)pushable_render,          /* render */
     (ObjectDescriptorCallback)pushable_free,            /* free */
     (ObjectDescriptorCallback)pushable_getObjectTypeId, /* getObjectTypeId */
-    (ObjectDescriptorCallback)pushable_getExtraSize,    /* slot09 */
+    pushable_getExtraSize,    /* slot09 */
     (ObjectDescriptorCallback)pushable_push,        /* slot0A */
     (ObjectDescriptorCallback)pushable_isWithinCullDistance,          /* slot0B */
     (ObjectDescriptorCallback)pushable_setModelFlag,      /* slot0C */

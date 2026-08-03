@@ -28,7 +28,7 @@ typedef struct DfpLevelControlInterface
 
 STATIC_ASSERT(offsetof(DfpLevelControlInterface, copyPuzzleValues) == 0x20);
 
-extern ObjectDescriptor11 gDFP_LevelControlObjDescriptor;
+extern ObjectDescriptor11ExtraSize gDFP_LevelControlObjDescriptor;
 extern s16 gDFPLevelControlPuzzleValues[10];
 
 void DFP_LevelControl_updateMapAct2(GameObject* obj);

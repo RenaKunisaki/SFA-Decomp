@@ -1,12 +1,12 @@
 # tools/banned_shapes_check.py baseline -- accepted existing instances.
 # Anything NOT listed here is regrowth and fails the gate.
 # Shrink this file; never grow it.
-src/dlls/engine/15/15.c:133:SINGLE_ELEM_CONST_ARRAY
+src/dlls/engine/15/15.c:134:SINGLE_ELEM_CONST_ARRAY
 src/dlls/engine/19/19.c:123:UNCALLED_STATIC_FN
 src/dlls/engine/20_Hcurves/Hcurves.c:1206:UNCALLED_STATIC_FN
-src/dlls/engine/20_Hcurves/Hcurves_romcurve.c:82:UNCALLED_STATIC_FN
+src/dlls/engine/20_Hcurves/Hcurves_romcurve.c:83:UNCALLED_STATIC_FN
 src/dlls/engine/21/21.c:1768:LBL_CONST_DEF
-src/dlls/engine/24/24.c:46:UNCALLED_STATIC_FN
+src/dlls/engine/24/24.c:47:UNCALLED_STATIC_FN
 src/dlls/engine/69/69.c:29:UNCALLED_STATIC_FN
 src/dlls/objects/195_Player/player.c:1357:UNCALLED_STATIC_FN
 src/dlls/objects/195_Player/player.c:1375:UNCALLED_STATIC_FN

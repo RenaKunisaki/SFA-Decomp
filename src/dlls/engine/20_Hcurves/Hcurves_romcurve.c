@@ -2968,14 +2968,14 @@ typedef struct RomCurveDllInterface {
     ObjectDescriptorCallback initialise;
     ObjectDescriptorCallback release;
     ObjectDescriptorCallback slot02;
-    ObjectDescriptorCallback slot03;
+    ObjectDescriptorCallback curvesInitialise;
     ObjectDescriptorCallback add;
     ObjectDescriptorCallback remove;
     ObjectDescriptorCallback getCurves;
     ObjectDescriptorCallback find;
     ObjectDescriptorCallback findNearObj;
     ObjectDescriptorCallback getById;
-    ObjectDescriptorCallback slot0A;
+    ObjectDescriptorCallback curvesFind;
     ObjectDescriptorCallback distToObj;
     ObjectDescriptorCallback distXZ;
     ObjectDescriptorCallback getLastFindSegment;

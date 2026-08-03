@@ -53,24 +53,6 @@ typedef struct ObjectDescriptor {
     ObjectDescriptorExtraSizeCallback getExtraSize;
 } ObjectDescriptor;
 
-typedef struct ObjectDescriptor11 {
-    u32 reserved0;
-    u32 reserved1;
-    u32 reserved2;
-    u32 slotCountAndFlags;
-    ObjectDescriptorCallback initialise;
-    ObjectDescriptorCallback release;
-    ObjectDescriptorCallback slot02;
-    ObjectDescriptorCallback init;
-    ObjectDescriptorCallback update;
-    ObjectDescriptorCallback hitDetect;
-    ObjectDescriptorCallback render;
-    ObjectDescriptorCallback free;
-    ObjectDescriptorCallback getObjectTypeId;
-    ObjectDescriptorCallback slot09;
-    ObjectDescriptorCallback slot0A;
-} ObjectDescriptor11;
-
 typedef struct ObjectDescriptor10WithPadding {
     ObjectDescriptor descriptor;
     u32 padding;
@@ -162,7 +144,7 @@ typedef struct ObjectDescriptor14 {
     ObjectDescriptorCallback render;
     ObjectDescriptorCallback free;
     ObjectDescriptorCallback getObjectTypeId;
-    ObjectDescriptorCallback slot09;
+    ObjectDescriptorExtraSizeCallback getExtraSize;
     ObjectDescriptorCallback slot0A;
     ObjectDescriptorCallback slot0B;
     ObjectDescriptorCallback slot0C;

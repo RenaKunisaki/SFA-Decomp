@@ -8,7 +8,25 @@
 #include "dlls/object_descriptor.h"
 #include "main/rcp_dolphin.h"
 
-extern ObjectDescriptor11 projgfx_funcs;
+typedef struct ProjgfxDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback onMapSetup;
+    ObjectDescriptorCallback slot04;
+    ObjectDescriptorCallback slot05;
+    ObjectDescriptorCallback slot06;
+    ObjectDescriptorCallback slot07;
+    ObjectDescriptorCallback getObjectTypeId;
+    ObjectDescriptorCallback setzscale;
+    ObjectDescriptorCallback rayhit;
+} ProjgfxDllInterface;
+
+extern ProjgfxDllInterface projgfx_funcs;
 extern char sProjgfxReleaseDoNoLongerSupported[];
 extern char sProjgfxRayhitDoNoLongerSupported[];
 extern char sProjgfxSetzscaleDoNoLongerSupported[];

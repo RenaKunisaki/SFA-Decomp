@@ -452,7 +452,7 @@ ObjectDescriptor14 gDrakorMissileObjDescriptor = {
     (ObjectDescriptorCallback)drakormissile_render,
     (ObjectDescriptorCallback)drakormissile_free,
     (ObjectDescriptorCallback)drakormissile_getObjectTypeId,
-    (ObjectDescriptorCallback)drakormissile_getExtraSize,
+    drakormissile_getExtraSize,
     (ObjectDescriptorCallback)drakormissile_isFadingOut,
     (ObjectDescriptorCallback)drakormissile_startStraightLaunch,
     (ObjectDescriptorCallback)drakormissile_requestFree,

@@ -398,7 +398,7 @@ ObjectDescriptor14 gMoonSeedPlantingSpotObjDescriptor = {
     (ObjectDescriptorCallback)MoonSeedPlantingSpot_render,
     (ObjectDescriptorCallback)MoonSeedPlantingSpot_free,
     (ObjectDescriptorCallback)MoonSeedPlantingSpot_getObjectTypeId,
-    (ObjectDescriptorCallback)MoonSeedPlantingSpot_getExtraSize,
+    MoonSeedPlantingSpot_getExtraSize,
     (ObjectDescriptorCallback)MoonSeedPlantingSpot_cutOrHarvest,
     (ObjectDescriptorCallback)MoonSeedPlantingSpot_func0B,
     (ObjectDescriptorCallback)MoonSeedPlantingSpot_modelMtxFn,

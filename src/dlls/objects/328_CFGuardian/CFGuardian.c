@@ -182,7 +182,7 @@ int gCfGuardianIdleMoveTable[CFGUARDIAN_IDLE_MOVE_COUNT] = {
     -1, 0, 26, 0, 0, -1, -1, 26, 14, 14, 26, 26, 0, 0, -1, 10, 11, 12, 13, 14,
 };
 
-ObjectDescriptor11 gCFGuardianObjDescriptor = {
+ObjectDescriptor11ExtraSize gCFGuardianObjDescriptor = {
     0,
     0,
     0,
@@ -196,7 +196,7 @@ ObjectDescriptor11 gCFGuardianObjDescriptor = {
     (ObjectDescriptorCallback)cfguardian_render,
     (ObjectDescriptorCallback)cfguardian_free,
     (ObjectDescriptorCallback)cfguardian_getObjectTypeId,
-    (ObjectDescriptorCallback)cfguardian_getExtraSize,
+    cfguardian_getExtraSize,
     (ObjectDescriptorCallback)cfguardian_isNotPathFlying,
 };
 

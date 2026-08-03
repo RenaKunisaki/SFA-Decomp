@@ -293,7 +293,7 @@ void DFP_LevelControl_initialise(void)
 
 s16 gDFPLevelControlPuzzleValues[10] = {1, 2, 3, 0, 0, 0, 0, 0, 0, 0};
 
-ObjectDescriptor11 gDFP_LevelControlObjDescriptor = {
+ObjectDescriptor11ExtraSize gDFP_LevelControlObjDescriptor = {
     0,
     0,
     0,
@@ -307,6 +307,6 @@ ObjectDescriptor11 gDFP_LevelControlObjDescriptor = {
     (ObjectDescriptorCallback)DFP_LevelControl_render,
     (ObjectDescriptorCallback)DFP_LevelControl_free,
     (ObjectDescriptorCallback)DFP_LevelControl_getObjectTypeId,
-    (ObjectDescriptorCallback)DFP_LevelControl_getExtraSize,
+    DFP_LevelControl_getExtraSize,
     (ObjectDescriptorCallback)DFP_LevelControl_copyPuzzleValues,
 };

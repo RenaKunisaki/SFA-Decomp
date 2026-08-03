@@ -162,7 +162,7 @@ ObjectDescriptor14 gWallAnimatorObjDescriptor = {
     (ObjectDescriptorCallback)WallAnimator_render,
     (ObjectDescriptorCallback)WallAnimator_free,
     0,
-    (ObjectDescriptorCallback)WallAnimator_getExtraSize,
+    WallAnimator_getExtraSize,
     (ObjectDescriptorCallback)WallAnimator_applyImpact,
     (ObjectDescriptorCallback)WallAnimator_isComplete,
     (ObjectDescriptorCallback)WallAnimator_getEnergyCost,
