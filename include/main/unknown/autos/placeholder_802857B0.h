@@ -1,8 +1,0 @@
-#ifndef MAIN_UNKNOWN_AUTOS_PLACEHOLDER_802857B0_H_
-#define MAIN_UNKNOWN_AUTOS_PLACEHOLDER_802857B0_H_
-
-#include "ghidra_import.h"
-
-BOOL DBGRead(u32 count, u32 *buffer, s32 size);
-
-#endif /* MAIN_UNKNOWN_AUTOS_PLACEHOLDER_802857B0_H_ */
