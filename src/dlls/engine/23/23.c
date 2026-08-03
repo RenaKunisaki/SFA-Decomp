@@ -86,17 +86,16 @@ STATIC_ASSERT(sizeof(SaveGameData) == 0xF70);
 #define SAVEGAME_COMPLETION_SCORE_MAX         0xbb
 #define SAVE_SCORE_FILE_STRIDE                0x28
 #define SAVE_SCORE_TABLE_OFFSET               0x1c
-#define SAVE_SCORE_ENTRY_COUNT                5
 /* number of on-disk save-game slots */
 #define SAVEGAME_SLOT_COUNT              3
 #define SAVEGAME_MAP_COUNT               0x78
 #define SAVEGAME_EXTENDED_MAP_THRESHOLD  0x50
+#define SAVEGAME_EXTENDED_MAP_COUNT      (SAVEGAME_MAP_COUNT - SAVEGAME_EXTENDED_MAP_THRESHOLD)
 #define SAVEGAME_TRANSIENT_MAP_BIT_COUNT 20
 #define SAVEGAME_TRANSIENT_MAP_BIT_TTL   3
 
 enum
 {
-    SAVEGAME_EMPTY_TASK_HINT = -1,
     SAVEGAME_DEFAULT_VOLUME = 0x7f,
 };
 
@@ -108,13 +107,6 @@ typedef struct SaveGameRomListPosition
     f32 z;
     u32 objectId;
 } SaveGameRomListPosition;
-
-typedef struct SaveScoreEntry
-{
-    u32 score : 31;
-    u32 flag : 1;
-    u8 initials[4];
-} SaveScoreEntry;
 
 typedef struct SaveScoreFile
 {
@@ -154,29 +146,37 @@ const Vec3f gSaveGameDefaultPosition = {
 
 void loadMapForCurrentSaveGame(void);
 
-u8 gSaveGameData[0xF70];
+u8 gSaveGameData[SAVEGAME_LIVE_BUFFER_SIZE];
 u8 saveData[SAVE_DATA_SIZE];
-u32 gMapObjGroupStatuses[0x78];
-u8 gExtendedMapActLookup[0x28];
+u32 gMapObjGroupStatuses[SAVEGAME_MAP_COUNT];
+u8 gExtendedMapActLookup[SAVEGAME_EXTENDED_MAP_COUNT];
 
-MapBitTransient gTransientMapBits[0x3C / sizeof(MapBitTransient)];
+MapBitTransient gTransientMapBits[SAVEGAME_TRANSIENT_MAP_BIT_COUNT];
 
-typedef struct SaveGameMapState
+typedef struct SaveGameRecord
 {
-    MapBitTransient transient[SAVEGAME_TRANSIENT_MAP_BIT_COUNT]; /* 0x000 */
-    u32 groupStatuses[SAVEGAME_MAP_COUNT];                       /* 0x03C */
-    u8 extendedMapActLookup[40];                                 /* 0x21C */
-} SaveGameMapState;
+    MapBitTransient transientMapBits[SAVEGAME_TRANSIENT_MAP_BIT_COUNT];
+    u32 mapObjGroupStatuses[SAVEGAME_MAP_COUNT];
+    u8 extendedMapActLookup[SAVEGAME_EXTENDED_MAP_COUNT];
+    SaveData options;
+    SaveGameData game;
+} SaveGameRecord;
 
-#define gSaveGameMapState (*(SaveGameMapState*)gTransientMapBits)
+STATIC_ASSERT(offsetof(SaveGameRecord, mapObjGroupStatuses) == 0x3C);
+STATIC_ASSERT(offsetof(SaveGameRecord, extendedMapActLookup) == 0x21C);
+STATIC_ASSERT(offsetof(SaveGameRecord, options) == 0x244);
+STATIC_ASSERT(offsetof(SaveGameRecord, game) == 0x328);
+STATIC_ASSERT(sizeof(SaveGameRecord) == 0x1298);
 
-static inline s8 saveGame_findTransientMapBit(int mapId, int shift, const SaveGameMapState* state)
+#define gSaveGameRecord (*(SaveGameRecord*)gTransientMapBits)
+
+static inline s8 saveGame_findTransientMapBit(int mapId, int shift, const SaveGameRecord* record)
 {
     int i;
 
     for (i = 0; i < SAVEGAME_TRANSIENT_MAP_BIT_COUNT; i++)
     {
-        if (mapId == state->transient[i].mapId && shift == state->transient[i].shift)
+        if (mapId == record->transientMapBits[i].mapId && shift == record->transientMapBits[i].shift)
         {
             return i;
         }
@@ -184,16 +184,16 @@ static inline s8 saveGame_findTransientMapBit(int mapId, int shift, const SaveGa
     return -1;
 }
 
-static inline void saveGame_addTransientMapBit(int mapId, int shift, SaveGameMapState* state)
+static inline void saveGame_addTransientMapBit(int mapId, int shift, SaveGameRecord* record)
 {
     int i;
     MapBitTransient* transient;
 
     for (i = 0; i < SAVEGAME_TRANSIENT_MAP_BIT_COUNT; i++)
     {
-        if (state->transient[i].mapId == -1)
+        if (record->transientMapBits[i].mapId == -1)
         {
-            (transient = &state->transient[i])->mapId = mapId;
+            (transient = &record->transientMapBits[i])->mapId = mapId;
             transient->shift = shift;
             transient->timer = SAVEGAME_TRANSIENT_MAP_BIT_TTL;
             return;
@@ -311,16 +311,16 @@ int loadGameOptions(void)
     int loadResult;
 
     loadResult = maybeTryLoadSave(saveData);
-    if ((loadResult == 0) || (saveData[0] == '\0'))
+    if ((loadResult == 0) || (((SaveData*)saveData)->optionsValid == 0))
     {
         memset(saveData, 0, SAVE_DATA_SIZE);
-        saveData[6] = 0;
-        saveData[2] = 1;
-        saveData[8] = 1;
-        saveData[0] = 1;
-        saveData[10] = SAVEGAME_DEFAULT_VOLUME;
-        saveData[11] = SAVEGAME_DEFAULT_VOLUME;
-        saveData[12] = SAVEGAME_DEFAULT_VOLUME;
+        ((SaveData*)saveData)->widescreenEnabled = 0;
+        ((SaveData*)saveData)->subtitlesEnabled = 1;
+        ((SaveData*)saveData)->rumbleEnabled = 1;
+        ((SaveData*)saveData)->optionsValid = 1;
+        ((SaveData*)saveData)->musicVolume = SAVEGAME_DEFAULT_VOLUME;
+        ((SaveData*)saveData)->sfxVolume = SAVEGAME_DEFAULT_VOLUME;
+        ((SaveData*)saveData)->speechVolume = SAVEGAME_DEFAULT_VOLUME;
     }
     return loadResult;
 }
@@ -702,14 +702,14 @@ int saveSelect_getInfo(void* outPtr)
 
 void SaveGame_gplaySetObjGroupStatus(int mapId, int groupBit, int enabled)
 {
-    SaveGameMapState* s[1];
+    SaveGameRecord* s[1];
     u8 createTransient;
     u32 newStatus;
     int oldStatus;
     u32 bit;
     int i;
 
-    s[0] = &gSaveGameMapState;
+    s[0] = &gSaveGameRecord;
     createTransient = 0;
 
     if (mapId >= SAVEGAME_EXTENDED_MAP_THRESHOLD)
@@ -753,7 +753,7 @@ void SaveGame_gplaySetObjGroupStatus(int mapId, int groupBit, int enabled)
         {
             if ((oldStatus & (1 << groupBit)) == 0)
             {
-                u32* gp = s[0]->groupStatuses;
+                u32* gp = s[0]->mapObjGroupStatuses;
                 for (i = 0; i < SAVEGAME_MAP_COUNT; i++)
                 {
                     if (gSaveGameMapObjGroupBits[i] == gSaveGameMapObjGroupBits[mapId])
@@ -765,7 +765,7 @@ void SaveGame_gplaySetObjGroupStatus(int mapId, int groupBit, int enabled)
         }
         else
         {
-            u32* gp = s[0]->groupStatuses;
+            u32* gp = s[0]->mapObjGroupStatuses;
             for (i = 0; i < SAVEGAME_MAP_COUNT; i++)
             {
                 if (gSaveGameMapObjGroupBits[i] == gSaveGameMapObjGroupBits[mapId])
@@ -803,7 +803,7 @@ void SaveGame_updateTransientMapBits(void)
 
 s8 SaveGame_findTransientMapBit(int mapId, int shift)
 {
-    return saveGame_findTransientMapBit(mapId, shift, &gSaveGameMapState);
+    return saveGame_findTransientMapBit(mapId, shift, &gSaveGameRecord);
 }
 
 void mapClearBit(int idx, int bit)
@@ -1181,8 +1181,9 @@ void SaveGame_release(void)
 
 void SaveGame_initialise(void)
 {
-    s8* base = (s8*)gTransientMapBits;
-    memset(base + 0x328, 0, SAVEGAME_LIVE_BUFFER_SIZE);
+    SaveGameRecord* record = &gSaveGameRecord;
+
+    memset(&record->game, 0, sizeof(record->game));
     if (!(((SaveGameData*)gSaveGameWorkBuffer)->newFileFlag & 0x80))
     {
         memset(gSaveGameWorkBuffer, 0, SAVEGAME_ACTIVE_SIZE);
@@ -1190,34 +1191,34 @@ void SaveGame_initialise(void)
     pRestartPoint = 0;
     gSaveGameMapActCacheIdx[0] = -1;
     gSaveGameObjGroupCacheIdx[0] = -1;
-    memset(base + 0x244, 0, 0xe4);
-    base[0x24a] = 0;
-    base[0x246] = 1;
-    base[0x24c] = 1;
-    base[0x244] = 1;
-    base[0x24e] = SAVEGAME_DEFAULT_VOLUME;
-    base[0x24f] = SAVEGAME_DEFAULT_VOLUME;
-    base[0x250] = SAVEGAME_DEFAULT_VOLUME;
-    base[0x00] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x03] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x06] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x09] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x0c] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x0f] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x12] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x15] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x18] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x1b] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x1e] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x21] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x24] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x27] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x2a] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x2d] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x30] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x33] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x36] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x39] = SAVEGAME_EMPTY_TASK_HINT;
+    memset(&record->options, 0, sizeof(record->options));
+    record->options.widescreenEnabled = 0;
+    record->options.subtitlesEnabled = 1;
+    record->options.rumbleEnabled = 1;
+    record->options.optionsValid = 1;
+    record->options.musicVolume = SAVEGAME_DEFAULT_VOLUME;
+    record->options.sfxVolume = SAVEGAME_DEFAULT_VOLUME;
+    record->options.speechVolume = SAVEGAME_DEFAULT_VOLUME;
+    record->transientMapBits[0].mapId = -1;
+    record->transientMapBits[1].mapId = -1;
+    record->transientMapBits[2].mapId = -1;
+    record->transientMapBits[3].mapId = -1;
+    record->transientMapBits[4].mapId = -1;
+    record->transientMapBits[5].mapId = -1;
+    record->transientMapBits[6].mapId = -1;
+    record->transientMapBits[7].mapId = -1;
+    record->transientMapBits[8].mapId = -1;
+    record->transientMapBits[9].mapId = -1;
+    record->transientMapBits[10].mapId = -1;
+    record->transientMapBits[11].mapId = -1;
+    record->transientMapBits[12].mapId = -1;
+    record->transientMapBits[13].mapId = -1;
+    record->transientMapBits[14].mapId = -1;
+    record->transientMapBits[15].mapId = -1;
+    record->transientMapBits[16].mapId = -1;
+    record->transientMapBits[17].mapId = -1;
+    record->transientMapBits[18].mapId = -1;
+    record->transientMapBits[19].mapId = -1;
 }
 
 u16 gSaveGameMapActBits[120] = {
