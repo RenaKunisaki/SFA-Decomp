@@ -1020,10 +1020,12 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
             if (((s32)((BaddieState*)state)->surfaceFlags & 2) != 0 || ((BaddieState*)state)->groundContact != 0)
             {
                 ((GameObject*)pos)->anim.velocityX =
-                    (((GameObject*)pos)->anim.localPosX - *(f32*)((int)((GameObject*)pos)->anim.hitReactState + 0x10)) /
+                    (((GameObject*)pos)->anim.localPosX -
+                     ((ObjHitsPriorityState*)((GameObject*)pos)->anim.hitReactState)->localPosX) /
                     dt;
                 ((GameObject*)pos)->anim.velocityZ =
-                    (((GameObject*)pos)->anim.localPosZ - *(f32*)((int)((GameObject*)pos)->anim.hitReactState + 0x18)) /
+                    (((GameObject*)pos)->anim.localPosZ -
+                     ((ObjHitsPriorityState*)((GameObject*)pos)->anim.hitReactState)->localPosZ) /
                     dt;
             }
             *(u32*)state &= 0xff7fffff;
