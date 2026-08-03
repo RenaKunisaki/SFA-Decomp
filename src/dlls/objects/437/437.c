@@ -389,7 +389,7 @@ PlayerLightfootMoveSpeeds gPlayerMoveSpeedTable = {
 int Lightfoot_UpdateTargetAnimationCycle(GameObject* obj, int state, f32 fv)
 {
     GroundBaddieState* inner = obj->extra;
-    Dll1B5ControlState* a4 = inner->control;
+    Dll1B5ControlState* control = inner->control;
     void* p = ((BaddieState*)state)->targetObj;
     if (p != NULL)
     {
@@ -401,15 +401,15 @@ int Lightfoot_UpdateTargetAnimationCycle(GameObject* obj, int state, f32 fv)
         ObjPlacement* q = (ObjPlacement*)obj->anim.placementData;
         obj->anim.localPosX = q->posX;
         obj->anim.localPosZ = q->posZ;
-        a4->moveIndex += 1;
-        if (gPlayerMoveTableC[a4->moveIndex] == -1)
+        control->moveIndex += 1;
+        if (gPlayerMoveTableC[control->moveIndex] == -1)
         {
-            a4->moveIndex = 0;
+            control->moveIndex = 0;
         }
-        ObjAnim_SetCurrentMove((int)obj, gPlayerMoveTableC[a4->moveIndex], 0.0f, 0);
+        ObjAnim_SetCurrentMove((int)obj, gPlayerMoveTableC[control->moveIndex], 0.0f, 0);
     }
     ((BaddieState*)state)->moveSpeed =
-        gPlayerMoveSpeedTable.speeds[a4->moveIndex];
+        gPlayerMoveSpeedTable.speeds[control->moveIndex];
     (*gPlayerInterface)->updateAnimRootMotion(obj, (void*)state, fv, 1);
     return 0;
 }
@@ -520,37 +520,37 @@ int Lightfoot_UpdateAnimationCycle(GameObject* obj, int state, f32 fv)
 {
     GroundBaddieState* inner = obj->extra;
     void* p = ((BaddieState*)state)->targetObj;
-    Dll1B5ControlState* a4;
+    Dll1B5ControlState* control;
     const s16* moves;
     const f32* blends;
     if (p != NULL)
     {
         characterSetHeadYawToTarget(obj, (GameObject*)p, &inner->eyeAnimState, 0x19);
     }
-    a4 = inner->control;
-    moves = a4->moveIds;
-    blends = a4->moveSpeeds;
+    control = inner->control;
+    moves = control->moveIds;
+    blends = control->moveSpeeds;
     if (((BaddieState*)state)->moveJustStartedA != 0 ||
         ((BaddieState*)state)->moveDone != 0)
     {
-        a4->completionCountdown = 0;
-        a4->moveIndex += 1;
-        if (moves[a4->moveIndex] == -1)
+        control->completionCountdown = 0;
+        control->moveIndex += 1;
+        if (moves[control->moveIndex] == -1)
         {
-            a4->moveIndex = 0;
+            control->moveIndex = 0;
         }
         if (((BaddieState*)state)->moveJustStartedA != 0)
         {
             obj->anim.currentMoveProgress = (f32)randomGetRange(0, 0x63) / 100.0f;
-            ObjAnim_SetCurrentMove((int)obj, moves[a4->moveIndex], obj->anim.currentMoveProgress,
+            ObjAnim_SetCurrentMove((int)obj, moves[control->moveIndex], obj->anim.currentMoveProgress,
                                    0);
         }
         else
         {
-            ObjAnim_SetCurrentMove((int)obj, moves[a4->moveIndex], 0.0f, 0);
+            ObjAnim_SetCurrentMove((int)obj, moves[control->moveIndex], 0.0f, 0);
         }
     }
-    ((BaddieState*)state)->moveSpeed = blends[a4->moveIndex];
+    ((BaddieState*)state)->moveSpeed = blends[control->moveIndex];
     (*gPlayerInterface)->updateAnimRootMotion(obj, (void*)state, fv, 0);
     return 0;
 }

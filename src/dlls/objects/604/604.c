@@ -577,7 +577,7 @@ void snowclaw_hitDetect(GameObject* obj)
     GameObject* player;
     f32 dist;
     int hit;
-    s8 a5;
+    s8 hitCooldown;
 
     inner = obj->extra;
     s = (SnowclawState*)inner;
@@ -654,10 +654,10 @@ void snowclaw_hitDetect(GameObject* obj)
     {
         snowclaw_syncMountTransform(obj, *(GameObject**)inner, 0, 0, 0, 0, 0, 0, 0);
     }
-    a5 = s->hitCooldown;
-    if (a5 >= 0)
+    hitCooldown = s->hitCooldown;
+    if (hitCooldown >= 0)
     {
-        s->hitCooldown = a5 - framesThisStep;
+        s->hitCooldown = hitCooldown - framesThisStep;
     }
 }
 

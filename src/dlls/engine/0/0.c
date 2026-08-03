@@ -3076,7 +3076,7 @@ void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
     char* aTextPtr;
     s16 alpha;
     s16 rowFade;
-    s16 a16;
+    s16 fadedAlpha;
     int prevCharset;
     u8* aPhraseIndex;
     int bPrevCharset2;
@@ -3182,12 +3182,12 @@ void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
                 {
                     alpha = 0xFF;
                 }
-                a16 = alpha * gCMenuHighlightFade / 0xFF;
+                fadedAlpha = alpha * gCMenuHighlightFade / 0xFF;
                 GXSetScissor(0, 0, 0x280, 0x1E0);
                 sprintf(label.text, lbl_803DBB58, gCMenuItemIcons[iconIndex]);
-                gameTextSetColor(0, 0, 0, a16 & 0xFF);
+                gameTextSetColor(0, 0, 0, fadedAlpha & 0xFF);
                 gameTextShowStr(label.text, 0x93, 0x247, 0x2B + (rowOffset + gCMenuScrollTimer));
-                gameTextSetColor(0xFF, 0xFF, 0xFF, (u8)a16);
+                gameTextSetColor(0xFF, 0xFF, 0xFF, (u8)fadedAlpha);
                 gameTextShowStr(label.text, 0x93, 0x246, 0x2A + (rowOffset + gCMenuScrollTimer));
             }
         }

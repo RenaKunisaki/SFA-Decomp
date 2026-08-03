@@ -639,7 +639,7 @@ void renderShadows(int unused0, int unused1, int unused2)
     Mtx mTrans, mScale;
     Mtx44 mOrtho;
     f32 mc54[3], mc48[3];
-    Vec vA, v30;
+    Vec vA, direction;
     Vec dot24, proj;
     Camera* slot;
     NewShadowData* shadowData = (NewShadowData*)gNewShadowEntries;
@@ -671,10 +671,10 @@ void renderShadows(int unused0, int unused1, int unused2)
     savedRotX = slot->yaw;
     savedRotZ = slot->roll;
     slot->pitch = 0;
-    v30.x = 0.0f;
-    v30.y = 1.0f;
-    v30.z = 0.0f;
-    buildShadowVolumeBox(&v30.x, om100, 2.0f);
+    direction.x = 0.0f;
+    direction.y = 1.0f;
+    direction.z = 0.0f;
+    buildShadowVolumeBox(&direction.x, om100, 2.0f);
     mapGetBlocks(&layerTables, &blocks);
     texIdx = 0;
     slotIdx = 0;
@@ -882,9 +882,9 @@ void renderShadows(int unused0, int unused1, int unused2)
                 mScale[2][3] = 1.0f;
             }
             PSMTXConcat(mScale, mTrans, (MtxPtr)castSlot->textureMtx);
-            modelState->shadowOffsetX = v30.x;
-            modelState->shadowOffsetY = v30.y;
-            modelState->shadowOffsetZ = v30.z;
+            modelState->shadowOffsetX = direction.x;
+            modelState->shadowOffsetY = direction.y;
+            modelState->shadowOffsetZ = direction.z;
             obj->anim.modelState->shadowCastSlot = castSlot;
         }
         slotIdx++;

@@ -491,7 +491,7 @@ void sky2_run(void)
     int d;
     int bestKnotOffset;
     int secondKnotOffset;
-    u16 a1;
+    u16 angle;
     int range;
     int redInt;
     int greenInt;
@@ -685,8 +685,8 @@ void sky2_run(void)
                 k = 0;
                 do
                 {
-                    a1 = getAngle(lbl_8039A7B8[k * 3], lbl_8039A7B8[k * 3 + 2]);
-                    d = a1 - (u16)getAngle(vec[0], vec[2]);
+                    angle = getAngle(lbl_8039A7B8[k * 3], lbl_8039A7B8[k * 3 + 2]);
+                    d = angle - (u16)getAngle(vec[0], vec[2]);
                     if (d < 0)
                     {
                         d *= -1;

@@ -762,7 +762,7 @@ u8 objShadowUpdateAlpha(GameObject* obj, int delta)
 {
     ObjModelState* modelState;
     s16* alphaStep;
-    f32 f31;
+    f32 alphaScale;
     int v;
 
     modelState = obj->anim.modelState;
@@ -788,11 +788,11 @@ u8 objShadowUpdateAlpha(GameObject* obj, int delta)
             *alphaStep = 0x4000;
         }
     }
-    f31 = (1.0f / 16384.0f) * (f32)*alphaStep;
-    f31 = gShadowAlphaScale * f31;
+    alphaScale = (1.0f / 16384.0f) * (f32)*alphaStep;
+    alphaScale = gShadowAlphaScale * alphaScale;
     {
         f32 tint = objShadowGetFadedAlpha(obj, modelState->shadowTintA);
-        v = (s16)(int)(tint * f31);
+        v = (s16)(int)(tint * alphaScale);
     }
     if (v > 0xff)
     {

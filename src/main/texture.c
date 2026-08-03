@@ -421,14 +421,14 @@ void textureSelectAnimationFramePair(void* context, Texture* texture, Texture* f
     Texture* current;
     Texture* result;
     Texture* walk;
-    u16 f10;
+    u16 animationFrameCount;
 
     if (texture == NULL)
         return;
     idx = packed >> 16;
-    f10 = texture->animationFrameCount;
-    if (f10 != 0)
-        count = f10 >> 8;
+    animationFrameCount = texture->animationFrameCount;
+    if (animationFrameCount != 0)
+        count = animationFrameCount >> 8;
     else
         count = 0;
     current = texture;

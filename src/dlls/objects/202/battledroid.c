@@ -111,7 +111,7 @@ void battleDroidUpdateAttack(int obj, int state)
 
 void battleDroidInit(int unused, char* p)
 {
-    f32 v1c;
+    f32 moveSpeedScale;
     ((EnemyState*)p)->sightRange = 60.0f;
     ((EnemyState*)p)->flags2E4 = 1;
     ((EnemyState*)p)->flags2E4 |= 0x80;
@@ -119,10 +119,10 @@ void battleDroidInit(int unused, char* p)
     ((EnemyState*)p)->gravity = 0.17f;
     ((EnemyState*)p)->drag = 0.97f;
     ((EnemyState*)p)->moveId0 = 0;
-    v1c = 3.0f;
-    ((EnemyState*)p)->moveSpeedScale0 = v1c;
+    moveSpeedScale = 3.0f;
+    ((EnemyState*)p)->moveSpeedScale0 = moveSpeedScale;
     ((EnemyState*)p)->moveId1 = 0;
     ((EnemyState*)p)->moveSpeedScale1 = 1.25f;
     ((EnemyState*)p)->moveId2 = 0;
-    ((EnemyState*)p)->moveSpeedScale2 = v1c;
+    ((EnemyState*)p)->moveSpeedScale2 = moveSpeedScale;
 }

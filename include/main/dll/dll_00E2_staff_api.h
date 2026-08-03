@@ -66,7 +66,7 @@ void staffSetGlow(GameObject* obj, u8 attackType, u8 enable);
 void staff_func0A(void);
 void staff_setHitReactValue(GameObject* obj, s32 value);
 void staff_setupSwipe(int p1, u8* swipe, int p3, int p4);
-void staff_startSwipe(GameObject* obj, s16 index, f32 arg2, f32 arg3);
+void staff_startSwipe(GameObject* obj, s16 index, f32 arg2, f32 lengthScale);
 void staff_update(GameObject* obj);
 void staffStartQuakeSpell(f32* position);
 

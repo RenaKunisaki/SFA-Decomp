@@ -182,7 +182,7 @@ int trickyTryPlaySound(GameObject* obj, u16 sfxId, int vol)
 void objAnimFreeChildren(GameObject* a, int b, GameObject** c)
 {
     char buf[4];
-    void *v0, *v1, *v2;
+    void *childA, *childB, *child;
 
     if (*c == NULL)
     {
@@ -194,38 +194,38 @@ void objAnimFreeChildren(GameObject* a, int b, GameObject** c)
     buf[0] = -1;
     buf[1] = -1;
     buf[2] = -1;
-    v0 = (void*)((TrickyState*)b)->childA;
-    if (v0 != NULL)
+    childA = (void*)((TrickyState*)b)->childA;
+    if (childA != NULL)
     {
         buf[((TrickyState*)b)->packedSlots.promptASlot] = 1;
     }
-    v1 = (void*)((TrickyState*)b)->childB;
-    if (v1 != NULL)
+    childB = (void*)((TrickyState*)b)->childB;
+    if (childB != NULL)
     {
         buf[((TrickyState*)b)->packedSlots.promptBSlot] = 1;
     }
-    v2 = (void*)((TrickyState*)b)->child;
-    if (v2 != NULL)
+    child = (void*)((TrickyState*)b)->child;
+    if (child != NULL)
     {
         buf[((TrickyState*)b)->packedSlots.zzzSlot] = 1;
     }
     if (buf[0] == -1)
     {
-        if (v0 != NULL)
+        if (childA != NULL)
         {
-            ObjLink_DetachChild(a, v0);
+            ObjLink_DetachChild(a, childA);
             ObjLink_AttachChild(a, ((TrickyState*)b)->childA, 0);
             ((TrickyState*)b)->packedSlots.promptASlot = 0;
         }
-        else if (v1 != NULL)
+        else if (childB != NULL)
         {
-            ObjLink_DetachChild(a, v1);
+            ObjLink_DetachChild(a, childB);
             ObjLink_AttachChild(a, ((TrickyState*)b)->childB, 0);
             ((TrickyState*)b)->packedSlots.promptBSlot = 0;
         }
-        else if (v2 != NULL)
+        else if (child != NULL)
         {
-            ObjLink_DetachChild(a, v2);
+            ObjLink_DetachChild(a, child);
             ObjLink_AttachChild(a, ((TrickyState*)b)->child, 0);
             ((TrickyState*)b)->packedSlots.zzzSlot = 0;
         }
@@ -3886,8 +3886,8 @@ void* trickyFindCirclingTarget(GameObject* obj, void* state);
         cfg = *(u8**)&((GameObject*)(obj))->extra;                                                                     \
         if (!((TrickyState*)cfg)->soundSuppressed)                                                                        \
         {                                                                                                              \
-            s16 a0 = ((GameObject*)(obj))->anim.currentMove;                                                           \
-            if (a0 >= 0x30 || a0 < 0x29)                                                                               \
+            s16 currentMove = ((GameObject*)(obj))->anim.currentMove;                                                           \
+            if (currentMove >= 0x30 || currentMove < 0x29)                                                                               \
             {                                                                                                          \
                 if (Sfx_IsPlayingFromObjectChannel((GameObject*)(obj), 0x10) == 0)                               \
                 {                                                                                                      \
@@ -5241,8 +5241,8 @@ void trickyGuard(ObjAnimComponent* obj, TrickyState* trickyState)
             temp = (int)((GameObject*)obj)->extra;
             if ((((u32)((TrickyState*)temp)->statusFlags >> 6) & 1) == 0)
             {
-                s16 a0 = obj->currentMove;
-                if (a0 >= 0x30 || a0 < 0x29)
+                s16 currentMove = obj->currentMove;
+                if (currentMove >= 0x30 || currentMove < 0x29)
                 {
                     if (Sfx_IsPlayingFromObjectChannel((GameObject*)obj, 0x10) == 0)
                     {
@@ -5279,8 +5279,8 @@ void trickyGuard(ObjAnimComponent* obj, TrickyState* trickyState)
             temp2 = (int)((GameObject*)obj)->extra;
             if ((((u32)((TrickyState*)temp2)->statusFlags >> 6) & 1) == 0)
             {
-                s16 a0 = obj->currentMove;
-                if (a0 >= 0x30 || a0 < 0x29)
+                s16 currentMove = obj->currentMove;
+                if (currentMove >= 0x30 || currentMove < 0x29)
                 {
                     if (Sfx_IsPlayingFromObjectChannel((GameObject*)obj, 0x10) == 0)
                     {
@@ -5304,8 +5304,8 @@ void trickyGuard(ObjAnimComponent* obj, TrickyState* trickyState)
             temp3 = (int)((GameObject*)obj)->extra;
             if ((((u32)((TrickyState*)temp3)->statusFlags >> 6) & 1) == 0)
             {
-                s16 a0 = obj->currentMove;
-                if (a0 >= 0x30 || a0 < 0x29)
+                s16 currentMove = obj->currentMove;
+                if (currentMove >= 0x30 || currentMove < 0x29)
                 {
                     if (Sfx_IsPlayingFromObjectChannel((GameObject*)obj, 0x10) == 0)
                     {
@@ -5553,8 +5553,8 @@ void trickyFlame(GameObject* obj, TrickyState* trickyState)
                         i = (int)(obj)->extra;
                         if ((((u32)((TrickyState*)i)->statusFlags >> 6) & 1) == 0)
                         {
-                            s16 a0 = (obj)->anim.currentMove;
-                            if (a0 >= 0x30 || a0 < 0x29)
+                            s16 currentMove = (obj)->anim.currentMove;
+                            if (currentMove >= 0x30 || currentMove < 0x29)
                             {
                                 if (Sfx_IsPlayingFromObjectChannel((GameObject*)obj, 0x10) == 0)
                                 {
@@ -5651,8 +5651,8 @@ void trickyFlame(GameObject* obj, TrickyState* trickyState)
                         slot = (void**)(obj)->extra;
                         if ((((u32)((TrickyState*)slot)->statusFlags >> 6) & 1) == 0)
                         {
-                            s16 a0 = (obj)->anim.currentMove;
-                            if (a0 >= 0x30 || a0 < 0x29)
+                            s16 currentMove = (obj)->anim.currentMove;
+                            if (currentMove >= 0x30 || currentMove < 0x29)
                             {
                                 if (Sfx_IsPlayingFromObjectChannel((GameObject*)obj, 0x10) == 0)
                                 {

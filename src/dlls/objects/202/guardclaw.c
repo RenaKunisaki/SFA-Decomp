@@ -121,7 +121,7 @@ void groundBaddiePushPlayerOut(GameObject* obj, u8* state)
     f32 sinA;
     f32 cosA;
     f32 base;
-    f32 f5;
+    f32 depth;
     f32 f2v;
     f32 dx;
     f32 dz;
@@ -147,16 +147,16 @@ void groundBaddiePushPlayerOut(GameObject* obj, u8* state)
         sinA = mathSinf(GROUND_BADDIE_PI * (f32)obj->anim.rotX / GROUND_BADDIE_ANGLE_UNIT_SCALE);
         cosA = mathCosf(GROUND_BADDIE_PI * (f32)obj->anim.rotX / GROUND_BADDIE_ANGLE_UNIT_SCALE);
         base = -(sinA * (px0 - sinA) + cosA * (pz0 - cosA));
-        f5 = base + (sinA * player->anim.previousWorldPosX + cosA * player->anim.previousWorldPosZ);
+        depth = base + (sinA * player->anim.previousWorldPosX + cosA * player->anim.previousWorldPosZ);
         f2v = base + (sinA * player->anim.worldPosX + cosA * player->anim.worldPosZ);
         if (f2v > 0.0f)
         {
-            if (!(f5 >= GROUND_BADDIE_PUSH_MAX_DEPTH))
+            if (!(depth >= GROUND_BADDIE_PUSH_MAX_DEPTH))
             {
                 return;
             }
-            player->anim.worldPosX = player->anim.worldPosX - sinA * f5;
-            player->anim.worldPosZ = player->anim.worldPosZ - cosA * f5;
+            player->anim.worldPosX = player->anim.worldPosX - sinA * depth;
+            player->anim.worldPosZ = player->anim.worldPosZ - cosA * depth;
             Obj_TransformWorldPointToLocal(player->anim.worldPosX, player->anim.worldPosY, player->anim.worldPosZ,
                                            &player->anim.localPosX, &player->anim.localPosY, &player->anim.localPosZ,
                                            player->anim.parent);

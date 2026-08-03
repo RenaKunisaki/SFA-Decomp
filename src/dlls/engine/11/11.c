@@ -280,8 +280,8 @@ void modgfx_captureFrameBaseVertices(PartfxEffectState* state)
     int i;
     ModgfxVertexData* dst;
     ModgfxVertexData* src;
-    f32 f1;
-    f32 f0;
+    f32 one;
+    f32 zero;
     src = state->vertexBuffers[1 - state->activeVertexBufferIndex];
     dst = state->vertexBuffers[2];
     for (i = 0; i < state->vertexCount; i++)
@@ -296,20 +296,20 @@ void modgfx_captureFrameBaseVertices(PartfxEffectState* state)
         dst++;
         src++;
     }
-    f1 = MODGFX_ONE;
-    state->scaleVectors[0].x = f1;
-    state->scaleVectors[0].y = f1;
-    state->scaleVectors[0].z = f1;
-    f0 = MODGFX_ZERO;
-    state->scaleVectors[1].x = f0;
-    state->scaleVectors[1].y = f0;
-    state->scaleVectors[1].z = f0;
-    state->scaleVectors[2].x = f1;
-    state->scaleVectors[2].y = f1;
-    state->scaleVectors[2].z = f1;
-    state->scaleVectors[3].x = f0;
-    state->scaleVectors[3].y = f0;
-    state->scaleVectors[3].z = f0;
+    one = MODGFX_ONE;
+    state->scaleVectors[0].x = one;
+    state->scaleVectors[0].y = one;
+    state->scaleVectors[0].z = one;
+    zero = MODGFX_ZERO;
+    state->scaleVectors[1].x = zero;
+    state->scaleVectors[1].y = zero;
+    state->scaleVectors[1].z = zero;
+    state->scaleVectors[2].x = one;
+    state->scaleVectors[2].y = one;
+    state->scaleVectors[2].z = one;
+    state->scaleVectors[3].x = zero;
+    state->scaleVectors[3].y = zero;
+    state->scaleVectors[3].z = zero;
 }
 
 void modgfx_stepVertexColor(void* state, void* p, int reinit)

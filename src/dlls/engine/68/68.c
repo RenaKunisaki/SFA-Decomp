@@ -484,7 +484,7 @@ void CameraModeViewfinder_init(CameraObject* camera, int mode, CameraModeViewfin
     GameObject* focus;
     s16 diff;
     s16 absDiff;
-    s16 a2;
+    s16 yawDelta;
     f32 dx;
     f32 dz;
     f32 dist;
@@ -547,16 +547,16 @@ void CameraModeViewfinder_init(CameraObject* camera, int mode, CameraModeViewfin
     gCameraModeViewfinderState->positionZCurve.startTangent = zero;
     gCameraModeViewfinderState->positionZCurve.endTangent = zero;
     curvesMove(&gCameraModeViewfinderState->transitionCurve);
-    a2 = camera->anim.rotX -
+    yawDelta = camera->anim.rotX -
          (u16)(0x8000 - getAngle(camera->anim.worldPosX - gCameraModeViewfinderState->positionXCurve.end,
                                  camera->anim.worldPosZ - gCameraModeViewfinderState->positionZCurve.end));
-    if (a2 > 0x8000) {
-        a2 = a2 - 0xffff;
+    if (yawDelta > 0x8000) {
+        yawDelta = yawDelta - 0xffff;
     }
-    if (a2 < -0x8000) {
-        a2 = a2 + 0xffff;
+    if (yawDelta < -0x8000) {
+        yawDelta = yawDelta + 0xffff;
     }
-    gCameraModeViewfinderState->yawCurve.start = a2;
+    gCameraModeViewfinderState->yawCurve.start = yawDelta;
     zero = 0.0f;
     gCameraModeViewfinderState->yawCurve.end = zero;
     gCameraModeViewfinderState->yawCurve.startTangent = zero;

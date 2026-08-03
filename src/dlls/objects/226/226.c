@@ -164,10 +164,10 @@ typedef struct StaffEffectParams {
     u16 a;
     u16 b;
     s16 count;
-    f32 f0;
-    f32 f1;
-    f32 f2;
-    f32 f3;
+    f32 scale;
+    f32 posX;
+    f32 posY;
+    f32 posZ;
 } StaffEffectParams;
 
 #define GXWGFifo (*(volatile PPCWGPipe*)0xCC008000)
@@ -223,52 +223,52 @@ void staffUpdateAttackEffects(GameObject* obj, GameObject* player) {
         fxB.id = 0;
         fxB.a = 0;
         fxB.b = 0;
-        fxB.f0 = 1.0f;
+        fxB.scale = 1.0f;
         switch (moveId) {
         case 135:
             fxB.count = 21 - (int)(15.0f * ((chargeRatio = chargeLevel) / 30.0f));
-            fxB.f1 = 40.0f * (chargeRatio / 10.0f - 0.5f);
+            fxB.posX = 40.0f * (chargeRatio / 10.0f - 0.5f);
             fxB.id = 0xc94;
             (*gPartfxInterface)->spawnObject(obj, STAFF_PARTFX_SWIPE_BURST, &fxB, 2, -1, NULL);
             (*gPartfxInterface)->spawnObject(obj, STAFF_PARTFX_SWIPE_BURST, &fxB, 2, -1, NULL);
             (*gPartfxInterface)->spawnObject(obj, STAFF_PARTFX_SWIPE_BURST, &fxB, 2, -1, NULL);
             (*gPartfxInterface)->spawnObject(obj, STAFF_PARTFX_SWIPE_BURST, &fxB, 2, -1, NULL);
             fxB.count = 9;
-            fxB.f0 = 0.9f * (chargeLevel / 10.0f) + 0.1f;
-            fxB.f2 = 0.0f;
+            fxB.scale = 0.9f * (chargeLevel / 10.0f) + 0.1f;
+            fxB.posY = 0.0f;
             fxB.id = 0xc0e;
             (*gPartfxInterface)->spawnObject(obj, STAFF_PARTFX_SWIPE_TRAIL, &fxB, 2, -1, NULL);
             break;
         case 67:
             if (chargeLevel > 0.0f) {
                 fxB.count = (int)(15.0f * (chargeLevel / 30.0f)) + 6;
-                fxB.f1 = 40.0f * (chargeLevel / 10.0f - 0.5f);
+                fxB.posX = 40.0f * (chargeLevel / 10.0f - 0.5f);
                 fxB.id = 0xc94;
                 (*gPartfxInterface)->spawnObject(obj, 0x7b4, &fxB, 2, -1, NULL);
                 (*gPartfxInterface)->spawnObject(obj, 0x7b4, &fxB, 2, -1, NULL);
                 fxB.count = 9;
-                fxB.f0 = 0.9f * (chargeLevel / 10.0f) + 0.1f;
-                fxB.f2 = 0.0f;
+                fxB.scale = 0.9f * (chargeLevel / 10.0f) + 0.1f;
+                fxB.posY = 0.0f;
                 fxB.id = 0xc0e;
                 (*gPartfxInterface)->spawnObject(obj, STAFF_PARTFX_SWIPE_TRAIL, &fxB, 2, -1, NULL);
             }
             break;
         case 136:
-            fxB.f0 = 1.0f;
+            fxB.scale = 1.0f;
             fxB.count = 35;
-            fxB.f2 = 0.0f;
-            fxB.f1 = 20.0f;
+            fxB.posY = 0.0f;
+            fxB.posX = 20.0f;
             fxB.id = 0xc0e;
             (*gPartfxInterface)->spawnObject(obj, STAFF_PARTFX_SWIPE_TRAIL, &fxB, 2, -1, NULL);
             fxB.count = 18;
-            fxB.f2 = 0.005f;
+            fxB.posY = 0.005f;
             (*gPartfxInterface)->spawnObject(obj, STAFF_PARTFX_SWIPE_TRAIL, &fxB, 2, -1, NULL);
             break;
         case 127:
-            fxB.f0 = 0.75f;
+            fxB.scale = 0.75f;
             fxB.count = 10;
-            fxB.f2 = 0.005f;
-            fxB.f1 = 20.0f;
+            fxB.posY = 0.005f;
+            fxB.posX = 20.0f;
             fxB.id = 0xc0e;
             (*gPartfxInterface)->spawnObject(obj, STAFF_PARTFX_SWIPE_TRAIL, &fxB, 2, -1, NULL);
             break;
@@ -276,11 +276,11 @@ void staffUpdateAttackEffects(GameObject* obj, GameObject* player) {
             if (chargeLevel > 0.0f) {
                 if (mainGetBit(GAMEBIT_STAFF_ABILITY_SUPER_QUAKE) != 0) {
                     fxB.count = 21 - (int)(15.0f * (chargeRatio = chargeLevel / 20.0f));
-                    fxB.f1 = 50.0f * (0.4f - chargeRatio);
+                    fxB.posX = 50.0f * (0.4f - chargeRatio);
                     fxB.id = 0xc75;
                 } else {
                     fxB.count = 21 - (int)(15.0f * (chargeRatio = chargeLevel / 10.0f));
-                    fxB.f1 = 50.0f * (0.4f - chargeRatio);
+                    fxB.posX = 50.0f * (0.4f - chargeRatio);
                     fxB.id = 0xc94;
                 }
                 (*gPartfxInterface)->spawnObject(obj, STAFF_PARTFX_SWIPE_BURST, &fxB, 2, -1, NULL);
@@ -289,28 +289,28 @@ void staffUpdateAttackEffects(GameObject* obj, GameObject* player) {
                 (*gPartfxInterface)->spawnObject(obj, STAFF_PARTFX_SWIPE_BURST, &fxB, 2, -1, NULL);
                 fxB.count = 9;
                 if (mainGetBit(GAMEBIT_STAFF_ABILITY_SUPER_QUAKE) != 0) {
-                    fxB.f0 = 0.9f * (chargeLevel / 20.0f) + 0.1f;
+                    fxB.scale = 0.9f * (chargeLevel / 20.0f) + 0.1f;
                     fxB.id = 0xc75;
                 } else {
-                    fxB.f0 = 0.9f * (chargeLevel / 10.0f) + 0.1f;
+                    fxB.scale = 0.9f * (chargeLevel / 10.0f) + 0.1f;
                     fxB.id = 0xc0e;
                 }
-                fxB.f2 = 0.0f;
+                fxB.posY = 0.0f;
                 (*gPartfxInterface)->spawnObject(obj, STAFF_PARTFX_SWIPE_TRAIL, &fxB, 2, -1, NULL);
             }
             break;
         case 1135:
             if (chargeLevel > 0.0f) {
                 fxB.count = 21 - (int)(15.0f * (chargeLevel / 60.0f));
-                fxB.f1 = 50.0f * (0.4f - chargeLevel / 60.0f);
+                fxB.posX = 50.0f * (0.4f - chargeLevel / 60.0f);
                 fxB.id = 0xc94;
                 (*gPartfxInterface)->spawnObject(obj, STAFF_PARTFX_SWIPE_BURST, &fxB, 2, -1, NULL);
                 (*gPartfxInterface)->spawnObject(obj, STAFF_PARTFX_SWIPE_BURST, &fxB, 2, -1, NULL);
                 (*gPartfxInterface)->spawnObject(obj, STAFF_PARTFX_SWIPE_BURST, &fxB, 2, -1, NULL);
                 (*gPartfxInterface)->spawnObject(obj, STAFF_PARTFX_SWIPE_BURST, &fxB, 2, -1, NULL);
                 fxB.count = 9;
-                fxB.f0 = 0.9f * (chargeLevel / 60.0f) + 0.1f;
-                fxB.f2 = 0.0f;
+                fxB.scale = 0.9f * (chargeLevel / 60.0f) + 0.1f;
+                fxB.posY = 0.0f;
                 fxB.id = 0xc0e;
                 (*gPartfxInterface)->spawnObject(obj, STAFF_PARTFX_SWIPE_TRAIL, &fxB, 2, -1, NULL);
             }
@@ -320,19 +320,19 @@ void staffUpdateAttackEffects(GameObject* obj, GameObject* player) {
                 fxA.count = 21 - (int)(15.0f * (chargeLevel / 60.0f));
                 fxA.id = 0xc95;
                 playerGetFxOffsets((GameObject*)(*(int*)&obj->ownerObj), &effectOffsets);
-                fxB.f1 = effectOffsets[3];
-                fxB.f2 = effectOffsets[4];
-                fxB.f3 = effectOffsets[5];
+                fxB.posX = effectOffsets[3];
+                fxB.posY = effectOffsets[4];
+                fxB.posZ = effectOffsets[5];
                 (*gPartfxInterface)->spawnObject((void*)*(int*)&obj->ownerObj, 0x7b9, &fxB, 0x200001, -1, &fxA);
                 (*gPartfxInterface)->spawnObject((void*)*(int*)&obj->ownerObj, 0x7b9, &fxB, 0x200001, -1, &fxA);
                 (*gPartfxInterface)->spawnObject((void*)*(int*)&obj->ownerObj, 0x7b9, &fxB, 0x200001, -1, &fxA);
                 (*gPartfxInterface)->spawnObject((void*)*(int*)&obj->ownerObj, 0x7b9, &fxB, 0x200001, -1, &fxA);
                 fxA.count = 9;
                 fxA.id = 0xc95;
-                fxA.f0 = 0.8f * (chargeLevel / 60.0f) + 0.1f;
-                fxB.f1 = effectOffsets[3];
-                fxB.f2 = effectOffsets[4];
-                fxB.f3 = effectOffsets[5];
+                fxA.scale = 0.8f * (chargeLevel / 60.0f) + 0.1f;
+                fxB.posX = effectOffsets[3];
+                fxB.posY = effectOffsets[4];
+                fxB.posZ = effectOffsets[5];
                 (*gPartfxInterface)->spawnObject((void*)*(int*)&obj->ownerObj, 0x7ba, &fxB, 0x200001, -1, &fxA);
             }
             break;
@@ -347,16 +347,16 @@ void staffUpdateAttackEffects(GameObject* obj, GameObject* player) {
             fxB.id = effectParamId;
             progress = player->anim.currentMoveProgress;
             if (progress < 0.05f) {
-                fxB.f1 = -25.0f;
+                fxB.posX = -25.0f;
                 fxB.count = 9;
-                fxB.f0 = 1.0f;
-                fxB.f2 = 0.0f;
+                fxB.scale = 1.0f;
+                fxB.posY = 0.0f;
                 (*gPartfxInterface)->spawnObject(obj, STAFF_PARTFX_SWIPE_TRAIL, &fxB, 2, -1, NULL);
             } else if (progress < 0.2f) {
-                fxB.f1 = 50.0f * (6.667f * (progress - 0.05f) - 0.5f);
+                fxB.posX = 50.0f * (6.667f * (progress - 0.05f) - 0.5f);
                 fxB.count = 9;
-                fxB.f0 = 1.0f;
-                fxB.f2 = 0.0f;
+                fxB.scale = 1.0f;
+                fxB.posY = 0.0f;
                 (*gPartfxInterface)->spawnObject(obj, STAFF_PARTFX_SWIPE_TRAIL, &fxB, 2, -1, NULL);
             }
             break;
@@ -804,7 +804,7 @@ void objSetAnimField48to0(GameObject* obj) {
     state->activeSlot = NULL;
 }
 
-void staff_startSwipe(GameObject* obj, s16 idx, f32 f1, f32 f2) {
+void staff_startSwipe(GameObject* obj, s16 idx, f32 arg2, f32 lengthScale) {
     StaffSwipeSlot* slot;
     int n;
     StaffSwipeSlot* slots = (StaffSwipeSlot*)obj->extra;
@@ -815,8 +815,8 @@ void staff_startSwipe(GameObject* obj, s16 idx, f32 f1, f32 f2) {
         }
     }
     slot->flags = (u8)(slot->flags | 0x3);
-    slot->unk4 = f1;
-    slot->lengthScale = f2;
+    slot->unk4 = arg2;
+    slot->lengthScale = lengthScale;
     slot->startIndex = 0;
     slot->endIndex = 0;
     slot->vertexCount = 0;

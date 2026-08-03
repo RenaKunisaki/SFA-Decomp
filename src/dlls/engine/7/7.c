@@ -1052,16 +1052,7 @@ static void snowReposSnowCloud(int cloudId)
     int dz;
     int distSq;
     u8 fl;
-    struct
-    {
-        s16 f8;
-        s16 fa;
-        s16 fc;
-        f32 f10;
-        f32 f14;
-        f32 f18;
-        f32 f1c;
-    } args;
+    MatrixTransform args;
     f32 dir[3];
     f32 fwd[3];
     f32 from[3];
@@ -1109,22 +1100,22 @@ static void snowReposSnowCloud(int cloudId)
             dir[0] = 0.0f;
             dir[1] = 0.0f;
             dir[2] = 400.0f;
-            args.f14 = 0.0f;
-            args.f18 = 0.0f;
-            args.f1c = 0.0f;
-            args.f10 = 1.0f;
-            args.fc = 0;
-            args.fa = 0;
-            args.f8 = 0xffff - (cam->yaw + randomGetRange(-5000, 5000));
-            vecRotateZXY(&args.f8, dir);
+            args.x = 0.0f;
+            args.y = 0.0f;
+            args.z = 0.0f;
+            args.scale = 1.0f;
+            args.rotZ = 0;
+            args.rotY = 0;
+            args.rotX = 0xffff - (cam->yaw + randomGetRange(-5000, 5000));
+            vecRotateZXY(&args.rotX, dir);
         }
-        args.f14 = dir[0];
-        args.f18 = dir[1];
-        args.f1c = dir[2];
-        args.f10 = 1.0f;
-        args.f8 = 0;
-        args.fc = 0;
-        args.fa = 0;
+        args.x = dir[0];
+        args.y = dir[1];
+        args.z = dir[2];
+        args.scale = 1.0f;
+        args.rotX = 0;
+        args.rotZ = 0;
+        args.rotY = 0;
         m = Camera_GetViewMatrix();
         fwd[0] = m[8];
         fwd[1] = m[9];
@@ -1589,17 +1580,7 @@ void newclouds_run(void)
     f32 pos[3];
     f32 vec[3];
     f32 d[3];
-    struct
-    {
-        s16 f8;
-        s16 fa;
-        s16 fc;
-        s16 pad_e;
-        f32 f10;
-        f32 f14;
-        f32 f18;
-        f32 f1c;
-    } args;
+    MatrixTransform args;
     Mtx mtx;
 
     clouds = (void**)gNewCloudLayerTextures;
@@ -1685,14 +1666,14 @@ void newclouds_run(void)
                     vec[0] = 0.0f;
                     vec[1] = 0.0f;
                     vec[2] = 100.0f;
-                    args.f14 = 0.0f;
-                    args.f18 = 0.0f;
-                    args.f1c = 0.0f;
-                    args.f10 = 1.0f;
-                    args.fc = 0;
-                    args.fa = 0;
-                    args.f8 = 0xffff - cam->yaw;
-                    vecRotateZXY(&args.f8, vec);
+                    args.x = 0.0f;
+                    args.y = 0.0f;
+                    args.z = 0.0f;
+                    args.scale = 1.0f;
+                    args.rotZ = 0;
+                    args.rotY = 0;
+                    args.rotX = 0xffff - cam->yaw;
+                    vecRotateZXY(&args.rotX, vec);
                     pos[0] = cam->worldX + vec[0];
                     t = cam->worldY - 60.0f;
                     pos[1] = t + vec[1];
@@ -1986,16 +1967,7 @@ void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params)
     u8* env;
     NewCloud* cloud;
     u8 fl;
-    struct
-    {
-        s16 f8;
-        s16 fa;
-        s16 fc;
-        f32 f10;
-        f32 f14;
-        f32 f18;
-        f32 f1c;
-    } args;
+    MatrixTransform args;
     f32 posA[3];
     f32 posB[3];
     f32 vec[3];
@@ -2148,14 +2120,14 @@ void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params)
             vec[0] = 0.0f;
             vec[1] = 0.0f;
             vec[2] = 0.0f;
-            args.f14 = 0.0f;
-            args.f18 = 0.0f;
-            args.f1c = 0.0f;
-            args.f10 = 1.0f;
-            args.fc = 0;
-            args.fa = 0;
-            args.f8 = objA->anim.rotX;
-            vecRotateZXY(&args.f8, vec);
+            args.x = 0.0f;
+            args.y = 0.0f;
+            args.z = 0.0f;
+            args.scale = 1.0f;
+            args.rotZ = 0;
+            args.rotY = 0;
+            args.rotX = objA->anim.rotX;
+            vecRotateZXY(&args.rotX, vec);
             ((NewCloud*)NC_CLOUD)->worldPosX = vec[0] + objA->anim.worldPosX;
             ((NewCloud*)NC_CLOUD)->worldPosY = vec[1] + objA->anim.worldPosY;
             ((NewCloud*)NC_CLOUD)->worldPosZ = vec[2] + objA->anim.worldPosZ;

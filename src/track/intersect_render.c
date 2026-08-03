@@ -1809,7 +1809,7 @@ u32 objCausticReflectionRenderCb(int handle, void* model)
     f32 indMtx_44[6];
     f32 indMtx_2c[6];
     int handle1, handle2;
-    f32 f1, f2;
+    f32 scrollX, scrollY;
     f32 f31_val;
     GXColor temp;
     f32* viewMtx;
@@ -1836,14 +1836,14 @@ u32 objCausticReflectionRenderCb(int handle, void* model)
     selectReflectionTexture(0);
     GXLoadTexMtxImm(gCameraLightPerspectiveFlipYMatrix, GX_PTTEXMTX6, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_POS, 0, GX_FALSE, GX_PTTEXMTX6);
-    newshadows_getReflectionScrollOffsets(&f1, &f2);
-    f1 *= 4.0f;
-    f2 *= 4.0f;
+    newshadows_getReflectionScrollOffsets(&scrollX, &scrollY);
+    scrollX *= 4.0f;
+    scrollY *= 4.0f;
     getNewShadowCausticTexture((u32*)&handle1);
     selectTexture((Texture*)handle1, 1);
 
     PSMTXScale(mtx_ec, 4.0f, 4.0f, 4.0f);
-    mtx_ec[0][3] = f1;
+    mtx_ec[0][3] = scrollX;
     GXLoadTexMtxImm(mtx_ec, GX_TEXMTX1, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX1, GX_FALSE, GX_PTIDENTITY);
 
@@ -1864,8 +1864,8 @@ u32 objCausticReflectionRenderCb(int handle, void* model)
     PSMTXScale(mtx_bc, 0.83f, 0.83f, 0.83f);
     PSMTXRotRad(mtx_5c, 'z', 0.7853982f);
     PSMTXConcat(mtx_5c, mtx_bc, mtx_bc);
-    mtx_bc[0][3] = f2;
-    mtx_bc[1][3] = f2;
+    mtx_bc[0][3] = scrollY;
+    mtx_bc[1][3] = scrollY;
     GXLoadTexMtxImm(mtx_bc, GX_TEXMTX2, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX2, GX_FALSE, GX_PTIDENTITY);
 

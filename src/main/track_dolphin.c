@@ -835,7 +835,7 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
         int hi;
         s16* rec2;
         f32 fa, fb;
-        f32 *va2, *vb2;
+        f32 *lineStart, *lineEnd;
         f32 dx, dz;
         if (flag1 == 0)
         {
@@ -870,15 +870,15 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
                 fb = (f32)(s8) * ((u8*)rec2 + 1);
             }
             hit->lineStartX = ((f32*)vp)[j0 * 3];
-            va2 = (f32*)(vp + j0 * 0xc);
-            hit->lineStartY = va2[1];
+            lineStart = (f32*)(vp + j0 * 0xc);
+            hit->lineStartY = lineStart[1];
             hit->upperY0 = hit->lineStartY + fa;
-            hit->lineStartZ = va2[2];
+            hit->lineStartZ = lineStart[2];
             hit->lineEndX = ((f32*)vp)[j1 * 3];
-            vb2 = (f32*)(vp + j1 * 0xc);
-            hit->lineEndY = vb2[1];
+            lineEnd = (f32*)(vp + j1 * 0xc);
+            hit->lineEndY = lineEnd[1];
             hit->upperY1 = hit->lineEndY + fb;
-            hit->lineEndZ = vb2[2];
+            hit->lineEndZ = lineEnd[2];
             hit->surfaceType = (s8)(*((u8*)rec2 + 3) & 0x3f);
             hit->flags = *((u8*)rec2 + 2);
             hit->kind = rec2[6];

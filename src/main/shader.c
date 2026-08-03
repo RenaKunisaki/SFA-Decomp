@@ -1873,29 +1873,29 @@ void beginLoadingMap(void)
         *(f32*)(buf + 0x1c) = 0.0f;
         *(f32*)(buf + 0x20) = 0.0f;
         {
-            s16 a1 = *(s16*)(environmentState + 0xe);
-            if (a1 != -1)
+            s16 index = *(s16*)(environmentState + 0xe);
+            if (index != -1)
             {
                 *(f32*)(buf + 0xc) = (f32) * (int*)(environmentState + 0x14);
                 *(f32*)(buf + 0x10) = (f32) * (int*)(environmentState + 0x18);
                 *(f32*)(buf + 0x14) = (f32) * (int*)(environmentState + 0x1c);
-                getEnvfxAct(buf, player, a1 & 0xFFFF, 0);
+                getEnvfxAct(buf, player, index & 0xFFFF, 0);
             }
-            a1 = *(s16*)(environmentState + 0x10);
-            if (a1 != -1)
+            index = *(s16*)(environmentState + 0x10);
+            if (index != -1)
             {
                 *(f32*)(buf + 0xc) = (f32) * (int*)(environmentState + 0x20);
                 *(f32*)(buf + 0x10) = (f32) * (int*)(environmentState + 0x24);
                 *(f32*)(buf + 0x14) = (f32) * (int*)(environmentState + 0x28);
-                getEnvfxAct(buf, player, a1 & 0xFFFF, 0);
+                getEnvfxAct(buf, player, index & 0xFFFF, 0);
             }
-            a1 = *(s16*)(environmentState + 0x12);
-            if (a1 != -1)
+            index = *(s16*)(environmentState + 0x12);
+            if (index != -1)
             {
                 *(f32*)(buf + 0xc) = (f32) * (int*)(environmentState + 0x2c);
                 *(f32*)(buf + 0x10) = (f32) * (int*)(environmentState + 0x30);
                 *(f32*)(buf + 0x14) = (f32) * (int*)(environmentState + 0x34);
-                getEnvfxAct(buf, player, a1 & 0xFFFF, 0);
+                getEnvfxAct(buf, player, index & 0xFFFF, 0);
             }
         }
         (*gSkyInterface)->setTimeOfDay(*(f32*)environmentState);

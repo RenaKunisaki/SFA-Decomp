@@ -138,7 +138,7 @@ int DIMSnowHorn1_stateHandler0A(GameObject* obj, DIMSnowHorn1State* state, f32 t
     int useNormal;
     f32 speed;
     f32 target;
-    f32 f2;
+    f32 animSpeedC;
     f32 blend;
     f32 nearDist;
 
@@ -224,9 +224,9 @@ int DIMSnowHorn1_stateHandler0A(GameObject* obj, DIMSnowHorn1State* state, f32 t
         phase = 1;
     }
 
-    f2 = state->baddie.animSpeedC;
+    animSpeedC = state->baddie.animSpeedC;
     moveIdx = phase * 2;
-    if (f2 < gDIMSnowHorn1LocomotionSpeedRanges[moveIdx])
+    if (animSpeedC < gDIMSnowHorn1LocomotionSpeedRanges[moveIdx])
     {
         if (phase == 1)
         {
@@ -235,7 +235,7 @@ int DIMSnowHorn1_stateHandler0A(GameObject* obj, DIMSnowHorn1State* state, f32 t
         phase--;
         changed = 1;
     }
-    else if (f2 >= gDIMSnowHorn1LocomotionSpeedRanges[moveIdx + 1])
+    else if (animSpeedC >= gDIMSnowHorn1LocomotionSpeedRanges[moveIdx + 1])
     {
         if (phase == 0)
         {

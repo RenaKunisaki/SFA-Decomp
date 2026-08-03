@@ -1963,15 +1963,15 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
             u8 zon = 1;
             if (((GameObject*)obj)->anim.renderAlpha < 0xff || (((Shader*)op)->flags & SHADER_FLAG_FORCE_BLEND) || shad)
             {
-                u16 f2;
+                u16 flags;
                 GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
-                f2 = ((ModelFileHeader*)p2)->flags;
-                if (f2 & 0x400)
+                flags = ((ModelFileHeader*)p2)->flags;
+                if (flags & 0x400)
                 {
                     gxSetZMode_(0, 3, 0);
                     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
                 }
-                else if (f2 & 0x2000)
+                else if (flags & 0x2000)
                 {
                     zon = 0;
                     gxSetZMode_(1, 3, 1);
