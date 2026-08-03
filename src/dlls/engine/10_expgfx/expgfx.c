@@ -174,10 +174,7 @@ void viewFinderSetZoomTo50(void)
 #include "main/dll/partfx_interface.h"
 #include "dolphin/gx/GXGeometry.h"
 
-u8 gExpgfxStaticData[48] = {
-    192, 160, 0, 0, 66, 72, 0, 0, 66, 72, 0, 0, 66, 72, 0, 0, 66, 72, 0, 0, 66, 72, 0, 0,
-    66,  72,  0, 0, 66, 72, 0, 0, 66, 72, 0, 0, 66, 72, 0, 0, 66, 72, 0, 0, 66, 72, 0, 0,
-};
+f32 gExpgfxStaticData[12] = {-5.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f};
 
 s16 gExpgfxStaticPoolSlotTypeIds[80] = {
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0,

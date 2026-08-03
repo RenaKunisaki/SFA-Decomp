@@ -472,7 +472,7 @@ STATIC_ASSERT(offsetof(ExpgfxSlot, renderX) == 0x90);
 #define EXPGFX_STATIC_DATA ((ExpgfxStaticDataLayout *)gExpgfxStaticData)
 #define EXPGFX_RUNTIME_DATA ((ExpgfxRuntimeDataLayout *)gExpgfxRuntimeData)
 
-extern u8 gExpgfxStaticData[];
+extern f32 gExpgfxStaticData[];
 extern u8 gExpgfxRuntimeData[];
 extern ExpgfxTableEntry gExpgfxTableEntries[];
 extern ObjAnimComponent* gExpgfxTrackedPoolSourceIds[];

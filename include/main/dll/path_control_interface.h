@@ -5,9 +5,10 @@
 
 typedef void (*PathControlInitFn)(void *pathState, int mode, int flags, int arg);
 typedef void (*PathControlSetLocalPointCollisionFn)(void *pathState, int pointCount,
-                                                    void *points, void *params, int stride);
-typedef void (*PathControlSetupFn)(void *pathState, int pointCount, void *pathDataA, void *pathDataB,
-                                   void *pathParam);
+                                                    void *localPointPositions, void *localPointRadii,
+                                                    int primaryHitType);
+typedef void (*PathControlSetupFn)(void *pathState, int segmentCount, void *segmentLocalPoints,
+                                   void *segmentRadii, void *segmentSourceTypes);
 typedef void (*PathControlStepFn)(void *obj, void *pathState, f32 delta);
 typedef void (*PathControlApplyFn)(void *obj, void *pathState);
 typedef f32 (*PathControlSampleHeightFn)(void *obj, f32 x, f32 y, f32 z, f32 radius);
