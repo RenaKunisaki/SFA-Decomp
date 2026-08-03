@@ -89,6 +89,7 @@ verdict is worthless and must not be quoted.
 import argparse
 import collections
 import copy
+import difflib
 import hashlib
 import json
 import os
@@ -290,32 +291,88 @@ EPS = 1e-6
 class PoolStat:
     """One data section of one unit, ours against the retail carve.
 
-    `hits` is the number of positionally identical 32-bit words. It is the
-    field a ROTATION moves: a rotation preserves the word multiset exactly, so
-    `missing` and `extra` stay flat while `hits` collapses. `missing` is the
-    field an actual word LOSS moves. Between them they see every way a pool can
-    drift from its carve, and neither is derived from a score.
+    Three axes, and only two of them are allowed to turn a row red.
+
+    VALUE axis -- `missing` and `extra`, the word MULTISET shortfall and
+    surplus against the carve. This is the axis that says whether our pool
+    holds the right constants. It is immune to where in the section they sit.
+
+    ORDER axis -- `aligned`, the number of words covered by SequenceMatcher's
+    matching blocks. A rotation preserves the multiset exactly but shreds the
+    alignment, so this is the field that catches blind spot 3. Unlike raw
+    positional agreement it is SHIFT-INVARIANT: deleting one word from the
+    front does not cost the whole tail.
+
+    `hits`, the raw positional agreement, is kept for continuity of the printed
+    row but is NO LONGER a gate. It was: on an already-short section any size
+    change slid the tail and read as a large regression, and lane A83's
+    correct engine/0 literal-width fix went red on it (hits 94 -> 64) while the
+    multiset moved strictly TOWARD the carve (extra {0x40840000:1} -> {}) and
+    the three newly-"missing" words were 0x00000000 padding that existed only
+    because our literal had the wrong width. A red row that is really an
+    improvement eventually costs a lane a correct fix.
     """
 
-    __slots__ = ("unit", "section", "hits", "ours", "retail", "missing", "extra")
+    __slots__ = ("unit", "section", "hits", "aligned", "ours", "retail",
+                 "missing", "extra", "mdelta")
 
-    def __init__(self, unit, section, hits, ours, retail, missing, extra):
+    def __init__(self, unit, section, hits, ours, retail, missing, extra,
+                 aligned=None, mdelta=None):
         self.unit = unit
         self.section = section
         self.hits = hits
+        self.aligned = hits if aligned is None else aligned
         self.ours = ours
         self.retail = retail
         self.missing = missing
         self.extra = extra
+        # {word: +n surplus / -n shortfall}, the value axis in full.
+        self.mdelta = mdelta or {}
+
+    # A 0x00000000 word is alignment padding or a reservation, not a constant
+    # any source text names, and its count moves whenever a literal changes
+    # width. The gate reads the NONZERO shortfall/surplus; the zero counts are
+    # printed but never turn a row red. A genuinely deleted 0.0f still shows on
+    # the alignment axis and in the section's own fuzzy score.
+    @property
+    def missing_nz(self):
+        return sum(-n for w, n in self.mdelta.items() if n < 0 and w)
+
+    @property
+    def extra_nz(self):
+        return sum(n for w, n in self.mdelta.items() if n > 0 and w)
+
+    @property
+    def zero_delta(self):
+        return self.mdelta.get(0, 0)
+
+    @property
+    def unmatched(self):
+        """OUR words that no aligned run accounts for -- the ones sitting in
+        the wrong place or holding the wrong value. `aligned` alone cannot gate
+        because it is capped by len(ours), so deleting a surplus word lowers it
+        on a correct fix; this difference is not."""
+        return self.ours - self.aligned
 
     @property
     def key(self):
         return (self.unit, self.section)
 
+    def mdelta_str(self, limit=4):
+        """The multiset delta as source text, worst first. Printing this is the
+        whole point: a pool row is only believable next to its value delta."""
+        if not self.mdelta:
+            return "{}"
+        items = sorted(self.mdelta.items(), key=lambda kv: (-abs(kv[1]), kv[0]))
+        head = ", ".join("0x%08x:%+d" % (w, n) for w, n in items[:limit])
+        if len(items) > limit:
+            head += ", +%d more" % (len(items) - limit)
+        return "{%s}" % head
+
     def __repr__(self):
-        return ("PoolStat(%s %s hits=%d/%d missing=%d extra=%d)"
-                % (self.unit, self.section, self.hits, self.retail,
-                   self.missing, self.extra))
+        return ("PoolStat(%s %s aligned=%d/%d hits=%d missing=%d extra=%d)"
+                % (self.unit, self.section, self.aligned, self.retail,
+                   self.hits, self.missing, self.extra))
 
 
 def elf_progbits(path):
@@ -363,9 +420,19 @@ def compare_pool(unit, section, ours_blob, retail_blob):
     ours, retail = _words(ours_blob), _words(retail_blob)
     hits = sum(1 for x, y in zip(ours, retail) if x == y)
     co, cr = collections.Counter(ours), collections.Counter(retail)
-    missing = sum((cr - co).values())
-    extra = sum((co - cr).values())
-    return PoolStat(unit, section, hits, len(ours), len(retail), missing, extra)
+    surplus, shortfall = co - cr, cr - co
+    missing = sum(shortfall.values())
+    extra = sum(surplus.values())
+    mdelta = {}
+    for w, n in surplus.items():
+        mdelta[w] = n
+    for w, n in shortfall.items():
+        mdelta[w] = -n
+    aligned = sum(b.size for b in
+                  difflib.SequenceMatcher(None, ours, retail,
+                                          autojunk=False).get_matching_blocks())
+    return PoolStat(unit, section, hits, len(ours), len(retail), missing, extra,
+                    aligned=aligned, mdelta=mdelta)
 
 
 def obj_paths(wt, source_path):
@@ -409,8 +476,13 @@ def pool_fingerprint(wt, report):
 
 def diff_pools(pa, pb):
     """Rows where our pool moved AWAY from the carve, and rows where it moved
-    toward it. A row is reported when the positional agreement drops or the
-    word shortfall grows -- neither of which needs any score to move."""
+    toward it.
+
+    A row is reported worse when the VALUE axis loses ground (the word
+    shortfall or the surplus grows) or when the SHIFT-INVARIANT alignment
+    drops. Raw positional agreement is printed but never gates: a pure size
+    change slides the whole tail out of position without any word changing, and
+    gating on that reports a correct fix as a regression."""
     worse, better = [], []
     if pa is None or pb is None:
         return worse, better
@@ -418,21 +490,33 @@ def diff_pools(pa, pb):
         sa, sb = pa.get(key), pb.get(key)
         if sa is None or sb is None:
             # A data section that appeared or vanished outright.
-            zero = PoolStat(key[0], key[1], 0, 0,
-                            (sb or sa).retail, (sb or sa).retail, 0)
+            seen = sb or sa
+            zero = PoolStat(key[0], key[1], 0, 0, seen.retail, seen.retail, 0,
+                            aligned=0, mdelta={})
             sa, sb = (sa or zero), (sb or zero)
         # Growth past the retail claim counts against us -- that is how a
         # freshly minted @N anon shows up -- but not when the same edit also
-        # bought positional agreement, which is a section being filled in
-        # rather than drifting.
-        drifted = (sb.hits < sa.hits or sb.missing > sa.missing
-                   or (sb.extra > sa.extra and sb.hits <= sa.hits))
+        # bought alignment, which is a section being filled in rather than
+        # drifting.
+        filling_in = sb.missing_nz < sa.missing_nz
+        improved_any = (filling_in or sb.extra_nz < sa.extra_nz
+                        or sb.unmatched < sa.unmatched)
+        # A zero-word shortfall that grows on its own is still a loss; one that
+        # grows while the row improves elsewhere is the alignment padding a
+        # wrong-width literal used to force, and is not.
+        zero_lost = sb.zero_delta < sa.zero_delta
+        drifted = (sb.missing_nz > sa.missing_nz
+                   or (sb.unmatched > sa.unmatched and not filling_in)
+                   or (sb.extra_nz > sa.extra_nz and not filling_in)
+                   or (zero_lost and not improved_any))
         if drifted:
             worse.append((sa, sb))
-        elif sb.hits > sa.hits or sb.missing < sa.missing or sb.extra < sa.extra:
+        elif improved_any:
             better.append((sa, sb))
-    worse.sort(key=lambda r: (r[1].hits - r[0].hits, r[0].missing - r[1].missing))
-    better.sort(key=lambda r: (r[0].hits - r[1].hits, r[1].missing - r[0].missing))
+    worse.sort(key=lambda r: (r[0].missing_nz - r[1].missing_nz,
+                              r[0].unmatched - r[1].unmatched))
+    better.sort(key=lambda r: (r[1].missing_nz - r[0].missing_nz,
+                               r[1].unmatched - r[0].unmatched))
     return worse, better
 
 
@@ -606,14 +690,29 @@ def render(d, a, b, out=sys.stdout):
         w("\nPOOL word-diff (ours vs the retail carve, per data section) "
           "worse %d / better %d\n" % (len(d.pool_worse), len(d.pool_better)))
         for sa, sb in d.pool_worse[:60]:
-            w("  POOL  %-52s %-10s hits %5d -> %-5d (%+d)  missing %d -> %d  "
-              "extra %d -> %d\n"
-              % (sb.unit, sb.section, sa.hits, sb.hits, sb.hits - sa.hits,
-                 sa.missing, sb.missing, sa.extra, sb.extra))
+            w("  POOL  %-52s %-10s misplaced %4d -> %-4d (%+d)  "
+              "shortfall %d -> %d  surplus %d -> %d  [raw hits %d -> %d]\n"
+              % (sb.unit, sb.section, sa.unmatched, sb.unmatched,
+                 sb.unmatched - sa.unmatched, sa.missing_nz, sb.missing_nz,
+                 sa.extra_nz, sb.extra_nz, sa.hits, sb.hits))
+            w("        zero pad %+d -> %+d, raw missing %d -> %d, "
+              "raw extra %d -> %d\n"
+              % (sa.zero_delta, sb.zero_delta, sa.missing, sb.missing,
+                 sa.extra, sb.extra))
+            w("        value delta %s -> %s\n"
+              % (sa.mdelta_str(), sb.mdelta_str()))
         for sa, sb in d.pool_better[:40]:
-            w("  POOL+ %-52s %-10s hits %5d -> %-5d (%+d)  missing %d -> %d\n"
-              % (sb.unit, sb.section, sa.hits, sb.hits, sb.hits - sa.hits,
-                 sa.missing, sb.missing))
+            w("  POOL+ %-52s %-10s misplaced %4d -> %-4d (%+d)  "
+              "shortfall %d -> %d  surplus %d -> %d  [raw hits %d -> %d]\n"
+              % (sb.unit, sb.section, sa.unmatched, sb.unmatched,
+                 sb.unmatched - sa.unmatched, sa.missing_nz, sb.missing_nz,
+                 sa.extra_nz, sb.extra_nz, sa.hits, sb.hits))
+            w("        zero pad %+d -> %+d, raw missing %d -> %d, "
+              "raw extra %d -> %d\n"
+              % (sa.zero_delta, sb.zero_delta, sa.missing, sb.missing,
+                 sa.extra, sb.extra))
+            w("        value delta %s -> %s\n"
+              % (sa.mdelta_str(), sb.mdelta_str()))
     w("\nVERDICT: %s\n" % ("RED" if d.red else "CLEAN"))
     return d
 
@@ -1050,7 +1149,7 @@ def self_test(real_report=None):
         rot.missing == 0 and rot.extra == 0)
     worse, better = diff_pools(base_pool, {("u", ".sdata2"): rot})
     chk("a pool ROTATION at flat multiset is reported worse",
-        len(worse) == 1 and worse[0][1].hits == 0 and not better)
+        len(worse) == 1 and worse[0][1].unmatched > 0 and not better)
 
     d = diff_reports(base, parse_report(copy.deepcopy(base_doc), path="synthetic-B"))
     d.pool_worse, d.pool_better = worse, better
@@ -1064,22 +1163,124 @@ def self_test(real_report=None):
     worse, better = diff_pools(
         {("u", ".sdata2"): rot}, base_pool)
     chk("a pool moving TOWARD the carve is better, not worse",
-        not worse and len(better) == 1 and better[0][1].hits == 8)
+        not worse and len(better) == 1 and better[0][1].unmatched == 0)
 
     # Growth past the carve is the freshly-minted-@N tell and counts against
     # us, but only when it did not also buy positional agreement -- a section
     # being filled in grows too.
     grew_only = compare_pool("u", ".sdata2", carve + struct.pack(">I", 77), carve)
     worse, better = diff_pools(base_pool, {("u", ".sdata2"): grew_only})
-    chk("growth past the carve with no hits gained is worse",
-        len(worse) == 1 and worse[0][1].extra == 1)
+    chk("growth past the carve that filled nothing in is worse",
+        len(worse) == 1 and worse[0][1].extra_nz == 1)
     thin = {("u", ".sdata2"): compare_pool("u", ".sdata2", carve[:8], carve)}
     worse, better = diff_pools(thin, {("u", ".sdata2"): grew_only})
-    chk("growth that also bought positional hits is better, not worse",
-        not worse and len(better) == 1)
+    chk("growth that filled the section in is better, not worse",
+        not worse and len(better) == 1, [repr(x[1]) for x in worse])
 
     worse, better = diff_pools(base_pool, dict(base_pool))
     chk("an unchanged pool is silent", not worse and not better)
+
+    # THE POSITIONAL-HITS TRAP (lane A84). `hits` used to gate, and a pure SIZE
+    # change slides the whole tail out of position without one word changing.
+    # Both controls below are built from the same size shift; only the value
+    # axis tells them apart, so the sensor must read the value axis.
+
+    # NEGATIVE CONTROL: our section carried one surplus word that retail does
+    # not have (a literal compiled at the wrong width). Deleting it is a strict
+    # improvement, yet it slides every later word by one and costs almost all
+    # the raw positional agreement. This is A83's engine/0 .sdata2 row.
+    surplus_head = struct.pack(">9I", 0x40840000, 1, 2, 3, 4, 5, 6, 7, 8)
+    fixed = carve                       # the surplus word removed
+    before = compare_pool("u", ".sdata2", surplus_head, carve)
+    after = compare_pool("u", ".sdata2", fixed, carve)
+    chk("a value-neutral size shift shreds RAW positional hits",
+        before.hits == 0 and after.hits == 8 and before.unmatched == 1
+        and after.unmatched == 0,
+        "hits %d -> %d, misplaced %d -> %d"
+        % (before.hits, after.hits, before.unmatched, after.unmatched))
+    chk("deleting a surplus word empties the multiset surplus",
+        before.extra == 1 and after.extra == 0 and after.missing == 0)
+    worse, better = diff_pools({("u", ".sdata2"): before},
+                               {("u", ".sdata2"): after})
+    chk("a size shift that is value-NEUTRAL-or-better is NOT reported worse",
+        not worse and len(better) == 1, [repr(x[1]) for x in worse])
+    d = diff_reports(base, parse_report(copy.deepcopy(base_doc), path="synthetic-B"))
+    d.pool_worse, d.pool_better = worse, better
+    chk("a correct pool fix does not turn the verdict RED", not d.red)
+    chk("the value delta is printed, not just the counts",
+        before.mdelta_str() == "{0x40840000:+1}" and after.mdelta_str() == "{}")
+
+    # And the same shift in reverse -- MINTING a surplus word at the head --
+    # must still be caught, so the negative control is not just a blanket
+    # amnesty for anything that changes length.
+    worse, better = diff_pools({("u", ".sdata2"): after},
+                               {("u", ".sdata2"): before})
+    chk("minting a surplus word at the head is still reported worse",
+        len(worse) == 1 and worse[0][1].extra == 1 and not better)
+
+    # POSITIVE CONTROL: a real VALUE regression hiding inside a size change.
+    # One word is both moved and corrupted, so the length shift is identical to
+    # the negative control above and only the multiset separates them.
+    corrupt = struct.pack(">8I", 1, 2, 3, 4, 5, 6, 7, 0xDEADBEEF)
+    bad = compare_pool("u", ".sdata2", corrupt, carve)
+    worse, better = diff_pools({("u", ".sdata2"): before},
+                               {("u", ".sdata2"): bad})
+    chk("a real value regression inside a size change is CAUGHT",
+        len(worse) == 1 and worse[0][1].missing == 1
+        and worse[0][1].mdelta.get(8) == -1
+        and worse[0][1].mdelta.get(0xDEADBEEF) == 1)
+    d = diff_reports(base, parse_report(copy.deepcopy(base_doc), path="synthetic-B"))
+    d.pool_worse, d.pool_better = worse, better
+    chk("a value regression turns the verdict RED", d.red)
+
+    # The order axis still fires with the multiset flat: `aligned` is what
+    # catches blind spot 3 now, and it must be shift-invariant.
+    chk("a rotation still misplaces words at a flat multiset",
+        rot.unmatched > 0 and rot.missing == 0 and rot.extra == 0)
+    slid = compare_pool("u", ".sdata2", struct.pack(">I", 0x40840000) + carve,
+                        carve)
+    chk("a pure head insertion misplaces exactly the inserted word",
+        slid.unmatched == 1 and slid.hits < 8)
+
+    # ZERO PADDING. Deleting a wrong-width literal also deletes the alignment
+    # zeros it forced, so the raw shortfall GROWS on a correct fix. This is the
+    # exact residue of A83's engine/0 row, reproduced here at full scale.
+    pad_carve = struct.pack(">6I", 0x40490fdb, 0, 0, 1, 2, 3)
+    pad_before = compare_pool(          # surplus literal + the zeros it forced
+        "u", ".sdata2", struct.pack(">5I", 0x40840000, 0, 0, 1, 2), pad_carve)
+    pad_after = compare_pool(           # literal deleted, its padding with it
+        "u", ".sdata2", struct.pack(">3I", 0, 1, 2), pad_carve)
+    chk("deleting a wrong-width literal GROWS the raw shortfall (zeros only)",
+        pad_after.missing > pad_before.missing
+        and pad_after.zero_delta < pad_before.zero_delta
+        and pad_after.missing_nz == pad_before.missing_nz
+        and pad_after.extra_nz < pad_before.extra_nz,
+        "raw %d -> %d, nz %d -> %d" % (pad_before.missing, pad_after.missing,
+                                       pad_before.missing_nz,
+                                       pad_after.missing_nz))
+    worse, better = diff_pools({("u", ".sdata2"): pad_before},
+                               {("u", ".sdata2"): pad_after})
+    chk("a fix whose only new shortfall is ZERO PADDING is better, not worse",
+        not worse and len(better) == 1, [repr(x[1]) for x in worse])
+
+    # ...but a nonzero constant lost in the same shape is still caught, and so
+    # is a lost 0.0f -- that one via the alignment axis, which no zero-word
+    # amnesty touches.
+    lost_const = compare_pool(
+        "u", ".sdata2", struct.pack(">2I", 0, 1), pad_carve)
+    worse, better = diff_pools({("u", ".sdata2"): pad_after},
+                               {("u", ".sdata2"): lost_const})
+    chk("a nonzero constant lost under the same shape is still WORSE",
+        len(worse) == 1 and worse[0][1].missing_nz > pad_after.missing_nz)
+    full = compare_pool("u", ".sdata2", pad_carve, pad_carve)
+    lost_zero = compare_pool("u", ".sdata2",
+                             struct.pack(">5I", 0x40490fdb, 0, 1, 2, 3),
+                             pad_carve)
+    worse, better = diff_pools({("u", ".sdata2"): full},
+                               {("u", ".sdata2"): lost_zero})
+    chk("a 0.0f deleted with NOTHING else improving is still caught",
+        len(worse) == 1 and lost_zero.missing_nz == 0
+        and lost_zero.zero_delta == -1, [repr(x[1]) for x in worse])
 
     chk("a report-only endpoint reports the pool diff as NOT RUN",
         diff_pools(None, base_pool) == ([], [])
