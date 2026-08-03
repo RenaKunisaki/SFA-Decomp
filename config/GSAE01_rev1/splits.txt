@@ -4899,6 +4899,18 @@ dolphin/TRK_MINNOW_DOLPHIN/flush_cache.c:
 dolphin/TRK_MINNOW_DOLPHIN/mem_TRK.c:
 	.text       start:0x8028B780 end:0x8028B83C
 
+Runtime.PPCEABI.H/__start.c:
+	.init       start:0x80003100 end:0x800033A8
+
+Runtime.PPCEABI.H/__mem.c:
+	.init       start:0x800033A8 end:0x800034E4
+
+Runtime.PPCEABI.H/mem_TRK.c:
+	.init       start:0x800034E4 end:0x80003538
+
+dolphin/TRK_MINNOW_DOLPHIN/__exception.s:
+	.init       start:0x80003538 end:0x8000546C
+
 dolphin/TRK_MINNOW_DOLPHIN/dolphin_trk.c:
 	.init       start:0x8000546C end:0x80005570
 	.text       start:0x8028D0F0 end:0x8028D230

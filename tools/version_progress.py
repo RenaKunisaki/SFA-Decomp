@@ -127,12 +127,13 @@ def load_splits(path: Path) -> tuple[list[str], list[SplitRange]]:
     ranges: list[SplitRange] = []
     unit: str | None = None
     for index, line in enumerate(lines):
-        if line and not line[0].isspace() and line.endswith(":"):
-            if line == "Sections:":
+        if line and not line[0].isspace() and ":" in line:
+            unit_name, _, _ = line.partition(":")
+            if unit_name == "Sections":
                 continue
             if header_end == len(lines):
                 header_end = index
-            unit = line[:-1]
+            unit = unit_name
             continue
         if unit is None:
             continue
@@ -574,16 +575,30 @@ def snap_symbol_boundaries(
             if len(crossing) != 1:
                 continue
             target_span = crossing[0]
-            if not weak_symbol_name(target_span.name) and not any(
+            target_signature = normalized_span_signature(target_dol, target_span)
+            named_homolog = any(
                 source_span.name == target_span.name
                 and (
                     source_span.start == source_boundary
                     or source_span.end == source_boundary
                 )
                 for source_span in section_source_spans
+            )
+            weak_zero_extended_tail = any(
+                weak_symbol_name(source_span.name)
+                and source_span.end == source_boundary
+                and 0 < target_span.size - source_span.size <= 8
+                and target_signature[: source_span.size]
+                == normalized_span_signature(source_dol, source_span)
+                and not any(target_signature[source_span.size :])
+                for source_span in section_source_spans
+            )
+            if (
+                not weak_symbol_name(target_span.name)
+                and not named_homolog
+                and not weak_zero_extended_tail
             ):
                 continue
-            target_signature = normalized_span_signature(target_dol, target_span)
             candidates: list[int] = []
             for source_span in section_source_spans:
                 source_signature = normalized_span_signature(source_dol, source_span)
@@ -731,7 +746,11 @@ def port_coherent_units(
                 reason = "invalid target range"
                 break
             size_drift = split.end - split.start != target_end - target_start
-            spans = target_all_symbol_spans if size_drift else target_symbol_spans
+            spans = (
+                target_all_symbol_spans
+                if size_drift or split.section in CODE_SECTIONS
+                else target_symbol_spans
+            )
             if boundary_crosses_symbol(
                 spans, split.section, target_start
             ) or boundary_crosses_symbol(spans, split.section, target_end):
@@ -925,8 +944,11 @@ def render_splits(header: list[str], ported: list[PortedRange]) -> str:
     for unit, ranges in by_unit.items():
         lines.append(f"{unit}:")
         for split in ranges:
+            section = split.source.section
+            if section not in {"extab", "extabindex"}:
+                section = f".{section}"
             lines.append(
-                f"\t.{split.source.section:<10} "
+                f"\t{section:<11} "
                 f"start:0x{split.target_start:08X} end:0x{split.target_end:08X}"
             )
         lines.append("")
