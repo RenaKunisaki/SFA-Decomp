@@ -22,26 +22,44 @@ demonstrations that it is a real hazard, not a hypothetical:
     Forcing `is_pure` to True blessed `f(x) + y -> y + f(x)`.
 
 So: deliberately corrupt the SUBJECT (or the model), and require the instrument
-to scream.  Three mutation families.
+to scream.  Six families; `scope`, `object`, `delegate` and `report` run by
+default, `build` and `oracle` are opt-in because they write into the tree.
 
   SCOPE     run the screen with a unit filter that matches nothing.  A screen
             that answers `scanned=0 ... =0` and exits 0 will answer the same
             way for a typo'd unit name, and the operator reads it as clean.
             The instrument must REFUSE an empty scope, not report it clean.
+            Each row first PROVES the argument is a filter at all -- the
+            filtered and unfiltered runs must differ -- or the probe would be
+            as vacuous as the thing it audits.
 
   OBJECT    hand the screen a deliberately damaged copy of a real object --
             a section resized, its alignment changed, a byte flipped in .text,
-            a symbol renamed, two symbols' addresses swapped -- through a
-            shadow repo root, and require a finding.  This is the only control
-            that proves the two-sided comparators are wired to their subject at
-            all.  The ELF patcher here is written from the spec with `struct`
-            and shares no code with any instrument it tests.
+            a symbol renamed, a symbol's size changed, two symbols' addresses
+            swapped -- through a shadow repo root, and require a finding.  This
+            is the only control that proves the two-sided comparators are wired
+            to their subject at all.  Every row also runs against an UNDAMAGED
+            shadow and the outputs must differ, so a finding that was already
+            there cannot pass for a detection.  The ELF patcher here is written
+            from the spec with `struct` and shares no code with any instrument
+            it tests.
 
   DELEGATE  the instrument owns its own mutation suite; run it.
 
+  BUILD     what every declaration sweep silently rests on and nothing had ever
+            asserted: `direct_build` must reproduce ninja's object BYTES, and
+            `unitfuzzy` must agree with report.json.  (opt-in: writes objects)
+
+  REPORT    vacuities in the score itself, reported rather than fixed.
+
+  ORACLE    a POSITIVE control for tools/slot_oracle.py, whose census answers
+            "pi not realisable within this block" almost every time -- exactly
+            the shape a broken instrument produces.  (opt-in: writes source)
+
 Usage:
-  python3 tools/vacuity_audit.py                # every family
+  python3 tools/vacuity_audit.py                # scope+object+delegate+report
   python3 tools/vacuity_audit.py --family scope
+  python3 tools/vacuity_audit.py --family build --family oracle
   python3 tools/vacuity_audit.py --list
 """
 from __future__ import annotations
@@ -126,6 +144,19 @@ def mutate_object(path: str, kind: str) -> str:
             raise ValueError("no .text to corrupt")
         e.b[t["off"] + 4] ^= 0x01
         what = ".text byte at +4 flipped"
+    elif kind == "symsize":
+        st, _strt = e.symtab()
+        if st is None:
+            raise ValueError("no .symtab")
+        for k in range(st["size"] // 16):
+            o = st["off"] + k * 16
+            _n, _v, sz, info, _o2, _sh = struct.unpack_from(">IIIBBH", e.b, o)
+            if (info & 0xF) == 2 and sz > 8:                # STT_FUNC
+                struct.pack_into(">I", e.b, o + 8, sz - 4)
+                what = "first function's st_size %d -> %d" % (sz, sz - 4)
+                break
+        else:
+            raise ValueError("no sized function")
     elif kind in ("symname", "symorder"):
         st, strt = e.symtab()
         if st is None:
@@ -249,6 +280,10 @@ OBJECT_SCREENS = {
     "order_check": ("symorder",),
     "pairing_check": ("symname",),
     "obj_equal": ("content", "size"),
+    # a SECTION-size change is invisible to size_parity_check by design -- it
+    # reads per-function symbol sizes -- so its control has to mutate the axis
+    # it actually looks at, or the row would pass for the wrong reason.
+    "size_parity_check": ("symsize",),
 }
 
 # Screens that accept a unit filter.  An empty scope must be refused.
@@ -340,11 +375,17 @@ def family_object(unit, verbose):
 
                 def go(r):
                     if tool == "obj_equal":
+                        # ours-vs-ours: the damaged copy against the UNDAMAGED
+                        # shadow of the same object, so the ONLY difference is
+                        # the mutation.  Against retail it would report the
+                        # pre-existing `.comment` delta and look like a pass
+                        # for entirely the wrong reason.
                         return run([PY, os.path.join(r, "tools",
                                                      "obj_equal.py"),
+                                    os.path.join(base_root, "build", "GSAE01",
+                                                 "src", *unit.split("/")[1:])
+                                    + ".o",
                                     os.path.join(r, "build", "GSAE01", "src",
-                                                 *unit.split("/")[1:]) + ".o",
-                                    os.path.join(r, "build", "GSAE01", "obj",
                                                  *unit.split("/")[1:]) + ".o"],
                                    cwd=r)
                     return run([PY, os.path.join(r, "tools", tool + ".py")],
@@ -493,11 +534,111 @@ def family_report(verbose):
     return 0
 
 
+_PERTURB = """
+import sys;sys.path.insert(0,'tools')
+from pathlib import Path
+import brute_match as B
+from function_objdump import load_units, resolve_unit
+u=resolve_unit(load_units(Path('build/GSAE01/config.json')), %r)
+f=Path('src')/u['name']
+src=f.read_bytes().decode('latin-1')
+o,e=B.find_function_body(src, %r)
+bl=B.collect_decl_blocks(src,o,e)[0]
+order=list(range(len(bl['items']))); order[%d],order[%d]=order[%d],order[%d]
+it=bl['items']
+first=it[order[0]].lstrip()
+rest=''.join('\\n'+bl['indent']+it[k].lstrip() for k in order[1:])
+f.write_bytes((src[:bl['start']]+first+rest+src[bl['end']:]).encode('latin-1'))
+"""
+
+
+def family_oracle(verbose):
+    """POSITIVE CONTROL for tools/slot_oracle.py.
+
+    Swept over the sub-100 rows the oracle answers "pi not realisable within
+    this block" essentially every time.  A uniform verdict is exactly the shape
+    a broken instrument produces, so the census means nothing until the oracle
+    has been seen saying something else AND being right.
+
+    Perturb a function that is already at 100.0 by swapping two of its
+    declarations: our object now differs from retail by precisely the register
+    transposition that swap caused, which is a pi that IS realisable and whose
+    solution is the swap back.  (An unperturbed 100.0 function is useless --
+    pi is empty and the oracle short-circuits before it probes anything, which
+    is why the perturbation has to come first.)
+
+    NOTE: writes into src/ and rebuilds.  Restores from HEAD after every probe.
+    Do not run against a worktree with a sweep in flight.
+    """
+    print("\n=== POSITIVE CONTROL: tools/slot_oracle.py ===")
+    rep = json.load(open(os.path.join(REPO, "build/GSAE01/report.json")))
+    cfg = json.load(open(os.path.join(REPO, "build/GSAE01/config.json")))
+    names = {u["name"] for u in cfg["units"]}
+    cands = []
+    for u in rep["units"]:
+        for f in u.get("functions") or []:
+            if f.get("fuzzy_match_percent") != 100.0:
+                continue
+            if not (1200 <= int(f.get("size", 0)) <= 6000):
+                continue
+            base = "/".join(u["name"].split("/")[1:]) + ".c"
+            if base in names and "dolphin" not in base and "musyx" not in base:
+                cands.append((base, f["name"], int(f["size"])))
+    cands.sort(key=lambda r: -r[2])
+
+    def restore(rel):
+        g = subprocess.run(["git", "show", "HEAD:src/" + rel], cwd=REPO,
+                           capture_output=True)
+        if g.returncode == 0:
+            open(os.path.join(REPO, "src", rel), "wb").write(g.stdout)
+        b = os.path.join(REPO, "src", rel) + ".brutebak"
+        if os.path.exists(b):
+            os.unlink(b)
+
+    tried = 0
+    for cfgname, fn, size in cands:
+        r = run([PY, os.path.join(REPO, "tools", "brute_match.py"),
+                 cfgname, fn, "--list-blocks"])
+        m = re.search(r"block 0: depth=\d+ line \d+-\d+\s+(\d+) items", r[1])
+        if not m or int(m.group(1)) < 6:
+            continue
+        n = int(m.group(1))
+        for (i, j) in ((0, 1), (0, 2), (1, 2), (2, 3)):
+            tried += 1
+            if tried > 24:
+                print("  *** no subject produced a positive control in 24 "
+                      "perturbations ***")
+                return 1
+            w = run([PY, "-c", _PERTURB % (cfgname, fn, i, j, j, i)])
+            if w[0]:
+                restore(cfgname)
+                continue
+            rc, txt = run([PY, os.path.join(REPO, "tools", "slot_oracle.py"),
+                           cfgname, fn])
+            restore(cfgname)
+            b = re.search(r"baseline fuzzy=([\d.]+)", txt)
+            if not b or float(b.group(1)) >= 100.0:
+                continue                    # the swap was inert; try another
+            pi = bool(re.search(r"# pi \(saved band\): \{.+\}", txt))
+            unreal = "not realisable" in txt
+            sol = re.search(r"SOLVED order \[[^\]]*\] -> fuzzy=([\d.]+)", txt)
+            back = bool(sol) and abs(float(sol.group(1)) - 100.0) < 1e-9
+            print("  %s %s: perturbed decl %d<->%d, fuzzy 100.0 -> %s;  "
+                  "pi non-empty=%s  unrealisable=%s  solved-back-to-100=%s"
+                  % (cfgname, fn, i, j, b.group(1), pi, unreal, back))
+            if pi and not unreal and back:
+                print("  [held] the oracle CAN report a realisable pi, and the "
+                      "ordering it computes is the right one")
+                return 0
+    print("  *** NO SUBJECT PRODUCED A POSITIVE CONTROL ***")
+    return 1
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.split("\n")[0])
     ap.add_argument("--family",
                     choices=("scope", "object", "delegate", "build",
-                             "report"),
+                             "report", "oracle"),
                     action="append")
     ap.add_argument("--unit-object",
                     default="build/GSAE01/obj/main/camera.o",
@@ -509,9 +650,12 @@ def main():
     ap.add_argument("-v", "--verbose", action="store_true")
     a = ap.parse_args()
     if a.list:
-        print("scope:   " + " ".join(SCOPE_SCREENS))
-        print("object:  " + " ".join(sorted(OBJECT_SCREENS)))
-        print("delegate:" + " ".join(t for t, _ in DELEGATED))
+        print("scope:    " + " ".join(SCOPE_SCREENS))
+        print("object:   " + " ".join(sorted(OBJECT_SCREENS)))
+        print("delegate: " + " ".join(t for t, _ in DELEGATED))
+        print("build:    direct_build unitfuzzy   (opt-in: writes objects)")
+        print("report:   build/GSAE01/report.json")
+        print("oracle:   slot_oracle              (opt-in: writes source)")
         return 0
     fams = a.family or ["scope", "object", "delegate", "report"]
     bad = 0
@@ -525,6 +669,8 @@ def main():
         bad += family_build(a.unit_object, a.verbose)
     if "report" in fams:
         bad += family_report(a.verbose)
+    if "oracle" in fams:
+        bad += family_oracle(a.verbose)
     print("\nvacuity audit: %s" % ("ALL INSTRUMENTS SCREAMED" if not bad
                                    else "%d INSTRUMENT(S) STAYED SILENT" % bad))
     return 1 if bad else 0
