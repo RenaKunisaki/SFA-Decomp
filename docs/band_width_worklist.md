@@ -5,6 +5,19 @@ tree fuzzy 99.81795, **205 sub-100 functions**. This replaces the old band-width
 the fixed `tools/structscan.py` now reloc-masks and pool-canonicalises the diff, so `ndiff` below
 is REAL differing instruction words (an `@N`-vs-`lbl_` pool naming difference no longer counts).
 
+## Rotation class CLOSED WITH MECHANISM (2026-08-03 corpus mining)
+
+The saved-band rotation offset is set by the inline-boundary value count, dose-saturating at one,
+profile-invariant, proven by a corpus natural experiment (an MP4 wrapper pair with identical bodies
+rotated by one) plus twelve controlled variants under both compiler eras. The knob only moves bands
+in small functions; every rotation row below sits ten to eighty times past saturation, several need
+a value REMOVED, and the only mover spelling is an identity extern inline — a match-hack. Corpus
+rotations arise from ordinary structural variation with no transplantable idiom. Do not probe these
+rows further with source spellings; fingerprint schema: scratchpad bandfp.py.
+
+Re-tagged out of this class (saved-band fingerprints IDENTICAL to retail; diffs are scratch-band/
+flag-lane): pauseMenuDraw, objInterpretSeq, CameraModeWorldMap_update.
+
 ## Regeneration
 
     ninja build/GSAE01/report.json
