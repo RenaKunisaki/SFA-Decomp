@@ -295,48 +295,60 @@ regressing, and are reclassified in place as split-lever-SPENT scratch rotations
 | boxBlurTexture | main/newshadows | 5424 | 99.167 | 161 | 1 | 8G/0F | 6 | true scratch rotation: flat 161/1; alternates catastrophic (+nolifetimes 1109, +noloopinv 1011) |
 | allocLotsOfTextures | main/newshadows | 5948 | 98.067 | 370 | 0 | 8G/16F | 6 | true scratch rotation: 8G/16F whole-band recolour; flat 370/0, +noprop 388/4, alternates worse |
 
-### misc-compiler-wall (36)
+### misc-compiler-wall (36) — VERIFIED 2026-08-03 at `271a7c226d`
 
 Recorded compiler-internal walls that fit no named family: priced_classes 15 order bucket, large-const-HI (priced 4), r0 base-mat LO-fold, block-placement trampolines, preheader linearisation, engine/0 HUD cluster, etc.
 
+Verification pass (same method as the flag-signature bucket): all 36 rows rebuilt at HEAD and
+`fn_diff` recomputed — **every row reproduces its tabulated ndiff/struc exactly**, and the diff
+shape was read against the cited ledger section for each. 32 rows verified-current (citations
+tightened to the exact priced section where the ledger has since grown one: 23b li/mr remat,
+24b texture trampolines + mapLoadUnloadObjects CSE asymmetry, 26/27 tree-wide ordering sweep).
+**4 rows carried a STALE price — the §4 large-const-HI quartet**: the "confirmed unreachable"
+`lis` hoist HAS landed in-tree (the `spawnFlags = PARTFXFLAG_200000; ... spawnFlags +
+PARTFXFLAG_1` spelling), so §4's row list and player-cluster-walls' HI-half wall section no
+longer describe these functions; the residual is a 3-word single-home recolour of the constant
+web (re-classified in place below, with a fresh out-of-tree decl sweep on the one sub-cliff
+member). No row is misfiled — every row has a live ledger/memory anchor.
+
 | fn | unit | size | fuzzy | ndiff | struc | band | #nm | recorded mechanism |
 |---|---|---|---|---|---|---|---|---|
-| errorThreadFunc | main/dll_80136a40 | 2776 | 99.954 | 2 | 0 | 8G/0F | 4 | sole-straggler: preheader statement/const-group linearisation, 23 spellings |
-| playerStateAimStaff | dlls/objects/195_Player/player | 1824 | 99.967 | 3 | 0 | 6G/3F | 22 | priced 4 large-const-HI never CSE'd across a call |
-| playerState30 | dlls/objects/195_Player/player | 1500 | 99.960 | 3 | 0 | 6G/1F | 22 | priced 4 large-const-HI never CSE'd across a call |
-| playerStateShootFireball | dlls/objects/195_Player/player | 1132 | 99.947 | 3 | 0 | 6G/2F | 22 | priced 4 large-const-HI never CSE'd across a call |
-| playerStateTryCastSpell | dlls/objects/195_Player/player | 964 | 99.938 | 3 | 0 | 4G/1F | 22 | priced 4 large-const-HI never CSE'd across a call |
-| loadTextureFiles | main/texture | 436 | 97.248 | 3 | 6 | 1G/0F | 3 | block-placement: dead unreachable trampolines / dead inline preheaders |
-| newclouds_run | dlls/engine/7/7 | 2376 | 99.946 | 4 | 0 | 9G/1F | 1 | sole-straggler: base+16 trilemma, 10 spellings |
+| errorThreadFunc | main/dll_80136a40 | 2776 | 99.954 | 2 | 0 | 8G/0F | 4 | sole-straggler: preheader statement/const-group linearisation, 23 spellings; verified — one `addi r4,r29,76` slid one slot, registers identical |
+| playerStateAimStaff | dlls/objects/195_Player/player | 1824 | 99.967 | 3 | 0 | 6G/3F | 22 | STALE priced 4, re-classified 08-03: hoist landed (spawnFlags+PARTFXFLAG_1), residual = single-home recolour of the lis web (T r30 vs C r26); band 6G rotation regime |
+| playerState30 | dlls/objects/195_Player/player | 1500 | 99.960 | 3 | 0 | 6G/1F | 22 | STALE priced 4, re-classified 08-03: hoist landed, residual = single-home recolour (T r28 vs C r26); band 6G rotation regime |
+| playerStateShootFireball | dlls/objects/195_Player/player | 1132 | 99.947 | 3 | 0 | 6G/2F | 22 | STALE priced 4, re-classified 08-03: hoist landed, residual = single-home recolour (T r28 vs C r26); band 6G rotation regime |
+| playerStateTryCastSpell | dlls/objects/195_Player/player | 964 | 99.938 | 3 | 0 | 4G/1F | 22 | STALE priced 4, re-classified 08-03: hoist landed, residual = single-home recolour (T r30 vs C r28); 4G sub-cliff so PROBED — out-of-tree decl sweep of spawnFlags (first/2nd/3rd/4th/last) all flat 3/0: the web is propagation-fed, no named-local key reaches it. Recolour wall |
+| loadTextureFiles | main/texture | 436 | 97.248 | 3 | 6 | 1G/0F | 3 | priced 24b: retail carries an orphan duplicate inline loop-preheader (3 dead `b` at the tail), 8 callee spellings measured; verified — T is exactly the 3 `b` longer |
+| newclouds_run | dlls/engine/7/7 | 2376 | 99.946 | 4 | 0 | 9G/1F | 1 | sole-straggler: base+16 trilemma, 10 spellings; verified — dead intermediate web routed via r3 vs folded into r27, plus one addi slide |
 | playerCheckIfClimbingOntoWall | dlls/objects/195_Player/player | 3348 | 99.791 | 5 | 3 | 15G/5F | 22 | flags360 mask family: li/and vs rlwinm — see LEAD 1 |
-| debugTextDrawToFrameBuffer | main/dll_80136a40 | 384 | 97.656 | 6 | 2 | 7G/0F | 4 | priced 15 order bucket: param-home mr slid into the mulli gap; COLOURING |
-| mmFreeDeferred | main/mm | 220 | 99.455 | 6 | 0 | 2G/0F | 2 | mm dead-operand cap (old worklist) |
-| playerState25 | dlls/objects/195_Player/player | 1384 | 99.884 | 7 | 0 | 4G/4F | 22 | player-cluster coloring walls |
+| debugTextDrawToFrameBuffer | main/dll_80136a40 | 384 | 97.656 | 6 | 2 | 7G/0F | 4 | priced 15 order bucket: param-home mr slid into the mulli gap; COLOURING; verified — mulli pair slid one slot inside the r27/r29 swap |
+| mmFreeDeferred | main/mm | 220 | 99.455 | 6 | 0 | 2G/0F | 2 | verified 08-03: pure r3/r4 scratch swap — priced 27 volatile-only class (residual entirely in r0-r13, no declaration key); §27 parse census also notes it has no 2-item decl block. Supersedes the old-worklist "dead-operand cap" phrasing |
+| playerState25 | dlls/objects/195_Player/player | 1384 | 99.884 | 7 | 0 | 4G/4F | 22 | player-cluster coloring walls; named in saved-band-rotation-model; swept inert in priced 26 (34100 orderings, no hit); verified |
 | playerStopRidingObject | dlls/objects/195_Player/player | 356 | 97.978 | 7 | 4 | 2G/0F | 22 | flags360 mask family: li/and vs rlwinm — see LEAD 1 |
-| ObjSeq_onMapSetup | dlls/engine/2/2 | 760 | 99.211 | 10 | 2 | 4G/0F | 5 | surplus-queue W6/W7 + gLightmapDrawQueue struct wall |
-| playerStateAttack | dlls/objects/195_Player/player | 2836 | 99.908 | 11 | 0 | 5G/2F | 22 | player-cluster coloring walls |
-| boneParticleEffect_update | dlls/engine/24/24 | 1764 | 99.649 | 11 | 9 | 15G/6F | 1 | value-home-r0 / base-mat LO-fold wall (+ engine/24 pool 2b) |
-| objDrawShadowCasterMesh | main/shadow_dolphin | 1132 | 99.509 | 12 | 1 | 7G/2F | 2 | shadow copy-survival cited (structscan doc) |
-| gameTextFinalizeLoad | main/textrender_run | 1592 | 99.334 | 14 | 2 | 11G/0F | 4 | priced 15 order bucket: one slid instruction inside a register perm; COLOURING |
+| ObjSeq_onMapSetup | dlls/engine/2/2 | 760 | 99.211 | 10 | 2 | 4G/0F | 5 | surplus-queue W6 (the duplicate `marks[0] = 0;` is LOAD-BEARING) + priced 24c: banked; verified |
+| playerStateAttack | dlls/objects/195_Player/player | 2836 | 99.908 | 11 | 0 | 5G/2F | 22 | player-cluster coloring walls (web-class-pun-effect association win landed; residual recolour); swept inert in priced 26; verified |
+| boneParticleEffect_update | dlls/engine/24/24 | 1764 | 99.649 | 11 | 9 | 15G/6F | 1 | value-home-r0 / base-mat LO-fold wall (verified: C detours the base through r0 via a surviving mr, +1 instr) + priced 23b reverse-direction li/mr member |
+| objDrawShadowCasterMesh | main/shadow_dolphin | 1132 | 99.509 | 12 | 1 | 7G/2F | 2 | priced 23b li/mr remat family (named member) + r7/r8 scratch swap and one addi slide; verified |
+| gameTextFinalizeLoad | main/textrender_run | 1592 | 99.334 | 14 | 2 | 11G/0F | 4 | priced 15 order bucket: front-end addend canonicalisation (constant folds into the scaled index first), one slid addi inside a register perm; PRICED; verified |
 | GameUI_release | dlls/engine/0/0 | 336 | 98.929 | 14 | 0 | 7G/0F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
 | pauseMenuDrawStatusPage | dlls/engine/0/0 | 2692 | 99.851 | 19 | 0 | 8G/5F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
 | pauseMenuDrawGridCell | dlls/engine/0/0 | 1012 | 99.506 | 22 | 0 | 12G/7F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
 | drawArwingHud | dlls/engine/0/0 | 1064 | 99.436 | 27 | 0 | 10G/1F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
 | hudDrawCommunicatorAlert | dlls/engine/0/0 | 632 | 99.051 | 27 | 0 | 8G/5F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
-| textureLoad | main/texture | 1932 | 98.882 | 33 | 22 | 17G/0F | 3 | block-placement: dead unreachable trampolines / dead inline preheaders |
+| textureLoad | main/texture | 1932 | 98.882 | 33 | 22 | 17G/0F | 3 | priced 24b (same mechanism as loadTextureFiles: orphan inline preheaders at tail) + width-17 recolour mass; verified |
 | pauseMenuDrawStatus | dlls/engine/0/0 | 2064 | 99.641 | 34 | 0 | 6G/2F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
-| unloadMap | main/shader | 616 | 97.922 | 43 | 1 | 10G/0F | 8 | surplus-queue W6/W7 + gLightmapDrawQueue struct wall |
-| mapScreenDrawHud | dlls/engine/0/0 | 3456 | 99.647 | 47 | 1 | 12G/5F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
-| headDisplayDraw | dlls/engine/0/0 | 1920 | 98.802 | 47 | 4 | 12G/5F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
-| playerStateMoving | dlls/objects/195_Player/player | 4880 | 99.746 | 51 | 0 | 4G/3F | 22 | player-cluster coloring walls |
-| cMenuSetItems | dlls/engine/0/0 | 1208 | 98.758 | 60 | 0 | 10G/0F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
-| expgfxGetSlot | dlls/engine/10_expgfx/expgfx | 792 | 95.899 | 63 | 4 | 4G/0F | 4 | expgfx-addregroup + unroll wall |
-| hudDrawButtons | dlls/engine/0/0 | 3684 | 99.194 | 69 | 4 | 13G/0F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
+| unloadMap | main/shader | 616 | 97.922 | 43 | 1 | 10G/0F | 8 | priced 23b li/mr remat family (named member) + width-10 recolour mass; verified |
+| mapScreenDrawHud | dlls/engine/0/0 | 3456 | 99.647 | 47 | 1 | 12G/5F | 14 | engine0-hud-walls cluster + priced 23b li/mr member; verified |
+| headDisplayDraw | dlls/engine/0/0 | 1920 | 98.802 | 47 | 4 | 12G/5F | 14 | engine0-hud-walls cluster + priced 23b li/mr member; verified |
+| playerStateMoving | dlls/objects/195_Player/player | 4880 | 99.746 | 51 | 0 | 4G/3F | 22 | player-cluster coloring walls (named member: all f3/f4, f29/f30, scratch perm); verified |
+| cMenuSetItems | dlls/engine/0/0 | 1208 | 98.758 | 60 | 0 | 10G/0F | 14 | engine0-hud-walls cluster; priced 27's slot_oracle caveat names it (one swap rotates a full 6-cycle — band-membership rotation, not a decl key); verified |
+| expgfxGetSlot | dlls/engine/10_expgfx/expgfx | 792 | 95.899 | 63 | 4 | 4G/0F | 4 | expgfx-addregroup + unroll wall; priced 15 names it (the `li 1`/mask-load slide at both unrolled sites, PRICED pending owner); verified — r11/r28/r29 temp-routing perm across the unrolled block |
+| hudDrawButtons | dlls/engine/0/0 | 3684 | 99.194 | 69 | 4 | 13G/0F | 14 | engine0-hud-walls cluster + priced 23b li/mr member; verified |
 | hudDrawMagicBar | dlls/engine/0/0 | 2472 | 99.288 | 75 | 0 | 12G/0F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
-| mapLoadUnloadObjects | main/shader | 1912 | 98.372 | 112 | 21 | 13G/0F | 8 | surplus-queue W6/W7 + gLightmapDrawQueue struct wall |
+| mapLoadUnloadObjects | main/shader | 1912 | 98.372 | 112 | 21 | 13G/0F | 8 | surplus-queue W7 (add-grouping optimal) + priced 24b/A83: a CSE asymmetry the source text has to state twice; verified |
 | drawViewFinderHud | dlls/engine/0/0 | 4980 | 99.345 | 126 | 84 | 7G/18F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
-| modelRenderInterpolateRootTransform | main/render | 2212 | 96.682 | 140 | 117 | 17G/1F | 1 | 16-18-wide multi-defect (old worklist frontier) |
-| Checkpoint_buildControlPoints | dlls/engine/3/3 | 2500 | 98.464 | 268 | 2 | 12G/12F | 1 | priced 15 order bucket: LICM preheader hoist order + param-home perm; COLOURING |
+| modelRenderInterpolateRootTransform | main/render | 2212 | 96.682 | 140 | 117 | 17G/1F | 1 | 16-18-wide multi-defect: surplus-queue W-list + toplevel-base-mat alias wall (dropping the alias local REGRESSES); verified 140/117 at HEAD after the u16 frameStreamStride commit |
+| Checkpoint_buildControlPoints | dlls/engine/3/3 | 2500 | 98.464 | 268 | 2 | 12G/12F | 1 | priced 15 order bucket: LICM preheader hoist order (one lfd) + param-home perm; COLOURING; verified — param-home mr perm (r29/r31/r27 vs retail) carries the mass |
 
 ### hand-asm (5)
 
