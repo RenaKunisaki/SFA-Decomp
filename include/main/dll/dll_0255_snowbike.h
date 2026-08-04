@@ -127,10 +127,7 @@ typedef struct SnowBikeState {
     s8 routeRank;           /* 0x422: current checkpoint-route rank */
     u8 pad423;
     f32 impactShakeTimer;   /* 0x424: accumulates timeDelta while grounded; drives doRumble + CameraShake_SetOffset */
-    union {
-        u8 flags428;        /* 0x428: SnowBikeFlags overlay byte */
-        SnowBikeRouteFlags routeFlags;
-    };
+    SnowBikeRouteFlags routeFlags; /* 0x428 */
     u8 pad429[0x3];
     int linkedObj;             /* 0x42c: linked object */
     f32 engineFxLevel;      /* 0x430: scaled down on each collision impact; negated and scaled to form the SnowBike_UpdateEngineFx intensity argument */
@@ -212,7 +209,7 @@ STATIC_ASSERT(offsetof(SnowBikeState, refPosX) == 0x16C);
 STATIC_ASSERT(offsetof(SnowBikeState, unk3D6) == 0x3D6);
 STATIC_ASSERT(offsetof(SnowBikeState, collisionFxDamping) == 0x3E0);
 STATIC_ASSERT(offsetof(SnowBikeState, impactShakeTimer) == 0x424);
-STATIC_ASSERT(offsetof(SnowBikeState, flags428) == 0x428);
+STATIC_ASSERT(offsetof(SnowBikeState, routeFlags) == 0x428);
 STATIC_ASSERT(offsetof(SnowBikeState, collisionBounceScale) == 0x4AC);
 STATIC_ASSERT(offsetof(SnowBikeState, unk530) == 0x530);
 STATIC_ASSERT(offsetof(SnowBikeState, haloPitchDrift) == 0x594);

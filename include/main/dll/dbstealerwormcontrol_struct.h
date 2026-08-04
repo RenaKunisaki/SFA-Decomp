@@ -40,6 +40,15 @@ typedef struct DbStealerwormScript
     s16 unk6;
 } DbStealerwormScript;
 
+typedef struct DbStealerwormFlags44
+{
+    u8 flag80 : 1;
+    u8 flag40 : 1;
+    u8 flag20 : 1;
+    u8 flag10 : 1;
+    u8 low : 4;
+} DbStealerwormFlags44;
+
 typedef struct DbStealerwormControl
 {
     const DbStealerwormScript* cfg;
@@ -69,7 +78,7 @@ typedef struct DbStealerwormControl
         struct GameObject* savedTargetObject;
     };
     u8 unk40[4];
-    u8 flags44; /* bits 0x10/0x20 */
+    DbStealerwormFlags44 flags44;
     u8 unk45[3];
     f32 randomTimer48; /* RandomTimer_UpdateRangeTrigger slots */
     f32 randomTimer4C;

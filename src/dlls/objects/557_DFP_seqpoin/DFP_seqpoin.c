@@ -79,7 +79,7 @@ int DFP_seqpoint_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
             case 0x14:
                 if (*(u32*)&data->head.ident == 0x49de8)
                 {
-                    ((DfpFlags7*)&blob->flags0F)->b80 = 1;
+                    blob->flags0F.b80 = 1;
                 }
                 else
                 {
@@ -135,10 +135,10 @@ void DFP_seqpoint_update(GameObject* obj)
     self = obj;
     player = (GameObject*)Obj_GetPlayerObject();
     state = self->extra;
-    if (((u32)state->flags0F >> 7 & 1) != 0)
+    if (state->flags0F.b80 != 0)
     {
         mainSetBits(0xef7, 1);
-        ((DfpFlags7*)&state->flags0F)->b80 = 0;
+        state->flags0F.b80 = 0;
     }
     gameBit = state->disableGameBit;
     if (gameBit != -1)
@@ -234,7 +234,7 @@ void DFP_seqpoint_init(GameObject* obj, u8* init)
     sub->conditionGameBit = ((DfpSeqPointPlacement*)init)->conditionGameBit;
     sub->disableGameBit = ((DfpSeqPointPlacement*)init)->disableGameBit;
     obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HITDETECT_DISABLED);
-    ((DfpFlags7*)&sub->flags0F)->b80 = 0;
+    sub->flags0F.b80 = 0;
 }
 
 void DFP_seqpoint_release(void)
