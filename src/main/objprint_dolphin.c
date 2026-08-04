@@ -3220,8 +3220,8 @@ void objRenderShadow(void* obj)
         return;
     }
     {
-        int* m = *(int**)Obj_GetActiveModel((GameObject*)obj);
-        if (((ModelFileHeader*)m)->shadowDisplayListCount != 0)
+        ModelFileHeader* m = (ModelFileHeader*)*(int**)Obj_GetActiveModel((GameObject*)obj);
+        if (m->shadowDisplayListCount != 0)
         {
             objRenderShadowModel(obj, obj, (u8*)m, 1);
         }
@@ -3388,8 +3388,8 @@ void objRenderModel(GameObject* obj)
         return;
     }
     {
-        int m0 = *model;
-        if (((ModelFileHeader*)m0)->flags & 0x8000)
+        ModelFileHeader* m0 = (ModelFileHeader*)*model;
+        if (m0->flags & 0x8000)
         {
             modelDoAltRenderInstrs((int*)obj, obj->ownerObj ? (int*)obj->ownerObj : (int*)obj, (u8*)m0, 0);
         }

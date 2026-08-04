@@ -1879,7 +1879,7 @@ void newclouds_run(void)
 
 void newclouds_killSnowCloud(int cloudId, int flag)
 {
-    void* p;
+    NewCloud* p;
     int i;
 
     if (flag == 0)
@@ -1900,7 +1900,7 @@ void newclouds_killSnowCloud(int cloudId, int flag)
     for (i = 0; i < 8; i++)
     {
         p = gNewClouds[i];
-        if (p != NULL && cloudId == ((NewCloud*)p)->cloudId)
+        if (p != NULL && cloudId == p->cloudId)
         {
             break;
         }

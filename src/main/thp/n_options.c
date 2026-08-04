@@ -455,18 +455,18 @@ void AttractMovie_AddVideoTevStages(void)
 BOOL AttractMovie_DrawTextureCallback(int unused, u32* modelPtr, u32 renderOpIdx)
 {
     AttractMovieTextureSet* textureSet;
-    u8* renderOp;
+    Shader* renderOp;
 
     if (modelPtr != NULL)
     {
-        renderOp = (u8*)ObjModel_GetRenderOp((ModelFileHeader*)*modelPtr, renderOpIdx);
+        renderOp = ObjModel_GetRenderOp((ModelFileHeader*)*modelPtr, renderOpIdx);
     }
     else
     {
         renderOp = NULL;
     }
 
-    if (((renderOp == NULL) || (((Shader*)renderOp)->layers[0].materialId == 1)) && (gAttractMovieState == 2))
+    if (((renderOp == NULL) || (renderOp->layers[0].materialId == 1)) && (gAttractMovieState == 2))
     {
         textureSet = gAttractMoviePlayer.curTextureSet;
         THPPlayerDrawCurrentFrame(textureSet->yTexture, textureSet->uTexture, textureSet->vTexture,

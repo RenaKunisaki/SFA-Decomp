@@ -377,13 +377,13 @@ void explosion_update(GameObject* obj) {
                     if ((f32)((DimExplosionFlame*)cursor)->age / (f32)((DimExplosionFlame*)cursor)->lifetime < 0.2f) {
                         ((DimExplosionFlame*)cursor)->spawnTimer -= framesThisStep;
                         if (((DimExplosionFlame*)cursor)->spawnTimer <= 0) {
-                            int spawnState;
+                            DimExplosionState* spawnState;
                             u8 parentGeneration;
                             f32 parentSpeed;
                             f32 childSpeed;
                             parentGeneration = ((DimExplosionFlame*)cursor)->generation;
                             parentSpeed = ((DimExplosionFlame*)cursor)->speed;
-                            spawnState = (int)obj->extra;
+                            spawnState = obj->extra;
                             vpos.x = ((DimExplosionFlame*)cursor)->scale *
                                       (sExplosionChildOffsetStep[0] * (f32)randomGetRange(-5, 3) +
                                        sExplosionBaseScale[0]);
@@ -399,7 +399,7 @@ void explosion_update(GameObject* obj) {
                             vpos.z += ((DimExplosionFlame*)cursor)->posZ;
                             childSpeed = parentSpeed * (f32)randomGetRange(0xc0, 0x100);
                             childSpeed = childSpeed * sExplosionSpeedScale[0];
-                            if (((DimExplosionState*)spawnState)->flameCount < DIM_EXPLOSION_FLAME_CAPACITY) {
+                            if (spawnState->flameCount < DIM_EXPLOSION_FLAME_CAPACITY) {
                                 explosion_spawnFlame(obj, (u8)(parentGeneration + 1), childSpeed, vpos.x, vpos.y,
                                                      vpos.z);
                             }

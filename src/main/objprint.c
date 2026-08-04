@@ -426,7 +426,7 @@ s16* objFindJointPoseVector(GameObject* obj, int key) {
     int vecOffset;
     int jointData;
     int entryIdx;
-    void* modelDef;
+    ObjDef* modelDef;
     s16* result;
     int count;
     int i;
@@ -438,7 +438,7 @@ s16* objFindJointPoseVector(GameObject* obj, int key) {
         vecOffset = 0;
         count = OBJPRINT_JOINT_COUNT(modelDef);
         for (i = 0; i < count; i++) {
-            jointData = (int)((ObjDef*)modelDef)->jointData;
+            jointData = (int)modelDef->jointData;
             if ((int)*(u8*)(jointData + OBJPRINT_ACTIVE_BANK_INDEX(obj) + entryIdx + 1) != 0xff &&
                 (s32) * (u8*)(jointData + entryIdx) == key) {
                 result = (s16*)((char*)(obj)->anim.jointPoseData + vecOffset);
@@ -1278,13 +1278,13 @@ void staffUpdateSegmentTransforms(int staffArg, GameObject* objArg, int modelArg
     Vec* vp0;
     int i;
     char* base;
-    u8* model;
+    ObjModel* model;
     int obj;
     GameObject* staff;
 
     staff = (GameObject*)staffArg;
     obj = (int)objArg;
-    model = (u8*)modelArg;
+    model = (ObjModel*)modelArg;
 
     if (OBJPRINT_MODEL_INSTANCE(staff)->attachPointCount >= 2 && staff->anim.classId == 0x2d) {
         int off;
@@ -1301,7 +1301,7 @@ void staffUpdateSegmentTransforms(int staffArg, GameObject* objArg, int modelArg
                 MtxPtr jm;
                 int joint;
                 joint = ((ObjAttachPoint*)(OBJPRINT_ATTACH_POINTS(staff) + off))[1].joints[OBJPRINT_ACTIVE_BANK_INDEX(staff)];
-                jm = (MtxPtr)ObjModel_GetJointMatrix(model, joint);
+                jm = (MtxPtr)ObjModel_GetJointMatrix((u8*)model, joint);
                 vp->x = ((ObjAttachPoint*)(OBJPRINT_ATTACH_POINTS(staff) + off))[1].pos[0];
                 va[1] = ((ObjAttachPoint*)(OBJPRINT_ATTACH_POINTS(staff) + off))[1].pos[1];
                 va[2] = ((ObjAttachPoint*)(OBJPRINT_ATTACH_POINTS(staff) + off))[1].pos[2];
@@ -1316,7 +1316,7 @@ void staffUpdateSegmentTransforms(int staffArg, GameObject* objArg, int modelArg
                 ObjAttachPoint* row = (ObjAttachPoint*)(OBJPRINT_ATTACH_POINTS(staff) + off);
                 int idx2 = row->joints[OBJPRINT_ACTIVE_BANK_INDEX(staff)];
                 MtxPtr mtx2 =
-                    (MtxPtr)(idx2 * 0x40 + *(int*)(model + ((((ObjModel*)model)->bufferFlags & 1) * 4) + 0xc));
+                    (MtxPtr)(idx2 * 0x40 + *(int*)((u8*)model + ((model->bufferFlags & 1) * 4) + 0xc));
                 vb.x = row->pos[0];
                 vb.y = ((ObjAttachPoint*)(OBJPRINT_ATTACH_POINTS(staff) + off))->pos[1];
                 vb.z = ((ObjAttachPoint*)(OBJPRINT_ATTACH_POINTS(staff) + off))->pos[2];

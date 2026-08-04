@@ -3313,9 +3313,9 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t) {
                 warpCursor++;
             }
             {
-                int* circlingObstacle = (int*)t->unk724;
+                GameObject* circlingObstacle = t->unk724;
                 if (circlingObstacle != NULL &&
-                    (((GameObject*)circlingObstacle)->objectFlags & ANIMOBJD2_OBJFLAG_FREED)) {
+                    (circlingObstacle->objectFlags & ANIMOBJD2_OBJFLAG_FREED)) {
                     t->unk724 = 0;
                     TRICKY_RETARGET((u8*)t, t->playerObj);
                 }
@@ -6990,7 +6990,7 @@ void Tricky_hitDetect(GameObject* obj) {
     f32 y;
     GameObject** objects;
     int i;
-    void* firepipeObj;
+    GameObject* firepipeObj;
     TrickyState* state;
     f32 height;
     f32 z;
@@ -7010,7 +7010,7 @@ void Tricky_hitDetect(GameObject* obj) {
     } else {
         firepipeObj = ObjList_FindObjectById(TRICKY_HEIGHT_TRACK_FIREPIPE_OBJECT_ID);
         if ((firepipeObj != 0) &&
-            (getXZDistanceSquared(&obj->anim.worldPosX, &((GameObject*)firepipeObj)->anim.worldPosX) < 841.0f)) {
+            (getXZDistanceSquared(&obj->anim.worldPosX, &firepipeObj->anim.worldPosX) < 841.0f)) {
             state->heightTracking = 1;
             state->heightTrackObjId = TRICKY_HEIGHT_TRACK_FIREPIPE_OBJECT_ID;
             state->trackedHeight = 0.0f;

@@ -70,7 +70,7 @@
 int PressureSwitchFB_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     s16 sequenceId;
     PressureSwitchFBPlacement* placement;
-    u32 trackedObject;
+    GameObject* trackedObject;
     u32 trackedObjectOffset;
     PressureSwitchFBState* stateAddress;
     int positionAddress;
@@ -81,11 +81,11 @@ int PressureSwitchFB_animEventCallback(GameObject* obj, int unused, ObjSeqState*
     if (animUpdate->curEventId == PRESSURESWITCHFB_ANIM_COMMAND_CAPTURE_POSITIONS) {
         for (trackedIndex = 0; trackedIndex < PRESSURESWITCHFB_TRACKED_OBJECT_COUNT; trackedIndex++) {
             trackedObjectOffset = (u32)trackedIndex * 4 + PRESSURESWITCHFB_RUNTIME_TRACKED_OBJECTS_OFFSET;
-            trackedObject = *(u32*)((int)stateAddress + trackedObjectOffset);
+            trackedObject = (GameObject*)*(u32*)((int)stateAddress + trackedObjectOffset);
             if (trackedObject != 0) {
                 ((PressureSwitchFBState*)(positionAddress = (int)stateAddress + (u32)trackedIndex * 8))
                     ->trackedPositions[0]
-                    .x = ((GameObject*)trackedObject)->anim.localPosX;
+                    .x = trackedObject->anim.localPosX;
                 ((PressureSwitchFBState*)positionAddress)->trackedPositions[0].z =
                     ((GameObject*)*(int*)((int)stateAddress + trackedObjectOffset))->anim.localPosZ;
             }

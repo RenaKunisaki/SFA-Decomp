@@ -716,7 +716,7 @@ int DR_CloudRunner_stateHandler04(GameObject* obj, CloudRunnerState* baddie)
     {
         f32 fz = 0.0f;
         CloudRunnerState* inner2;
-        int placement;
+        DRCloudRunnerPlacement* placement;
         baddie->baddie.animSpeedC = fz;
         baddie->baddie.animSpeedB = fz;
         baddie->baddie.animSpeedA = fz;
@@ -724,10 +724,10 @@ int DR_CloudRunner_stateHandler04(GameObject* obj, CloudRunnerState* baddie)
         (obj)->anim.velocityY = fz;
         (obj)->anim.velocityZ = fz;
         inner2 = (obj)->extra;
-        placement = (obj)->anim.placementDataAddress;
+        placement = (DRCloudRunnerPlacement*)(obj)->anim.placementDataAddress;
         inner2->flagsBC0.b02 = 1;
         (*gGameUIInterface)
-            ->initAirMeter(((DRCloudRunnerPlacement*)placement)->airMeterCapacity, DRCLOUDRUNNER_AIRMETER_BGTEXTURE);
+            ->initAirMeter(placement->airMeterCapacity, DRCLOUDRUNNER_AIRMETER_BGTEXTURE);
         (*gGameUIInterface)->runAirMeter(inner2->airTimeRemaining);
         baddie->baddie.controlTimer = 0;
         baddie->baddie.moveSpeed = 0.005f;

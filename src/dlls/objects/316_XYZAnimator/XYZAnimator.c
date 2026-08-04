@@ -214,7 +214,7 @@ void XyzAnimator_update(GameObject* obj) {
     XyzAnimatorPlacement* placement = (XyzAnimatorPlacement*)obj->anim.placementData;
     XyzAnimatorState* state = (XyzAnimatorState*)obj->extra;
     MapBlockData* blockAddress;
-    u8* polygonGroup;
+    MapTriGroup* polygonGroup;
     int polygonGroupIndex;
     int completedAxes;
     u8* bufferAddress;
@@ -236,7 +236,7 @@ void XyzAnimator_update(GameObject* obj) {
             value = mapBlockGetPolygonGroupType(polygonGroup);
             if (placement->blockLayer == value) {
                 state->polygonGroupCount++;
-                state->vertexCount += ((MapTriGroup*)polygonGroup)[1].firstTri - ((MapTriGroup*)polygonGroup)->firstTri;
+                state->vertexCount += ((MapTriGroup*)polygonGroup)[1].firstTri - polygonGroup->firstTri;
             }
         }
         if (state->vertexCount == 0) {

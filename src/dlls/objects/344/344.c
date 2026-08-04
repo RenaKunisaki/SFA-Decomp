@@ -510,7 +510,7 @@ void gunpowderBarrel_render(GameObject* obj, int renderArg2, int renderArg3, int
                             s8 visible) {
     GunpowderBarrelState* state;
     int renderResult;
-    int* linkedTimer;
+    GameObject* linkedTimer;
 
     state = obj->extra;
     if (state->fuseFrames != 0 || state->heldFlags.held) {
@@ -524,9 +524,9 @@ void gunpowderBarrel_render(GameObject* obj, int renderArg2, int renderArg3, int
     if (renderResult != 0 || visible == -1) {
         objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
-    linkedTimer = (int*)state->linkedTimerObject;
+    linkedTimer = state->linkedTimerObject;
     if (linkedTimer != 0) {
-        (*(GunpowderBarrelTimerInterface**)((GameObject*)linkedTimer)->anim.dll)
+        (*(GunpowderBarrelTimerInterface**)linkedTimer->anim.dll)
             ->render((GameObject*)linkedTimer, renderArg2, renderArg3, renderArg4, renderArg5, visible);
     }
 }

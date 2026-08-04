@@ -67,13 +67,13 @@ void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue
 
 void sky2GetFogRange(int* fogNear, int* fogFar)
 {
-    u8* state;
+    SkySlotAnim* state;
     f32 value;
 
-    state = gSky2State;
+    state = (SkySlotAnim*)gSky2State;
     if (state != NULL)
     {
-        value = ((SkySlotAnim*)state)->fogNear;
+        value = state->fogNear;
         *fogNear = value;
         value = ((SkySlotAnim*)gSky2State)->fogFar;
         *fogFar = value;
@@ -82,14 +82,14 @@ void sky2GetFogRange(int* fogNear, int* fogFar)
 
 void sky2GetTargetColor(int* red, int* green, int* blue, f32* blend)
 {
-    u8* state;
+    SkySlotAnim* state;
 
-    state = gSky2State;
+    state = (SkySlotAnim*)gSky2State;
     if (state == NULL)
     {
         return;
     }
-    *red = ((SkySlotAnim*)state)->colorR;
+    *red = state->colorR;
     *green = ((SkySlotAnim*)gSky2State)->colorG;
     *blue = ((SkySlotAnim*)gSky2State)->colorB;
     *blend = ((SkySlotAnim*)gSky2State)->prevT;
@@ -280,16 +280,16 @@ void sky2StepSlotAnim(int slot)
 
 int sky2GetFogFadeAlpha(void)
 {
-    u8* state;
+    SkySlotAnim* state;
     f32 y;
     int alpha;
 
-    state = gSky2State;
+    state = (SkySlotAnim*)gSky2State;
     if (state == NULL)
     {
         return 0xff;
     }
-    y = ((SkySlotAnim*)state)->fogNear;
+    y = state->fogNear;
     if (y < 950.0f)
     {
         alpha = 0;

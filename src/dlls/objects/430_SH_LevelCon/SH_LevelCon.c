@@ -267,7 +267,7 @@ void SH_LevelControl_setMusic(short* obj) {
 }
 
 void SH_LevelControl_runBloopEvent(GameObject* obj, ShLevelControlState* state) {
-    int player;
+    GameObject* player;
     u8 i;
     u8 bloopsRemaining;
     u8 j;
@@ -281,7 +281,7 @@ void SH_LevelControl_runBloopEvent(GameObject* obj, ShLevelControlState* state) 
         }
     }
 
-    player = (int)Obj_GetPlayerObject();
+    player = Obj_GetPlayerObject();
     switch (state->bloopEventState) {
     case 0:
         if (mainGetBit(GAMEBIT_ITEM_BigScarabBag_Got) != 0) {
@@ -292,7 +292,7 @@ void SH_LevelControl_runBloopEvent(GameObject* obj, ShLevelControlState* state) 
         break;
     case 1:
         if (mainGetBit(0x124) != 0) {
-            (*gMapEventInterface)->savePoint(player + 0xc, ((GameObject*)player)->anim.rotX, 1, 0);
+            (*gMapEventInterface)->savePoint((int)player + 0xc, player->anim.rotX, 1, 0);
             state->airMeterTimer = 100000.0f;
             (*gGameUIInterface)->initAirMeter(100000, SHLEVELCONTROL_AIRMETER_BGTEXTURE);
             state->bloopEventState = 2;

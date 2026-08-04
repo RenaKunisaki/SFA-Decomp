@@ -573,7 +573,7 @@ void ObjMsg_SendToObjects(int targetId, u32 flags, void* sender, u32 message, u3
 
 u32 ObjMsg_SendToObject(GameObject* obj, u32 message, void* sender, u32 param) {
     u32 count;
-    void* senderObj;
+    GameObject* senderObj;
     ObjMsgQueue* queue;
     ObjMsgQueueCursor* slot;
 
@@ -593,7 +593,7 @@ u32 ObjMsg_SendToObject(GameObject* obj, u32 message, void* sender, u32 param) {
             return queue->count;
         }
         debugPrintf(sObjMsgOverflowInObjectWarning, message, (int)obj->anim.classId, (int)obj->anim.romDefNo,
-                    (int)((GameObject*)senderObj)->anim.romDefNo);
+                    (int)senderObj->anim.romDefNo);
     }
     return 0;
 }

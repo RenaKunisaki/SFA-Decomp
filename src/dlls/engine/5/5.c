@@ -414,12 +414,12 @@ void skySetSlotFlag80(int flags, u8 mode)
 
 int skyGetSlotFlag80(int slot)
 {
-    u8* sky;
+    SkyState* sky;
 
-    sky = gSkyState;
+    sky = (SkyState*)gSkyState;
     if (sky != NULL)
     {
-        return ((SkyState*)sky)->lights[slot].flags.unused80;
+        return sky->lights[slot].flags.unused80;
     }
     return 0;
 }
@@ -500,12 +500,12 @@ void skySetLightIndex(int mode, f32 brightness)
 
 int skyGetCurrentLightIndex(void)
 {
-    u8* sky;
+    SkyState* sky;
 
-    sky = gSkyState;
+    sky = (SkyState*)gSkyState;
     if (sky != NULL)
     {
-        return ((SkyState*)sky)->currentLightIndex;
+        return sky->currentLightIndex;
     }
     return 0;
 }
@@ -582,15 +582,15 @@ void skyBuildSunModelMatrix(Mtx mtx)
 
 u8 skyGetSunRenderAlpha(int slot)
 {
-    u8* sky;
+    SkyState* sky;
 
-    sky = gSkyState;
+    sky = (SkyState*)gSkyState;
     if (sky == NULL)
     {
         return 0;
     }
 
-    if (((SkyState*)sky)->lights[slot].flags.unused80 != 0)
+    if (sky->lights[slot].flags.unused80 != 0)
     {
         return 0;
     }
@@ -1733,12 +1733,12 @@ void skyRenderTimeOfDayBackdrop(void)
 
 int skyGetVisibility(int slot)
 {
-    u8* sky;
+    SkyState* sky;
 
-    sky = gSkyState;
+    sky = (SkyState*)gSkyState;
     if (sky != NULL)
     {
-        return ((SkyState*)sky)->lights[slot].flags.visibility;
+        return sky->lights[slot].flags.visibility;
     }
     return 0;
 }
@@ -1799,15 +1799,15 @@ int getSunPos(f32* outTime)
 
 void skyGetTimer(int* outTimer)
 {
-    u8* sky;
+    SkyState* sky;
 
-    sky = gSkyState;
+    sky = (SkyState*)gSkyState;
     if (sky == NULL)
     {
         *outTimer = 0;
         return;
     }
-    *outTimer = ((SkyState*)sky)->timer;
+    *outTimer = sky->timer;
 }
 
 void skyReservedNopA(void)
@@ -1816,16 +1816,16 @@ void skyReservedNopA(void)
 
 void skyGetClockTime(f32* time)
 {
-    u8* sky;
+    SkyState* sky;
 
-    sky = gSkyState;
+    sky = (SkyState*)gSkyState;
     if (sky == NULL)
     {
         *time = 0.0f;
     }
     else
     {
-        *time = ((SkyState*)sky)->clockTime;
+        *time = sky->clockTime;
     }
 }
 
@@ -1835,15 +1835,15 @@ void pDll_Sky_setTimeOfDay_nop(void)
 
 void getTimeOfDay(f32* time)
 {
-    u8* sky;
+    SkyState* sky;
 
-    sky = gSkyState;
+    sky = (SkyState*)gSkyState;
     if (sky == NULL)
     {
         *time = 0.0f;
         return;
     }
-    *time = ((SkyState*)sky)->timeOfDay;
+    *time = sky->timeOfDay;
 }
 
 void renderSky(int a, int b, int c, int d, int visible)

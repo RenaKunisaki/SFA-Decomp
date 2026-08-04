@@ -2141,12 +2141,12 @@ void hudDrawStatusBarsAndCounters(int unused1, int unused2, int unused3)
     {
         int c2 = 0, c1 = 0, c0 = 0;
         f32 radius = 10000.0f;
-        int* near;
-        near = (int*)objGetNearestTypeTo(9, Obj_GetPlayerObject(), &radius);
+        GameObject* near;
+        near = objGetNearestTypeTo(9, Obj_GetPlayerObject(), &radius);
         if (near != NULL && pauseMenuState == 0)
         {
             (*(void (*)(int*, int*, int*, int*)) *
-             (int*)((char*)*(int*)((int)((GameObject*)near)->anim.dll) + 0x54))(near, &c2, &c1, &c0);
+             (int*)((char*)*(int*)((int)near->anim.dll) + 0x54))((int*)near, &c2, &c1, &c0);
             hcArg = 0x118;
             hudDrawCounter(0x1e, (s16)(c1 - c2), (s16)c0, 0xff, 0, &hcArg, 1);
         }
@@ -9011,7 +9011,7 @@ void GameUI_initialise(void)
     int height;
     int width;
     int i;
-    void* p;
+    Texture* p;
 
     gCMenuPreselectOwnedBit = -1;
     gCMenuForcedSelIndex = -1;
@@ -9032,7 +9032,7 @@ void GameUI_initialise(void)
     }
     p = textureLoadAsset(GAMEUI_TEXTURE_BLINK);
     gGameUiBlinkTexture = p;
-    ((Texture*)p)->animationFrameStep = 40;
+    p->animationFrameStep = 40;
     gGameUiBlinkAnimFlags = 0x80000;
     gGameUiBlinkAnimFrame = 0;
     gHudItemInfoPopup.framesLeft = -1;

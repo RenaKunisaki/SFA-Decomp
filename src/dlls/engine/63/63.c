@@ -21,7 +21,7 @@ void dll_3F_updateTimerReadout(void* obj)
     int elapsed;
     int total;
     void* player;
-    void* nearest;
+    GameObject* nearest;
 
     maxDist = 1e+04f;
     start = 0;
@@ -32,10 +32,10 @@ void dll_3F_updateTimerReadout(void* obj)
         gameTimerRun(obj);
     }
     player = Obj_GetPlayerObject();
-    nearest = (void*)objGetNearestTypeTo(9, player, &maxDist);
+    nearest = objGetNearestTypeTo(9, player, &maxDist);
     if (nearest != NULL)
     {
-        ((void (*)(void*, int*, int*, int*))(*(void***)((GameObject*)nearest)->anim.dll)[21])(nearest, &start, &elapsed,
+        ((void (*)(void*, int*, int*, int*))(*(void***)nearest->anim.dll)[21])(nearest, &start, &elapsed,
                                                                                               &total);
     }
     elapsed = total - (elapsed - start);

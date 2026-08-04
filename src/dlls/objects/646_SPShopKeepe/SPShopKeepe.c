@@ -718,8 +718,8 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
     int digit;
     int slot;
     int i;
-    int state2;
-    void* player;
+    ShopkeeperState* state2;
+    GameObject* player;
     int hundreds;
     ObjTextureRuntimeSlot* tex;
     UiDllVTable** uiDll;
@@ -728,7 +728,7 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
 
     state = *(int*)&(obj)->extra;
     /* second copy of the extra pointer */
-    state2 = (int)(long)*(int*)&(obj)->extra;
+    state2 = (ShopkeeperState*)(long)*(int*)&(obj)->extra;
     player = Obj_GetPlayerObject();
     range = 1.0f;
     ((ShopkeeperState*)state)->flags9D4 &= ~SHOPKEEPER_FLAG_TICK;
@@ -748,7 +748,7 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
     seq->freeCallback = (ObjAnimSequenceFreeCallback)ShopKeeper_startScarabGame;
     seq->flags &= ~0x20;
     speed = 0.0f;
-    ((ShopkeeperState*)state2)->baddie.animSpeedA = speed;
+    state2->baddie.animSpeedA = speed;
     ((ShopkeeperState*)state)->flags9D4 |= SHOPKEEPER_FLAG_FACING;
     if (advance != 0)
     {
@@ -812,7 +812,7 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
             ((ShopkeeperState*)state)->opacity = 0xFF;
             break;
         case 4:
-            if (((GameObject*)player)->anim.romDefNo == 0)
+            if (player->anim.romDefNo == 0)
             {
                 warpToMap(0xF, 0);
             }

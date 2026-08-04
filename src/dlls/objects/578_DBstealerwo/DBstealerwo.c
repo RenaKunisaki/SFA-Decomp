@@ -621,7 +621,7 @@ int dbstealerworm_stateHandlerA0C(GameObject* obj, BaddieState* baddie, f32 t)
     int* objs;
     int best;
     GameObject* player;
-    int o;
+    GameObject* o;
     int* cursor;
     int i;
     int tmpB;
@@ -698,10 +698,10 @@ int dbstealerworm_stateHandlerA0C(GameObject* obj, BaddieState* baddie, f32 t)
     objs = (int*)objGetAllOfType(c30, &cnt);
     for (i = 0, cursor = objs; i < cnt; i++)
     {
-        o = *cursor;
+        o = (GameObject*)*cursor;
         if ((u32)o != (u32)player)
         {
-            ds = vec3f_distanceSquared(&player->anim.worldPosX, &((GameObject*)o)->anim.worldPosX);
+            ds = vec3f_distanceSquared(&player->anim.worldPosX, &o->anim.worldPosX);
             if (ds > bestD)
             {
                 bestD = ds;
@@ -1755,10 +1755,10 @@ int dbstealerworm_stateHandlerA01(GameObject* obj, BaddieState* baddie)
     BaddieState* bs = baddie;
     GroundBaddieState* sub;
     DbStealerwormControl* control;
-    int placementData;
+    GroundBaddiePlacement* placementData;
 
     sub = (obj)->extra;
-    placementData = (obj)->anim.placementDataAddress;
+    placementData = (GroundBaddiePlacement*)(obj)->anim.placementDataAddress;
     control = (DbStealerwormControl*)sub->control;
     if (bs->moveJustStartedA != '\0')
     {
@@ -1785,7 +1785,7 @@ int dbstealerworm_stateHandlerA01(GameObject* obj, BaddieState* baddie)
         bs->physicsActive = 0;
         bs->hasTarget = 0;
         sub->targetState = 0;
-        sub->configFlags |= ((GroundBaddiePlacement*)placementData)->flags;
+        sub->configFlags |= placementData->flags;
         if (control->linkedObject != NULL)
         {
             ObjMsg_SendToObject((void*)control->linkedObj, 17, obj, 19);
@@ -2072,7 +2072,7 @@ void dbstealerworm_acquireTarget(GameObject* obj, GroundBaddieState* groundState
     GroundBaddieState* st = groundState;
     DbStealerwormControl* sub = (DbStealerwormControl*)st->control;
     GameObject* near;
-    int data;
+    GroundBaddiePlacement* data;
     GameObject* player;
     f32 dist;
     struct
@@ -2081,7 +2081,7 @@ void dbstealerworm_acquireTarget(GameObject* obj, GroundBaddieState* groundState
         f32 d[3];
     } stk;
     stk.range = 100.0f;
-    data = obj->anim.placementDataAddress;
+    data = (GroundBaddiePlacement*)obj->anim.placementDataAddress;
     near = (*gBaddieControlInterface)
                ->findAggroTarget(obj, (void*)baddie, st->aggroRange, 0x8000);
     if (near == 0 && (st->configFlags & 0x10) != 0)
@@ -2089,7 +2089,7 @@ void dbstealerworm_acquireTarget(GameObject* obj, GroundBaddieState* groundState
         near = objGetNearestTypeTo(DBEGG_OBJGROUP, obj, &stk.range);
     }
     if (near == 0 && (st->configFlags & 0x10) != 0 && (st->configFlags & 2) == 0 &&
-        (((GroundBaddiePlacement*)data)->flags & 2) != 0)
+        (data->flags & 2) != 0)
     {
         near = objGetNearestTypeTo(DBEGG_OBJGROUP, obj, 0);
     }
@@ -2185,8 +2185,8 @@ int dbstealerworm_getObjectTypeId(void)
 
 void dbstealerworm_free(GameObject* obj)
 {
-    u8* sub = obj->extra;
-    DbStealerwormControl* p40c = ((GroundBaddieState*)sub)->control;
+    GroundBaddieState* sub = obj->extra;
+    DbStealerwormControl* p40c = sub->control;
     objFreeObjectType((int)obj, DBSTEALERWORM_OBJGROUP);
     Stack_Free(p40c->msgStack);
     if (obj->childObjs[0] != NULL)
@@ -2256,7 +2256,7 @@ void dbstealerworm_update(GameObject* obj)
     GroundBaddiePlacement* data;
     DbStealerwormControl* sub;
     DbWormMsgGroup* grp;
-    int sub3;
+    DbStealerwormControl* sub3;
     int n;
     DbStealerwormControl* sub2;
     GameObject* t;
@@ -2358,11 +2358,11 @@ void dbstealerworm_update(GameObject* obj)
                 }
                 else
                 {
-                    sub3 = (int)blob->control;
+                    sub3 = blob->control;
                     ((void (*)(GameObject*, int))dbstealerworm_processEffectFlags)(obj, (int)blob);
                     (*gBaddieControlInterface)
                         ->updateGravity(obj, (void*)blob, gDbStealerwormGravity[0], -1);
-                    if ((((DbStealerwormControl*)sub3)->flags15 & 4) == 0)
+                    if ((sub3->flags15 & 4) == 0)
                     {
                         (*gPlayerInterface)->rotateTowardTarget((void*)obj, (void*)blob, timeDelta, 4);
                     }

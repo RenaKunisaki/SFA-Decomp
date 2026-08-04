@@ -472,7 +472,7 @@ void Sfx_UpdateLoopedObjectSounds(void)
     u16 index;
     s16 i;
     int index2;
-    u32 obj;
+    GameObject* obj;
     int removeSound;
     u16 sz;
 
@@ -487,8 +487,8 @@ void Sfx_UpdateLoopedObjectSounds(void)
         {
             removeSound = 1;
         }
-        obj = *op;
-        if (((obj != 0) && ((((GameObject*)obj)->objectFlags & SFX_LOOPED_OBJECT_STOP_FLAG) != 0)) || removeSound)
+        obj = (GameObject*)*op;
+        if (((obj != 0) && ((obj->objectFlags & SFX_LOOPED_OBJECT_STOP_FLAG) != 0)) || removeSound)
         {
             Sfx_StopFromObject((GameObject*)obj, *ip);
             gSfxLoopedObjectSoundCount--;

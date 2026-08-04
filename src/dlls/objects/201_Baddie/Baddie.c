@@ -853,11 +853,11 @@ int baddie_spawnRewardDrops(GameObject* obj, int state, int spawnBits, u32 useAl
 
 void baddieInstantiateWeapon(GameObject* obj, EnemyState* state)
 {
-    int parentSetup;
+    BaddieInstantiateWeaponPlacement* parentSetup;
     void* child;
-    int setup;
+    ObjPlacement* setup;
 
-    parentSetup = obj->anim.placementDataAddress;
+    parentSetup = (BaddieInstantiateWeaponPlacement*)obj->anim.placementDataAddress;
     if ((state->spawnedWeaponRomDefNo != state->weaponRomDefNo) && (obj->anim.alpha != 0))
     {
         if (obj->childObjs[0] != NULL)
@@ -870,8 +870,8 @@ void baddieInstantiateWeapon(GameObject* obj, EnemyState* state)
         {
             if (state->weaponRomDefNo > 0)
             {
-                setup = (int)Obj_AllocObjectSetup(0x20, state->weaponRomDefNo);
-                ((ObjPlacement*)setup)->color[1] |= ((BaddieInstantiateWeaponPlacement*)parentSetup)->unk5 & 0x18;
+                setup = Obj_AllocObjectSetup(0x20, state->weaponRomDefNo);
+                setup->color[1] |= parentSetup->unk5 & 0x18;
                 child = objSetupObject((ObjPlacement*)setup, 4, obj->anim.mapEventSlot, -1, obj->anim.parent);
                 ObjLink_AttachChild(obj, child, 0);
                 state->spawnedWeaponRomDefNo = state->weaponRomDefNo;
@@ -2478,7 +2478,7 @@ int enemy_getObjectTypeId(void)
 
 void enemy_free(GameObject* obj, int flag)
 {
-    u8* child;
+    GameObject* child;
     int i;
     int n;
     EnemyState* state;
@@ -2518,7 +2518,7 @@ void enemy_free(GameObject* obj, int flag)
         if (child != NULL)
         {
             ObjLink_DetachChild(obj, (GameObject*)child);
-            if (flag == 0 || (((GameObject*)child)->objectFlags & 0x10) == 0)
+            if (flag == 0 || (child->objectFlags & 0x10) == 0)
             {
                 Obj_FreeObject((GameObject*)child);
             }

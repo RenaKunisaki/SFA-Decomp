@@ -1440,9 +1440,9 @@ void ktrex_func0B(void)
 
 int ktrex_getControlMode(GameObject* obj)
 {
-    void* p = obj->extra;
-    gKTRexRuntime = p;
-    return ((KtrexState*)p)->controlMode;
+    KtrexState* p = obj->extra;
+    gKTRexRuntime = (GroundBaddieState*)p;
+    return p->controlMode;
 }
 
 int ktrex_getExtraSize(void)

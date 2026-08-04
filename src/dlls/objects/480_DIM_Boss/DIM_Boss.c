@@ -314,9 +314,9 @@ int DIMbossAnim_updatePlayerHitReaction(GameObject* obj, BaddieState* runtime) {
     u16 dirSector;
     u16 unused;
     u16 distance;
-    int state;
+    GroundBaddieState* state;
     s16 mode;
-    state = (int)obj->extra;
+    state = obj->extra;
     if (runtime->moveDone != 0 || runtime->moveJustStartedB != 0) {
         (*gBaddieControlInterface)
             ->getTargetGeometry(obj, (GameObject*)runtime->targetObj, 0x10, &dirSector, &unused,
@@ -334,7 +334,7 @@ int DIMbossAnim_updatePlayerHitReaction(GameObject* obj, BaddieState* runtime) {
                 ((*gBaddieControlInterface)->getClearDirectionMask(obj, runtime, 100.0f) & 1)) {
                 (*gPlayerInterface)
                     ->setState(obj, runtime, gDim2LiftFarMoveChoices.surprised[randomGetRange(0, 5)]);
-            } else if (((GroundBaddieState*)state)->flags400 & 4) {
+            } else if (state->flags400 & 4) {
                 (*gPlayerInterface)
                     ->setState(obj, runtime, gDim2LiftFarFlankMoveChoices[randomGetRange(0, 1)]);
             } else {
@@ -1655,7 +1655,7 @@ void DIMboss_update(GameObject* obj) {
     DIMbossTopState* topState;
     DIMbossRuntime* runtime;
     DIMbossPlacementView* config;
-    void* childObject;
+    ObjAnimComponent* childObject;
 
     runtime = obj->extra;
     config = (DIMbossPlacementView*)obj->anim.placementData;
@@ -1725,7 +1725,7 @@ void DIMboss_update(GameObject* obj) {
                 }
                 childObject = obj->childObjs[0];
                 if (childObject != NULL) {
-                    ((ObjAnimComponent*)childObject)->parent = obj->anim.parent;
+                    childObject->parent = obj->anim.parent;
                 }
                 DIMboss_updateCombatState(obj, NULL, runtime, runtime);
                 dll_2E_setLockTarget(&gDIMbossAnimController, (GameObject*)runtime->targetObj);

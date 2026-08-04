@@ -123,7 +123,7 @@ void sh_staff_render(GameObject* obj, int renderArg2, int renderArg3, int render
     int player;
     int i;
     int j;
-    int hazeChild;
+    GameObject* hazeChild;
     f32 dx;
     f32 dy;
     f32 dz;
@@ -273,9 +273,9 @@ void sh_staff_render(GameObject* obj, int renderArg2, int renderArg3, int render
             if (cur2 != bx) {
                 state->hazeFadeTimer = cur2 - timeDelta;
                 if (state->hazeFadeTimer <= bx) {
-                    hazeChild = state->hazeChildren[0];
+                    hazeChild = (GameObject*)state->hazeChildren[0];
                     if ((u32)hazeChild != 0) {
-                        ((GameObject*)hazeChild)->anim.flags |= OBJANIM_FLAG_HIDDEN;
+                        hazeChild->anim.flags |= OBJANIM_FLAG_HIDDEN;
                         state->hazeChildren[0] = 0;
                         state->hazeFadeTimer = bx;
                     }

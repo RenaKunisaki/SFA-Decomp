@@ -303,7 +303,7 @@ int dll_CE_updateAlertState(GameObject* obj, GroundBaddieState* state) {
     int* objects;
     int objectCount;
     int objectIndex;
-    int* playerChild;
+    GameObject* playerChild;
     GameObject* player;
     int childState;
 
@@ -321,9 +321,9 @@ int dll_CE_updateAlertState(GameObject* obj, GroundBaddieState* state) {
                     ->handleMessage(sibling, DLL_CE_MESSAGE_RELEASE, 0);
             }
         }
-        playerChild = (int*)((GameObject*)Obj_GetPlayerObject())->childObjs[0];
+        playerChild = ((GameObject*)Obj_GetPlayerObject())->childObjs[0];
         player = Obj_GetPlayerObject();
-        childState = (*(DllCEStaffInterface**)((GameObject*)playerChild)->anim.dll)
+        childState = (*(DllCEStaffInterface**)playerChild->anim.dll)
                          ->getHitReactValue((GameObject*)playerChild);
         if (childState != 0) {
             if (player->anim.romDefNo != 0) {
@@ -630,9 +630,9 @@ void dll_CE_updateTargeting(GameObject* obj, GroundBaddieState* objectStateAddre
                                 gDllCEHitReactionDamage, 1, &gDllCEHitReactionScratch);
 
     if (hitReactionUpdated != 0) {
-        void* playerChild = player->childObjs[0];
+        GameObject* playerChild = player->childObjs[0];
 
-        (*(DllCEStaffInterface**)((GameObject*)playerChild)->anim.dll)->getSwipeTextureIndex(playerChild);
+        (*(DllCEStaffInterface**)playerChild->anim.dll)->getSwipeTextureIndex(playerChild);
     }
 }
 

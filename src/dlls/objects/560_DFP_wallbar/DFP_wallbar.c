@@ -56,7 +56,7 @@ void chuka_update(GameObject* obj)
     ChukaState* state = obj->extra;
     GameObject* linkedObj;
     int* objList;
-    int candidate;
+    GameObject* candidate;
     int i;
     int height;
     int firstIdx;
@@ -77,10 +77,10 @@ void chuka_update(GameObject* obj)
         objList = ObjList_GetObjects(&firstIdx, &count);
         for (i = firstIdx; i < count; i++)
         {
-            candidate = objList[i];
-            if (((GameObject*)candidate)->anim.romDefNo == DFPWALLBAR_SEQID_CONTROLLER)
+            candidate = (GameObject*)objList[i];
+            if (candidate->anim.romDefNo == DFPWALLBAR_SEQID_CONTROLLER)
             {
-                state->linkedObject = candidate;
+                state->linkedObject = (int)candidate;
                 i = count;
             }
         }

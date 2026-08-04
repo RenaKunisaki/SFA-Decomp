@@ -702,7 +702,7 @@ void curves_updateLocalPointCollision(GameObject* obj, CurvesCollisionState* col
 void curves_preparePointCollisionFrame(int obj, CurvesCollisionState* collision)
 {
     u32 flags;
-    int matrixSource;
+    ObjHitboxTransformState* matrixSource;
     int iv[2];
     u8* wb[1];
     int off[1];
@@ -721,8 +721,8 @@ void curves_preparePointCollisionFrame(int obj, CurvesCollisionState* collision)
             if ((((GameObject*)obj)->anim.parentAnim->hitboxTransformState != NULL) &&
                 (ObjHits_IsObjectEnabled((ObjAnimComponent*)((GameObject*)obj)->anim.parent) != 0))
             {
-                matrixSource = (int)((GameObject*)obj)->anim.parentAnim->hitboxTransformState;
-                matrixOffset = (((ObjHitboxTransformState*)matrixSource)->activeMatrixIndex + 2) * 0x10;
+                matrixSource = ((GameObject*)obj)->anim.parentAnim->hitboxTransformState;
+                matrixOffset = (matrixSource->activeMatrixIndex + 2) * 0x10;
                 Matrix_TransformPoint((f32*)matrixSource + matrixOffset, ((GameObject*)obj)->anim.localPosX,
                                       ((GameObject*)obj)->anim.localPosY, ((GameObject*)obj)->anim.localPosZ,
                                       &((GameObject*)obj)->anim.worldPosX, &((GameObject*)obj)->anim.worldPosY,

@@ -63,7 +63,7 @@ void SB_ShipHead_free(GameObject* obj) {
 
 void SB_ShipHead_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     int damagePhase;
-    int parentObj;
+    GameObject* parentObj;
     SBShipHeadState* state;
     GameObject* object;
     u8 particleIndex;
@@ -73,9 +73,9 @@ void SB_ShipHead_render(GameObject* obj, int renderArg2, int renderArg3, int ren
     if (visible != 0) {
         state = object->extra;
         objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
-        parentObj = object->anim.parentAddress;
-        if ((((void*)parentObj != NULL && (((GameObject*)parentObj)->anim.romDefNo == SB_GALLEON_FIRING_SEQUENCE_ID)) &&
-             (damagePhase = SB_GALLEON_VTBL(parentObj)->getDamagePhase(parentObj), damagePhase != 0)) &&
+        parentObj = (GameObject*)object->anim.parentAddress;
+        if ((((void*)parentObj != NULL && (parentObj->anim.romDefNo == SB_GALLEON_FIRING_SEQUENCE_ID)) &&
+             (damagePhase = SB_GALLEON_VTBL(parentObj)->getDamagePhase((int)parentObj), damagePhase != 0)) &&
             (damagePhase != 2)) {
             state->swayA = state->swayA - timeDelta;
             if (state->swayA <= 0.0f) {
@@ -106,7 +106,7 @@ void SB_ShipHead_update(GameObject* obj) {
     f32 speedScale;
     GameObject* player;
     u8 firingCue;
-    u8* galleon;
+    GameObject* galleon;
     SBShipHeadState* state;
     int galleonPhase;
     int cameraState;
@@ -127,7 +127,7 @@ void SB_ShipHead_update(GameObject* obj) {
     object = obj;
     firingCue = 0;
     player = Obj_GetPlayerObject();
-    galleon = (u8*)object->anim.parent;
+    galleon = object->anim.parent;
     if (galleon == 0) {
         return;
     }
@@ -139,7 +139,7 @@ void SB_ShipHead_update(GameObject* obj) {
             Sfx_StopObjectChannel(obj, SB_SHIP_HEAD_HISS_SFX_CHANNEL);
         }
     }
-    galleonPhase = ((GameObject*)galleon)->userData1;
+    galleonPhase = galleon->userData1;
     state = object->extra;
     if ((void*)state->target == 0) {
         int* objects = ObjList_GetObjects(&objectStart, &objectEnd);

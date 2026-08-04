@@ -312,7 +312,7 @@ void warpstone_loadBaseUi(void) {
 int warpstone_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animObj) {
     WarpStoneState* state = obj->extra;
     int i;
-    int child;
+    GameObject* child;
     u8 command;
     ObjSeqState* animUpdate = animObj;
 
@@ -323,10 +323,10 @@ int warpstone_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animObj) {
         }
     }
 
-    child = (int)state->child;
+    child = state->child;
     if ((void*)child != NULL) {
         ObjAnim_AdvanceCurrentMove(
-            child, obj->anim.currentMoveProgress - ((GameObject*)child)->anim.currentMoveProgress, timeDelta, NULL);
+            (int)child, obj->anim.currentMoveProgress - child->anim.currentMoveProgress, timeDelta, NULL);
     }
 
     animUpdate->conditionCallback = (ObjAnimSequenceConditionCallback)warpstone_testEvent;

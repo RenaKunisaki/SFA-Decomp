@@ -338,7 +338,7 @@ void Rcp_UpdateDistortionTextures(void)
 }
 void ShaderDef_free(int* def)
 {
-    void* s;
+    Texture* s;
     void* p1 = (void*)def[0];
     int i;
     void* p2;
@@ -348,8 +348,8 @@ void ShaderDef_free(int* def)
     {
         for (i = 0; i < 6; i++)
         {
-            s = gRcpDistortSlots[i].texture;
-            if (((Texture*)s)->refCount != 0 && s == p1)
+            s = (Texture*)gRcpDistortSlots[i].texture;
+            if (s->refCount != 0 && s == p1)
             {
                 (((Texture*)gRcpDistortSlots[i].texture)->refCount)--;
                 break;

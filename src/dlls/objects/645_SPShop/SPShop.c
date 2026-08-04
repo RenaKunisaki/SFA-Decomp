@@ -195,13 +195,13 @@ void shop_buyItem(GameObject* obj, int price)
 
     GameObject* player;
     ShopBuyItemState* state;
-    int mapEventState;
+    PlayerStatus* mapEventState;
     u8* items;
     s16 boughtBit;
 
     player = (GameObject*)Obj_GetPlayerObject();
     state = obj->extra;
-    mapEventState = (int)(*gMapEventInterface)->getCurCharacterState();
+    mapEventState = (*gMapEventInterface)->getCurCharacterState();
     playerAddMoney(player, -price);
 
     switch (state->itemIndex)
@@ -210,7 +210,7 @@ void shop_buyItem(GameObject* obj, int price)
         playerAddHealth(player, 2);
         break;
     case SHOP_ITEM_BAFOMDAD_HOLDER:
-        ((PlayerStatus*)mapEventState)->healCountMax = 10;
+        mapEventState->healCountMax = 10;
         break;
     case SHOP_ITEM_DUMBLEDANG_POD_4X:
         playerAddHealth(player, 8);

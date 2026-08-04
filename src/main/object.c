@@ -2430,7 +2430,7 @@ void Obj_UpdateModelBlendStates(void)
     int i;
     int j;
     GameObject* obj;
-    u8* child;
+    GameObject* child;
     ObjModel* m;
     GameObject* c0;
     u8* bp;
@@ -2464,7 +2464,7 @@ void Obj_UpdateModelBlendStates(void)
             j = 0;
             for (; j < obj->childCount; j++)
             {
-                child = (u8*)obj->childObjs[j];
+                child = obj->childObjs[j];
                 childAnim = (ObjAnimComponent*)child;
                 if (child != 0 && childAnim->modelInstance != NULL)
                 {
@@ -2477,7 +2477,7 @@ void Obj_UpdateModelBlendStates(void)
                             m->bufferFlags &= ~8;
                             if (m->file->morphTargetCount != 0)
                             {
-                                c0 = (GameObject*)(((GameObject*)child)->pendingParentObj);
+                                c0 = (GameObject*)(child->pendingParentObj);
                                 if (c0 != 0)
                                 {
                                     bp = (u8*)c0->extra;

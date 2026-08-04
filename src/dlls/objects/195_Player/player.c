@@ -572,7 +572,7 @@ void playerUpdatePathEffectCountdown(GameObject* obj, int inner)
 int playerStopRidingObject(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
-    int sub;
+    GameObject* sub;
 
     if ((void*)obj == NULL)
     {
@@ -581,10 +581,10 @@ int playerStopRidingObject(GameObject* obj)
     (*gCameraInterface)->loadTriggeredCamAction(0, 1, 0);
     (*gObjectTriggerInterface)->setCamVars(0x42, 4, 0, 0);
 
-    sub = (int)inner->focusObject;
+    sub = inner->focusObject;
     if ((void*)sub != NULL)
     {
-        (*(void (**)(int, int))((char*)*((GameObject*)sub)->anim.dll + 0x3c))(sub, VEHICLE_NoRider);
+        (*(void (**)(int, int))((char*)*sub->anim.dll + 0x3c))((int)sub, VEHICLE_NoRider);
         (*gCameraInterface)->setFocus((void*)obj, 0);
         obj->anim.flags &= ~8;
         obj->anim.modelState->flags &= ~OBJ_MODEL_STATE_SHADOW_FADE_OUT;
@@ -1298,7 +1298,7 @@ int playerGetStateValue(GameObject* obj, int sel)
 
 void objSetPos(GameObject* obj, f32 x, f32 y, f32 z)
 {
-    int inner = (int)obj->extra;
+    PlayerState* inner = obj->extra;
     obj->anim.previousWorldPosX = x;
     obj->anim.previousLocalPosX = x;
     obj->anim.worldPosX = x;
@@ -1311,9 +1311,9 @@ void objSetPos(GameObject* obj, f32 x, f32 y, f32 z)
     obj->anim.previousLocalPosZ = z;
     obj->anim.worldPosZ = z;
     obj->anim.localPosZ = z;
-    playerRefreshCollisionState(obj, inner, 7);
+    playerRefreshCollisionState(obj, (int)inner, 7);
     (*gPlayerInterface)->setState(obj, (void*)inner, 1);
-    ((PlayerState*)inner)->baddie.stateExitFn = (BaddieStateExitFn)playerStagedRestoreDefaultControl;
+    inner->baddie.stateExitFn = (BaddieStateExitFn)playerStagedRestoreDefaultControl;
 }
 
 int objIsCurModelNotZero(void* obj)
@@ -2056,10 +2056,10 @@ void playerCancelSpell(GameObject* obj, int p2)
 
 int objGetAnimState80A(GameObject* obj)
 {
-    void* inner = obj->extra;
+    PlayerState* inner = obj->extra;
     if (inner != NULL)
     {
-        return ((PlayerState*)inner)->animState;
+        return inner->animState;
     }
     return 0;
 }
@@ -2402,7 +2402,7 @@ int playerState41(GameObject* obj, int state, f32 fv)
     ((PlayerState*)state)->baddie.flags0 |= 0x200000;
     if (0.0f == inner->verticalVel)
     {
-        void* sub;
+        GameObject* sub;
         inner->flags3F0.b80 = 0;
         inner->flags3F0.b10 = 0;
         inner->flags3F0.b08 = 0;
@@ -2417,7 +2417,7 @@ int playerState41(GameObject* obj, int state, f32 fv)
         sub = inner->heldObj;
         if (sub != NULL)
         {
-            s16 id = ((GameObject*)sub)->anim.romDefNo;
+            s16 id = sub->anim.romDefNo;
             if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
             {
                 SmallBasket_throw((GameObject*)sub);
@@ -5778,7 +5778,7 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
     int* tblB;
     GameObject* self = (GameObject*)obj;
     PlayerState* inner = self->extra;
-    int sub;
+    GameObject* sub;
     int nextMove = -1;
     int doXform = 1;
     int camCall = 0;
@@ -5836,7 +5836,7 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
         state->baddie.animSpeedA = z;
         state->baddie.animSpeedB = z;
     }
-    sub = inner->contactObject;
+    sub = (GameObject*)inner->contactObject;
     switch (self->anim.currentMove)
     {
     case 0x5f:
@@ -5995,8 +5995,8 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
                 a = inner->stickTargetX;
                 b = inner->stickTargetY;
             }
-            res = (*(u8 (*)(int, int, int, f32, f32))(*(int*)((char*)((GameObject*)sub)->anim.dll[0] + 0x20)))(
-                sub, obj, direction, a, b);
+            res = (*(u8 (*)(int, int, int, f32, f32))(*(int*)((char*)sub->anim.dll[0] + 0x20)))(
+                (int)sub, obj, direction, a, b);
             if (res == 1)
             {
                 inner->latchedStickDir = 1;
@@ -6314,7 +6314,7 @@ int playerState1B(GameObject* obj, int state, f32 fv)
 int playerStateOnCloudRunner(GameObject* obj, int state)
 {
     PlayerState* inner = obj->extra;
-    void* sub;
+    GameObject* sub;
     f32 aimInputX, aimInputZ;
     f32 k;
     int res, halfH, halfW;
@@ -6335,7 +6335,7 @@ int playerStateOnCloudRunner(GameObject* obj, int state)
     }
     else
     {
-        if (((GameObject*)sub)->anim.romDefNo != 0x714)
+        if (sub->anim.romDefNo != 0x714)
         {
             ObjHits_DisableObject(obj);
         }
@@ -6379,13 +6379,13 @@ int playerStateOnCloudRunner(GameObject* obj, int state)
     }
     {
         f32 c;
-        void* hit;
+        GameObject* hit;
         c = (((PlayerState*)state)->baddie.moveInputZ / 56.0f) < -1.5f ? -1.5f
             : (((PlayerState*)state)->baddie.moveInputZ / 56.0f) > 1.5f
                 ? 1.5f
                 : ((PlayerState*)state)->baddie.moveInputZ / 56.0f;
         hit = inner->focusObject;
-        if (hit != NULL && ((GameObject*)hit)->anim.romDefNo == 0x484)
+        if (hit != NULL && hit->anim.romDefNo == 0x484)
         {
             c = c + lbl_803DC6E0;
         }
@@ -7735,7 +7735,7 @@ int playerStateSlideDownLadder(GameObject* obj, int state, f32 fv)
                 else
                 {
                     f32 zero = 0.0f;
-                    void* sub;
+                    GameObject* sub;
                     ((PlayerState*)state)->baddie.animSpeedC = zero;
                     ((PlayerState*)state)->baddie.animSpeedB = zero;
                     ((PlayerState*)state)->baddie.animSpeedA = zero;
@@ -7757,7 +7757,7 @@ int playerStateSlideDownLadder(GameObject* obj, int state, f32 fv)
                     sub = inner->heldObj;
                     if (sub != NULL)
                     {
-                        s16 id = ((GameObject*)sub)->anim.romDefNo;
+                        s16 id = sub->anim.romDefNo;
                         if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                         {
                             SmallBasket_throw((GameObject*)sub);
@@ -8933,7 +8933,7 @@ int playerStateGrabLedge(GameObject* obj, int state)
     f32 fz;
     if (((PlayerState*)state)->baddie.moveJustStartedA != 0)
     {
-        void* sub;
+        GameObject* sub;
         Sfx_PlayFromObject(obj,
                            (u16)(inner->characterId == 0 ? SFXTRIG_foxcom_heel : SFXTRIG_sa_def01));
         ((PlayerState*)state)->baddie.stateId = 0xa;
@@ -8942,7 +8942,7 @@ int playerStateGrabLedge(GameObject* obj, int state)
         sub = inner->heldObj;
         if (sub != NULL)
         {
-            s16 id = ((GameObject*)sub)->anim.romDefNo;
+            s16 id = sub->anim.romDefNo;
             if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
             {
                 SmallBasket_throw((GameObject*)sub);
@@ -9490,10 +9490,10 @@ int playerStateThrowing(GameObject* obj, int state)
 void playerStagedMarkTeleported(GameObject* obj)
 {
     PlayerState* inner = obj->extra;
-    void* p = inner->heldObj;
+    GameObject* p = inner->heldObj;
     if (p != NULL)
     {
-        ((GameObject*)p)->userData2 = 1;
+        p->userData2 = 1;
     }
     inner->flags360 |= PLAYER_FLAG_TELEPORTED;
 }
@@ -9703,12 +9703,12 @@ void playerStagedRestoreDefaultControl(GameObject* obj, int state)
         s16 mode = ((PlayerState*)state)->baddie.controlMode;
         if (mode != 2 && mode != 1 && mode != 5 && mode != 7 && mode != 6)
         {
-            void* sub;
+            GameObject* sub;
             inner->isHoldingObject = 0;
             sub = inner->heldObj;
             if (sub != NULL)
             {
-                s16 id = ((GameObject*)sub)->anim.romDefNo;
+                s16 id = sub->anim.romDefNo;
                 if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                 {
                     SmallBasket_throw((GameObject*)sub);
@@ -12203,7 +12203,7 @@ void playerSyncTransformToFocusObject(int p1, int p2, int p3, int p4, int p5, in
     int d, e, flag;
     s16 angle;
     int clamped;
-    int inner;
+    PlayerState* inner;
     if (p8 != 0)
     {
         vec = (void*)objFindJointPoseVector((GameObject*)(p1), 0);
@@ -12239,8 +12239,8 @@ void playerSyncTransformToFocusObject(int p1, int p2, int p3, int p4, int p5, in
     ((GameObject*)p1)->anim.localPosX = a;
     ((GameObject*)p1)->anim.localPosY = b;
     ((GameObject*)p1)->anim.localPosZ = c;
-    inner = (int)((GameObject*)p1)->extra;
-    if (((PlayerState*)inner)->baddie.controlMode != 0x18 &&
+    inner = ((GameObject*)p1)->extra;
+    if (inner->baddie.controlMode != 0x18 &&
         (((GameObject*)p1)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0)
     {
         flag = 1;
@@ -13926,7 +13926,7 @@ int playerUpdateFallingMotion(GameObject* obj, int inner, int p3)
     if (obj->anim.worldPosY <= ((PlayerState*)inner)->fallThresholdY ||
         ((((PlayerState*)p3)->baddie.surfaceFlags & 2) && (((PlayerState*)p3)->baddie.surfaceFlags & 0x20) == 0) || ((PlayerState*)p3)->baddie.groundContact != 0)
     {
-        void* sub;
+        GameObject* sub;
         ((PlayerState*)inner)->flags3F0.b80 = 0;
         ((PlayerState*)inner)->flags3F0.b10 = 0;
         ((PlayerState*)inner)->flags3F0.b08 = 0;
@@ -13941,7 +13941,7 @@ int playerUpdateFallingMotion(GameObject* obj, int inner, int p3)
         sub = ((PlayerState*)inner)->heldObj;
         if (sub != NULL)
         {
-            s16 id = ((GameObject*)sub)->anim.romDefNo;
+            s16 id = sub->anim.romDefNo;
             if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
             {
                 SmallBasket_throw((GameObject*)sub);
@@ -14370,10 +14370,10 @@ void playerStartWallTransition(GameObject* obj, int inner, int state)
     }
     ((PlayerState*)inner)->isHoldingObject = 0;
     {
-        void* sub = ((PlayerState*)inner)->heldObj;
+        GameObject* sub = ((PlayerState*)inner)->heldObj;
         if (sub != NULL)
         {
-            s16 id = ((GameObject*)sub)->anim.romDefNo;
+            s16 id = sub->anim.romDefNo;
             if (id == SMALLBASKET_SEQUENCE_VARIANT_A || id == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
             {
                 SmallBasket_throw((GameObject*)sub);
@@ -16105,8 +16105,8 @@ void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt)
             if (1 < iv &&
                 (velMag = velMag + (nearList[0]->height - nearList[iv - 1]->height), velMag > 25.0f))
             {
-                int inner;
-                PlayerStatus* p = (PlayerStatus*)((PlayerState*)(inner = (int)obj->extra))->playerStatus;
+                PlayerState* inner;
+                PlayerStatus* p = (PlayerStatus*)((PlayerState*)(inner = obj->extra))->playerStatus;
                 iv = p->health;
                 iv = iv - 1;
                 if (iv < 0)
@@ -16118,7 +16118,7 @@ void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt)
                     iv = p->maxHealth;
                 }
                 p->health = (s8)iv;
-                if (((PlayerStatus*)((PlayerState*)inner)->playerStatus)->health <= 0)
+                if (((PlayerStatus*)inner->playerStatus)->health <= 0)
                 {
                     playerDie(obj);
                 }
@@ -17107,10 +17107,10 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                 {
                     ((PlayerState*)va)->isHoldingObject = 0;
                     {
-                        int p17 = (int)((PlayerState*)va)->heldObj;
+                        GameObject* p17 = ((PlayerState*)va)->heldObj;
                         if ((u32)p17 != 0)
                         {
-                            s16 romDefNo = ((GameObject*)p17)->anim.romDefNo;
+                            s16 romDefNo = p17->anim.romDefNo;
                             if (romDefNo == SMALLBASKET_SEQUENCE_VARIANT_A || romDefNo == SMALLBASKET_SEQUENCE_DISGUISE_GATED)
                             {
                                 SmallBasket_throw((GameObject*)(p17));
@@ -17882,9 +17882,9 @@ void playerDoHitDetection(int obj)
         }
         if ((((PlayerState*)inner)->flags360 & 2) != 0)
         {
-            void* h = *(void**)((char*)inner + 0xdc);
+            ObjAnimComponent* h = *(void**)((char*)inner + 0xdc);
             if (h != NULL &&
-                ((fl = ((ObjAnimComponent*)h)->modelInstance->flags) & OBJMODEL_FLAG_SKIP_RESET_UPDATE) != 0 &&
+                ((fl = h->modelInstance->flags) & OBJMODEL_FLAG_SKIP_RESET_UPDATE) != 0 &&
                 (fl & 0x8000) == 0)
             {
                 Obj_SetParent((GameObject*)obj, (GameObject*)h, 1);
@@ -18324,7 +18324,7 @@ void objLoadPlayerFromSave(int obj)
     PlayerState* inner = ((GameObject*)obj)->extra;
     int i;
     f32 fz;
-    int me;
+    SaveGameCharacterPosition* me;
     u8* pathState;
 
     gPlayerHitReactionVariant = 0;
@@ -18338,8 +18338,8 @@ void objLoadPlayerFromSave(int obj)
     inner->playerStatus = (int)(*gMapEventInterface)->getCurCharacterState();
     *(u16*)&inner->characterId = (*gMapEventInterface)->getCurChar();
     Obj_SetActiveModelIndex((GameObject*)obj, inner->characterId);
-    me = (int)(*gMapEventInterface)->getCurCharPos();
-    ((GameObject*)obj)->anim.rotX = (s16)(((SaveGameCharacterPosition*)me)->angle << 8);
+    me = (SaveGameCharacterPosition*)(*gMapEventInterface)->getCurCharPos();
+    ((GameObject*)obj)->anim.rotX = (s16)(me->angle << 8);
     inner->targetYaw = ((GameObject*)obj)->anim.rotX;
     inner->yaw = ((GameObject*)obj)->anim.rotX;
     inner->lastInputHeading = ((GameObject*)obj)->anim.rotX;

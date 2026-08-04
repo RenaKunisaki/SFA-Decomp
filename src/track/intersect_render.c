@@ -1522,11 +1522,11 @@ int moonFxRenderCallback(u8* obj, int* objB, int slot)
     GXColor colorK;
     GXColor colorFog;
     Mtx mtx;
-    int op;
+    Shader* op;
     Texture* tex;
     f32 tx;
 
-    op = (int)ObjModel_GetRenderOp((ModelFileHeader*)objB[0], slot);
+    op = ObjModel_GetRenderOp((ModelFileHeader*)objB[0], slot);
     tex = (Texture*)textureIdxToPtr(*(int*)Shader_getLayer((void*)op, 0));
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     gMoonFxDayNo = mainGetBit(0x2ba);
@@ -1538,7 +1538,7 @@ int moonFxRenderCallback(u8* obj, int* objB, int slot)
     GXSetNumTevStages(3);
     GXSetNumIndStages(0);
     selectTexture(tex, 0);
-    colorK.a = (((Shader*)op)->alpha * obj[0x37]) >> 8;
+    colorK.a = (op->alpha * obj[0x37]) >> 8;
     GXSetTevKColor(GX_KCOLOR0, colorK);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
     GXSetTevDirect(GX_TEVSTAGE0);

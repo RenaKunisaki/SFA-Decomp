@@ -71,14 +71,14 @@ void DFP_Floorbar_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis
 
 void DFP_Floorbar_hitDetect(GameObject* obj)
 {
-    int* linkedObject;
+    GameObject* linkedObject;
     int** state;
     s32 hitFlag;
     state = (int**)(int)obj->extra;
-    linkedObject = state[2];
+    linkedObject = (GameObject*)state[2];
     if (linkedObject == NULL)
         return;
-    hitFlag = ((GameObject*)linkedObject)->anim.flags & 0x40;
+    hitFlag = linkedObject->anim.flags & 0x40;
     if (hitFlag == 0)
         return;
     state[2] = NULL;

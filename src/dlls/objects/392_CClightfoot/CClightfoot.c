@@ -206,7 +206,7 @@ void ccLightfoot_update(GameObject* obj) {
     GameObject* targetObject;
     s16 targetAngle;
     GameObject* candidateTarget;
-    u32 targetActorAHandle;
+    GameObject* targetActorAHandle;
     u32 farTarget;
     u32 nearTarget;
     s16 angleDifference;
@@ -227,13 +227,13 @@ void ccLightfoot_update(GameObject* obj) {
     } else {
         obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
     }
-    targetActorAHandle = (u32)state->targetActorA;
+    targetActorAHandle = state->targetActorA;
     if (targetActorAHandle != 0) {
         do {
             if (!(enemy_getHealthFraction((GameObject*)targetActorAHandle) > 0.0f)) {
                 targetValid = 0;
             } else {
-                targetValid = mainGetBit(((GameObject*)targetActorAHandle)->anim.placementData[0xC]) != 0 ? 0 : 1;
+                targetValid = mainGetBit(targetActorAHandle->anim.placementData[0xC]) != 0 ? 0 : 1;
             }
             if (targetValid != 0) {
                 candidateTarget = state->targetActorB;

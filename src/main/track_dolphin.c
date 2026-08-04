@@ -3416,7 +3416,7 @@ void trackIntersectBroadphase(GameObject* obj, TrackQueryBounds* ranges, u32 que
             {
                 ObjHitsPriorityState* hitState;
                 ObjHitboxTransformState* transformState;
-                int hdr;
+                ModelFileHeader* hdr;
                 f32 r, c;
 
                 resetObj = *resetObjects;
@@ -3435,8 +3435,8 @@ void trackIntersectBroadphase(GameObject* obj, TrackQueryBounds* ranges, u32 que
                 model = (int*)resetObj->banks[(s8)hitState->stateIndex];
                 if (model == NULL)
                     continue;
-                hdr = *model;
-                if (((ModelFileHeader*)hdr)->collisionBlockCount == 0)
+                hdr = (ModelFileHeader*)*model;
+                if (hdr->collisionBlockCount == 0)
                     continue;
                 r = (f32)(u32)modelFileHeaderGetCullDistance((ModelFileHeader*)hdr);
                 c = resetObj->worldPosX;
