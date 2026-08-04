@@ -243,7 +243,7 @@ void dll_7C_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* s
     packet.initialStateByte = 0xe;
     packet.byte5A = 0;
     packet.textureFrameTimer = 0xa;
-    packet.commandCount = (GfxCmd*)((u8*)commandCursor + 0x150) - commands;
+    packet.commandCount = (GfxCmd*)((u8*)commandCursor + sizeof(GfxCmd) * 14) - commands;
     packet.sequenceParams[0] = *(s16*)&resourceData[offsetof(Dll7CEffectResourceView, sequenceParams[0])];
     packet.sequenceParams[1] = *(s16*)&resourceData[offsetof(Dll7CEffectResourceView, sequenceParams[1])];
     packet.sequenceParams[2] = *(s16*)&resourceData[offsetof(Dll7CEffectResourceView, sequenceParams[2])];

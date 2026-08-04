@@ -254,7 +254,7 @@ s16 dll_81_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* sp
     packet.initialStateByte = 0xe;
     packet.byte5A = 0;
     packet.textureFrameTimer = 0xa;
-    packet.commandCount = (GfxCmd*)((u8*)commandCursor + 0x30) - commands;
+    packet.commandCount = (GfxCmd*)((u8*)commandCursor + sizeof(GfxCmd) * 2) - commands;
     packet.sequenceParams[0] = *(s16*)&resourceData[offsetof(Dll81EffectResourceView, sequenceParams[0])];
     packet.sequenceParams[1] = *(s16*)&resourceData[offsetof(Dll81EffectResourceView, sequenceParams[1])];
     packet.sequenceParams[2] = *(s16*)&resourceData[offsetof(Dll81EffectResourceView, sequenceParams[2])];
