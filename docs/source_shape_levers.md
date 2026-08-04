@@ -1016,3 +1016,18 @@ context, or fragment mirage. Worth knowing before anyone re-derives it:
 - `docs/rename_safety.md` — the rename gate and the stale-object race.
 - `docs/per_tu_flag_evidence.md` — per-TU flag measurements, for whoever adjudicates them.
 - `CLAUDE.md` "A few MWCC facts" — the high-frequency codegen rules this file builds on.
+
+
+## Addendum 2026-08-03: the saved-band model completes, and one core-law correction
+
+Layer 3 (within-class home priority) is closed by a 1,232-example supervised search plus synthetic
+morph probes: no feature-level law exists (best rule 78.3% against a 73.2% base); the orientation is
+function-local and deterministic but shifts with the internal lowering of individual expressions
+(signed vs unsigned modulo, function-address vs constant materialisation) while staying robust to
+whole-statement edits. Measure, do not predict. Probe artifacts in the session scratchpad
+(`layer3_*`, `layer3_probes/`).
+
+Correction to the band law as commonly quoted: "copy class takes the top band block" holds reliably
+for call-return copies only. A param copy competing with load-class webs sits at the band BOTTOM in
+73% of corpus functions, profile-invariant. Treat P and R as distinct populations when reading a
+band fingerprint.
