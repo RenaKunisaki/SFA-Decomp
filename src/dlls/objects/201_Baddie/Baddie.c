@@ -2585,16 +2585,16 @@ void enemy_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 
 void enemy_hitDetect(GameObject* obj)
 {
-    u8* state = obj->extra;
+    EnemyState* state = obj->extra;
     ObjHitsPriorityState* childHitState;
 
-    if (((EnemyState*)state)->modelLight != NULL &&
-        modelLightStruct_getActiveState(((EnemyState*)state)->modelLight) == 0)
+    if (state->modelLight != NULL &&
+        modelLightStruct_getActiveState(state->modelLight) == 0)
     {
-        ModelLightStruct_free(((EnemyState*)state)->modelLight);
-        ((EnemyState*)state)->modelLight = NULL;
+        ModelLightStruct_free(state->modelLight);
+        state->modelLight = NULL;
     }
-    ((EnemyState*)state)->lastHitObject = ((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject;
+    state->lastHitObject = ((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject;
     if (((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject != 0)
     {
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->suppressOutgoingHits = 1;
@@ -2604,9 +2604,9 @@ void enemy_hitDetect(GameObject* obj)
     {
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->suppressOutgoingHits = 1;
     }
-    if (((EnemyState*)state)->tailSimHandle != NULL)
+    if (state->tailSimHandle != NULL)
     {
-        ObjModelChain_AdvancePhase((ObjModelChain*)((EnemyState*)state)->tailSimHandle);
+        ObjModelChain_AdvancePhase((ObjModelChain*)state->tailSimHandle);
     }
 }
 

@@ -734,7 +734,7 @@ void SH_LevelControl_update(GameObject* obj) {
 }
 
 void SH_LevelControl_init(GameObject* obj) {
-    int* state = obj->extra;
+    ShLevelControlState* state = obj->extra;
     int i;
     u32 objectFlags;
 
@@ -749,16 +749,16 @@ void SH_LevelControl_init(GameObject* obj) {
         obj->userData1 = 1;
     }
 
-    ((ShLevelControlState*)state)->dayNightMusicLatch = -1;
-    ((ShLevelControlState*)state)->hudTextTimer = 300.0f;
+    state->dayNightMusicLatch = -1;
+    state->hudTextTimer = 300.0f;
 
     if (mainGetBit(GAMEBIT_ITEM_MMPKey_Got) != 0) {
-        ((ShLevelControlState*)state)->flags |= SH_LEVELCONTROL_FLAG_THORNTAIL_TRIGGERED;
+        state->flags |= SH_LEVELCONTROL_FLAG_THORNTAIL_TRIGGERED;
     }
 
-    ((ShLevelControlState*)state)->mapAct = (*gMapEventInterface)->getMapAct((int)obj->anim.mapEventSlot);
+    state->mapAct = (*gMapEventInterface)->getMapAct((int)obj->anim.mapEventSlot);
 
-    ((ShLevelControlState*)state)->musicLatch = -1;
+    state->musicLatch = -1;
     Music_Trigger(MUSICTRIG_fox_arwing, 0);
     Music_Trigger(MUSICTRIG_Barrels, 0);
     Music_Trigger(MUSICTRIG_PU3_Adventure_b2, 0);

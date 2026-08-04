@@ -189,12 +189,12 @@ void staffUpdateAttackEffects(GameObject* obj, GameObject* player) {
     f32 chargeLevel;
     f32 chargeRatio;
     f32* effectOffsets;
-    u8* staffState = obj->extra;
+    StaffState* staffState = obj->extra;
     if (obj == NULL || player == NULL) {
         return;
     }
     {
-        if (((StaffState*)staffState)->glowEnable != 0) {
+        if (staffState->glowEnable != 0) {
             f32 burstScale;
             if (playerIsStaffActionPending(player) != 0) {
                 chargeLevel = 1.0f;
@@ -203,13 +203,13 @@ void staffUpdateAttackEffects(GameObject* obj, GameObject* player) {
                 chargeLevel = 0.25f;
                 burstScale = 0.4f;
             }
-            if (((StaffState*)staffState)->glowAttackType == 7) {
-                objfx_spawnArcedBurst(obj, ((StaffState*)staffState)->glowAttackType, 0.5f,
-                                      ((StaffState*)staffState)->glowEnable, 1, (int)(30.0f * burstScale), 0.5f, 0.5f,
+            if (staffState->glowAttackType == 7) {
+                objfx_spawnArcedBurst(obj, staffState->glowAttackType, 0.5f,
+                                      staffState->glowEnable, 1, (int)(30.0f * burstScale), 0.5f, 0.5f,
                                       45.0f * chargeLevel, NULL, 0);
             } else {
-                objfx_spawnArcedBurst(obj, ((StaffState*)staffState)->glowAttackType, 1.0f,
-                                      ((StaffState*)staffState)->glowEnable, 1, (int)(30.0f * burstScale), 1.0f, 1.0f,
+                objfx_spawnArcedBurst(obj, staffState->glowAttackType, 1.0f,
+                                      staffState->glowEnable, 1, (int)(30.0f * burstScale), 1.0f, 1.0f,
                                       45.0f * chargeLevel, NULL, 0);
             }
         }
@@ -359,9 +359,9 @@ void staffUpdateAttackEffects(GameObject* obj, GameObject* player) {
     }
 }
 void staffSetGlow(GameObject* obj, u8 attackType, u8 enable) {
-    u8* state = obj->extra;
-    ((StaffState*)state)->glowAttackType = attackType;
-    ((StaffState*)state)->glowEnable = enable;
+    StaffState* state = obj->extra;
+    state->glowAttackType = attackType;
+    state->glowEnable = enable;
 }
 
 static void staffUpdateQuakeSpell(void) {

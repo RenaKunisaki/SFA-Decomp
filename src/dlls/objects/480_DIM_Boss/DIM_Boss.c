@@ -432,7 +432,7 @@ int DIMbossHitDetect_tonsilSlam(GameObject* obj, BaddieState* runtime) {
 }
 
 int DIMbossHitDetect_liftSlam(GameObject* obj, BaddieState* runtime) {
-    int state = (int)obj->extra;
+    GroundBaddieState* state = obj->extra;
     if (runtime->moveJustStartedA != 0) {
         f32 animSpeed;
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_2000;
@@ -448,8 +448,8 @@ int DIMbossHitDetect_liftSlam(GameObject* obj, BaddieState* runtime) {
             ObjAnim_SetCurrentMove((int)obj, 0xe, animSpeed, 0);
             runtime->moveDone = 0;
         }
-        if (((GroundBaddieState*)state)->targetState == 1) {
-            *(f32*)((int)((GroundBaddieState*)state)->control + 0xa8) = 780.0f;
+        if (state->targetState == 1) {
+            *(f32*)((int)state->control + 0xa8) = 780.0f;
         }
     }
     (*gPlayerInterface)->playSoundOnEvent0F(obj, runtime, 0, 1, lbl_803DBF30);

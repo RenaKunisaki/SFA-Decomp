@@ -1008,7 +1008,7 @@ void iceBaddie_updateTargetMotion(GameObject* obj, GroundBaddieState* objectStat
 }
 
 void iceBaddie_updateTargetCollision(GameObject* obj, int stateAddress, GroundBaddieState* state) {
-    int controlAddress = (int)((GroundBaddieState*)stateAddress)->control;
+    IceBaddieControl* controlAddress = ((GroundBaddieState*)stateAddress)->control;
     GameObject* target;
     int hitInfo[7];
     f32 targetDelta[3];
@@ -1031,21 +1031,21 @@ void iceBaddie_updateTargetCollision(GameObject* obj, int stateAddress, GroundBa
     (*gBaddieControlInterface)
         ->processMessages(obj, state, (void*)(stateAddress + 0x35c), ((GroundBaddieState*)stateAddress)->gameBitB, NULL,
                           0, 0, 8);
-    ((IceBaddieControl*)controlAddress)->hitTimer += timeDelta;
+    controlAddress->hitTimer += timeDelta;
     if (state->baddie.controlMode != 3 &&
         (*gBaddieControlInterface)
                 ->updateHitReaction(obj, state, &((GroundBaddieState*)stateAddress)->routeNav,
                                     ((GroundBaddieState*)stateAddress)->gameBitB, gIceBaddieHitReactionMoves,
                                     gIceBaddieHitReactionDamage, 1, hitInfo) != 0) {
-        if (((IceBaddieControl*)controlAddress)->hitTimer < 240.0f) {
-            ((IceBaddieControl*)controlAddress)->consecutiveHitCount += 1;
+        if (controlAddress->hitTimer < 240.0f) {
+            controlAddress->consecutiveHitCount += 1;
         } else {
-            ((IceBaddieControl*)controlAddress)->consecutiveHitCount = 0;
+            controlAddress->consecutiveHitCount = 0;
         }
-        ((IceBaddieControl*)controlAddress)->hitTimer = 0.0f;
-        if (state->baddie.hitPoints > 0 && ((IceBaddieControl*)controlAddress)->consecutiveHitCount >= 2) {
+        controlAddress->hitTimer = 0.0f;
+        if (state->baddie.hitPoints > 0 && controlAddress->consecutiveHitCount >= 2) {
             (*gPlayerInterface)->setState(obj, state, 3);
-            ((IceBaddieControl*)controlAddress)->consecutiveHitCount = 0;
+            controlAddress->consecutiveHitCount = 0;
             state->baddie.substate = 5;
         }
     }

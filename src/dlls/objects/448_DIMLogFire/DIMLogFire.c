@@ -108,8 +108,8 @@ void DIMLogFire_render(GameObject* obj, int renderArg2, int renderArg3, int rend
         state = obj->extra;
         subObject = (int*)state->subObject;
         if (subObject != NULL) {
-            int* model = (int*)((ObjAnimComponent*)subObject)->banks[((ObjAnimComponent*)subObject)->bankIndex];
-            ((ObjModel*)model)->bufferFlags = (u16)(((ObjModel*)model)->bufferFlags & ~0x8);
+            ObjModel* model = (ObjModel*)((ObjAnimComponent*)subObject)->banks[((ObjAnimComponent*)subObject)->bankIndex];
+            model->bufferFlags = (u16)(model->bufferFlags & ~0x8);
             ((GameObject*)state->subObject)->anim.renderAlpha = obj->anim.renderAlpha;
             objRenderModelAndHitVolumes((GameObject*)state->subObject, renderArg2, renderArg3, renderArg4, renderArg5,
                                         1.0f);

@@ -83,7 +83,7 @@ void dimbossgut2_updateTracking(GameObject* obj, DimBossGut2State* state) {
     s16 angle;
     int angleMag;
     f32 angleScale;
-    int player;
+    GameObject* player;
     int rel;
 
     control = state->groundBaddie.control;
@@ -123,9 +123,9 @@ void dimbossgut2_updateTracking(GameObject* obj, DimBossGut2State* state) {
         obj->anim.localPosX = pathWalker->posX;
         obj->anim.localPosZ = pathWalker->posZ;
     } else {
-        player = (int)Obj_GetPlayerObject();
-        rel = (int)(u16)getAngle(-(((GameObject*)player)->anim.worldPosX - obj->anim.worldPosX),
-                                 -(((GameObject*)player)->anim.worldPosZ - obj->anim.worldPosZ)) -
+        player = Obj_GetPlayerObject();
+        rel = (int)(u16)getAngle(-(player->anim.worldPosX - obj->anim.worldPosX),
+                                 -(player->anim.worldPosZ - obj->anim.worldPosZ)) -
               (int)(u16)obj->anim.rotX;
         if (rel > 0x8000) {
             rel = rel - 0xffff;
