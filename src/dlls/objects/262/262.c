@@ -476,8 +476,7 @@ void Scarab_update(GameObject* obj) {
                                           &groundHits, 1, 0);
                 for (hitIndex = 0; hitIndex < hitCount; hitIndex++) {
                     deltaY = groundHits[hitIndex]->height - obj->anim.localPosY;
-                    if (deltaY > gScarabMaxGroundHeightDelta) {
-                    } else {
+                    if (!(deltaY > gScarabMaxGroundHeightDelta)) {
                         deltaY = (deltaY >= 0.0f) ? deltaY : -deltaY;
                         if (deltaY < bestDistance) {
                             bestGroundHitIndex = hitIndex;

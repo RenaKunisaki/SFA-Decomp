@@ -235,9 +235,8 @@ void cfPrisonGuard_update(GameObject* obj) {
     }
     if (hasPrisonKey == 0) {
         if (state->stateId != CFPRISONGUARD_STATE_ALERT) {
-            if (distance < (f32)(s32)placement->watchRadius) {
-                /* Player proximity is sufficient to continue into the alert check. */
-            } else if (waterfx_consumePendingImpactNearPoint(&obj->anim.localPosX, 600.0f) == 0) {
+            if (!(distance < (f32)(s32)placement->watchRadius) &&
+                waterfx_consumePendingImpactNearPoint(&obj->anim.localPosX, 600.0f) == 0) {
                 return;
             }
         }

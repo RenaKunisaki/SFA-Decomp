@@ -137,8 +137,7 @@ void warpstone_updateDustEffects(GameObject* obj) {
                 }
             }
         } else {
-            if (state->dustEffectTimer < 480.0f) {
-            } else {
+            if (!(state->dustEffectTimer < 480.0f)) {
                 state->dustEffectTimer = 0.0f;
                 state->dustEffectFlags = state->dustEffectFlags & ~WARPSTONE_DUST_FLAG_ACTIVE;
             }
