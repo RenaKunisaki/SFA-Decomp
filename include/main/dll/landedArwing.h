@@ -23,13 +23,7 @@ typedef struct LandedArwingMovementFlags {
 
 typedef struct LandedArwingState {
   void *boundsObj;        /* nearest defNo-0x4AD object; fills bounds + bounceFlags */
-  f32 unk_04;
-  u8 pad08[0x18 - 0x08];
-  f32 unk_18;
-  u8 pad1C[0x2C - 0x1C];
-  f32 unk_2C;
-  u8 pad30[0x40 - 0x30];
-  f32 unk_40;
+  f32 surfaceOrientationMtx[16];
   f32 animSpeed;
   f32 boundsMinX;
   f32 boundsMaxX;
@@ -57,6 +51,7 @@ typedef struct LandedArwingState {
 } LandedArwingState;
 
 STATIC_ASSERT(sizeof(LandedArwingState) == 0x94);
+STATIC_ASSERT(offsetof(LandedArwingState, surfaceOrientationMtx) == 0x04);
 STATIC_ASSERT(offsetof(LandedArwingState, animSpeed) == 0x44);
 STATIC_ASSERT(offsetof(LandedArwingState, boundsMinX) == 0x48);
 STATIC_ASSERT(offsetof(LandedArwingState, speed) == 0x60);

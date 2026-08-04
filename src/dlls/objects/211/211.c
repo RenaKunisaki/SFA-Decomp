@@ -1106,7 +1106,7 @@ void dll_D3_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
     f32 scale;
 
     state = (LandedArwingState*)((GroundBaddieState*)(int)obj->extra)->control;
-    slideMtx = &state->unk_04;
+    slideMtx = state->surfaceOrientationMtx;
     if (visible != 0)
     {
         switch ((obj)->userData1)
@@ -1383,10 +1383,10 @@ void dll_D3_init(GameObject* obj, DllD3Placement* def, int flag)
     ObjHits_DisableObject(obj);
 
     fz = 1.0f;
-    extra->unk_04 = fz;
-    extra->unk_18 = fz;
-    extra->unk_2C = fz;
-    extra->unk_40 = fz;
+    extra->surfaceOrientationMtx[0] = fz;
+    extra->surfaceOrientationMtx[5] = fz;
+    extra->surfaceOrientationMtx[10] = fz;
+    extra->surfaceOrientationMtx[15] = fz;
 }
 
 void LandedArwing_OnPlayerContact(GameObject* obj, GameObject* otherObj)

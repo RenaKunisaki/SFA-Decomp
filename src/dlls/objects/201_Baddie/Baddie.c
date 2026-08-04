@@ -1179,7 +1179,7 @@ void enemyObjAnimUpdate(short* obj, EnemyState* state)
     MatrixTransform rec;
     f32 mtx[16];
 
-    memcpy(state->unk2C4, &state->lookDirX, 0xc);
+    memcpy(&state->prevLookDirX, &state->lookDirX, 0xc);
     memcpy(&state->lookDirX, obj + 0x12, 0xc);
     if ((state->flags2E4 & 0x400) != 0)
     {

@@ -48,7 +48,9 @@ typedef struct EnemyState {
     f32 lookDirX; /* look/aim direction: yaw = getAngle(-X,-Z), pitch = getAngle(Y, hyp(X,Z)) */
     f32 lookDirY;
     f32 lookDirZ;
-    u8 unk2C4[0x2D0 - 0x2C4];
+    f32 prevLookDirX;
+    f32 prevLookDirY;
+    f32 prevLookDirZ;
     f32 freezeEffectTimer; /* counts down by timeDelta; on reaching 0 the ice shatter fx re-fires and it re-primes to 20 */
     f32 repeatHitCooldown; /* counts down by timeDelta; while >= 0 a repeat hit of kind 0x1a is ignored */
     f32 freezeRecoverTimer;
@@ -199,7 +201,7 @@ typedef struct EnemyState {
 
 STATIC_ASSERT(sizeof(EnemyState) == 0x370);
 STATIC_ASSERT(offsetof(EnemyState, flags) == 0x004);
-STATIC_ASSERT(offsetof(EnemyState, unk2C4) == 0x2C4);
+STATIC_ASSERT(offsetof(EnemyState, prevLookDirX) == 0x2C4);
 STATIC_ASSERT(offsetof(EnemyState, spawnRotY) == 0x19C);
 STATIC_ASSERT(offsetof(EnemyState, nearestSpecialDeltaY) == 0x1B8);
 STATIC_ASSERT(offsetof(EnemyState, pathStep) == 0x2FC);
