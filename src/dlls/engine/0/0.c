@@ -399,8 +399,6 @@ extern const f32 gPauseMenuRingScale;
 extern const f32 lbl_803E209C;
 extern const f32 lbl_803E20B8;
 extern const f32 gGameUiAngleDivisor;
-extern f32 gTrickyHudTexScaleX, gTrickyHudTexScaleY, gTrickyHudTexScaleZ;
-extern f32 gTrickyHudIconFovY, gTrickyHudIconAspect, gTrickyHudIconNearPlane, gTrickyHudIconFarPlane;
 extern Texture* hudTextures[102];
 extern s16 gFearTestMeterAlpha;
 extern s8 lbl_803DD7F8;

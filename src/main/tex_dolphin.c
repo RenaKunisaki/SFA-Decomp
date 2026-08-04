@@ -68,6 +68,7 @@
 #include "main/objseq_api.h"
 #include "main/dll/FRONT/n_options.h"
 #include "main/lightmap_render_queue_api.h"
+#include "main/objprint_dolphin_internal.h"
 
 u8 gCloudLayerOverlayColor[4] = {0x20, 0x20, 0x20, 0};
 int gTexShaderAmbColor = -1;
@@ -79,7 +80,7 @@ extern const f32 lbl_803DEBFC;
 extern const f32 gTexIndMtxScale;
 extern f32 lbl_803DEC28;
 extern int lbl_803DEBB0;
-extern int gTexIndMtxTable[];
+extern IndTexMtx23 gTexIndMtxTable;
 extern u8 gLightmapDrawQueue[];
 #define FRUSTUM_PLANE_COUNT 5
 u8 gRcpPendingWarpDest[0x10];
@@ -174,18 +175,13 @@ static u8 mapBlockBounds_HasCornerPastDepthThreshold(MapBlockBoundsRec* bounds, 
     }
 }
 
-typedef struct IndMtxCopy
-{
-    int w[6];
-} IndMtxCopy;
-
 #define SHADER_FLAGS(s) ((s)->flags)
 
 void mapBlockRender_drawLightmapIndirectPasses(struct MapBlockData* blockData, Shader* shader,
                                                ModelRenderInstrsState* state, f32 (*viewMtx)[4])
 {
     f32 passMtx[3][4];
-    float indMtx[2][3];
+    IndTexMtx23 indMtx;
     int noiseFrameCount;
     Texture** noiseTextures;
     MapBlockBoundsRec* bounds[1];
@@ -194,7 +190,6 @@ void mapBlockRender_drawLightmapIndirectPasses(struct MapBlockData* blockData, S
     u32 bits;
     int bitPos;
     u32 flags;
-    IndMtxCopy* mtxSrc;
     int i;
 
     bitPos = state->bit;
@@ -233,16 +228,15 @@ void mapBlockRender_drawLightmapIndirectPasses(struct MapBlockData* blockData, S
         PSMTXTrans(passMtx, 0.0f, 0.4f * (f32)(i + 1), 0.0f);
         PSMTXConcat(viewMtx, passMtx, passMtx);
         GXLoadPosMtxImm(passMtx, GX_PNMTX0);
-        mtxSrc = (IndMtxCopy*)((u8*)gTexIndMtxTable);
-        *(IndMtxCopy*)indMtx = *mtxSrc;
+        indMtx = gTexIndMtxTable;
         getNewShadowNoiseTextureFrames(&noiseTextures, &noiseFrameCount);
         selectTexture(noiseTextures[(u8)i], 1);
         {
             f32 s = (f32)((i & 0xff) + 1) * gTexIndMtxScale;
-            indMtx[0][0] = s * lbl_803DEBFC;
+            indMtx.m[0][0] = s * lbl_803DEBFC;
         }
-        indMtx[1][1] = indMtx[0][0];
-        GXSetIndTexMtx(GX_ITM_0, (const float (*)[3])indMtx, gTexIndMtxScaleExp);
+        indMtx.m[1][1] = indMtx.m[0][0];
+        GXSetIndTexMtx(GX_ITM_0, indMtx.m, gTexIndMtxScaleExp);
         GXCallDisplayList(bounds[0]->dlist, bounds[0]->dlistSize);
     }
 }

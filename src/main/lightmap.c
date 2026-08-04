@@ -74,7 +74,6 @@ extern u32 renderFlags;
 
 extern f32 gLightmapDegToBamScale;
 
-extern u8 gMapBlockCount; /* count of allocated blocks */
 
 
 volatile PPCWGPipe GXWGFifo : (0xCC008000);

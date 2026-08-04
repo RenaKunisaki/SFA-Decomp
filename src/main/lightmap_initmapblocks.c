@@ -32,7 +32,6 @@
 #include "main/lightmap_lifecycle_api.h"
 
 
-extern u8 gMapBlockCount; /* count of allocated blocks */
 
 
 volatile PPCWGPipe GXWGFifo : (0xCC008000);
