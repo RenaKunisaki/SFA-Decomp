@@ -339,27 +339,27 @@ void PrepareReady(void* msg) {
 }
 
 static void InitAllMessageQueue(void) {
-    AttractMoviePlayer* buf;
+    AttractMoviePlayer* player;
     s32 i;
 
-    buf = &gAttractMoviePlayer;
-    if (buf->isOnMemory == 0) {
+    player = &gAttractMoviePlayer;
+    if (player->isOnMemory == 0) {
         for (i = 0; i < 10; i++) {
-            PushFreeReadBuffer((OSMessage)&buf->readBuffer[i]);
+            PushFreeReadBuffer((OSMessage)&player->readBuffer[i]);
         }
     }
 
     i = 0;
-    buf = &gAttractMoviePlayer;
+    player = &gAttractMoviePlayer;
     do {
-        PushFreeTextureSet((OSMessage)&buf->textureSet[i]);
+        PushFreeTextureSet((OSMessage)&player->textureSet[i]);
         i++;
     } while (i < 3);
 
     if (gAttractMoviePlayer.audioExists != 0) {
         i = 0;
         do {
-            PushFreeAudioBuffer((OSMessage)&buf->audioBuffer[i]);
+            PushFreeAudioBuffer((OSMessage)&player->audioBuffer[i]);
             i++;
         } while (i < 3);
     }
