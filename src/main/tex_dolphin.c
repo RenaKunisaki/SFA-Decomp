@@ -81,7 +81,6 @@ extern const f32 gTexIndMtxScale;
 extern f32 lbl_803DEC28;
 extern int lbl_803DEBB0;
 extern IndTexMtx23 gTexIndMtxTable;
-extern u8 gLightmapDrawQueue[];
 #define FRUSTUM_PLANE_COUNT 5
 u8 gRcpPendingWarpDest[0x10];
 extern GXColor gTexShaderFogColor;
@@ -100,6 +99,8 @@ typedef struct TexShadowRow
     int unk8;
     int type;
 } TexShadowRow;
+
+extern TexShadowRow gLightmapDrawQueue[];
 
 static u8 mapBlockBounds_HasCornerPastDepthThreshold(MapBlockBoundsRec* bounds, float* xform)
 {
@@ -503,7 +504,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Sha
         TexShadowRow* texGlobals;
         MapBlockBoundsRec* bounds[1];
 
-        texGlobals = (TexShadowRow*)gLightmapDrawQueue;
+        texGlobals = gLightmapDrawQueue;
         bitPos = state->bit;
         {
             int off = bitPos >> 3;
@@ -533,8 +534,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Sha
 
                 lightmapQueueShadowRow(bounds[0], block, bounds[0]->selector);
                 shadowType = 5;
-                *(int*)((u8*)&texGlobals->type +
-                         gLightmapDrawQueueCount * sizeof(TexShadowRow)) = shadowType;
+                texGlobals[gLightmapDrawQueueCount].type = shadowType;
                 gLightmapDrawQueueCount = gLightmapDrawQueueCount + 1;
             }
             else if (((flags & 0x40000000) != 0) || ((flags & 0x2000) != 0))
@@ -543,8 +543,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Sha
 
                 lightmapQueueShadowRow(bounds[0], block, bounds[0]->selector);
                 shadowType = 4;
-                *(int*)((u8*)&texGlobals->type +
-                         gLightmapDrawQueueCount * sizeof(TexShadowRow)) = shadowType;
+                texGlobals[gLightmapDrawQueueCount].type = shadowType;
                 gLightmapDrawQueueCount = gLightmapDrawQueueCount + 1;
             }
         }
@@ -668,8 +667,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Sha
 
                 lightmapQueueShadowRow(bounds[0], block, 0x17);
                 shadowType = 6;
-                *(int*)((u8*)&texGlobals->type +
-                         gLightmapDrawQueueCount * sizeof(TexShadowRow)) = shadowType;
+                texGlobals[gLightmapDrawQueueCount].type = shadowType;
                 gLightmapDrawQueueCount = gLightmapDrawQueueCount + 1;
             }
         }

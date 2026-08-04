@@ -78,7 +78,7 @@ static inline void GXTexCoord2s16(const s16 s, const s16 t)
 static inline void GXPosition1x8(const u8 x) { GXWGFifo.u8 = x; }
 
 
-extern u32 gLightmapDrawQueue[];
+extern LightSortEntry gLightmapDrawQueue[];
 
 
 typedef struct LightmapDrawEntry
@@ -322,8 +322,8 @@ void renderShadowType3(GameObject* obj, u32 b, s32 offset)
     PSMTXMultVec((MtxPtr)Camera_GetViewMatrix(), &stk, &stk);
     t = (s32) - stk.z + offset;
     t = t < 0 ? 0 : (t > 0x7ffffff ? 0x7ffffff : t);
-    gLightmapDrawQueue[gLightmapDrawQueueCount * 4] = (u32)obj;
-    gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 2] = t | ((b & 0xff) << 27);
+    gLightmapDrawQueue[gLightmapDrawQueueCount].a = (u32)obj;
+    gLightmapDrawQueue[gLightmapDrawQueueCount].key = t | ((b & 0xff) << 27);
 }
 
 void lightmap_sortTransparentDrawQueue(void)
@@ -337,14 +337,14 @@ void lightmap_sortTransparentDrawQueue(void)
     {
         for (i = gap + 1; i <= gLightmapDrawQueueCount; i++)
         {
-            tmp = ((LightSortEntry*)gLightmapDrawQueue)[i - 1];
+            tmp = gLightmapDrawQueue[i - 1];
             j = i;
-            while (j > gap && ((LightSortEntry*)gLightmapDrawQueue)[j - gap - 1].key < tmp.key)
+            while (j > gap && gLightmapDrawQueue[j - gap - 1].key < tmp.key)
             {
-                ((LightSortEntry*)gLightmapDrawQueue)[j - 1] = ((LightSortEntry*)gLightmapDrawQueue)[j - gap - 1];
+                gLightmapDrawQueue[j - 1] = gLightmapDrawQueue[j - gap - 1];
                 j -= gap;
             }
-            ((LightSortEntry*)gLightmapDrawQueue)[j - 1] = tmp;
+            gLightmapDrawQueue[j - 1] = tmp;
         }
         gap /= 3;
     }
@@ -392,9 +392,9 @@ void lightmapQueueShadowRow(MapBlockBoundsRec* bounds, MapBlockData* block, s32 
     PSMTXMultVec((MtxPtr)Camera_GetViewMatrix(), &stk, &stk);
     t = (s32) - stk.z;
     t = t < 0 ? 0 : (t > 0x7ffffff ? 0x7ffffff : t);
-    gLightmapDrawQueue[gLightmapDrawQueueCount * 4] = (u32)bounds;
-    gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 1] = (u32)block;
-    gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 2] = t | ((selector & 0xff) << 27);
+    gLightmapDrawQueue[gLightmapDrawQueueCount].a = (u32)bounds;
+    gLightmapDrawQueue[gLightmapDrawQueueCount].b = (u32)block;
+    gLightmapDrawQueue[gLightmapDrawQueueCount].key = t | ((selector & 0xff) << 27);
 }
 
 
@@ -653,9 +653,9 @@ void lightmap_queueExternalRenderEntry(u32 a, u32 b, f32* p)
     }
     t = (s32) - p[2];
     t = t < 0 ? 0 : (t > 0x7ffffff ? 0x7ffffff : t);
-    gLightmapDrawQueue[gLightmapDrawQueueCount * 4] = a;
-    gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 1] = b;
-    gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 2] = t | 0x38000000;
-    gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 3] = 7;
+    gLightmapDrawQueue[gLightmapDrawQueueCount].a = a;
+    gLightmapDrawQueue[gLightmapDrawQueueCount].b = b;
+    gLightmapDrawQueue[gLightmapDrawQueueCount].key = t | 0x38000000;
+    gLightmapDrawQueue[gLightmapDrawQueueCount].d = 7;
     gLightmapDrawQueueCount++;
 }

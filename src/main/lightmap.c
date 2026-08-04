@@ -182,7 +182,7 @@ MapBlockData* mapGetBlock(int i)
     return gMapBlocks[i];
 }
 
-extern u32 gLightmapDrawQueue[];
+extern LightmapQEnt gLightmapDrawQueue[];
 
 s8* mapGetBlockIdx(int layer)
 {
@@ -464,7 +464,7 @@ void getVisibleObjects(s8* opacity)
                             (o->anim.flags & OBJANIM_FLAG_HIDDEN) == 0)
                         {
                             renderShadowType3(o, 7, 0x50);
-                            gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 3] = 1;
+                            gLightmapDrawQueue[gLightmapDrawQueueCount].d = 1;
                             gLightmapDrawQueueCount++;
                         }
                     }
@@ -480,13 +480,13 @@ void getVisibleObjects(s8* opacity)
                             mode = 7;
                         }
                         renderShadowType3(o, mode, 0);
-                        gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 3] = 0;
+                        gLightmapDrawQueue[gLightmapDrawQueueCount].d = 0;
                         gLightmapDrawQueueCount++;
                         if ((o->anim.modelInstance->renderFlags & 0x20) != 0 &&
                             (o->anim.flags & OBJANIM_FLAG_HIDDEN) == 0)
                         {
                             renderShadowType3(o, 7, 0x50);
-                            gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 3] = 1;
+                            gLightmapDrawQueue[gLightmapDrawQueueCount].d = 1;
                             gLightmapDrawQueueCount++;
                         }
                     }
@@ -524,7 +524,7 @@ static void renderObjects(s8* opacity) {
     LightmapDrawQueue* dq;
 
     qbase = (LightmapDrawQueue*)gLightmapDrawQueue;
-    q = (LightmapQEnt*)gLightmapDrawQueue;
+    q = gLightmapDrawQueue;
     objects = ObjList_GetObjects((int*)0, 0);
     for (i = 1, kp = (u32*)((u8*)qbase + 0x8818) + 1; i < gVisibleObjectSortKeyCount; kp++, i++) {
         idx = *kp & 0x3ff;
