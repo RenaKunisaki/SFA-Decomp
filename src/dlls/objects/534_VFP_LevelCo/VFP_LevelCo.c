@@ -14,9 +14,14 @@
  *    "sequence done" bit when all four are set;
  *  - two music latches driven through GameBitLatch_Update.
  */
+#include "main/audio/music_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
+#include "main/lightmap_api.h"
 #include "main/mapEventTypes.h"
+#include "main/map_load.h"
+#include "main/objtype.h"
+#include "main/rcp_dolphin_api.h"
 #include "main/render_envfx_api.h"
 #include "dlls/objects/430_SH_LevelCon.h"
 #include "main/sky_api.h"

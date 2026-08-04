@@ -9,6 +9,7 @@
 #include "main/dll/cloudaction_interface.h"
 #include "game/objects/object.h"
 #include "main/gameloop_api.h"
+#include "string.h"
 #include "sys/objects.h"
 #include "main/objprint_render_api.h"
 #include "sys/objects/lifecycle.h"

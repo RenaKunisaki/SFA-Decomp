@@ -1,6 +1,7 @@
 #include "dlls/object_descriptor.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/rom_curve_interface.h"
+#include "string.h"
 #include "sys/objects.h"
 #include "main/dll/rom_curve_def.h"
 #include "game/objects/object.h"

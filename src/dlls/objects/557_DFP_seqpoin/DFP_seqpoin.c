@@ -5,12 +5,14 @@
  * gamebit.
  */
 #include "main/dll/dfp_types.h"
+#include "main/map_load.h"
 #include "main/object_render_legacy.h"
 #include "main/gamebits.h"
 #include "game/objects/object_setup.h"
 #include "main/mapEventTypes.h"
 #include "main/dll/DF/dll_022D_dfpseqpoint.h"
 #include "main/objseq.h"
+#include "main/rcp_dolphin_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "dlls/object_descriptor.h"
