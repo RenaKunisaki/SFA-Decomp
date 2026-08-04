@@ -276,7 +276,7 @@ u32 SHthorntail_chooseNextState(GameObject* object, SHthorntailState* state, SHt
             value = (s16)getAngle(object->anim.localPosX - placement->homePosition.x,
                                   object->anim.localPosZ - placement->homePosition.z);
             angleDelta = value - (u16)object->anim.rotX;
-            if (0x8000 < angleDelta) {
+            if (angleDelta > 0x8000) {
                 angleDelta = angleDelta - 0xFFFF;
             }
             if (angleDelta < -0x8000) {
@@ -284,7 +284,7 @@ u32 SHthorntail_chooseNextState(GameObject* object, SHthorntailState* state, SHt
             }
             value = angleDelta;
             value = (value >= 0) ? value : -value;
-            if (0x20 < value) {
+            if (value > 0x20) {
                 OSReport(sSHthorntailAngleYawDebug,
                          (u16)getAngle(object->anim.localPosX - placement->homePosition.x,
                                        object->anim.localPosZ - placement->homePosition.z),

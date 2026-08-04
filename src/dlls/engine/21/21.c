@@ -1169,7 +1169,7 @@ void curves_advanceCollision(GameObject* curveObj, CurvesCollisionState* state, 
         }
         if ((s32)(state->flags & 0x800) != 0)
         {
-            if (0x3400 < curveObj->anim.rotY)
+            if (curveObj->anim.rotY > 0x3400)
             {
                 curveObj->anim.rotY = 0x3400;
             }
@@ -1180,7 +1180,7 @@ void curves_advanceCollision(GameObject* curveObj, CurvesCollisionState* state, 
         }
         if ((s32)(state->flags & 0x1000) != 0)
         {
-            if (0x3400 < curveObj->anim.rotZ)
+            if (curveObj->anim.rotZ > 0x3400)
             {
                 curveObj->anim.rotZ = 0x3400;
             }

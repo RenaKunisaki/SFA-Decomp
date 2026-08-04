@@ -662,7 +662,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
                 }
                 ival = (short)yawDelta;
                 ival = (ival >= 0) ? ival : -ival;
-                if (((0x5555 < ival) || (target == 0)) ||
+                if (((ival > 0x5555) || (target == 0)) ||
                     (Vec_distance(&obj->anim.worldPosX, &((GameObject*)target)->anim.worldPosX) > s->lookAtMaxDistance))
                 {
                     if ((s->phase != MOVELIB_PHASE_IDLE) || ((target == 0 && ((u32)s->lastTarget != 0))))

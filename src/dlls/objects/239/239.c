@@ -571,21 +571,21 @@ u32 pushable_SeqFn(GameObject* obj, MatrixTransform* referenceTransform, ObjSeqS
             animUpdate->posOffsetY = obj->anim.localPosY - referenceTransform->y;
             animUpdate->posOffsetZ = obj->anim.localPosZ - referenceTransform->z;
             animUpdate->rotOffsetX = obj->anim.rotX - (u16)referenceTransform->rotX;
-            if (0x8000 < animUpdate->rotOffsetX) {
+            if (animUpdate->rotOffsetX > 0x8000) {
                 animUpdate->rotOffsetX = animUpdate->rotOffsetX - 0xffff;
             }
             if (animUpdate->rotOffsetX < -0x8000) {
                 animUpdate->rotOffsetX = animUpdate->rotOffsetX + 0xffff;
             }
             animUpdate->rotOffsetY = obj->anim.rotY - (u16)referenceTransform->rotY;
-            if (0x8000 < animUpdate->rotOffsetY) {
+            if (animUpdate->rotOffsetY > 0x8000) {
                 animUpdate->rotOffsetY = animUpdate->rotOffsetY - 0xffff;
             }
             if (animUpdate->rotOffsetY < -0x8000) {
                 animUpdate->rotOffsetY = animUpdate->rotOffsetY + 0xffff;
             }
             animUpdate->rotOffsetZ = (u16)referenceTransform->rotZ - (u16)obj->anim.rotZ;
-            if (0x8000 < animUpdate->rotOffsetZ) {
+            if (animUpdate->rotOffsetZ > 0x8000) {
                 animUpdate->rotOffsetZ = animUpdate->rotOffsetZ - 0xffff;
             }
             if (animUpdate->rotOffsetZ < -0x8000) {
@@ -603,7 +603,7 @@ u32 pushable_SeqFn(GameObject* obj, MatrixTransform* referenceTransform, ObjSeqS
     }
     if ((obj->anim.romDefNo == PUSHABLE_SEQ_ID_MAGIC_GEM_21E) || (obj->anim.romDefNo == PUSHABLE_SEQ_ID_MAGIC_GEM_411)) {
         obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
-        if ((0 < obj->anim.hitboxTransformState->contactObjectCount) &&
+        if ((obj->anim.hitboxTransformState->contactObjectCount > 0) &&
             ((((GameObject*)obj->anim.hitboxTransformState->contactObjects[0])->anim.classId ==
                   PUSHABLE_SEQUENCE_TARGET_CLASS_ID &&
               (gameBitValue = mainGetBit(PUSHABLE_SEQUENCE_GAME_BIT), gameBitValue == 0)))) {

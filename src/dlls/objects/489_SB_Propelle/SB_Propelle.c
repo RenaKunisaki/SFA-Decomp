@@ -87,7 +87,7 @@ void SB_Propeller_update(GameObject* obj) {
             }
             state->smokeTimer = (f32)randomGetRange(0x5a, 0xf0);
         }
-        if (2 < galleonStage && obj->anim.bankIndex == 1) {
+        if (galleonStage > 2 && obj->anim.bankIndex == 1) {
             spawnParams.scale = 2.5f;
             spawnParams.arg3 = 0xc0a;
             ObjPath_GetPointWorldPosition(obj, 0, &spawnParams.posX, &spawnParams.posY, &spawnParams.posZ, 0);

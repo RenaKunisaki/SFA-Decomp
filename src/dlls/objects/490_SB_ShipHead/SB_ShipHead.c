@@ -170,12 +170,12 @@ void SB_ShipHead_update(GameObject* obj) {
             ObjHits_DisableObject(obj);
         }
     }
-    if (0 < object->userData2) {
+    if (object->userData2 > 0) {
         object->userData2 = object->userData2 - framesThisStep;
     }
     if (galleonPhase == 8) {
         object->userData1 = object->userData1 + 1;
-        if (10 < object->userData1) {
+        if (object->userData1 > 10) {
             object->userData1 = 0;
         }
     }

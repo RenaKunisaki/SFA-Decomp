@@ -503,7 +503,7 @@ void LargeCrate_update(GameObject* obj) {
             }
             obj->anim.rotY = state->spinSpeed;
             state->spinSpeed *= -0.5f;
-            if ((obj->anim.rotY < 10) && (-10 < obj->anim.rotY)) {
+            if ((obj->anim.rotY < 10) && (obj->anim.rotY > -10)) {
                 obj->anim.rotY = 0;
             }
             hitKind = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitType, (u32*)&hitDamage,

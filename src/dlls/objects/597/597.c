@@ -780,7 +780,7 @@ int SnowBike_UpdateSwingBlend(GameObject* obj, SnowBikeState* state)
     }
 
     yawDelta = (s32)(u16)getAngle(o->anim.localPosX - s->posSnapshotX, o->anim.localPosZ - s->posSnapshotZ) - (s32)(u16)s->yawCurrent;
-    if (0x8000 < yawDelta)
+    if (yawDelta > 0x8000)
     {
         yawDelta = yawDelta + -0xffff;
     }
@@ -973,7 +973,7 @@ void SnowBike_UpdateRouteFollowing(GameObject* obj, SnowBikeState* st)
         {
             routeHeading = (*gCheckpointInterface)->getRouteHeading(obj, &st->routeState);
             headingDelta = obj->anim.rotX - routeHeading;
-            if (0x8000 < headingDelta)
+            if (headingDelta > 0x8000)
             {
                 headingDelta = headingDelta - 0xffff;
             }
@@ -1357,7 +1357,7 @@ void SnowBike_UpdateSteering(short* obj, int stateRaw)
     st->haloPitchDrift = st->haloYawDrift * mathSinf((3.1415927f * (f32)(s32)st->haloDriftPhaseA) / 32768.0f);
     st->haloDriftB = st->haloDriftAmpB * mathSinf((3.1415927f * (f32)(s32)st->haloDriftPhaseB) / 32768.0f);
     yawDelta = (int)*obj - ((int)st->yaw & 0xffffU);
-    if (0x8000 < yawDelta)
+    if (yawDelta > 0x8000)
     {
         yawDelta = yawDelta + -0xffff;
     }
@@ -1374,7 +1374,7 @@ void SnowBike_UpdateSteering(short* obj, int stateRaw)
     {
         rotClamped = -0x2000;
     }
-    else if (0x2000 < rotClamped)
+    else if (rotClamped > 0x2000)
     {
         rotClamped = 0x2000;
     }
@@ -1384,7 +1384,7 @@ void SnowBike_UpdateSteering(short* obj, int stateRaw)
     {
         rotClamped = -0x2000;
     }
-    else if (0x2000 < rotClamped)
+    else if (rotClamped > 0x2000)
     {
         rotClamped = 0x2000;
     }

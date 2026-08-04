@@ -236,9 +236,9 @@ void DIM_BossGut2_update(GameObject* obj) {
         light = lightOwner->light;
         if ((light != NULL) && (light->glowType != 0) && (light->enabled != 0)) {
             brightness = (light->glowAlpha + light->glowAlphaStep) & 0xffff;
-            if (0xc < brightness) {
+            if (brightness > 0xc) {
                 brightness = (brightness + randomGetRange(-12, 12)) & 0xffff;
-                if (0xff < brightness) {
+                if (brightness > 0xff) {
                     brightness = 0xff;
                     lightOwner->light->glowAlphaStep = 0;
                 }

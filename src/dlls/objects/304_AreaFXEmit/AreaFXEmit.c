@@ -280,7 +280,7 @@ void AreaFXEmit_update(GameObject* obj) {
                 }
                 obj->userData1 = -state->emitCount;
                 state->lastDistance = distance;
-            } else if ((state->emitCount < 0) && (0 < obj->userData1)) {
+            } else if ((state->emitCount < 0) && (obj->userData1 > 0)) {
                 obj->userData1 = obj->userData1 - framesThisStep;
             }
             break;

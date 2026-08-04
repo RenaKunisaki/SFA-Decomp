@@ -77,7 +77,7 @@ void CameraModeTalk_update(CameraObject* camera) {
         targetAngle = 3072.0f - gCameraModeTalkState->pitchTarget;
         cameraAngle = camera->anim.rotY;
         angleDelta = targetAngle - cameraAngle;
-        if (0x8000 < angleDelta) {
+        if (angleDelta > 0x8000) {
             angleDelta = angleDelta - 0xFFFF;
         }
         if (angleDelta < -0x8000) {
@@ -105,7 +105,7 @@ void CameraModeTalk_update(CameraObject* camera) {
         targetAngle = 0.2f * gCameraModeTalkState->rollInput;
         cameraAngle = camera->anim.rotZ;
         angleDelta = targetAngle - cameraAngle;
-        if (0x8000 < angleDelta) {
+        if (angleDelta > 0x8000) {
             angleDelta = angleDelta - 0xFFFF;
         }
         if (angleDelta < -0x8000) {

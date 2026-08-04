@@ -1061,7 +1061,7 @@ int Obj_GetYawDeltaToObject(GameObject* obj, GameObject* target, float* distOut)
         *distOut = sqrtf(dx * dx + dz * dz);
     }
     yawDelta = (int)(short)yawDelta - (u32)(u16) * (s16*)obj;
-    if (0x8000 < yawDelta) {
+    if (yawDelta > 0x8000) {
         yawDelta = yawDelta + -0xffff;
     }
     if (yawDelta < -0x8000) {

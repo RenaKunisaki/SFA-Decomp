@@ -63,7 +63,7 @@ void drearthcal_update(GameObject* obj)
     else
     {
         obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
-        if (0 < obj->anim.hitboxTransformState->contactObjectCount)
+        if (obj->anim.hitboxTransformState->contactObjectCount > 0)
             for (i = 0; i < obj->anim.hitboxTransformState->contactObjectCount; i++)
             {
                 {

@@ -170,7 +170,7 @@ void firstPersonDoControls(CameraObject* camera) {
     camera->anim.rotX = gCameraModeViewfinderState->yawSpeed * timeDelta + (f32)camera->anim.rotX;
     spinI = spinI - (camera->anim.rotY & 0xffffU);
     pitchDelta = spinI;
-    if (0x8000 < pitchDelta) {
+    if (pitchDelta > 0x8000) {
         pitchDelta = pitchDelta - 0xffff;
     }
     if (pitchDelta < -0x8000) {
@@ -178,7 +178,7 @@ void firstPersonDoControls(CameraObject* camera) {
     }
     spin = interpolate((f32)pitchDelta, 1.0f / (32.0f * zoom + 16.0f), timeDelta);
     camera->anim.rotY = camera->anim.rotY + spin;
-    if (0x3c00 < camera->anim.rotY) {
+    if (camera->anim.rotY > 0x3c00) {
         camera->anim.rotY = 0x3c00;
     }
     if (camera->anim.rotY < -0x3c00) {

@@ -131,7 +131,7 @@ u32 EnterSaveNameScreen_run(void)
             gEnterSaveNameScrollPos = gEnterSaveNameScrollPos + gEnterSaveNameTotalWidth;
             moved = 1;
         }
-        if ((0 < gEnterSaveNameSelectedIndex) &&
+        if ((gEnterSaveNameSelectedIndex > 0) &&
             (gEnterSaveNameScrollPos <= (f32)(gEnterSaveNameCharOffsets[gEnterSaveNameSelectedIndex] -
                                               gEnterSaveNameCharWidths[gEnterSaveNameSelectedIndex - 1] / 2)))
         {

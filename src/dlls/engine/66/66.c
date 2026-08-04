@@ -134,7 +134,7 @@ u8 camcontrol_getTargetPosition(CameraObject* camera, ObjAnimComponent* targetAn
     ang = getAngle(b, d2);
     angleDelta = ang & 0xffff;
     angleDelta -= (u16)camera->anim.rotY;
-    if (0x8000 < angleDelta) {
+    if (angleDelta > 0x8000) {
         angleDelta = angleDelta - 0xffff;
     }
     if (angleDelta < -0x8000) {
@@ -330,7 +330,7 @@ int CameraModeNormal_chooseWallAvoidanceDirection(CameraObject* cam, f32* outA, 
         f32 f;
         f32 g;
         d = (0x8000 - cam->anim.rotX) - (angle & 0xffff);
-        if (0x8000 < d) {
+        if (d > 0x8000) {
             d = d - 0xffff;
         }
         if (d < -0x8000) {
@@ -457,7 +457,7 @@ void CameraModeNormal_updateWallAvoidance(CameraObject* camera, GameObject* targ
     }
     if (gCameraModeNormalState->avoidanceYawOffset != 0.0f) {
         spin = (s16)(int)gCameraModeNormalState->avoidanceYawOffset;
-        if ((spin < -0x1e) || (0x1e < spin)) {
+        if ((spin < -0x1e) || (spin > 0x1e)) {
             f32 rad;
 
             rad = (3.1415927f * spin) / 32768.0f;
@@ -1085,7 +1085,7 @@ void CameraModeNormal_update(CameraObject* camera) {
         } else {
             gCameraModeNormalState->wallAvoidanceTimer = 0;
         }
-        if (10 < gCameraModeNormalState->wallAvoidanceTimer) {
+        if (gCameraModeNormalState->wallAvoidanceTimer > 10) {
             if (target[0]->anim.classId == 1) {
                 cameraGetPrevPos2(target[0], &aimX2, &aimY2, &aimZ2);
             } else {
@@ -1107,7 +1107,7 @@ void CameraModeNormal_update(CameraObject* camera) {
         } else {
             gCameraModeNormalState->collisionProbeTimer = 0;
         }
-        if (5 < gCameraModeNormalState->collisionProbeTimer) {
+        if (gCameraModeNormalState->collisionProbeTimer > 5) {
             if (target[0]->anim.classId == 1) {
                 cameraGetPrevPos2(target[0], &aimX, &aimY, &aimZ);
             } else {

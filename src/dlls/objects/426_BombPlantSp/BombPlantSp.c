@@ -83,7 +83,7 @@ void BombPlantSpore_startDriftBurst(GameObject* obj, BombPlantSporeState* state)
 
     state->burstDriftAngle = (s16)(state->currentSpinAngle + randomGetRange(-2000, 2000));
     angleDelta = (s32)state->burstDriftAngle - (u16)baseAngle;
-    if (0x8000 < angleDelta) {
+    if (angleDelta > 0x8000) {
         angleDelta -= 0xFFFF;
     }
     if (angleDelta < -0x8000) {

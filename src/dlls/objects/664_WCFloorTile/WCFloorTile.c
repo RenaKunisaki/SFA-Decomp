@@ -65,7 +65,7 @@ void wcfloortile_update(GameObject* obj)
     default:
         if (state->flags & 4)
         {
-            if (0 < obj->anim.hitboxTransformState->contactObjectCount)
+            if (obj->anim.hitboxTransformState->contactObjectCount > 0)
             {
                 f32 z = 0.0f;
                 for (i = 0, off = 0; i < obj->anim.hitboxTransformState->contactObjectCount; off += 4, i++)

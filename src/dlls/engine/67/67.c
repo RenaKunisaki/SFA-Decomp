@@ -253,7 +253,7 @@ void CameraModeStaffAnim_update(CameraObject* camera) {
         angle = getAngle((double)relX, (double)relZ);
         yawDelta = 0x8000 - (angle & 0xffff);
         yawDelta = yawDelta - (u32)(u16)camera->anim.rotX;
-        if (0x8000 < yawDelta) {
+        if (yawDelta > 0x8000) {
             yawDelta = yawDelta + -0xffff;
         }
         if (yawDelta < -0x8000) {

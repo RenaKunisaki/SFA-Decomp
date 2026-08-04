@@ -713,7 +713,7 @@ static void mapBlockRender_setupShaderTextures(Shader* shader, int mode)
                 overrideEntry = overrides;
                 for (remain = 0x50; remain != 0 || (texture = layerTextureId, 0); remain--)
                 {
-                    if (((0 < overrideEntry->refCount) &&
+                    if (((overrideEntry->refCount > 0) &&
                          ((u32)overrideEntry->textureId == layerTextureId)) &&
                         ((int)overrideType == overrideEntry->type))
                     {
@@ -760,7 +760,7 @@ static void mapBlockRender_setupShaderTextures(Shader* shader, int mode)
                 overrideEntry = overrides;
                 for (remain = 0x50; remain != 0 || (texture = layerTextureId, 0); remain--)
                 {
-                    if (((0 < overrideEntry->refCount) &&
+                    if (((overrideEntry->refCount > 0) &&
                          ((u32)overrideEntry->textureId == layerTextureId)) &&
                         ((int)overrideType == overrideEntry->type))
                     {
@@ -812,7 +812,7 @@ static void mapBlockRender_setupShaderTextures(Shader* shader, int mode)
                         overrideEntry = overrides;
                         for (remain = 0x50; remain != 0 || (texture = layerTextureId, 0); remain--)
                         {
-                            if (((0 < overrideEntry->refCount) &&
+                            if (((overrideEntry->refCount > 0) &&
                                  ((u32)overrideEntry->textureId == layerTextureId)) &&
                                 ((int)overrideType == overrideEntry->type))
                             {

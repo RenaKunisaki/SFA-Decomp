@@ -490,10 +490,10 @@ void tumbleweed_updateRollingMotion(GameObject* obj, TumbleweedState* state) {
                 obj->anim.velocityY = -(bounceVelocity * heightDelta);
             }
             nearestHitIndex = (int)(32.0f * obj->anim.velocityY);
-            if (0x7f < nearestHitIndex) {
+            if (nearestHitIndex > 0x7f) {
                 nearestHitIndex = 0x7f;
             }
-            if (0x10 < nearestHitIndex) {
+            if (nearestHitIndex > 0x10) {
                 Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_roothack16);
                 randomValue = randomGetRange(0, 5);
                 if (((int)randomValue == 0) && ((state->flags & TUMBLEWEED_EFFECT_FLAG_IMPACT_SFX) != 0)) {
