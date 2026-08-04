@@ -34,6 +34,7 @@
 #include "main/objtype.h"
 #include "main/object_update_list.h"
 #include "main/objfx.h"
+#include "string.h"
 #include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
 #include "main/object_render.h"

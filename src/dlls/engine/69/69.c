@@ -10,6 +10,7 @@
 #include "main/mm.h"
 #include "main/object_transform.h"
 #include "main/vecmath.h"
+#include "string.h"
 
 int lbl_803DD544;
 CameraModeTalkState* gCameraModeTalkState;

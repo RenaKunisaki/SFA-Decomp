@@ -25,6 +25,7 @@
 #include "main/pad.h"
 #include "main/rcp_dolphin.h"
 #include "main/vecmath.h"
+#include "string.h"
 #include "sys/objects.h"
 
 int lbl_803DD54C;

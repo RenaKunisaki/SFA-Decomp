@@ -2,6 +2,7 @@
 #include "main/dll/savegame_env_api.h"
 #include "main/render_envfx_api.h"
 #include "main/sky_interface.h"
+#include "string.h"
 #include "sys/objects.h"
 #include "main/curve_eval.h"
 #include "main/frame_timing.h"

@@ -14,6 +14,7 @@
 #include "dolphin/gx/GXPixel.h"
 #include "dolphin/gx/GXTransform.h"
 #include "dolphin/mtx.h"
+#include "string.h"
 #include "track/intersect_render_setup_api.h"
 #include "track/intersect_api.h"
 #include "main/hud_visibility_api.h"

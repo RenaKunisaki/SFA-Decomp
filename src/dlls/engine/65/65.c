@@ -1,4 +1,5 @@
 #include "main/texture.h"
+#include "string.h"
 #include "track/intersect_hud_api.h"
 #include "main/gametext_command_api.h"
 #include "main/gametext_color_api.h"

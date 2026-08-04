@@ -20,6 +20,7 @@
 #include "main/objhits.h"
 #include "main/shader_api.h"
 #include "main/vecmath.h"
+#include "string.h"
 #include "sys/objects.h"
 #include "main/curve.h"
 #include "main/audio/sfx_play_api.h"
@@ -334,7 +335,7 @@ void Hagabon_init(GameObject* obj, HagabonPlacement* placement, int skipAlloc) {
     if (skipAlloc == 0) {
         state->curve = mmAlloc(sizeof(RomCurveWalker), HAGABON_CURVE_ALLOCATOR_TAG, 0);
         if (state->curve != NULL) {
-            (void)memset(state->curve, 0, sizeof(RomCurveWalker));
+            memset(state->curve, 0, sizeof(RomCurveWalker));
         }
         if ((*gRomCurveInterface)
                 ->initCurve((void*)state->curve, (void*)obj, state->chaseRadius, gHagabonCurveInitData, -1) == 0) {

@@ -11,6 +11,7 @@
 #include "main/obj_list.h"
 #include "main/object_transform.h"
 #include "main/vecmath.h"
+#include "string.h"
 #include "sys/objects.h"
 
 CameraMode54State* gCameraMode54State;
