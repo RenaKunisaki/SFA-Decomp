@@ -2765,6 +2765,7 @@ void pauseMenuDrawStatus(void)
     f32 flashThreshold;
     f32 previousOpacity;
     s8 maxMagicDelta;
+    f32 zero = 0.0f;
     int statuses[HUD_STATUS_COUNT];
 
     base = (u8*)lbl_803A87F0;
@@ -2802,7 +2803,7 @@ void pauseMenuDrawStatus(void)
     }
     maxMagicDelta = -magicDelta;
     statuses[HUD_STATUS_MAX_MAGIC] = hud->statusPrevious[HUD_STATUS_MAX_MAGIC] + maxMagicDelta;
-    if ((maxMagicDelta != 0) && (gHudStatusAlpha != 0.0f) && (objIsCurModelNotZero(player) != 0) &&
+    if ((maxMagicDelta != 0) && (gHudStatusAlpha != zero) && (objIsCurModelNotZero(player) != 0) &&
         (mainGetBit(GAMEBIT_ITEM_Magic_Got) != 0))
     {
         Sfx_KeepAliveLoopedObjectSound(0, SFXTRIG_pda_compassbeep_3f0);
