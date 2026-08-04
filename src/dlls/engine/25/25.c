@@ -201,7 +201,7 @@ void dll_19_initGroundBaddie(GameObject* obj, GroundBaddiePlacement* config, u8*
 
     curveLocal = gDll19DefaultCurveMode.u;
     byteLocal = 1;
-    ((GroundBaddieState*)state)->control = (void*)(state + 1040);
+    ((GroundBaddieState*)state)->control = (void*)(state + sizeof(GroundBaddieState));
     ((GroundBaddieState*)state)->targetState = 0;
 
     flags = initFlags;
