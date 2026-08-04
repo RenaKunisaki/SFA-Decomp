@@ -5383,8 +5383,6 @@ void pauseMenuDrawGridCell(u8 i, int alpha, int flag)
     cnt = gPauseMenuActiveGrid[i].count;
     div15 = (s16)scaled / 15;
     quarter = lbl_803E20B8;
-    k2128 = lbl_803E2128;
-    k2108 = gPauseMenuGridCursorScale;
     for (; cnt >= 0; cnt -= 4)
     {
         spd = quarter * gPauseMenuActiveGrid[i].f10;
@@ -5425,7 +5423,10 @@ void pauseMenuDrawGridCell(u8 i, int alpha, int flag)
             y = (f32)(pr * 0.001953125 + y);
         }
         {
-            f32 prod = spd * gPauseMenuActiveGrid[i].trailX;
+            f32 prod;
+            k2108 = gPauseMenuGridCursorScale;
+            k2128 = lbl_803E2128;
+            prod = spd * gPauseMenuActiveGrid[i].trailX;
             x -= k2108 * (prod * k2128);
             prod = spd * gPauseMenuActiveGrid[i].trailY;
             y -= k2108 * (prod * k2128);
