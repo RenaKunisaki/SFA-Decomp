@@ -275,10 +275,8 @@ void sc_levelcontrol_update(GameObject* obj) {
             if (state->fogNear < state->fogNearTarget) {
                 state->fogNear = state->fogNearTarget;
             }
-        } else {
-            if (state->fogNear > state->fogNearTarget) {
-                state->fogNear = state->fogNearTarget;
-            }
+        } else if (state->fogNear > state->fogNearTarget) {
+            state->fogNear = state->fogNearTarget;
         }
         enableHeavyFog(50.0f + state->fogNear, state->fogNear, 1000.0f, 0.1f, 0.0005f, 0);
     }
@@ -315,10 +313,8 @@ void sc_levelcontrol_update(GameObject* obj) {
             if (mainGetBit(0x627) != 0 && mainGetBit(0x63e) != 0) {
                 mainSetBits(GAMEBIT_LV_DoneTests, 1);
             }
-        } else {
-            if (mainGetBit(GAMEBIT_LV_DoneTests) != 0) {
-                mainSetBits(0x85, 1);
-            }
+        } else if (mainGetBit(GAMEBIT_LV_DoneTests) != 0) {
+            mainSetBits(0x85, 1);
         }
     }
     if (state->animEventState == 0) {

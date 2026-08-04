@@ -746,41 +746,39 @@ void grimble_update(GameObject* obj) {
             state->baddie.moveJustStartedB = 1;
             obj->anim.alpha = 0;
         }
-    } else {
-        if ((void*)control->candidatePathObj != NULL) {
-            GameObject* target;
-            int hitReaction;
+    } else if ((void*)control->candidatePathObj != NULL) {
+        GameObject* target;
+        int hitReaction;
 
-            (*gPlayerInterface)->update(obj, state, 1.0f, 1.0f, gGrimbleStateHandlersA, gGrimbleStateHandlersB);
-            (*(void (**)(int, f32, f32*, f32*, f32*))(
-                *(int*)(*(int*)(control->pathObj + GRIMBLE_PATH_INTERFACE_OFFSET)) +
-                GRIMBLE_PATH_SAMPLE_CALLBACK_OFFSET))(control->pathObj, control->pathProgress, &obj->anim.localPosX,
-                                                      &obj->anim.localPosY, &obj->anim.localPosZ);
-            (*gBaddieControlInterface)
-                ->processMessages(obj, state, &state->routeNav, state->gameBitB, &state->subMode, 0, 0, 0);
-            hitReaction = (*gBaddieControlInterface)
-                              ->updateHitReaction(obj, state, &state->routeNav, state->gameBitB,
-                                                  gGrimbleHitReactionMoves, gGrimbleHitReactionDamage, 3, NULL);
-            if (hitReaction == 0xe) {
-                state->subMode = 2;
-                state->baddie.targetObj = Obj_GetPlayerObject();
-            }
-            if (state->baddie.targetObj != NULL || state->baddie.hitPoints == 0) {
-                ((ObjHitsPriorityState*)obj->anim.hitReactState)->flags |= 1;
-                if ((*gBaddieControlInterface)->shouldDropTarget(obj, state, (f32)state->aggroRange, 1) != 0) {
-                    state->baddie.targetObj = 0;
-                }
-            } else {
-                ((ObjHitsPriorityState*)obj->anim.hitReactState)->flags &= ~1;
-                target = (*gBaddieControlInterface)->findAggroTarget(obj, state, (f32)state->aggroRange, 0x8000);
-                if (target != NULL) {
-                    state->baddie.targetObj = target;
-                    state->baddie.hasTarget = 0;
-                }
+        (*gPlayerInterface)->update(obj, state, 1.0f, 1.0f, gGrimbleStateHandlersA, gGrimbleStateHandlersB);
+        (*(void (**)(int, f32, f32*, f32*, f32*))(
+            *(int*)(*(int*)(control->pathObj + GRIMBLE_PATH_INTERFACE_OFFSET)) +
+            GRIMBLE_PATH_SAMPLE_CALLBACK_OFFSET))(control->pathObj, control->pathProgress, &obj->anim.localPosX,
+                                                  &obj->anim.localPosY, &obj->anim.localPosZ);
+        (*gBaddieControlInterface)
+            ->processMessages(obj, state, &state->routeNav, state->gameBitB, &state->subMode, 0, 0, 0);
+        hitReaction = (*gBaddieControlInterface)
+                          ->updateHitReaction(obj, state, &state->routeNav, state->gameBitB,
+                                              gGrimbleHitReactionMoves, gGrimbleHitReactionDamage, 3, NULL);
+        if (hitReaction == 0xe) {
+            state->subMode = 2;
+            state->baddie.targetObj = Obj_GetPlayerObject();
+        }
+        if (state->baddie.targetObj != NULL || state->baddie.hitPoints == 0) {
+            ((ObjHitsPriorityState*)obj->anim.hitReactState)->flags |= 1;
+            if ((*gBaddieControlInterface)->shouldDropTarget(obj, state, (f32)state->aggroRange, 1) != 0) {
+                state->baddie.targetObj = 0;
             }
         } else {
-            grimble_attachNearestPath(obj);
+            ((ObjHitsPriorityState*)obj->anim.hitReactState)->flags &= ~1;
+            target = (*gBaddieControlInterface)->findAggroTarget(obj, state, (f32)state->aggroRange, 0x8000);
+            if (target != NULL) {
+                state->baddie.targetObj = target;
+                state->baddie.hasTarget = 0;
+            }
         }
+    } else {
+        grimble_attachNearestPath(obj);
     }
 }
 

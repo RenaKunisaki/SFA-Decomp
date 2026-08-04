@@ -777,12 +777,10 @@ void tumbleweed_updateStateMachine(GameObject* obj) {
             obj->anim.localPosX = state->targetPos[0];
             obj->anim.localPosY = state->targetPos[1];
             obj->anim.localPosZ = state->targetPos[2];
+        } else if (state->growRate <= 0.0f) {
+            Obj_FreeObject(obj);
         } else {
-            if (state->growRate <= 0.0f) {
-                Obj_FreeObject(obj);
-            } else {
-                state->growRate -= timeDelta;
-            }
+            state->growRate -= timeDelta;
         }
     }
 }
@@ -847,12 +845,10 @@ void tumbleweed_updateTargetedStateMachine(GameObject* obj) {
             mainSetBits(GAMEBIT_TumbleweedRelated642, 1);
             state->flags |= TUMBLEWEED_EFFECT_FLAGS_ALL;
         }
+    } else if (state->growRate <= 0.0f) {
+        Obj_FreeObject(obj);
     } else {
-        if (state->growRate <= 0.0f) {
-            Obj_FreeObject(obj);
-        } else {
-            state->growRate -= timeDelta;
-        }
+        state->growRate -= timeDelta;
     }
 }
 

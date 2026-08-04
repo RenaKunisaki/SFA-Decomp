@@ -517,18 +517,16 @@ void NW_mammoth_updatePatrol(GameObject* obj, NwMammothState* state, NwMammothPl
         } else {
             state->triggerList = gNwMammothMode1DefaultTriggerList;
         }
+    } else if (mainGetBit(GAMEBIT_SnowHornArtifact19D) != 0) {
+        state->triggerList = gNwMammothPatrolArtifactCompleteTriggerList;
+    } else if (mainGetBit(GAMEBIT_ITEM_NWSnowHornArtifact_Got) != 0) {
+        state->triggerList = gNwMammothPatrolArtifactObtainedTriggerList;
+    } else if (mainGetBit(GAMEBIT_NW_RescuedSnowHornGateKeeper) != 0) {
+        state->triggerList = gNwMammothPatrolRescuedTriggerList;
+    } else if (mainGetBit(0x9e) != 0) {
+        state->triggerList = gNwMammothPatrolBit9ETriggerList;
     } else {
-        if (mainGetBit(GAMEBIT_SnowHornArtifact19D) != 0) {
-            state->triggerList = gNwMammothPatrolArtifactCompleteTriggerList;
-        } else if (mainGetBit(GAMEBIT_ITEM_NWSnowHornArtifact_Got) != 0) {
-            state->triggerList = gNwMammothPatrolArtifactObtainedTriggerList;
-        } else if (mainGetBit(GAMEBIT_NW_RescuedSnowHornGateKeeper) != 0) {
-            state->triggerList = gNwMammothPatrolRescuedTriggerList;
-        } else if (mainGetBit(0x9e) != 0) {
-            state->triggerList = gNwMammothPatrolBit9ETriggerList;
-        } else {
-            state->triggerList = gNwMammothPatrolDefaultTriggerList;
-        }
+        state->triggerList = gNwMammothPatrolDefaultTriggerList;
     }
 }
 

@@ -393,54 +393,52 @@ void worldplanet_update(GameObject* obj) {
                 if ((int)i == state->selectedPlanet) {
                     arwing->anim.flags |= OBJANIM_FLAG_HIDDEN;
                 }
-            } else {
-                if ((int)i == state->selectedPlanet) {
-                    u32 fi;
-                    u32 ni;
-                    WorldObjPathSegmentWork* segment;
-                    f32 x0;
-                    f32 x1;
-                    f32 y0;
-                    f32 y1;
-                    f32 z0;
-                    f32 z1;
-                    f32 frac;
-                    s16 yaw;
-                    s16 dyaw;
-                    fi = (int)gWorldPlanetPathProgress & 0xff;
-                    ni = (fi + 2) & 0xff;
-                    frac = gWorldPlanetPathProgress - fi;
-                    segment = WorldObj_GetPathSegmentWork(pstate, fi);
-                    x0 = segment->start.x;
-                    x1 = segment->end.x;
-                    y0 = segment->start.y;
-                    y1 = segment->end.y;
-                    z0 = segment->start.z;
-                    z1 = segment->end.z;
-                    pstate->effectState = 2;
-                    yaw = getAngle(x1 - x0, z1 - z0);
-                    dyaw = ((ni >= 0x16) ? yaw
-                                         : (s16)getAngle(WorldObj_GetPathSegmentWork(pstate, ni)->start.x - x1,
-                                                         WorldObj_GetPathSegmentWork(pstate, ni)->start.z - z1)) -
-                           (u16)yaw;
-                    if (dyaw > 0x8000) {
-                        dyaw = (s16)(dyaw - 0xffff);
-                    }
-                    if (dyaw < -0x8000) {
-                        dyaw = (s16)(dyaw + 0xffff);
-                    }
-                    if (getWorldMapVoiceoverTimer() != 0) {
-                        arwing->anim.flags |= OBJANIM_FLAG_HIDDEN;
-                    } else {
-                        arwing->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
-                    }
-                    arwing->anim.rotX = (frac * dyaw + yaw);
-                    arwing->anim.localPosX = frac * (x1 - x0) + x0;
-                    arwing->anim.localPosY = frac * (y1 - y0) + y0;
-                    arwing->anim.localPosZ = frac * (z1 - z0) + z0;
-                } else {
-                    pstate->effectState = 1;
+            } else if ((int)i == state->selectedPlanet) {
+                u32 fi;
+                u32 ni;
+                WorldObjPathSegmentWork* segment;
+                f32 x0;
+                f32 x1;
+                f32 y0;
+                f32 y1;
+                f32 z0;
+                f32 z1;
+                f32 frac;
+                s16 yaw;
+                s16 dyaw;
+                fi = (int)gWorldPlanetPathProgress & 0xff;
+                ni = (fi + 2) & 0xff;
+                frac = gWorldPlanetPathProgress - fi;
+                segment = WorldObj_GetPathSegmentWork(pstate, fi);
+                x0 = segment->start.x;
+                x1 = segment->end.x;
+                y0 = segment->start.y;
+                y1 = segment->end.y;
+                z0 = segment->start.z;
+                z1 = segment->end.z;
+                pstate->effectState = 2;
+                yaw = getAngle(x1 - x0, z1 - z0);
+                dyaw = ((ni >= 0x16) ? yaw
+                                     : (s16)getAngle(WorldObj_GetPathSegmentWork(pstate, ni)->start.x - x1,
+                                                     WorldObj_GetPathSegmentWork(pstate, ni)->start.z - z1)) -
+                       (u16)yaw;
+                if (dyaw > 0x8000) {
+                    dyaw = (s16)(dyaw - 0xffff);
                 }
+                if (dyaw < -0x8000) {
+                    dyaw = (s16)(dyaw + 0xffff);
+                }
+                if (getWorldMapVoiceoverTimer() != 0) {
+                    arwing->anim.flags |= OBJANIM_FLAG_HIDDEN;
+                } else {
+                    arwing->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
+                }
+                arwing->anim.rotX = (frac * dyaw + yaw);
+                arwing->anim.localPosX = frac * (x1 - x0) + x0;
+                arwing->anim.localPosY = frac * (y1 - y0) + y0;
+                arwing->anim.localPosZ = frac * (z1 - z0) + z0;
+            } else {
+                pstate->effectState = 1;
             }
         }
         objId = (int)ObjList_FindObjectById(tbl->orbitObjectIds[gWorldPlanetSelectionToIndex[state->selectedPlanet]]);

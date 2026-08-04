@@ -331,12 +331,10 @@ int dll_CE_updateAlertState(GameObject* obj, GroundBaddieState* state) {
             } else {
                 Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_95);
             }
+        } else if (player->anim.romDefNo != 0) {
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_stftest122_1f2);
         } else {
-            if (player->anim.romDefNo != 0) {
-                Sfx_PlayFromObject(obj, SFXTRIG_wp_stftest122_1f2);
-            } else {
-                Sfx_PlayFromObject(obj, SFXTRIG_swd);
-            }
+            Sfx_PlayFromObject(obj, SFXTRIG_swd);
         }
         Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_267);
     }
@@ -438,11 +436,9 @@ int dll_CE_updateAttackState(GameObject* obj, GroundBaddieState* state) {
                 ObjAnim_SetCurrentMove((int)obj, 6, 0.0f, 0);
                 state->baddie.moveDone = 0;
             }
-        } else {
-            if (state->baddie.moveJustStartedA != '\0') {
-                ObjAnim_SetCurrentMove((int)obj, 7, 0.0f, 0);
-                state->baddie.moveDone = 0;
-            }
+        } else if (state->baddie.moveJustStartedA != '\0') {
+            ObjAnim_SetCurrentMove((int)obj, 7, 0.0f, 0);
+            state->baddie.moveDone = 0;
         }
         state->baddie.stateTag = 1;
         state->baddie.moveSpeed = 0.005f + (f32)(u32)objectState->aggression / 20000.0f;
@@ -733,41 +729,39 @@ void dll_CE_update(GameObject* obj, int unusedA, int unusedB) {
         obj->anim.localPosZ = placement->base.posZ;
         (*gObjectTriggerInterface)->runSequence(placement->sequenceId, obj, -1);
         obj->userData2 = 1;
+    } else if ((*gBaddieControlInterface)->isObjectValid(obj, state, 0) == 0) {
+        state->targetState = 0;
+    } else if ((state->configFlags & 0x10) != 0 && (*gSkyInterface)->getSunPosition(&sunTime) == 0) {
+        state->targetState = 0;
     } else {
-        if ((*gBaddieControlInterface)->isObjectValid(obj, state, 0) == 0) {
-            state->targetState = 0;
-        } else if ((state->configFlags & 0x10) != 0 && (*gSkyInterface)->getSunPosition(&sunTime) == 0) {
-            state->targetState = 0;
+        dll_CE_updateTargeting(obj, state, state);
+        if (state->targetState == 0) {
+            dll_CE_acquireTarget(obj, state, state);
         } else {
-            dll_CE_updateTargeting(obj, state, state);
-            if (state->targetState == 0) {
-                dll_CE_acquireTarget(obj, state, state);
-            } else {
-                control = state->control;
-                if ((control->effectFlags & DLL_CE_EFFECT_PROJECTILE) != 0) {
-                    dll_CE_spawnIceBall(obj, state);
-                }
-                if ((control->effectFlags & DLL_CE_EFFECT_DUST) != 0) {
-                    (*gPartfxInterface)->spawnObject((void*)obj, DLL_CE_PARTFX_DUST, NULL, 1, -1, NULL);
-                }
-                if ((control->effectFlags & DLL_CE_EFFECT_SPRAY) != 0) {
-                    spawnCount = 0;
-                    do {
-                        (*gPartfxInterface)->spawnObject((void*)obj, DLL_CE_PARTFX_SPRAY, NULL, 1, -1, NULL);
-                        spawnCount++;
-                    } while (spawnCount < 10);
-                }
-                control->effectFlags = 0;
-                (*gBaddieControlInterface)->updateGravity(obj, state, 0.0f, -1);
-                (*gPlayerInterface)->rotateTowardTarget(obj, state, timeDelta, 4);
-                state->savedPendingParentObj = obj->pendingParentObj;
-                obj->pendingParentObj = 0;
-                (*gPlayerInterface)
-                    ->update(obj, state, timeDelta, timeDelta, gDllCEMoveHandlers, gDllCECheckHandlers);
-                obj->pendingParentObj = state->savedPendingParentObj;
+            control = state->control;
+            if ((control->effectFlags & DLL_CE_EFFECT_PROJECTILE) != 0) {
+                dll_CE_spawnIceBall(obj, state);
             }
-            obj->anim.localPosY = placement->base.posY - 2.0f;
+            if ((control->effectFlags & DLL_CE_EFFECT_DUST) != 0) {
+                (*gPartfxInterface)->spawnObject((void*)obj, DLL_CE_PARTFX_DUST, NULL, 1, -1, NULL);
+            }
+            if ((control->effectFlags & DLL_CE_EFFECT_SPRAY) != 0) {
+                spawnCount = 0;
+                do {
+                    (*gPartfxInterface)->spawnObject((void*)obj, DLL_CE_PARTFX_SPRAY, NULL, 1, -1, NULL);
+                    spawnCount++;
+                } while (spawnCount < 10);
+            }
+            control->effectFlags = 0;
+            (*gBaddieControlInterface)->updateGravity(obj, state, 0.0f, -1);
+            (*gPlayerInterface)->rotateTowardTarget(obj, state, timeDelta, 4);
+            state->savedPendingParentObj = obj->pendingParentObj;
+            obj->pendingParentObj = 0;
+            (*gPlayerInterface)
+                ->update(obj, state, timeDelta, timeDelta, gDllCEMoveHandlers, gDllCECheckHandlers);
+            obj->pendingParentObj = state->savedPendingParentObj;
         }
+        obj->anim.localPosY = placement->base.posY - 2.0f;
     }
 }
 

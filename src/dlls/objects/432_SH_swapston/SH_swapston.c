@@ -136,11 +136,9 @@ void warpstone_updateDustEffects(GameObject* obj) {
                     (*gPartfxInterface)->spawnObject(playerObj, DUST_CLOUD_EFFECT_ID, &effectParams, 2, -1, NULL);
                 }
             }
-        } else {
-            if (!(state->dustEffectTimer < 480.0f)) {
-                state->dustEffectTimer = 0.0f;
-                state->dustEffectFlags = state->dustEffectFlags & ~WARPSTONE_DUST_FLAG_ACTIVE;
-            }
+        } else if (!(state->dustEffectTimer < 480.0f)) {
+            state->dustEffectTimer = 0.0f;
+            state->dustEffectFlags = state->dustEffectFlags & ~WARPSTONE_DUST_FLAG_ACTIVE;
         }
         state->dustEffectTimer = state->dustEffectTimer + timeDelta;
     }

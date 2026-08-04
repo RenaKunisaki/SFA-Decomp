@@ -465,12 +465,10 @@ void ccLightfoot_update(GameObject* obj) {
             if (mainGetBit(CC_LIGHTFOOT_ENCOUNTER_DESPAWN_GAMEBIT) != 0) {
                 state->phase = CC_LIGHTFOOT_PHASE_DESPAWN;
             }
-        } else {
-            if (ObjTrigger_IsSet(obj) != 0) {
-                mainSetBits(CC_LIGHTFOOT_ENCOUNTER_TRIGGERED_GAMEBIT, 1);
-            } else if ((state->flags & CC_LIGHTFOOT_FLAG_TURN_REQUIRED) != 0) {
-                state->phase = CC_LIGHTFOOT_PHASE_DORMANT_TURN;
-            }
+        } else if (ObjTrigger_IsSet(obj) != 0) {
+            mainSetBits(CC_LIGHTFOOT_ENCOUNTER_TRIGGERED_GAMEBIT, 1);
+        } else if ((state->flags & CC_LIGHTFOOT_FLAG_TURN_REQUIRED) != 0) {
+            state->phase = CC_LIGHTFOOT_PHASE_DORMANT_TURN;
         }
         break;
     case CC_LIGHTFOOT_PHASE_DORMANT_TURN:
@@ -512,12 +510,10 @@ void ccLightfoot_update(GameObject* obj) {
             }
             Sfx_PlayFromObject((u32)obj, SFXTRIG_swdtest222);
         }
-    } else {
-        if (ObjHits_GetPriorityHit(obj, &hitObjectHandle, 0, 0) != 0) {
-            move = ((GameObject*)hitObjectHandle)->anim.romDefNo;
-            if (move == CC_LIGHTFOOT_HIT_SEQ_COLOR_FADE_A || move == CC_LIGHTFOOT_HIT_SEQ_COLOR_FADE_B) {
-                Obj_SetModelColorFadeRecursive(obj, 0xf, 0xc8, 0, 0, 1);
-            }
+    } else if (ObjHits_GetPriorityHit(obj, &hitObjectHandle, 0, 0) != 0) {
+        move = ((GameObject*)hitObjectHandle)->anim.romDefNo;
+        if (move == CC_LIGHTFOOT_HIT_SEQ_COLOR_FADE_A || move == CC_LIGHTFOOT_HIT_SEQ_COLOR_FADE_B) {
+            Obj_SetModelColorFadeRecursive(obj, 0xf, 0xc8, 0, 0, 1);
         }
     }
     phase = state->phase;

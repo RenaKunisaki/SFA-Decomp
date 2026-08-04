@@ -1188,10 +1188,8 @@ void pushable_update(GameObject* obj) {
     }
     if (state->savePosDelay != 0) {
         state->savePosDelay -= 1;
-    } else {
-        if (state->savePosEnabled != 0) {
-            pushable_savePos(obj);
-        }
+    } else if (state->savePosEnabled != 0) {
+        pushable_savePos(obj);
     }
     switch (obj->anim.romDefNo) {
     case PUSHABLE_SEQ_ID_MAGIC_GEM_21E:

@@ -328,22 +328,20 @@ int DIMbossAnim_updatePlayerHitReaction(GameObject* obj, BaddieState* runtime) {
             } else {
                 (*gPlayerInterface)->setState(obj, runtime, 9);
             }
-        } else {
-            if (dirSector == 0 || dirSector == 15) {
-                runtime->moveDone = 0;
-                if (distance > 240 &&
-                    ((*gBaddieControlInterface)->getClearDirectionMask(obj, runtime, 100.0f) & 1)) {
-                    (*gPlayerInterface)
-                        ->setState(obj, runtime, gDim2LiftFarMoveChoices.surprised[randomGetRange(0, 5)]);
-                } else if (((GroundBaddieState*)state)->flags400 & 4) {
-                    (*gPlayerInterface)
-                        ->setState(obj, runtime, gDim2LiftFarFlankMoveChoices[randomGetRange(0, 1)]);
-                } else {
-                    (*gPlayerInterface)->setState(obj, runtime, 3);
-                }
+        } else if (dirSector == 0 || dirSector == 15) {
+            runtime->moveDone = 0;
+            if (distance > 240 &&
+                ((*gBaddieControlInterface)->getClearDirectionMask(obj, runtime, 100.0f) & 1)) {
+                (*gPlayerInterface)
+                    ->setState(obj, runtime, gDim2LiftFarMoveChoices.surprised[randomGetRange(0, 5)]);
+            } else if (((GroundBaddieState*)state)->flags400 & 4) {
+                (*gPlayerInterface)
+                    ->setState(obj, runtime, gDim2LiftFarFlankMoveChoices[randomGetRange(0, 1)]);
             } else {
-                (*gPlayerInterface)->setState(obj, runtime, 2);
+                (*gPlayerInterface)->setState(obj, runtime, 3);
             }
+        } else {
+            (*gPlayerInterface)->setState(obj, runtime, 2);
         }
     }
     mode = runtime->controlMode;
@@ -496,11 +494,9 @@ int DIMbossHitDetect_chooseIdleTaunt(GameObject* obj, BaddieState* runtime) {
                 ObjAnim_SetCurrentMove((int)obj, 0xd, 0.0f, 0);
                 runtime->moveDone = 0;
             }
-        } else {
-            if (runtime->moveJustStartedA != 0) {
-                ObjAnim_SetCurrentMove((int)obj, 0xc, 0.0f, 0);
-                runtime->moveDone = 0;
-            }
+        } else if (runtime->moveJustStartedA != 0) {
+            ObjAnim_SetCurrentMove((int)obj, 0xc, 0.0f, 0);
+            runtime->moveDone = 0;
         }
     }
     (*gPlayerInterface)->playSoundOnEvent0F(obj, runtime, 0, 0, lbl_80325AA0);
@@ -982,10 +978,8 @@ void DIMboss_updateWarpAndEffects(GameObject* obj, DIMbossRuntime* runtime) {
                 (*gPartfxInterface)->spawnObject((void*)obj, 0x4b4, &topState->tonsilDustSource, 0x200001, -1, NULL);
                 i = i + 1;
             } while (i < 7);
-        } else {
-            if (randomGetRange(0, runtime->hitPoints) == 0 && runtime->targetState == DIMBOSS_PHASE_GAMEBIT_COUNT_MET) {
-                (*gPartfxInterface)->spawnObject((void*)obj, 0x4b4, &topState->tonsilDustSource, 0x200001, -1, NULL);
-            }
+        } else if (randomGetRange(0, runtime->hitPoints) == 0 && runtime->targetState == DIMBOSS_PHASE_GAMEBIT_COUNT_MET) {
+            (*gPartfxInterface)->spawnObject((void*)obj, 0x4b4, &topState->tonsilDustSource, 0x200001, -1, NULL);
         }
         if (gDIMbossSequenceFlags & DIMBOSS_SEQUENCE_FLAG_8000) {
             (*gPartfxInterface)->spawnObject((void*)obj, 0x4b2, &topState->tonsilDustSource, 0x200001, -1, NULL);
