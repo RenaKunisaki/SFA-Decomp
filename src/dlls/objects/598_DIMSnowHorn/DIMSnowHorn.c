@@ -8,6 +8,7 @@
  */
 #include "dlls/objects/457_DIMDismount.h"
 #include "main/dll/partfx_interface.h"
+#include "main/obj_path.h"
 #include "main/texture.h"
 #include "main/objHitReact.h"
 #include "main/vecmath.h"

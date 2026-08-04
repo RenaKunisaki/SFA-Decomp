@@ -1,3 +1,7 @@
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/game_timer_control_api.h"
+#include "main/objhits.h"
 #include "sys/objects.h"
 #include "main/mapEvent.h"
 #include "dlls/objects/562_DFP_RotateP.h"
@@ -5,6 +9,7 @@
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
 #include "main/vecmath.h"
+#include "sys/objects/lifecycle.h"
 
 typedef struct CmbSrcColorIndexPair
 {
@@ -218,7 +223,7 @@ int DFP_RotateP_getObjectTypeId(void)
     return 0x0;
 }
 
-void DFP_RotateP_free(u32 obj, int flag)
+void DFP_RotateP_free(GameObject* obj, int flag)
 {
     u32* handles;
     s16 i;
@@ -317,7 +322,7 @@ void DFP_RotateP_update(GameObject* obj)
                         Obj_FreeObject((GameObject*)handles[i * DFP_ROTATEP_EFFECT_HANDLES_PER_RING + 1]);
                     }
                     handles[i * DFP_ROTATEP_EFFECT_HANDLES_PER_RING + 1] = 0;
-                    Sfx_PlayFromObject((int)obj, DFP_ROTATEP_SFX_TIMEOUT_RESET);
+                    Sfx_PlayFromObject(obj, DFP_ROTATEP_SFX_TIMEOUT_RESET);
                 }
                 state->ringCount = 0;
                 flags->bit40 = 0;

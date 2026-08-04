@@ -10,6 +10,7 @@
 #include "main/dll/partfx_interface.h"
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
+#include "main/obj_path.h"
 #include "main/objfx.h"
 #include "main/object_render.h"
 

@@ -13,6 +13,7 @@
 #include "main/vecmath.h"
 #include "game/objects/object.h"
 #include "main/objprint_api.h"
+#include "string.h"
 #include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
 #include "main/obj_list.h"

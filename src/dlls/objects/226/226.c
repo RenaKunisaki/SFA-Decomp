@@ -22,6 +22,7 @@
 #include "main/dll/ppcwgpipe_struct.h"
 #include "game/objects/object_setup.h"
 #include "game/objects/object.h"
+#include "string.h"
 #include "sys/objects/lifecycle.h"
 #include "main/dll/player_api.h"
 #include "main/objfx.h"

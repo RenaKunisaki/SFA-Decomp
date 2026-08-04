@@ -6,10 +6,13 @@
 
 #include "dlls/objects/449_DIMSnowBall.h"
 
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 #define DIM_SNOWBALL_COORDINATES_PER_POINT 3
 #define DIM_SNOWBALL_COORDINATE_SCALE      16.0f
@@ -155,7 +158,7 @@ void dimsnowball_update(GameObject* obj) {
         sqrtf(obj->anim.velocityZ * obj->anim.velocityZ +
               (obj->anim.velocityX * obj->anim.velocityX + obj->anim.velocityY * obj->anim.velocityY));
         if ((player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_en_fireup_c_1fb);
+            Sfx_PlayFromObject(obj, SFXTRIG_en_fireup_c_1fb);
         }
         state->jingleCooldown = DIM_SNOWBALL_JINGLE_COOLDOWN;
     }

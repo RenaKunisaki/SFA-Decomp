@@ -7,15 +7,21 @@
 #include "dlls/objects/426_BombPlantSp.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/path_control_interface.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
+#include "main/gameloop_gamebit_api.h"
 #include "main/model_light.h"
+#include "main/obj_message.h"
 #include "main/objfx.h"
+#include "main/objhits.h"
+#include "main/vecmath.h"
 #include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 #define BOMB_PLANT_SPORE_MESSAGE_IN_RANGE 0x7000A
 #define BOMB_PLANT_SPORE_MESSAGE_DETONATE 0x7000B
@@ -175,7 +181,7 @@ void BombPlantSpore_update(GameObject* obj) {
             switch (poppedMessage) {
             case BOMB_PLANT_SPORE_MESSAGE_DETONATE:
                 gameBitIncrement(GAMEBIT_ITEM_BombSpore_Count);
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_sc_gemrun0122);
+                Sfx_PlayFromObject(obj, SFXTRIG_sc_gemrun0122);
                 (*gExpgfxInterface)->freeSource((u32)obj);
                 for (i = 0; i < BOMB_PLANT_SPORE_EXPLOSION_PARTICLE_COUNT; i++) {
                     objfx_spawnDirectionalBurst(obj, 5, 1.0f, 7, 1, 0x3C,
@@ -266,7 +272,7 @@ void BombPlantSpore_update(GameObject* obj) {
         (*gPathControlInterface)->advance(obj, &state->path, timeDelta);
         if (contactObj != NULL && (hitId = contactObj->anim.romDefNo, hitId != BOMB_PLANT_SPORE_BOMB_PLANT_ALIAS_ID) &&
             hitId != BOMB_PLANT_SPORE_OBJECT_ID && hitId != BOMB_PLANT_SPORE_GROUND_QUAKE_ALIAS_ID) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_sc_eatthefood16);
+            Sfx_PlayFromObject(obj, SFXTRIG_sc_eatthefood16);
             state->flags.hitSurface = 1;
             if (state->fuseTimer > 120.0f) {
                 state->fuseTimer = 120.0f;
@@ -288,7 +294,7 @@ void BombPlantSpore_update(GameObject* obj) {
         f32 fuse = state->fuseTimer - timeDelta;
         state->fuseTimer = fuse;
         if (fuse <= 0.0f) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_en_majring2);
+            Sfx_PlayFromObject(obj, SFXTRIG_en_majring2);
             (*gExpgfxInterface)->freeSource((u32)obj);
             for (j = 0; j < BOMB_PLANT_SPORE_EXPLOSION_PARTICLE_COUNT; j++) {
                 objfx_spawnDirectionalBurst(obj, 5, 1.0f, 7, 1, 0x3C,

@@ -6,13 +6,18 @@
  */
 #include "dlls/objects/392_CClightfoot.h"
 
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_00C9_enemy.h"
+#include "main/dll/player_api.h"
 #include "main/dll/player_target.h"
 #include "main/dll/waterfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
+#include "main/obj_link.h"
+#include "main/obj_trigger.h"
 #include "main/objfx.h"
+#include "main/objhits.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
@@ -347,7 +352,7 @@ void ccLightfoot_update(GameObject* obj) {
         if (state->idleSfxTimer < 0.0f) {
             state->idleSfxTimer =
                 (f32)randomGetRange(CC_LIGHTFOOT_IDLE_SFX_DELAY_MIN, CC_LIGHTFOOT_IDLE_SFX_DELAY_MAX);
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_trwhin4);
+            Sfx_PlayFromObject(obj, SFXTRIG_trwhin4);
         }
     }
     switch (state->phase) {
@@ -508,7 +513,7 @@ void ccLightfoot_update(GameObject* obj) {
                 objfx_spawnHitEmitterAtPos(hitPos, 8, 0xff, 0xff, 0x78);
                 objDoHitParticleFx((void*)obj, CC_LIGHTFOOT_HIT_LIGHT_SCALE, hitPos, 4, 0);
             }
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_swdtest222);
+            Sfx_PlayFromObject(obj, SFXTRIG_swdtest222);
         }
     } else if (ObjHits_GetPriorityHit(obj, &hitObjectHandle, 0, 0) != 0) {
         move = hitObjectHandle->anim.romDefNo;

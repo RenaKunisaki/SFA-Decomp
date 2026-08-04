@@ -8,6 +8,7 @@
 #include "main/gamebits.h"
 #include "main/obj_list.h"
 #include "main/dll/DF/dll_0230_dfpwallbar.h"
+#include "sys/objects.h"
 
 /* romDefNo of the DragonRock spell-puzzle controller object this bar links
    to (stored as ChukaState.linkedObject; same controller as the floor bar). */

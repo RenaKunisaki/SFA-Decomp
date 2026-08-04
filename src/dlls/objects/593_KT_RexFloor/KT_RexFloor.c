@@ -11,6 +11,8 @@
  */
 #include "dlls/object_descriptor.h"
 #include "dolphin/mtx.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/DR/dll_024F_ktrexlevel.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/DR/dll_0251_ktrexfloorswitch.h"
 
@@ -321,7 +323,7 @@ void KT_RexFloorSwitch_update(GameObject* obj)
     }
     if ((s8)moved != 0 && gKTrexFloorSwitchPrevMoved == 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_en_birdymornin11);
+        Sfx_PlayFromObject(obj, SFXTRIG_en_birdymornin11);
     }
     gKTrexFloorSwitchPrevMoved = (s8)moved;
     if ((obj)->userData1 == 2)

@@ -6,15 +6,20 @@
 #include "dlls/objects/482_DIM_BossTon.h"
 
 #include "dlls/objects/480_DIM_Boss.h"
+#include "main/audio/music_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/camera_shake_api.h"
 #include "main/dll/baddie_control_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/mapEvent.h"
+#include "main/obj_message.h"
+#include "main/obj_path.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
 #include "main/objhits.h"
 #include "main/objseq.h"
+#include "main/objtype.h"
 #include "main/pad.h"
 #include "main/player_control_interface.h"
 #include "main/render_envfx_api.h"
@@ -143,12 +148,12 @@ void DIMbosstonsil_checkHit(GameObject* obj, GroundBaddieState* state) {
         (*gPartfxInterface)
             ->spawnObject(obj, DIMBOSSTONSIL_HIT_EFFECT_ALT_ID, &spawnArgs, DIMBOSSTONSIL_HIT_FX_FLAGS, -1, NULL);
         objDoHitParticleFx(obj, 0.028f, &spawnArgs, 3, 0);
-        Sfx_PlayFromObject((u32)obj, DIMBOSSTONSIL_PRIMARY_HIT_SFX);
+        Sfx_PlayFromObject(obj, DIMBOSSTONSIL_PRIMARY_HIT_SFX);
         doRumble(16.0f);
         if (state->baddie.hitPoints != 0) {
-            Sfx_PlayFromObject((u32)obj, DIMBOSSTONSIL_ALT_HIT_SFX);
+            Sfx_PlayFromObject(obj, DIMBOSSTONSIL_ALT_HIT_SFX);
         } else {
-            Sfx_PlayFromObject((u32)obj, DIMBOSSTONSIL_NORMAL_HIT_SFX);
+            Sfx_PlayFromObject(obj, DIMBOSSTONSIL_NORMAL_HIT_SFX);
         }
         CameraShake_SetOffset(3.0f);
         if (gDIMbosstonsilRouteDelayTimer == 0.0f) {
@@ -216,7 +221,7 @@ void dimBossTonsil_newState_hitFightMain(GameObject* obj, ObjSeqState* animUpdat
     }
 
     if (gDIMbosstonsilRumbleElapsed >= gDIMbosstonsilNextRumbleTime) {
-        Sfx_PlayFromObject((u32)obj, DIMBOSSTONSIL_RUMBLE_SFX);
+        Sfx_PlayFromObject(obj, DIMBOSSTONSIL_RUMBLE_SFX);
         if (timer > 100.0f) {
             timer = 100.0f;
         }
@@ -336,7 +341,7 @@ int DIMbosstonsil_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animUpdate) {
     }
 
     if (gDIMbosstonsilRumbleElapsed >= gDIMbosstonsilNextRumbleTime) {
-        Sfx_PlayFromObject((u32)obj, DIMBOSSTONSIL_RUMBLE_SFX);
+        Sfx_PlayFromObject(obj, DIMBOSSTONSIL_RUMBLE_SFX);
         gDIMbosstonsilNextRumbleTime += 100.0f;
         doRumble(8.0f);
     }

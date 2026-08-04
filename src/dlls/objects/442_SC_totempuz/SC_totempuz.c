@@ -4,6 +4,8 @@
  */
 #include "dlls/objects/442_SC_totempuz.h"
 
+#include "main/audio/sfx_limited_object_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
@@ -12,6 +14,7 @@
 #include "main/obj_list.h"
 #include "main/objHitReact_types.h"
 #include "main/objfx.h"
+#include "main/objhits.h"
 #include "main/objtexture.h"
 #include "main/object_render.h"
 #include "main/shader_api.h"
@@ -183,7 +186,7 @@ void sc_totempuzzle_update(GameObject* obj) {
     if ((obj->anim.bankIndex == SC_TOTEM_PUZZLE_CAP_INDEX) || (mainGetBit(GAMEBIT_SC_totempuzzle_running) != 0) ||
         (mainGetBit(SC_TOTEM_PUZZLE_GAMEBIT_ACTIVATED) == 0)) {
         if ((hitKind != 0) && (hitKind != OBJHITREACT_COLLISION_SKIP_REACTION)) {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_wp_swdtest222);
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_swdtest222);
             lightArgs.posX += playerMapOffsetX;
             lightArgs.posZ += playerMapOffsetZ;
             objDoHitParticleFx((void*)obj, 0.014f, &lightArgs, 1, 0);
@@ -192,7 +195,7 @@ void sc_totempuzzle_update(GameObject* obj) {
     }
 
     if ((hitKind != 0) && (hitKind != OBJHITREACT_COLLISION_SKIP_REACTION)) {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_wp_swdtest222);
+        Sfx_PlayFromObject(obj, SFXTRIG_wp_swdtest222);
         lightArgs.posX += playerMapOffsetX;
         lightArgs.posZ += playerMapOffsetZ;
         objDoHitParticleFx((void*)obj, 0.014f, &lightArgs, 1, 0);
@@ -235,7 +238,7 @@ void sc_totempuzzle_update(GameObject* obj) {
         state->pulseTimer -= timeDelta;
         if (state->pulseTimer < 0.0f) {
             state->flags &= ~SC_TOTEM_PUZZLE_FLAG_PULSE_ACTIVE;
-            Sfx_PlayFromObjectLimited((int)obj, SFXTRIG_mv_cagerat01, 2);
+            Sfx_PlayFromObjectLimited(obj, SFXTRIG_mv_cagerat01, 2);
             if ((state->flags & SC_TOTEM_PUZZLE_FLAG_REVERSED) != 0) {
                 if (--state->stepIndex < 0) {
                     state->angle += 65535.0f;

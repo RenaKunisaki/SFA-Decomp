@@ -21,6 +21,7 @@
  */
 #include "main/dll/baddie_state.h"
 #include "main/dll/baddie_control_interface.h"
+#include "string.h"
 #include "sys/objects.h"
 #include "main/shader_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"

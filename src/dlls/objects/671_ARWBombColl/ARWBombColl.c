@@ -10,12 +10,16 @@
  * an axis-aligned proximity test (flag bit10) or a plane-crossing test that
  * compares the Arwing's current and previous Z against the pickup's Z.
  */
+#include "main/audio/sfx_play_api.h"
 #include "main/frame_timing.h"
 #include "main/objfx.h"
 #include "main/dll/ARW/dll_029F_arwbombcoll.h"
 #include "main/dll/ARW/dll_029A_arwarwing.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
+#include "main/objhits.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 #define ARW_ARWING_BOMB_OBJ 0x605 /* retail OBJECTS.bin "ARWArwingBo", DLL 0x29C */
 
@@ -167,29 +171,29 @@ void ARWBombColl_update(GameObject* obj)
                 switch (obj->anim.romDefNo)
                 {
                 case 0x609:
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_ar_ring_pickup);
+                    Sfx_PlayFromObject(obj, SFXTRIG_ar_ring_pickup);
                     arwarwing_upgradeLaserLevel(arw);
                     break;
                 case 0x608:
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_ar_largeenergy_pickup);
+                    Sfx_PlayFromObject(obj, SFXTRIG_ar_largeenergy_pickup);
                     arwarwing_addBomb(arw);
                     break;
                 case 0x60a:
                     break;
                 case 0x6d8:
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_ar_smallenergy_pickup);
+                    Sfx_PlayFromObject(obj, SFXTRIG_ar_smallenergy_pickup);
                     arwarwing_incrementPickup6D8Count(arw);
                     break;
                 case 0x6d9:
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_ar_smallenergy_pickup);
+                    Sfx_PlayFromObject(obj, SFXTRIG_ar_smallenergy_pickup);
                     arwarwing_incrementPickup6D9Count(arw);
                     break;
                 case 0x6db:
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_ar_smallenergy_pickup);
+                    Sfx_PlayFromObject(obj, SFXTRIG_ar_smallenergy_pickup);
                     arwarwing_incrementPickup6DBCount(arw);
                     break;
                 case 0x6da:
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_ar_smallenergy_pickup);
+                    Sfx_PlayFromObject(obj, SFXTRIG_ar_smallenergy_pickup);
                     arwarwing_incrementPickup6DACount(arw);
                     break;
                 }

@@ -8,8 +8,12 @@
  */
 #include "dlls/objects/431_SH_swaplift.h"
 
+#include "main/dll/dll_0000_gameui_api.h"
+#include "main/dll/tricky_api.h"
 #include "main/gamebits.h"
+#include "main/obj_trigger.h"
 #include "main/object_render.h"
+#include "sys/objects.h"
 
 #define WARP_STONE_LIFT_PLAYER_CLASS_ID 1
 

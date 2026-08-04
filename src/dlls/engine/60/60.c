@@ -1,6 +1,7 @@
 #include "dlls/object_descriptor.h"
 #include "dolphin/os/OSReport.h"
 #include "main/dll/dll_003C_link.h"
+#include "string.h"
 #include "track/intersect_hud_api.h"
 #include "main/gametext_box_api.h"
 #include "main/gametext_command_api.h"

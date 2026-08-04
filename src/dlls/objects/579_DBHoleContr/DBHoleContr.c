@@ -1,5 +1,9 @@
 /* DBHoleContr (DLL 0x243) */
+#include "main/obj_message.h"
 #include "main/object_render.h"
+#include "main/object_update_list.h"
+#include "main/objtype.h"
+#include "string.h"
 #include "sys/objects/lifecycle.h"
 #include "main/dll/dbholecontrol1state_struct.h"
 #include "main/objseq.h"

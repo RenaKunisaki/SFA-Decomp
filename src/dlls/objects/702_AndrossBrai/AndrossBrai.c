@@ -7,10 +7,13 @@
  * collision with a flash + cooldown, and on reaching zero health flips to
  * the defeated state, signalling andross and the lightning object.
  */
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/dll_02BC_andross.h"
 #include "main/dll/dll_02BE_androssbrain.h"
 #include "main/dll/dll_02BF_androssligh.h"
 #include "main/game_ui_interface.h"
 #include "main/frame_timing.h"
+#include "main/objhits.h"
 #include "sys/objects.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
@@ -147,11 +150,11 @@ void AndrossBrain_update(GameObject* obj)
                 {
                     state->brainState = ANDROSSBRAIN_DEFEATED;
                     andross_setPartSignal((GameObject*)state->andross, ANDROSS_SIGNAL_BRAIN_HIT);
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_en_barrelblow11);
+                    Sfx_PlayFromObject(obj, SFXTRIG_en_barrelblow11);
                 }
                 else
                 {
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_wmap_nameoff);
+                    Sfx_PlayFromObject(obj, SFXTRIG_wmap_nameoff);
                 }
             }
         }

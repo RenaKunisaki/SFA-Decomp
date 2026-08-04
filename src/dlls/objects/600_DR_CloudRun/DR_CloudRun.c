@@ -18,6 +18,8 @@
  * overlays for the placement record and for the few extra fields the
  * shared struct does not yet name.
  */
+#include "main/audio/sfx_play_api.h"
+#include "main/camera.h"
 #include "main/dll/partfx_interface.h"
 #include "main/debug.h"
 #include "main/byte_flags.h"
@@ -211,7 +213,7 @@ void DR_CloudRunner_fireProjectile(GameObject* obj)
     {
         return;
     }
-    Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_11e);
+    Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_11e);
     setup = Obj_AllocObjectSetup(0x24, DRCLOUDRUNNER_CHILD_OBJ_PROJECTILE);
     setup->color[2] = 0xff;
     setup->color[3] = 0xff;
@@ -321,7 +323,7 @@ int DR_CloudRunner_stateHandler06(GameObject* obj, CloudRunnerState* baddie)
         {
             return 0;
         }
-        Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_11e);
+        Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_11e);
         setup = Obj_AllocObjectSetup(0x18, DRCLOUDRUNNER_CHILD_OBJ_PROJECTILE);
         setup->color[2] = 0xff;
         setup->color[3] = 0xff;
@@ -620,7 +622,7 @@ int DR_CloudRunner_stateHandler05(GameObject* obj, CloudRunnerState* baddie, f32
                  obj->anim.velocityY * obj->anim.velocityY));
     if (inner->flagsBC0.b80 == 0 && (baddie->baddie.pressedButtons & 0x200))
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_sliftloop11);
+        Sfx_PlayFromObject(obj, SFXTRIG_sliftloop11);
         inner->flagsBC0.b80 = 1;
         speed = 0.0f;
         needMove = 1;
@@ -896,7 +898,7 @@ int DR_CloudRunner_stateHandler01(GameObject* obj, CloudRunnerState* baddie)
     Vec_distance(&(obj)->anim.worldPosX, &((GameObject*)Obj_GetPlayerObject())->anim.worldPosX);
     if (RandomTimer_UpdateRangeTrigger(&inner->randomTimerB54, 12.0f, 18.0f))
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_lfoot_taunt);
+        Sfx_PlayFromObject(obj, SFXTRIG_lfoot_taunt);
     }
     if (mainGetBit(placement->enableGameBit) != 0)
     {
@@ -1133,7 +1135,7 @@ void DR_CloudRunner_hitDetect(GameObject* obj)
             inner->airTimeRemaining = 1;
             (*gPlayerInterface)->setState(obj, inner, 7);
         }
-        Sfx_PlayFromObject((int)obj, SFXTRIG_gscsc);
+        Sfx_PlayFromObject(obj, SFXTRIG_gscsc);
     }
 }
 

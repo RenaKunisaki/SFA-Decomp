@@ -7,6 +7,7 @@
 #include "main/dll/player_api.h"
 #include "main/model_engine.h"
 #include "main/model_engine_ui_api.h"
+#include "string.h"
 #include "sys/objects.h"
 #include "main/map_load.h"
 #include "main/mm.h"

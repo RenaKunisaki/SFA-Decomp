@@ -26,6 +26,7 @@
 #include "main/newclouds.h"
 #include "game/objects/object.h"
 #include "main/object_render.h"
+#include "string.h"
 #include "sys/objects.h"
 #include "main/resource.h"
 #include "main/screen_transition.h"

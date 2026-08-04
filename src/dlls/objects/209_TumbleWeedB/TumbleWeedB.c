@@ -9,13 +9,19 @@
 #include "dlls/objects/209_TumbleWeedB.h"
 #include "dlls/objects/210.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
+#include "main/obj_list.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
+#include "main/objhits.h"
+#include "main/objtype.h"
 #include "main/sky_interface.h"
 #include "main/track_dolphin_api.h"
 #include "main/vecmath.h"
+#include "string.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 #include "main/audio/sfx_looped_object_api.h"
@@ -226,7 +232,7 @@ void TumbleWeedBush_update(GameObject* obj) {
         if (hitObject->anim.romDefNo != TUMBLEWEED_BUSH_SIBLING_C) {
             objfx_spawnHitEmitterAtPos(hitPos, TUMBLEWEED_BUSH_HIT_EFFECT_ID, TUMBLEWEED_BUSH_HIT_COLOR_R,
                                        TUMBLEWEED_BUSH_HIT_COLOR_G, TUMBLEWEED_BUSH_HIT_COLOR_B);
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_swdtest222_280);
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_swdtest222_280);
             for (pieceIndex = 0; (u8)pieceIndex < state->pieceCount; pieceIndex++) {
                 pieceSlot = &state->pieceObjects[(u8)pieceIndex];
                 if (*pieceSlot != NULL) {
@@ -494,10 +500,10 @@ void tumbleweed_updateRollingMotion(GameObject* obj, TumbleweedState* state) {
                 nearestHitIndex = 0x7f;
             }
             if (nearestHitIndex > 0x10) {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_roothack16);
+                Sfx_PlayFromObject(obj, SFXTRIG_mv_roothack16);
                 randomValue = randomGetRange(0, 5);
                 if (((int)randomValue == 0) && ((state->flags & TUMBLEWEED_EFFECT_FLAG_IMPACT_SFX) != 0)) {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_id_27f);
+                    Sfx_PlayFromObject(obj, SFXTRIG_id_27f);
                 }
             }
         }
@@ -875,7 +881,7 @@ void tumbleweed_updateEffects(GameObject* obj) {
             } while (spawnCount != 0);
             break;
         }
-        Sfx_PlayFromObject((u32)obj, TUMBLEWEED_SFX_BURST);
+        Sfx_PlayFromObject(obj, TUMBLEWEED_SFX_BURST);
         state->flags &= ~TUMBLEWEED_EFFECT_FLAG_BURST;
     }
 

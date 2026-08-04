@@ -1,8 +1,11 @@
+#include "main/audio/sfx_limited_object_api.h"
 #include "main/dll/partfx_interface.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/mtx.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
+#include "main/maketex_timer_api.h"
+#include "main/obj_path.h"
 #include "main/vecmath.h"
 #include "main/dll/dll_0282_barrelgener.h"
 #include "main/dll/rom_curve_interface.h"
@@ -273,7 +276,7 @@ void arwsquadron_spawnProjectile(GameObject* obj, int pathIdx, int angle, int fl
         arwprojectile_createLinkedEffect(proj, 1);
     arwprojectile_setLifetime(proj, 0x4b);
     arwprojectile_placeForward(proj, 40.0f);
-    Sfx_PlayFromObjectLimited((int)proj, SFXTRIG_wp_blaserhit16, 4);
+    Sfx_PlayFromObjectLimited(proj, SFXTRIG_wp_blaserhit16, 4);
 }
 
 void arwsquadron_handleDamage(GameObject* obj, ArwSquadronState* squad)
@@ -302,7 +305,7 @@ void arwsquadron_handleDamage(GameObject* obj, ArwSquadronState* squad)
         if (flags->acceptsDamage)
         {
             if (squad->hitFlashActive == 0)
-                Sfx_PlayFromObjectLimited((int)obj, SFXTRIG_wmap_nameoff_29e, 4);
+                Sfx_PlayFromObjectLimited(obj, SFXTRIG_wmap_nameoff_29e, 4);
             Obj_SetModelColorFadeRecursive(obj, 0xf, 0xc8, 0, 0, 1);
             squad->hitFlashTimer = 25.0f;
             squad->hitFlashActive = 1;
@@ -344,7 +347,7 @@ void arwsquadron_handleDamage(GameObject* obj, ArwSquadronState* squad)
         else
         {
             if (squad->hitFlashActive == 0)
-                Sfx_PlayFromObjectLimited((int)obj, SFXTRIG_ar_laser116, 4);
+                Sfx_PlayFromObjectLimited(obj, SFXTRIG_ar_laser116, 4);
             squad->hitFlashTimer = 25.0f;
             squad->hitFlashActive = 1;
         }

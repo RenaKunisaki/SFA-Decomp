@@ -15,6 +15,7 @@
 #include "main/mapEventTypes.h"
 #include "main/objtexture.h"
 #include "main/object_render.h"
+#include "main/vecmath.h"
 
 #define WCTREXSTATU_CALLBACK_TRIGGER 1
 

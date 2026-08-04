@@ -4,7 +4,11 @@
  * The TU contains the shopkeeper's state handlers, its object-sequence
  * callbacks, and the shopkeeper object implementation.
  */
+#include "main/audio/sfx_play_api.h"
 #include "main/dll/baddie_state.h"
+#include "main/dll/player_api.h"
+#include "main/dll/tricky_api.h"
+#include "main/gametext_show_api.h"
 #include "main/track_dolphin_api.h"
 #include "main/dll/dll_0004_dummy04.h"
 #include "main/dll/rom_curve_interface.h"
@@ -438,7 +442,7 @@ int ShopKeeper_updateTracking(GameObject* obj, BaddieState* baddie)
     state->actionTimer = state->actionTimer - timeDelta;
     if (state->actionTimer <= 0.0f && (state->flags9D4 & SHOPKEEPER_FLAG_IDLE_ANIM) == 0)
     {
-        Sfx_PlayFromObject((int)obj, SHOPKEEPER_SFX_IDLE_ANIM);
+        Sfx_PlayFromObject(obj, SHOPKEEPER_SFX_IDLE_ANIM);
         if (obj->anim.currentMove == SHOPKEEPER_ANIM_ALERT)
         {
             ObjAnim_SetCurrentMove((int)obj, SHOPKEEPER_ANIM_TRACKING, 0.99f, 0);

@@ -5,6 +5,7 @@
 #include "main/frame_timing.h"
 #include "main/lightmap_api.h"
 #include "main/lightmap_text_color_api.h"
+#include "string.h"
 #include "track/intersect_render_setup_api.h"
 #include "track/intersect_geom_api.h"
 #include "main/shader_api.h"

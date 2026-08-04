@@ -6,6 +6,7 @@
  */
 #include "dlls/objects/485_DIM_BossSpi.h"
 
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_shake_api.h"
 #include "main/dll/expgfx_interface.h"
@@ -13,8 +14,11 @@
 #include "main/frame_timing.h"
 #include "main/model.h"
 #include "main/object_render.h"
+#include "main/objhits.h"
 #include "main/pad_api.h"
+#include "main/vecmath.h"
 #include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 #define DIMBOSSSPIT_PHASE_FLIGHT                     0
 #define DIMBOSSSPIT_BURST_START_FRAME                1
@@ -76,8 +80,8 @@ void DIMbossspit_updateBurst(GameObject* obj) {
         (*gPartfxInterface)
             ->spawnObject(obj, DIMBOSSSPIT_PARTFX_BURST_FLASH, NULL, DIMBOSSSPIT_PARTFX_MODE,
                           DIMBOSSSPIT_PARTFX_MODEL_NONE, NULL);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_wp_gcexp1_c);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_mn_lummy311);
+        Sfx_PlayFromObject(obj, SFXTRIG_wp_gcexp1_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_mn_lummy311);
         CameraShake_SetOffset(3.0f);
         doRumble(12.0f);
         if (stateAddress->light != NULL) {

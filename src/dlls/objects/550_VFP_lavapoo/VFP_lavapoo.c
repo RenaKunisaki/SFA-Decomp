@@ -2,11 +2,14 @@
 #include "dlls/object_descriptor.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "game/objects/object_setup.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
+#include "main/objprint_api.h"
 #include "main/objtexture.h"
+#include "main/vecmath.h"
 
 #define VFP_LAVAPOOL_PARTFX          0x3a2
 
@@ -65,7 +68,7 @@ void VFP_lavapool_updateWave(GameObject* obj)
         state->speedFactor = (f32)randomGetRange(0x32, 100);
         state->amplitude = 1.0f / ((f32)(int)mapData->amplitudeDivisor / (f32)randomGetRange(0x15e, 800));
         state->phase = 0.0f;
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_id_111);
+        Sfx_PlayFromObject(obj, SFXTRIG_id_111);
         speed = 255.0f;
     }
     gVfpLavaPoolWaveSin = mathSinf((gVfpLavaPoolPi * (f32)(s16)(int)state->phase) / 32768.0f);

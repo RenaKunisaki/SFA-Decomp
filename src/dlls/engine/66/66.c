@@ -24,6 +24,7 @@
 #include "main/vecmath.h"
 #include "main/objseq_api.h"
 #include "main/pad.h"
+#include "string.h"
 
 typedef struct CameraModeNormalSlideTransform {
     s16 angles[3];

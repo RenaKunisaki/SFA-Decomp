@@ -15,6 +15,7 @@
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "dolphin/os/OSCache.h"
+#include "main/dll/player_api.h"
 #include "main/dll/ppcwgpipe_struct.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
@@ -22,6 +23,7 @@
 #include "main/objseq.h"
 #include "main/object_render.h"
 #include "main/objtexture.h"
+#include "main/track_dolphin_api.h"
 #include "sys/objects.h"
 
 #define DIM_MAGIC_BRIDGE_GAMEBIT_IGNITED 0x1e9

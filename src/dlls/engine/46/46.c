@@ -1,4 +1,5 @@
 #include "main/camera_interface.h"
+#include "string.h"
 #include "sys/objects.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/objprint_api.h"

@@ -16,6 +16,7 @@
 #include "main/dll/objfx_api.h"
 #include "main/dll/player_api.h"
 #include "main/dll/player_state.h"
+#include "main/dll/savegame_object_api.h"
 #include "main/dll/tricky_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"

@@ -11,7 +11,9 @@
 #include "main/dll/rom_curve_def.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
+#include "main/objtype.h"
 #include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 #define DIM2_PATH_GENERATOR_FLAG_SPAWN_TOGGLE 0x01
 #define DIM2_PATH_GENERATOR_FLAG_CURVE_BUILT  0x02

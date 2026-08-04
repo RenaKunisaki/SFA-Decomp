@@ -14,9 +14,13 @@
 #include "dlls/objects/430_SH_LevelCon.h"
 
 #include "dolphin/pad.h"
+#include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/debug.h"
+#include "main/dll/player_api.h"
+#include "main/dll/savegame_load_api.h"
 #include "main/frame_timing.h"
 #include "main/game_ui_interface.h"
 #include "main/gamebit_ids.h"
@@ -578,7 +582,7 @@ void SH_LevelControl_update(GameObject* obj) {
         val = mainGetBit(GAMEBIT_ITEM_WhiteGrubTub_Used);
         val2 = mainGetBit(GAMEBIT_ITEM_WhiteShroom_Count);
         if ((val2 + val == 6) && (val = mainGetBit(GAMEBIT_SH_Got6WhiteShrooms), val == 0)) {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_mpick1_b);
+            Sfx_PlayFromObject(obj, SFXTRIG_mpick1_b);
             mainSetBits(GAMEBIT_SH_Got6WhiteShrooms, 1);
         }
         break;

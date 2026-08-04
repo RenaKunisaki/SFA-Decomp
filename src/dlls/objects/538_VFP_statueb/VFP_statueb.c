@@ -12,9 +12,13 @@
  * The placement variant (0..2) selects both the displayed model and the
  * particle-burst model.
  */
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/dll/expgfx_interface.h"
+#include "main/objhits.h"
+#include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 #include "main/objfx.h"
 #include "main/audio/sfx_trigger_ids.h"
@@ -115,7 +119,7 @@ void VFP_statueball_update(GameObject* obj)
     if ((state->active != 0) && (state->activateSfxPending != 0))
     {
         state->activateSfxPending = 0;
-        Sfx_PlayFromObject((int)obj, SFXTRIG_cvdrip1c);
+        Sfx_PlayFromObject(obj, SFXTRIG_cvdrip1c);
         Sfx_PlayFromObject(0, SFXTRIG_menuups16k);
     }
 
@@ -134,7 +138,7 @@ void VFP_statueball_update(GameObject* obj)
         }
         else
         {
-            Sfx_StopObjectChannel((int)obj, 0x40);
+            Sfx_StopObjectChannel(obj, 0x40);
             (*gExpgfxInterface)->freeSource((u32)obj);
             if (state->activationGameBit != -1)
             {

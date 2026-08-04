@@ -3,6 +3,7 @@
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
+#include "main/objtype.h"
 
 #define WCBLOCK_VARIANT_A          1
 

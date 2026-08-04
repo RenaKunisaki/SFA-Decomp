@@ -8,11 +8,14 @@
 #include "dlls/objects/455_DIMLavaSmas.h"
 
 #include "dlls/objects/446.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/gamebits_api.h"
 #include "main/lightmap_api.h"
+#include "main/objhits.h"
 #include "main/objseq.h"
 #include "main/object_render.h"
+#include "main/pi_dolphin_api.h"
 #include "main/track_dolphin_map_api.h"
 
 enum DimLavaSmashPhase {
@@ -70,7 +73,7 @@ int dimlavasmash_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
             if (ObjHits_GetPriorityHit(obj, &hit, 0, 0) != 0) {
                 if (hit->anim.romDefNo == DIM_LAVA_PROJECTILE_SEQUENCE_ID) {
                     state->phase = DIM_LAVA_SMASH_PHASE_SMASHING;
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_en_mushsporedisp22);
+                    Sfx_PlayFromObject(obj, SFXTRIG_en_mushsporedisp22);
                     block =
                         mapGetBlock(objPosToMapBlockIdx(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ));
                     if (block != NULL) {

@@ -12,14 +12,18 @@
 
 #include "dlls/objects/488_SB_Galleon.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
+#include "main/obj_message.h"
 #include "main/object_render.h"
 #include "main/obj_list.h"
 #include "main/obj_path.h"
 #include "main/objhits.h"
 #include "main/object_transform.h"
+#include "main/objtype.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
@@ -130,9 +134,9 @@ void SB_ShipHead_update(GameObject* obj) {
     cameraState = SB_Galleon_getCameraState(getSbGalleon());
     if (cameraState == 2) {
         if (Vec_distance(&player->anim.worldPosX, &object->anim.worldPosX) < gSbShipHeadHissSfxDistance) {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_en_trpopn_c_312);
+            Sfx_PlayFromObject(obj, SFXTRIG_en_trpopn_c_312);
         } else {
-            Sfx_StopObjectChannel((int)obj, SB_SHIP_HEAD_HISS_SFX_CHANNEL);
+            Sfx_StopObjectChannel(obj, SB_SHIP_HEAD_HISS_SFX_CHANNEL);
         }
     }
     galleonPhase = ((GameObject*)galleon)->userData1;
@@ -162,7 +166,7 @@ void SB_ShipHead_update(GameObject* obj) {
         (((u32)(galleonPhase - 3) <= 1 || (galleonPhase == 5))) &&
         (ObjHits_GetPriorityHit(obj, &hit, 0, 0) != 0) && (hit->anim.romDefNo != SB_FIREBALL_OBJECT_ID)) {
         Obj_SetModelColorFadeRecursive(obj, 0xf, 200, 0, 0, 1);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_wp_gcfir1_c_37);
+        Sfx_PlayFromObject(obj, SFXTRIG_wp_gcfir1_c_37);
         state->health -= 1;
         if (state->health <= 0) {
             SB_GALLEON_VTBL(galleon)->onPartDestroyed((int)galleon);
@@ -188,7 +192,7 @@ void SB_ShipHead_update(GameObject* obj) {
         (Obj_IsLoadingLocked() != 0)) {
         gSbShipHeadHasFiredFireball = 1;
         object->userData1 = object->userData1 + framesThisStep;
-        Sfx_PlayFromObject((int)obj, SFXTRIG_gcexp1_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_gcexp1_c);
         object->anim.localPosY += 50.0f;
         object->anim.localPosZ = object->anim.localPosZ - 300.0f;
         Obj_GetWorldPosition(obj, &spawnX, &spawnY, &spawnZ);
@@ -214,7 +218,7 @@ void SB_ShipHead_update(GameObject* obj) {
         ((GameObject*)result)->userData2 = (int)state->target;
     }
     if ((firingCue == 1) && (Obj_IsLoadingLocked() != 0)) {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_gcexp1_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_gcexp1_c);
         player = Obj_GetPlayerObject();
         placementBytes = (ObjPlacement*)Obj_AllocObjectSetup(0x18, SB_PROJECTILE_OBJECT_ID);
         placementBytes->posX = 100.0f + player->anim.worldPosX;

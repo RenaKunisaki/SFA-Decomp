@@ -3,10 +3,14 @@
  * raycasts for hits, snaps to stored path points, plays impact/loop SFX,
  * and reports completion.
  */
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/dll/partfx_interface.h"
+#include "main/gamebits_api.h"
 #include "main/object_render.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/objhits.h"
 #include "main/track_bbox_api.h"
 #include "main/objfx.h"
 #include "main/mapEvent.h"
@@ -63,7 +67,7 @@ void dfptargetblock_resolveCollisionPoints(GameObject* obj, DfpTargetBlockCollis
                 obj->anim.velocityY = zero;
                 obj->anim.velocityZ = zero;
             }
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_bflconc1_1d0);
+            Sfx_PlayFromObject(obj, SFXTRIG_mv_bflconc1_1d0);
             return;
         }
         point += DFPTARGETBLOCK_POINT_STRIDE;
@@ -109,7 +113,7 @@ static inline void dfptargetblock_resetToHome(GameObject* obj, ObjPlacement* hom
     obj->anim.velocityZ = zero;
     state->mode = DFPTARGETBLOCK_MODE_RESETTING;
     obj->anim.localPosY = home->posY - (80.0f);
-    Sfx_PlayFromObject((u32)obj, DFPTARGETBLOCK_RESET_SFX);
+    Sfx_PlayFromObject(obj, DFPTARGETBLOCK_RESET_SFX);
 }
 static inline void dfptargetblock_checkSettled(GameObject* obj, DfpTargetBlockState* state,
                                                f32 threshold)
@@ -173,7 +177,7 @@ void dfptargetblock_hitDetect(GameObject* obj)
     if ((hitType != 0) && (hitObj != NULL) && (hitType == DFPTARGETBLOCK_HIT_TYPE_PUSH) &&
         (hitType == DFPTARGETBLOCK_HIT_TYPE_PUSH))
     {
-        Sfx_PlayFromObject((u32)obj, DFPTARGETBLOCK_IMPACT_SFX);
+        Sfx_PlayFromObject(obj, DFPTARGETBLOCK_IMPACT_SFX);
         velX = hitObj->anim.velocityX;
         velZ = hitObj->anim.velocityZ;
         if (velX < 0.0f)
