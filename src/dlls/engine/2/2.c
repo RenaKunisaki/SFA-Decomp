@@ -780,14 +780,6 @@ typedef struct CamMode
     u8 flag;
 } CamMode;
 
-typedef struct SeqByte136
-{
-    u8 modelSlot : 4;
-    u8 pad3 : 1;
-    u8 mapEvent : 1;
-    u8 rest : 2;
-} SeqByte136;
-
 int ObjSeq_update(GameObject* obj, f32 t);
 
 u8 gObjSeqPreemptCount;
@@ -2290,18 +2282,12 @@ void animatedObjFreeAndSavePlayerPos(GameObject* obj, GameObject* seqObj, u8* se
         }
     }
 
-    if ((((u32)((ObjSeqState*)seq)->flags136[0] >> 2) & 1U) != 0U)
+    if (((ObjSeqState*)seq)->flags136.mapEvent != 0U)
     {
         player = Obj_GetPlayerObject();
         (*gMapEventInterface)->savePoint((int)&player->anim.localPosX, player->anim.rotX, 0, getCurMapLayer());
         clearBit = 0;
-        {
-            struct SeqByte136
-            {
-                u8 b80 : 1, b40 : 1, b20 : 1, b10 : 1, b08 : 1, b04 : 1, b02 : 1, b01 : 1;
-            };
-            ((struct SeqByte136*)&((ObjSeqState*)seq)->flags136[0])->b04 = clearBit;
-        }
+        ((ObjSeqState*)seq)->flags136.mapEvent = clearBit;
     }
 
     ((ObjSeqState*)seq)->runState = 0;
@@ -2569,14 +2555,14 @@ int objSeqExecCmd06(GameObject* obj, GameObject* sourceObj, u8* seq, int cmd, s8
         break;
     case 33:
         ((ObjSeqState*)seq)->flags = ((ObjSeqState*)seq)->flags | 0x400;
-        ((SeqByte136*)&((ObjSeqState*)seq)->flags136[0])->modelSlot = cmdArg;
+        ((ObjSeqState*)seq)->flags136.modelSlot = cmdArg;
         break;
     case 34:
         ((ObjSeqState*)seq)->flags = ((ObjSeqState*)seq)->flags & ~0x400;
-        ((SeqByte136*)&((ObjSeqState*)seq)->flags136[0])->modelSlot = 0;
+        ((ObjSeqState*)seq)->flags136.modelSlot = 0;
         break;
     case 35:
-        ((SeqByte136*)&((ObjSeqState*)seq)->flags136[0])->mapEvent = 1;
+        ((ObjSeqState*)seq)->flags136.mapEvent = 1;
         break;
     case 36:
         (*gMapEventInterface)->savePoint(0, 0, 1, getCurMapLayer());
@@ -4894,7 +4880,7 @@ void ObjSeq_ApplyFrameCurves(GameObject* obj, GameObject* seqObj, u8* seq, int f
 
                 if ((((ObjSeqState*)seq)->flags & 0x400) != 0)
                 {
-                    slots = ((SeqByte136*)&((ObjSeqState*)seq)->flags136[0])->modelSlot;
+                    slots = ((ObjSeqState*)seq)->flags136.modelSlot;
                     modelIds = objGetLookAtJointKeys();
                     if (slots == 0)
                     {

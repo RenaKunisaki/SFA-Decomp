@@ -11,6 +11,15 @@
  * objseq.c). Only fields with read/write evidence in objseq.c are named;
  * everything else is padded.
  */
+
+typedef struct SeqByte136
+{
+    u8 modelSlot : 4;
+    u8 pad3 : 1;
+    u8 mapEvent : 1;
+    u8 rest : 2;
+} SeqByte136;
+
 typedef struct ObjSeqState ObjSeqState;
 struct GameObject;
 
@@ -171,7 +180,8 @@ struct ObjSeqState {
     s16 baseRotX; /* base rotation added to interpolated curve angle (vec[0]) */
     s16 conditionFrames[10];
     u8 conditionOpcodes[10];
-    u8 flags136[2]; /* 0x136 flags byte; bit 0x04 = record a save-point on free */
+    SeqByte136 flags136; /* 0x136 */
+    u8 pad137;
 };
 
 STATIC_ASSERT(sizeof(ObjSeqCommand) == 0x04);

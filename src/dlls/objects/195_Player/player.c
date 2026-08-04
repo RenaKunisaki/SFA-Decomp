@@ -7732,7 +7732,7 @@ int playerStateSlideDownLadder(GameObject* obj, int state, f32 fv)
                 climbBaseY = inner->climbBaseY;
                 obj->anim.worldPosY = climbBaseY;
                 obj->anim.localPosY = climbBaseY;
-                if (((ByteFlags*)((char*)inner + 0x547))->b80)
+                if (((PlayerState*)inner)->flags547.b80)
                 {
                     ObjAnim_SetCurrentMove((int)obj, 0x37, 0.0f, 1);
                     ((PlayerState*)state)->baddie.moveSpeed = 0.02f;
@@ -8151,7 +8151,7 @@ int playerStateOnLadder(int obj, int state)
                             (*gCameraInterface)->setMode(0x42, 0, 1, 0, NULL, 0x1e, 0xff);
                             ((PlayerState*)inner)->curAnimId = 0x42;
                         }
-                        if (((u32) * (u8*)((char*)inner + 0x547) >> 7 & 1) != 0)
+                        if (((PlayerState*)inner)->flags547.b80 != 0)
                         {
                             spd = 0.0f;
                             ph = 0.016f;
@@ -10316,7 +10316,7 @@ int playerStateMoving(int obj, int state, f32 fv)
                     *(s16*)(((PlayerState*)inner)->moveAnimTable + (((PlayerState*)inner)->gaitLevel + dir) * 2))
             {
                 if (ObjAnim_GetCurrentEventCountdown((ObjAnimComponent*)obj) == 0 ||
-                    ((u32) * (u8*)((char*)inner + 0x3f2) >> 4 & 1) != 0)
+                    ((PlayerState*)inner)->flags3F2.b10 != 0)
                 {
                     ObjAnim_SetCurrentMove(
                         obj,
@@ -16497,7 +16497,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
             ((PlayerState*)inner)->knockbackTimer = fz;
             ((PlayerState*)inner)->knockbackHitTimer = fz;
         }
-        if (((u32) * (u8*)((char*)inner + 0x3f2) >> 7 & 1) == 0)
+        if (((PlayerState*)inner)->flags3F2.b80 == 0)
         {
             if (gPlayerPathObject != NULL && (((PlayerState*)inner)->flags3F4.b40) != 0)
             {
@@ -17326,7 +17326,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
             seq->flags &= ~3;
         }
     }
-    if (((u32) * (u8*)((char*)inner + 0x3f2) >> 6 & 1) != 0)
+    if (((PlayerState*)inner)->flags3F2.b40 != 0)
     {
         characterDoEyeAnims((GameObject*)obj, (char*)inner + 0x364);
     }
