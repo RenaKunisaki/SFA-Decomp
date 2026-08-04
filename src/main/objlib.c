@@ -487,17 +487,17 @@ void ObjMsg_SendToNearbyObjects(int targetId, float radius, u32 flags, void* sen
     GameObject* obj;
     int includeSender;
     int matchAny;
-    GameObject* s;
+    GameObject* senderObj;
 
     objects = ObjList_GetObjects(&objectIndex, &objectCount);
     maskedFlags = flags & 0xffff;
     includeSender = maskedFlags & OBJMSG_SEND_INCLUDE_SENDER;
     matchAny = maskedFlags & OBJMSG_SEND_MATCH_ANY;
-    s = (GameObject*)sender;
+    senderObj = (GameObject*)sender;
     for (; objectIndex < objectCount; objectIndex = objectIndex + 1) {
         obj = objects[objectIndex];
         if (((obj != sender) || (includeSender == 0)) && ((obj->anim.romDefNo == (s16)targetId || (matchAny != 0))) &&
-            ((Vec_distance(&s->anim.worldPosX, &obj->anim.worldPosX) < radius && (obj != 0x0)) &&
+            ((Vec_distance(&senderObj->anim.worldPosX, &obj->anim.worldPosX) < radius && (obj != 0x0)) &&
              (queue = obj->msgQueue, queue != (ObjMsgQueue*)0x0))) {
             count = queue->count;
             if (count < queue->capacity) {
@@ -508,7 +508,7 @@ void ObjMsg_SendToNearbyObjects(int targetId, float radius, u32 flags, void* sen
                 queue->count = queue->count + 1;
             } else {
                 debugPrintf(sObjMsgOverflowInObjectWarning, message, (int)obj->anim.classId, (int)obj->anim.romDefNo,
-                            (int)s->anim.romDefNo);
+                            (int)senderObj->anim.romDefNo);
             }
         }
     }

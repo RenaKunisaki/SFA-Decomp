@@ -315,18 +315,18 @@ static inline int skeetla_isInWater(TrickyState* state) {
 
 /* Latch the impress move: set stateFlags bit 0x80000000 and prime impressTimer. */
 void trickyImpress(GameObject* obj) {
-    TrickyState* b = obj->extra;
-    b->stateFlags |= 0x80000000;
-    b->impressTimer = 20.0f;
+    TrickyState* state = obj->extra;
+    state->stateFlags |= 0x80000000;
+    state->impressTimer = 20.0f;
 }
 
 /* GameBit-gated bit toggle on stateFlags: requires mainGetBit(GAMEBIT_Tricky_Usable); sets bit 0x10000 then
  * checks bit 0x10. Returns 1 only when the post-OR check passes. */
 int Tricky_requestRecallAndCheckBusy(GameObject* obj) {
-    TrickyState* b = obj->extra;
+    TrickyState* state = obj->extra;
     if ((u32)mainGetBit(GAMEBIT_Tricky_Usable) != 0u) {
-        b->stateFlags |= 0x10000LL;
-        if ((b->stateFlags & 0x10) != 0u) {
+        state->stateFlags |= 0x10000LL;
+        if ((state->stateFlags & 0x10) != 0u) {
             return 1;
         }
     }
@@ -1060,39 +1060,39 @@ int moveTricky(GameObject* obj, f32* targetPos) {
 }
 
 int trickyRequestMove(GameObject* obj, int newState, f32 speed, u32 flags) {
-    TrickyState* t = obj->extra;
+    TrickyState* state = obj->extra;
     f32 fz;
-    if (t->moveId == newState) {
+    if (state->moveId == newState) {
         if (obj->anim.currentMove == newState) {
-            t->moveProgress = speed;
-            t->stateFlags = t->stateFlags | flags;
+            state->moveProgress = speed;
+            state->stateFlags = state->stateFlags | flags;
         }
         return 1;
     }
     if ((flags & 0x4000000) != 0) {
-        t->animTransitionTimer = 15.0f;
+        state->animTransitionTimer = 15.0f;
     }
-    t->moveId = newState;
-    t->moveProgressTarget = speed;
-    t->pendingStateFlags = flags;
+    state->moveId = newState;
+    state->moveProgressTarget = speed;
+    state->pendingStateFlags = flags;
     if ((flags & 0x20) == 0) {
-        t->stateFlags = t->stateFlags & ~(u64)0x20;
+        state->stateFlags = state->stateFlags & ~(u64)0x20;
     }
     if ((flags & 0x40) == 0) {
-        t->stateFlags = t->stateFlags & ~(u64)0x40;
+        state->stateFlags = state->stateFlags & ~(u64)0x40;
     }
     if ((flags & 0x80) == 0) {
-        t->stateFlags = t->stateFlags & ~(u64)0x80;
+        state->stateFlags = state->stateFlags & ~(u64)0x80;
     }
     if ((flags & 0x100) == 0) {
-        t->stateFlags = t->stateFlags & ~(u64)0x100;
+        state->stateFlags = state->stateFlags & ~(u64)0x100;
     }
     fz = 1.0f;
-    t->sidestepDelta = fz;
-    t->backstepDelta = fz;
-    t->verticalDelta = fz;
-    t->rotStepScale = fz;
-    if (t->animTransitionTimer >= 15.0f) {
+    state->sidestepDelta = fz;
+    state->backstepDelta = fz;
+    state->verticalDelta = fz;
+    state->rotStepScale = fz;
+    if (state->animTransitionTimer >= 15.0f) {
         return 1;
     }
     return 0;
