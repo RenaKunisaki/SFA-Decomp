@@ -42,7 +42,7 @@ enum
     WMSEQPOINT_SEQ_SPIRIT_RESET = 0x22 /* re-arms all five spirit indicators */
 };
 
-/* spirit 1's pair (gWM_seqpointSpiritTargets[0..1]), hardcoded on the
+/* spirit 1's pair (gWM_seqpointSpiritTargets[0]), hardcoded on the
    WMSEQPOINT_SEQ_SPIRIT_1 path */
 #define WMSEQPOINT_SPIRIT_1_GAMEBIT 0xD1B
 #define WMSEQPOINT_SPIRIT_1_OBJID   0x4AEB1
@@ -60,9 +60,15 @@ enum
 #define WMSEQPOINT_ENVFX_DAY_C   0x84
 #define WMSEQPOINT_ENVFX_DAY_D   0x8a
 
-/* {game bit, placement id} per released-spirit indicator. */
-int gWM_seqpointSpiritTargets[10] = {
-    0xD1B, 0x4AEB1, 0xD1C, 0x4AEB2, 0xD1D, 0x4AEB3, 0xD1E, 0x4AEB4, 0xD1F, 0x4AEB5,
+/* Game bit and placement id per released-spirit indicator. */
+typedef struct WmSeqPointSpiritTarget
+{
+    int gameBit;
+    int placementId;
+} WmSeqPointSpiritTarget;
+
+WmSeqPointSpiritTarget gWM_seqpointSpiritTargets[WMSEQPOINT_SPIRIT_COUNT] = {
+    {0xD1B, 0x4AEB1}, {0xD1C, 0x4AEB2}, {0xD1D, 0x4AEB3}, {0xD1E, 0x4AEB4}, {0xD1F, 0x4AEB5},
 };
 
 void wmseqpoint_onSeqFree(GameObject* obj)
@@ -258,8 +264,8 @@ void wmseqpoint_update(GameObject* obj)
             {
                 for (i = 0; i < WMSEQPOINT_SPIRIT_COUNT; i++)
                 {
-                    mainSetBits(gWM_seqpointSpiritTargets[i * 2], 0);
-                    target = ObjList_FindObjectById(gWM_seqpointSpiritTargets[i * 2 + 1]);
+                    mainSetBits(gWM_seqpointSpiritTargets[i].gameBit, 0);
+                    target = ObjList_FindObjectById(gWM_seqpointSpiritTargets[i].placementId);
                     ((WmSeqPointState*)target->extra)->doneLatch = 0;
                     if (target->seqIndex != -1)
                     {

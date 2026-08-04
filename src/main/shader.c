@@ -2924,8 +2924,8 @@ f32 sAabbCornerDirections[24] = {
 
 /* Screen-space (x,y) sample offsets used by the sun occlusion depth probe:
  * center plus the four corners of a 30-pixel box. */
-int gSunOcclusionSampleOffsets[10] = {
-    0, 0, -15, -15, 15, -15, 15, 15, -15, 15,
+SunOcclusionSample gSunOcclusionSampleOffsets[5] = {
+    {0, 0}, {-15, -15}, {15, -15}, {15, 15}, {-15, 15},
 };
 
 /* Map-cell visit order for the opaque scene pass: outward from the two

@@ -1263,8 +1263,8 @@ void renderGlows(void)
             occ = 0;
             for (i = 0; i < 5; i++)
             {
-                int d = depthReadRequestPoll(sx + gSunOcclusionSampleOffsets[i * 2],
-                                             sy + gSunOcclusionSampleOffsets[i * 2 + 1], (void*)i);
+                int d = depthReadRequestPoll(sx + gSunOcclusionSampleOffsets[i].x,
+                                             sy + gSunOcclusionSampleOffsets[i].y, (void*)i);
                 if (sz <= d && pauseMenuGetState() == 0)
                     occ++;
             }

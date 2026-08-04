@@ -133,16 +133,6 @@ typedef struct
     f32 spd;   /* 0x0 */
     u32 mask;  /* 0x4 */
     u8 moveId; /* 0x8 */
-    u8 next;   /* 0x9 */
-    u8 mode;   /* 0xa */
-    u8 pad;
-} CrawlerSeq12;
-
-typedef struct
-{
-    f32 spd;   /* 0x0 */
-    u32 mask;  /* 0x4 */
-    u8 moveId; /* 0x8 */
     u8 next9;  /* 0x9 */
     u8 nextA;  /* 0xa */
     u8 pad;
