@@ -774,11 +774,9 @@ void gunpowderBarrel_update(GameObject* obj) {
         } else {
             setAButtonIcon(A_BUTTON_ICON_THROW_CARRYABLE);
         }
-    } else {
-        if (state->configFlags.returnHome != 0 && state->heldFlags.onGround != 0 &&
-            (state->motionFlags & GUNPOWDER_BARREL_MOTION_FLAG_IN_FLIGHT) == 0) {
-            saveGame_saveObjectPos(obj);
-        }
+    } else if (state->configFlags.returnHome != 0 && state->heldFlags.onGround != 0 &&
+               (state->motionFlags & GUNPOWDER_BARREL_MOTION_FLAG_IN_FLIGHT) == 0) {
+        saveGame_saveObjectPos(obj);
     }
     if ((state->motionFlags & GUNPOWDER_BARREL_MOTION_FLAG_IN_FLIGHT) != 0 || state->heldFlags.held != 0 ||
         (*gCarryableInterface)->updateHeld(obj, state) == 0 ||

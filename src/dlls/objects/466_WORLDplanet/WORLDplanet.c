@@ -447,13 +447,11 @@ void worldplanet_update(GameObject* obj) {
             case 0:
                 if (gWorldPlanetReselectDelayTimer != 0) {
                     gWorldPlanetReselectDelayTimer -= 1;
-                } else {
-                    if (gWorldPlanetSelectConfirmTimer == 0 &&
-                        (state->unlockedPlanetMask & (1 << state->selectedPlanet)) != 0 &&
-                        (buttons & WORLDPLANET_CONFIRM_BUTTON) != 0) {
-                        gWorldPlanetSelectConfirmTimer = WORLDPLANET_COUNTDOWN_FRAMES;
-                        mapUnload(gWorldPlanetLoadedMapId, WORLDPLANET_MAP_SELECTED_FLAG);
-                    }
+                } else if (gWorldPlanetSelectConfirmTimer == 0 &&
+                           (state->unlockedPlanetMask & (1 << state->selectedPlanet)) != 0 &&
+                           (buttons & WORLDPLANET_CONFIRM_BUTTON) != 0) {
+                    gWorldPlanetSelectConfirmTimer = WORLDPLANET_COUNTDOWN_FRAMES;
+                    mapUnload(gWorldPlanetLoadedMapId, WORLDPLANET_MAP_SELECTED_FLAG);
                 }
                 if (gWorldPlanetSelectConfirmTimer != 0) {
                     Pause_ResetMenuFrameCounter();

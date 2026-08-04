@@ -615,14 +615,12 @@ int cfguardian_updateMain(GameObject* obj) {
                 state->chatterState = CFGUARDIAN_CHATTER_READY;
                 state->chatterAlt = (state->chatterAlt + 1) % 2;
             }
-        } else {
-            if ((state->stateFlags & CFGUARDIAN_STATE_HOMING) == 0 &&
-                gCfGuardianIdleMoveTable[state->questState] != 0xe) {
-                state->chatterState = CFGUARDIAN_CHATTER_PLAYING;
-                state->stateFlags |= CFGUARDIAN_STATE_MOVE_LATCHED | CFGUARDIAN_STATE_HOMING;
-                dll_2E_getCurveActionTarget(0xe, &state->home);
-                gCfGuardianIdleMoveTable[state->questState] = 0xe;
-            }
+        } else if ((state->stateFlags & CFGUARDIAN_STATE_HOMING) == 0 &&
+                   gCfGuardianIdleMoveTable[state->questState] != 0xe) {
+            state->chatterState = CFGUARDIAN_CHATTER_PLAYING;
+            state->stateFlags |= CFGUARDIAN_STATE_MOVE_LATCHED | CFGUARDIAN_STATE_HOMING;
+            dll_2E_getCurveActionTarget(0xe, &state->home);
+            gCfGuardianIdleMoveTable[state->questState] = 0xe;
         }
         if ((state->stateFlags & CFGUARDIAN_STATE_HOMING) != 0 &&
             cfguardian_steerToward(obj, &state->home, 0.5f, &state->moveSpeed) != 0) {
@@ -652,14 +650,12 @@ int cfguardian_updateMain(GameObject* obj) {
                 state->chatterState = CFGUARDIAN_CHATTER_READY;
                 state->chatterAlt = (state->chatterAlt + 1) % 2;
             }
-        } else {
-            if ((state->stateFlags & CFGUARDIAN_STATE_HOMING) == 0 &&
-                gCfGuardianIdleMoveTable[state->questState] != 0xe) {
-                state->chatterState = CFGUARDIAN_CHATTER_PLAYING;
-                state->stateFlags |= CFGUARDIAN_STATE_MOVE_LATCHED | CFGUARDIAN_STATE_HOMING;
-                dll_2E_getCurveActionTarget(0xe, &state->home);
-                gCfGuardianIdleMoveTable[state->questState] = 0xe;
-            }
+        } else if ((state->stateFlags & CFGUARDIAN_STATE_HOMING) == 0 &&
+                   gCfGuardianIdleMoveTable[state->questState] != 0xe) {
+            state->chatterState = CFGUARDIAN_CHATTER_PLAYING;
+            state->stateFlags |= CFGUARDIAN_STATE_MOVE_LATCHED | CFGUARDIAN_STATE_HOMING;
+            dll_2E_getCurveActionTarget(0xe, &state->home);
+            gCfGuardianIdleMoveTable[state->questState] = 0xe;
         }
         if ((state->stateFlags & CFGUARDIAN_STATE_HOMING) != 0 &&
             cfguardian_steerToward(obj, &state->home, 0.5f, &state->moveSpeed) != 0) {

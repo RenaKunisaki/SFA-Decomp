@@ -679,19 +679,17 @@ void tumbleweed_updateStateMachine(GameObject* obj) {
             state->phaseTimer -= timeDelta;
             if (state->phaseTimer < 0.0f) {
                 state->flags |= TUMBLEWEED_EFFECT_FLAGS_ALL;
-            } else {
-                if (ObjHits_GetPriorityHit(obj, (int*)&hitObject, &sphereIndex, &hitVolume) != 0 &&
-                    hitObject->anim.romDefNo != obj->anim.romDefNo) {
-                    if (obj->anim.romDefNo == TUMBLEWEED_TYPE_3) {
-                        state->flags |= TUMBLEWEED_EFFECT_FLAGS_BURST_PUFF;
-                        state->flags &= ~TUMBLEWEED_EFFECT_FLAG_HIT_PULSE;
-                        state->phase = TUMBLEWEED_PHASE_PICKUP_APPROACH;
-                        state->growRate = 300.0f;
-                        state->phaseTimer = 1200.0f;
-                        Obj_SetActiveModelIndex(obj, 1);
-                    } else {
-                        state->flags |= TUMBLEWEED_EFFECT_FLAGS_ALL;
-                    }
+            } else if (ObjHits_GetPriorityHit(obj, (int*)&hitObject, &sphereIndex, &hitVolume) != 0 &&
+                       hitObject->anim.romDefNo != obj->anim.romDefNo) {
+                if (obj->anim.romDefNo == TUMBLEWEED_TYPE_3) {
+                    state->flags |= TUMBLEWEED_EFFECT_FLAGS_BURST_PUFF;
+                    state->flags &= ~TUMBLEWEED_EFFECT_FLAG_HIT_PULSE;
+                    state->phase = TUMBLEWEED_PHASE_PICKUP_APPROACH;
+                    state->growRate = 300.0f;
+                    state->phaseTimer = 1200.0f;
+                    Obj_SetActiveModelIndex(obj, 1);
+                } else {
+                    state->flags |= TUMBLEWEED_EFFECT_FLAGS_ALL;
                 }
             }
         } else if (phase == TUMBLEWEED_PHASE_PICKUP_APPROACH) {
@@ -711,11 +709,9 @@ void tumbleweed_updateStateMachine(GameObject* obj) {
                     state->flags |= TUMBLEWEED_EFFECT_FLAGS_ALL;
                 } else if (state->growRate <= 0.0f) {
                     state->flags |= TUMBLEWEED_EFFECT_FLAGS_ALL;
-                } else {
-                    if (ObjHits_GetPriorityHit(obj, (int*)&hitObject, &sphereIndex, &hitVolume) != 0 &&
-                        hitObject->anim.romDefNo != obj->anim.romDefNo) {
-                        state->flags |= TUMBLEWEED_EFFECT_FLAGS_ALL;
-                    }
+                } else if (ObjHits_GetPriorityHit(obj, (int*)&hitObject, &sphereIndex, &hitVolume) != 0 &&
+                           hitObject->anim.romDefNo != obj->anim.romDefNo) {
+                    state->flags |= TUMBLEWEED_EFFECT_FLAGS_ALL;
                 }
             }
             tumbleweedbush_updateDetachedPiece(obj, state);

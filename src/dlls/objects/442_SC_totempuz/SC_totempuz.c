@@ -246,18 +246,16 @@ void sc_totempuzzle_update(GameObject* obj) {
                 state->stepIndex = 0;
             }
         }
+    } else if (((state->flags & SC_TOTEM_PUZZLE_FLAG_REVERSED) != 0) &&
+               (state->angle > (SC_TOTEM_PUZZLE_ANGLE_STEP * (f32)(s32)(state->stepIndex + 1)))) {
+        f32 step = 512.0f * state->peerPhaseOffset;
+        state->angle -= step * timeDelta;
+    } else if (state->angle < (SC_TOTEM_PUZZLE_ANGLE_STEP * (f32)(s32)state->stepIndex)) {
+        f32 step = 512.0f * state->peerPhaseOffset;
+        state->angle += step * timeDelta;
     } else {
-        if (((state->flags & SC_TOTEM_PUZZLE_FLAG_REVERSED) != 0) &&
-            (state->angle > (SC_TOTEM_PUZZLE_ANGLE_STEP * (f32)(s32)(state->stepIndex + 1)))) {
-            f32 step = 512.0f * state->peerPhaseOffset;
-            state->angle -= step * timeDelta;
-        } else if (state->angle < (SC_TOTEM_PUZZLE_ANGLE_STEP * (f32)(s32)state->stepIndex)) {
-            f32 step = 512.0f * state->peerPhaseOffset;
-            state->angle += step * timeDelta;
-        } else {
-            state->pulseTimer = state->pulseTimerReset / state->peerPhaseOffset;
-            state->flags |= SC_TOTEM_PUZZLE_FLAG_PULSE_ACTIVE;
-        }
+        state->pulseTimer = state->pulseTimerReset / state->peerPhaseOffset;
+        state->flags |= SC_TOTEM_PUZZLE_FLAG_PULSE_ACTIVE;
     }
 
     obj->anim.rotX = (s16)(s32)state->angle;
