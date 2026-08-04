@@ -676,7 +676,7 @@ void kaldachom_update(GameObject* obj) {
     } else {
         ref = (*gBaddieControlInterface)->isObjectValid(obj, objectState, 0);
         if (ref == 0) {
-            *(u16*)&objectState->targetState = 0;
+            objectState->targetState = 0;
         } else {
             kaldachom_updateCombat(obj, (GroundBaddieState*)objectState, (GroundBaddieState*)objectState);
             if (objectState->targetState == 0) {
@@ -698,7 +698,7 @@ void kaldachom_update(GameObject* obj) {
                         ->startHitReaction(obj, objectState, (char*)objectState + 0x35c, objectState->gameBitB, NULL, 0,
                                            0, 4, -1);
                     objectState->ground.baddie.hasTarget = 0;
-                    *(u16*)&objectState->targetState = 1;
+                    objectState->targetState = 1;
                 }
             } else {
                 ref = (int)objectState->control;
