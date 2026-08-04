@@ -1196,41 +1196,42 @@ u8* loadObjectFile(int id)
     if (buf != 0)
     {
         fileLoadToBufferOffset(MLDF_FILEID_OBJECTS_BIN, buf, base, size);
-        if (*(void**)(buf + 0x20) != 0)
+        if (((ObjDef*)buf)->eventMoveTable != NULL)
         {
-            *(int*)(buf + 0x20) = (int)buf + *(int*)(buf + 0x20);
+            ((ObjDef*)buf)->eventMoveTable = (s16*)((int)buf + (int)((ObjDef*)buf)->eventMoveTable);
         }
-        if (*(void**)(buf + 0x24) != 0)
+        if (((ObjDef*)buf)->hitReactMoveTable != NULL)
         {
-            *(int*)(buf + 0x24) = (int)buf + *(int*)(buf + 0x24);
+            ((ObjDef*)buf)->hitReactMoveTable =
+                (ObjHitReactMoveEntry*)((int)buf + (int)((ObjDef*)buf)->hitReactMoveTable);
         }
-        if (*(void**)(buf + 0x28) != 0)
+        if (((ObjDef*)buf)->weaponDaTable != NULL)
         {
-            *(int*)(buf + 0x28) = (int)buf + *(int*)(buf + 0x28);
+            ((ObjDef*)buf)->weaponDaTable = (s16*)((int)buf + (int)((ObjDef*)buf)->weaponDaTable);
         }
-        *(int*)(buf + 8) = (int)buf + *(int*)(buf + 8);
-        *(int*)(buf + 0xc) = (int)buf + *(int*)(buf + 0xc);
-        *(int*)(buf + 0x10) = (int)buf + *(int*)(buf + 0x10);
-        if (*(void**)(buf + 0x18) != 0)
+        ((ObjDef*)buf)->modelFileIds = (s32*)((int)buf + (int)((ObjDef*)buf)->modelFileIds);
+        ((ObjDef*)buf)->textureSlotDefs = (ObjTextureSlotDef*)((int)buf + (int)((ObjDef*)buf)->textureSlotDefs);
+        ((ObjDef*)buf)->jointData = (s8*)((int)buf + (int)((ObjDef*)buf)->jointData);
+        if (((ObjDef*)buf)->extraSetupData != NULL)
         {
-            *(int*)(buf + 0x18) = (int)buf + *(int*)(buf + 0x18);
+            ((ObjDef*)buf)->extraSetupData = (u8*)((int)buf + (int)((ObjDef*)buf)->extraSetupData);
         }
-        if (*(void**)(buf + 0x40) != 0)
+        if (((ObjDef*)buf)->hitVolumes != NULL)
         {
-            *(int*)(buf + 0x40) = (int)buf + *(int*)(buf + 0x40);
+            ((ObjDef*)buf)->hitVolumes = (ObjDefHitVolume*)((int)buf + (int)((ObjDef*)buf)->hitVolumes);
         }
-        if (*(void**)(buf + 0x1c) != 0)
+        if (((ObjDef*)buf)->sequenceMap != NULL)
         {
-            *(int*)(buf + 0x1c) = (int)buf + *(int*)(buf + 0x1c);
+            ((ObjDef*)buf)->sequenceMap = (s16*)((int)buf + (int)((ObjDef*)buf)->sequenceMap);
         }
-        *(int*)(buf + 0x2c) = (int)buf + *(int*)(buf + 0x2c);
-        *(int*)(buf + 0x30) = 0;
-        *(int*)(buf + 0x34) = 0;
+        ((ObjDef*)buf)->attachPoints = (ObjAttachPoint*)((int)buf + (int)((ObjDef*)buf)->attachPoints);
+        ((ObjDef*)buf)->modLines = NULL;
+        ((ObjDef*)buf)->intersectionLines = NULL;
         n = (s8)buf[0x5d];
         if (n > -1)
         {
-            *(int*)(buf + 0x30) = loadModLines(n, &modLine);
-            *(u8*)(buf + 0x5c) = modLine;
+            ((ObjDef*)buf)->modLines = (struct MapHitLine*)loadModLines(n, &modLine);
+            ((ObjDef*)buf)->modLineCount = modLine;
             intersectModLineBuild((IntersectModLineObject*)buf);
         }
         gObjFileBufferTable[id] = buf;
