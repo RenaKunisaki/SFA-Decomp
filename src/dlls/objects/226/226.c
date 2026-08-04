@@ -528,7 +528,7 @@ void staffDrawSwipe(GameObject* obj, StaffState* swipe) {
         swp++;
     }
 }
-void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg) {
+void staff_setupSwipe(int unused1, StaffState* swipe, int unused3, int objArg) {
     ObjWeaponDaTable* weaponDaTable;
     u8* slot;
     GameObject* obj;
@@ -550,7 +550,7 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg) {
     int ang;
 
     obj = (GameObject*)objArg;
-    if (((StaffState*)swipe)->activeSlot == NULL || ((StaffState*)swipe)->hudSuppressed != 0) {
+    if (swipe->activeSlot == NULL || swipe->hudSuppressed != 0) {
         return;
     }
     {
@@ -565,21 +565,21 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg) {
         weaponDaTable = obj->anim.weaponDaTable;
         if (weaponDaTable != NULL && weaponDaTable->byteCount > 0) {
             f32 sw;
-            slot = (u8*)((StaffState*)swipe)->activeSlot;
+            slot = (u8*)swipe->activeSlot;
             count = (int)(2.0f * model2->frameLength);
             prog = ((StaffSwipeSlot*)slot)->lengthScale * model2->frameLength;
             if (((StaffSwipeSlot*)slot)->flags & 1) {
-                ((StaffState*)swipe)->anchorX = obj->anim.worldPosX;
-                ((StaffState*)swipe)->anchorY = obj->anim.worldPosY;
-                ((StaffState*)swipe)->anchorZ = obj->anim.worldPosZ;
-                ((StaffState*)swipe)->progress = 0.0f;
+                swipe->anchorX = obj->anim.worldPosX;
+                swipe->anchorY = obj->anim.worldPosY;
+                swipe->anchorZ = obj->anim.worldPosZ;
+                swipe->progress = 0.0f;
                 ((StaffSwipeSlot*)slot)->flags &= ~1;
             }
-            sw = ((StaffState*)swipe)->progress;
+            sw = swipe->progress;
             m4 = model2->framePhase;
             tmax = m4;
             if (sw > prog) {
-                ((StaffState*)swipe)->progress = m4;
+                swipe->progress = m4;
                 return;
             }
             if (m4 > prog) {
@@ -598,7 +598,7 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg) {
                 count2 = (int)((flb - fla) / 0.1f);
                 if (count2 == 0) {
                     if (model2->framePhase > prog) {
-                        ((StaffState*)swipe)->progress = model2->framePhase;
+                        swipe->progress = model2->framePhase;
                     }
                     return;
                 }
@@ -673,12 +673,9 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg) {
                         ((SwipeVertex*)vp)[0].x = Curve_EvalBSpline(ptBx, frac, NULL);
                         ((SwipeVertex*)vp)[0].y = Curve_EvalBSpline(ptBy, frac, NULL);
                         ((SwipeVertex*)vp)[0].z = Curve_EvalBSpline(ptBz, frac, NULL);
-                        ((SwipeVertex*)vp)[0].x +=
-                            ((StaffState*)swipe)->anchorX + acc * (obj->anim.worldPosX - ((StaffState*)swipe)->anchorX);
-                        ((SwipeVertex*)vp)[0].y +=
-                            ((StaffState*)swipe)->anchorY + acc * (obj->anim.worldPosY - ((StaffState*)swipe)->anchorY);
-                        ((SwipeVertex*)vp)[0].z +=
-                            ((StaffState*)swipe)->anchorZ + acc * (obj->anim.worldPosZ - ((StaffState*)swipe)->anchorZ);
+                        ((SwipeVertex*)vp)[0].x += swipe->anchorX + acc * (obj->anim.worldPosX - swipe->anchorX);
+                        ((SwipeVertex*)vp)[0].y += swipe->anchorY + acc * (obj->anim.worldPosY - swipe->anchorY);
+                        ((SwipeVertex*)vp)[0].z += swipe->anchorZ + acc * (obj->anim.worldPosZ - swipe->anchorZ);
                         vidx = ibase + frac;
                         ((SwipeVertex*)vp)[0].life = vidx;
                         {
@@ -689,12 +686,9 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg) {
                         ((SwipeVertex*)vp)[1].x = Curve_EvalBSpline(ptAx, frac, NULL);
                         ((SwipeVertex*)vp)[1].y = Curve_EvalBSpline(ptAy, frac, NULL);
                         ((SwipeVertex*)vp)[1].z = Curve_EvalBSpline(ptAz, frac, NULL);
-                        ((SwipeVertex*)vp)[1].x +=
-                            ((StaffState*)swipe)->anchorX + acc * (obj->anim.worldPosX - ((StaffState*)swipe)->anchorX);
-                        ((SwipeVertex*)vp)[1].y +=
-                            ((StaffState*)swipe)->anchorY + acc * (obj->anim.worldPosY - ((StaffState*)swipe)->anchorY);
-                        ((SwipeVertex*)vp)[1].z +=
-                            ((StaffState*)swipe)->anchorZ + acc * (obj->anim.worldPosZ - ((StaffState*)swipe)->anchorZ);
+                        ((SwipeVertex*)vp)[1].x += swipe->anchorX + acc * (obj->anim.worldPosX - swipe->anchorX);
+                        ((SwipeVertex*)vp)[1].y += swipe->anchorY + acc * (obj->anim.worldPosY - swipe->anchorY);
+                        ((SwipeVertex*)vp)[1].z += swipe->anchorZ + acc * (obj->anim.worldPosZ - swipe->anchorZ);
                         ((SwipeVertex*)vp)[1].life = vidx;
                         {
                             f32 t = 255.0f * ((flb - ((SwipeVertex*)vp)[1].life) / 8.0f);
@@ -708,10 +702,10 @@ void staff_setupSwipe(int unused1, u8* swipe, int unused3, int objArg) {
                 }
             }
         }
-        ((StaffState*)swipe)->anchorX = obj->anim.worldPosX;
-        ((StaffState*)swipe)->anchorY = obj->anim.worldPosY;
-        ((StaffState*)swipe)->anchorZ = obj->anim.worldPosZ;
-        ((StaffState*)swipe)->progress = model2->framePhase;
+        swipe->anchorX = obj->anim.worldPosX;
+        swipe->anchorY = obj->anim.worldPosY;
+        swipe->anchorZ = obj->anim.worldPosZ;
+        swipe->progress = model2->framePhase;
     }
 }
 
@@ -892,7 +886,7 @@ void staff_hitDetectGeometry(GameObject* obj) {
 
 void staff_updateSwipe(GameObject* obj, int p4, int p5) {
     StaffState* inner = (StaffState*)(int)obj->extra;
-    staff_setupSwipe((int)obj, (u8*)inner, p5, p4);
+    staff_setupSwipe((int)obj, inner, p5, p4);
     if (getHudHiddenFrameCount() != 0) {
         inner->hudSuppressed = 1;
     } else {

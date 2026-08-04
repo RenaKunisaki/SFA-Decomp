@@ -6,6 +6,8 @@
 
 extern ObjectDescriptor23 gStaffObjDescriptor;
 
+struct StaffState;
+
 /* gStaffObjDescriptor from slot02 onwards: the export table other objects
    reach through the player's staff child object (childObjs[0])->anim.dll. */
 typedef struct StaffInterface
@@ -65,7 +67,7 @@ void staff_render(void);
 void staffSetGlow(GameObject* obj, u8 attackType, u8 enable);
 void staff_func0A(void);
 void staff_setHitReactValue(GameObject* obj, s32 value);
-void staff_setupSwipe(int p1, u8* swipe, int p3, int p4);
+void staff_setupSwipe(int p1, struct StaffState* swipe, int p3, int p4);
 void staff_startSwipe(GameObject* obj, s16 index, f32 arg2, f32 lengthScale);
 void staff_update(GameObject* obj);
 void staffStartQuakeSpell(f32* position);
