@@ -1683,7 +1683,7 @@ void mapClearBlockEdgeFlags(void)
     }
 }
 
-int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int vertsOut, int unusedTriangleCount,
+int collectShadowTrackTriangles(GameObject* obj, int triBuf, void* planesOut, int vertsOut, int unusedTriangleCount,
                                 f32 offX, f32 offZ, int unusedRenderMode, int kindSelector)
 {
     int j;
@@ -1702,10 +1702,10 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
     for (; descBytes < end; descBytes += 0x18)
     {
         u32 id = *(u32*)descBytes;
-        if (id == 0 || id == *(u32*)&((GameObject*)obj)->anim.parent)
+        if (id == 0 || id == *(u32*)&obj->anim.parent)
         {
-            f32 fx = ((GameObject*)obj)->anim.localPosX;
-            f32 fz = ((GameObject*)obj)->anim.localPosZ;
+            f32 fx = obj->anim.localPosX;
+            f32 fz = obj->anim.localPosZ;
             TrackShadowTriangle* outA;
 
             if (id == 0)
@@ -1721,15 +1721,15 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
                 {
                     ((TrackP6Entry*)vertsOut)->relX0 = __OSs16tof32(&((TrackTriangle*)triBuf + j)->vx[0]) - fx;
                     ((TrackP6Entry*)vertsOut)->relY0 =
-                        __OSs16tof32(&((TrackTriangle*)triBuf + j)->vy[0]) - ((GameObject*)obj)->anim.localPosY;
+                        __OSs16tof32(&((TrackTriangle*)triBuf + j)->vy[0]) - obj->anim.localPosY;
                     ((TrackP6Entry*)vertsOut)->relZ0 = __OSs16tof32(&((TrackTriangle*)triBuf + j)->vz[0]) - fz;
                     ((TrackP6Entry*)vertsOut)->relX1 = __OSs16tof32(&((TrackTriangle*)triBuf + j)->vx[1]) - fx;
                     ((TrackP6Entry*)vertsOut)->relY1 =
-                        __OSs16tof32(&((TrackTriangle*)triBuf + j)->vy[1]) - ((GameObject*)obj)->anim.localPosY;
+                        __OSs16tof32(&((TrackTriangle*)triBuf + j)->vy[1]) - obj->anim.localPosY;
                     ((TrackP6Entry*)vertsOut)->relZ1 = __OSs16tof32(&((TrackTriangle*)triBuf + j)->vz[1]) - fz;
                     ((TrackP6Entry*)vertsOut)->relX2 = __OSs16tof32(&((TrackTriangle*)triBuf + j)->vx[2]) - fx;
                     ((TrackP6Entry*)vertsOut)->relY2 =
-                        __OSs16tof32(&((TrackTriangle*)triBuf + j)->vy[2]) - ((GameObject*)obj)->anim.localPosY;
+                        __OSs16tof32(&((TrackTriangle*)triBuf + j)->vy[2]) - obj->anim.localPosY;
                     ((TrackP6Entry*)vertsOut)->relZ2 = __OSs16tof32(&((TrackTriangle*)triBuf + j)->vz[2]) - fz;
                     outA->normal.x = ((TrackTriangle*)triBuf + j)->planeN[0];
                     outA->normal.y = ((TrackTriangle*)triBuf + j)->planeN[1];
@@ -1754,15 +1754,15 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
             lm[0] = m[0];
             lm[1] = m[4];
             lm[2] = m[8];
-            lm[3] = m[12] - ((GameObject*)obj)->anim.localPosX;
+            lm[3] = m[12] - obj->anim.localPosX;
             lm[4] = m[1];
             lm[5] = m[5];
             lm[6] = m[9];
-            lm[7] = m[13] - ((GameObject*)obj)->anim.localPosY;
+            lm[7] = m[13] - obj->anim.localPosY;
             lm[8] = m[2];
             lm[9] = m[6];
             lm[10] = m[10];
-            lm[11] = m[14] - ((GameObject*)obj)->anim.localPosZ;
+            lm[11] = m[14] - obj->anim.localPosZ;
             p6start = (f32*)vertsOut;
             totalStart = total;
             j = (s16)((TrackBlockDescriptor*)descBytes)->firstTriangle;
