@@ -1707,7 +1707,7 @@ void skyRenderTimeOfDayBackdrop(void)
         angle *= 32.0f;
         (*gSky2Interface)->applyTextColor(0);
         GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, fogColor);
-        selectTexture((Texture*)texC, 0);
+        selectTexture(texC, 0);
         gxSetOpaqueNoZWriteMode();
         GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
         GXSetTevDirect(GX_TEVSTAGE0);

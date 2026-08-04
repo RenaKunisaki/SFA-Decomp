@@ -882,7 +882,7 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
     lbl_803DD44E = 0;
 
     attachment = ((BaddieState*)state)->targetObj;
-    if ((void*)attachment != NULL)
+    if (attachment != NULL)
     {
         dx = attachment->anim.localPosX - ((GameObject*)pos)->anim.localPosX;
         dz = attachment->anim.localPosZ - ((GameObject*)pos)->anim.localPosZ;
