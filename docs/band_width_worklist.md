@@ -52,7 +52,7 @@ MWCC GC/1.3+ elides a redundant load/store-forward whenever the address's proven
 
 | fn | unit | size | fuzzy | ndiff | struc | band | #nm | recorded mechanism |
 |---|---|---|---|---|---|---|---|---|
-| dll_98_spawnEffect | dlls/modgfx/152/152 | 1040 | 99.769 | 1 | 1 | 6G/0F | 1 | store-forward vs reload (7 spellings walled) |
+| dll_98_spawnEffect | dlls/modgfx/152/152 | 1040 | 99.769 | 1 | 1 | 6G/0F | 1 | store-forward vs reload (7 spellings walled; spellfuzz.py depth-2 grammar over the defect neighbourhood: 121 legal variants incl. chain/`(s32)(a=x)`/temp-park/fresh-temp, every one still forwards — the chain spellings drop the second `extsh` and go one instruction SHORT (259/260) without producing the `lha`) |
 | mathSinCosf | main/sincosf | 320 | 98.750 | 1 | 2 | 2G/5F | 1 | un-elided parameter-home fmr copy; profile already maximal |
 | mathTanf | dolphin/MSL_C/PPCEABI/bare/H/math_8029454c | 148 | 97.297 | 1 | 2 | 0G/4F | 1 | un-elided parameter-home fmr copy; profile already maximal |
 | gameUiLoadResources | dlls/engine/0/0 | 896 | 98.661 | 4 | 6 | 7G/3F | 14 | symbol-provenance-load-cse (the 6-fn reload family) |
@@ -73,8 +73,8 @@ The li/mr rematerialisation family (incl. the srawi/extsh u64-pair pocket and co
 
 | fn | unit | size | fuzzy | ndiff | struc | band | #nm | recorded mechanism |
 |---|---|---|---|---|---|---|---|---|
-| Scarab_update | dlls/objects/262/262 | 3476 | 99.931 | 1 | 1 | 6G/1F | 1 | copy-survival-first-definition-rule (walled; clause-A fix nets negative) |
-| curves_advanceCollision | dlls/engine/21/21 | 2472 | 99.903 | 1 | 1 | 6G/1F | 1 | copy-survival-first-definition-rule (walled; clause-A fix nets negative) |
+| Scarab_update | dlls/objects/262/262 | 3476 | 99.931 | 1 | 1 | 6G/1F | 1 | copy-survival-first-definition-rule (walled; clause-A fix nets negative; spellfuzz.py depth-2 grammar over 316:345: 419 legal variants — swaps/parks/chains/fresh-temps/decl-moves — best is still ndiff 1, everything else strictly worse) |
+| curves_advanceCollision | dlls/engine/21/21 | 2472 | 99.903 | 1 | 1 | 6G/1F | 1 | copy-survival-first-definition-rule (walled; clause-A fix nets negative — spellfuzz.py measured it: `u32 sourceOffset[1]` flips the site's `li` to `mr` but re-rotates 54 words (struc 0); 405 legal depth-2 variants over the first preamble incl. loop-form/scope-push/dup-fold, best remains ndiff 1; `scal(outputCursor)` costs 82 words, so the existing array-of-one locals are load-bearing original source) |
 | playerStateMountBike | dlls/objects/195_Player/player | 1452 | 99.405 | 3 | 2 | 6G/0F | 22 | independent-match-ceiling: the srawi/extsh ~(u64) pocket |
 | playerState19 | dlls/objects/195_Player/player | 1396 | 99.295 | 8 | 5 | 6G/1F | 22 | independent-match-ceiling: the srawi/extsh ~(u64) pocket |
 | Shield_setMode | dlls/objects/229/229 | 1788 | 99.709 | 15 | 1 | 7G/4F | 2 | web-class: 226/229/engine-22 copy-class placement / copy-survival textures |
