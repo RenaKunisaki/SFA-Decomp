@@ -79,7 +79,7 @@ extern u8 gMapBlockCount; /* count of allocated blocks */
 
 volatile PPCWGPipe GXWGFifo : (0xCC008000);
 
-void renderShadowType3(u8* obj, u32 b, s32 offset);
+void renderShadowType3(GameObject* obj, u32 b, s32 offset);
 static inline void GXPosition3s16(const s16 x, const s16 y, const s16 z)
 {
     GXWGFifo.s16 = x;
@@ -464,7 +464,7 @@ void getVisibleObjects(s8* opacity)
                             (o->objectFlags & OBJECT_OBJFLAG_SHADOW_DISABLED) == 0 &&
                             (o->anim.flags & OBJANIM_FLAG_HIDDEN) == 0)
                         {
-                            renderShadowType3((u8*)o, 7, 0x50);
+                            renderShadowType3(o, 7, 0x50);
                             gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 3] = 1;
                             gLightmapDrawQueueCount++;
                         }
@@ -480,13 +480,13 @@ void getVisibleObjects(s8* opacity)
                         {
                             mode = 7;
                         }
-                        renderShadowType3((u8*)o, mode, 0);
+                        renderShadowType3(o, mode, 0);
                         gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 3] = 0;
                         gLightmapDrawQueueCount++;
                         if ((o->anim.modelInstance->renderFlags & 0x20) != 0 &&
                             (o->anim.flags & OBJANIM_FLAG_HIDDEN) == 0)
                         {
-                            renderShadowType3((u8*)o, 7, 0x50);
+                            renderShadowType3(o, 7, 0x50);
                             gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 3] = 1;
                             gLightmapDrawQueueCount++;
                         }
@@ -550,7 +550,7 @@ static void renderObjects(s8* opacity) {
                 int qi;
                 u32 shadowKind;
 
-                renderShadowType3((u8*)obj, 0x13, 0);
+                renderShadowType3(obj, 0x13, 0);
                 shadowKind = 2;
                 qi = gLightmapDrawQueueCount;
                 qe = &q[qi];
@@ -563,7 +563,7 @@ static void renderObjects(s8* opacity) {
                 int qi;
                 u32 shadowKind;
 
-                renderShadowType3((u8*)obj, 0x13, 0);
+                renderShadowType3(obj, 0x13, 0);
                 shadowKind = 3;
                 qi = gLightmapDrawQueueCount;
                 qe = &q[qi];
@@ -960,7 +960,7 @@ void mapBlockRenderTransparent(MapBlockBoundsRec* bounds, MapBlockData* block, f
 void lightmap_sortTransparentDrawQueue(void);
 
 
-void renderShadowType3(u8* obj, u32 b, s32 offset);
+void renderShadowType3(GameObject* obj, u32 b, s32 offset);
 
 void lightmap_sortTransparentDrawQueue(void);
 

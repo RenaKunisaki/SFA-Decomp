@@ -57,7 +57,7 @@ extern u8 gMapBlockCount; /* count of allocated blocks */
 
 volatile PPCWGPipe GXWGFifo : (0xCC008000);
 
-void renderShadowType3(u8* obj, u32 b, s32 offset);
+void renderShadowType3(GameObject* obj, u32 b, s32 offset);
 static inline void GXPosition3s16(const s16 x, const s16 y, const s16 z)
 {
     GXWGFifo.s16 = x;
@@ -299,7 +299,7 @@ void renderSceneGeometry(u8 renderType, s8* order);
 void lightmapObjectRenderEnd(int arg0, int arg1)
 {
 }
-void renderShadowType3(u8* obj, u32 b, s32 offset)
+void renderShadowType3(GameObject* obj, u32 b, s32 offset)
 {
     Vec stk;
     s32 t;
@@ -308,17 +308,17 @@ void renderShadowType3(u8* obj, u32 b, s32 offset)
         sceneDrawTransparentPolys();
         gLightmapDrawQueueCount = 0;
     }
-    if (((GameObject*)obj)->anim.parent != NULL)
+    if (obj->anim.parent != NULL)
     {
-        stk.x = ((GameObject*)obj)->anim.worldPosX;
-        stk.y = ((GameObject*)obj)->anim.worldPosY;
-        stk.z = ((GameObject*)obj)->anim.worldPosZ;
+        stk.x = obj->anim.worldPosX;
+        stk.y = obj->anim.worldPosY;
+        stk.z = obj->anim.worldPosZ;
     }
     else
     {
-        stk.x = ((GameObject*)obj)->anim.worldPosX - playerMapOffsetX;
-        stk.y = ((GameObject*)obj)->anim.worldPosY;
-        stk.z = ((GameObject*)obj)->anim.worldPosZ - playerMapOffsetZ;
+        stk.x = obj->anim.worldPosX - playerMapOffsetX;
+        stk.y = obj->anim.worldPosY;
+        stk.z = obj->anim.worldPosZ - playerMapOffsetZ;
     }
     PSMTXMultVec((MtxPtr)Camera_GetViewMatrix(), &stk, &stk);
     t = (s32) - stk.z + offset;
