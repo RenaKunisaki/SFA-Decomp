@@ -522,7 +522,7 @@ do not re-survey it.
 | `679_ARWProximit` | 64 | retail mints `0.0f, 100.0f, 127.0f` ahead of `arwproximit_render`'s `1.0f`; all three are read only from inside `arwproximit_update` | 1-element-array form gives **120/120 data, all 9 functions still 100.0** — and trips `banned_shapes_check` as regrowth. RECOVERED in `015b98abbd`; measured price before that was 64 B |
 | `engine/68` | 128 | **not** a wrong constant: retail's `120.0f` at `.sdata2+0x44` is a plain literal of `firstPersonDoControls`, minted between `15360.0f` (0x40) and `16.0f` (0x48) | **RECOVERED at `ab2a7a3016` — see §18.** The 94.512 below is real and reproduces at today's baseline, but it prices the wrong variable: every probe here varied how the CONSTANT is spelled, and the sink needs a single-use TEMP. Delete the temp and the plain literal is free. Was: plain literal makes `.sdata2` byte-identical (64/192 -> **192/192**) but drops `firstPersonDoControls` 100.0 -> 94.512; tree 99.811676 -> 99.809730 |
 | `engine/7` | 232 | one missing 4-byte mint cascades: retail mints a `1.0f` at 0x0c as a front-end literal of `lightningGetRemainingFraction`, after its `0.0f` and before its two bias doubles. Ours has only the `0.0f`, so 0x0c stays a hole, every later slot shifts 4, and a second hole opens at 0x84 | the missing `1.0f` emits no code in retail's `fn1` either — recovering it needs a phantom minter. DECLINE. **See the 2026-08-03 addendum below the table: the phantom minter is now proven to have existed, and the row awaits an owner call** |
-| `237`, `704`, `model`/`modellight`, `213_Kaldachom`, `279_AppleOnTree`, `597`, `195_Player`, `intersect_render`, `main/object` | 88-784 | same class; several heads are led by a bias double, which cannot be declared at all | not probed individually — the class verdict covers them |
+| `237`, `704`, `model`/`modellight`, `213_Kaldachom`, `279_AppleOnTree`, `597`, `195_Player`, `intersect_render`, `main/object` | 88-784 | same class; several heads are led by a bias double, which cannot be declared at all | not probed individually — the class verdict covers them. **2026-08-03: `intersect_render` and `main/object` have since been probed and GATE-PASSED to proven-lost-body — see the batch addendum below** |
 
 `engine/68` carries a second, separate defect worth a code lane: `firstPersonDoControls` only
 holds 100.0 because it divides by `gCameraModeViewfinderStickScale`, an `extern const f32` that
@@ -583,6 +583,99 @@ arrangements inside the existing functions remain unrefuted (the probe set above
 there) and a stripped body is one candidate, not a forced conclusion. A row earns this upgrade
 only when both halves are measured: the ghost slot inside a byte-exact function's mint run, and
 the probe sweep showing every surviving spelling in that function moves `.text`.
+
+**ADDENDUM 2026-08-03 (later) — the gate above, run as a batch over every remaining ORDER_ONLY
+pool unit.** Out-of-tree probes only (each unit's own cflags; every baseline compile reproduced
+the in-tree object byte-for-byte before any variant was scored; `.text` compared per function on
+instruction bytes with `.sdata2` relocs resolved to slot values, so pool renumbering cannot fake
+a diff). One front-end fact the reproductions forced, recorded so the next lane does not
+re-derive it: inside one statement pair `if (x < K1) x = K2;`, MWCC mints K2 *before* K1 — the
+assignment's literal precedes the compare's — so a phantom probe that needs K1-first must spell
+K1 in an earlier plain-arithmetic statement. Verdicts:
+
+- **`objects/332` — GATE PASSED; the paragraph above is superseded and the probe set has now
+  been run there.** The divergence is not a pure rotation: retail's `[0.0f, pad, signed-bias,
+  1.0f]` head precedes fn1's `[0.01, 0.07, 0.5]` run, and a lone `10.0f` sits between fn1's and
+  `turnTowardTarget`'s runs; referrers exclude every function positioned at each mint point, and
+  the head bias is undeclarable by construction. Probes on the byte-exact fn1: dead `0.0f` local
+  inert; dead `(f32)` conversion inert (**a dead conversion is eliminated before codegen and
+  mints no bias** — measured here); a *live* `f32 zero = 0.0f;` used at both clamp sites is
+  propagation-folded back — pool AND `.text` both unchanged, so even the surviving-local
+  spelling cannot re-order the mint. Three uncalled statics (one minting `0.0f`+signed
+  conversion, one `1.0f`, one `10.0f` before `turnTowardTarget`) take `.sdata2` **byte-exact to
+  the carve (68/68, hole at 0x04 included)** with every function's bytes unchanged. At least one
+  code-bearing lost body is forced (the bias); the `1.0f`/`10.0f` slots are individually
+  body-or-const undecidable. `turnTowardTarget`'s 98.86 residual is independent (its own slots
+  agree). Owner call to land, same conjectural-text caveat as `engine/7`.
+- **`main/object` — GATE PASSED.** Retail mints the *signed* bias at 0x28, between
+  `Obj_TickModelColorFadeRecursive`'s run and `objApplyVelocity`'s `0.5f`, with referrers
+  (`mapSetupPlayer`, `Obj_UpdateObject`, `loadCharacter`) all later; every function positioned
+  there is byte-exact and none converts. A bias cannot be declared (§12), and the dead-conversion
+  probe (in `objGetFlagsE5_2`) is inert — so the minter was code-bearing and stripped. Second
+  ghost group: `loadCharacter`'s `10.0f, 255.0f` minted ahead of `modelInitBones`' `0.01/0.1`
+  (body-or-const undecidable alone). Two uncalled statics (`(f32)v` signed; `v*10.0f` then
+  255-clamp) reproduce the carve pool **byte-exact through 84 of 88 bytes, the remainder being
+  the carve's linker 8-align tail word** (the tolerated PAD class, `tricky`/Transporter
+  precedent), `.text` unchanged everywhere. `loadCharacter` at 99.76 is the unit's only
+  non-exact fn and owns no disputed slot.
+- **`track/intersect_render` — GATE PASSED, the cleanest specimen.** Retail mints `[-0.5f, 0.5f,
+  pad, unsigned-bias]` at 0x54-0x60, between `doColorFilter` and `doDistortionFilter`; first
+  live loader of the `-0.5f` is `drawSnowFlashOverlay` (function 57), of the bias
+  `moonFxRenderCallback`; every function in the unit is byte-exact (unit `.text` 100.0). The
+  bias forces a code-bearing minter; dead `-0.5f` local + dead unsigned conversion in
+  `doColorFilter` are inert. ONE uncalled static (`f32 r = (f32)v; x = x * -0.5f;` then
+  0.5-clamp) takes `.sdata2` **byte-exact to the carve, 236/236 in full**, `.text` unchanged.
+  One lost body explains all three slots. (The unit's git-history removals are hack-purge
+  artifacts, not this body — nothing to restore from history; text would be written fresh.)
+- **`main/vecmath` — GATE PASSED, and the probe set also REFUTES the declaration origin, which
+  the reference count alone could not.** The single head swap (retail `0.0f, 1.0f`; ours
+  reversed) sits ahead of byte-exact `interpolate`, whose parse order is proven `1.0f`-first.
+  Dead `0.0f` local inert; live `f32 result = 0.0f;` single-exit reaches the pool byte-exact but
+  moves `interpolate` (§12's 87.08 row, reproduced); an uncalled static minting `0.0f`
+  reproduces `.sdata2` byte-exact with zero `.text` change. The new elimination: a visible
+  in-TU definition (`static const struct {f32;}` at head, all nine zero sites converted) fixes
+  the head but **moves `mtx44_multSafe` and `mtxRotateByVec3s`** — the two sites that today ride
+  the `lbl_803DE7C0` opaque-extern crutch — because a visible initializer lets propagation in
+  (§9's mechanism, measured on this row); a definition late enough to stay opaque mints at the
+  wrong end. So no const arrangement reaches both the pool and the code ⇒ lost body. Honest
+  residue: the crutch survives under BOTH origins — neither explains what retail's `multSafe`
+  actually spelled to get an opaque load of its own TU's word — so the row stays coupled to the
+  §9 crutch story even after the upgrade; no cross-TU referrer of `803DE7C0` exists (checked),
+  so a carve-boundary re-draw is not the answer either.
+- **`objects/701` — gate run, elimination FAILS; stays the §12/§12b owner call.** The lone
+  `0.0f` wanted at 0x0c sits *between* runs (after `androsshand_handleDamage`'s `120.0f`, before
+  `AndrossHand_render`'s `1.0f`) — a legal declaration point — and BOTH origins reproduce
+  byte-exactly (92/92, `.text` unchanged): an uncalled static minting `0.0f`, and the banned
+  one-member-struct const with all eleven `update`/`init` zero sites read through it. Dead local
+  inert; live literal in `render` fixes the pool but moves `render`. With ten refs the
+  all-sites-const reading is strained but not refuted; no upgrade.
+- **`main/rcp_dolphin` — gate run, elimination FAILS symmetrically; stays §12/§12b.** The three
+  head slots are at the file-scope mint region (not inside any function's run — not a ghost in
+  this section's sense), each with exactly ONE referrer (`Rcp_InitDistortionEffects`, the last
+  function), so the reference-count spec cannot bite. §12b's aggregate spelling reproduces
+  byte-exactly; an uncalled static minting `2.146452f, 2.520326f, 255.0f` before the first
+  function ALSO reproduces **byte-exact, 80/80, `.text` unchanged** (measured today). Perfectly
+  undecidable; the owner's shape decision, not a probe question.
+- **`main/trig` — NOT GATED; premise fails.** The disputed five words are an intra-function
+  permutation inside `fsin16Approx`'s own run (cos-poly consts minted before sin-poly, against
+  sin-first use order) and the minting functions are NOT byte-exact: all eight fns hold ~99.97
+  with one real diff each, the s16 frame slot at 10 vs 12 (`sth r0,10(r1)`) — the closed
+  trig-cluster stack-slot wall. Pool order and frame slot are plausibly one source-shape
+  unknown; stays §8b-priced (and MSL/GC-1.2.5n TU suspicion stands). No probe can certify a
+  mint run whose owner's text is already wrong.
+- **`dlls/engine/5`, `dlls/engine/68`, `dlls/engine/69` — gate MOOT; disputes closed in-tree.**
+  All three `.sdata2` sections verified byte-identical to their carves today (176/176, 128/128,
+  64/64): `engine/5` and `engine/68` via §18's crutch-sink deletions, `engine/69` via the
+  git-verbatim `CameraModeTalk_resetSmoothing` restore plus the parse-order revert — that body
+  was recovered, not invented, so no conjectural-text caveat attaches. `engine/69`'s residual
+  50/25 item is `.text`-only (`CameraModeTalk_update` 99.894, the named-const late-load
+  mechanism) and is §8b/§9 territory, not this gate's.
+
+Net: the proven-lost-body roster is now `engine/7` + `332` + `main/object` +
+`track/intersect_render` + `main/vecmath` (each: existence proven, text conjectured, landable
+only under §7's `UNCALLED_STATIC_FN` adjudication); `701` and `rcp_dolphin` remain genuinely
+two-origin; `trig` is walled behind its own `.text`; the three engine units are done. Nothing
+was landed from this batch.
 
 ### 8b. The intra-function half of the class: statement order, and why it is still priced
 
@@ -1304,6 +1397,12 @@ and the movers; `300_Transporter` was retired as a padding artifact in section 1
 motion reaches none of them** -- confirming 8b's finding from the other direction, since every
 intra-function row's mint order is only reachable through a live use and a live use is what
 moves the load.
+
+(2026-08-03, later: the §8 proven-lost-body gate was subsequently run as a batch over the
+remaining ORDER_ONLY units -- see the second addendum under §8's table. It upgrades `332`,
+`main/object`, `track/intersect_render` and `main/vecmath` to proven-lost-body, leaves `701`
+and `main/rcp_dolphin` two-origin, and walls `main/trig` behind its own `.text`; the
+adjudications above stand otherwise.)
 
 ## 13. The cross-TU declaration laws (measured 2026-08-02/03)
 
