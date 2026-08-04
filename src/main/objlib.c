@@ -652,7 +652,7 @@ int ObjHits_PollPriorityHitWithCooldown(GameObject* obj, float* cooldown, GameOb
                 ObjHits_ConvertHitPositionToWorld(obj, outHitPos);
             }
         } else {
-            collisionType = ObjHits_GetPriorityHit(obj, (int*)outHitObject, 0x0, 0x0);
+            collisionType = ObjHits_GetPriorityHit(obj, outHitObject, 0x0, 0x0);
         }
         if (collisionType != 0) {
             *cooldown = 30.0f;

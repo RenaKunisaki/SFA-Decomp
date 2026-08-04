@@ -288,7 +288,7 @@ void gunpowderBarrel_homeOnTarget(GameObject* obj, s16 rotYModeArg, s16 rotZMode
 
 void gunpowderBarrel_triggerExplosion(GameObject* obj) {
     GunpowderBarrelState* state;
-    int hitObject;
+    GameObject* hitObject;
     int generatorCount;
     u8* tricky;
     int* timerObject;

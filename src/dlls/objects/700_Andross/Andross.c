@@ -218,7 +218,7 @@ void andross_processPartHits(GameObject* obj, AndrossState* state) {
     s8 textureState;
     ObjTextureRuntimeSlot* texture;
 
-    hasHit = ObjHits_GetPriorityHit(obj, (int*)&hitObj, &hitType, &hitVolume);
+    hasHit = ObjHits_GetPriorityHit(obj, &hitObj, &hitType, &hitVolume);
     {
         u8 partIndex;
         for (partIndex = 0; partIndex < ARRAY_COUNT(state->partHitTimer); partIndex++) {

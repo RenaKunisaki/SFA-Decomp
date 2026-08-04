@@ -169,7 +169,7 @@ void dfptargetblock_hitDetect(GameObject* obj)
     obj->anim.previousLocalPosZ = obj->anim.localPosZ;
 
     hitObj = NULL;
-    hitType = ObjHits_GetPriorityHit(obj, (int*)&hitObj, &priority, 0);
+    hitType = ObjHits_GetPriorityHit(obj, &hitObj, &priority, 0);
     if ((hitType != 0) && (hitObj != NULL) && (hitType == DFPTARGETBLOCK_HIT_TYPE_PUSH) &&
         (hitType == DFPTARGETBLOCK_HIT_TYPE_PUSH))
     {

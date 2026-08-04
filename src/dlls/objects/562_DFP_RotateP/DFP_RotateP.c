@@ -332,7 +332,7 @@ void DFP_RotateP_update(GameObject* obj)
                 {
                     hitObj = NULL;
                     hitType = ObjHits_GetPriorityHit(
-                        (GameObject*)(handles[i * DFP_ROTATEP_EFFECT_HANDLES_PER_RING + 1]), (int*)&hitObj, 0x0, 0x0);
+                        (GameObject*)(handles[i * DFP_ROTATEP_EFFECT_HANDLES_PER_RING + 1]), &hitObj, 0x0, 0x0);
                     if (hitType == DFP_ROTATEP_HIT_TYPE_RING_TARGET)
                     {
                         mode = (*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot);

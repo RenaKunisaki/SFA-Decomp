@@ -83,7 +83,7 @@ void AndrossBrain_update(GameObject* obj)
 {
     AndrossBrainState* state = (obj)->extra;
     u8 stateChanged = 0;
-    int hitObj;
+    GameObject* hitObj;
     int sphereIdx;
     u32 hitVol;
     int hit;

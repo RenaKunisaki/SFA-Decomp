@@ -5635,14 +5635,14 @@ int playerState20(GameObject* obj, int state, f32 fv)
 int playerState1F(GameObject* obj, int state, f32 fv)
 {
     PlayerState* inner = obj->extra;
-    int hit;
+    GameObject* hit;
 
     ((PlayerState*)state)->baddie.stateTag = 3;
     if (((PlayerState*)state)->baddie.moveJustStartedA != 0)
     {
         if (ObjHits_GetPriorityHit(obj, &hit, 0, 0))
         {
-            inner->targetYaw = (s16)getAngle(-((GameObject*)hit)->anim.velocityX, -((GameObject*)hit)->anim.velocityZ);
+            inner->targetYaw = (s16)getAngle(-hit->anim.velocityX, -hit->anim.velocityZ);
             inner->yaw = inner->targetYaw;
         }
         ObjAnim_SetCurrentMove((int)obj, 0x407, 0.0f, 0);

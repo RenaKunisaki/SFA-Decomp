@@ -6178,7 +6178,7 @@ int tricky_handleFeedOrTalk(GameObject* obj, int* state) {
 }
 
 void tricky_handlePlayerContact(GameObject* obj, TrickyState* state) {
-    int hit[1];
+    GameObject* hit[1];
     TrickyState* ptr;
     f32 fv;
     int inWater;
@@ -6187,8 +6187,8 @@ void tricky_handlePlayerContact(GameObject* obj, TrickyState* state) {
     if (state->cooldownB.f < 0.0f) {
         state->cooldownB.f = 0.0f;
     }
-    if (ObjHits_GetPriorityHit(obj, hit, 0, 0) != 0 && *(u8**)(hit[0] + 0xc4) != NULL &&
-        *(s16*)(*(u8**)(hit[0] + 0xc4) + 0x44) == 1) {
+    if (ObjHits_GetPriorityHit(obj, hit, 0, 0) != 0 && hit[0]->ownerObj != NULL &&
+        ((GameObject*)hit[0]->ownerObj)->anim.classId == 1) {
         fv = state->cooldownB.f;
         if (fv <= 0.0f) {
             state->cooldownB.f += 180.0f;

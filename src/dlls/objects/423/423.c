@@ -458,7 +458,7 @@ void EdibleMushroom_update(GameObject* obj) {
     EdibleMushroomPlacement* placement;
     GameObject* player;
     GameObject* enemy;
-    int hitObj;
+    GameObject* hitObj;
     int msg;
     int hitKind;
     f32 distState;
@@ -522,7 +522,7 @@ void EdibleMushroom_update(GameObject* obj) {
             Obj_StartModelFadeIn(obj, 0x12C);
         } else {
             Obj_SetModelColorFadeRecursive(obj, 0xF, 0xC8, 0, 0, 1);
-            if (((GameObject*)hitObj)->anim.romDefNo != EDIBLE_MUSHROOM_EARTH_WARRIOR_ALIAS_ID) {
+            if (hitObj->anim.romDefNo != EDIBLE_MUSHROOM_EARTH_WARRIOR_ALIAS_ID) {
                 if ((state->flags & EDIBLE_MUSHROOM_FLAG_STRUCK) == 0) {
                     Sfx_PlayFromObject(obj, SFXTRIG_mv_ladderslide16);
                 }

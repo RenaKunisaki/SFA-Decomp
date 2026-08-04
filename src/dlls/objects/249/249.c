@@ -87,7 +87,7 @@ void ProjectileSwitch_hitDetect(GameObject* obj) {
 
     placement = (ProjectileSwitchPlacement*)obj->anim.placementData;
     switchState = obj->extra;
-    hitPriority = ObjHits_GetPriorityHit(obj, (int*)&hitObject, NULL, NULL);
+    hitPriority = ObjHits_GetPriorityHit(obj, &hitObject, NULL, NULL);
     if (hitPriority != PROJECTILE_SWITCH_HIT_PRIORITY_0E && hitPriority != PROJECTILE_SWITCH_HIT_PRIORITY_0F) {
         return;
     }

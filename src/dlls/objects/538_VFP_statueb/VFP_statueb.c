@@ -95,7 +95,7 @@ void VFP_statueball_update(GameObject* obj)
 
     if (mainGetBit(state->activationGameBit) == 0)
     {
-        hitType = ObjHits_GetPriorityHit(obj, (int*)&hitObj, 0, 0);
+        hitType = ObjHits_GetPriorityHit(obj, &hitObj, 0, 0);
         if ((hitObj != NULL) && (hitType != 0) && (hitObj != NULL) &&
             (hitObj->anim.romDefNo == VFPSTATUEBALL_HIT_SEQID))
         {

@@ -11,15 +11,15 @@ static inline DfpPowerSlState* dfppowersl_getState(GameObject* obj)
 int dfppowersl_spawnSeqObjectsOnHit(GameObject* obj)
 {
     int i;
-    int outObj;
+    GameObject* outObj;
 
-    outObj = 0;
+    outObj = NULL;
     if (obj == 0)
     {
         return 0;
     }
     i = ObjHits_GetPriorityHit(obj, &outObj, 0, 0);
-    if (((u32)outObj != 0) && (i != 0))
+    if ((outObj != NULL) && (i != 0))
     {
         i = 1;
         do

@@ -16,6 +16,7 @@
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
+#include "sys/objects.h"
 
 /* anim.romDefNo tag identifying a live propeller (vs. a placeholder stand-in) */
 #define SB_PROPELLER_SEQ_ID 0x69c
@@ -115,7 +116,7 @@ void SB_Propeller_update(GameObject* obj) {
             obj->userData1 = 0;
         }
         if (galleonPhase == 1 && ObjHits_GetPriorityHit(obj, &hitObjectAddress, 0, 0) != 0 && obj->userData1 == 0 &&
-            (void*)hitObjectAddress != NULL && (void*)hitObjectAddress != (void*)Obj_GetPlayerObject() &&
+            hitObjectAddress != NULL && hitObjectAddress != Obj_GetPlayerObject() &&
             hitObjectAddress->anim.romDefNo != SB_PROPELLER_SEQ_ID &&
             hitObjectAddress->anim.romDefNo != SB_OTHER_SEQ_ID &&
             (obj->userData1 = 0x14, obj->anim.parent != NULL) && (galleonStage == 2 || galleonStage == 5) &&

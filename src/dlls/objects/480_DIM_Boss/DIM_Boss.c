@@ -1071,7 +1071,7 @@ void DIMboss_updateHitResponse(GameObject* obj, BaddieState* playerState) {
     ObjHitsPriorityState* hitState;
     int hitType;
     u32 hitVolume;
-    int hitId;
+    GameObject* hitId;
     DimBossHitDescriptor desc;
 
     state = obj->extra;
@@ -1162,7 +1162,7 @@ void DIMboss_updateHitResponse(GameObject* obj, BaddieState* playerState) {
             } else {
                 (*gPlayerInterface)->setState(obj, playerState, 0xb);
             }
-            ObjMsg_SendToObject((void*)hitId, DIM2ICICLE_ADVANCE_MSG, obj, 0);
+            ObjMsg_SendToObject(hitId, DIM2ICICLE_ADVANCE_MSG, obj, 0);
         }
     }
 }

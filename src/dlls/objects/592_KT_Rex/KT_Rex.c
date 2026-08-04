@@ -1012,7 +1012,7 @@ void ktrex_updateContactEffects(GameObject* obj, GroundBaddieState* runtime)
 {
     int hitType;
     u32 hitC;
-    int hitA;
+    GameObject* hitA;
     KtrexMsgBlob msg;
     int hit;
     f32* contactPoints;
@@ -1095,7 +1095,7 @@ void ktrex_updateContactEffects(GameObject* obj, GroundBaddieState* runtime)
     {
         runtime->baddie.hitPoints = 0;
     }
-    ObjMsg_SendToObject((void*)hitA, KTREX_ADVANCE_MSG, obj, 0);
+    ObjMsg_SendToObject(hitA, KTREX_ADVANCE_MSG, obj, 0);
 }
 
 void ktrex_updateAttackEffects(GameObject* obj)

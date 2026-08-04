@@ -617,7 +617,7 @@ void tumbleweed_updateStateMachine(GameObject* obj) {
                 state->phase = TUMBLEWEED_PHASE_ARMED;
             }
         } else if (phase == TUMBLEWEED_PHASE_ARMED) {
-            if (ObjHits_GetPriorityHit(obj, (int*)&hitObject, &sphereIndex, &hitVolume) != 0) {
+            if (ObjHits_GetPriorityHit(obj, &hitObject, &sphereIndex, &hitVolume) != 0) {
                 ObjHits_EnableObject(obj);
                 state->phase = TUMBLEWEED_PHASE_ROLLING;
                 state->flags |= TUMBLEWEED_EFFECT_FLAGS_BURST_PUFF;
@@ -679,7 +679,7 @@ void tumbleweed_updateStateMachine(GameObject* obj) {
             state->phaseTimer -= timeDelta;
             if (state->phaseTimer < 0.0f) {
                 state->flags |= TUMBLEWEED_EFFECT_FLAGS_ALL;
-            } else if (ObjHits_GetPriorityHit(obj, (int*)&hitObject, &sphereIndex, &hitVolume) != 0 &&
+            } else if (ObjHits_GetPriorityHit(obj, &hitObject, &sphereIndex, &hitVolume) != 0 &&
                        hitObject->anim.romDefNo != obj->anim.romDefNo) {
                 if (obj->anim.romDefNo == TUMBLEWEED_TYPE_3) {
                     state->flags |= TUMBLEWEED_EFFECT_FLAGS_BURST_PUFF;
@@ -709,7 +709,7 @@ void tumbleweed_updateStateMachine(GameObject* obj) {
                     state->flags |= TUMBLEWEED_EFFECT_FLAGS_ALL;
                 } else if (state->growRate <= 0.0f) {
                     state->flags |= TUMBLEWEED_EFFECT_FLAGS_ALL;
-                } else if (ObjHits_GetPriorityHit(obj, (int*)&hitObject, &sphereIndex, &hitVolume) != 0 &&
+                } else if (ObjHits_GetPriorityHit(obj, &hitObject, &sphereIndex, &hitVolume) != 0 &&
                            hitObject->anim.romDefNo != obj->anim.romDefNo) {
                     state->flags |= TUMBLEWEED_EFFECT_FLAGS_ALL;
                 }
@@ -837,7 +837,7 @@ void tumbleweed_updateTargetedStateMachine(GameObject* obj) {
         }
         tumbleweed_updateRollingMotion(obj, state);
         (*gPathControlInterface)->advance(obj, state, timeDelta);
-        if (ObjHits_GetPriorityHit(obj, (int*)&hitObject, &sphereIndex, &hitVolume) != 0) {
+        if (ObjHits_GetPriorityHit(obj, &hitObject, &sphereIndex, &hitVolume) != 0) {
             mainSetBits(GAMEBIT_TumbleweedRelated642, 1);
             state->flags |= TUMBLEWEED_EFFECT_FLAGS_ALL;
         }

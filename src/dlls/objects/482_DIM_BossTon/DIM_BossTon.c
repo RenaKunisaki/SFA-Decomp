@@ -121,7 +121,7 @@ const f32 gDIMbosstonsilThirty[1] = {30.0f};
 const f32 gDIMbosstonsilFifty[1] = {50.0f};
 
 void DIMbosstonsil_checkHit(GameObject* obj, GroundBaddieState* state) {
-    int hitObj;
+    GameObject* hitObj;
     int modelPart;
     u32 hitVolume;
     PartFxSpawnParams spawnArgs;
@@ -165,7 +165,7 @@ void DIMbosstonsil_checkHit(GameObject* obj, GroundBaddieState* state) {
             }
             (*gPlayerInterface)->setState(obj, state, 1);
             state->baddie.substate = 1;
-            ObjMsg_SendToObject((void*)hitObj, DIMBOSSTONSIL_ADVANCE_MSG, obj, 0);
+            ObjMsg_SendToObject(hitObj, DIMBOSSTONSIL_ADVANCE_MSG, obj, 0);
         }
     }
 }

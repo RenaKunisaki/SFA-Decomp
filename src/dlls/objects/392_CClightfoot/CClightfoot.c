@@ -209,7 +209,7 @@ void ccLightfoot_update(GameObject* obj) {
     u32 targetByteOffset;
     u8 targetIndex;
     f32 distanceSquared;
-    int hitObjectHandle;
+    GameObject* hitObjectHandle;
     f32 targetDistanceSquares[2];
     f32 hitPos[3];
     int moveId;
@@ -511,7 +511,7 @@ void ccLightfoot_update(GameObject* obj) {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_swdtest222);
         }
     } else if (ObjHits_GetPriorityHit(obj, &hitObjectHandle, 0, 0) != 0) {
-        move = ((GameObject*)hitObjectHandle)->anim.romDefNo;
+        move = hitObjectHandle->anim.romDefNo;
         if (move == CC_LIGHTFOOT_HIT_SEQ_COLOR_FADE_A || move == CC_LIGHTFOOT_HIT_SEQ_COLOR_FADE_B) {
             Obj_SetModelColorFadeRecursive(obj, 0xf, 0xc8, 0, 0, 1);
         }

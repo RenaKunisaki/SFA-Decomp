@@ -40,7 +40,7 @@ void dll_1DA_hitDetect(GameObject* obj) {
     GameObject* hitObject;
     GameObject* player;
     f32 scale;
-    int hitType = ObjHits_GetPriorityHit(obj, (int*)&hitObject, NULL, NULL);
+    int hitType = ObjHits_GetPriorityHit(obj, &hitObject, NULL, NULL);
 
     if (hitType == 0xE) {
         player = Obj_GetPlayerObject();

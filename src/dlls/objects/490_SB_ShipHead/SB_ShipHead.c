@@ -160,7 +160,7 @@ void SB_ShipHead_update(GameObject* obj) {
     }
     if ((SB_GALLEON_VTBL(galleon)->getPhase((int)galleon) >= 2) && (object->userData2 <= 0) &&
         (((u32)(galleonPhase - 3) <= 1 || (galleonPhase == 5))) &&
-        (ObjHits_GetPriorityHit(obj, (int*)&hit, 0, 0) != 0) && (hit->anim.romDefNo != SB_FIREBALL_OBJECT_ID)) {
+        (ObjHits_GetPriorityHit(obj, &hit, 0, 0) != 0) && (hit->anim.romDefNo != SB_FIREBALL_OBJECT_ID)) {
         Obj_SetModelColorFadeRecursive(obj, 0xf, 200, 0, 0, 1);
         Sfx_PlayFromObject((int)obj, SFXTRIG_wp_gcfir1_c_37);
         state->health -= 1;

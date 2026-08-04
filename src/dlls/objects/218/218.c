@@ -118,7 +118,7 @@ void pollenfragment_hitDetect(GameObject* obj)
 {
     PollenFragmentExtra* extra;
     int hitType;
-    int hitObject;
+    GameObject* hitObject;
 
     extra = obj->extra;
     if (timerIsActive(&extra->deathTimer) == 0)

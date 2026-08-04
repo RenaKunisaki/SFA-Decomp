@@ -59,7 +59,7 @@ void gcRobotLightBeam_hitDetect(GameObject* obj) {
     if (obj->ownerObj == NULL) {
         return;
     }
-    if (ObjHits_GetPriorityHit(obj, (int*)&hitObject, NULL, NULL) == 0) {
+    if (ObjHits_GetPriorityHit(obj, &hitObject, NULL, NULL) == 0) {
         hitObject = (GameObject*)((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject;
         if (hitObject == NULL) {
             return;

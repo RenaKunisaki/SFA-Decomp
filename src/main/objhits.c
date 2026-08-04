@@ -2946,7 +2946,7 @@ int ObjHits_GetPriorityHitWithPosition(GameObject* obj, GameObject** outHitObjec
     return 0;
 }
 
-int ObjHits_GetPriorityHit(GameObject* obj, int* outHitObject, int* outSphereIndex, u32* outHitVolume) {
+int ObjHits_GetPriorityHit(GameObject* obj, GameObject** outHitObject, int* outSphereIndex, u32* outHitVolume) {
     u8 hitPriority;
     int hitCount;
     ObjHitsPriorityState* hitState;
@@ -2971,7 +2971,7 @@ int ObjHits_GetPriorityHit(GameObject* obj, int* outHitObject, int* outSphereInd
         }
         if (bestHitSlot != -1) {
             if (outHitObject != 0x0) {
-                *outHitObject = hitState->hitObjects[bestHitSlot];
+                *outHitObject = (GameObject*)hitState->hitObjects[bestHitSlot];
             }
             if (outSphereIndex != 0x0) {
                 *outSphereIndex = hitState->sphereIndices[bestHitSlot];

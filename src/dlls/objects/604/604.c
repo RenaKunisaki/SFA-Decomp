@@ -579,7 +579,7 @@ void snowclaw_hitDetect(GameObject* obj)
     GameObject* near;
     GameObject* player;
     f32 dist;
-    int hit;
+    GameObject* hit;
     s8 hitCooldown;
 
     inner = obj->extra;
@@ -592,7 +592,7 @@ void snowclaw_hitDetect(GameObject* obj)
     }
     if (ObjHits_GetPriorityHit((GameObject*)(sub), &hit, 0, 0) == 0x15 && s->health >= 0)
     {
-        ObjHits_RecordObjectHit((GameObject*)sub, (GameObject*)hit, 0x15, 1, 0);
+        ObjHits_RecordObjectHit((GameObject*)sub, hit, 0x15, 1, 0);
         if (s->hitCooldown < 0)
         {
             s->health -= 1;

@@ -338,7 +338,7 @@ void drakormissile_update(GameObject* o)
     {
         lastHit = (GameObject*)((ObjHitsPriorityState*)o->anim.hitReactState)->lastHitObject;
         hitObj = NULL;
-        hit = ObjHits_GetPriorityHit((GameObject*)(o), (int*)&hitObj, 0, 0);
+        hit = ObjHits_GetPriorityHit((GameObject*)(o), &hitObj, 0, 0);
         expired = 0;
         rem = state->timer - framesThisStep;
         state->timer = rem;

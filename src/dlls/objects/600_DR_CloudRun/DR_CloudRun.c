@@ -1102,13 +1102,13 @@ void DR_CloudRunner_hitDetect(GameObject* obj)
 {
     CloudRunnerState* inner = (obj)->extra;
     int hitResult;
-    s16* hits[4];
+    GameObject* hits[4];
     s16 diff;
     if (inner->airTimeRemaining != 0 && (obj)->anim.currentMove != 0xf &&
-        (hitResult = ObjHits_GetPriorityHit(obj, (int*)hits, 0, 0)) != 0 && hitResult != 0xf &&
+        (hitResult = ObjHits_GetPriorityHit(obj, hits, 0, 0)) != 0 && hitResult != 0xf &&
         inner->flightState == CLOUDRUNNER_FLIGHT_MOUNTED)
     {
-        diff = (obj)->anim.rotX - (u16)*hits[0];
+        diff = (obj)->anim.rotX - (u16)hits[0]->anim.rotX;
         if (diff > 0x8000)
         {
             diff = diff - 0xffff;

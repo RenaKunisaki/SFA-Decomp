@@ -83,7 +83,7 @@ void androsshand_handleDamage(GameObject* obj, AndrossHandState* state)
 {
     u32 hitVol;
     int sphereIdx;
-    int hitObj;
+    GameObject* hitObj;
     f32 x;
     f32 y;
     f32 z;

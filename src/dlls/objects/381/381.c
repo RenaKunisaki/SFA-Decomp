@@ -110,7 +110,7 @@ void rollingBarrel_update(GameObject* obj) {
     f32 floorY;
     f32 distanceSquared;
     int blocked;
-    int hitObject;
+    GameObject* hitObject;
     int hitSphereIndex;
     u32 hitVolume;
     int hitType;
@@ -118,7 +118,7 @@ void rollingBarrel_update(GameObject* obj) {
     u8 mode;
 
     state = obj->extra;
-    hitObject = 0;
+    hitObject = NULL;
     placement = (RollingBarrelPlacement*)obj->anim.placementData;
     blocked = 0;
     distanceSquared = 0.0f;
@@ -190,7 +190,7 @@ void rollingBarrel_update(GameObject* obj) {
         }
         hitType = ObjHits_GetPriorityHit(obj, &hitObject, &hitSphereIndex, &hitVolume);
 
-        if (blocked != 0 || (void*)hitObject == (void*)Obj_GetPlayerObject() || (u32)(hitType - 0xe) <= 1u ||
+        if (blocked != 0 || hitObject == Obj_GetPlayerObject() || (u32)(hitType - 0xe) <= 1u ||
             hitType == 0x13) {
             if (blocked == 0) {
                 state->hitVolumeSlot = 0;

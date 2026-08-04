@@ -275,8 +275,8 @@ void ring_update(GameObject* obj)
     RingPlacement* setup;
     int bit;
     int alpha;
-    int hitA;
-    int hitB;
+    GameObject* hitA;
+    GameObject* hitB;
     GameObject* hit;
     int ang;
     f32 dir[3];
@@ -331,7 +331,7 @@ void ring_update(GameObject* obj)
         {
         case RING_ROUTE_MOVING_SHOT_A:
         case RING_ROUTE_MOVING_SHOT_B:
-            if (ObjHits_GetPriorityHit(obj, &hitA, 0, 0) != 0 && (void*)(hit = (GameObject*)hitA) != NULL &&
+            if (ObjHits_GetPriorityHit(obj, &hitA, 0, 0) != 0 && (hit = hitA) != NULL &&
                 (hit->anim.romDefNo == RING_SHOT_TYPE_A ||
                  hit->anim.romDefNo == RING_SHOT_TYPE_B))
             {
@@ -349,7 +349,7 @@ void ring_update(GameObject* obj)
             ring_updateMovingAxis(obj, state);
             break;
         case RING_ROUTE_STATIONARY_SHOT:
-            if (ObjHits_GetPriorityHit(obj, &hitB, 0, 0) != 0 && (void*)(hit = (GameObject*)hitB) != NULL &&
+            if (ObjHits_GetPriorityHit(obj, &hitB, 0, 0) != 0 && (hit = hitB) != NULL &&
                 (hit->anim.romDefNo == RING_SHOT_TYPE_A ||
                  hit->anim.romDefNo == RING_SHOT_TYPE_B))
             {

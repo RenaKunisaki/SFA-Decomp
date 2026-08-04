@@ -798,7 +798,7 @@ void arwarwing_handlePathDamage(GameObject* obj, ArwingState* state)
 void arwarwing_handleObjectDamage(GameObject* obj, ArwingState* state)
 {
     int hitVol;
-    int hitObj;
+    GameObject* hitObj;
 
     if (objGetFlagsE5_2((u8*)obj) != 0)
         return;

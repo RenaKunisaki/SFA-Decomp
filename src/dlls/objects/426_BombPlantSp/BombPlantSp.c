@@ -164,7 +164,7 @@ void BombPlantSpore_update(GameObject* obj) {
     GameObject* contactObj;
     int poppedMessage;
     u32 poppedSender;
-    int hitObject;
+    GameObject* hitObject;
     GameObject* player;
     int i;
     int j;

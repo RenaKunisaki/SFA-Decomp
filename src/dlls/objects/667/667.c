@@ -165,7 +165,7 @@ void arwingandrossstuff_hitDetect(GameObject* obj)
 
     if (objAnim->romDefNo == ARW_SEQID_ANDROSS_ASTEROID)
     {
-        int hit;
+        GameObject* hit;
         u32 vol;
 
         if (ObjHits_GetPriorityHit(obj, &hit, 0, &vol) != 0)
