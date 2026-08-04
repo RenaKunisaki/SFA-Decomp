@@ -71,7 +71,8 @@ typedef struct MusicTrackSlot {
 typedef struct StreamEntry {
     u16 id;
     u8 fadeBits;
-    u8 volBits;
+    u8 fullVolume : 1;
+    u8 volume : 7;
     u16 lengthRaw;
     char name[0xF];
     u8 flag;
@@ -86,7 +87,9 @@ typedef struct MusicTrigger {
     u8 volume;
     u8 priority;
     u8 pad0E;
-    u8 flags;
+    u8 pad0FHigh : 2;
+    u8 priorityGroup : 1;
+    u8 pad0FLow : 5;
 } MusicTrigger;
 
 STATIC_ASSERT(sizeof(MusicTrigger) == 0x10);

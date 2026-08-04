@@ -335,7 +335,7 @@ int AudioStream_Play(int id, void (*preparedCallback)(void))
         {
             Sfx_StopAllObjectSounds();
         }
-        gAudioActiveChannelMask = (((u32)s->volBits >> 7) & 1) ? 4 : 0;
+        gAudioActiveChannelMask = s->fullVolume ? 4 : 0;
 
         stopped = 0;
         while (gAudioStreamPlaying != 0)
@@ -360,7 +360,7 @@ int AudioStream_Play(int id, void (*preparedCallback)(void))
             }
         }
 
-        vol = (((s->volBits & 0x7F) + 1) * gAudioStreamDefaultVolume) >> 7;
+        vol = ((s->volume + 1) * gAudioStreamDefaultVolume) >> 7;
         gAudioStreamVolumeLeft = vol;
         gAudioStreamVolumeRight = vol;
         AISetStreamVolLeft(vol);

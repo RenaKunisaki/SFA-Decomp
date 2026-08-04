@@ -5262,7 +5262,7 @@ int tricky_substateApproachThorntail(GameObject* obj, TrickyState* state) {
         state->wanderTargetY = pos[1];
         state->wanderTargetZ = pos[2];
     }
-    if ((((u32)state->stateFlags728 >> 5) & 1) != 0) {
+    if (state->flag728Bit5 != 0) {
         if (Sfx_IsPlayingFromObjectChannel(obj, 16) != 0) {
             return 0;
         }
@@ -5842,12 +5842,12 @@ u32 tricky_updateIdleBehavior(GameObject* obj, int* trickyState) {
         ((TrickyState*)trickyState)->cooldownC = 0.0f;
         return 1;
     }
-    if ((((TrickyState*)trickyState)->stateFlags728 >> 7 & 1) != 0U) {
+    if (((TrickyState*)trickyState)->flag728Bit7 != 0U) {
         ((TrickyState*)trickyState)->idleTimer = 200.0f;
         ((TrickyState*)trickyState)->flag728Bit7 = 0;
         ((TrickyState*)trickyState)->flag728Bit6 = 1;
     }
-    if ((((TrickyState*)trickyState)->stateFlags728 >> 6 & 1) != 0U) {
+    if (((TrickyState*)trickyState)->flag728Bit6 != 0U) {
         ((TrickyState*)trickyState)->idleTimer -= timeDelta;
         if (((TrickyState*)trickyState)->idleTimer <= 0.0f) {
             ((TrickyState*)trickyState)->cooldownA = 300.0f;
