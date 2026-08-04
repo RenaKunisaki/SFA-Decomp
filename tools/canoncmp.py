@@ -130,4 +130,5 @@ def main():
         print("NEUT_ATN")
 
 
-main()
+if __name__ == "__main__":
+    main()

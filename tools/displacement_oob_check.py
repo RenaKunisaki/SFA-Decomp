@@ -229,4 +229,5 @@ def main():
               f"{h['sym']}+0x{h['off']:x} size=0x{h['size']:x} ({h['symsec']})")
 
 
-main()
+if __name__ == "__main__":
+    main()

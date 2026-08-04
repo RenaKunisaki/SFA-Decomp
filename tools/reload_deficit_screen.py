@@ -86,4 +86,5 @@ def main():
     print("\ntotal hits: %d" % len(rows))
 
 
-main()
+if __name__ == "__main__":
+    main()

@@ -623,17 +623,30 @@ def family_build(unit_object, verbose):
     #     crash is loud, a screen that finds nothing looks like a clean tree.
     import ast
 
+    # ...and the KEY SET has to be derived too, for the same reason the reader
+    # scope did.  This block used to enumerate seven key names by hand while
+    # its own comment explained that a hand-written scope hides whatever sits
+    # outside it.  `matched_data_percent` sat outside it, so the
+    # `.get(key, 100.0)` half below -- the half the comment calls "worse" --
+    # could not see the one live instance of that exact shape in the tree
+    # (`promotion_candidates.is_report_exact`).  The vocabulary is the
+    # tree-level `measures` dict; a key is omitted-at-zero if some instance of
+    # a scope kind that uses it does not carry it.  Each kind is asked
+    # separately, because a function scope has no `matched_data` to omit.
     rep_doc = rep
-    omit_keys = set()
-    for u in rep_doc["units"]:
-        for scope_ in ([u.get("measures") or {}] + list(u.get("functions") or [])
-                       + list(u.get("sections") or [])):
-            for k in ("fuzzy_match_percent", "complete_units", "matched_code",
-                      "matched_data", "matched_functions", "total_code",
-                      "total_data"):
-                if k not in scope_ and any(k in s for s in
-                                           (rep_doc["measures"],)):
-                    omit_keys.add(k)
+    measure_vocab = set(rep_doc["measures"])
+
+    def _omitted(scopes):
+        used = set()
+        for s in scopes:
+            used |= measure_vocab & set(s)
+        return {k for k in used if any(k not in s for s in scopes)}
+
+    omit_keys = _omitted([u.get("measures") or {} for u in rep_doc["units"]])
+    omit_keys |= _omitted([f for u in rep_doc["units"]
+                           for f in (u.get("functions") or [])])
+    omit_keys |= _omitted([s for u in rep_doc["units"]
+                           for s in (u.get("sections") or [])])
     present_zero = [(u["name"], k) for u in rep_doc["units"]
                     for k, v in (u.get("measures") or {}).items() if v == 0]
     ok = bool(omit_keys) and not present_zero
@@ -711,6 +724,36 @@ def family_build(unit_object, verbose):
           % ("held" if ok else "WRONG DEFAULT",
              "" if not dflt_off else "  *** " + ", ".join(
                  "%s%s" % (f, d) for f, d in dflt_off)))
+
+    # ...and the one live instance, checked by BEHAVIOUR and not by grep, so a
+    # future respelling of the same mistake is still caught.  A unit with no
+    # `matched_data_percent` matched no data; `promotion_candidates` must
+    # reject it, and must still accept the same unit once the key is present at
+    # 100.0 -- otherwise a stricter default would simply have turned the tool
+    # off.
+    # The predicate is lifted out by AST and executed on its own -- importing
+    # the module would be the very side effect the arm below checks for.
+    _pc_src = open(os.path.join(REPO, "tools", "promotion_candidates.py")).read()
+    _pc_fn = next(n for n in ast.parse(_pc_src).body
+                  if isinstance(n, ast.FunctionDef)
+                  and n.name == "is_report_exact")
+    _ns = {}
+    exec(compile(ast.Module(body=[_pc_fn], type_ignores=[]),
+                 "promotion_candidates.py", "exec"), _ns)
+    is_report_exact = _ns["is_report_exact"]
+    _base = {"measures": {"matched_code_percent": 100.0},
+             "metadata": {"complete": False, "auto_generated": False}}
+    _absent = is_report_exact(_base)
+    _present = dict(_base, measures=dict(_base["measures"],
+                                         matched_data_percent=100.0))
+    _zero = dict(_base, measures=dict(_base["measures"],
+                                      matched_data_percent=0.0))
+    ok = (not _absent) and is_report_exact(_present) \
+        and not is_report_exact(_zero)
+    bad += not ok
+    print("  [%s] promotion_candidates rejects a unit whose "
+          "matched_data_percent is ABSENT, and still accepts one at 100.0"
+          % ("held" if ok else "WRONG DEFAULT"))
 
     # ABLATION.  A checker that finds nothing because it is looking in the
     # wrong place is indistinguishable from a clean tree, so every arm gets an
@@ -829,6 +872,20 @@ def family_build(unit_object, verbose):
     # Static, so it costs nothing and cannot itself run anything: a tool that
     # calls out or opens a file for writing at MODULE level, and has no
     # `__main__` guard, is an import-time side effect.
+    #
+    # The first version of this check only looked for the effect SYNTACTICALLY
+    # inside the module-level statement, so a module-level loop that calls a
+    # helper defined in the same file -- `for o in objs: rows = secs(o)`, with
+    # `subprocess.run` one frame down inside `secs` -- read as clean.  Nine
+    # tools had exactly that shape and the check reported zero.  The call graph
+    # is followed now, and the write vocabulary covers the pathlib/shutil verbs
+    # that never go through `open`.  Names that collide with str/list methods
+    # (`replace`, `remove`, `rename`, `copy`, `move`) are deliberately NOT in
+    # it: they cost four false offenders and caught nothing.
+    WRITE_CALLS = {"run", "check_call", "check_output", "call", "Popen", "system"}
+    WRITE_METHODS = {"write_text", "write_bytes", "makedirs", "mkdir",
+                     "rmtree", "unlink"}
+
     def import_side_effects(text):
         try:
             tree = ast.parse(text)
@@ -840,24 +897,33 @@ def family_build(unit_object, verbose):
             for n in tree.body)
         if guarded:
             return []
-        hits = []
-        for node in tree.body:
-            if isinstance(node, (ast.Import, ast.ImportFrom, ast.FunctionDef,
-                                 ast.AsyncFunctionDef, ast.ClassDef)):
-                continue
+        funcs = {n.name: n for n in ast.walk(tree)
+                 if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))}
+
+        def effects(node, seen):
+            hits = []
             for n in ast.walk(node):
                 if not isinstance(n, ast.Call):
                     continue
                 f = n.func
                 name = f.attr if isinstance(f, ast.Attribute) else \
                     (f.id if isinstance(f, ast.Name) else "")
-                if name in ("run", "check_call", "check_output", "call",
-                            "Popen", "system"):
+                if name in WRITE_CALLS or name in WRITE_METHODS:
                     hits.append(name)
-                if name == "open" and any(
+                elif name == "open" and any(
                         isinstance(a, ast.Constant) and isinstance(a.value, str)
                         and ("w" in a.value or "a" in a.value) for a in n.args[1:]):
                     hits.append("open-for-write")
+                elif isinstance(f, ast.Name) and f.id in funcs and f.id not in seen:
+                    hits += effects(funcs[f.id], seen | {f.id})
+            return hits
+
+        hits = []
+        for node in tree.body:
+            if isinstance(node, (ast.Import, ast.ImportFrom, ast.FunctionDef,
+                                 ast.AsyncFunctionDef, ast.ClassDef)):
+                continue
+            hits += effects(node, frozenset())
         return hits
 
     offenders = []
@@ -889,6 +955,20 @@ def family_build(unit_object, verbose):
          "import subprocess\ndef f():\n    subprocess.run(['x'])\n", False),
         ("a module-level read-only open passes",
          "d = open('/tmp/x')\n", False),
+        ("the INDIRECT shape -- a module-level loop calling a local helper "
+         "that shells out -- is caught",
+         "import subprocess\ndef secs(p):\n    return subprocess.run([p])\n"
+         "for p in ['a']:\n    secs(p)\n", True),
+        ("...and the same body behind a __main__ guard passes",
+         "import subprocess\ndef secs(p):\n    return subprocess.run([p])\n"
+         "if __name__ == '__main__':\n    for p in ['a']:\n        secs(p)\n",
+         False),
+        ("a module-level Path.write_text is caught without any open()",
+         "from pathlib import Path\nPath('/tmp/x').write_text('y')\n", True),
+        ("...and two mutually recursive helpers do not hang the walk",
+         "def a():\n    b()\ndef b():\n    a()\na()\n", False),
+        ("a module-level str.replace is NOT a filesystem write",
+         "s = 'a'.replace('a', 'b')\n", False),
     ]
     misread = [lbl for lbl, text, want in shapes
                if bool(import_side_effects(text)) != want]

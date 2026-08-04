@@ -110,13 +110,18 @@ def read_linker_undefined_symbols(objdump: Path, build: Path) -> set[str]:
 
 
 def is_report_exact(unit: dict) -> bool:
+    # objdiff omits every measure that is zero, so an ABSENT
+    # `matched_data_percent` means the unit matched NO data at all.  Defaulting
+    # it to 100.0 read those units as perfect and would have recommended a unit
+    # with zero matched data for a trial link; 41 units in the tree carry the
+    # absence.  Both defaults are 0.0 for the same reason.
     measures = unit.get("measures", {})
     code_percent = measures.get(
         "matched_code_percent", measures.get("fuzzy_match_percent", 0.0)
     )
     return (
         float(code_percent) == 100.0
-        and float(measures.get("matched_data_percent", 100.0)) == 100.0
+        and float(measures.get("matched_data_percent", 0.0)) == 100.0
         and not unit.get("metadata", {}).get("complete", False)
         and not unit.get("metadata", {}).get("auto_generated", False)
     )
@@ -140,16 +145,21 @@ def main() -> None:
     linker_undefined = read_linker_undefined_symbols(objdump, build)
     ready = []
     rejected = []
+    unexamined = []
+    selected = 0
     for unit in report["units"]:
         if not is_report_exact(unit):
             continue
+        selected += 1
         name = unit["name"]
         if "/" not in name:
+            unexamined.append((name, "unqualified-name"))
             continue
         object_path = name.split("/", 1)[1]
         target = build / "obj" / f"{object_path}.o"
         source = build / "src" / f"{object_path}.o"
         if not target.exists() or not source.exists():
+            unexamined.append((name, "missing-object"))
             continue
         if report_path.stat().st_mtime_ns < max(
             target.stat().st_mtime_ns, source.stat().st_mtime_ns
@@ -180,6 +190,15 @@ def main() -> None:
         rejected.append((name, ",".join(reasons)))
 
     ready.sort(key=lambda item: (-item[1], item[0]))
+    accounted = len(ready) + len(rejected) + len(unexamined)
+    print(
+        f"units selected {selected}  accounted {accounted}"
+        f"  ({len(ready)} ready, {len(rejected)} rejected,"
+        f" {len(unexamined)} unexamined)"
+        + ("" if accounted == selected else "  *** ROWS LOST ***")
+    )
+    for name, reason in unexamined:
+        print(f"unexamined: {reason:20s}  {name}")
     print(f"structural promotion candidates: {len(ready)}")
     for name, code_size in ready:
         print(f"{code_size:7d}  {name}")

@@ -111,4 +111,5 @@ def main():
               % len(size_rows))
 
 
-main()
+if __name__ == "__main__":
+    main()
