@@ -204,7 +204,7 @@ Width >=5 saved band, identical mnemonic stream: the rotation-offset model — e
 | mapProcessRomList | main/shader | 560 | 99.643 | 8 | 0 | 5G/2F | 8 | signature: struc 0, band >=5, no recorded lever site |
 | trickyFindReachableRouteIndex | dlls/objects/196_Tricky/tricky | 468 | 99.573 | 8 | 0 | 8G/0F | 6 | surplus-queue tricky walls (5 exhaustive sweeps flat) |
 | modelInitBoneMtxs | main/model | 236 | 99.288 | 8 | 0 | 6G/0F | 8 | signature: struc 0, band >=5, no recorded lever site |
-| modelDoRenderInstrs | main/objprint_dolphin | 3160 | 99.943 | 9 | 0 | 15G/4F | 6 | biased-base-add-canon 08-03 (residual width-15 rotation + pool naming) |
+| modelDoRenderInstrs | main/objprint_dolphin | 3160 | 99.943 | 9 | 0 | 15G/4F | 6 | transposition pass 08-03: pure r21<->r22 swap, obj2 param-copy vs `did` K-web (bias temp follows param home in both); probed did-decl-first, dead early obj2 use (eliminated pre-allocation) — all byte-inert; no source knob found |
 | tricky_updateBallRoll | dlls/objects/196_Tricky/tricky | 1516 | 99.881 | 9 | 0 | 7G/1F | 6 | surplus-queue tricky walls (5 exhaustive sweeps flat) |
 | objInterpretSeq | dlls/objects/294/294 | 3920 | 99.939 | 10 | 0 | 10G/0F | 1 | near100-band-census-2026-08-01 (16 dead ends) |
 | renderShadows | main/newshadows | 2596 | 99.730 | 10 | 2 | 18G/11F | 6 | near100-band-census-2026-08-01 (16 dead ends) |
@@ -238,7 +238,7 @@ Width >=5 saved band, identical mnemonic stream: the rotation-offset model — e
 | titleScreenDrawMenuFrame | dlls/objects/704/704 | 2772 | 99.488 | 29 | 1 | 10G/2F | 1 | near100-band-census-2026-08-01 (16 dead ends) |
 | ObjModel_BlendNormalStream | main/model | 880 | 99.182 | 29 | 0 | 16G/0F | 8 | signature: struc 0, band >=5, no recorded lever site |
 | trackIntersect | main/track_dolphin | 2280 | 99.553 | 32 | 1 | 16G/7F | 7 | near100-band-census-2026-08-01 (16 dead ends) |
-| trickyUpdateMovementState | dlls/objects/196_Tricky/tricky | 8764 | 99.922 | 34 | 0 | 11G/2F | 6 | near100-band-census-2026-08-01 (16 dead ends) |
+| trickyUpdateMovementState | dlls/objects/196_Tricky/tricky | 8764 | 99.922 | 34 | 0 | 11G/2F | 6 | transposition pass 08-03: pure r28<->r29 swap, didMove K-init vs objectWalkGroup call-copy; probed decl swap, init-as-statement, embedded call assignment, s8/int retype (stream-rejected), init reposition (stream-rejected) — all inert; no source knob found |
 | tricky_SeqFn | dlls/objects/196_Tricky/tricky | 1168 | 99.384 | 35 | 0 | 8G/0F | 6 | surplus-queue tricky walls (5 exhaustive sweeps flat) |
 | addShaderLayerStages | main/objprint_dolphin | 1128 | 99.184 | 38 | 0 | 13G/0F | 6 | signature: struc 0, band >=5, no recorded lever site |
 | StaffCollision_spawn | dlls/modgfx/90/90 | 1408 | 99.219 | 39 | 1 | 17G/7F | 1 | web-class-pun-effect (width 17 + copy-class flip / width 9) |
@@ -248,12 +248,12 @@ Width >=5 saved band, identical mnemonic stream: the rotation-offset model — e
 | trackGetIntersect2 | main/track_dolphin | 4460 | 99.762 | 47 | 0 | 18G/11F | 7 | near100-band-census-2026-08-01 (16 dead ends) |
 | loadGameTextSequence | main/textrender_run | 588 | 98.061 | 47 | 0 | 8G/0F | 4 | independent-match-ceiling (permsweep walls) |
 | SHthorntail_update | dlls/objects/429_SH_thorntai/SHthorntail | 1928 | 99.274 | 69 | 0 | 6G/1F | 1 | sole-straggler-frontier (clean saved-band swaps width 6-15) |
-| SB_Galleon_updateFlight | dlls/objects/488_SB_Galleon/SB_Galleon | 5732 | 99.749 | 71 | 0 | 5G/10F | 1 | near100-band-census-2026-08-01 (16 dead ends) |
+| SB_Galleon_updateFlight | dlls/objects/488_SB_Galleon/SB_Galleon | 5732 | 99.749 | 71 | 0 | 5G/10F | 1 | transposition pass 08-03: wholesale r27<->r31 swap (obj param vs nextState/wrap K-A group; sfxObj r27-vs-r30 is derivative — retail's r27 is occupied by obj); probed nextState hoist first (regressed 391)/last (=base), sfxObj via otherObj/spawnData (name-inert), stmt reorders (stream-rejected), pressure probe (band robust); MP4 corpus holds both orientations profile-invariantly (909 P-bottom vs 323 P-top) — source-keyed but discriminator unfound |
 | ObjHits_CheckObjectHitVolumes | main/objhits | 1392 | 98.951 | 73 | 0 | 11G/1F | 9 | objhits GROUND pass 08-03: all 9 T==C recolours, no lever site |
 | gameTextWrapLines | main/gametext_tail | 1836 | 98.932 | 84 | 0 | 12G/3F | 1 | sole-straggler-frontier (clean saved-band swaps width 6-15) |
 | voxmaps_visitRouteNeighbor | main/voxmaps | 2296 | 98.990 | 98 | 0 | 18G/0F | 3 | objseq-voxmaps-walls (rotation offset 2/3rd unreachable) |
 | ObjHits_CheckHitVolumes | main/objhits | 3592 | 99.382 | 101 | 0 | 18G/18F | 9 | objhits GROUND pass 08-03: all 9 T==C recolours, no lever site |
-| mapLoadDataFile | main/pi_dolphin | 8444 | 99.711 | 117 | 0 | 10G/0F | 2 | near100-band-census-2026-08-01 (16 dead ends) |
+| mapLoadDataFile | main/pi_dolphin | 8444 | 99.711 | 117 | 0 | 10G/0F | 2 | transposition pass 08-03: FOUR regional transpositions among {slot<<2 CSE temp, slotPtrAddr, slotSizeAddr, fi} + one anonymous -28008 addressing web at r22-vs-r28 (retail reuses the dead fileId param home); 60-variant decl-relocation sweep floor = baseline 117 (moves shift 123-393, never below); the r22 web has no named local behind it — ordering knobs provably dead |
 | playerBuildWallTransitionProbe | dlls/objects/195_Player/player | 1816 | 98.476 | 135 | 1 | 18G/3F | 22 | web-class-pun-effect 08-03 (one rotation off, width 18) |
 | trackBuildBlockTriangles | main/track_dolphin | 3060 | 98.476 | 148 | 2 | 18G/2F | 7 | signature: struc 0, band >=5, no recorded lever site |
 | ObjSeq_update | dlls/engine/2/2 | 3912 | 98.569 | 274 | 0 | 9G/4F | 5 | objseq-voxmaps-walls (rotation offset 2/3rd unreachable) |
