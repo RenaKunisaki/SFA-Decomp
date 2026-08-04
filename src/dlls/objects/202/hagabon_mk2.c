@@ -212,7 +212,7 @@ void hagabonMK2_stopLoopSfx(int obj, u8* state)
 void hagabonMK2_updateWhileFrozen(int obj, u8* st, GameObject* attacker, int cmd, int wpad0, int wpad1, Vec* wpad2,
                                   int wpad3)
 {
-    int objI = (int)obj;
+    int objI = obj;
     if (cmd == 0x11)
     {
     }
@@ -523,10 +523,10 @@ void hagabonMK2_init(GameObject* obj, EnemyState* st)
         u32 off = idx * 0xc;
         baddieSetMove(obj, (int)st, bbase[off + 8], *(f32*)((char*)fbase + off), 0, 0);
     }
-    ((EnemyState*)st)->crawler.emergeTimer = 15.0f;
+    st->crawler.emergeTimer = 15.0f;
     ObjHits_SetHitVolumeMasks(&obj->anim, 0xe, 1, 0xfff);
-    ((EnemyState*)st)->tailSimHandle = ObjModelChain_Alloc(gCrawlerModelChainIds, 5);
-    ObjModelChain_SetOrigin(((EnemyState*)st)->tailSimHandle, 0.1f, 0.85f, -0.075f);
+    st->tailSimHandle = ObjModelChain_Alloc(gCrawlerModelChainIds, 5);
+    ObjModelChain_SetOrigin(st->tailSimHandle, 0.1f, 0.85f, -0.075f);
     st->flags2E8 = st->flags2E8 | 0x100;
     obj->afterBonesCallback = &baddieAfterUpdateBonesCb;
 }

@@ -78,14 +78,14 @@ int suntemple_interactCallback(GameObject* obj, int unused, ObjSeqState* animUpd
             {
                 ObjTextureRuntimeSlot* tex;
                 mainSetBits(cfg->activationGameBit, 1);
-                tex = objFindTexture((GameObject*)obj, 0, 0);
+                tex = objFindTexture(obj, 0, 0);
                 if (tex != NULL)
                     tex->textureId = SUNTEMPLE_TEXTURE_LATCHED;
             }
             break;
         case 2:
             if (cfg->preemptSequenceId != 0)
-                (*gObjectTriggerInterface)->yield((ObjSeqState*)animUpdate, cfg->preemptSequenceId);
+                (*gObjectTriggerInterface)->yield(animUpdate, cfg->preemptSequenceId);
             break;
         case 3:
             if (gameObj->anim.bankIndex == 1)

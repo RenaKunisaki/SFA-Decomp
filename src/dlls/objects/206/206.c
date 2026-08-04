@@ -560,7 +560,7 @@ void dll_CE_acquireTarget(GameObject* obj, GroundBaddieState* objectState, Groun
         int disabledSoundId = -1;
 
         (*gBaddieControlInterface)
-            ->startHitReaction(obj, state, &((GroundBaddieState*)objectState)->routeNav, objectState->gameBitB, NULL, 0, 0, 8,
+            ->startHitReaction(obj, state, &objectState->routeNav, objectState->gameBitB, NULL, 0, 0, 8,
                                disabledSoundId);
         state->baddie.targetObj = (void*)target;
         state->baddie.hasTarget = 0;

@@ -224,7 +224,7 @@ int kytesmum_updateNearPlayerCallback(GameObject* obj, int unused, u8* arg)
             runtime->animSpeed = 0.006f;
             if (tricky != 0)
             {
-                TRICKY_INTERFACE(tricky)->commandPlayBall((GameObject*)tricky, 0, NULL);
+                TRICKY_INTERFACE(tricky)->commandPlayBall(tricky, 0, NULL);
             }
         }
     }
@@ -273,7 +273,7 @@ int kytesmum_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpd
     }
     {
         int move2 = runtime->moveSet->moves[2];
-        int result = !dll_2E_updateSequenceTurn(obj, (ObjSeqState*)animUpdate, (MoveLibState*)runtime, move2, move2);
+        int result = !dll_2E_updateSequenceTurn(obj, animUpdate, (MoveLibState*)runtime, move2, move2);
         return !result;
     }
 }
@@ -330,11 +330,11 @@ void kytesmum_update(GameObject* obj)
         }
     }
     diff = (s16)((setup->yaw << 8) - (u16)obj->anim.rotX);
-    if ((s16)diff > 0x8000)
+    if (diff > 0x8000)
     {
         diff = (s16)((diff - 0x10000) + 1);
     }
-    if ((s16)diff < -0x8000)
+    if (diff < -0x8000)
     {
         diff = (s16)((diff + 0x10000) - 1);
     }

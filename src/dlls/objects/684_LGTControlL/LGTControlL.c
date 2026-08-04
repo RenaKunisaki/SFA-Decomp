@@ -66,7 +66,7 @@ void ControlLight_update(GameObject* obj)
                 lightObj = *lightIter;
                 if (Vec_distance(&self->anim.worldPosX, &lightObj->anim.worldPosX) < radius)
                 {
-                    pointlight_setEffectState((GameObject*)lightObj, newBit);
+                    pointlight_setEffectState(lightObj, newBit);
                 }
                 lightIter++;
             }
@@ -88,7 +88,7 @@ void ControlLight_update(GameObject* obj)
                 lightObj = *lightIter;
                 if (Vec_distance(&self->anim.worldPosX, &lightObj->anim.worldPosX) < radius)
                 {
-                    pointlight_setEffectState((GameObject*)lightObj, invBit);
+                    pointlight_setEffectState(lightObj, invBit);
                 }
                 lightIter++;
             }

@@ -65,7 +65,7 @@ void SB_ShipHead_render(GameObject* obj, int renderArg2, int renderArg3, int ren
     u8 particleIndex;
     PartFxSpawnParams effectParams;
 
-    object = (GameObject*)obj;
+    object = obj;
     if (visible != 0) {
         state = object->extra;
         objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);

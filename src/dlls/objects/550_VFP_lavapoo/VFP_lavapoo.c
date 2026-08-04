@@ -90,7 +90,7 @@ void VFP_lavapool_updateWave(GameObject* obj)
         speed = 255.0f * (phase / 2000.0f);
     }
     obj->anim.alpha = ((speed < 0.0f) ? 0.0f : ((speed > 255.0f) ? 255.0f : speed));
-    tex = objFindTexture((GameObject*)obj, 0, 0);
+    tex = objFindTexture(obj, 0, 0);
     if (tex != NULL)
     {
         scrollT = (f32)(int)tex->offsetT;
@@ -101,7 +101,7 @@ void VFP_lavapool_updateWave(GameObject* obj)
         }
         tex->offsetT = (s16)scrollT;
     }
-    tex = objFindTexture((GameObject*)obj, 1, 0);
+    tex = objFindTexture(obj, 1, 0);
     if (tex != NULL)
     {
         scrollT = (f32)(int)tex->offsetT;

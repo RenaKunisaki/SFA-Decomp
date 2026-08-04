@@ -343,12 +343,12 @@ int DIMbosstonsil_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animUpdate) {
     gDIMbosstonsilRumbleElapsed += timeDelta;
 
     if (obj->seqIndex != -1) {
-        animOk = (*gBaddieControlInterface)->isObjectValid((GameObject*)obj, state, 1);
+        animOk = (*gBaddieControlInterface)->isObjectValid(obj, state, 1);
         if (animOk == 0) {
             return 1;
         }
         if ((state->gameBitC != -1) && (mainGetBit(state->gameBitC) != 0)) {
-            (*gObjectTriggerInterface)->yield((ObjSeqState*)animUpdate, config->eventId);
+            (*gObjectTriggerInterface)->yield(animUpdate, config->eventId);
             state->gameBitC = -1;
         }
 
@@ -366,10 +366,10 @@ int DIMbosstonsil_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animUpdate) {
             break;
         case 1:
             animOk = (*gBaddieControlInterface)
-                         ->updateSequenceMovement((GameObject*)obj, (ObjSeqState*)animUpdate, (char*)state,
+                         ->updateSequenceMovement(obj, animUpdate, (char*)state,
                                                   &gDIMbosstonsilStateHandlers, &gDIMbosstonsilSubstateHandlers, 0);
             if (animOk != 0) {
-                (*gBaddieControlInterface)->updateGravity((GameObject*)obj, state, 0.0f, 1);
+                (*gBaddieControlInterface)->updateGravity(obj, state, 0.0f, 1);
             }
             break;
         case 0:
@@ -408,7 +408,7 @@ void DIMbosstonsil_free(GameObject* obj) {
 
     state = obj->extra;
     objFreeObjectType((int)obj, DIMBOSSTONSIL_OBJGROUP);
-    (*gBaddieControlInterface)->releaseState((GameObject*)obj, state, 1);
+    (*gBaddieControlInterface)->releaseState(obj, state, 1);
     if (gDIMbosstonsilLight != NULL) {
         ModelLightStruct_free(gDIMbosstonsilLight);
     }

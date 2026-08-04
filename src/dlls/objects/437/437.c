@@ -149,20 +149,20 @@ int Lightfoot_UpdateCompletionInteraction(GameObject* obj, BaddieState* state)
         {
             if (state->controlMode != 3)
             {
-                ((LightfootControlState*)control)->completionCountdown = 4;
+                control->completionCountdown = 4;
                 (*gPlayerInterface)->setState(obj, state, 3);
             }
-            if (((LightfootControlState*)control)->completionCountdown != 0)
+            if (control->completionCountdown != 0)
             {
-                ((LightfootControlState*)control)->completionCountdown -= 1;
-                if (((LightfootControlState*)control)->completionCountdown == 0)
+                control->completionCountdown -= 1;
+                if (control->completionCountdown == 0)
                 {
                     mainSetBits(data->completionGameBit, 1);
                     mainSetBits(data->activeGameBit, 0);
                     obj->anim.alpha = 0;
                     obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
-                    ((LightfootControlState*)control)->completionTimer = 120.0f;
-                    ((LightfootControlState*)control)->lifeTimer = 100.0f;
+                    control->completionTimer = 120.0f;
+                    control->lifeTimer = 100.0f;
                 }
             }
         }
@@ -762,7 +762,7 @@ int Lightfoot_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
         timerRec->lifeTimer = fv - timeDelta;
         if (timerRec->lifeTimer <= zero)
         {
-            Obj_FreeObject((GameObject*)obj);
+            Obj_FreeObject(obj);
         }
     }
     for (i = 0; i < animUpdate->eventCount; i++)

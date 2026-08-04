@@ -431,7 +431,7 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
             (1.0f - 0.01f * (f32)randomGetRange(0, 0x19));
         child->anim.velocityY = 2.2f;
         (*(CollectibleInterface**)child->anim.dll)
-            ->startBounceMotion((GameObject*)child, child->anim.velocityX,
+            ->startBounceMotion(child, child->anim.velocityX,
                                 child->anim.velocityY, child->anim.velocityZ);
         rotation.posX = 0.0f;
         rotation.posY = 0.0f;

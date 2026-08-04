@@ -409,7 +409,7 @@ void sh_staff_update(GameObject* obj) {
                 sh_staff_deactivate(obj, obj->extra, 0);
             } else {
                 int loadResult;
-                staffToggle((GameObject*)player, 0);
+                staffToggle(player, 0);
                 ObjAnim_SetMoveProgress((ObjAnimComponent*)obj, 1.0f);
                 obj->anim.rotY = (s16)(placement->rotYByte << 8);
                 obj->anim.rotZ = (s16)(placement->rotZByte << 8);

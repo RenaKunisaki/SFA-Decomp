@@ -756,7 +756,7 @@ void ecshShrine_update(GameObject* obj) {
         case ECSH_SHRINE_PHASE_SUCCESS:
             mainSetBits(GAMEBIT_ECSH_TestObservRunning, 0);
             audioStopByMask(ECSH_SHRINE_AUDIO_STOP_MASK);
-            if (objGetAnimStateFlags((GameObject*)player, ECSH_SHRINE_PLAYER_ANIM_STATE_FLAG) != 0) {
+            if (objGetAnimStateFlags(player, ECSH_SHRINE_PLAYER_ANIM_STATE_FLAG) != 0) {
                 mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 1);
                 state->testPhase = ECSH_SHRINE_PHASE_POST_SUCCESS;
             } else {

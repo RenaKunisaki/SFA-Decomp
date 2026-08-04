@@ -126,7 +126,7 @@ void TrickyCurve_updateCooldownHit(GameObject* obj)
     }
     if (insideAxes == 3 && state->cooldown <= 0)
     {
-        if (objGetAnimState80A((GameObject*)player) == TRICKY_CURVE_PLAYER_ANIM_SLIDE)
+        if (objGetAnimState80A(player) == TRICKY_CURVE_PLAYER_ANIM_SLIDE)
         {
             mainSetBits(TRICKY_CURVE_GAMEBIT_HIT, 1);
             (*gPartfxInterface)->spawnObject(player, TRICKY_CURVE_PARTFX_COOLDOWN, NULL, 2, -1, NULL);
@@ -232,7 +232,7 @@ void TrickyCurve_updateBurstHit(GameObject* obj)
             partfxArgs.rotX = 0x3fff;
         }
 
-        if (objGetAnimState80A((GameObject*)player) == TRICKY_CURVE_PLAYER_ANIM_SLIDE)
+        if (objGetAnimState80A(player) == TRICKY_CURVE_PLAYER_ANIM_SLIDE)
         {
             if (gTrickyCurveBurstCounter > TRICKY_CURVE_BURST_LIMIT)
             {

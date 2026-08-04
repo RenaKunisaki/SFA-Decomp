@@ -561,7 +561,7 @@ u32 wispBaddieProcessAnimEvent(GameObject* obj, u8* state, u32 allowNewEvent)
         }
         if ((sf2 & 0x40000000) != 0)
         {
-            groundBaddiePickNextMove(obj, (u8*)state);
+            groundBaddiePickNextMove(obj, state);
         }
         return 0;
     }

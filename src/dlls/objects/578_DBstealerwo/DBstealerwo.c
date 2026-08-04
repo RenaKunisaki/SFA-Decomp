@@ -940,7 +940,7 @@ int dbstealerworm_stateHandlerA0B(GameObject* obj, BaddieState* baddie, f32 t)
     player = Obj_GetPlayerObject();
     d = Obj_GetYawDeltaToObject(obj, player, &yawf);
     flag = 0;
-    if (((s16)d >= 0 ? (s16)d : -(s16)d) < 0x1c71 && yawf < 30.0f)
+    if ((d >= 0 ? d : -d) < 0x1c71 && yawf < 30.0f)
     {
         flag = 1;
     }
@@ -1240,7 +1240,7 @@ int dbstealerworm_stateHandlerA08(GameObject* obj, BaddieState* baddie, f32 t)
         player = Obj_GetPlayerObject();
         d = Obj_GetYawDeltaToObject(obj, player, &yawf);
         flag = 0;
-        if (((s16)d >= 0 ? (s16)d : -(s16)d) < 0x1c71 && yawf < 30.0f)
+        if ((d >= 0 ? d : -d) < 0x1c71 && yawf < 30.0f)
         {
             flag = 1;
         }
@@ -1438,7 +1438,7 @@ int dbstealerworm_stateHandlerA07(GameObject* obj, BaddieState* baddie, f32 t)
         player = Obj_GetPlayerObject();
         d = Obj_GetYawDeltaToObject(obj, player, &yawf);
         flag = 0;
-        if (((s16)d >= 0 ? (s16)d : -(s16)d) < 0x1c71 && yawf < 30.0f)
+        if ((d >= 0 ? d : -d) < 0x1c71 && yawf < 30.0f)
         {
             flag = 1;
         }
@@ -1961,7 +1961,7 @@ int dbstealerworm_turnToFaceObject(GameObject* obj, GameObject* otherObj, f32 ya
     }
     cur = state->animSpeedA;
     k = timeDelta * 0.25f;
-    prod = speed * (1.0f - (f32)(s16)yaw / 65536.0f);
+    prod = speed * (1.0f - (f32)yaw / 65536.0f);
     state->animSpeedA = k * (prod - cur) + cur;
     state->animSpeedB = 0.0f;
     return 0;
@@ -2000,7 +2000,7 @@ int dbstealerworm_turnToFaceObjectVertical(GameObject* obj, GameObject* otherObj
     }
     cur = state->animSpeedA;
     k = timeDelta * 0.25f;
-    prod = speed * (1.0f - (f32)(s16)yaw / 65536.0f);
+    prod = speed * (1.0f - (f32)yaw / 65536.0f);
     state->animSpeedA = k * (prod - cur) + cur;
     state->animSpeedB = 0.0f;
     return 0;
@@ -2030,15 +2030,15 @@ void dbstealerworm_launchIceBall(GameObject* obj, BaddieState* baddie)
         {
             t = baddie->targetDistance / 200.0f;
             dur = 50.0f * t;
-            ((GameObject*)newObj)->anim.velocityX =
+            newObj->anim.velocityX =
                 (((GameObject*)baddie->targetObj)->anim.localPosX - (obj)->anim.localPosX) / dur;
-            ((GameObject*)newObj)->anim.velocityY =
+            newObj->anim.velocityY =
                 ((90.0f * t + ((GameObject*)baddie->targetObj)->anim.localPosY) -
                  (obj)->anim.localPosY) /
                 dur;
-            ((GameObject*)newObj)->anim.velocityZ =
+            newObj->anim.velocityZ =
                 (((GameObject*)baddie->targetObj)->anim.localPosZ - (obj)->anim.localPosZ) / dur;
-            ((GameObject*)newObj)->ownerObj = obj;
+            newObj->ownerObj = obj;
         }
     }
 }

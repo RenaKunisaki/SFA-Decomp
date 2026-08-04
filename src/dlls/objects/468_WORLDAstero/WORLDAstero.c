@@ -24,7 +24,7 @@ extern f32 gWorldAsteroidsOrbitRadiusBase;
 typedef f32 (*WorldAsteroidsTrigFn)(u16 angle);
 
 static inline f32 worldasteroids_s32AsFloat(s32 value) {
-    return (f32)(s32)value;
+    return (f32)value;
 }
 
 int worldasteroids_getExtraSize(void) {

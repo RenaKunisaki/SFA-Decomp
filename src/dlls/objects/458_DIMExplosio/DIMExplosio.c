@@ -426,9 +426,9 @@ void explosion_update(GameObject* obj) {
             } else {
                 f32 gravity = ((DimExplosionState*)state)->gravity;
                 u32 elapsedFrames = framesThisStep;
-                f32 nextVelocityY = -(gravity * (f32)(u32)elapsedFrames - debris->velocityY);
+                f32 nextVelocityY = -(gravity * (f32)elapsedFrames - debris->velocityY);
                 debris->posY = -(0.5f * (gravity * (f32)(int)(elapsedFrames * elapsedFrames)) -
-                                 (debris->velocityY * (f32)(u32)elapsedFrames + debris->posY));
+                                 (debris->velocityY * (f32)elapsedFrames + debris->posY));
                 debris->velocityY = nextVelocityY;
                 debris->posX += debris->velocityX * (f32)(u32)framesThisStep;
                 debris->posZ += debris->velocityZ * (f32)(u32)framesThisStep;

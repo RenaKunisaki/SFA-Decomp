@@ -358,7 +358,7 @@ int snowclaw_animEventCallback(GameObject* obj, int a2, ObjSeqState* seq)
     ObjHits_DisableObject(obj);
     if (*(int**)inner != 0)
     {
-        ObjHits_DisableObject((GameObject*)*(int*)inner);
+        ObjHits_DisableObject((GameObject*)*inner);
     }
     if (obj->seqIndex != -1 && (obj->anim.romDefNo == SNOWCLAW_SEQID_IM_SNOWCLAW || obj->anim.romDefNo == SNOWCLAW_SEQID_IM_SNOWCLAW2) &&
         mainGetBit(GAMEBIT_IM_BikeRelated03A3) != 0)
@@ -534,7 +534,7 @@ void snowclaw_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis)
     {
         (obj)->anim.flags &= ~8;
     }
-    if ((s8)vis != 0 && s->mountAlpha != 0)
+    if (vis != 0 && s->mountAlpha != 0)
     {
         oldFlag = obj->anim.renderAlpha;
         if (found != 0)
@@ -585,7 +585,7 @@ void snowclaw_hitDetect(GameObject* obj)
     inner = obj->extra;
     s = (SnowclawState*)inner;
     dist = 500.0f;
-    sub = *(int*)inner;
+    sub = *inner;
     if ((u32)sub == 0)
     {
         return;

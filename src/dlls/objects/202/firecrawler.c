@@ -391,7 +391,7 @@ void crawler_checkNearbyActive(GameObject* obj, u8* state)
         u8 i;
         for (i = 0; i < count; i++)
         {
-            u32 objectIndex = (u8)i;
+            u32 objectIndex = i;
             GameObject* e = gCrawlerNearbyObjectBuffer[objectIndex].obj;
             if (e->anim.romDefNo == FIRECRAWLER_SEQID_REDEYE)
             {

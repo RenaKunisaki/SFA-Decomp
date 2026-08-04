@@ -622,11 +622,11 @@ int DIMSnowHorn1_stateHandler05(GameObject* obj, DIMSnowHorn1State* state)
                 o1 = ObjList_FindObjectById(id_a);
                 o2 = (int*)ObjList_FindObjectById(id_c);
                 if (o1 != NULL && o2 != NULL)
-                    enemy_setTrackedObj((GameObject*)o1, (GameObject*)o2);
+                    enemy_setTrackedObj(o1, (GameObject*)o2);
                 o1 = ObjList_FindObjectById(id_b);
                 o2 = (int*)ObjList_FindObjectById(id_d);
                 if (o1 != NULL && o2 != NULL)
-                    enemy_setTrackedObj((GameObject*)o1, (GameObject*)o2);
+                    enemy_setTrackedObj(o1, (GameObject*)o2);
                 inner->proximityPhase = 1;
             }
             else

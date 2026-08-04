@@ -182,13 +182,13 @@ void ktrex_spawnRandomEnergyArc(GameObject* obj, int angle, f32 arcLen, int slot
     localPoint.y = 0.0f;
     localPoint.z = 0.0f;
 
-    PSMTXMultVec((MtxPtr)ObjModel_GetJointMatrix((u8*)model, randomGetRange(0, *(u8*)(*(int*)model + 0xf3) - 1)), &localPoint,
+    PSMTXMultVec((MtxPtr)ObjModel_GetJointMatrix((u8*)model, randomGetRange(0, *(u8*)(*model + 0xf3) - 1)), &localPoint,
                  &point1);
     point1.x = point1.x + playerMapOffsetX;
     point1.y += 50.0f;
     point1.z = point1.z + playerMapOffsetZ;
 
-    PSMTXMultVec((MtxPtr)ObjModel_GetJointMatrix((u8*)model, randomGetRange(0, *(u8*)(*(int*)model + 0xf3) - 1)), &localPoint,
+    PSMTXMultVec((MtxPtr)ObjModel_GetJointMatrix((u8*)model, randomGetRange(0, *(u8*)(*model + 0xf3) - 1)), &localPoint,
                  &point2);
     point2.x = point2.x + playerMapOffsetX;
     point2.z = point2.z + playerMapOffsetZ;

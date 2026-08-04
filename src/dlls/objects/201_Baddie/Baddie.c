@@ -2825,7 +2825,7 @@ void enemy_update(GameObject* obj)
         }
         if (tricky != NULL && (obj->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE) != 0)
         {
-            TRICKY_INTERFACE(tricky)->sideCommandEnable((GameObject*)tricky, obj, 1, 2);
+            TRICKY_INTERFACE(tricky)->sideCommandEnable(tricky, obj, 1, 2);
         }
     }
     baddie_updateWhileFrozen(obj, state, 0);
@@ -2943,7 +2943,7 @@ void enemy_init(GameObject* obj, u8* setup, int flag)
             break;
         case ENEMY_GUARDCLAW_OBJ:
         case 641:
-            guardClaw_init((GameObject*)obj, state);
+            guardClaw_init(obj, state);
             break;
         case ENEMY_GCROBOTPATROL_OBJ:
             gcRobotPatrol_init(obj, (int)state);

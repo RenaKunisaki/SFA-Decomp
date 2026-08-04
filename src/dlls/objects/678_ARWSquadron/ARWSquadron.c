@@ -244,7 +244,7 @@ void arwsquadron_followPath(GameObject* obj, ArwSquadronState* state)
                                                    state->flags.cmd.rollCmdActive ? 0.0f : 50.0f, 1.0f);
         }
         state->pathSpeed += interpolate(state->targetPathSpeed - state->pathSpeed, 0.1f, timeDelta);
-        objMove((GameObject*)obj, objAnim->velocityX * timeDelta, objAnim->velocityY * timeDelta,
+        objMove(obj, objAnim->velocityX * timeDelta, objAnim->velocityY * timeDelta,
                 objAnim->velocityZ * timeDelta);
     }
 }

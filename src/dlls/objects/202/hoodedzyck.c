@@ -496,9 +496,9 @@ void hoodedZyck_init(GameObject* obj, EnemyState* st)
         *((u8*)st + 0x322) = 5;
         st->moveSpeedScale2 = d2;
     }
-    ((EnemyState*)st)->phaseAngle = 0;
-    ((EnemyState*)st)->crawler.engineTimer = 60.0f;
-    ((EnemyState*)st)->crawler.emergeTimer = base_v;
+    st->phaseAngle = 0;
+    st->crawler.engineTimer = 60.0f;
+    st->crawler.emergeTimer = base_v;
     obj->anim.alpha = 0;
     st->pathStep = 0.5f * ratio;
     st->flags2E8 = 0;

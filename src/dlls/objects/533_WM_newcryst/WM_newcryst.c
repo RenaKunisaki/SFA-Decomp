@@ -75,14 +75,14 @@ int WM_newcrystal_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
     }
     else if (obj->anim.romDefNo == WMNEWCRYSTAL_OBJECT_GREEN && state->greenBurstsActive != 0)
     {
-        ObjPath_GetPointLocalPosition((GameObject*)obj, 0, &params.x, &params.y, &params.z);
+        ObjPath_GetPointLocalPosition(obj, 0, &params.x, &params.y, &params.z);
         params.x *= obj->anim.rootMotionScale;
         params.y *= obj->anim.rootMotionScale;
         params.z *= obj->anim.rootMotionScale;
         params.pathPoint = 1;
         objfx_spawnDirectionalBurst(obj, 5, 2.0f, 1, 1, 10, 4.0f, &params, 0);
 
-        ObjPath_GetPointLocalPosition((GameObject*)obj, 1, &params.x, &params.y, &params.z);
+        ObjPath_GetPointLocalPosition(obj, 1, &params.x, &params.y, &params.z);
         params.x *= obj->anim.rootMotionScale;
         params.y *= obj->anim.rootMotionScale;
         params.z *= obj->anim.rootMotionScale;

@@ -143,7 +143,7 @@ int wcblock_isPlayerAwayFromStoredCell(GameObject* obj, WCBlockState* state, Gam
     }
 
     min = cellX - WCBLOCK_PLAYER_CELL_MARGIN;
-    playerObj = (GameObject*)player;
+    playerObj = player;
     pos = playerObj->anim.localPosX;
     max = WCBLOCK_PLAYER_CELL_MARGIN + cellX;
     if (pos > max || pos < min)

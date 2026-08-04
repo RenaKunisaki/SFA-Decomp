@@ -804,7 +804,7 @@ int cfguardian_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUp
         movePair = &sequenceMoves.idleMoveA;
     }
     if (animatedObjGetSeqId(animUpdate) != CFGUARDIAN_SEQUENCE_ID_MAGIC_GRANT) {
-        if (dll_2E_updateSequenceTurn(obj, (ObjSeqState*)animUpdate, &state->moveLib, movePair[0], movePair[1]) != 0) {
+        if (dll_2E_updateSequenceTurn(obj, animUpdate, &state->moveLib, movePair[0], movePair[1]) != 0) {
             return 1;
         }
     }

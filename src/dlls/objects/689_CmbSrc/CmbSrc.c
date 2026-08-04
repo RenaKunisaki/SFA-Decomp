@@ -231,7 +231,7 @@ void cmbsrc_updateVisuals(GameObject* cmbsrc, CmbSrcState* sourceState)
                     subMode = setup->pulseSubMode;
                 }
             }
-            objfx_spawnLightPulse((GameObject*)cmbsrc, sourceState->radius, colorIdx, effectMode, subMode,
+            objfx_spawnLightPulse(cmbsrc, sourceState->radius, colorIdx, effectMode, subMode,
                                   (f32)(u32)setup->pulseDistance / 255.0f, NULL);
             break;
         case CMBSRC_SEQ_DEFAULT:
@@ -363,7 +363,7 @@ void cmbsrc_render(GameObject* cmbsrc, int p2, int p3, int p4, int p5, s8 visibl
         }
         if ((setup->flags & CMBSRC_MAP_RENDER_MODEL) != 0)
         {
-            objRenderModelAndHitVolumes((GameObject*)cmbsrc, p2, p3, p4, p5, 1.0f);
+            objRenderModelAndHitVolumes(cmbsrc, p2, p3, p4, p5, 1.0f);
         }
     }
 }
@@ -377,7 +377,7 @@ void cmbsrc_hitDetect(GameObject* cmbsrc)
     state->priorityHitType = 0;
     if ((setup->behaviorFlags & CMBSRC_BEHAVIOR_HIT_MODE_MASK) != 0)
     {
-        state->priorityHitType = ObjHits_GetPriorityHit((GameObject*)cmbsrc, 0, 0, 0);
+        state->priorityHitType = ObjHits_GetPriorityHit(cmbsrc, 0, 0, 0);
         if (state->priorityHitType == CMBSRC_HIT_TYPE_DAMAGE)
         {
             state->hitCharge -= 1;
@@ -428,7 +428,7 @@ void cmbsrc_update(GameObject* cmbsrc)
             {
                 Sfx_StopObjectChannel(cmbsrc, CMBSRC_LOOP_SOUND_CHANNEL);
             }
-            ObjHits_DisableObject((GameObject*)cmbsrc);
+            ObjHits_DisableObject(cmbsrc);
             if (setup->gameBit != -1)
             {
                 mainSetBits(setup->gameBit, 0);
@@ -474,7 +474,7 @@ void cmbsrc_update(GameObject* cmbsrc)
             }
             if (!state->hitFlags.disabled)
             {
-                ObjHits_EnableObject((GameObject*)cmbsrc);
+                ObjHits_EnableObject(cmbsrc);
             }
             if (setup->gameBit != -1)
             {
@@ -643,7 +643,7 @@ void cmbsrc_init(GameObject* cmbsrc, CmbSrcMapData* mapData)
         }
         if (mapData->behaviorFlags & CMBSRC_BEHAVIOR_SYNC_HIT_POSITION)
         {
-            ObjHits_SyncObjectPositionIfDirty((GameObject*)cmbsrc);
+            ObjHits_SyncObjectPositionIfDirty(cmbsrc);
             state->hitFlags.disabled = 0;
         }
         else
@@ -656,7 +656,7 @@ void cmbsrc_init(GameObject* cmbsrc, CmbSrcMapData* mapData)
         }
         if (state->hitFlags.disabled)
         {
-            ObjHits_DisableObject((GameObject*)cmbsrc);
+            ObjHits_DisableObject(cmbsrc);
         }
     }
     state->colorCycleTimer = randomGetRange(0, 0x64);

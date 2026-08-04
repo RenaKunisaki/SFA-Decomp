@@ -1051,7 +1051,7 @@ void SnowBike_UpdateAirMeter(u32 obj, int stateRaw)
             }
             if (st->airMeterCurrent < 10000.0f)
             {
-                Sfx_KeepAliveLoopedObjectSound((u32)obj, SFXTRIG_ar_bomb_pickup);
+                Sfx_KeepAliveLoopedObjectSound(obj, SFXTRIG_ar_bomb_pickup);
             }
             (*gGameUIInterface)->runAirMeter((s32)st->airMeterCurrent);
         }
@@ -1193,7 +1193,7 @@ int SnowBike_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
             st->stickY = 0x46;
         }
 
-        SnowBike_UpdateEngineFx((GameObject*)obj, (void*)state, st->localVelZ,
+        SnowBike_UpdateEngineFx(obj, (void*)state, st->localVelZ,
                                    (int)(850.0f * -st->engineFxLevel), (u8*)(state + 0x461), 4);
     }
 
@@ -1275,7 +1275,7 @@ void SnowBike_UpdateCollisionResponse(GameObject* obj, int stateRaw)
         if (((hit != 0) && (hitObj = hit, *(u32*)& st->linkedObj = hit, st->collisionFxTimer == zero)) &&
             (hitKind = arrayIndexOf(gDrHighTopHitObjectKinds, 0xc, (int)*(short*)(hitObj + 0x46)), hitKind != -1))
         {
-            objfx_shakeCameraByDistance((GameObject*)obj, 300.0f);
+            objfx_shakeCameraByDistance(obj, 300.0f);
             (*gPartfxInterface)->spawnObject((void*)obj, 0x551, NULL, 4, -1, NULL);
             (*gPartfxInterface)->spawnObject((void*)obj, 0x552, NULL, 4, -1, NULL);
             (*gPartfxInterface)->spawnObject((void*)obj, 0x554, NULL, 4, -1, NULL);
@@ -1565,7 +1565,7 @@ void SnowBike_UpdateLiftSway(int obj, int state)
     }
     rate = (target - ((DRPickupState*)state)->liftZVel) * 0.05f;
     clampedRate = (rate < -0.002f) ? -0.002f : ((rate > 0.01f) ? 0.01f : rate);
-    *(f32*)(state + 0x430) = clampedRate * timeDelta + *(f32*)((int)state + 0x430);
+    *(f32*)(state + 0x430) = clampedRate * timeDelta + *(f32*)(state + 0x430);
 
     target = 0.0f;
     if (flags->b4 != 0)
@@ -1625,7 +1625,7 @@ void SnowBike_UpdateLiftSway(int obj, int state)
             delta = delta + 0xFFFF;
         }
         ((DRPickupState*)state)->angAccum410 =
-            (u32)(s32)((f32)delta * ((DRPickupState*)state)->angAccumGain + (f32)(s32) * (u32*)((int)state + 0x410));
+            (u32)(s32)((f32)delta * ((DRPickupState*)state)->angAccumGain + (f32)(s32) * (u32*)(state + 0x410));
     }
     {
         s32 delta = (s32)((DRPickupState*)state)->angle40E - (s32)(u16)((DRPickupState*)state)->angle40C;
@@ -1638,7 +1638,7 @@ void SnowBike_UpdateLiftSway(int obj, int state)
             delta = delta + 0xFFFF;
         }
         ((DRPickupState*)state)->angle40C =
-            (s16)((f32)delta * ((DRPickupState*)state)->angleGain + (f32)(s32) * (s16*)((int)state + 0x40c));
+            (s16)((f32)delta * ((DRPickupState*)state)->angleGain + (f32)(s32) * (s16*)(state + 0x40c));
     }
 
     if (flags->b7 != 0)

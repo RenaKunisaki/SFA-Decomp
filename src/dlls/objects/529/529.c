@@ -720,7 +720,7 @@ void wmwallcrawler_init(GameObject* obj, WmwallcrawlerMapData* mapData)
     }
     (obj)->animEventCallback = wmwallcrawler_animEventCallback;
     ObjHits_EnableObject(obj);
-    ObjHits_SyncObjectPositionIfDirty((GameObject*)obj);
+    ObjHits_SyncObjectPositionIfDirty(obj);
 }
 
 void wmwallcrawler_release(void)

@@ -386,9 +386,9 @@ void titleScreenDrawMenuFrame(int alpha, int hideHighlight, u32 showArrows)
         int yb = (int)mtx[7];
         f32 cy = gTitleScreenCursorY;
         int a = (cy > 0.0f) ? 0xff : gTitleScreenPulseAlpha;
-        drawTexture(gTitleScreenTextures[2], (f32)(int)(xb - 0x18), -6.0f + (268.0f * cy + (f32)(int)yb),
+        drawTexture(gTitleScreenTextures[2], (f32)(int)(xb - 0x18), -6.0f + (268.0f * cy + (f32)yb),
                     0xff, 0xff);
-        drawTexture(texs2[7], (f32)(int)(xb + 0xa1), 16.0f + (268.0f * gTitleScreenCursorY + (f32)(int)yb),
+        drawTexture(texs2[7], (f32)(int)(xb + 0xa1), 16.0f + (268.0f * gTitleScreenCursorY + (f32)yb),
                     a, 0xff);
     }
     gameTextSetColor(0xff, 0xff, 0xff, (int)((f64)gTitleScreenPulseAlpha * (1.0 - gTitleScreenCursorY)));

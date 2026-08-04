@@ -46,10 +46,10 @@ void dimmagicbridge_updateVertexWave(GameObject* obj, u8* stateBytes) {
         wavePosition = wavePosition + state->wavePhase;
         if (*baseVertex > 0) {
             *currentVertex =
-                256.0f * mathSinf((3.1415927f * (f32)(int)wavePosition) / 32768.0f) + (f32)(int)*baseVertex;
+                256.0f * mathSinf((3.1415927f * (f32)wavePosition) / 32768.0f) + (f32)(int)*baseVertex;
         } else {
             *currentVertex =
-                -(256.0f * mathSinf((3.1415927f * (f32)(int)wavePosition) / 32768.0f) - (f32)(int)*baseVertex);
+                -(256.0f * mathSinf((3.1415927f * (f32)wavePosition) / 32768.0f) - (f32)(int)*baseVertex);
         }
     }
     DCStoreRange((void*)ObjModel_GetCurrentVertexCoords(model, 0), vertexCount * 6);

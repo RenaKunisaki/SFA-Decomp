@@ -340,7 +340,7 @@ int ShopKeeper_updateIdle(GameObject* obj, BaddieState* baddie)
     {
         ObjAnim_SetCurrentMove((int)obj, SHOPKEEPER_ANIM_IDLE, 0.0f, 0);
     }
-    ObjHits_EnableObject((GameObject*)obj);
+    ObjHits_EnableObject(obj);
     obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
     if (mainGetBit(GAMEBIT_SHOP_Unk0617) == 0)
     {

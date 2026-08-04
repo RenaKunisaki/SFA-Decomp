@@ -567,7 +567,7 @@ void DR_LaserCannon_update(GameObject* obj)
         GameObject* tricky = getTrickyObject();
         if (tricky != NULL)
         {
-            TRICKY_INTERFACE(tricky)->sideCommandEnable((GameObject*)tricky, obj, 1, 2);
+            TRICKY_INTERFACE(tricky)->sideCommandEnable(tricky, obj, 1, 2);
         }
     }
     hit = ObjAnim_AdvanceCurrentMove((int)obj, state->animStepScale, timeDelta, 0);

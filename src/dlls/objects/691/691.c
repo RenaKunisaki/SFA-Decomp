@@ -94,7 +94,7 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 
     if (obj->anim.romDefNo == VORTEX_OBJ_WNDLIFTS || obj->anim.romDefNo == VORTEX_OBJ_WNDLIFTC)
     {
-        texture = objFindTexture((GameObject*)obj, 0, 0);
+        texture = objFindTexture(obj, 0, 0);
         if (texture != NULL)
         {
             u8 reverse;
@@ -157,7 +157,7 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
     }
     else if (obj->anim.romDefNo == VORTEX_OBJ_DIMPIT)
     {
-        texture = objFindTexture((GameObject*)obj, 0, 0);
+        texture = objFindTexture(obj, 0, 0);
         if (texture != NULL)
         {
             texture->offsetS = texture->offsetS + (int)(VORTEX_DIMPIT_TEXTURE_SCROLL_SPEED * dt);
@@ -193,7 +193,7 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
     }
     else
     {
-        texture = objFindTexture((GameObject*)obj, 0, 0);
+        texture = objFindTexture(obj, 0, 0);
         if (texture != NULL)
         {
             texture->offsetS = texture->offsetS + (int)(VORTEX_DIMPIT_TEXTURE_SCROLL_SPEED * dt);

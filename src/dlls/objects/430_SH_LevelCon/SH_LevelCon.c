@@ -488,7 +488,7 @@ void SH_LevelControl_doEarlyScenes(GameObject* obj, ShLevelControlState* state) 
 
     if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.mapEventSlot, 6) == 0) {
         playerObj = (GameObject*)Obj_GetPlayerObject();
-        if (playerHasSpell((GameObject*)playerObj, 0) != 0) {
+        if (playerHasSpell(playerObj, 0) != 0) {
             (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 6, 1);
         }
     }

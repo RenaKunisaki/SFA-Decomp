@@ -589,7 +589,7 @@ void dbegg_update(GameObject* obj)
                         Sfx_PlayFromObject(obj, SFXTRIG_id_2df);
                     }
                 }
-                objMove((GameObject*)obj, (obj)->anim.velocityX * timeDelta, (obj)->anim.velocityY * timeDelta,
+                objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
                         (obj)->anim.velocityZ * timeDelta);
                 (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             }
@@ -645,7 +645,7 @@ void dbegg_update(GameObject* obj)
             }
             randomGetRange(0x64, 0x1388);
             randomGetRange(0x64, 0x1388);
-            objMove((GameObject*)obj, (obj)->anim.velocityX * timeDelta, (obj)->anim.velocityY * timeDelta,
+            objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
                     (obj)->anim.velocityZ * timeDelta);
             if (randomGetRange(0, 10) == 0)
             {
@@ -734,7 +734,7 @@ void dbegg_update(GameObject* obj)
                 {
                     (obj)->anim.velocityY = 0.4f * -(obj)->anim.velocityY;
                 }
-                objMove((GameObject*)obj, (obj)->anim.velocityX * timeDelta, (obj)->anim.velocityY * timeDelta,
+                objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
                         (obj)->anim.velocityZ * timeDelta);
             }
             break;
@@ -831,7 +831,7 @@ void dbegg_update(GameObject* obj)
                 {
                     (*gPartfxInterface)->spawnObject((void*)obj, DBEGG_PARTFX_HOMING_TRAIL, NULL, 1, -1, NULL);
                 }
-                objMove((GameObject*)obj, (obj)->anim.velocityX * timeDelta, (obj)->anim.velocityY * timeDelta,
+                objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
                         (obj)->anim.velocityZ * timeDelta);
             }
             break;

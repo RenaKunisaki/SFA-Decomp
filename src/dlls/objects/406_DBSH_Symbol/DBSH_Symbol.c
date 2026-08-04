@@ -101,7 +101,7 @@ int dbshSymbol_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animU
             Sfx_PlayFromObject(obj, SFXTRIG_wp_iceywindlp16);
             state->flags.spinCompleted = 0;
             state->flags.sequenceInactive = 1;
-            (*gObjectTriggerInterface)->yield((ObjSeqState*)animUpdate, DBSH_SYMBOL_YIELD_REASON);
+            (*gObjectTriggerInterface)->yield(animUpdate, DBSH_SYMBOL_YIELD_REASON);
         }
         buttons = getButtonsJustPressedIfNotBusy(DBSH_SYMBOL_INPUT_PORT);
         if ((buttons & PAD_BUTTON_A) != 0) {
@@ -118,7 +118,7 @@ int dbshSymbol_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animU
             state->flags.spinCompleted = 1;
             state->flags.sequenceInactive = 1;
             state->spinProgress = DBSH_SYMBOL_SPIN_COMPLETE;
-            (*gObjectTriggerInterface)->yield((ObjSeqState*)animUpdate, DBSH_SYMBOL_YIELD_REASON);
+            (*gObjectTriggerInterface)->yield(animUpdate, DBSH_SYMBOL_YIELD_REASON);
             return 0;
         }
         (*gObjectTriggerInterface)->setXrot(state->sequenceHandle, state->spinProgress);
