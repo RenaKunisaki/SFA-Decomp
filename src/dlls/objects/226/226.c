@@ -933,13 +933,13 @@ int staff_getObjectTypeId(void) {
 }
 
 void staff_free(GameObject* obj) {
-    StaffSwipeSlot* p;
+    StaffSwipeSlot* slot;
     int i;
     i = 0;
-    p = (StaffSwipeSlot*)obj->extra;
+    slot = (StaffSwipeSlot*)obj->extra;
     for (; i < 3; i++) {
-        mm_free(p->vertexData);
-        p++;
+        mm_free(slot->vertexData);
+        slot++;
     }
     (*gExpgfxInterface)->freeSource2((u32)obj);
 }
@@ -1017,7 +1017,7 @@ void staff_update(GameObject* obj) {
 void staff_init(GameObject* obj) {
     StaffState* state = obj->extra;
     ObjHitsPriorityState* hitState;
-    StaffSwipeSlot* p;
+    StaffSwipeSlot* slot;
     int i;
     state->unkAA = 1;
     state->unkB0 = 2;
@@ -1027,11 +1027,11 @@ void staff_init(GameObject* obj) {
         hitState->trackContactMask = 0x109;
     }
     i = 0;
-    p = (StaffSwipeSlot*)state;
+    slot = (StaffSwipeSlot*)state;
     for (; i < 3; i++) {
-        p->vertexData = (u8*)mmAlloc(0xEA60, 0x1a, 0);
-        p->idx = -1;
-        p++;
+        slot->vertexData = (u8*)mmAlloc(0xEA60, 0x1a, 0);
+        slot->idx = -1;
+        slot++;
     }
     gStaffQuakeSpellState.active = 0;
     gStaffQuakeSpellState.object = 0;

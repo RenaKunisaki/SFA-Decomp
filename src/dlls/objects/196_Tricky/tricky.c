@@ -3157,7 +3157,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t) {
                         t->stateFlags |= TRICKY_STATE_FLAG_4;
                         TRICKY_RESET((u8*)t);
                         if (t->child == NULL) {
-                            AnimObjD2DripSetup* o = (AnimObjD2DripSetup*)Obj_AllocObjectSetup(0x20, ANIMOBJD2_TRICKY_FOOD_OBJ_ID);
+                            AnimObjD2DripSetup* setup = (AnimObjD2DripSetup*)Obj_AllocObjectSetup(0x20, ANIMOBJD2_TRICKY_FOOD_OBJ_ID);
                             s8 slots[4];
                             int free_;
                             slots[0] = -1;
@@ -3184,7 +3184,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t) {
                                 free_ = -1;
                             }
                             t->packedSlots.zzzSlot = free_;
-                            t->child = (void*)objSetupObject((ObjPlacement*)o, 4, -1, -1, (void*)gobj->anim.parentAddress);
+                            t->child = (void*)objSetupObject((ObjPlacement*)setup, 4, -1, -1, (void*)gobj->anim.parentAddress);
                             ObjLink_AttachChild(gobj, t->child, t->packedSlots.zzzSlot);
                             {
                                 f32 z3 = 0.0f;
@@ -3236,12 +3236,12 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t) {
                     int i = 0;
                     u8* p = (u8*)t;
                     for (; i < 7; i++) {
-                        AnimObjD2DripSetup* o = (AnimObjD2DripSetup*)Obj_AllocObjectSetup(0x24, ANIMOBJD2_FLAMEBLAST_OBJ_ID);
-                        o->head.color[0] = 2;
-                        o->head.color[1] = 1;
-                        o->index = i;
+                        AnimObjD2DripSetup* setup = (AnimObjD2DripSetup*)Obj_AllocObjectSetup(0x24, ANIMOBJD2_FLAMEBLAST_OBJ_ID);
+                        setup->head.color[0] = 2;
+                        setup->head.color[1] = 1;
+                        setup->index = i;
                         ((TrickyState*)p)->flameChildren[0] = objSetupObject(
-                            (ObjPlacement*)o, 5, gobj->anim.mapEventSlot, -1, (void*)gobj->anim.parentAddress);
+                            (ObjPlacement*)setup, 5, gobj->anim.mapEventSlot, -1, (void*)gobj->anim.parentAddress);
                         p += 4;
                     }
                 }
@@ -4726,11 +4726,11 @@ const TrickyItemIdList gTrickyCmdQueryInit = {{0, 1, 3, 4, 5}};
 const TrickyItemIdList gTrickyFoodItemIds = {{0, 1, 3, 4, 5}};
 
 static inline void trickyPlayWhineSfx(u32 id, GameObject* obj) {
-    TrickyState* ptr = obj->extra;
-    if (ptr->soundSuppressed == 0 &&
+    TrickyState* sfxState = obj->extra;
+    if (sfxState->soundSuppressed == 0 &&
         (obj->anim.currentMove >= 0x30 || obj->anim.currentMove < 0x29) &&
         Sfx_IsPlayingFromObjectChannel(obj, 0x10) == 0) {
-        objSoundStartTimed(obj, &ptr->soundState, id, 0x500, -1, 0);
+        objSoundStartTimed(obj, &sfxState->soundState, id, 0x500, -1, 0);
     }
 }
 
@@ -5101,7 +5101,7 @@ void tricky_stateFollowPlayer(GameObject* obj, TrickyState* state) {
     GameObject* found;
     TrickyState* other;
     GameObject* target;
-    TrickyState* ptr;
+    TrickyState* sfxState;
     int inWater;
     f32 z;
 
@@ -5139,12 +5139,12 @@ void tricky_stateFollowPlayer(GameObject* obj, TrickyState* state) {
                     state->idleSfxTimer -= timeDelta;
                     if (state->idleSfxTimer <= 0.0f) {
                         state->idleSfxTimer = (f32)(int)randomGetRange(500, 0x2ee);
-                        ptr = obj->extra;
-                        if (ptr->soundSuppressed == 0 &&
+                        sfxState = obj->extra;
+                        if (sfxState->soundSuppressed == 0 &&
                             (obj->anim.currentMove >= 0x30 ||
                              obj->anim.currentMove < 0x29) &&
                             Sfx_IsPlayingFromObjectChannel(obj, 0x10) == 0) {
-                            objSoundStartTimed(obj, &ptr->soundState, 0x360, 0x500, -1, 0);
+                            objSoundStartTimed(obj, &sfxState->soundState, 0x360, 0x500, -1, 0);
                         }
                     }
                     if (0.0f == state->waterLevel) {
@@ -5285,10 +5285,10 @@ int tricky_substateApproachThorntail(GameObject* obj, TrickyState* state) {
 int tricky_substateFlameBreath(GameObject* obj, TrickyState* state) {
     int i;
     int j;
-    TrickyState* ptr;
+    TrickyState* sfxState;
     u8* p;
     u8* q;
-    FlameblastPlacement* e;
+    FlameblastPlacement* setup;
 
     switch (obj->anim.currentMove) {
     case 0x1a:
@@ -5297,12 +5297,12 @@ int tricky_substateFlameBreath(GameObject* obj, TrickyState* state) {
             if (Obj_IsLoadingLocked() != 0) {
                 state->stateFlags |= TRICKY_STATE_FLAG_CHILDREN_ACTIVE;
                 for (i = 0, p = (u8*)state; i < 7; p += 4, i++) {
-                    e = (FlameblastPlacement*)Obj_AllocObjectSetup(0x24, TRICKY_CHILD_OBJ_FLAMEBLAST);
-                    e->base.color[0] = 2;
-                    e->base.color[1] = 1;
-                    e->streamIndex = i;
+                    setup = (FlameblastPlacement*)Obj_AllocObjectSetup(0x24, TRICKY_CHILD_OBJ_FLAMEBLAST);
+                    setup->base.color[0] = 2;
+                    setup->base.color[1] = 1;
+                    setup->streamIndex = i;
                     ((TrickyState*)p)->flameChildren[0] =
-                        objSetupObject((ObjPlacement*)e, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+                        objSetupObject((ObjPlacement*)setup, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
                 }
                 Sfx_PlayFromObject(obj, SFXTRIG_en_cvdrip1c_3db);
                 Sfx_AddLoopedObjectSound((u32)obj, SFXTRIG_trpopn_c);
@@ -5315,11 +5315,11 @@ int tricky_substateFlameBreath(GameObject* obj, TrickyState* state) {
                     objSetAnimSpeedTo1((GameObject*)*(u8**)(q + 0x700));
                 }
                 Sfx_RemoveLoopedObjectSound((u32)obj, SFXTRIG_trpopn_c);
-                ptr = obj->extra;
-                if (ptr->soundSuppressed == 0 &&
+                sfxState = obj->extra;
+                if (sfxState->soundSuppressed == 0 &&
                     (obj->anim.currentMove >= 0x30 || obj->anim.currentMove < 0x29) &&
                     Sfx_IsPlayingFromObjectChannel(obj, 0x10) == 0) {
-                    objSoundStartTimed(obj, &ptr->soundState, 0x29d, 0, -1, 0);
+                    objSoundStartTimed(obj, &sfxState->soundState, 0x29d, 0, -1, 0);
                 }
                 state->substate = 10;
             }
@@ -5446,7 +5446,7 @@ int tricky_substateDigForFood(GameObject* obj, TrickyState* state) {
 }
 
 int tricky_substateIdlePick(GameObject* obj, TrickyState* state) {
-    TrickyState* ptr;
+    TrickyState* sfxState;
 
     if (tricky_handleFeedOrTalk(obj, state) != 0) {
         return 1;
@@ -5454,11 +5454,11 @@ int tricky_substateIdlePick(GameObject* obj, TrickyState* state) {
     if ((u8)trickyUpdateMovementState(obj, 340282346638528859811704183484516925440.0f,
                                       state) != 1) {
         if (state->childB != NULL) {
-            ptr = obj->extra;
-            if (ptr->soundSuppressed == 0 &&
+            sfxState = obj->extra;
+            if (sfxState->soundSuppressed == 0 &&
                 (obj->anim.currentMove >= 0x30 || obj->anim.currentMove < 0x29) &&
                 Sfx_IsPlayingFromObjectChannel(obj, 0x10) == 0) {
-                objSoundStartTimed(obj, &ptr->soundState, 0x357, 0, -1, 0);
+                objSoundStartTimed(obj, &sfxState->soundState, 0x357, 0, -1, 0);
             }
             trickyRequestMove(obj, 0x26, 0.0075f, 0);
             state->substate = 5;
@@ -5653,7 +5653,7 @@ int tricky_substateHowlCall(GameObject* obj, TrickyState* trickyState) {
 
 int tricky_substateSleep(GameObject* obj, TrickyState* state) {
     s8 slots[4];
-    TrickyState* ptr;
+    TrickyState* sfxState;
     u8* e;
     int idx;
     f32 z;
@@ -5668,11 +5668,11 @@ int tricky_substateSleep(GameObject* obj, TrickyState* state) {
     }
     state->sfxRepeatTimer -= timeDelta;
     if (state->sfxRepeatTimer < 0.0f) {
-        ptr = (obj)->extra;
-        if (ptr->soundSuppressed == 0 &&
+        sfxState = (obj)->extra;
+        if (sfxState->soundSuppressed == 0 &&
             ((obj)->anim.currentMove >= 0x30 || (obj)->anim.currentMove < 0x29) &&
             Sfx_IsPlayingFromObjectChannel(obj, 0x10) == 0) {
-            objSoundStartTimed(obj, &ptr->soundState, 0x29a, 0x100, -1, 0);
+            objSoundStartTimed(obj, &sfxState->soundState, 0x29a, 0x100, -1, 0);
         }
         state->sfxRepeatTimer = 600.0f;
     }
@@ -5712,11 +5712,11 @@ int tricky_substateSleep(GameObject* obj, TrickyState* state) {
     if ((*gSkyInterface)->getSunPosition(0) != 0 && state->cooldownA <= 0.0f &&
         mainGetBit(GAMEBIT_ITEM_TrickyCall_Got) != 0) {
         trickyRequestMove(obj, 0x29, 0.005f, 0);
-        ptr = (obj)->extra;
-        if (ptr->soundSuppressed == 0 &&
+        sfxState = (obj)->extra;
+        if (sfxState->soundSuppressed == 0 &&
             ((obj)->anim.currentMove >= 0x30 || (obj)->anim.currentMove < 0x29) &&
             Sfx_IsPlayingFromObjectChannel(obj, 0x10) == 0) {
-            objSoundStartTimed(obj, &ptr->soundState, 0x354, 0x1000, -1, 0);
+            objSoundStartTimed(obj, &sfxState->soundState, 0x354, 0x1000, -1, 0);
         }
         state->stateFlags |= 0x10;
         state->substate = 4;
@@ -5925,7 +5925,7 @@ u32 tricky_updateIdleBehavior(GameObject* obj, TrickyState* trickyState) {
 
 void tricky_pickAmbientActivity(GameObject* obj, TrickyState* state) {
     f32 arr[2];
-    TrickyState* ptr;
+    TrickyState* sfxState;
     u8 lo;
     u8 hi;
     GameObject* found;
@@ -5985,11 +5985,11 @@ void tricky_pickAmbientActivity(GameObject* obj, TrickyState* state) {
         break;
     case 3:
         trickyRequestMove(obj, 0x29, 0.005f, 0);
-        ptr = obj->extra;
-        if (ptr->soundSuppressed == 0 &&
+        sfxState = obj->extra;
+        if (sfxState->soundSuppressed == 0 &&
             (obj->anim.currentMove >= 0x30 || obj->anim.currentMove < 0x29) &&
             Sfx_IsPlayingFromObjectChannel(obj, 0x10) == 0) {
-            objSoundStartTimed(obj, &ptr->soundState, 0x354, 0x1000, -1, 0);
+            objSoundStartTimed(obj, &sfxState->soundState, 0x354, 0x1000, -1, 0);
         }
         state->stateFlags |= 0x10;
         state->substate = 4;
@@ -6179,7 +6179,7 @@ int tricky_handleFeedOrTalk(GameObject* obj, TrickyState* state) {
 
 void tricky_handlePlayerContact(GameObject* obj, TrickyState* state) {
     GameObject* hit[1];
-    TrickyState* ptr;
+    TrickyState* sfxState;
     f32 fv;
     int inWater;
 
@@ -6192,11 +6192,11 @@ void tricky_handlePlayerContact(GameObject* obj, TrickyState* state) {
         fv = state->cooldownB.f;
         if (fv <= 0.0f) {
             state->cooldownB.f += 180.0f;
-            ptr = obj->extra;
-            if (ptr->soundSuppressed == 0 &&
+            sfxState = obj->extra;
+            if (sfxState->soundSuppressed == 0 &&
                 (obj->anim.currentMove >= 0x30 || obj->anim.currentMove < 0x29) &&
                 Sfx_IsPlayingFromObjectChannel(obj, 0x10) == 0) {
-                objSoundStartTimed(obj, &ptr->soundState, 0x34f, 0x500, -1, 0);
+                objSoundStartTimed(obj, &sfxState->soundState, 0x34f, 0x500, -1, 0);
             }
         } else {
             state->cooldownB.f += 600.0f;
@@ -6219,28 +6219,28 @@ void tricky_handlePlayerContact(GameObject* obj, TrickyState* state) {
                                 return;
                             }
                         }
-                        ptr = obj->extra;
-                        if (ptr->soundSuppressed == 0 &&
+                        sfxState = obj->extra;
+                        if (sfxState->soundSuppressed == 0 &&
                             (obj->anim.currentMove >= 0x30 ||
                              obj->anim.currentMove < 0x29) &&
                             Sfx_IsPlayingFromObjectChannel(obj, 0x10) == 0) {
-                            objSoundStartTimed(obj, &ptr->soundState, 0x350, 0x500, -1, 0);
+                            objSoundStartTimed(obj, &sfxState->soundState, 0x350, 0x500, -1, 0);
                         }
                     } else {
-                        ptr = obj->extra;
-                        if (ptr->soundSuppressed == 0 &&
+                        sfxState = obj->extra;
+                        if (sfxState->soundSuppressed == 0 &&
                             (obj->anim.currentMove >= 0x30 ||
                              obj->anim.currentMove < 0x29) &&
                             Sfx_IsPlayingFromObjectChannel(obj, 0x10) == 0) {
-                            objSoundStartTimed(obj, &ptr->soundState, 0x350, 0x500, -1, 0);
+                            objSoundStartTimed(obj, &sfxState->soundState, 0x350, 0x500, -1, 0);
                         }
                     }
                 } else {
-                    ptr = obj->extra;
-                    if (ptr->soundSuppressed == 0 &&
+                    sfxState = obj->extra;
+                    if (sfxState->soundSuppressed == 0 &&
                         (obj->anim.currentMove >= 0x30 || obj->anim.currentMove < 0x29) &&
                         Sfx_IsPlayingFromObjectChannel(obj, 0x10) == 0) {
-                        objSoundStartTimed(obj, &ptr->soundState, 0x350, 0x500, -1, 0);
+                        objSoundStartTimed(obj, &sfxState->soundState, 0x350, 0x500, -1, 0);
                     }
                     state->substate = 10;
                     state->stateFlags |= 0x10;

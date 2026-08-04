@@ -488,7 +488,7 @@ void worldobj_init(GameObject* obj, const WorldObjSetup* setup) {
     WorldObjState* state = obj->extra;
     GameObject* objA;
     GameObject* objB;
-    ObjPlacement* sub;
+    ObjPlacement* placement;
     int idx;
     u8 i;
     f32 base;
@@ -548,17 +548,17 @@ void worldobj_init(GameObject* obj, const WorldObjSetup* setup) {
         Obj_SetActiveModelIndex(obj, idx);
         obj->anim.alpha = gWorldObjVariantAlphaTable[idx];
         for (i = 0; i < 0xb; i++) {
-            sub = (ObjPlacement*)obj->anim.placementDataAddress;
+            placement = (ObjPlacement*)obj->anim.placementDataAddress;
             if (Obj_IsLoadingLocked() != 0) {
-                ObjPlacement* o2 = Obj_AllocObjectSetup(0x20, WORLDOBJ_SUNRAY_OBJ);
-                o2->color[0] = sub->color[0];
-                o2->color[2] = sub->color[2];
-                o2->color[1] = sub->color[1];
-                o2->color[3] = sub->color[3];
-                o2->posX = obj->anim.localPosX;
-                o2->posY = obj->anim.localPosY;
-                o2->posZ = obj->anim.localPosZ;
-                objSetupObject((ObjPlacement*)o2, 5, obj->anim.mapEventSlot, -1, NULL);
+                ObjPlacement* childPlacement = Obj_AllocObjectSetup(0x20, WORLDOBJ_SUNRAY_OBJ);
+                childPlacement->color[0] = placement->color[0];
+                childPlacement->color[2] = placement->color[2];
+                childPlacement->color[1] = placement->color[1];
+                childPlacement->color[3] = placement->color[3];
+                childPlacement->posX = obj->anim.localPosX;
+                childPlacement->posY = obj->anim.localPosY;
+                childPlacement->posZ = obj->anim.localPosZ;
+                objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, NULL);
             }
         }
         break;

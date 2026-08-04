@@ -945,7 +945,7 @@ int ObjHits_CheckHitVolumes(GameObject* objA, GameObject* objB, GameObject* srcO
     char modeA;
     char miss;
     s64 maskB;
-    ObjHitsModelHitVolume* p;
+    ObjHitsModelHitVolume* vol;
     float* pb2;
     ObjHitsModelBank* modelBank;
     ObjHitsModelFileHeader* modelFile;
@@ -1101,25 +1101,25 @@ int ObjHits_CheckHitVolumes(GameObject* objA, GameObject* objB, GameObject* srcO
     maskB = 0;
     volBits = 0;
     i = 0;
-    p = volA;
+    vol = volA;
     for (; i < countA; i++) {
-        if (i == p->sphereIndex) {
-            if ((mask & 1 << p->maskBit) != 0) {
+        if (i == vol->sphereIndex) {
+            if ((mask & 1 << vol->maskBit) != 0) {
                 maskA |= 1 << i;
             }
-            if ((volMask & 1 << p->maskBit) != 0) {
+            if ((volMask & 1 << vol->maskBit) != 0) {
                 volBits |= 1 << i;
             }
         }
-        p++;
+        vol++;
     }
     j = 0;
-    p = volB;
+    vol = volB;
     for (; j < countB; j++) {
-        if (j == p->sphereIndex) {
+        if (j == vol->sphereIndex) {
             maskB |= 1 << j;
         }
-        p++;
+        vol++;
     }
     contactBase = gObjHitsContactScratch;
     bestDepth = -1.0f;
