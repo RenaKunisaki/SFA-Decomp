@@ -763,7 +763,7 @@ static void gameLoop(void) {
                     objRenderModelAndHitVolumes(*p, 0, 0, 0, 0, 1.0f);
                     if ((*p)->anim.romDefNo == GAMELOOP_SEQID_DIE_FOX ||
                         (*p)->anim.romDefNo == GAMELOOP_SEQID_DIE_KRYSTAL) {
-                        objRenderFuzz((int*)*p);
+                        objRenderFuzz(*p);
                     }
                     p++;
                 }

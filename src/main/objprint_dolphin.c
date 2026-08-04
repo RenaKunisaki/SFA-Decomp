@@ -846,7 +846,7 @@ extern PPCWGPipe GXWGFifo : (0xCC008000);
 
 extern u8 gObjGxPosMtxIdTable[12];
 
-void objRenderAttachment(u8* obj, int* p2)
+void objRenderAttachment(GameObject* obj, int* p2)
 {
     f32 wm[16];
     f32 cm[16];
@@ -866,12 +866,12 @@ void objRenderAttachment(u8* obj, int* p2)
     s16 a;
     s16* uv;
     f32* vm = Camera_GetViewMatrix();
-    Obj_BuildWorldTransformMatrix((GameObject*)obj, wm, 0);
+    Obj_BuildWorldTransformMatrix(obj, wm, 0);
     PSMTXConcat((MtxPtr)vm, (MtxPtr)wm, (MtxPtr)cm);
     GXLoadPosMtxImm((const f32 (*)[4])cm, gObjGxPosMtxIdTable[0]);
     GXSetCurrentMtx(gObjGxPosMtxIdTable[0]);
-    PSMTXScale((MtxPtr)sm, 1.0f / ((GameObject*)obj)->anim.rootMotionScale,
-               1.0f / ((GameObject*)obj)->anim.rootMotionScale, 1.0f);
+    PSMTXScale((MtxPtr)sm, 1.0f / obj->anim.rootMotionScale,
+               1.0f / obj->anim.rootMotionScale, 1.0f);
     cm[3] = 0.0f;
     cm[7] = 0.0f;
     cm[11] = 0.0f;
@@ -927,10 +927,10 @@ void objRenderAttachment(u8* obj, int* p2)
     if (randomGetRange(0, 5) == 0)
     {
         int m = randomGetRange(0, *(s16*)(data + 0xe) - 1) * 3;
-        f32 fs = ((GameObject*)obj)->anim.rootMotionScale;
-        blk.x = fs * (f32)(verts[m] >> 8) + ((GameObject*)obj)->anim.localPosX;
-        blk.y = fs * (f32)(verts[m + 1] >> 8) + ((GameObject*)obj)->anim.localPosY;
-        blk.z = fs * (f32)(verts[m + 2] >> 8) + ((GameObject*)obj)->anim.localPosZ;
+        f32 fs = obj->anim.rootMotionScale;
+        blk.x = fs * (f32)(verts[m] >> 8) + obj->anim.localPosX;
+        blk.y = fs * (f32)(verts[m + 1] >> 8) + obj->anim.localPosY;
+        blk.z = fs * (f32)(verts[m + 2] >> 8) + obj->anim.localPosZ;
         blk.scale = 1.0f;
         blk.rotX = 0;
         blk.rotZ = 0;
@@ -939,7 +939,7 @@ void objRenderAttachment(u8* obj, int* p2)
     }
 }
 
-static void objSetupLightChannels(u8* model, u8* obj)
+static void objSetupLightChannels(u8* model, GameObject* obj)
 {
     int t2;
     int t10;
@@ -1004,8 +1004,8 @@ static void objSetupLightChannels(u8* model, u8* obj)
                 l = OBJPRINT_MODEL_DEF(obj)->modelLightMaskIndex;
                 if (l == 0)
                 {
-                    skyApplyLightSlot(((GameObject*)obj)->lightColorSlot);
-                    skyGetAmbientColor(((GameObject*)obj)->lightColorSlot, &c.r, &c.g, &c.b);
+                    skyApplyLightSlot(obj->lightColorSlot);
+                    skyGetAmbientColor(obj->lightColorSlot, &c.r, &c.g, &c.b);
                 }
                 else
                 {
@@ -1015,10 +1015,10 @@ static void objSetupLightChannels(u8* model, u8* obj)
                 GXSetChanAmbColor(ch, c);
             }
             {
-                u32 nl = ((u8*)((GameObject*)obj)->anim.modelInstance)[0x8c];
+                u32 nl = ((u8*)obj->anim.modelInstance)[0x8c];
                 if (nl != 0)
                 {
-                    modelLightStruct_selectObjectLights((GameObject*)obj, larr, nl, &count, mode);
+                    modelLightStruct_selectObjectLights(obj, larr, nl, &count, mode);
                 }
             }
             if (count == 0)
@@ -1036,7 +1036,7 @@ static void objSetupLightChannels(u8* model, u8* obj)
                 p = larr;
                 for (; i < count; i++)
                 {
-                    modelLightStruct_loadChannelLight(ch, *p, (GameObject*)obj);
+                    modelLightStruct_loadChannelLight(ch, *p, obj);
                     p++;
                 }
             }
@@ -1056,7 +1056,7 @@ static void objSetupLightChannels(u8* model, u8* obj)
             u32 nf = ((ModelFileHeader*)model)->texMtxCount;
             if (nf != 0)
             {
-                modelLightStruct_selectObjectLights((GameObject*)obj, &gObjSelectedLights, nf, &gObjSelectedLightCount, 8);
+                modelLightStruct_selectObjectLights(obj, &gObjSelectedLights, nf, &gObjSelectedLightCount, 8);
                 if ((OBJPRINT_MODEL_DEF(obj)->renderFlags & OBJDEF_RENDERFLAG_PROJECTED_SHADOW) || gObjShadowNear)
                 {
                     gObjSelectedLightCount = 0;
@@ -1087,7 +1087,7 @@ static void objSetupLightChannels(u8* model, u8* obj)
                             *sp = 3;
                         }
                         modelLightChannel_configure(*sp, 2, 0);
-                        modelLightStruct_loadChannelLight(*sp, *lp, (GameObject*)obj);
+                        modelLightStruct_loadChannelLight(*sp, *lp, obj);
                         GXSetChanAmbColor(*sp, *(GXColor*)&lbl_803DB470);
                         GXSetChanMatColor(*sp, *(GXColor*)&lbl_803DB468);
                         lp++;
@@ -1297,9 +1297,9 @@ static void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* 
 #include "main/objprint_dolphin_internal.h"
 
 
-static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4);
-static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask);
-static void objRenderChild(int* child, int* parent, u8 isShadow);
+static void objRenderShadowModel(GameObject* obj, GameObject* obj2, u8* m, int p4);
+static void modelDoRenderInstrs(GameObject* obj, GameObject* obj2, u8* m, u8 passMask);
+static void objRenderChild(GameObject* child, GameObject* parent, u8 isShadow);
 
 
 
@@ -1512,10 +1512,10 @@ static void modelRenderFn_setVtxDescr(u8* modelHeader, u8* shader, u32* textureR
         }
     }
 }
-static inline void texSlotGetScroll(u8* obj, u32 jid, f32* txp, f32* typ)
+static inline void texSlotGetScroll(GameObject* obj, u32 jid, f32* txp, f32* typ)
 {
-    ObjTextureRuntimeSlot* slots = ((GameObject*)obj)->anim.textureSlots;
-    ObjDef* modelDef = ((GameObject*)obj)->anim.modelInstance;
+    ObjTextureRuntimeSlot* slots = obj->anim.textureSlots;
+    ObjDef* modelDef = obj->anim.modelInstance;
     ObjTextureSlotDef* q = modelDef->textureSlotDefs;
     int n = modelDef->textureSlotCount;
     int k;
@@ -1531,7 +1531,7 @@ static inline void texSlotGetScroll(u8* obj, u32 jid, f32* txp, f32* typ)
     }
     *typ = *txp = 0.0f;
 }
-static u8 addShaderLayerStages(u8* obj, u8* shader, u32* p3, int mask, int p5, int p6)
+static u8 addShaderLayerStages(GameObject* obj, u8* shader, u32* p3, int mask, int p5, int p6)
 {
     u16 alpha;
     u8* colp;
@@ -1584,7 +1584,7 @@ static u8 addShaderLayerStages(u8* obj, u8* shader, u32* p3, int mask, int p5, i
                     addLitColorStage(hasBaseTexture);
                     return 1;
                 }
-                alpha = ((((GameObject*)obj)->anim.renderAlpha + 1) * ((Shader*)shader)->alpha) >> 8;
+                alpha = ((obj->anim.renderAlpha + 1) * ((Shader*)shader)->alpha) >> 8;
                 if (*(u32*)layer != 0)
                 {
                     f32 (*mtxp)[4];
@@ -1594,8 +1594,8 @@ static u8 addShaderLayerStages(u8* obj, u8* shader, u32* p3, int mask, int p5, i
                         u32 jid = layer[5];
                         if (jid != 0)
                         {
-                            ObjTextureRuntimeSlot* slots = ((GameObject*)obj)->anim.textureSlots;
-                            ObjDef* modelDef = ((GameObject*)obj)->anim.modelInstance;
+                            ObjTextureRuntimeSlot* slots = obj->anim.textureSlots;
+                            ObjDef* modelDef = obj->anim.modelInstance;
                             ObjTextureSlotDef* q = modelDef->textureSlotDefs;
                             int n = modelDef->textureSlotCount;
                             int k;
@@ -1710,7 +1710,7 @@ static u8 addShaderLayerStages(u8* obj, u8* shader, u32* p3, int mask, int p5, i
     }
     return ok;
 }
-static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
+static u32 objSetupRenderOpGxState(GameObject* obj, u8* p2, int* am, MtxBitStream* bs)
 {
     Shader* op;
     u32* refs;
@@ -1770,7 +1770,7 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     }
     if (refs[0] != 0)
     {
-        addSphereMapTexStage((void*)refs[0], ((GameObject*)obj)->sphereMapIntensity);
+        addSphereMapTexStage((void*)refs[0], obj->sphereMapIntensity);
     }
     if (refs[1] != 0)
     {
@@ -1829,7 +1829,7 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
         f32* mx;
         u8 b5f = OBJPRINT_MODEL_DEF(obj)->renderFlags;
         b4 = b5f & 4;
-        if (b4 && (mx = (f32*)((GameObject*)obj)->anim.modelState->shadowCastSlot) != NULL)
+        if (b4 && (mx = (f32*)obj->anim.modelState->shadowCastSlot) != NULL)
         {
             addCastShadowTevStages((u8*)mx);
             nlay = 0;
@@ -1913,7 +1913,7 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     if (op->flags & SHADER_FLAG_PROJECTED_TEX_PASS)
     {
         f32* vm = Camera_GetViewMatrix();
-        Obj_BuildWorldTransformMatrix((GameObject*)obj, wm, 0);
+        Obj_BuildWorldTransformMatrix(obj, wm, 0);
         PSMTXConcat((MtxPtr)vm, (MtxPtr)wm, (MtxPtr)t1);
         PSMTXConcat((MtxPtr)(f32*)gCameraLightPerspectiveMatrix, (MtxPtr)t1, (MtxPtr)t2);
         GXLoadTexMtxImm((const f32 (*)[4])t2, 0x24, 0);
@@ -1924,13 +1924,13 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
         addRenderOpFadeStage(op);
     }
     {
-        u8 e5 = ((GameObject*)obj)->colorFadeFlags;
+        u8 e5 = obj->colorFadeFlags;
         if ((e5 & OBJ_COLOR_FADE_FLAG_ACTIVE) || (e5 & OBJ_COLOR_FADE_FLAG_OVERRIDE))
         {
-            color[0] = ((GameObject*)obj)->colorFadeRed;
-            color[1] = ((GameObject*)obj)->colorFadeGreen;
-            color[2] = ((GameObject*)obj)->colorFadeBlue;
-            color[3] = ((GameObject*)obj)->colorFadeAlpha;
+            color[0] = obj->colorFadeRed;
+            color[1] = obj->colorFadeGreen;
+            color[2] = obj->colorFadeBlue;
+            color[3] = obj->colorFadeAlpha;
             addColorFadeStage((GXColor*)color);
         }
     }
@@ -1948,7 +1948,7 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
         else
         {
             u8 zon = 1;
-            if (((GameObject*)obj)->anim.renderAlpha < 0xff || (op->flags & SHADER_FLAG_FORCE_BLEND) || shad)
+            if (obj->anim.renderAlpha < 0xff || (op->flags & SHADER_FLAG_FORCE_BLEND) || shad)
             {
                 u16 flags;
                 GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
@@ -2013,7 +2013,7 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     }
     return idx;
 }
-static void shaderSetGxFlags(u8* obj, u8* m, u8* shader)
+static void shaderSetGxFlags(GameObject* obj, u8* m, u8* shader)
 {
     u8 blend;
     u8 zwrite;
@@ -2022,7 +2022,7 @@ static void shaderSetGxFlags(u8* obj, u8* m, u8* shader)
     u32 alpha;
     u8 cull;
     u32 sf;
-    if (((GameObject*)obj)->anim.renderAlpha < 0xff || ((sf = ((Shader*)shader)->flags) & SHADER_FLAG_FORCE_BLEND))
+    if (obj->anim.renderAlpha < 0xff || ((sf = ((Shader*)shader)->flags) & SHADER_FLAG_FORCE_BLEND))
     {
         blend = 1;
         if (((ModelFileHeader*)m)->flags & 0x400)
@@ -2137,14 +2137,14 @@ static void shaderSetGxFlags(u8* obj, u8* m, u8* shader)
 }
 
 extern f32 gObjJointMtxTemp[];
-static void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
+static void modelDoAltRenderInstrs(GameObject* obj, GameObject* obj2, u8* m, int p4)
 {
     f32 wm[16];
     f32 cm[12];
     MtxBitStream bs;
     u8 color[4];
     ObjModelRenderCb cb;
-    int* am = (int*)Obj_GetActiveModel((GameObject*)obj);
+    int* am = (int*)Obj_GetActiveModel(obj);
     if (curObjMtx != 0)
     {
         PSMTXCopy((MtxPtr)(f32*)curObjMtx, (MtxPtr)wm);
@@ -2152,7 +2152,7 @@ static void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
     }
     else
     {
-        Obj_BuildWorldTransformMatrix((GameObject*)obj, wm, 0);
+        Obj_BuildWorldTransformMatrix(obj, wm, 0);
     }
     PSMTXConcat((MtxPtr)Camera_GetViewMatrix(), (MtxPtr)wm, (MtxPtr)cm);
     if (!(((ObjModel*)am)->bufferFlags & 8))
@@ -2163,7 +2163,7 @@ static void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
         {
             if (gObjCachedModel != (u32)m)
             {
-                ObjModel_UpdateAnimMatrices((ObjModel*)am, (ModelFileHeader*)m, (GameObject*)obj, gObjJointMtxTemp);
+                ObjModel_UpdateAnimMatrices((ObjModel*)am, (ModelFileHeader*)m, obj, gObjJointMtxTemp);
                 modelInitMtxs((ModelFileHeader*)m, (ObjModel*)am);
             }
             else
@@ -2178,13 +2178,13 @@ static void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
             gModelMtxCacheState = 3;
         }
         {
-            u8* att = (u8*)((GameObject*)obj)->anim.hitReactState;
+            u8* att = (u8*)obj->anim.hitReactState;
             if (att != NULL)
             {
                 att[0xaf]--;
-                if ((s8)((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->resetHitboxMode < 0)
+                if ((s8)((ObjHitsPriorityState*)obj->anim.hitReactState)->resetHitboxMode < 0)
                 {
-                    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->resetHitboxMode = 0;
+                    ((ObjHitsPriorityState*)obj->anim.hitReactState)->resetHitboxMode = 0;
                 }
             }
         }
@@ -2204,7 +2204,7 @@ static void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
         }
         else
         {
-            objGetSunColor(((GameObject*)obj)->lightColorSlot, &color[0], &color[1], &color[2]);
+            objGetSunColor(obj->lightColorSlot, &color[0], &color[1], &color[2]);
         }
     }
     else
@@ -2213,12 +2213,12 @@ static void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
         color[1] = 0xff;
         color[0] = 0xff;
     }
-    color[3] = ((GameObject*)obj)->anim.renderAlpha;
+    color[3] = obj->anim.renderAlpha;
     cb = (ObjModelRenderCb)ObjModel_GetRenderCallback((ObjModel*)am);
     if (gObjRenderSetupDone == 0 || cb != NULL)
     {
         Camera_RebuildProjectionMatrix();
-        if (cb == NULL || cb(obj, am, 0) == 0)
+        if (cb == NULL || cb((int*)obj, am, 0) == 0)
         {
             _gxSetFogParams();
             Rcp_ResetTextureStageState();
@@ -2260,7 +2260,7 @@ static void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
         GXSetArray(GX_VA_TEX0, ((ModelFileHeader*)m)->texCoords, 4);
         gObjCachedModel = (u32)m;
     }
-    shaderSetGxFlags((u8*)obj, m, (u8*)((ModelFileHeader*)m)->renderOps);
+    shaderSetGxFlags(obj, m, (u8*)((ModelFileHeader*)m)->renderOps);
     bs.pos += 4;
     ModelHeader_setupPosTexFmt(m, (void*)((ModelFileHeader*)m)->renderOps, &bs, p4);
     bs.pos += 4;
@@ -2304,12 +2304,12 @@ void objRenderInvalidateStateCache(void)
     gObjGxKColorCache[1] = 0;
     gObjGxKColorCache[0] = 0;
 }
-typedef void (*ObjShadowCb)(int* obj, int* am, f32* wm);
+typedef void (*ObjShadowCb)(GameObject* obj, int* am, f32* wm);
 
 f32 gObjBoneMtxBuffer[0xC00];
 
 
-static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
+static void objRenderShadowModel(GameObject* obj, GameObject* obj2, u8* m, int p4)
 {
     int done;
     f32 cm[16];
@@ -2323,7 +2323,7 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
     Shader* op;
     u32 sh;
 
-    am = (int*)Obj_GetActiveModel((GameObject*)obj);
+    am = (int*)Obj_GetActiveModel(obj);
     vm = Camera_GetViewMatrix();
     if (curObjMtx != 0)
     {
@@ -2332,7 +2332,7 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
     }
     else
     {
-        Obj_BuildWorldTransformMatrix((GameObject*)obj, wm, 0);
+        Obj_BuildWorldTransformMatrix(obj, wm, 0);
     }
     if (!(((ObjModel*)am)->bufferFlags & 8))
     {
@@ -2345,16 +2345,16 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
             if ((u32)((ModelFileHeader*)m)->vertexAnimEntries != 0)
             {
                 PSMTXIdentity((MtxPtr)im);
-                ObjModel_UpdateAnimMatrices((ObjModel*)am, (ModelFileHeader*)m, (GameObject*)obj, im);
+                ObjModel_UpdateAnimMatrices((ObjModel*)am, (ModelFileHeader*)m, obj, im);
                 modelInitBoneMtxs2((ObjModel*)am, wm, gObjBoneMtxBuffer);
                 did = 1;
             }
             else
             {
-                ObjModel_UpdateAnimMatrices((ObjModel*)am, (ModelFileHeader*)m, (GameObject*)obj, wm);
+                ObjModel_UpdateAnimMatrices((ObjModel*)am, (ModelFileHeader*)m, obj, wm);
             }
             {
-                ObjShadowCb cb = (ObjShadowCb)((GameObject*)obj)->afterBonesCallback;
+                ObjShadowCb cb = (ObjShadowCb)obj->afterBonesCallback;
                 if (cb != NULL && obj2 == obj)
                 {
                     cb(obj, am, wm);
@@ -2396,13 +2396,13 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
         }
         else
         {
-            u8* att = (u8*)((GameObject*)obj)->anim.hitReactState;
+            u8* att = (u8*)obj->anim.hitReactState;
             if (att != NULL)
             {
                 att[0xaf]--;
-                if ((s8)((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->resetHitboxMode < 0)
+                if ((s8)((ObjHitsPriorityState*)obj->anim.hitReactState)->resetHitboxMode < 0)
                 {
-                    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->resetHitboxMode = 0;
+                    ((ObjHitsPriorityState*)obj->anim.hitReactState)->resetHitboxMode = 0;
                 }
             }
         }
@@ -2420,7 +2420,7 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
     {
         GameObject* o;
         GameObject* nxt;
-        o = (GameObject*)obj;
+        o = obj;
         while ((nxt = o->ownerObj) != NULL)
         {
             o = nxt;
@@ -2558,7 +2558,7 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
 }
 extern u8 gObjGxTexMtxIdTable[12];
 
-static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
+static void modelDoRenderInstrs(GameObject* obj, GameObject* obj2, u8* m, u8 passMask)
 {
     int joff;
     f32 fm[16];
@@ -2600,7 +2600,7 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
     gObjGxKColorCache[2] = 0;
     gObjGxKColorCache[1] = 0;
     gObjGxKColorCache[0] = 0;
-    am = (int*)Obj_GetActiveModel((GameObject*)obj);
+    am = (int*)Obj_GetActiveModel(obj);
     vm = Camera_GetViewMatrix();
     if (curObjMtx != 0)
     {
@@ -2609,7 +2609,7 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
     }
     else
     {
-        Obj_BuildWorldTransformMatrix((GameObject*)obj, wm, 0);
+        Obj_BuildWorldTransformMatrix(obj, wm, 0);
     }
     gObjShadowNear = 0;
     if (((ObjAnimComponent*)obj)->modelInstance->flags & 0x400)
@@ -2619,8 +2619,8 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
         if (player != NULL && !(player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) &&
             cam->anim.targetObj == player)
         {
-            f32 d = 2e+01f + (((GameObject*)obj)->anim.hitboxScale * ((GameObject*)obj)->anim.rootMotionScale +
-                                    *(f32*)&((GameObject*)obj)->anim.targetObj);
+            f32 d = 2e+01f + (obj->anim.hitboxScale * obj->anim.rootMotionScale +
+                                    *(f32*)&obj->anim.targetObj);
             f32 dist = Camera_DistanceToCurrentViewPosition(player->anim.worldPosX, player->anim.worldPosY,
                                                             player->anim.worldPosZ);
             if (d > -dist)
@@ -2639,7 +2639,7 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
     }
     else
     {
-        objGetSunColor(((GameObject*)obj)->lightColorSlot, &gObjCurChanColor.r, &gObjCurChanColor.g,
+        objGetSunColor(obj->lightColorSlot, &gObjCurChanColor.r, &gObjCurChanColor.g,
                     &gObjCurChanColor.b);
     }
     passMaskCopy = passMask;
@@ -2663,7 +2663,7 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
             if ((u32)((ModelFileHeader*)m)->vertexAnimEntries != 0)
             {
                 PSMTXIdentity((MtxPtr)im);
-                ObjModel_UpdateAnimMatrices((ObjModel*)am, (ModelFileHeader*)m, (GameObject*)obj, im);
+                ObjModel_UpdateAnimMatrices((ObjModel*)am, (ModelFileHeader*)m, obj, im);
                 if (fuzzPass == 0)
                 {
                     modelInitBoneMtxs2((ObjModel*)am, wm, gObjBoneMtxBuffer);
@@ -2676,10 +2676,10 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
             }
             else
             {
-                ObjModel_UpdateAnimMatrices((ObjModel*)am, (ModelFileHeader*)m, (GameObject*)obj, wm);
+                ObjModel_UpdateAnimMatrices((ObjModel*)am, (ModelFileHeader*)m, obj, wm);
             }
             {
-                ObjShadowCb cb = (ObjShadowCb)((GameObject*)obj)->afterBonesCallback;
+                ObjShadowCb cb = (ObjShadowCb)obj->afterBonesCallback;
                 if (cb != NULL && obj2 == obj)
                 {
                     cb(obj, am, wm);
@@ -2724,13 +2724,13 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
         }
         else
         {
-            u8* att = (u8*)((GameObject*)obj)->anim.hitReactState;
+            u8* att = (u8*)obj->anim.hitReactState;
             if (att != NULL)
             {
                 att[0xaf]--;
-                if ((s8)((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->resetHitboxMode < 0)
+                if ((s8)((ObjHitsPriorityState*)obj->anim.hitReactState)->resetHitboxMode < 0)
                 {
-                    ((ObjHitsPriorityState*)((GameObject*)obj)->anim.hitReactState)->resetHitboxMode = 0;
+                    ((ObjHitsPriorityState*)obj->anim.hitReactState)->resetHitboxMode = 0;
                 }
             }
         }
@@ -2777,7 +2777,7 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
                                 ((ModelFileHeader*)m)->instrsBitLenWords << 3,
                                 ((ModelFileHeader*)m)->instrsBitLenWords << 3);
     {
-        f32 inv = 1.0f / ((GameObject*)obj)->anim.rootMotionScale;
+        f32 inv = 1.0f / obj->anim.rootMotionScale;
         PSMTXScale((MtxPtr)sm, inv, inv, inv);
     }
     if ((u32)((ModelFileHeader*)m)->vertexAnimEntries != 0)
@@ -2820,7 +2820,7 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
             u32 sh;
             GameObject* o;
             GameObject* nxt;
-            o = (GameObject*)obj;
+            o = obj;
             while ((nxt = o->ownerObj) != NULL)
             {
                 o = nxt;
@@ -2879,7 +2879,7 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
     else
     {
         Camera_RebuildProjectionMatrix();
-        objSetupLightChannels(m, (u8*)obj);
+        objSetupLightChannels(m, obj);
         if (((ModelFileHeader*)m)->flags & 0x100)
         {
             GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, *(GXColor*)&lbl_803DB468);
@@ -2926,7 +2926,7 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
             u32 idx;
             if ((passMask == 0 || passMask == 4 || passMask == 8) && lbl_803DCC20 == 0)
             {
-                idx = objSetupRenderOpGxState((u8*)obj, m, am, &bs);
+                idx = objSetupRenderOpGxState(obj, m, am, &bs);
                 op = (int*)ObjModel_GetRenderOp((ModelFileHeader*)m, idx);
             }
             else
@@ -2974,7 +2974,7 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
 }
 
 
-void objTransformHitVolumePoint(f32* mtx, f32* out, s16* in, int flag, int* obj, int e);
+void objTransformHitVolumePoint(f32* mtx, f32* out, s16* in, int flag, GameObject* obj, int e);
 
 void objUpdateHitVolumeTransforms(GameObject* obj)
 {
@@ -3002,8 +3002,8 @@ void objUpdateHitVolumeTransforms(GameObject* obj)
             {
                 mtx = NULL;
             }
-            objTransformHitVolumePoint(NULL, &q->centerX, &p->posX, base->flags & 0x10, (int*)obj, 0);
-            objTransformHitVolumePoint((f32*)mtx, &q->jointX, &p->jointOffsetX, base->flags & 0x10, (int*)obj, 1);
+            objTransformHitVolumePoint(NULL, &q->centerX, &p->posX, base->flags & 0x10, obj, 0);
+            objTransformHitVolumePoint((f32*)mtx, &q->jointX, &p->jointOffsetX, base->flags & 0x10, obj, 1);
             p++;
             q++;
         }
@@ -3011,7 +3011,7 @@ void objUpdateHitVolumeTransforms(GameObject* obj)
 }
 
 
-void objTransformHitVolumePoint(f32* mtx, f32* out, s16* in, int flag, int* obj, int e)
+void objTransformHitVolumePoint(f32* mtx, f32* out, s16* in, int flag, GameObject* obj, int e)
 {
     f32 m[16];
     MatrixTransform blk;
@@ -3046,9 +3046,9 @@ void objTransformHitVolumePoint(f32* mtx, f32* out, s16* in, int flag, int* obj,
     }
     else
     {
-        blk.x = ((GameObject*)obj)->anim.worldPosX;
-        blk.y = ((GameObject*)obj)->anim.worldPosY;
-        blk.z = ((GameObject*)obj)->anim.worldPosZ;
+        blk.x = obj->anim.worldPosX;
+        blk.y = obj->anim.worldPosY;
+        blk.z = obj->anim.worldPosZ;
         if (flag != 0)
         {
             blk.rotX = 0;
@@ -3057,9 +3057,9 @@ void objTransformHitVolumePoint(f32* mtx, f32* out, s16* in, int flag, int* obj,
         }
         else
         {
-            blk.rotX = ((GameObject*)obj)->anim.rotX;
-            blk.rotY = ((GameObject*)obj)->anim.rotY;
-            blk.rotZ = ((GameObject*)obj)->anim.rotZ;
+            blk.rotX = obj->anim.rotX;
+            blk.rotY = obj->anim.rotY;
+            blk.rotZ = obj->anim.rotZ;
         }
         blk.scale = 1.0f;
         setMatrixFromObjectPos(m, &blk);
@@ -3081,18 +3081,18 @@ void objSetCurrentMatrix(u32 x)
     curObjMtx = x;
 }
 
-void objRenderFuzzShells(int* obj)
+void objRenderFuzzShells(GameObject* obj)
 {
     int* model;
     u32 savedMtx;
     gObjFuzzStep = 1;
-    model = (int*)Obj_GetActiveModel((GameObject*)obj);
+    model = (int*)Obj_GetActiveModel(obj);
     savedMtx = curObjMtx;
     gObjFuzzPhaseLatched = gObjFuzzPhase;
     ObjModel_SetRenderCallback((u8*)model, objFuzzShellRenderCb);
     for (gObjFuzzLayerIndex = 0; gObjFuzzLayerIndex < 16; gObjFuzzLayerIndex += gObjFuzzStep)
     {
-        modelDoRenderInstrs(obj, ((GameObject*)obj)->ownerObj ? ((GameObject*)obj)->ownerObj : obj, (u8*)*model, 8);
+        modelDoRenderInstrs(obj, obj->ownerObj ? obj->ownerObj : obj, (u8*)*model, 8);
         curObjMtx = savedMtx;
     }
     curObjMtx = 0;
@@ -3104,17 +3104,17 @@ void objRenderFuzzShells(int* obj)
     }
 }
 
-void objRenderFuzzShadowShells(int* obj)
+void objRenderFuzzShadowShells(GameObject* obj)
 {
     int* model;
     u32 savedMtx;
     gObjFuzzStep = 4;
-    model = (int*)Obj_GetActiveModel((GameObject*)obj);
+    model = (int*)Obj_GetActiveModel(obj);
     savedMtx = curObjMtx;
     gObjFuzzPhaseLatched = gObjFuzzPhase;
     for (gObjFuzzLayerIndex = 0; gObjFuzzLayerIndex < 16; gObjFuzzLayerIndex += gObjFuzzStep)
     {
-        modelDoRenderInstrs(obj, ((GameObject*)obj)->ownerObj ? ((GameObject*)obj)->ownerObj : obj, (u8*)*model, 2);
+        modelDoRenderInstrs(obj, obj->ownerObj ? obj->ownerObj : obj, (u8*)*model, 2);
         curObjMtx = savedMtx;
     }
     curObjMtx = 0;
@@ -3131,7 +3131,7 @@ void objRenderFuzzShadowShells(int* obj)
 #define OBJPRINT_SEQID_DIE_FOX     0x882 /* "DieFox" (DLL 0x10E) */
 #define OBJPRINT_SEQID_DIE_KRYSTAL 0x887 /* "DieKrystal" (DLL 0x10E) */
 
-void objRenderFuzz(int* obj)
+void objRenderFuzz(GameObject* obj)
 {
     int n;
     u8 maxN;
@@ -3141,16 +3141,16 @@ void objRenderFuzz(int* obj)
     u8 strong;
     f32 dx, dy, dz, dist;
     Camera* cam = Camera_GetCurrent();
-    if ((((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) ||
-        ((GameObject*)obj)->anim.mapEventSlot == 0x3f ||
-        ((GameObject*)obj)->anim.romDefNo == OBJPRINT_SEQID_DIE_FOX ||
-        ((GameObject*)obj)->anim.romDefNo == OBJPRINT_SEQID_DIE_KRYSTAL)
+    if ((obj->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) ||
+        obj->anim.mapEventSlot == 0x3f ||
+        obj->anim.romDefNo == OBJPRINT_SEQID_DIE_FOX ||
+        obj->anim.romDefNo == OBJPRINT_SEQID_DIE_KRYSTAL)
     {
         strong = 1;
-        if (((GameObject*)obj)->anim.classId == 1 ||
-            ((GameObject*)obj)->anim.romDefNo == OBJPRINT_SEQID_FRONT_FOX ||
-            ((GameObject*)obj)->anim.romDefNo == OBJPRINT_SEQID_DIE_FOX ||
-            ((GameObject*)obj)->anim.romDefNo == OBJPRINT_SEQID_DIE_KRYSTAL)
+        if (obj->anim.classId == 1 ||
+            obj->anim.romDefNo == OBJPRINT_SEQID_FRONT_FOX ||
+            obj->anim.romDefNo == OBJPRINT_SEQID_DIE_FOX ||
+            obj->anim.romDefNo == OBJPRINT_SEQID_DIE_KRYSTAL)
         {
             maxN = 0xf;
         }
@@ -3174,22 +3174,22 @@ void objRenderFuzz(int* obj)
         }
         else
         {
-            dx = ((GameObject*)obj)->anim.worldPosX - cam->x;
-            dy = ((GameObject*)obj)->anim.worldPosY - cam->y;
-            dz = ((GameObject*)obj)->anim.worldPosZ - cam->z;
+            dx = obj->anim.worldPosX - cam->x;
+            dy = obj->anim.worldPosY - cam->y;
+            dz = obj->anim.worldPosZ - cam->z;
         }
     }
     dist = sqrtf(dx * dx + dy * dy + dz * dz);
     if (strong == 0)
     {
         cnt = (s32)((5.25f * (2.0f * dist)) /
-                    (((GameObject*)obj)->anim.hitboxScale * ((GameObject*)obj)->anim.rootMotionScale));
+                    (obj->anim.hitboxScale * obj->anim.rootMotionScale));
         gObjFuzzStep = 2;
     }
     else
     {
         cnt = (s32)((2.0f * dist) /
-                    (((GameObject*)obj)->anim.hitboxScale * ((GameObject*)obj)->anim.rootMotionScale));
+                    (obj->anim.hitboxScale * obj->anim.rootMotionScale));
         gObjFuzzStep = 1;
     }
     n = 16 - cnt;
@@ -3199,12 +3199,12 @@ void objRenderFuzz(int* obj)
         {
             n = maxN;
         }
-        model = (int*)Obj_GetActiveModel((GameObject*)obj);
+        model = (int*)Obj_GetActiveModel(obj);
         savedMtx = curObjMtx;
         ObjModel_SetRenderCallback((u8*)model, objFuzzRenderCb);
         for (gObjFuzzLayerIndex = 0; gObjFuzzLayerIndex < n; gObjFuzzLayerIndex++)
         {
-            modelDoRenderInstrs(obj, ((GameObject*)obj)->ownerObj ? ((GameObject*)obj)->ownerObj : obj, (u8*)*model, 4);
+            modelDoRenderInstrs(obj, obj->ownerObj ? obj->ownerObj : obj, (u8*)*model, 4);
             curObjMtx = savedMtx;
         }
         curObjMtx = 0;
@@ -3212,15 +3212,15 @@ void objRenderFuzz(int* obj)
     }
 }
 
-void objRenderShadow(void* obj)
+void objRenderShadow(GameObject* obj)
 {
-    if (((GameObject*)obj)->anim.rootMotionScale == 0.0f)
+    if (obj->anim.rootMotionScale == 0.0f)
     {
         curObjMtx = 0;
         return;
     }
     {
-        ModelFileHeader* m = (ModelFileHeader*)*(int**)Obj_GetActiveModel((GameObject*)obj);
+        ModelFileHeader* m = (ModelFileHeader*)*(int**)Obj_GetActiveModel(obj);
         if (m->shadowDisplayListCount != 0)
         {
             objRenderShadowModel(obj, obj, (u8*)m, 1);
@@ -3230,14 +3230,14 @@ void objRenderShadow(void* obj)
             modelDoRenderInstrs(obj, obj, (u8*)m, 1);
         }
     }
-    if (((GameObject*)obj)->anim.classId == 1)
+    if (obj->anim.classId == 1)
     {
         u8* iter;
         int i = 0;
         iter = (u8*)obj;
-        for (; i < ((GameObject*)obj)->childCount; i++)
+        for (; i < obj->childCount; i++)
         {
-            int* child = (int*)((GameObject*)iter)->childObjs[0];
+            GameObject* child = ((GameObject*)iter)->childObjs[0];
             if (child != NULL)
             {
                 objRenderChild(child, obj, 1);
@@ -3247,7 +3247,7 @@ void objRenderShadow(void* obj)
     }
 }
 
-static void objRenderChild(int* child, int* parent, u8 isShadow)
+static void objRenderChild(GameObject* child, GameObject* parent, u8 isShadow)
 {
     f32 res[3];
     MatrixTransform blk;
@@ -3256,18 +3256,18 @@ static void objRenderChild(int* child, int* parent, u8 isShadow)
     f32 dx, dz;
     int off;
     f32* mtx;
-    if (((GameObject*)child)->anim.rootMotionScale == 0.0f)
+    if (child->anim.rootMotionScale == 0.0f)
     {
         curObjMtx = 0;
         return;
     }
-    Obj_GetActiveModel((GameObject*)child);
+    Obj_GetActiveModel(child);
     {
-        int* pmodel = (int*)Obj_GetActiveModel((GameObject*)parent);
+        int* pmodel = (int*)Obj_GetActiveModel(parent);
         ObjAttachPoint* ent;
         int j;
-        u8* tbl = (u8*)((GameObject*)parent)->anim.modelInstance->attachPoints;
-        off = (((GameObject*)child)->objectFlags & 7) * 0x18;
+        u8* tbl = (u8*)parent->anim.modelInstance->attachPoints;
+        off = (child->objectFlags & 7) * 0x18;
         ent = (ObjAttachPoint*)(tbl + off);
         j = ent->joints[OBJPRINT_ACTIVE_BANK_INDEX(parent)];
         blk.x = *(f32*)(off + (char*)tbl);
@@ -3275,7 +3275,7 @@ static void objRenderChild(int* child, int* parent, u8 isShadow)
         blk.z = ent->pos[2];
         if (j == -1)
         {
-            Obj_BuildWorldTransformMatrix((GameObject*)parent, wm, 0);
+            Obj_BuildWorldTransformMatrix(parent, wm, 0);
             mtx = wm;
         }
         else
@@ -3286,11 +3286,11 @@ static void objRenderChild(int* child, int* parent, u8 isShadow)
     if (OBJPRINT_MODEL_DEF(child)->renderFlags & 8)
     {
         Camera* cam = Camera_GetCurrent();
-        blk.scale = ((GameObject*)child)->anim.rootMotionScale;
-        dx = ((GameObject*)child)->anim.localPosX - cam->x;
-        dz = ((GameObject*)child)->anim.localPosZ - cam->z;
+        blk.scale = child->anim.rootMotionScale;
+        dx = child->anim.localPosX - cam->x;
+        dz = child->anim.localPosZ - cam->z;
         blk.rotX = getAngle(dx, dz) + 0x8000;
-        blk.rotY = getAngle(((GameObject*)child)->anim.localPosY - cam->y,
+        blk.rotY = getAngle(child->anim.localPosY - cam->y,
                               sqrtf(dx * dx + dz * dz));
         blk.rotZ = cam->roll;
         setMatrixFromObjectTransposed(&blk, m2);
@@ -3306,7 +3306,7 @@ static void objRenderChild(int* child, int* parent, u8 isShadow)
     {
         ObjAttachPoint* pr;
         blk.scale = 1.0f;
-        pr = (ObjAttachPoint*)((u8*)((GameObject*)parent)->anim.modelInstance->attachPoints + off);
+        pr = (ObjAttachPoint*)((u8*)parent->anim.modelInstance->attachPoints + off);
         blk.rotX = pr->rot[0];
         blk.rotY = pr->rot[1];
         blk.rotZ = pr->rot[2];
@@ -3316,35 +3316,35 @@ static void objRenderChild(int* child, int* parent, u8 isShadow)
     if (isShadow == 0)
     {
         GameObject* space;
-        ((GameObject*)child)->anim.worldPosX = m2[3] + playerMapOffsetX;
-        ((GameObject*)child)->anim.worldPosY = m2[7];
-        ((GameObject*)child)->anim.worldPosZ = m2[11] + playerMapOffsetZ;
-        space = ((GameObject*)child)->anim.parent;
+        child->anim.worldPosX = m2[3] + playerMapOffsetX;
+        child->anim.worldPosY = m2[7];
+        child->anim.worldPosZ = m2[11] + playerMapOffsetZ;
+        space = child->anim.parent;
         if (space != NULL)
         {
-            Obj_TransformWorldPointToLocal(((GameObject*)child)->anim.worldPosX, ((GameObject*)child)->anim.worldPosY,
-                                           ((GameObject*)child)->anim.worldPosZ, &((GameObject*)child)->anim.localPosX,
-                                           &((GameObject*)child)->anim.localPosY, &((GameObject*)child)->anim.localPosZ,
+            Obj_TransformWorldPointToLocal(child->anim.worldPosX, child->anim.worldPosY,
+                                           child->anim.worldPosZ, &child->anim.localPosX,
+                                           &child->anim.localPosY, &child->anim.localPosZ,
                                            space);
         }
         else
         {
-            ((GameObject*)child)->anim.localPosX = ((GameObject*)child)->anim.worldPosX;
-            ((GameObject*)child)->anim.localPosY = ((GameObject*)child)->anim.worldPosY;
-            ((GameObject*)child)->anim.localPosZ = ((GameObject*)child)->anim.worldPosZ;
+            child->anim.localPosX = child->anim.worldPosX;
+            child->anim.localPosY = child->anim.worldPosY;
+            child->anim.localPosZ = child->anim.worldPosZ;
         }
-        objMatrixToRotation(m2, &((GameObject*)child)->anim.rotX, &((GameObject*)child)->anim.rotY,
-                             &((GameObject*)child)->anim.rotZ);
+        objMatrixToRotation(m2, &child->anim.rotX, &child->anim.rotY,
+                             &child->anim.rotZ);
     }
-    ((GameObject*)child)->anim.renderAlpha =
-        ((((GameObject*)child)->anim.alpha + 1) * ((GameObject*)parent)->anim.renderAlpha) >> 8;
-    ((GameObject*)child)->sphereMapIntensity = ((GameObject*)parent)->sphereMapIntensity;
-    if (!(((GameObject*)child)->anim.flags & OBJANIM_FLAG_HIDDEN))
+    child->anim.renderAlpha =
+        ((child->anim.alpha + 1) * parent->anim.renderAlpha) >> 8;
+    child->sphereMapIntensity = parent->sphereMapIntensity;
+    if (!(child->anim.flags & OBJANIM_FLAG_HIDDEN))
     {
         curObjMtx = (u32)m2;
         if (isShadow == 0)
         {
-            ((GameObject*)child)->objectFlags |= OBJECT_OBJFLAG_RENDERED;
+            child->objectFlags |= OBJECT_OBJFLAG_RENDERED;
             objRenderModel((GameObject*)child);
         }
         else
@@ -3391,11 +3391,11 @@ void objRenderModel(GameObject* obj)
         ModelFileHeader* m0 = (ModelFileHeader*)*model;
         if (m0->flags & 0x8000)
         {
-            modelDoAltRenderInstrs((int*)obj, obj->ownerObj ? (int*)obj->ownerObj : (int*)obj, (u8*)m0, 0);
+            modelDoAltRenderInstrs(obj, obj->ownerObj ? obj->ownerObj : obj, (u8*)m0, 0);
         }
         else
         {
-            modelDoRenderInstrs((int*)obj, obj->ownerObj ? (int*)obj->ownerObj : (int*)obj, (u8*)m0, 0);
+            modelDoRenderInstrs(obj, obj->ownerObj ? obj->ownerObj : obj, (u8*)m0, 0);
         }
     }
     {
@@ -3404,10 +3404,10 @@ void objRenderModel(GameObject* obj)
         iter = (u8*)obj;
         for (; i < obj->childCount; i++)
         {
-            int* child = (int*)((GameObject*)iter)->childObjs[0];
+            GameObject* child = ((GameObject*)iter)->childObjs[0];
             if (child != NULL)
             {
-                objRenderChild(child, (int*)obj, 0);
+                objRenderChild(child, obj, 0);
             }
             iter += 4;
         }

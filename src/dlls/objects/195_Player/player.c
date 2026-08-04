@@ -17533,15 +17533,15 @@ void playerRenderFuzz(GameObject* obj, int p2, int fuzzPass)
     m = (u32)(fuzzPass & 0xff);
     if (m == 1)
     {
-        objRenderFuzz((int*)obj);
+        objRenderFuzz(obj);
     }
     else if (m == 2)
     {
-        objRenderFuzzShadowShells((int*)obj);
+        objRenderFuzzShadowShells(obj);
     }
     else if (m == 4)
     {
-        objRenderFuzzShells((int*)obj);
+        objRenderFuzzShells(obj);
     }
     objSetCurrentMatrix(0);
     obj->anim.localPosY = obj->anim.localPosY - inner->sinkOffsetY;

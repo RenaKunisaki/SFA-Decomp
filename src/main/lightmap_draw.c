@@ -527,7 +527,7 @@ void lightmapDrawQueuedObject(GameObject* obj)
     ObjModel* model = Obj_GetActiveModel(obj);
     if (model->renderAttachment != NULL)
     {
-        objRenderAttachment((u8*)obj, (int*)model);
+        objRenderAttachment(obj, (int*)model);
     }
     else
     {
@@ -591,7 +591,7 @@ void sceneDrawTransparentPolys(void)
             }
             else
             {
-                objRenderFuzz((int*)item.object);
+                objRenderFuzz(item.object);
             }
             break;
         case 2:

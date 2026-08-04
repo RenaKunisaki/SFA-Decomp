@@ -12,12 +12,12 @@ extern ModelLightStruct* gObjSelectedLights;
 
 void objRender(int a, int b, int c, int d, GameObject* obj, int flag);
 void objFuzzSetupGxState(void* obj);
-void objRenderShadow(void* obj);
+void objRenderShadow(GameObject* obj);
 void objRenderShadowIfVisible(GameObject* obj, int a, int b, int c, int d, int e);
-void objRenderAttachment(u8* obj, int* model);
-void objRenderFuzz(int* obj);
-void objRenderFuzzShadowShells(int* obj);
-void objRenderFuzzShells(int* obj);
+void objRenderAttachment(GameObject* obj, int* model);
+void objRenderFuzz(GameObject* obj);
+void objRenderFuzzShadowShells(GameObject* obj);
+void objRenderFuzzShells(GameObject* obj);
 void objRenderInvalidateStateCache(void);
 void objSetRenderingShadowPass(u8 enabled);
 void objUpdateHitVolumeTransforms(GameObject* obj);
