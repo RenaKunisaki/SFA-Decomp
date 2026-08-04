@@ -954,12 +954,12 @@ void staff_hitDetect(void) {
 }
 
 void staff_update(GameObject* obj) {
-    u8* state = obj->extra;
+    StaffState* state = obj->extra;
     StaffSwipeSlot* swp;
     int n;
     ObjModel* model = Obj_GetActiveModel(obj);
     model->bufferFlags &= ~0x8;
-    ObjAnim_AdvanceCurrentMove((int)obj, ((StaffState*)state)->moveSpeed, timeDelta, NULL);
+    ObjAnim_AdvanceCurrentMove((int)obj, state->moveSpeed, timeDelta, NULL);
 
     swp = (StaffSwipeSlot*)state;
     for (n = 3; n != 0; n--) {
@@ -969,8 +969,8 @@ void staff_update(GameObject* obj) {
             j = swp->startIndex;
             vp = (SwipeVertex*)(swp->vertexData + j * 20);
             for (; j < swp->endIndex; j += 2) {
-                if ((u8*)swp == ((StaffState*)state)->activeSlot) {
-                    f32 t = 255.0f * ((2.0f * ((StaffState*)state)->progress - vp[0].life) / 8.0f);
+                if ((u8*)swp == state->activeSlot) {
+                    f32 t = 255.0f * ((2.0f * state->progress - vp[0].life) / 8.0f);
                     f32 clamped = (t < 0.0f) ? 0.0f : ((t > 255.0f) ? 255.0f : t);
                     vp[0].alpha = 255.0f - clamped;
                     vp[1].alpha = vp[0].alpha;
@@ -1000,7 +1000,7 @@ void staff_update(GameObject* obj) {
                 }
                 vp += 2;
             }
-            if ((u8*)swp != *(u8**)(state + 0x48) && swp->vertexCount == 0) {
+            if ((u8*)swp != *(u8**)((u8*)state + 0x48) && swp->vertexCount == 0) {
                 swp->flags &= ~2;
             }
         }
@@ -1009,7 +1009,7 @@ void staff_update(GameObject* obj) {
 
     staffUpdateAttackEffects(obj, (GameObject*)obj->ownerObj);
     objGetAnimState80A((GameObject*)((int)obj->ownerObj));
-    ((StaffState*)state)->swipeTextureIndex = 0;
+    state->swipeTextureIndex = 0;
     staffUpdateQuakeSpell();
 }
 

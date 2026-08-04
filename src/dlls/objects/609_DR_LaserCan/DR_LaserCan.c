@@ -374,7 +374,7 @@ void DR_LaserCannon_hitDetect(GameObject* obj)
 
 void DR_LaserCannon_update(GameObject* obj)
 {
-    int target;
+    GameObject* target;
     DrLaserCannonState* state = (obj)->extra;
     DrLaserCannonSetup* setup = (DrLaserCannonSetup*)(obj)->anim.placementData;
     GameObject* player = Obj_GetPlayerObject();
@@ -443,11 +443,11 @@ void DR_LaserCannon_update(GameObject* obj)
             return;
         }
     }
-    target = (int)drlasercannon_getTrackedTarget(obj, &state->trickyCooldown);
+    target = drlasercannon_getTrackedTarget(obj, &state->trickyCooldown);
     if ((void*)target != NULL && (state->optionalGameBit == -1 || mainGetBit(state->optionalGameBit) == 0))
     {
         hit = 1;
-        dist = Vec_xzDistance(&((GameObject*)target)->anim.worldPosX, &(obj)->anim.worldPosX);
+        dist = Vec_xzDistance(&target->anim.worldPosX, &(obj)->anim.worldPosX);
         if (dist < setup->targetRange)
         {
             hit = drlasercannon_aimAtTarget(obj, (GameObject*)target, &state->aim, 0x168, &state->muzzleX);

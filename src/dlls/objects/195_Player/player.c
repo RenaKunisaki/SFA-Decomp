@@ -6624,7 +6624,7 @@ void playerStagedClearActiveMove(GameObject* obj)
 int playerStateOnBike(GameObject* obj, int state)
 {
     PlayerState* inner = obj->extra;
-    void* sub;
+    GameObject* sub;
     f32 out;
     f32 a;
     int b;
@@ -6654,7 +6654,7 @@ int playerStateOnBike(GameObject* obj, int state)
     }
     if ((inner->moveSequenceFlags & 0x4) != 0)
     {
-        ObjAnim_SetMoveProgress(&obj->anim, ((GameObject*)sub)->anim.currentMoveProgress);
+        ObjAnim_SetMoveProgress(&obj->anim, sub->anim.currentMoveProgress);
         ((PlayerState*)state)->baddie.moveSpeed = 0.0f;
     }
     else
@@ -17349,7 +17349,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
 
 void playerUpdateTargetSelection(GameObject* obj, int inner, int inner2)
 {
-    int* target = (int*)(*gCameraInterface)->getOverrideTarget();
+    GameObject* target = (GameObject*)(*gCameraInterface)->getOverrideTarget();
     u32 v = ((PlayerState*)inner)->flags3F4.b40;
 
     if (v != 0)
@@ -17376,10 +17376,10 @@ void playerUpdateTargetSelection(GameObject* obj, int inner, int inner2)
         {
             if (target != NULL)
             {
-                if ((int*)((PlayerState*)inner2)->baddie.targetObj != target)
+                if ((GameObject*)((PlayerState*)inner2)->baddie.targetObj != target)
                 {
                     ((PlayerState*)inner2)->baddie.hasTarget = 0;
-                    if ((((GameObject*)target)->anim.hitVolumeBounds->flags & 0xf) == 1)
+                    if ((target->anim.hitVolumeBounds->flags & 0xf) == 1)
                     {
                         if (gPlayerPathObject != NULL)
                         {

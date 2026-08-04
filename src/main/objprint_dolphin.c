@@ -216,7 +216,7 @@ void modelCalcVtxGroupMtxs(ModelFileHeader* def, ObjModel* model)
         MtxPtr out;
         MtxPtr m2;
         MtxPtr m1;
-        char* jd;
+        ModelBone* jd;
         u8* grp;
         f32 w;
         f32 wi;
@@ -229,11 +229,11 @@ void modelCalcVtxGroupMtxs(ModelFileHeader* def, ObjModel* model)
         w = (f32)grp[2] / 4.0f;
         wi = 1.0f - w;
 
-        jd = (char*)modelDef->jointData + grp[0] * 0x1c;
-        PSMTXTrans(trans, -((ModelBone*)jd)->tail[0], -((ModelBone*)jd)->tail[1], -((ModelBone*)jd)->tail[2]);
+        jd = (ModelBone*)((char*)modelDef->jointData + grp[0] * 0x1c);
+        PSMTXTrans(trans, -jd->tail[0], -jd->tail[1], -jd->tail[2]);
         PSMTXConcat(m1, trans, ma);
-        jd = (char*)modelDef->jointData + grp[1] * 0x1c;
-        PSMTXTrans(trans, -((ModelBone*)jd)->tail[0], -((ModelBone*)jd)->tail[1], -((ModelBone*)jd)->tail[2]);
+        jd = (ModelBone*)((char*)modelDef->jointData + grp[1] * 0x1c);
+        PSMTXTrans(trans, -jd->tail[0], -jd->tail[1], -jd->tail[2]);
         PSMTXConcat(m2, trans, mb);
 
         out[0][0] = ma[0][0] * w + mb[0][0] * wi;

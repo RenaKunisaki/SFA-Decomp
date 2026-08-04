@@ -565,7 +565,7 @@ Texture* gNewCloudLayerTextures[4];
 
 void snowCloudInitFlakes(f32* buf, f32 a, f32 b, int cloudId)
 {
-    u8* p;
+    NewCloud* p;
     SnowQuad* e;
     f32* dst;
     int i;
@@ -581,23 +581,23 @@ void snowCloudInitFlakes(f32* buf, f32 a, f32 b, int cloudId)
     amp = ab / 1024.0f;
     for (i = 0; i < 8; i++)
     {
-        p = (u8*)gNewClouds[i];
-        if (p != NULL && cloudId == ((NewCloud*)p)->cloudId)
+        p = gNewClouds[i];
+        if (p != NULL && cloudId == p->cloudId)
         {
             break;
         }
     }
-    p = (u8*)gNewClouds[i];
+    p = gNewClouds[i];
     if (p == NULL || SNOW_FLAKE_SIZE == gSnowFlakeWaveValue)
     {
         return;
     }
-    if (cloudId != ((NewCloud*)p)->cloudId)
+    if (cloudId != p->cloudId)
     {
         debugPrintf(sSnowFreeSnowCloudInvalidCloudId, cloudId);
         return;
     }
-    if (((NewCloud*)p)->cloudType == 4)
+    if (p->cloudType == 4)
     {
         size = SNOW_FLAKE_SIZE;
     }
@@ -606,7 +606,7 @@ void snowCloudInitFlakes(f32* buf, f32 a, f32 b, int cloudId)
         size = 16.0f;
     }
     j = 0;
-    e = (SnowQuad*)(p + 0x1008);
+    e = (SnowQuad*)((u8*)p + 0x1008);
     negSize = -size;
     halfNeg = 64.0f * negSize;
     for (; j < 20; j++)

@@ -1043,7 +1043,7 @@ void* SaveGame_getState(void)
 
 void loadMapForCurrentSaveGame(void)
 {
-    char* base;
+    SaveGameData* base;
     gSaveGameMapActCacheIdx[0] = -1;
     gSaveGameObjGroupCacheIdx[0] = -1;
     unlockLevel(0, 0, 1);
@@ -1052,9 +1052,9 @@ void loadMapForCurrentSaveGame(void)
     audioStopByMask(7);
     stopRumble2();
     resetYbutton();
-    base = (char*)gSaveGameData + ((SaveGameData*)gSaveGameData)->currentCharacter * 16;
-    mapLoadByCoords(((SaveGameData*)base)->characterPositions[0].x, ((SaveGameData*)base)->characterPositions[0].y,
-                    ((SaveGameData*)base)->characterPositions[0].z, ((SaveGameData*)base)->characterPositions[0].mapLayer);
+    base = (SaveGameData*)((char*)gSaveGameData + ((SaveGameData*)gSaveGameData)->currentCharacter * 16);
+    mapLoadByCoords(base->characterPositions[0].x, base->characterPositions[0].y,
+                    base->characterPositions[0].z, base->characterPositions[0].mapLayer);
     if (getCurUiDll() != 4)
     {
         loadUiDll(1);
