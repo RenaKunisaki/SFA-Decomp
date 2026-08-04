@@ -168,7 +168,7 @@ void sc_totempuzzle_update(GameObject* obj) {
     ScTotemPuzzleState* state;
     int hitKind;
     int* objects;
-    int other;
+    GameObject* other;
     ObjTextureRuntimeSlot* texture;
     PartFxSpawnParams lightArgs;
     GameObject* hitObject;
@@ -205,18 +205,18 @@ void sc_totempuzzle_update(GameObject* obj) {
             }
             objects = ObjList_GetObjects(&startA, &countA);
             while (startA < countA) {
-                other = objects[startA];
-                if ((((GameObject*)other)->anim.romDefNo == SC_TOTEM_PUZZLE_SEQUENCE_ID) && ((GameObject*)other != obj)) {
-                    ((ScTotemPuzzleState*)((GameObject*)other)->extra)->peerPhaseOffset += 0.65f;
+                other = (GameObject*)objects[startA];
+                if ((other->anim.romDefNo == SC_TOTEM_PUZZLE_SEQUENCE_ID) && ((GameObject*)other != obj)) {
+                    ((ScTotemPuzzleState*)other->extra)->peerPhaseOffset += 0.65f;
                 }
                 startA++;
             }
         } else {
             objects = ObjList_GetObjects(&startB, &countB);
             while (startB < countB) {
-                other = objects[startB];
-                if ((((GameObject*)other)->anim.romDefNo == SC_TOTEM_PUZZLE_SEQUENCE_ID) && ((GameObject*)other != obj)) {
-                    ((ScTotemPuzzleState*)((GameObject*)other)->extra)->peerPhaseOffset += -0.65f;
+                other = (GameObject*)objects[startB];
+                if ((other->anim.romDefNo == SC_TOTEM_PUZZLE_SEQUENCE_ID) && ((GameObject*)other != obj)) {
+                    ((ScTotemPuzzleState*)other->extra)->peerPhaseOffset += -0.65f;
                 }
                 startB++;
             }

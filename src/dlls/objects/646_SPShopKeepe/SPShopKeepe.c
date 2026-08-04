@@ -204,7 +204,7 @@ int ShopKeeper_moveToCurvePoint(GameObject* obj, BaddieState* baddie)
     ShopkeeperState* state;
     GameObject* playerObj;
     RingBufferQueue* stackHandle;
-    int node;
+    ShopKeeperCurveNode* node;
     u32 head[2];
     int pushKindA;
     int pushKindB;
@@ -224,17 +224,17 @@ int ShopKeeper_moveToCurvePoint(GameObject* obj, BaddieState* baddie)
 
             if (found != -1)
             {
-                node = (int)(*gRomCurveInterface)->getById(found);
-                (obj)->anim.localPosX = ((ShopKeeperCurveNode*)node)->x;
-                (obj)->anim.localPosY = 6.0f + ((ShopKeeperCurveNode*)node)->y;
-                (obj)->anim.localPosZ = ((ShopKeeperCurveNode*)node)->z;
-                obj->anim.rotX = (s16)((s32)((ShopKeeperCurveNode*)node)->rotZ << 8);
-                state->bobBaseY = 6.0f + ((ShopKeeperCurveNode*)node)->y;
+                node = (ShopKeeperCurveNode*)(*gRomCurveInterface)->getById(found);
+                (obj)->anim.localPosX = node->x;
+                (obj)->anim.localPosY = 6.0f + node->y;
+                (obj)->anim.localPosZ = node->z;
+                obj->anim.rotX = (s16)((s32)node->rotZ << 8);
+                state->bobBaseY = 6.0f + node->y;
                 state->bobPhase = 0;
-                state->curveNodeType = ((ShopKeeperCurveNode*)node)->type;
+                state->curveNodeType = node->type;
             }
 
-            if ((s8)((ShopKeeperCurveNode*)node)->type == SHOPKEEPER_CURVE_NODE_TYPE_A)
+            if ((s8)node->type == SHOPKEEPER_CURVE_NODE_TYPE_A)
             {
                 pushKindA = SHOPKEEPER_STATE_CURVE_A;
                 stackHandle = state->msgStack;

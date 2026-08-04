@@ -133,17 +133,17 @@ STATIC_ASSERT(offsetof(LargeCratePickupPlacement, unk20) == 0x20);
 STATIC_ASSERT(sizeof(LargeCratePickupPlacement) == LARGECRATE_PICKUP_PLACEMENT_SIZE);
 
 static void LargeCrate_spawnPickup(GameObject* obj) {
-    char* childPlacement;
+    LargeCratePickupPlacement* childPlacement;
 
     if (Obj_IsLoadingLocked() != 0) {
-        childPlacement = (char*)Obj_AllocObjectSetup(LARGECRATE_PICKUP_PLACEMENT_SIZE, LARGECRATE_CHILD_OBJECT_PICKUP);
-        ((LargeCratePickupPlacement*)childPlacement)->base.posX = obj->anim.localPosX;
-        ((LargeCratePickupPlacement*)childPlacement)->base.posY = 2.0f + obj->anim.localPosY;
-        ((LargeCratePickupPlacement*)childPlacement)->base.posZ = obj->anim.localPosZ;
-        ((LargeCratePickupPlacement*)childPlacement)->base.color[0] = 4;
-        ((LargeCratePickupPlacement*)childPlacement)->base.color[2] = 200;
-        ((LargeCratePickupPlacement*)childPlacement)->unk20 = -1;
-        ((LargeCratePickupPlacement*)childPlacement)->unk1A = 0x7F;
+        childPlacement = (LargeCratePickupPlacement*)Obj_AllocObjectSetup(LARGECRATE_PICKUP_PLACEMENT_SIZE, LARGECRATE_CHILD_OBJECT_PICKUP);
+        childPlacement->base.posX = obj->anim.localPosX;
+        childPlacement->base.posY = 2.0f + obj->anim.localPosY;
+        childPlacement->base.posZ = obj->anim.localPosZ;
+        childPlacement->base.color[0] = 4;
+        childPlacement->base.color[2] = 200;
+        childPlacement->unk20 = -1;
+        childPlacement->unk1A = 0x7F;
         objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, (void*)obj->anim.parentAddress);
     }
 }

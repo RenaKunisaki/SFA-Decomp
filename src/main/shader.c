@@ -410,13 +410,13 @@ void loadNextMap(void)
 
 void warpToMap(int idx, s8 transType)
 {
-    u8* p = gMapInfoBuffer;
+    WarpDestination* p = (WarpDestination*)gMapInfoBuffer;
     getTabEntry(p, MLDF_FILEID_WARPTAB_BIN, idx << 4, 16);
-    ((WarpDestination*)gRcpPendingWarpDest)->x = ((WarpDestination*)p)->x;
-    ((WarpDestination*)gRcpPendingWarpDest)->y = ((WarpDestination*)p)->y;
-    ((WarpDestination*)gRcpPendingWarpDest)->z = ((WarpDestination*)p)->z;
-    ((WarpDestination*)gRcpPendingWarpDest)->layer = ((WarpDestination*)p)->layer;
-    ((WarpDestination*)gRcpPendingWarpDest)->angle = ((WarpDestination*)p)->angle;
+    ((WarpDestination*)gRcpPendingWarpDest)->x = p->x;
+    ((WarpDestination*)gRcpPendingWarpDest)->y = p->y;
+    ((WarpDestination*)gRcpPendingWarpDest)->z = p->z;
+    ((WarpDestination*)gRcpPendingWarpDest)->layer = p->layer;
+    ((WarpDestination*)gRcpPendingWarpDest)->angle = p->angle;
     gPendingWarpIndex = (s16)idx;
     gWarpRequested = 1;
     *(s8*)&gRcpWarpTransitionType = transType;

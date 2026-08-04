@@ -869,7 +869,7 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
     int attachment;
     f32* axes;
     int mapBlock;
-    int overrideObj;
+    GameObject* overrideObj;
     f32 dx;
     f32 dz;
     f32 dist;
@@ -964,11 +964,11 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
         player_applyVelocityStep((GameObject*)pos, (int*)state, dt);
     }
 
-    overrideObj = playerOverride;
+    overrideObj = (GameObject*)playerOverride;
     if ((void*)overrideObj != NULL)
     {
-        dx = ((GameObject*)overrideObj)->anim.localPosX - gPlayerMoveOverridePosX;
-        dz = ((GameObject*)overrideObj)->anim.localPosZ - gPlayerMoveOverridePosZ;
+        dx = overrideObj->anim.localPosX - gPlayerMoveOverridePosX;
+        dz = overrideObj->anim.localPosZ - gPlayerMoveOverridePosZ;
         dist = sqrtf(dx * dx + dz * dz);
         if (dist < PLAYER_MOVE_TIMER_LIMIT)
         {
@@ -982,8 +982,8 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
 
             if (dist < gPlayerMoveOne[0])
             {
-                ((GameObject*)pos)->anim.localPosX = ((GameObject*)overrideObj)->anim.localPosX;
-                ((GameObject*)pos)->anim.localPosZ = ((GameObject*)overrideObj)->anim.localPosZ;
+                ((GameObject*)pos)->anim.localPosX = overrideObj->anim.localPosX;
+                ((GameObject*)pos)->anim.localPosZ = overrideObj->anim.localPosZ;
             }
             else
             {

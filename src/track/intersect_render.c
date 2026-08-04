@@ -192,9 +192,9 @@ void setFogColorRgb(u8 red, u8 green, u8 blue)
 int renderWhirlpool(void* obj_a, void** obj_b, int slot)
 {
 
-    void* renderOp;
-    void* tex2;
-    void* model;
+    Shader* renderOp;
+    Texture* tex2;
+    ModelFileHeader* model;
     int handle1;
     u8 ignoredLightColor;
     Mtx scaleMtx;
@@ -207,10 +207,10 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
     handle1 = *(int*)Shader_getLayer(renderOp, 0);
     selectTexture((Texture*)textureIdxToPtr(handle1), 0);
     selectReflectionTexture(1);
-    tex2 = textureIdxToPtr(((Shader*)renderOp)->auxTextureIndex);
-    wrapBit = (((Texture*)tex2)->maxLod - ((Texture*)tex2)->minLod > 0) ? GX_TRUE : GX_FALSE;
-    GXInitTexObj((void*)((Texture*)tex2)->gxTexObj, (u8*)tex2 + 0x60, ((Texture*)tex2)->width, ((Texture*)tex2)->height,
-                 ((Texture*)tex2)->format, GX_REPEAT, GX_REPEAT, wrapBit);
+    tex2 = textureIdxToPtr(renderOp->auxTextureIndex);
+    wrapBit = (tex2->maxLod - tex2->minLod > 0) ? GX_TRUE : GX_FALSE;
+    GXInitTexObj((void*)tex2->gxTexObj, (u8*)tex2 + 0x60, tex2->width, tex2->height,
+                 tex2->format, GX_REPEAT, GX_REPEAT, wrapBit);
     selectTexture((Texture*)tex2, 2);
     GXLoadTexMtxImm(gCameraLightPerspectiveScaledMatrix, GX_PTTEXMTX6, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_POS, 0, GX_FALSE, GX_PTTEXMTX6);
@@ -292,11 +292,11 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
     else
     {
         u8 zCompLoc = 1;
-        if (((u8*)obj_a)[0x37] < 0xFF || (((Shader*)renderOp)->flags & 0x40000000) != 0 ||
-            ((Shader*)renderOp)->alpha < 0xFF)
+        if (((u8*)obj_a)[0x37] < 0xFF || (renderOp->flags & 0x40000000) != 0 ||
+            renderOp->alpha < 0xFF)
         {
             GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
-            if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
+            if ((model->flags & 0x400) != 0)
             {
                 if ((u32)gGxZModeCompareEnable != 0 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 0 ||
                     gGxZModeValid == 0)
@@ -309,7 +309,7 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
                 }
                 ((GXSetAlphaCompareIntFn)GXSetAlphaCompare)(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
             }
-            else if ((((ModelFileHeader*)model)->flags & 0x2000) != 0)
+            else if ((model->flags & 0x2000) != 0)
             {
                 zCompLoc = 0;
                 if ((u32)gGxZModeCompareEnable != 1 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 1 ||
@@ -339,10 +339,10 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
         }
         else
         {
-            if ((((Shader*)renderOp)->flags & 0x400) != 0)
+            if ((renderOp->flags & 0x400) != 0)
             {
                 GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
-                if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
+                if ((model->flags & 0x400) != 0)
                 {
                     if ((u32)gGxZModeCompareEnable != 0 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 0 ||
                         gGxZModeValid == 0)
@@ -371,7 +371,7 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
             else
             {
                 GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
-                if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
+                if ((model->flags & 0x400) != 0)
                 {
                     if ((u32)gGxZModeCompareEnable != 0 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 0 ||
                         gGxZModeValid == 0)
@@ -398,7 +398,7 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
                 ((GXSetAlphaCompareIntFn)GXSetAlphaCompare)(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
             }
         }
-        if ((((Shader*)renderOp)->flags & 0x400) != 0)
+        if ((renderOp->flags & 0x400) != 0)
         {
             zCompLoc = 0;
         }
@@ -409,7 +409,7 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
             gGxZCompLocValid = 1;
         }
     }
-    if ((((Shader*)renderOp)->flags & 0x8) != 0)
+    if ((renderOp->flags & 0x8) != 0)
     {
         GXSetCullMode(GX_CULL_BACK);
     }
@@ -1079,7 +1079,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
     Mtx mtx_24;
     Shader* renderOp;
     void* tex;
-    void* model;
+    ModelFileHeader* model;
     GXColor temp;
     void (*pcb)(void*, void**, int);
     int alpha_byte;
@@ -1095,7 +1095,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
     GXLoadTexMtxImm(gCameraLightPerspectiveFlipYMatrix, GX_PTTEXMTX7, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_POS, 0, GX_FALSE, GX_PTTEXMTX7);
 
-    if (model == 0 || ((ModelFileHeader*)model)->normalCount != 0)
+    if (model == 0 || model->normalCount != 0)
     {
         PSMTXScale(mtx_54, gFrozenReflectionNormalScale, gFrozenReflectionNormalScale, 0.0f);
         mtx_54[2][3] = 1.0f;
@@ -1163,7 +1163,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
             renderOp->alpha < 0xff)
         {
             GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
-            if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
+            if ((model->flags & 0x400) != 0)
             {
                 if ((u32)gGxZModeCompareEnable != 0 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 0 ||
                     gGxZModeValid == 0)
@@ -1176,7 +1176,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
                 }
                 ((GXSetAlphaCompareIntFn)GXSetAlphaCompare)(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
             }
-            else if ((((ModelFileHeader*)model)->flags & 0x2000) != 0)
+            else if ((model->flags & 0x2000) != 0)
             {
                 zCompLoc = 0;
                 if ((u32)gGxZModeCompareEnable != 1 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 1 ||
@@ -1211,7 +1211,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
             if ((renderOp->flags & 0x400) != 0)
             {
                 GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
-                if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
+                if ((model->flags & 0x400) != 0)
                 {
                     if ((u32)gGxZModeCompareEnable != 0 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 0 ||
                         gGxZModeValid == 0)
@@ -1240,7 +1240,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
             else
             {
                 GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
-                if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
+                if ((model->flags & 0x400) != 0)
                 {
                     if ((u32)gGxZModeCompareEnable != 0 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 0 ||
                         gGxZModeValid == 0)
@@ -1279,7 +1279,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
         }
     }
     GXSetCullMode(GX_CULL_NONE);
-    if ((((ModelFileHeader*)model)->flags & 0x100) != 0)
+    if ((model->flags & 0x100) != 0)
     {
         fogColor = temp;
         GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, fogColor);

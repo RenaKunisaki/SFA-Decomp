@@ -123,7 +123,7 @@ void DR_BarrelGr_update(GameObject* obj)
     DrbarrelgrPlacement* setup = (DrbarrelgrPlacement*)obj->anim.placementData;
     int newMode = -1;
     DrBarrelGrFlags* flags = &state->flags;
-    int nearest;
+    GameObject* nearest;
     int match;
     int gameBit;
     f32 traceTarget[3];
@@ -133,7 +133,7 @@ void DR_BarrelGr_update(GameObject* obj)
         GameObject* held = state->heldBarrel;
         if (held != NULL)
         {
-            nearest = objGetNearestTypeTo(GUNPOWDER_BARREL_OBJECT_GROUP, obj, NULL);
+            nearest = (GameObject*)objGetNearestTypeTo(GUNPOWDER_BARREL_OBJECT_GROUP, obj, NULL);
             match = 0;
             if ((u32)nearest != 0 && held == (GameObject*)nearest)
             {
@@ -161,15 +161,15 @@ void DR_BarrelGr_update(GameObject* obj)
     case DRBARRELGR_MODE_SCAN:
         if (state->heldBarrel == NULL)
         {
-            nearest = objGetNearestTypeTo(GUNPOWDER_BARREL_OBJECT_GROUP, obj, NULL);
+            nearest = (GameObject*)objGetNearestTypeTo(GUNPOWDER_BARREL_OBJECT_GROUP, obj, NULL);
             if ((u32)nearest != 0 &&
-                Vec_xzDistance(&obj->anim.worldPosX, &((GameObject*)nearest)->anim.worldPosX) <
+                Vec_xzDistance(&obj->anim.worldPosX, &nearest->anim.worldPosX) <
                     20.0f &&
-                ((GameObject*)nearest)->anim.localPosY < obj->anim.localPosY)
+                nearest->anim.localPosY < obj->anim.localPosY)
             {
-                traceTarget[0] = ((GameObject*)nearest)->anim.localPosX;
-                traceTarget[1] = 10.0f + ((GameObject*)nearest)->anim.localPosY;
-                traceTarget[2] = ((GameObject*)nearest)->anim.localPosZ;
+                traceTarget[0] = nearest->anim.localPosX;
+                traceTarget[1] = 10.0f + nearest->anim.localPosY;
+                traceTarget[2] = nearest->anim.localPosZ;
                 if (voxmaps_traceWorldLine((void*)&obj->anim.localPosX, traceTarget) != 0 &&
                     gunpowderBarrel_canBeGrabbed((GameObject*)nearest) != 0)
                 {

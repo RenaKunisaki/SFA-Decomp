@@ -215,10 +215,10 @@ static void pushable_driftEyePos(f32* pos, f32 driftSpeed, f32 limit)
 }
 
 int pushable_updateCurtain(GameObject* obj, PushableState* state) {
-    int placement;
+    ObjPlacement* placement;
     GameObject* player;
 
-    placement = obj->anim.placementDataAddress;
+    placement = (ObjPlacement*)obj->anim.placementDataAddress;
     player = Obj_GetPlayerObject();
     if (((state->flags & PUSHABLE_FLAG_PUSH_LOCKED) != 0) || (playerGetStateValue(player, 10) != 0)) {
         Sfx_StopObjectChannel(obj, 8);
@@ -229,18 +229,18 @@ int pushable_updateCurtain(GameObject* obj, PushableState* state) {
     if ((state->flags & PUSHABLE_FLAG_AIRBORNE) == 0) {
         pushable_resolveCollisions(obj, state);
     }
-    if (obj->anim.localPosX <= PUSHABLE_CURTAIN_TRIGGER_X + ((ObjPlacement*)placement)->posX) {
+    if (obj->anim.localPosX <= PUSHABLE_CURTAIN_TRIGGER_X + placement->posX) {
         mainSetBits(state->gameBit, 1);
         state->flags |= PUSHABLE_FLAG_PUSH_LOCKED;
-        obj->anim.localPosX = (f32)(((ObjPlacement*)placement)->posX - PUSHABLE_CURTAIN_POSITION_X);
-        obj->anim.localPosY = ((ObjPlacement*)placement)->posY;
-        obj->anim.localPosZ = (f32)(PUSHABLE_CURTAIN_POSITION_Z + ((ObjPlacement*)placement)->posZ);
+        obj->anim.localPosX = (f32)(placement->posX - PUSHABLE_CURTAIN_POSITION_X);
+        obj->anim.localPosY = placement->posY;
+        obj->anim.localPosZ = (f32)(PUSHABLE_CURTAIN_POSITION_Z + placement->posZ);
         Sfx_PlayFromObject(obj, SFXTRIG_curtainopen16);
     }
     if (mainGetBit(GAMEBIT_PushableRelated0A1A) != 0) {
-        obj->anim.localPosX = ((ObjPlacement*)placement)->posX;
-        obj->anim.localPosY = ((ObjPlacement*)placement)->posY;
-        obj->anim.localPosZ = ((ObjPlacement*)placement)->posZ;
+        obj->anim.localPosX = placement->posX;
+        obj->anim.localPosY = placement->posY;
+        obj->anim.localPosZ = placement->posZ;
     }
     return 0;
 }

@@ -404,7 +404,7 @@ void staffStartQuakeSpell(f32* pos) {
     player = Obj_GetPlayerObject();
     if (player != NULL && Obj_IsLoadingLocked() != 0) {
         PartFxSpawnParams v;
-        void* setup;
+        ObjPlacement* setup;
         ((StaffQuakeSpellState*)gStaffQuakeSpellState)->active = 1;
         v.posX = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posX;
         v.posY = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posY;
@@ -414,14 +414,14 @@ void staffStartQuakeSpell(f32* pos) {
         v.rotZ = 0;
         v.rotY = 0;
         (*gPartfxInterface)->spawnObject(player, STAFF_PARTFX_QUAKE, &v, 0x200000, -1, NULL);
-        setup = (void*)Obj_AllocObjectSetup(36, STAFF_CHILD_OBJ_QUAKE);
-        ((ObjPlacement*)setup)->color[0] = 1;
-        ((ObjPlacement*)setup)->color[2] = 0xff;
-        ((ObjPlacement*)setup)->color[1] = 2;
-        ((ObjPlacement*)setup)->color[3] = 0xff;
-        ((ObjPlacement*)setup)->posX = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posX;
-        ((ObjPlacement*)setup)->posY = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posY;
-        ((ObjPlacement*)setup)->posZ = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posZ;
+        setup = Obj_AllocObjectSetup(36, STAFF_CHILD_OBJ_QUAKE);
+        setup->color[0] = 1;
+        setup->color[2] = 0xff;
+        setup->color[1] = 2;
+        setup->color[3] = 0xff;
+        setup->posX = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posX;
+        setup->posY = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posY;
+        setup->posZ = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posZ;
         ((StaffQuakeSpellState*)gStaffQuakeSpellState)->object =
             (int*)objSetupObject((ObjPlacement*)setup, 5, player->anim.mapEventSlot, -1, player->anim.parent);
         if (mainGetBit(GAMEBIT_STAFF_ABILITY_SUPER_QUAKE) != 0) {

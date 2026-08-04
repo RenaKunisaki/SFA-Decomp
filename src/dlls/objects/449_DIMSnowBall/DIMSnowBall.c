@@ -62,7 +62,7 @@ void dimsnowball_update(GameObject* obj) {
     int count;
     int last;
     u8 frames;
-    u8* model;
+    ObjHitsPriorityState* model;
     f32 dy2;
     f32 dy1;
     f32 velocityX;
@@ -177,13 +177,13 @@ void dimsnowball_update(GameObject* obj) {
     dy2 = DIM_SNOWBALL_ROTATION_SCALE;
     obj->anim.rotY = -(dy2 * -obj->anim.velocityZ - (f32)obj->anim.rotY);
     obj->anim.rotZ = -(dy2 * velocityX - (f32)obj->anim.rotZ);
-    model = (u8*)obj->anim.hitReactState;
+    model = (ObjHitsPriorityState*)obj->anim.hitReactState;
     if (model != NULL) {
-        ((ObjHitsPriorityState*)model)->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
-        *(u8*)&((ObjHitsPriorityState*)model)->hitVolumePriority = DIM_SNOWBALL_HIT_VOLUME_PRIORITY;
-        ((ObjHitsPriorityState*)model)->hitVolumeId = DIM_SNOWBALL_HIT_VOLUME_ID;
-        ((ObjHitsPriorityState*)model)->objectHitMask = DIM_SNOWBALL_HIT_MASK;
-        ((ObjHitsPriorityState*)model)->skeletonHitMask = DIM_SNOWBALL_HIT_MASK;
+        model->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
+        *(u8*)&model->hitVolumePriority = DIM_SNOWBALL_HIT_VOLUME_PRIORITY;
+        model->hitVolumeId = DIM_SNOWBALL_HIT_VOLUME_ID;
+        model->objectHitMask = DIM_SNOWBALL_HIT_MASK;
+        model->skeletonHitMask = DIM_SNOWBALL_HIT_MASK;
     }
 }
 

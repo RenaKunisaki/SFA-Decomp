@@ -166,7 +166,7 @@ static inline void PressureSwitchFB_addTrackedObject(GameObject* obj, GameObject
 
 void PressureSwitchFB_update(GameObject* obj) {
     int foundTrackedObject;
-    u32 nearbyObject;
+    GameObject* nearbyObject;
     int isMoving;
     PressureSwitchFBPlacement* placement;
     PressureSwitchFBState* state;
@@ -204,19 +204,19 @@ void PressureSwitchFB_update(GameObject* obj) {
         }
         if (obj->anim.hitboxTransformState->contactObjectCount > 0) {
             for (i = 0; i < obj->anim.hitboxTransformState->contactObjectCount; i++) {
-                nearbyObject = (u32)obj->anim.hitboxTransformState->contactObjects[i];
-                if ((((GameObject*)nearbyObject)->anim.classId == PRESSURESWITCHFB_TRACKED_CLASS_PLAYER) ||
-                    (((GameObject*)nearbyObject)->anim.classId == PRESSURESWITCHFB_TRACKED_CLASS_TRICKY) ||
-                    (((GameObject*)nearbyObject)->anim.romDefNo == PRESSURESWITCHFB_TRACKED_SEQ_ID_A) ||
-                    (((GameObject*)nearbyObject)->anim.romDefNo == PRESSURESWITCHFB_TRACKED_SEQ_ID_B)) {
+                nearbyObject = obj->anim.hitboxTransformState->contactObjects[i];
+                if ((nearbyObject->anim.classId == PRESSURESWITCHFB_TRACKED_CLASS_PLAYER) ||
+                    (nearbyObject->anim.classId == PRESSURESWITCHFB_TRACKED_CLASS_TRICKY) ||
+                    (nearbyObject->anim.romDefNo == PRESSURESWITCHFB_TRACKED_SEQ_ID_A) ||
+                    (nearbyObject->anim.romDefNo == PRESSURESWITCHFB_TRACKED_SEQ_ID_B)) {
                     isTrackedType = 1;
                 } else {
                     isTrackedType = 0;
                 }
-                if (isTrackedType && (nearbyObject != nearestTarget)) {
-                    if (((GameObject*)nearbyObject)->anim.localPosY - obj->anim.localPosY >
+                if (isTrackedType && ((int)nearbyObject != nearestTarget)) {
+                    if (nearbyObject->anim.localPosY - obj->anim.localPosY >
                         (f32)(u32)placement->triggerHeight) {
-                        PressureSwitchFB_addTrackedObject(obj, (GameObject*)nearbyObject);
+                        PressureSwitchFB_addTrackedObject(obj, nearbyObject);
                     }
                 }
             }

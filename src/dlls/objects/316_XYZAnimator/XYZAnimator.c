@@ -210,7 +210,7 @@ void XyzAnimator_applyToMapBlock(XyzAnimatorPlacement* placement, XyzAnimatorSta
 void XyzAnimator_update(GameObject* obj) {
     XyzAnimatorPlacement* placement = (XyzAnimatorPlacement*)obj->anim.placementData;
     XyzAnimatorState* state = (XyzAnimatorState*)obj->extra;
-    int blockAddress;
+    MapBlockData* blockAddress;
     u8* polygonGroup;
     int polygonGroupIndex;
     int completedAxes;
@@ -218,16 +218,16 @@ void XyzAnimator_update(GameObject* obj) {
     int streamSize;
     int value;
 
-    blockAddress = (int)mapGetBlock(objPosToMapBlockIdx(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ));
+    blockAddress = (MapBlockData*)mapGetBlock(objPosToMapBlockIdx(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ));
     if ((u32)blockAddress == 0) {
         state->passCount = 0;
         return;
     }
-    if ((((MapBlockData*)blockAddress)->flags4 & MAP_BLOCK_FLAG_LOADED) == 0) {
+    if ((blockAddress->flags4 & MAP_BLOCK_FLAG_LOADED) == 0) {
         return;
     }
     if (state->vertexCount == 0) {
-        for (polygonGroupIndex = 0; polygonGroupIndex < ((MapBlockData*)blockAddress)->polyGroupCount;
+        for (polygonGroupIndex = 0; polygonGroupIndex < blockAddress->polyGroupCount;
              polygonGroupIndex++) {
             polygonGroup = mapBlockGetPolygonGroup((void*)blockAddress, polygonGroupIndex);
             value = mapBlockGetPolygonGroupType(polygonGroup);
@@ -245,7 +245,7 @@ void XyzAnimator_update(GameObject* obj) {
         } else {
             state->triggerBitValue = mainGetBit(placement->triggerGameBit);
         }
-        state->displayListCount = ((MapBlockData*)blockAddress)->displayListCount;
+        state->displayListCount = blockAddress->displayListCount;
         state->offsetX = (f32)placement->startX;
         state->offsetY = (f32)placement->startY;
         state->offsetZ = (f32)placement->startZ;
@@ -288,9 +288,9 @@ void XyzAnimator_update(GameObject* obj) {
         XyzAnimator_captureGeometry(placement, state, (MapBlockData*)blockAddress);
         if (placement->mode != XYZ_ANIMATOR_MODE_DEFERRED_ONESHOT) {
             XyzAnimator_applyToMapBlock(placement, state, (MapBlockData*)blockAddress);
-            ((MapBlockData*)blockAddress)->flags4 = ((MapBlockData*)blockAddress)->flags4 ^ 1;
+            blockAddress->flags4 = blockAddress->flags4 ^ 1;
             XyzAnimator_applyToMapBlock(placement, state, (MapBlockData*)blockAddress);
-            ((MapBlockData*)blockAddress)->flags4 = ((MapBlockData*)blockAddress)->flags4 ^ 1;
+            blockAddress->flags4 = blockAddress->flags4 ^ 1;
         }
     }
     if (placement->mode == XYZ_ANIMATOR_MODE_GATED) {

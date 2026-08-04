@@ -187,7 +187,7 @@ void CameraModeNormal_updateTargetAction(CameraObject* camera, GameObject* targe
 }
 
 int CameraModeNormal_chooseWallAvoidanceDirection(CameraObject* cam, f32* outA, f32* outB, int angle) {
-    int tgt0;
+    GameObject* tgt0;
     float probe[75];
     u8 box[136];
     float pathA[21];
@@ -223,8 +223,8 @@ int CameraModeNormal_chooseWallAvoidanceDirection(CameraObject* cam, f32* outA, 
     result = 0;
     (*gCameraInterface)
         ->getRelativePosition(cam, &spinB, &spinC, &spinD, &spinA, gCameraModeNormalState->targetHeight, 0);
-    tgt0 = (int)cam->anim.targetObj;
-    *(int*)&probe[35] = tgt0;
+    tgt0 = cam->anim.targetObj;
+    *(int*)&probe[35] = (int)tgt0;
     probe[1] = cam->anim.worldPosY;
     pathA[0] = cam->anim.worldPosX;
     pathA[1] = cam->anim.worldPosY;
@@ -232,12 +232,12 @@ int CameraModeNormal_chooseWallAvoidanceDirection(CameraObject* cam, f32* outA, 
     pathB[0] = pathA[0];
     pathB[1] = pathA[1];
     pathB[2] = pathA[2];
-    if (((GameObject*)tgt0)->anim.classId == 1) {
+    if (tgt0->anim.classId == 1) {
         cameraGetPrevPos2((GameObject*)tgt0, &prev[0], &prev[1], &prev[2]);
     } else {
-        prev[0] = ((GameObject*)tgt0)->anim.worldPosX;
-        prev[1] = ((GameObject*)tgt0)->anim.worldPosY + gCameraModeNormalState->targetHeight;
-        prev[2] = ((GameObject*)tgt0)->anim.worldPosZ;
+        prev[0] = tgt0->anim.worldPosX;
+        prev[1] = tgt0->anim.worldPosY + gCameraModeNormalState->targetHeight;
+        prev[2] = tgt0->anim.worldPosZ;
     }
     s = 0xf;
     i = 0;

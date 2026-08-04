@@ -1336,13 +1336,13 @@ void dll_D3_update(GameObject* obj)
 
 void dll_D3_init(GameObject* obj, DllD3Placement* def, int flag)
 {
-    int state;
+    GroundBaddieState* state;
     LandedArwingState* extra;
     u8 setupFlags;
     f32 fz;
     int ftag;
 
-    state = (int)obj->extra;
+    state = obj->extra;
     setupFlags = 6;
     if (flag != 0)
     {
@@ -1352,7 +1352,7 @@ void dll_D3_init(GameObject* obj, DllD3Placement* def, int flag)
         ->initGroundBaddie(obj, (u8*)def, (u8*)state, 5, 1, 0x108, setupFlags, 20.0f);
     (obj)->animEventCallback = NULL;
 
-    extra = (LandedArwingState*)((GroundBaddieState*)state)->control;
+    extra = (LandedArwingState*)state->control;
     memset((void*)extra, 0, 0x94);
     extra->surfaceMode = 5;
     extra->flags92.boundsLookupRetries = 3;
@@ -1374,11 +1374,11 @@ void dll_D3_init(GameObject* obj, DllD3Placement* def, int flag)
     {
         ftag = 1;
     }
-    ((GroundBaddieState*)state)->baddie.controlMode = ftag;
-    ((GroundBaddieState*)state)->baddie.substate = 0;
-    ((GroundBaddieState*)state)->targetState = 0;
-    ((GroundBaddieState*)state)->subMode = 0;
-    ((GroundBaddieState*)state)->baddie.physicsActive = 0;
+    state->baddie.controlMode = ftag;
+    state->baddie.substate = 0;
+    state->targetState = 0;
+    state->subMode = 0;
+    state->baddie.physicsActive = 0;
     ObjHits_DisableObject(obj);
 
     fz = 1.0f;
