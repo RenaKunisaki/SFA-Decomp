@@ -5661,11 +5661,11 @@ int tricky_substateSleep(GameObject* obj, int* state) {
     f32 z;
 
     if (tricky_handleFeedOrTalk(obj, state) != 0) {
-        ((u8*)state)[0xa] = 0;
+        ((TrickyState*)state)->substate = 0;
         return 1;
     }
     if (cMenuGetSelectedItem() == 0xc1) {
-        ((u8*)state)[0xa] = 0;
+        ((TrickyState*)state)->substate = 0;
         return 1;
     }
     ((TrickyState*)state)->sfxRepeatTimer -= timeDelta;
@@ -5721,7 +5721,7 @@ int tricky_substateSleep(GameObject* obj, int* state) {
             objSoundStartTimed(obj, &((TrickyState*)ptr)->soundState, 0x354, 0x1000, -1, 0);
         }
         ((TrickyState*)state)->stateFlags |= 0x10;
-        ((u8*)state)[0xa] = 4;
+        ((TrickyState*)state)->substate = 4;
         ((TrickyState*)state)->moveHoldTimer = (f32)(int)randomGetRange(0x78, 0xf0);
     }
     return 1;
