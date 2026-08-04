@@ -769,7 +769,7 @@ int SnowBike_UpdateSwingBlend(GameObject* obj, SnowBikeState* state)
 
     hitResult = (*gCheckpointInterface)->advanceRoute((u8*)state, &s->routeState, fade, s->routeMode, 1, 0);
 
-    (*gCheckpointInterface)->getRouteHeading((GameObject*)obj, &s->routeState);
+    (*gCheckpointInterface)->getRouteHeading(obj, &s->routeState);
 
     (*gCheckpointInterface)->queueRouteRankItem(&s->rankItem);
 
