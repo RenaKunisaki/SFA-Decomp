@@ -2885,3 +2885,92 @@ mid-loop; another skipped its final rebuild), and the rows read 10.18 and 3.00 a
 baseline until `ninja all_source` was re-run. **A probe loop must rebuild after its last restore,
 and a lane must re-measure the whole report before trusting any baseline it took mid-sweep.**
 `git status` is not a build-state oracle.
+
+## 30. The pure-permutation class partitioned, and the parameter-home law (measured 2026-08-03, A98)
+
+`tools/perm_class_scan.py` (`--self-test`, 13 controls, all PASS) isolates the sub-100 rows whose
+**entire** residual is a register renaming: equal stream length, 1:1 alignment, identical mnemonic
+and identical operand text once register names are abstracted, and **one injective map sigma that
+rewrites our whole stream into retail's**. Such a row asks the code generator for retail's
+operations in retail's order and differs only in colouring, so no operation, ordering or addressing
+lever can reach it. At `2a5c0e0fed` (99.818634 / 2 520 188 / 1 195 969 / 915 of 1043):
+
+| class | what sigma moves | rows | bytes forfeited |
+|---|---|---|---|
+| **PARAM-HOME** | at least one register the entry block homes an argument into | **10** | **19 136** |
+| **LOCALS-ONLY** | callee-saved band only, no home | **6** | **14 416** |
+| **SCRATCH** | a volatile register (`r0`-`r13`) | **3** | **840** |
+| | | **19** | **34 392** |
+
+Rejected buckets, for scale: LENDIFF 49 / 79 852 B, OPERAND 49 / 74 432 B, NOTPERM 35 / 49 512 B,
+NONFUNC 28 / 59 272 B, MNEMONIC 23 / 45 580 B, NONINJ 4 / 4 728 B. **The `NOTPERM` bucket is the
+control that matters**: 35 rows where a single map exists site-by-site but does not rewrite the
+whole stream, i.e. the verification arm fires.
+
+### 30a. The law, from controlled compiles (GC/2.0, the real `-O4,p` cflags)
+
+1. The callee-saved GPRs form ONE contiguous band with base `32 - N`, materialised by
+   `_savegpr_<base>`. Parameters needing a home take a contiguous run of it; locals take the rest,
+   **descending in declaration order** (A86's band law, reconfirmed).
+2. **In the simple regime the homes are POSITIONAL**: argument register `rN` homes at `base + N - 3`,
+   and the map is completely insensitive to which variable sits in which slot. Measured on a
+   six-`int`-parameter probe with an asymmetric body (branches, a loop, unequal use counts) over four
+   parameter-list permutations: the home is a function of the **position**, every time.
+3. **In the complex regime the homes follow the VARIABLE, not the position.** On
+   `Effect3_spawnObject` four different parameter-list orders — including moving `spawnFlags` to
+   argument 1 and `effectId` to argument 6 — produce the **identical variable to home map**
+   (`sourceObject` r26, `effectId` r31, `spawnParams` r28, `spawnFlags` r30, `extraArgs` r27). This
+   **bounds §27's "param i -> f(28+i)" to the simple regime**; it is not a general law.
+4. **Which end of the band each group takes flips with body complexity.** Measured on a synthetic:
+   at four call-defined locals the locals sit at the TOP of the band and the parameters below it;
+   adding eight switch cases to the same function moves the parameters to the top and the locals
+   below. Nothing in the source selects the regime.
+5. **`register` is inert.** MWCC GC/2.0 ignores the storage-class specifier for band placement
+   (four probes: one parameter, one local, all locals, none — identical objects).
+
+### 30b. `Effect3_spawnObject` — the PARAM-HOME row worked to exhaustion (7 796 B, 0.75 loss)
+
+Every axis measured inert (home map unchanged in all of them): **7 declaration orders** of the
+three-local block including A91 split forms; **4 parameter-list orders**; **5 parameter retypes**
+(`u32`->`int` flags, `int`->`u32` id, `u8`->`int` modelId, and two that do not compile);
+`static inline`->`static`; the inline helper **hand-expanded at all 10 call sites**; the helper
+rewritten to return `void`; the `hasAttachedSource` local replaced by the repeated expression so
+CSE mints the temp instead; **16 compiler flag combinations** (`-O2/3/4`, `,s`/`,p`, `-sym on`,
+`nopeephole`/`noschedule`/`nostrength`/`nolifetimes`/`noglobal`/`nocse`, `-inline off/deferred`);
+and **7 compiler versions** across the GC/2.x line — 1.3.2, 2.0, 2.0p1, 2.5, 2.6 and 2.7 all
+reproduce our map exactly. (3.0a3/3.0a5 give an ascending map, but from a different band base, so
+they differ elsewhere and are not this project's compiler.) `expr_sweep --assoc` clears **5**
+operand-order rewrites here, and `slot_oracle` reports no declaration slot owning any of the four
+moved registers. **PRICED 7 796 `matched_code`.**
+
+### 30c. The tree-wide control that refutes the tempting inference
+
+Inside the ten PARAM-HOME rows, retail's homes ascend with the argument register in **8 of 9**
+judgeable rows and ours in only **3 of 9** — which invites "retail's compiler always allocates
+parameter homes in argument order". **False.** `perm_class_scan.py --canon` measures it on every
+function in the tree with at least two homes: **retail 1 228 of 1 471 (83.48 %) ascending, ours
+1 220 of 1 472 (82.88 %)**. The regime is body-determined and we reproduce it in five sixths of the
+tree; the skew inside the mismatching rows is a **selection effect**, not a compiler difference.
+
+### 30d. Yield, and the sweeps behind the zero
+
+**Zero bytes recovered.** `expr_sweep --assoc` over 18 of the 19 rows (`playerBuildLedgeClimbProbe`
+left alone, owner-hot): **420 semantically-cleared operand-order rewrites across 16 rows, 0 hits**;
+the other two rows have **nothing to sweep**, which is not the same reading as "cleared". Over 13
+rows `slot_oracle` finds the moved registers declaration-owned in only **two** — `SHthorntail_update`
+(slot 4 owns `r26`) and `Link_render` (slot 3 owns `r28`), one of the two moved registers each — and
+`brute_match --strategy all --cross` on both (17 and 14 declarations, swaps and moves) is **inert**.
+`brute_match --strategy radius2 --cross` on
+`dimlavasmash_setBlockSurfaceFlags` (3 declarations, the whole neighbourhood) and
+`--strategy all --cross` on `shadowVolumeBeginFrame`: inert. Targeted declaration moves and split
+forms on `trickyUpdateMovementState` (the 8 764 B row: the two moved registers hold
+`objectWalkGroup` and a constant `1`) and three alias/retype forms on `staff_setupSwipe`: inert.
+`staff_setupSwipe`'s honest retype (`u8* swipe` -> `StaffState*`) is blocked by type visibility in
+`include/main/dll/dll_00E2_staff_api.h`, i.e. a §13 cross-TU decision, not a colouring one.
+
+**Instrument note, the same shape A97 recorded.** The first version of this lane's scanner read a
+function's homes through a 40-line window with a prologue mnemonic allowlist, so a leading
+`fmr f31,f1` terminated the scan and `mapSetup` came back with **no homes at all** — filing a
+PARAM-HOME row as LOCALS-ONLY. The landed tool walks until the first instruction that is neither a
+home nor precedes one, and is controlled by `--self-test`. **Classify the operand, not the token,
+and control the parser before believing the partition.**
