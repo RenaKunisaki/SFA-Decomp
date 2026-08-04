@@ -36,15 +36,8 @@
 #define BOMB_PLANT_SPORE_BOMB_PLANT_ALIAS_ID   0x36D
 #define BOMB_PLANT_SPORE_GROUND_QUAKE_ALIAS_ID 0x63C
 
-typedef struct BombPlantSporeFlags {
-    u8 hitSurface : 1;
-    u8 waitingForDetonateAck : 1;
-    u8 unknown : 6;
-} BombPlantSporeFlags;
-
 STATIC_ASSERT(sizeof(BombPlantSporeFlags) == 1);
 
-#define BOMB_PLANT_SPORE_FLAGS(state) ((BombPlantSporeFlags*)&(state)->flags)
 
 u8 gBombPlantSporePathSetupData[8] = {0x40, 0xA0, 0, 0, 0, 0, 0, 0};
 f32 gBombPlantSporePathPointData[3] = {0.0f, 0.0f, 0.0f};
@@ -177,7 +170,7 @@ void BombPlantSpore_update(GameObject* obj) {
     int j;
 
     state = obj->extra;
-    if (BOMB_PLANT_SPORE_FLAGS(state)->waitingForDetonateAck != 0) {
+    if (state->flags.waitingForDetonateAck != 0) {
         while (ObjMsg_Pop(obj, (u32*)&poppedMessage, &poppedSender, NULL) != 0) {
             switch (poppedMessage) {
             case BOMB_PLANT_SPORE_MESSAGE_DETONATE:
@@ -193,11 +186,11 @@ void BombPlantSpore_update(GameObject* obj) {
                 state->detonateTimer = 200.0f;
                 obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
                 ObjHits_DisableObject(obj);
-                BOMB_PLANT_SPORE_FLAGS(state)->waitingForDetonateAck = 0;
+                state->flags.waitingForDetonateAck = 0;
                 break;
             }
         }
-        if (BOMB_PLANT_SPORE_FLAGS(state)->waitingForDetonateAck != 0) {
+        if (state->flags.waitingForDetonateAck != 0) {
             return;
         }
     }
@@ -227,7 +220,7 @@ void BombPlantSpore_update(GameObject* obj) {
     }
     ObjHits_GetPriorityHit(obj, &hitObject, 0, 0);
     contactObj = *(GameObject**)obj->anim.hitReactState;
-    if (BOMB_PLANT_SPORE_FLAGS(state)->hitSurface == 0) {
+    if (state->flags.hitSurface == 0) {
         state->driftTimer -= timeDelta;
         if (state->driftTimer < 0.0f) {
             state->driftTimer = 0.0f;
@@ -274,13 +267,13 @@ void BombPlantSpore_update(GameObject* obj) {
         if (contactObj != NULL && (hitId = contactObj->anim.romDefNo, hitId != BOMB_PLANT_SPORE_BOMB_PLANT_ALIAS_ID) &&
             hitId != BOMB_PLANT_SPORE_OBJECT_ID && hitId != BOMB_PLANT_SPORE_GROUND_QUAKE_ALIAS_ID) {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_sc_eatthefood16);
-            BOMB_PLANT_SPORE_FLAGS(state)->hitSurface = 1;
+            state->flags.hitSurface = 1;
             if (state->fuseTimer > 120.0f) {
                 state->fuseTimer = 120.0f;
             }
         }
         if ((state->path.contactFlags & BOMB_PLANT_SPORE_PATH_CONTACT_MASK) != 0) {
-            BOMB_PLANT_SPORE_FLAGS(state)->hitSurface = 1;
+            state->flags.hitSurface = 1;
             if (state->fuseTimer > 120.0f) {
                 state->fuseTimer = 120.0f;
             }
@@ -290,7 +283,7 @@ void BombPlantSpore_update(GameObject* obj) {
     if (contactObj == player) {
         state->pickupMsgBitId = GAMEBIT_SawBombSpore;
         ObjMsg_SendToObject(contactObj, BOMB_PLANT_SPORE_MESSAGE_IN_RANGE, obj, (u32)state);
-        BOMB_PLANT_SPORE_FLAGS(state)->waitingForDetonateAck = 1;
+        state->flags.waitingForDetonateAck = 1;
     } else {
         f32 fuse = state->fuseTimer - timeDelta;
         state->fuseTimer = fuse;

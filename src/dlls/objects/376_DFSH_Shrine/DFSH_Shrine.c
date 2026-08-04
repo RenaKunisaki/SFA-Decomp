@@ -17,17 +17,6 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 
-typedef struct DFSHShrineFlags {
-    u8 openedBySequence : 1;
-    u8 success : 1;
-    u8 unknown2 : 1;
-    u8 unknown3 : 1;
-    u8 unknown4 : 1;
-    u8 unknown5 : 1;
-    u8 unknown6 : 1;
-    u8 unknown7 : 1;
-} DFSHShrineFlags;
-
 STATIC_ASSERT(sizeof(DFSHShrineFlags) == 0x01);
 
 #define DFSH_SHRINE_MAP_ID 0xB
@@ -50,7 +39,6 @@ STATIC_ASSERT(sizeof(DFSHShrineFlags) == 0x01);
 #define DFSH_SHRINE_REWARD_DELAY(idx)  (rewardTableCursor[0][10 + (idx)])
 #define DFSH_SHRINE_TARGET_OBJECT(idx) (((int*)((u8*)rewardTableCursor[0] + 0x3C))[(idx)])
 
-#define DFSH_SHRINE_FLAGS(state) ((DFSHShrineFlags*)&(state)->flags)
 
 u8 gDFSHShrinePendingReward = 1;
 
@@ -136,7 +124,7 @@ int dfshShrine_processAnimEvents(GameObject* obj, int unusedArg2, ObjSeqState* a
         if (cmd != 0) {
             switch (cmd) {
             case 3:
-                ((DFSHShrineFlags*)&state->flags)->openedBySequence = 1;
+                state->flags.openedBySequence = 1;
                 break;
             case 7:
                 objSetAnimStateFlags(player, 1, 1);
@@ -293,7 +281,7 @@ void dfshShrine_update(GameObject* obj) {
         obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
         break;
     case DFSH_SHRINE_MODE_AWAIT_OPEN:
-        if (DFSH_SHRINE_FLAGS(state)->openedBySequence == 1) {
+        if (state->flags.openedBySequence == 1) {
             state->mode = DFSH_SHRINE_MODE_GRANT_REWARDS;
             mainSetBits(0xB76, 1);
             gameTimerInit(0x19, 0xD2);
@@ -318,11 +306,11 @@ void dfshShrine_update(GameObject* obj) {
         }
         if (anyMissing == 0) {
             state->mode = DFSH_SHRINE_MODE_FINISH;
-            DFSH_SHRINE_FLAGS(state)->success = 1;
+            state->flags.success = 1;
             gameTimerStop();
         } else if (isGameTimerDisabled() != 0) {
             state->mode = DFSH_SHRINE_MODE_FINISH;
-            DFSH_SHRINE_FLAGS(state)->success = 0;
+            state->flags.success = 0;
             state->transitionTimer = 0x78;
             for (i = 0; i < 10; i++) {
                 int targetId;
@@ -349,7 +337,7 @@ void dfshShrine_update(GameObject* obj) {
     case DFSH_SHRINE_MODE_POST_FINISH:
         if (objGetAnimStateFlags(player, 1) != 0 || mainGetBit(GAMEBIT_ITEM_TestCombatSpirit_Got) != 0u) {
             state->mode = DFSH_SHRINE_MODE_RESET;
-        } else if (DFSH_SHRINE_FLAGS(state)->success == 0) {
+        } else if (state->flags.success == 0) {
             state->mode = DFSH_SHRINE_MODE_RESET;
             mainSetBits(0xB70, 1);
         } else {
@@ -362,7 +350,7 @@ void dfshShrine_update(GameObject* obj) {
         break;
     case DFSH_SHRINE_MODE_RESET:
         state->mode = DFSH_SHRINE_MODE_IDLE;
-        DFSH_SHRINE_FLAGS(state)->openedBySequence = 0;
+        state->flags.openedBySequence = 0;
         state->rewardIndex = 0;
         state->rewardTimer = 0.0f;
         mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 1);
@@ -394,7 +382,7 @@ void dfshShrine_init(GameObject* obj, const DFSHShrinePlacement* placement) {
         state->startDelayFrames = (s16)((s32)placement->startDelay >> 8);
     }
     state->mode = DFSH_SHRINE_MODE_RESET;
-    DFSH_SHRINE_FLAGS(state)->openedBySequence = 0;
+    state->flags.openedBySequence = 0;
     state->transitionTimer = 0;
     obj->animEventCallback = dfshShrine_processAnimEvents;
     ObjMsg_AllocQueue(obj, 4);

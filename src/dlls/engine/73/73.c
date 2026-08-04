@@ -87,7 +87,7 @@ void CameraModeCombat_free(CameraObject* camera) {
     mm_free(gCameraModeCombatState);
     gCameraModeCombatState = NULL;
     Rcp_DisableBlurFilter();
-    ((BitFlags8*)&camera->smoothingFlags)->b0 = 0;
+    camera->smoothingFlags.b0 = 0;
 }
 
 static void CameraModeCombat_traceMove(f32* prevPos, CameraObject* camera, u8* traceWork) {
@@ -340,7 +340,7 @@ void CameraModeCombat_update(CameraObject* camera) {
                             turnOnBlurFilter(target->anim.worldPosX, target->anim.worldPosY, target->anim.worldPosZ, 1,
                                              0);
                             if (camera->blendProgress == 0.0f) {
-                                ((BitFlags8*)&camera->smoothingFlags)->b0 = 1;
+                                camera->smoothingFlags.b0 = 1;
                             }
                             Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY,
                                                            camera->anim.worldPosZ, &camera->anim.localPosX,

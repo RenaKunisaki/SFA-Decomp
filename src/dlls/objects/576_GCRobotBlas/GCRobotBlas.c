@@ -27,9 +27,9 @@ int GCRobotBlast_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 
     for (i = 0; i < animUpdate->eventCount; i++)
     {
-        ((BlastFlags4*)&state->flags04)->b80 = animUpdate->eventIds[i];
+        state->flags04.b80 = animUpdate->eventIds[i];
     }
-    if (((BlastFlags4*)&state->flags04)->b80 != 0)
+    if (state->flags04.b80 != 0)
     {
         switch (state->mode)
         {
@@ -72,7 +72,7 @@ void GCRobotBlast_init(GameObject* obj, GCRobotBlastPlacement* placement)
 {
     GCRobotBlastState* state = obj->extra;
     state->mode = placement->mode;
-    ((BlastFlags4*)&state->flags04)->b80 = 0;
+    state->flags04.b80 = 0;
     obj->animEventCallback = GCRobotBlast_SeqFn;
 }
 

@@ -12,9 +12,15 @@
  * treasurechest.c (dll_D3_*), landedArwing.c, staffAction.c (the
  * landedarwing_* movement helpers) and backpack.c (LandedArwing_Update*
  * action callbacks).
- * flags92 is bit-accessed through per-TU overlay structs (LandedArwingFlags,
- * LandedArwingMovementFlags) -- keep those casts at the use sites.
  */
+typedef struct LandedArwingMovementFlags {
+  u8 boundsLookupRetries : 4;
+  u8 surfaceOrientationReady : 1;
+  u8 airborne : 1;
+  u8 contactCallbackRegistered : 1;
+  u8 hitSurfaceType13 : 1;
+} LandedArwingMovementFlags;
+
 typedef struct LandedArwingState {
   void *boundsObj;        /* nearest defNo-0x4AD object; fills bounds + bounceFlags */
   f32 unk_04;
@@ -46,7 +52,7 @@ typedef struct LandedArwingState {
   u16 scriptTimer;
   u8 surfaceMode; /* 0-5 = wall axis lock, 6 = script/free flight */
   u8 bounceFlags; /* per-wall bounce-allowed bits, from boundsObj */
-  u8 flags92;
+  LandedArwingMovementFlags flags92;
   u8 pad93;
 } LandedArwingState;
 

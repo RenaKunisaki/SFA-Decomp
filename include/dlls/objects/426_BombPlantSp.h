@@ -8,6 +8,12 @@
 
 #define BOMB_PLANT_SPORE_OBJECT_ID 0x198
 
+typedef struct BombPlantSporeFlags {
+    u8 hitSurface : 1;
+    u8 waitingForDetonateAck : 1;
+    u8 unknown : 6;
+} BombPlantSporeFlags;
+
 typedef struct BombPlantSporePlacement {
     ObjPlacement base;
     u8 unknown18[2];
@@ -53,7 +59,7 @@ typedef struct BombPlantSporeState {
     s16 burstDriftAngle;
     s16 spinAngle;
     s16 yawStep;
-    u8 flags;
+    BombPlantSporeFlags flags;
     u8 unknown2B1[3];
 } BombPlantSporeState;
 

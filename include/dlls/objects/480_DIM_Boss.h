@@ -13,12 +13,9 @@
 #define DIMBOSS_RUNTIME_SIZE            0x4C8
 #define DIMBOSS_GAMEBIT_ICICLE_DEFEATED 0x20E
 
-typedef union DIMbossSteamFlags {
-    u8 raw;
-    struct {
-        u8 sfxPending : 1;
-        u8 rest : 7;
-    } bits;
+typedef struct DIMbossSteamFlags {
+    u8 sfxPending : 1;
+    u8 rest : 7;
 } DIMbossSteamFlags;
 
 typedef struct DIMbossEffectMarker {

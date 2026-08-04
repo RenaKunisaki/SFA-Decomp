@@ -62,13 +62,6 @@ u8 gWallCrawlerHitCount;
 extern u16 gWallCrawlerVariantFlags[];
 extern f32 gWallCrawlerPointCollision[];
 
-/* overlay of state->hitBits */
-typedef struct
-{
-    u8 hit : 1;
-    u8 _r299 : 7;
-} WcHitBits;
-
 int wmwallcrawler_animEventCallback(GameObject* obj)
 {
     ((WmwallcrawlerState*)obj->extra)->mode = WMWALLCRAWLER_MODE_DESCEND;
@@ -157,7 +150,7 @@ void wmwallcrawler_hitDetect(GameObject* obj)
             (obj)->anim.flags = (obj)->anim.flags | OBJANIM_FLAG_HIDDEN;
         }
     }
-    else if (((WcHitBits*)&state->hitBits)->hit != 0)
+    else if (state->hitBits.hit != 0)
     {
         GameObject* target;
         if ((state->flags & WMWALLCRAWLER_FLAG_TARGET_NEAREST) == 0)
@@ -170,7 +163,7 @@ void wmwallcrawler_hitDetect(GameObject* obj)
         }
         ObjHits_RecordObjectHit(target, obj, 0xb, 1, 0);
         state->mode = WMWALLCRAWLER_MODE_DIE;
-        ((WcHitBits*)&state->hitBits)->hit = 0;
+        state->hitBits.hit = 0;
     }
 }
 
@@ -577,7 +570,7 @@ void wmwallcrawler_update(GameObject* obj)
                                         }
                                         else
                                         {
-                                            ((WcHitBits*)&state->hitBits)->hit = 1;
+                                            state->hitBits.hit = 1;
                                         }
                                         gWallCrawlerHitCount = 0;
                                     }

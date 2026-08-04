@@ -11,11 +11,6 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 
-typedef struct LanternFireFlyControlBits {
-    u8 motionMode : 2;
-    u8 unused : 6;
-} LanternFireFlyControlBits;
-
 #define LANTERN_FIREFLY_OBJECT_GROUP              0x30
 #define LANTERN_FIREFLY_ACTIVE_COUNT_GAMEBIT      0x698
 #define LANTERN_FIREFLY_PLAYER_FOLLOW_MOTION_MODE 1
@@ -38,7 +33,7 @@ typedef struct LanternFireFlyControlBits {
 #define LANTERN_FIREFLY_RANDOM_ANGLE_MAX          0xFDE8
 #define LANTERN_FIREFLY_DEFAULT_WANDER_RANGE      4
 #define LANTERN_FIREFLY_LIGHT_ANGLE_SHIFT         11
-#define LANTERN_FIREFLY_OBJECT_MODE(state)        (((u32)(state)->modeFlags >> 6) & 3)
+#define LANTERN_FIREFLY_OBJECT_MODE(state)        ((state)->modeFlags.motionMode)
 #define LANTERN_FIREFLY_IS_ACTIVE(state)          (LANTERN_FIREFLY_OBJECT_MODE(state) == LANTERN_FIREFLY_ACTIVE_OBJECT_MODE)
 
 static f32 sLanternFireFlyEffectSpawnTimerThreshold = 60.0f;
@@ -105,7 +100,7 @@ void LanternFireFly_releaseFromLantern(GameObject* obj) {
     LanternFireFly_advanceControlRing(obj);
     LanternFireFly_advanceControlRing(obj);
     LanternFireFly_advanceControlRing(obj);
-    ((LanternFireFlyControlBits*)&state->modeFlags)->motionMode = LANTERN_FIREFLY_PLAYER_FOLLOW_MOTION_MODE;
+    state->modeFlags.motionMode = LANTERN_FIREFLY_PLAYER_FOLLOW_MOTION_MODE;
     state->timer = placement->timer;
     gameBitIncrement(LANTERN_FIREFLY_ACTIVE_COUNT_GAMEBIT);
 }
@@ -162,7 +157,7 @@ static void LanternFireFly_advanceControlRing(GameObject* obj) {
     state->controlX[2] = state->controlX[3];
     state->controlY[2] = state->controlY[3];
     state->controlZ[2] = state->controlZ[3];
-    if (((LanternFireFlyControlBits*)&state->modeFlags)->motionMode == LANTERN_FIREFLY_PLAYER_FOLLOW_MOTION_MODE) {
+    if (state->modeFlags.motionMode == LANTERN_FIREFLY_PLAYER_FOLLOW_MOTION_MODE) {
         GameObject* player = Obj_GetPlayerObject();
         state->speed = 0.0015f * Vec_distance((void*)&obj->anim.worldPosX, &player->anim.worldPosX) + 0.0001f;
     } else {
@@ -364,7 +359,7 @@ void LanternFireFly_init(GameObject* obj, LanternFireFlyPlacement* placement) {
     state->anchorZ = placement->base.posZ;
     zeroFlag = 0;
     state->unk6F = zeroFlag;
-    ((LanternFireFlyControlBits*)&state->modeFlags)->motionMode = zeroFlag;
+    state->modeFlags.motionMode = zeroFlag;
 }
 
 void LanternFireFly_release(void) {

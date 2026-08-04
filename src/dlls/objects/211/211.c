@@ -190,7 +190,7 @@ int LandedArwing_UpdateRetreatChase(GameObject* obj, BaddieState* baddie)
     landedarwing_updateConstrainedChaseVelocity(obj, x, y, z, scale);
     if (state->surfaceMode == LANDED_ARWING_SCRIPT_MODE)
     {
-        if ((u32)((state->flags92 >> 2) & 1) != 0U)
+        if (state->flags92.airborne != 0U)
         {
             landedarwing_updateAirborneMotion(obj, state);
         }
@@ -243,18 +243,11 @@ ObjectDescriptor dll_D3 = {
 #define LANDED_ARWING_TARGET_WANDER 1
 #define LANDED_ARWING_TARGET_SCRIPT 2
 
-#define LANDED_ARWING_FLAG_SCRIPT_TARGET 0x01
 #define LANDED_ARWING_FLAG_LAUNCHING 0x02004000
 
 #define LANDED_ARWING_REVERSE_CHASE_GAMEBIT 0x698
 #define LANDED_ARWING_WANDER_TIME_MIN 0x12c
 #define LANDED_ARWING_WANDER_TIME_MAX 0x258
-
-typedef struct
-{
-    u8 high7 : 7;
-    u8 bit0 : 1;
-} LandedArwingFlags;
 
 u32 LandedArwing_UpdateFlightChase(GameObject* obj, BaddieState* state)
 {
@@ -265,7 +258,6 @@ u32 LandedArwing_UpdateFlightChase(GameObject* obj, BaddieState* state)
     f32 targetY;
     f32 targetZ;
     f32 chaseScale;
-    u32 scriptFlags;
 
     sub = (LandedArwingState*)((GroundBaddieState*)(int)obj->extra)->control;
     playerObj = Obj_GetPlayerObject();
@@ -311,13 +303,12 @@ u32 LandedArwing_UpdateFlightChase(GameObject* obj, BaddieState* state)
     }
     else
     {
-        scriptFlags = sub->flags92;
-        if ((scriptFlags & LANDED_ARWING_FLAG_SCRIPT_TARGET) != 0)
+        if (sub->flags92.hitSurfaceType13 != 0)
         {
             targetMode = LANDED_ARWING_TARGET_SCRIPT;
             if ((s32)sub->scriptTimer <= framesThisStep)
             {
-                ((LandedArwingFlags*)&sub->flags92)->bit0 = 0;
+                sub->flags92.hitSurfaceType13 = 0;
             }
             else
             {
@@ -371,7 +362,7 @@ u32 LandedArwing_UpdateFlightChase(GameObject* obj, BaddieState* state)
 
     if (sub->surfaceMode == LANDED_ARWING_SCRIPT_MODE)
     {
-        if ((u32)((sub->flags92 >> 2) & 1) != 0)
+        if (sub->flags92.airborne != 0)
         {
             landedarwing_updateAirborneMotion(obj, sub);
         }
@@ -416,15 +407,6 @@ typedef struct LandedArwingStaffInterface
 STATIC_ASSERT(offsetof(LandedArwingBoundsInterface, getWorldBounds) == 0x20);
 STATIC_ASSERT(offsetof(LandedArwingStaffInterface, getSwipeTextureIndex) == 0x50);
 
-typedef struct LandedArwingMovementFlags
-{
-    u8 boundsLookupRetries : 4;
-    u8 surfaceOrientationReady : 1;
-    u8 airborne : 1;
-    u8 contactCallbackRegistered : 1;
-    u8 hitSurfaceType13 : 1;
-} LandedArwingMovementFlags;
-
 void landedarwing_buildSurfaceOrientationMatrix(f32* out, f32* forward, f32* up);
 
 u32 landedarwing_updateMovementState(GameObject* obj, BaddieState* baddie)
@@ -453,7 +435,7 @@ u32 landedarwing_updateMovementState(GameObject* obj, BaddieState* baddie)
     {
         if (state->surfaceMode == 6)
         {
-            if (((state->flags92 >> 2) & 1) != 0u)
+            if (state->flags92.airborne != 0u)
             {
                 landedarwing_updateAirborneMotion(obj, state);
             }
@@ -507,7 +489,7 @@ void landedarwing_updateAirborneMotion(GameObject* obj, LandedArwingState* state
     {
         {
             int zero = 0;
-            ((LandedArwingMovementFlags*)&state->flags92)->airborne = zero;
+            state->flags92.airborne = zero;
         }
         landedarwing_resolveSurfaceCollision(obj, state, hitScratch.hit, end);
     }
@@ -943,10 +925,10 @@ void landedarwing_moveAlongSurface(GameObject* obj, LandedArwingState* state)
             obj->anim.velocityX = speed * state->surfaceNormalX;
             obj->anim.velocityY = speed * state->surfaceNormalY;
             obj->anim.velocityZ = speed * state->surfaceNormalZ;
-            ((LandedArwingMovementFlags*)&state->flags92)->airborne = 1;
+            state->flags92.airborne = 1;
         }
     }
-    ((LandedArwingMovementFlags*)&state->flags92)->surfaceOrientationReady = 1;
+    state->flags92.surfaceOrientationReady = 1;
 }
 
 void landedarwing_resolveSurfaceCollision(GameObject* obj, LandedArwingState* state, f32* hit, f32* end)
@@ -1020,7 +1002,7 @@ void landedarwing_updateConstrainedChaseVelocity(GameObject* obj, f32 targetX, f
     f32 dot;
 
     state = (LandedArwingState*)((GroundBaddieState*)(int)obj->extra)->control;
-    if ((u32)(state->flags92 >> 2 & 1) == 0)
+    if (state->flags92.airborne == 0)
     {
         vx = targetX - (obj)->anim.localPosX;
         vy = targetY - (obj)->anim.localPosY;
@@ -1130,9 +1112,9 @@ void dll_D3_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
         {
         case 0:
             if ((state->surfaceMode == 6) &&
-                ((((u32)state->flags92 >> 3) & 1) != 0))
+                (state->flags92.surfaceOrientationReady != 0))
             {
-                if ((((u32)state->flags92 >> 2) & 1) == 0)
+                if (state->flags92.airborne == 0)
                 {
                     landedarwing_buildSurfaceOrientationMatrix(
                         slideMtx, &(obj)->anim.velocityX, &state->surfaceNormalX);
@@ -1226,7 +1208,7 @@ void dll_D3_update(GameObject* obj)
     if (extra->boundsObj == NULL)
     {
         extra->surfaceMode = 6;
-        if (((u32)extra->flags92 >> 4 & 0xF) != 0u)
+        if (extra->flags92.boundsLookupRetries != 0u)
         {
             if ((extra->boundsObj = ObjList_FindNearestObjectByDefNo(obj, 0x4ad, &searchRadius)) != NULL)
             {
@@ -1234,7 +1216,7 @@ void dll_D3_update(GameObject* obj)
                     ->getWorldBounds((GameObject*)extra->boundsObj, &extra->boundsMinX, &extra->bounceFlags);
                 extra->surfaceMode = 5;
             }
-            ((LandedArwingMovementFlags*)&extra->flags92)->boundsLookupRetries -= 1;
+            extra->flags92.boundsLookupRetries -= 1;
         }
     }
 
@@ -1255,11 +1237,11 @@ void dll_D3_update(GameObject* obj)
     if (rc == 0)
         return;
 
-    if (((LandedArwingMovementFlags*)&extra->flags92)->contactCallbackRegistered == 0u)
+    if (extra->flags92.contactCallbackRegistered == 0u)
     {
     if (ObjContact_AddCallback(obj, player, LandedArwing_OnPlayerContact) != 0)
         {
-            ((LandedArwingMovementFlags*)&extra->flags92)->contactCallbackRegistered = 1;
+            extra->flags92.contactCallbackRegistered = 1;
         }
     }
 
@@ -1335,14 +1317,14 @@ void dll_D3_update(GameObject* obj)
 
     obj->pendingParentObj = ((GroundBaddieState*)state)->savedPendingParentObj;
 
-    if (((LandedArwingMovementFlags*)&extra->flags92)->hitSurfaceType13 == 0u && extra->surfaceMode == 6)
+    if (extra->flags92.hitSurfaceType13 == 0u && extra->surfaceMode == 6)
     {
         hitCount = trackGetLineIntersect(&obj->anim.previousLocalPosX, &obj->anim.localPosX,
                                       6.0f, 0, (TrackBBoxHit*)hitResult, obj, -0x7c, -1, 0xff,
                                       0);
         if (hitCount != 0 && ((TrackBBoxHit*)hitResult)->surfaceType == 13)
         {
-            ((LandedArwingMovementFlags*)&extra->flags92)->hitSurfaceType13 = 1;
+            extra->flags92.hitSurfaceType13 = 1;
             extra->scriptTimer = (u16)(randomGetRange(10, 0xf) * 0x3c);
         }
     }
@@ -1373,7 +1355,7 @@ void dll_D3_init(GameObject* obj, DllD3Placement* def, int flag)
     extra = (LandedArwingState*)((GroundBaddieState*)state)->control;
     memset((void*)extra, 0, 0x94);
     extra->surfaceMode = 5;
-    ((LandedArwingMovementFlags*)&extra->flags92)->boundsLookupRetries = 3;
+    extra->flags92.boundsLookupRetries = 3;
     fz = 0.0f;
     extra->surfaceNormalX = fz;
     extra->surfaceNormalY = 1.0f;

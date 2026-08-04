@@ -10,11 +10,6 @@
 
 extern ObjectDescriptor gARWArwingObjDescriptor;
 
-typedef struct Arw339Flags
-{
-    u8 scoreFlag : 1;
-} Arw339Flags;
-
 typedef struct ArwInitCfg
 {
     int a;

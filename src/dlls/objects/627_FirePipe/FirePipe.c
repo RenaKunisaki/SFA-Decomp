@@ -74,18 +74,6 @@ int gFirePipeEmitTimerReset = 0x0A;
 #define FIREPIPE_EFFECT_TYPE_STEAM_HOLE_DE 0xe
 #define FIREPIPE_EFFECT_TYPE_FLAME         9
 
-typedef struct
-{
-    u8 lastGameBitState : 1; /* bit7: snapshot of gameBit, for change detection */
-    u8 emitting : 1;         /* bit6: jet is actively firing (live-verified) */
-    u8 wasEmitting : 1;      /* bit5: previous-frame `emitting`, for sound edge */
-    u8 restartPending : 1;   /* bit4: hit/freeze interrupted; re-enable emit when able */
-    u8 extTriggered : 1;     /* bit3: set when externally driven; not read in this DLL */
-    u8 childEmitEnabled : 1; /* bit2: emit enable when linked as a child (firecrawler) */
-    u8 renderEnabled : 1;    /* bit1: draw the emitter model (from placement flag 0x1) */
-    u8 glowEnabled : 1;      /* bit0: spawn the point-light glow (from placement flag 0x2) */
-} FirePipeBitFlags;
-
 typedef void (*FirePipeEffectInitFn)(int obj, void* spawnDef, int p3);
 
 /* Spawn-setup buffer seeded by firepipe_updateState for the emitted flame
@@ -158,14 +146,14 @@ void firepipe_releaseEffectObject(GameObject* obj)
 int firepipe_clearLinkedUpdateFlag(GameObject* obj)
 {
     FirePipeExtra* extra = obj->extra;
-    ((FirePipeBitFlags*)&extra->flags)->childEmitEnabled = 0;
+    extra->flags.childEmitEnabled = 0;
     return 1;
 }
 
 int firepipe_setLinkedUpdateFlag(GameObject* obj)
 {
     FirePipeExtra* extra = obj->extra;
-    ((FirePipeBitFlags*)&extra->flags)->childEmitEnabled = 1;
+    extra->flags.childEmitEnabled = 1;
     return 1;
 }
 
@@ -183,7 +171,7 @@ void firepipe_updateState(GameObject* obj)
 
     extra = obj->extra;
     mapData = (FirePipeMapData*)obj->anim.placementData;
-    flags = (FirePipeBitFlags*)&extra->flags;
+    flags = &extra->flags;
     Obj_GetPlayerObject();
 
     if (obj->ownerObj != NULL)
@@ -252,7 +240,7 @@ void firepipe_updateState(GameObject* obj)
                             s16toFloat(&ex2->cycleTimer, (md2->startOffset * 0x3c));
                             if (md2->startOffset >= md2->cycleTime)
                             {
-                                ((FirePipeBitFlags*)&ex2->flags)->emitting = 0;
+                                ex2->flags.emitting = 0;
                             }
                         }
                     }
@@ -449,7 +437,7 @@ void firepipe_render(GameObject* obj, int p1, int p2, int p3, int p4, char visib
     {
         queueGlowRender(glowLight);
     }
-    if (visible != 0 && (u32)((extra->flags >> 1) & 1) != 0)
+    if (visible != 0 && extra->flags.renderEnabled != 0)
     {
         objRenderModelAndHitVolumes(obj, p1, p2, p3, p4, 1.0f);
     }
@@ -480,11 +468,11 @@ void firepipe_init(GameObject* obj, FirePipeMapData* mapData)
     if (mapData->gameBit != -1)
     {
         bitVal = mainGetBit((int)mapData->gameBit);
-        ((FirePipeBitFlags*)&extra->flags)->emitting = bitVal;
+        extra->flags.emitting = bitVal;
     }
     else
     {
-        ((FirePipeBitFlags*)&extra->flags)->emitting = 1;
+        extra->flags.emitting = 1;
     }
     obj->animEventCallback = firepipe_stateCallback;
     {
@@ -507,7 +495,7 @@ void firepipe_init(GameObject* obj, FirePipeMapData* mapData)
                     s16toFloat(&extra2->cycleTimer, (int)(short)(startTime * 0x3c));
                     if (def->startOffset >= def->cycleTime)
                     {
-                        ((FirePipeBitFlags*)&extra2->flags)->emitting = 0;
+                        extra2->flags.emitting = 0;
                     }
                 }
             }
@@ -563,12 +551,12 @@ void firepipe_init(GameObject* obj, FirePipeMapData* mapData)
         obj->anim.rotX = (short)((int)mapData->rotX << 8);
         obj->anim.rotY = mapData->rotY << 8;
         ObjHits_EnableObject(obj);
-        ((FirePipeBitFlags*)&extra->flags)->restartPending = 0;
+        extra->flags.restartPending = 0;
         extra->activeSpawn = 0;
         bitVal = mainGetBit((int)mapData->gameBit);
         {
             u32 clz = __cntlzw(bitVal);
-            ((FirePipeBitFlags*)&extra->flags)->lastGameBitState = (u8)(clz >> 5);
+            extra->flags.lastGameBitState = (u8)(clz >> 5);
         }
         if ((mapData->flags & 1) != 0)
         {
@@ -578,7 +566,7 @@ void firepipe_init(GameObject* obj, FirePipeMapData* mapData)
         {
             flagValue = 1;
         }
-        ((FirePipeBitFlags*)&extra->flags)->renderEnabled = flagValue;
+        extra->flags.renderEnabled = flagValue;
         if ((mapData->flags & 2) != 0)
         {
             flagValue = 0;
@@ -587,11 +575,11 @@ void firepipe_init(GameObject* obj, FirePipeMapData* mapData)
         {
             flagValue = 1;
         }
-        ((FirePipeBitFlags*)&extra->flags)->glowEnabled = flagValue;
+        extra->flags.glowEnabled = flagValue;
         storeZeroToFloatParam(&extra->emitTimer);
         s16toFloat(&extra->emitTimer, 0x14);
         objAddObjectType((int)obj, FIREPIPE_OBJGROUP);
-        ((FirePipeBitFlags*)&extra->flags)->childEmitEnabled = 0;
+        extra->flags.childEmitEnabled = 0;
         extra->glowLight = NULL;
     }
 }

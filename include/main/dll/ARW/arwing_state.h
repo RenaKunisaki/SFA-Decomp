@@ -4,6 +4,11 @@
 #include "types.h"
 #include "global.h"
 
+typedef struct Arw339Flags
+{
+    u8 scoreFlag : 1;
+} Arw339Flags;
+
 /* Per-object extra state for the playable Arwing
  * (arwarwing_getExtraSize == 0x498). */
 typedef struct ArwingState {
@@ -57,7 +62,7 @@ typedef struct ArwingState {
     f32 knockVelZ;       /* 0x330 */
     u8 pad334[4];
     u8 hitShake;         /* 0x338: damage camera-shake active */
-    u8 flags339;         /* 0x339: 0x80 damage flash; Arw339Flags overlay */
+    Arw339Flags flags339;
     s16 shakeYaw;        /* 0x33a */
     s16 shakePitch;      /* 0x33c */
     u8 pad33E[2];

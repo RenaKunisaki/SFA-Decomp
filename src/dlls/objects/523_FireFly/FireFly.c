@@ -352,15 +352,15 @@ void firefly_update(GameObject* obj)
         }
     }
 
-    if (((FireFlyActiveBits*)&state->activeFlags)->active == 0)
+    if (state->activeFlags.active == 0)
     {
         isActive = 0;
         if ((def->requiredGameBit == -1) || (mainGetBit(def->requiredGameBit) != 0))
         {
             isActive = 1;
         }
-        ((FireFlyActiveBits*)&state->activeFlags)->active = isActive;
-        if (((FireFlyActiveBits*)&state->activeFlags)->active != 0)
+        state->activeFlags.active = isActive;
+        if (state->activeFlags.active != 0)
         {
             state->light = modelLightStruct_createPointLight((void*)obj, 100, 0xFF, 100, 0);
         }

@@ -8,6 +8,17 @@
 #include "main/model_light.h"
 #include "main/objseq.h"
 
+typedef struct DFSHShrineFlags {
+    u8 openedBySequence : 1;
+    u8 success : 1;
+    u8 unknown2 : 1;
+    u8 unknown3 : 1;
+    u8 unknown4 : 1;
+    u8 unknown5 : 1;
+    u8 unknown6 : 1;
+    u8 unknown7 : 1;
+} DFSHShrineFlags;
+
 typedef struct DFSHShrineHoverState {
     ModelLightStruct* light;
     u8 unknown04[0x14 - 0x04];
@@ -15,7 +26,7 @@ typedef struct DFSHShrineHoverState {
     s16 rollPhase;
     s16 yawPhase;
     u8 unknown1A[0x1C - 0x1A];
-    u8 flags;
+    DFSHShrineFlags flags;
     u8 unknown1D[0x20 - 0x1D];
 } DFSHShrineHoverState;
 
@@ -29,7 +40,7 @@ typedef struct DFSHShrineState {
     u8 unknown14[0x1A - 0x14];
     u8 mode;
     u8 rewardIndex;
-    u8 flags;
+    DFSHShrineFlags flags;
     u8 unknown1D[0x20 - 0x1D];
 } DFSHShrineState;
 

@@ -706,7 +706,7 @@ void camcontrol_applyState(CamcontrolCameraState* camera) {
     view->yaw = camera->yaw;
     view->pitch = camera->pitch;
     view->roll = camera->roll;
-    if (((camera->smoothingFlags >> 7) & 1) != 0u) {
+    if (camera->smoothingFlags.b0 != 0u) {
         PSVECSubtract((Vec*)&camera->worldX, (Vec*)&view->x, (Vec*)delta);
         mag = PSVECMag((Vec*)delta);
         if (mag > 0.0f) {

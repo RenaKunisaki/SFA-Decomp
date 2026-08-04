@@ -905,11 +905,6 @@ void DIMboss_updateSequenceEffects(GameObject* obj, DIMbossRuntime* runtime) {
 #define DIM2ICICLE_ENVFX_B 0xdc
 
 extern int gDIMbossSequenceSfx[];
-typedef struct Dim2IcicleWarpFlags {
-    u8 pending : 1;
-    u8 rest : 7;
-} Dim2IcicleWarpFlags;
-
 void DIMboss_updateWarpAndEffects(GameObject* obj, DIMbossRuntime* runtime) {
     DIMbossTopState* topState;
     int counter;
@@ -927,13 +922,13 @@ void DIMboss_updateWarpAndEffects(GameObject* obj, DIMbossRuntime* runtime) {
             return;
         }
     }
-    if (((Dim2IcicleWarpFlags*)&topState->steamFlags)->pending) {
+    if (topState->steamFlags.sfxPending) {
         getEnvfxAct(0, 0, DIM2ICICLE_ENVFX_A, 0);
         getEnvfxAct(0, 0, DIM2ICICLE_ENVFX_B, 0);
         skySetLightsEnabled(7, 1, 0);
         skySetLightDirection(7, 0.2f, -0.3f, -1.0f);
         skySetBaseColor(7, 0xa0, 0xa0, 0xff, 0x7f, 0x28);
-        ((Dim2IcicleWarpFlags*)&topState->steamFlags)->pending = 0;
+        topState->steamFlags.sfxPending = 0;
     }
     if (runtime->eventFlags & DIMBOSS_SEQUENCE_FLAG_0004) {
         runtime->eventFlags &= ~DIMBOSS_SEQUENCE_FLAG_0004;
@@ -1439,7 +1434,7 @@ int DIMboss_updateState(GameObject* obj, u32 state, ObjSeqState* animUpdate) {
             break;
         case DIMBOSS_EVENT_QUEUE_STEAM_SFX:
             topState = runtime->topState;
-            topState->steamFlags.bits.sfxPending = 1;
+            topState->steamFlags.sfxPending = 1;
             Music_Trigger(DIMBOSS_MUSIC_STEAM_LOOP, 0);
             break;
         case DIMBOSS_EVENT_SET_SEQUENCE_FLAG_0040:
@@ -1712,13 +1707,13 @@ void DIMboss_update(GameObject* obj) {
                                                              obj->anim.hitboxScale * obj->anim.rootMotionScale);
                     }
                 }
-                if (topState->steamFlags.bits.sfxPending != 0) {
+                if (topState->steamFlags.sfxPending != 0) {
                     getEnvfxAct(0, 0, DIMBOSS_ENVFX_A, 0);
                     getEnvfxAct(0, 0, DIMBOSS_ENVFX_B, 0);
                     skySetLightsEnabled(7, 1, 0);
                     skySetLightDirection(7, 0.2f, -0.3f, -1.0f);
                     skySetBaseColor(7, 0xa0, 0xa0, 0xff, 0x7f, 0x28);
-                    topState->steamFlags.bits.sfxPending = 0;
+                    topState->steamFlags.sfxPending = 0;
                 }
             } else {
                 if ((runtime->flags400 & DIMBOSS_STATE_FLAG_TARGET_TRICKY) != 0) {
@@ -1788,7 +1783,7 @@ void DIMboss_init(GameObject* obj, u32 params, int isAltVariant) {
     animFlagsByte = &gDIMbossAnimController.modeBits;
     *animFlagsByte |= 8;
     *animFlagsByte &= ~1;
-    topState->steamFlags.bits.sfxPending = 1;
+    topState->steamFlags.sfxPending = 1;
     gDIMbossHitEffectResource = Resource_Acquire(DIMBOSS_HIT_EFFECT_ID, DIMBOSS_HIT_EFFECT_RESOURCE_COUNT);
     if (mainGetBit(GAMEBIT_DIM_ReachedBoss) == 0) {
         topState->stompDustDelay = 2;

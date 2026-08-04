@@ -7,6 +7,12 @@
 #include "game/objects/object_setup.h"
 #include "main/vecmath.h"
 
+typedef struct WcHitBits
+{
+    u8 hit : 1;
+    u8 _r299 : 7;
+} WcHitBits;
+
 typedef struct WmwallcrawlerState
 {
     u8 pathState[0x268];    /* 0x000: PathControlInterface state block */
@@ -27,7 +33,7 @@ typedef struct WmwallcrawlerState
     s8 mode;            /* 0x296: WMWALLCRAWLER_MODE_* */
     u8 pad297;
     u8 variant; /* 0x298: placement byte indexing the flag table */
-    u8 hitBits; /* 0x299: bit 0 = hit recorded, consumed by hitDetect (WcHitBits) */
+    WcHitBits hitBits;
     u8 pad29A[0x29C - 0x29A];
 } WmwallcrawlerState;
 
