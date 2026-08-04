@@ -3028,7 +3028,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                         workB = -(prevDX * dirZ - prevDZ * dirX);
                         attractRatio = dirY * prevDX - prevDY * dirX;
                         normSq = attractRatio * attractRatio + (workA * workA + workB * workB);
-                        if (0.0f != normSq)
+                        if (normSq != 0.0f)
                         {
                             norm = sqrtf(normSq);
                         }
@@ -4241,15 +4241,15 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
     ExpgfxResourceHandle* resourceHandle;
     ExpgfxRuntimeDataLayout* runtime;
     GameObject* playerObj;
-    s16 texT1 = 0;
+    s16 texT1;
     int expTabIndex;
     int attachedTableKey;
     short poolIndex;
     short slotIndex;
-    s16 texT0 = 0;
+    s16 texT0;
     int resourceTableIndex;
-    s16 texS1 = 0;
-    s16 texS0 = 0;
+    s16 texS1;
+    s16 texS0;
     f32 scaleVal;
     u32 sourceModeValue;
 
@@ -4456,7 +4456,7 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
                 dx = playerObj->anim.worldPosX - slot->startPosX.value;
                 dz = playerObj->anim.worldPosZ - slot->startPosZ.value;
                 distSq = dx * dx + dz * dz;
-                if (distSq < 3600.0f && 0.0f != playerObj->anim.velocityX &&
+                if (distSq < 3600.0f && playerObj->anim.velocityX != 0.0f &&
                     0.0f != playerObj->anim.velocityZ)
                 {
                     slot->velocityX = slot->velocityX + dx / (f32)(s32)((int)slot->lifetimeFrame << 1);
@@ -4472,7 +4472,7 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
                 dx = playerObj->anim.worldPosX - (slot->startPosX.value + attachedSource->localPosX);
                 dz = playerObj->anim.worldPosZ - (slot->startPosZ.value + attachedSource->localPosZ);
                 distSq = dx * dx + dz * dz;
-                if (distSq < 3600.0f && 0.0f != playerObj->anim.velocityX &&
+                if (distSq < 3600.0f && playerObj->anim.velocityX != 0.0f &&
                     0.0f != playerObj->anim.velocityZ)
                 {
                     slot->velocityX = slot->velocityX - dx / (f32)(s32)((int)slot->lifetimeFrame << 1);

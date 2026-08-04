@@ -529,7 +529,6 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
     float dist;
     float blendA;
     float blendB;
-    float blendMax;
     float targetYaw;
     ProjNearSearch sv;
 
@@ -594,9 +593,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
                     if (dist <= 40.0f)
                     {
                         blendA = (dist - 10.0f) / 30.0f;
-                        blendMax = 1.0f;
-                        blendB = 0.0f;
-                        blendB = (blendA < blendB) ? blendB : ((blendA > blendMax) ? blendMax : blendA);
+                        blendB = (blendA < 0.0f) ? 0.0f : ((blendA > 1.0f) ? 1.0f : blendA);
                         blendB = 1.0f - blendB;
                         s->targetX = s->targetX * (blendA = 1.0f - blendB) +
                                      ((GameObject*)obj)->anim.localPosX * blendB;

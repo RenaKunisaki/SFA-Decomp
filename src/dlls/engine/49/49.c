@@ -474,13 +474,11 @@ int Minimap_update(void)
                     }
                     e = boxW - texW * gMinimapZoom;
                     e = e / 2.0f;
-                    t = 0.0f;
-                    t = (t > e) ? t : e;
+                    t = (0.0f > e) ? 0.0f : e;
                     panx = -t;
                     e = boxH - texH * gMinimapZoom;
                     e = e / 2.0f;
-                    t = 0.0f;
-                    t = (t > e) ? t : e;
+                    t = (0.0f > e) ? 0.0f : e;
                     pany = -t;
                     t = 0.0f;
                     if (t == panx)
