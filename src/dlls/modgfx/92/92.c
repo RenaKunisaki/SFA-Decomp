@@ -52,7 +52,7 @@ void dll_5C_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* s
     ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)(int)gDll5CEffectResourceData;
     GfxCmd* commands = packet.entries;
-    int sourceContext;
+    GameObject* sourceContext;
     commands[0].layer = 0;
     commands[0].flags = 0x15;
     commands[0].tex = &resourceData[offsetof(Dll5CEffectResourceView, fullIndices)];
@@ -131,8 +131,8 @@ void dll_5C_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* s
     commands[10].y = -2.0f;
     commands[10].z = 0.0f;
     packet.modeByte = 0;
-    sourceContext = (int)sourceObj;
-    packet.ctx = sourceContext;
+    sourceContext = sourceObj;
+    packet.ctx = (int)sourceContext;
     packet.sourceMode = variant;
     packet.position[0] = 0.0f;
     packet.position[1] = -10.0f;
@@ -159,9 +159,9 @@ void dll_5C_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* s
     packet.flags |= spawnFlags;
     if ((packet.flags & 1) != 0) {
         if ((void*)sourceContext != NULL) {
-            packet.position[0] += ((GameObject*)sourceContext)->anim.worldPosX;
-            packet.position[1] = -10.0f + ((GameObject*)sourceContext)->anim.worldPosY;
-            packet.position[2] += ((GameObject*)sourceContext)->anim.worldPosZ;
+            packet.position[0] += sourceContext->anim.worldPosX;
+            packet.position[1] = -10.0f + sourceContext->anim.worldPosY;
+            packet.position[2] += sourceContext->anim.worldPosZ;
         } else {
             packet.position[0] += spawnParams->posX;
             packet.position[1] = -10.0f + spawnParams->posY;

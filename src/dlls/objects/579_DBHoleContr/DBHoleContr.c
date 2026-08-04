@@ -91,16 +91,16 @@ void dbholecontrol1_hitDetect(void)
 void dbholecontrol1_update(GameObject* obj)
 {
 
-    u8* def;
-    def = (u8*)obj->anim.placementData;
-    if (mainGetBit(((Dbholecontrol1Placement*)def)->hideGameBit) != 0)
+    Dbholecontrol1Placement* def;
+    def = (Dbholecontrol1Placement*)obj->anim.placementData;
+    if (mainGetBit(def->hideGameBit) != 0)
     {
         Obj_RemoveFromUpdateList(obj);
         obj->anim.flags = (s16)(obj->anim.flags | OBJANIM_FLAG_HIDDEN);
     }
-    else if (mainGetBit(((Dbholecontrol1Placement*)def)->triggerGameBit) != 0)
+    else if (mainGetBit(def->triggerGameBit) != 0)
     {
-        (*gObjectTriggerInterface)->runSequence(((Dbholecontrol1Placement*)def)->triggerSeqId, obj, -1);
+        (*gObjectTriggerInterface)->runSequence(def->triggerSeqId, obj, -1);
     }
 }
 

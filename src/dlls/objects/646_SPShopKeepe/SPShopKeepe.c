@@ -168,12 +168,12 @@ int ShopKeeper_state7Handler(void)
 int ShopKeeper_popQueuedState(GameObject* objHandle, BaddieState* baddie)
 {
     GameObject* obj = objHandle;
-    int state;
+    ShopkeeperState* state;
     f32 spawnParam;
     RingBufferQueue* stk;
     int nextState;
 
-    state = (int)obj->extra;
+    state = obj->extra;
     spawnParam = 1.0f;
 
     if (baddie->moveJustStartedA != 0)
@@ -184,11 +184,11 @@ int ShopKeeper_popQueuedState(GameObject* objHandle, BaddieState* baddie)
         }
     }
 
-    ((ShopkeeperState*)state)->opacity = 0;
+    state->opacity = 0;
     baddie->animSpeedA = 0.0f;
-    if (((ShopkeeperState*)state)->opacity == 0)
+    if (state->opacity == 0)
     {
-        stk = ((ShopkeeperState*)state)->msgStack;
+        stk = state->msgStack;
         nextState = 0;
         if (Stack_IsEmpty(stk) == 0)
         {

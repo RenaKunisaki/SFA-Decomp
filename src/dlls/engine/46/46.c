@@ -523,7 +523,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
     register int yawDelta;
     register int seqHandle;
     register u32 target;
-    void* targetObj;
+    GameObject* targetObj;
     int bit1;
     int ival;
     float dist;
@@ -578,15 +578,15 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
         {
             targetObj = s->lockTarget;
             target = (u32)(targetObj != NULL ? targetObj
-                                             : (targetObj = (void*)objGetNearestTypeTo(MOVELIB_TARGET_OBJGROUP,
+                                             : (targetObj = objGetNearestTypeTo(MOVELIB_TARGET_OBJGROUP,
                                                                                               obj, (f32*)&sv)));
             if (targetObj != NULL)
             {
                 if ((s->modeBits & 0x20) != 0)
                 {
-                    sv.dx = s->targetX - ((GameObject*)targetObj)->anim.localPosX;
-                    sv.dy = s->targetY - ((GameObject*)targetObj)->anim.localPosY;
-                    sv.dz = s->targetZ - ((GameObject*)targetObj)->anim.localPosZ;
+                    sv.dx = s->targetX - targetObj->anim.localPosX;
+                    sv.dy = s->targetY - targetObj->anim.localPosY;
+                    sv.dz = s->targetZ - targetObj->anim.localPosZ;
                     blendA = sv.dx * sv.dx;
                     blendB = sv.dz * sv.dz;
                     dist = sqrtf(blendA + blendB);

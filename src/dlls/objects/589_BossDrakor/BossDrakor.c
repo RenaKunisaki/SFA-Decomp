@@ -104,12 +104,12 @@ STATIC_ASSERT(offsetof(BossDrakorSpellStoneInterface, setState) == 0x20);
 
 int bossdrakor_seqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
-    int inner = (int)obj->extra;
+    BossDrakorState* inner = obj->extra;
     int i;
     GameObject* target;
     int eventId;
     BossDrakorState* s = (BossDrakorState*)inner;
-    ((BossDrakorState*)inner)->flags198.b10 = 1;
+    inner->flags198.b10 = 1;
     if (s->textTimer > 0.0f)
     {
         gameTextShow(0x569);
@@ -144,7 +144,7 @@ int bossdrakor_seqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
             }
             break;
         case 9:
-            ((BossDrakorState*)inner)->flags198.b02 = 1;
+            inner->flags198.b02 = 1;
             break;
         case 8:
             mainSetBits(GAMEBIT_DR_ObjGroups, 0);
@@ -156,7 +156,7 @@ int bossdrakor_seqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
             break;
         }
     }
-    if (((BossDrakorState*)inner)->flags198.b02)
+    if (inner->flags198.b02)
     {
         objDoParticleFx(obj, 2.0f, 6, 1.0f, NULL);
     }
@@ -951,7 +951,7 @@ void bossdrakor_update(GameObject* obj)
 }
 void bossdrakor_init(GameObject* obj, BossdrakorPlacement* init)
 {
-    int inner = (int)obj->extra;
+    BossDrakorState* inner = obj->extra;
     f32 fz;
     BossDrakorState* s = (BossDrakorState*)inner;
     if (init->curveAdvanceStep == 0)
@@ -963,7 +963,7 @@ void bossdrakor_init(GameObject* obj, BossdrakorPlacement* init)
         init->airMeterMax = 0x1e;
     }
     s->unk0C = 0;
-    ((BossDrakorState*)inner)->flags198.b80 = 0;
+    inner->flags198.b80 = 0;
     s->curveAdvanceStep = (f32)(u32)init->curveAdvanceStep;
     s->airMeterHandle = init->airMeterMax;
     fz = 0.0f;
@@ -972,12 +972,12 @@ void bossdrakor_init(GameObject* obj, BossdrakorPlacement* init)
     s->unk16C = -1;
     s->attackType = 0;
     s->moveSpeed = 800.0f;
-    ((BossDrakorState*)inner)->flags198.b40 = 1;
+    inner->flags198.b40 = 1;
     s->shakeAmount = fz;
     s->shakeVel = fz;
     s->curveFollowState = 0;
     s->textTimer = fz;
-    ((BossDrakorState*)inner)->flags198.b10 = 1;
+    inner->flags198.b10 = 1;
     storeZeroToFloatParam(&s->attackTimer);
     objAddObjectType((int)obj, BOSSDRAKOR_OBJGROUP);
     storeZeroToFloatParam(&s->jawAnimTimer);

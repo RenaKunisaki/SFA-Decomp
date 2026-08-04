@@ -107,7 +107,7 @@ void CameraModeCloudRunner_update(CameraObject* camera) {
 }
 
 void CameraModeCloudRunner_init(CameraObject* camera, int fallbackRadius, CameraModeCloudRunnerInitParams* params) {
-    int* targetObj = (int*)camera->anim.targetObj;
+    GameObject* targetObj = camera->anim.targetObj;
 
     if (gCameraModeCloudRunnerState == NULL) {
         gCameraModeCloudRunnerState = (CameraModeCloudRunnerState*)mmAlloc(sizeof(CameraModeCloudRunnerState), 15, 0);
@@ -120,9 +120,9 @@ void CameraModeCloudRunner_init(CameraObject* camera, int fallbackRadius, Camera
             gCameraModeCloudRunnerState->focusZ = params->focusZ;
             computedRadius = params->radius;
         } else {
-            gCameraModeCloudRunnerState->focusX = ((GameObject*)targetObj)->anim.worldPosX;
-            gCameraModeCloudRunnerState->focusY = ((GameObject*)targetObj)->anim.worldPosY;
-            gCameraModeCloudRunnerState->focusZ = ((GameObject*)targetObj)->anim.worldPosZ;
+            gCameraModeCloudRunnerState->focusX = targetObj->anim.worldPosX;
+            gCameraModeCloudRunnerState->focusY = targetObj->anim.worldPosY;
+            gCameraModeCloudRunnerState->focusZ = targetObj->anim.worldPosZ;
             computedRadius = fallbackRadius;
         }
         gCameraModeCloudRunnerState->radius = computedRadius;

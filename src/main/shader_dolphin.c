@@ -487,8 +487,8 @@ void setupCausticBaseTevStages(void* viewMtx)
     f32 mtx70[3][4];
     f32 sx;
     f32 sy;
-    u8* obj7c;
-    u8* obj80;
+    Texture* obj7c;
+    Texture* obj80;
 
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     GXSetTevDirect(GX_TEVSTAGE0);
@@ -512,10 +512,10 @@ void setupCausticBaseTevStages(void* viewMtx)
     getNewShadowCausticTexture((u32*)&obj7c);
     if (obj7c != NULL)
     {
-        void* obj = ((Texture*)obj7c)->gxTexObj;
-        if (((Texture*)obj7c)->preloaded != 0)
+        void* obj = obj7c->gxTexObj;
+        if (obj7c->preloaded != 0)
         {
-            GXLoadTexObjPreLoaded((GXTexObj*)obj, (GXTexRegion*)((Texture*)obj7c)->tmemAddr, 2);
+            GXLoadTexObjPreLoaded((GXTexObj*)obj, (GXTexRegion*)obj7c->tmemAddr, 2);
         }
         else
         {
@@ -541,10 +541,10 @@ void setupCausticBaseTevStages(void* viewMtx)
     getNewShadowRampTexture((u32*)&obj80);
     if (obj80 != NULL)
     {
-        void* obj = ((Texture*)obj80)->gxTexObj;
-        if (((Texture*)obj80)->preloaded != 0)
+        void* obj = obj80->gxTexObj;
+        if (obj80->preloaded != 0)
         {
-            GXLoadTexObjPreLoaded((GXTexObj*)obj, (GXTexRegion*)((Texture*)obj80)->tmemAddr, 3);
+            GXLoadTexObjPreLoaded((GXTexObj*)obj, (GXTexRegion*)obj80->tmemAddr, 3);
         }
         else
         {
@@ -582,15 +582,15 @@ void addShadowFalloffTevStages(void)
 {
     f32 mtx1[4][4];
     f32 mtx2[3][4];
-    u8* obj1;
+    Texture* obj1;
     GameObject* player;
-    u8* obj2;
+    Texture* obj2;
     int id;
     f32 dist;
     f32 tmp;
     f32 t;
 
-    obj1 = (u8*)getNewShadowFalloffTexture();
+    obj1 = (Texture*)getNewShadowFalloffTexture();
     C_MTXLightOrtho(mtx1, 25.0f, -25.0f, -25.0f, 25.0f, 0.5f, 0.5f, 0.5f, 0.5f);
     GXLoadTexMtxImm(mtx1, gRcpNextPostTexMtx, 0);
     GXSetTexCoordGen2(gRcpNextTexCoord, GX_TG_MTX3x4, GX_TG_POS, GX_PNMTX0, GX_FALSE, gRcpNextPostTexMtx);
@@ -613,10 +613,10 @@ void addShadowFalloffTevStages(void)
     id = gRcpNextTexMap;
     if (obj1 != NULL)
     {
-        void* obj = ((Texture*)obj1)->gxTexObj;
-        if (((Texture*)obj1)->preloaded != 0)
+        void* obj = obj1->gxTexObj;
+        if (obj1->preloaded != 0)
         {
-            GXLoadTexObjPreLoaded((GXTexObj*)obj, (GXTexRegion*)((Texture*)obj1)->tmemAddr, id);
+            GXLoadTexObjPreLoaded((GXTexObj*)obj, (GXTexRegion*)obj1->tmemAddr, id);
         }
         else
         {
@@ -663,14 +663,14 @@ void addShadowFalloffTevStages(void)
     GXSetTevColorOp(gRcpNextTevStage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(gRcpNextTevStage, GX_TEV_SUB, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     gRcpTevPrevColorValid = 1;
-    obj2 = (u8*)getNewShadowInverseRampTexture();
+    obj2 = (Texture*)getNewShadowInverseRampTexture();
     id = gRcpNextTexMap;
     if (obj2 != NULL)
     {
-        void* obj = ((Texture*)obj2)->gxTexObj;
-        if (((Texture*)obj2)->preloaded != 0)
+        void* obj = obj2->gxTexObj;
+        if (obj2->preloaded != 0)
         {
-            GXLoadTexObjPreLoaded((GXTexObj*)obj, (GXTexRegion*)((Texture*)obj2)->tmemAddr, id);
+            GXLoadTexObjPreLoaded((GXTexObj*)obj, (GXTexRegion*)obj2->tmemAddr, id);
         }
         else
         {
@@ -715,7 +715,7 @@ void addRenderOpFadeStage(void* p1)
 void addWavyCausticTevStage(void)
 {
     struct piIndMtx indmtx;
-    void* tex;
+    Texture* tex;
     int id;
     f32 v;
     indmtx = sWavyCausticIndMtx;
@@ -737,10 +737,10 @@ void addWavyCausticTevStage(void)
     id = gRcpNextTexMap + 1;
     if (tex != NULL)
     {
-        GXTexObj* obj = (GXTexObj*)((Texture*)tex)->gxTexObj;
-        if (((Texture*)tex)->preloaded != 0)
+        GXTexObj* obj = (GXTexObj*)tex->gxTexObj;
+        if (tex->preloaded != 0)
         {
-            GXLoadTexObjPreLoaded(obj, (GXTexRegion*)((Texture*)tex)->tmemAddr, id);
+            GXLoadTexObjPreLoaded(obj, (GXTexRegion*)tex->tmemAddr, id);
         }
         else
         {
@@ -1698,9 +1698,9 @@ void addSphereMapLitStages(void* p1, f32* wpad0, void* wpad1, int wpad2)
 
 void addCastShadowTevStages(u8* objInst)
 {
-    u8* src;
+    Texture* src;
     f32 mtx[3][4];
-    u8* obj2;
+    Texture* obj2;
     int id;
     GXSetTevDirect(gRcpNextTevStage);
     GXSetTevDirect(gRcpNextTevStage + 1);
@@ -1741,10 +1741,10 @@ void addCastShadowTevStages(u8* objInst)
     id = gRcpNextTexMap;
     if (src != NULL)
     {
-        void* obj = ((Texture*)src)->gxTexObj;
-        if (((Texture*)src)->preloaded != 0)
+        void* obj = src->gxTexObj;
+        if (src->preloaded != 0)
         {
-            GXLoadTexObjPreLoaded((GXTexObj*)obj, (GXTexRegion*)((Texture*)src)->tmemAddr, id);
+            GXLoadTexObjPreLoaded((GXTexObj*)obj, (GXTexRegion*)src->tmemAddr, id);
         }
         else
         {
@@ -1752,13 +1752,13 @@ void addCastShadowTevStages(u8* objInst)
         }
     }
     id = gRcpNextTexMap + 1;
-    obj2 = *(u8**)(objInst + 0x60);
+    obj2 = *(Texture**)(objInst + 0x60);
     if (obj2 != NULL)
     {
-        void* obj = ((Texture*)obj2)->gxTexObj;
-        if (((Texture*)obj2)->preloaded != 0)
+        void* obj = obj2->gxTexObj;
+        if (obj2->preloaded != 0)
         {
-            GXLoadTexObjPreLoaded((GXTexObj*)obj, (GXTexRegion*)((Texture*)obj2)->tmemAddr, id);
+            GXLoadTexObjPreLoaded((GXTexObj*)obj, (GXTexRegion*)obj2->tmemAddr, id);
         }
         else
         {

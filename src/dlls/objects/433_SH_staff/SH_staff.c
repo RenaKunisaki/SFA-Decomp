@@ -96,7 +96,7 @@ int sh_staff_getExtraSize(void) {
 
 void sh_staff_free(GameObject* obj, int freeArg) {
     ShStaffState* state = obj->extra;
-    int* child;
+    GameObject* child;
     int i;
 
     if (freeArg != 0) {
@@ -105,9 +105,9 @@ void sh_staff_free(GameObject* obj, int freeArg) {
 
     i = 0;
     for (; i < SHSTAFF_HAZE_CHILD_COUNT; i++) {
-        child = (int*)state->hazeChildren[i];
+        child = (GameObject*)state->hazeChildren[i];
         if (child != NULL) {
-            ((GameObject*)child)->anim.flags = (s16)(((GameObject*)child)->anim.flags | OBJANIM_FLAG_HIDDEN);
+            child->anim.flags = (s16)(child->anim.flags | OBJANIM_FLAG_HIDDEN);
         }
     }
 }

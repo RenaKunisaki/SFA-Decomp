@@ -2259,7 +2259,7 @@ void dbstealerworm_update(GameObject* obj)
     int sub3;
     int n;
     DbStealerwormControl* sub2;
-    int t;
+    GameObject* t;
     struct
     {
         u32 msg;
@@ -2320,12 +2320,12 @@ void dbstealerworm_update(GameObject* obj)
             }
             else
             {
-                t = (int)blob->baddie.targetObj;
+                t = blob->baddie.targetObj;
                 if (blob->baddie.targetObj != NULL)
                 {
-                    stk.v[0] = ((GameObject*)t)->anim.worldPosX - obj->anim.worldPosX;
-                    stk.v[1] = ((GameObject*)t)->anim.worldPosY - obj->anim.worldPosY;
-                    stk.v[2] = ((GameObject*)t)->anim.worldPosZ - obj->anim.worldPosZ;
+                    stk.v[0] = t->anim.worldPosX - obj->anim.worldPosX;
+                    stk.v[1] = t->anim.worldPosY - obj->anim.worldPosY;
+                    stk.v[2] = t->anim.worldPosZ - obj->anim.worldPosZ;
                     blob->baddie.targetDistance =
                         sqrtf(stk.v[2] * stk.v[2] + (stk.v[0] * stk.v[0] + stk.v[1] * stk.v[1]));
                 }
@@ -2380,7 +2380,7 @@ void dbstealerworm_update(GameObject* obj)
 
 void dbstealerworm_init(GameObject* obj, u8* def, int flag)
 {
-    u8* sub;
+    GroundBaddieState* sub;
     DbStealerwormControl* p40c;
     u8 mode;
     int randomValue;
@@ -2392,10 +2392,10 @@ void dbstealerworm_init(GameObject* obj, u8* def, int flag)
         mode |= 1;
     }
     (*gBaddieControlInterface)
-        ->initGroundBaddie(obj, def, sub, 0x10, 7, 0x10a, mode, 20.0f);
+        ->initGroundBaddie(obj, def, (u8*)sub, 0x10, 7, 0x10a, mode, 20.0f);
     objAddObjectType((int)obj, DBSTEALERWORM_OBJGROUP);
     obj->animEventCallback = NULL;
-    p40c = ((GroundBaddieState*)sub)->control;
+    p40c = sub->control;
     memset(p40c, 0, sizeof(DbStealerwormControl));
     p40c->unk08 = 20.0f;
     p40c->cfg = &gDbStealerwormScriptTable[((GroundBaddiePlacement*)def)->unk24];
@@ -2408,8 +2408,8 @@ void dbstealerworm_init(GameObject* obj, u8* def, int flag)
     obj->anim.resetHitboxFlags =
         (u8)(obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
     (*gPlayerInterface)->setState(obj, sub, 3);
-    ((GroundBaddieState*)sub)->baddie.substate = 0;
-    ((GroundBaddieState*)sub)->baddie.physicsActive = 1;
+    sub->baddie.substate = 0;
+    sub->baddie.physicsActive = 1;
     ObjHits_EnableObject(obj);
     ObjMsg_AllocQueue(obj, 4);
     if (obj->anim.modelState != NULL)

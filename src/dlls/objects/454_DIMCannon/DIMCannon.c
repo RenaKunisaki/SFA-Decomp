@@ -588,22 +588,22 @@ void DIMCannon_init(GameObject* obj, DimCannonPlacement* placement) {
 
     if (obj->anim.romDefNo == DIM_CANNON_BALL_SEQUENCE_ID) {
         DimCannonBallState* state;
-        int* hitState;
+        ObjHitsPriorityState* hitState;
         obj->userData1 = 0;
-        hitState = (int*)obj->anim.modelState;
+        hitState = (ObjHitsPriorityState*)obj->anim.modelState;
         if (hitState != 0) {
-            *(int*)&((ObjHitsPriorityState*)hitState)->secondaryRadiusY |= 0xc10;
-            hitState = (int*)obj->anim.modelState;
-            *(u32*)&((ObjHitsPriorityState*)hitState)->secondaryRadiusY |= 0x8000LL;
+            *(int*)&hitState->secondaryRadiusY |= 0xc10;
+            hitState = (ObjHitsPriorityState*)obj->anim.modelState;
+            *(u32*)&hitState->secondaryRadiusY |= 0x8000LL;
         }
         state = obj->extra;
         state->rotationZRate = randomGetRange(-0x64, 0x64);
         state->rotationYRate = randomGetRange(-0x64, 0x64);
         state->rotationXRate = randomGetRange(-0x64, 0x64);
         state->clearLatch = 1;
-        hitState = (int*)obj->anim.hitReactState;
+        hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
         if (hitState != 0) {
-            ((ObjHitsPriorityState*)hitState)->trackContactMask = 1;
+            hitState->trackContactMask = 1;
         }
         obj->objectFlags |= OBJECT_OBJFLAG_HIDDEN;
     } else {

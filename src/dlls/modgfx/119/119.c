@@ -29,7 +29,7 @@ const f32 gDll77Scale = 1.0f;
 void dll_77_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
     ModgfxSpawnPacket packet;
     GfxCmd* commands = packet.entries;
-    int context;
+    GameObject* context;
     commands[0].layer = 0;
     commands[0].flags = 0x8c;
     commands[0].tex = NULL;
@@ -73,8 +73,8 @@ void dll_77_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* s
     commands[5].y = *(f32*)&gDll77Cmd0Y;
     commands[5].z = *(f32*)&gDll77Cmd0Z;
     packet.modeByte = 0;
-    context = (int)sourceObj;
-    packet.ctx = context;
+    context = sourceObj;
+    packet.ctx = (int)context;
     packet.sourceMode = variant;
     packet.position[0] = *(f32*)&gDll77Zero;
     packet.position[1] = *(f32*)&gDll77Zero;
@@ -101,9 +101,9 @@ void dll_77_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* s
     packet.flags |= spawnFlags;
     if ((packet.flags & 1) != 0) {
         if ((u32)context != 0) {
-            packet.position[0] = *(f32*)&gDll77Zero + ((GameObject*)context)->anim.worldPosX;
-            packet.position[1] = *(f32*)&gDll77Zero + ((GameObject*)context)->anim.worldPosY;
-            packet.position[2] = *(f32*)&gDll77Zero + ((GameObject*)context)->anim.worldPosZ;
+            packet.position[0] = *(f32*)&gDll77Zero + context->anim.worldPosX;
+            packet.position[1] = *(f32*)&gDll77Zero + context->anim.worldPosY;
+            packet.position[2] = *(f32*)&gDll77Zero + context->anim.worldPosZ;
         } else {
             packet.position[0] = *(f32*)&gDll77Zero + spawnParams->posX;
             packet.position[1] = *(f32*)&gDll77Zero + spawnParams->posY;

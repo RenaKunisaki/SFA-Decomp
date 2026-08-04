@@ -249,7 +249,7 @@ void Rcp_UpdateDistortionTextures(void)
     u8 group;
     int k;
     GameObject* model[1];
-    u8* tex;
+    Texture* tex;
 
     Rcp_SetupDistortionRenderState();
     PSMTXScale(mtx, 0.5f, -0.5f, 0.5f);
@@ -264,8 +264,8 @@ void Rcp_UpdateDistortionTextures(void)
     slots[0] = (u8*)gRcpDistortSlots;
     for (; i < 6; i++)
     {
-        tex = ((RcpDistortSlot*)slots[0])[i].texture;
-        if (((Texture*)tex)->refCount != 0 && ((RcpDistortSlot*)slots[0])[i].mode == 1 &&
+        tex = (Texture*)((RcpDistortSlot*)slots[0])[i].texture;
+        if (tex->refCount != 0 && ((RcpDistortSlot*)slots[0])[i].mode == 1 &&
             gRcpDistortGroup == ((RcpDistortSlot*)slots[0])[i].group)
         {
             matColor.r = (((RcpDistortSlot*)slots[0])[i].colR * ((RcpDistortSlot*)slots[0])[i].scaleR) >> 8;
@@ -280,8 +280,8 @@ void Rcp_UpdateDistortionTextures(void)
             Rcp_ApplyTextureStageCounts();
             Rcp_DrawWarpDistortionMesh((f32)(i * 0x20), 0.0f);
             GXCopyTex(((RcpDistortSlot*)slots[0])[i].texture + 0x60, 0);
-            tex = ((RcpDistortSlot*)slots[0])[i].texture;
-            if (((Texture*)tex)->preloaded != 0)
+            tex = (Texture*)((RcpDistortSlot*)slots[0])[i].texture;
+            if (tex->preloaded != 0)
             {
                 GXPreLoadEntireTexture(textureGetGXTexObj((Texture*)tex),
                                        textureGetGXTexRegion((Texture*)tex));
@@ -319,8 +319,8 @@ void Rcp_UpdateDistortionTextures(void)
             Rcp_DrawWarpDistortionMesh((f32)(i * 0x20), 0.0f);
             GXCopyTex(((RcpDistortSlot*)slots[0])[i].texture + 0x60,
                       (i == clearSlot) ? GX_TRUE : GX_FALSE);
-            tex = ((RcpDistortSlot*)slots[0])[i].texture;
-            if (((Texture*)tex)->preloaded != 0)
+            tex = (Texture*)((RcpDistortSlot*)slots[0])[i].texture;
+            if (tex->preloaded != 0)
             {
                 GXPreLoadEntireTexture(textureGetGXTexObj((Texture*)tex),
                                        textureGetGXTexRegion((Texture*)tex));

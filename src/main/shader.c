@@ -538,7 +538,7 @@ void mapInstantiateObjects(MapRomListPage* page, int mapId, int index, GameObjec
 int objShouldUnload(GameObject* obj)
 {
     u8* def;
-    u8* p;
+    GameObject* p;
     u8* src;
     s8** tp;
     int m;
@@ -615,11 +615,11 @@ int objShouldUnload(GameObject* obj)
     {
         return 0;
     }
-    if ((flags & 4) && (p = (u8*)Obj_GetPlayerObject()) != NULL && obj->anim.parent == NULL)
+    if ((flags & 4) && (p = Obj_GetPlayerObject()) != NULL && obj->anim.parent == NULL)
     {
-        x = ((GameObject*)p)->anim.worldPosX;
-        y = ((GameObject*)p)->anim.worldPosY;
-        z = ((GameObject*)p)->anim.worldPosZ;
+        x = p->anim.worldPosX;
+        y = p->anim.worldPosY;
+        z = p->anim.worldPosZ;
     }
     else
     {

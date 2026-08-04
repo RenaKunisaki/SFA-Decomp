@@ -91,15 +91,15 @@ void sc_cloudrunnera_update(GameObject* obj) {
         sequenceSlotCopy = slot;
         participantLimit = objectCount;
         for (; objectIndex < participantLimit; objectIndex++) {
-            int otherObject = *objects;
-            s16 sequenceIndex = ((GameObject*)otherObject)->seqIndex;
+            GameObject* otherObject = (GameObject*)*objects;
+            s16 sequenceIndex = otherObject->seqIndex;
 
             if (sequenceIndex == slot) {
-                sequenceOwner = otherObject;
+                sequenceOwner = (int)otherObject;
             }
             if (sequenceIndex == SC_CLOUDRUNNER_A_SEQUENCE_PENDING &&
-                ((GameObject*)otherObject)->anim.classId == SC_CLOUDRUNNER_A_SEQUENCE_CLASS_ID) {
-                sequence = *(ObjSeqState**)&((GameObject*)otherObject)->extra;
+                otherObject->anim.classId == SC_CLOUDRUNNER_A_SEQUENCE_CLASS_ID) {
+                sequence = *(ObjSeqState**)&otherObject->extra;
                 if (sequenceSlotCopy == sequence->slot) {
                     participantCount++;
                 }

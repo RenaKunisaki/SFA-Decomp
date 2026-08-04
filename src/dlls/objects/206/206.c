@@ -594,7 +594,7 @@ void dll_CE_acquireTarget(GameObject* obj, GroundBaddieState* objectState, Groun
 
 void dll_CE_updateTargeting(GameObject* obj, GroundBaddieState* objectStateAddress, GroundBaddieState* stateAddress) {
     GameObject* player;
-    char* target;
+    GameObject* target;
     int hitReactionUpdated;
     struct {
         f32 x, y, z;
@@ -603,11 +603,11 @@ void dll_CE_updateTargeting(GameObject* obj, GroundBaddieState* objectStateAddre
 
     (void)deltaAddress;
     player = Obj_GetPlayerObject();
-    target = (char*)stateAddress->baddie.targetObj;
+    target = stateAddress->baddie.targetObj;
     if (target != NULL) {
-        delta.x = ((GameObject*)target)->anim.worldPosX - obj->anim.worldPosX;
-        delta.y = ((GameObject*)target)->anim.worldPosY - obj->anim.worldPosY;
-        delta.z = ((GameObject*)target)->anim.worldPosZ - obj->anim.worldPosZ;
+        delta.x = target->anim.worldPosX - obj->anim.worldPosX;
+        delta.y = target->anim.worldPosY - obj->anim.worldPosY;
+        delta.z = target->anim.worldPosZ - obj->anim.worldPosZ;
         stateAddress->baddie.targetDistance =
             sqrtf(delta.z * delta.z + (delta.x * delta.x + delta.y * delta.y));
     }

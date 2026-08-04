@@ -3165,12 +3165,12 @@ void objRenderFuzz(int* obj)
         maxN = 3;
     }
     {
-        u32 m = curObjMtx;
+        ModelFileHeader* m = (ModelFileHeader*)curObjMtx;
         if (m != 0)
         {
-            dx = *(f32*)&((ModelFileHeader*)m)->dataSize - (cam->x - playerMapOffsetX);
-            dy = *(f32*)&((ModelFileHeader*)m)->unk1C - cam->y;
-            dz = *(f32*)&((ModelFileHeader*)m)->normals - (cam->z - playerMapOffsetZ);
+            dx = *(f32*)&m->dataSize - (cam->x - playerMapOffsetX);
+            dy = *(f32*)&m->unk1C - cam->y;
+            dz = *(f32*)&m->normals - (cam->z - playerMapOffsetZ);
         }
         else
         {
