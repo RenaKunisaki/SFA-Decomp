@@ -815,6 +815,89 @@ def family_build(unit_object, verbose):
     print("  [%s] ...and an unopenable row does not end the loop "
           "(%d of %d rows still reached after an injected failure)"
           % ("held" if ok else "ABORTS", reached, len(rows)))
+
+    # IMPORTING A SWEEPER MUST NOT SWEEP.
+    #
+    # `batch_brute` kept its whole body at module level with no `__main__`
+    # guard, so `import batch_brute` -- to read its selector, to reuse its
+    # population -- launched a tree-wide `brute_match --apply-best` run that
+    # EDITS THE WORKING TREE of whatever repo it was imported from.  That is
+    # the mirror of A91's `direct_build` defect (no `__main__`, so the CLI
+    # built nothing): the same missing line, opposite blast radius, and no
+    # gate in this project can see a sweep that ran when nobody asked.
+    #
+    # Static, so it costs nothing and cannot itself run anything: a tool that
+    # calls out or opens a file for writing at MODULE level, and has no
+    # `__main__` guard, is an import-time side effect.
+    def import_side_effects(text):
+        try:
+            tree = ast.parse(text)
+        except SyntaxError:
+            return None
+        guarded = any(
+            isinstance(n, ast.If) and isinstance(n.test, ast.Compare)
+            and isinstance(n.test.left, ast.Name) and n.test.left.id == "__name__"
+            for n in tree.body)
+        if guarded:
+            return []
+        hits = []
+        for node in tree.body:
+            if isinstance(node, (ast.Import, ast.ImportFrom, ast.FunctionDef,
+                                 ast.AsyncFunctionDef, ast.ClassDef)):
+                continue
+            for n in ast.walk(node):
+                if not isinstance(n, ast.Call):
+                    continue
+                f = n.func
+                name = f.attr if isinstance(f, ast.Attribute) else \
+                    (f.id if isinstance(f, ast.Name) else "")
+                if name in ("run", "check_call", "check_output", "call",
+                            "Popen", "system"):
+                    hits.append(name)
+                if name == "open" and any(
+                        isinstance(a, ast.Constant) and isinstance(a.value, str)
+                        and ("w" in a.value or "a" in a.value) for a in n.args[1:]):
+                    hits.append("open-for-write")
+        return hits
+
+    offenders = []
+    for fn_ in sorted(os.listdir(tools_dir)):
+        if not fn_.endswith(".py") or fn_ == "__init__.py":
+            continue
+        h = import_side_effects(open(os.path.join(tools_dir, fn_)).read())
+        if h:
+            offenders.append((fn_, sorted(set(h))))
+    ok = not offenders
+    bad += not ok
+    print("  [%s] no tool runs a subprocess or opens a file for writing at "
+          "IMPORT time%s"
+          % ("held" if ok else "IMPORT SWEEPS",
+             "" if not offenders else "  *** " + ", ".join(
+                 "%s%s" % (f, h) for f, h in offenders)))
+
+    # ABLATION -- the check must catch the exact shape that bit us, and must
+    # not fire on the guarded form or on a call inside a function.
+    shapes = [
+        ("unguarded module-level subprocess.run caught",
+         "import subprocess\nsubprocess.run(['x'])\n", True),
+        ("unguarded module-level open(w) caught",
+         "log = open('/tmp/x', 'w')\n", True),
+        ("the same body behind a __main__ guard passes",
+         "import subprocess\nif __name__ == '__main__':\n    subprocess.run(['x'])\n",
+         False),
+        ("a call inside a function passes",
+         "import subprocess\ndef f():\n    subprocess.run(['x'])\n", False),
+        ("a module-level read-only open passes",
+         "d = open('/tmp/x')\n", False),
+    ]
+    misread = [lbl for lbl, text, want in shapes
+               if bool(import_side_effects(text)) != want]
+    ok = not misread
+    bad += not ok
+    print("  [%s] ...and the import-side-effect scan reads all %d injected "
+          "shapes correctly%s"
+          % ("held" if ok else "BLIND", len(shapes),
+             "" if not misread else "  *** " + "; ".join(misread)))
     return bad
 
 
