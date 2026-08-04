@@ -402,7 +402,7 @@ void ring_update(GameObject* obj)
                         f32 frac = (state->pullTimer - sixty) / sixty;
                         obj->anim.rootMotionScale = frac * obj->anim.modelInstance->rootMotionScaleBase;
                     }
-                    if (120.0f != state->pullTimer)
+                    if (state->pullTimer != 120.0f)
                     {
                         Obj_BuildWorldTransformMatrix(obj, mtx, 0);
                         for (ang = -0x7fff; ang < 0x7fff; ang += gRingModeParams[state->mode].spiralAngleStep)

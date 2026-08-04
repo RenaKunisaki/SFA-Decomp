@@ -243,7 +243,7 @@ void MagicCaveTop_update(GameObject* obj) {
         }
     }
     if (isVisible != 0) {
-        if (0.0f == state->fadeTimer) {
+        if (state->fadeTimer == 0.0f) {
             Sfx_PlayFromObject((u32)obj, SFXTRIG_door_creak);
         }
         state->fadeTimer += timeDelta;

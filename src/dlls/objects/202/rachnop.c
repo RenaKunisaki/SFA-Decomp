@@ -142,7 +142,7 @@ void fireflyLanternGetTargetAngleAndDistance(GameObject* obj, int state, u16* ou
     axisA[2] = 0.0f;
     PSVECCrossProduct((Vec*)axisA, (Vec*)(state + 0x344), (Vec*)crossA);
     PSVECNormalize((Vec*)crossA, (Vec*)crossA);
-    if (0.0f != crossA[0])
+    if (crossA[0] != 0.0f)
     {
         dxDiff = (obj->anim.localPosX - ((EnemyState*)state)->wallPlane.anchorX) / crossA[0];
     }
@@ -167,7 +167,7 @@ void fireflyLanternGetTargetAngleAndDistance(GameObject* obj, int state, u16* ou
     axisB[2] = 0.0f;
     PSVECCrossProduct((Vec*)axisB, (Vec*)(state + 0x344), (Vec*)crossB);
     PSVECNormalize((Vec*)crossB, (Vec*)crossB);
-    if (0.0f != crossB[0])
+    if (crossB[0] != 0.0f)
     {
         d = (targetPos[0] - ((EnemyState*)state)->wallPlane.anchorX) / crossB[0];
     }
@@ -236,7 +236,7 @@ u32 fireflyLanternSteerTowardTarget(short* obj, int state, u32 turnTime, f32 max
     axisA[2] = 0.0f;
     PSVECCrossProduct((Vec*)axisA, (Vec*)fs->wallPlane.normal, (Vec*)crossA);
     PSVECNormalize((Vec*)crossA, (Vec*)crossA);
-    if (0.0f != crossA[0])
+    if (crossA[0] != 0.0f)
     {
         dxA = (o->anim.localPosX - fs->wallPlane.anchorX) / crossA[0];
     }
@@ -261,7 +261,7 @@ u32 fireflyLanternSteerTowardTarget(short* obj, int state, u32 turnTime, f32 max
     axisB[2] = 0.0f;
     PSVECCrossProduct((Vec*)axisB, (Vec*)fs->wallPlane.normal, (Vec*)crossB);
     PSVECNormalize((Vec*)crossB, (Vec*)crossB);
-    if (0.0f != crossB[0])
+    if (crossB[0] != 0.0f)
     {
         d = (targetPos[0] - fs->wallPlane.anchorX) / crossB[0];
     }
@@ -435,7 +435,7 @@ void rachnopFindWallPlane(GameObject* obj, int state)
         dv[2] = 0.0f;
         PSVECCrossProduct((Vec*)dv, (Vec*)(state + DUSTER_WALL_PLANE_OFFSET), (Vec*)sideAxis);
         PSVECNormalize((Vec*)sideAxis, (Vec*)sideAxis);
-        if (0.0f != sideAxis[0])
+        if (sideAxis[0] != 0.0f)
         {
             ((EnemyState*)state)->wallPlane.axisLimit =
                 (cv[0] - ((EnemyState*)state)->wallPlane.anchorX) / sideAxis[0];

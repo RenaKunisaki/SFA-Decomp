@@ -151,7 +151,7 @@ void DIMbosstonsil_checkHit(GameObject* obj, GroundBaddieState* state) {
             Sfx_PlayFromObject((u32)obj, DIMBOSSTONSIL_NORMAL_HIT_SFX);
         }
         CameraShake_SetOffset(3.0f);
-        if (0.0f == gDIMbosstonsilRouteDelayTimer) {
+        if (gDIMbosstonsilRouteDelayTimer == 0.0f) {
             state->baddie.moveJustStartedA = 1;
             state->baddie.moveDone = 0;
             state->baddie.lastHitPriority = hit;
@@ -196,7 +196,7 @@ void dimBossTonsil_newState_hitFightMain(GameObject* obj, ObjSeqState* animUpdat
         ->processMessages(obj, updateState, &state->routeNav, state->gameBitB, &state->subMode, 0,
                           0, 0);
 
-    if (0.0f != gDIMbosstonsilFightTimer) {
+    if (gDIMbosstonsilFightTimer != 0.0f) {
         gDIMbosstonsilFightTimer = gDIMbosstonsilFightTimer - timeDelta;
         timer = gDIMbosstonsilFightTimer / 8.0f;
         if (gDIMbosstonsilFightTimer <= 1.0f) {
@@ -230,7 +230,7 @@ void dimBossTonsil_newState_hitFightMain(GameObject* obj, ObjSeqState* animUpdat
     gDIMbosstonsilRumbleElapsed = gDIMbosstonsilRumbleElapsed + timeDelta;
     DIMbosstonsil_checkHit(obj, updateState);
 
-    if (0.0f != gDIMbosstonsilRouteDelayTimer) {
+    if (gDIMbosstonsilRouteDelayTimer != 0.0f) {
         gDIMbosstonsilRouteDelayTimer = gDIMbosstonsilRouteDelayTimer - timeDelta;
         if (gDIMbosstonsilRouteDelayTimer <= 0.0f) {
             gDIMbosstonsilRouteDelayTimer = 0.0f;

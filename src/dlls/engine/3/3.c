@@ -632,7 +632,7 @@ int Checkpoint_getRouteHeading(GameObject* obj, CheckpointRouteState* state)
         sum = dist2 / proj2;
         frac = 0.0f;
         sum = t0 + sum;
-        if (0.0f != sum)
+        if (sum != 0.0f)
         {
             frac = t0 / sum;
         }

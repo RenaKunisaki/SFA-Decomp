@@ -44,7 +44,7 @@ int Obj_UpdateLightningCluster(GameObject* obj, LightningEffect** entries, int c
     f32 pos[3];
 
     spawned = 0;
-    if (0.0f == intensity)
+    if (intensity == 0.0f)
     {
         spawned = 0;
         for (i = 0; i < count; i++)
@@ -399,7 +399,7 @@ void Obj_SmoothTurnAnglesTowardVelocity(GameObject* obj, const Vec3f* velocity, 
         anim->rotZ = rotZ;
     }
 
-    if (0.0f != pitchFactor)
+    if (pitchFactor != 0.0f)
     {
         {
             f32 xx = velocity->x * velocity->x;

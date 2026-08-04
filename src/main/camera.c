@@ -393,7 +393,7 @@ void Camera_LoadModelViewMatrix(int unusedDisplayList, int unusedMatrixList, Mat
     transform->x -= playerMapOffsetX;
     transform->z -= playerMapOffsetZ;
     setMatrixFromObjectPos(modelMatrix, transform);
-    if (1.0f != yScale) {
+    if (yScale != 1.0f) {
         mtx44ScaleRow1(modelMatrix, yScale);
     }
 
@@ -500,7 +500,7 @@ void Camera_ProjectWorldSphere(f32 x, f32 y, f32 z, f32 radius, f32* outX, f32* 
     clipW =
         gCameraProjectionMatrix[3][3] + (gCameraProjectionMatrix[3][0] * pos.x + gCameraProjectionMatrix[3][1] * pos.y +
                                          gCameraProjectionMatrix[3][2] * pos.z);
-    if (0.0f != clipW) {
+    if (clipW != 0.0f) {
         inverseW = 1.0f / clipW;
         *outX *= inverseW;
         *outY *= inverseW;
@@ -514,7 +514,7 @@ void Camera_ProjectWorldSphere(f32 x, f32 y, f32 z, f32 radius, f32* outX, f32* 
         clipW = gCameraProjectionMatrix[3][3] +
                 (gCameraProjectionMatrix[3][0] * pos.x + gCameraProjectionMatrix[3][1] * pos.y +
                  gCameraProjectionMatrix[3][2] * pos.z);
-        if (0.0f != clipW) {
+        if (clipW != 0.0f) {
             inverseW = 1.0f / clipW;
             *outRadiusX = fabsf(inverseW * (radius * gCameraProjectionMatrix[0][0]));
             *outRadiusY = fabsf(inverseW * (radius * gCameraProjectionMatrix[1][1]));
@@ -550,7 +550,7 @@ void Camera_ProjectWorldPointWithOffset(f32 x, f32 y, f32 z, f32 offset, f32* ou
     clipW =
         gCameraProjectionMatrix[3][3] + (gCameraProjectionMatrix[3][0] * pos.x + gCameraProjectionMatrix[3][1] * pos.y +
                                          gCameraProjectionMatrix[3][2] * pos.z);
-    if (0.0f != clipW) {
+    if (clipW != 0.0f) {
         inverseW = 1.0f / clipW;
         *outX *= inverseW;
         *outY *= inverseW;
@@ -582,7 +582,7 @@ void Camera_ProjectWorldPoint(f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* ou
     clipW =
         gCameraProjectionMatrix[3][3] + (gCameraProjectionMatrix[3][0] * pos.x + gCameraProjectionMatrix[3][1] * pos.y +
                                          gCameraProjectionMatrix[3][2] * pos.z);
-    if (0.0f != clipW) {
+    if (clipW != 0.0f) {
         inverseW = 1.0f / clipW;
         *outX *= inverseW;
         *outY *= inverseW;

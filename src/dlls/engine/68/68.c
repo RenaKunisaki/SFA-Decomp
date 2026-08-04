@@ -519,7 +519,7 @@ void CameraModeViewfinder_init(CameraObject* camera, int mode, CameraModeViewfin
     dx = camera->anim.worldPosX - focus->anim.worldPosX;
     dz = camera->anim.worldPosZ - focus->anim.worldPosZ;
     dist = sqrtf(dx * dx + dz * dz);
-    if (0.0f != dist) {
+    if (dist != 0.0f) {
         dx = dx / dist;
         dz = dz / dist;
     }

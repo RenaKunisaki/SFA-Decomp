@@ -342,7 +342,7 @@ void EdibleMushroom_updateBehavior(GameObject* obj, EdibleMushroomState* state, 
         speed = 0.0f;
     }
 
-    if (0.0f != speed) {
+    if (speed != 0.0f) {
         state->flags |= EDIBLE_MUSHROOM_FLAG_MOVING;
     } else {
         state->flags &= ~EDIBLE_MUSHROOM_FLAG_MOVING;

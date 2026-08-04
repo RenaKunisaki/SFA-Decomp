@@ -49,11 +49,11 @@ void dfptargetblock_resolveCollisionPoints(GameObject* obj, DfpTargetBlockCollis
         {
             deltaX = probe[0] - originalX;
             deltaZ = probe[2] - originalZ;
-            if (0.0f != obj->anim.velocityX)
+            if (obj->anim.velocityX != 0.0f)
             {
                 obj->anim.localPosX = obj->anim.localPosX + deltaX;
             }
-            if (0.0f != obj->anim.velocityZ)
+            if (obj->anim.velocityZ != 0.0f)
             {
                 obj->anim.localPosZ = obj->anim.localPosZ + deltaZ;
             }
@@ -119,7 +119,7 @@ static inline void dfptargetblock_checkSettled(GameObject* obj, DfpTargetBlockSt
 
     dx = obj->anim.localPosX - gTargetBlockHomeX;
     dz = obj->anim.localPosZ - gTargetBlockHomeZ;
-    if (!((0.0f == dx) && (0.0f == dz)))
+    if (!((dx == 0.0f) && (dz == 0.0f)))
     {
         if (sqrtf(dx * dx + dz * dz) < threshold)
         {
@@ -202,7 +202,7 @@ void dfptargetblock_hitDetect(GameObject* obj)
     obj->anim.localPosX = obj->anim.velocityX * timeDelta + obj->anim.localPosX;
     obj->anim.localPosZ = obj->anim.velocityZ * timeDelta + obj->anim.localPosZ;
 
-    if (0.0f != obj->anim.velocityX)
+    if (obj->anim.velocityX != 0.0f)
     {
         Sfx_KeepAliveLoopedObjectSound((int)obj, DFPTARGETBLOCK_LOOP_SFX);
         velX = obj->anim.velocityX;
@@ -219,7 +219,7 @@ void dfptargetblock_hitDetect(GameObject* obj)
         }
     }
 
-    if (0.0f != obj->anim.velocityZ)
+    if (obj->anim.velocityZ != 0.0f)
     {
         Sfx_KeepAliveLoopedObjectSound((int)obj, DFPTARGETBLOCK_LOOP_SFX);
         velZ = obj->anim.velocityZ;

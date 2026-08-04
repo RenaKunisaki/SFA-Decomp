@@ -3382,7 +3382,7 @@ void objRenderModel(GameObject* obj)
     s32 sz;
     u32 col;
     int* model = (int*)Obj_GetActiveModel(obj);
-    if (0.0f == obj->anim.rootMotionScale)
+    if (obj->anim.rootMotionScale == 0.0f)
     {
         curObjMtx = 0;
         return;

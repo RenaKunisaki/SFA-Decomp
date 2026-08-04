@@ -324,7 +324,7 @@ int AudioStream_Play(int id, void (*preparedCallback)(void))
         }
 
         gAudioStreamEndPos = (f32)(u32)s->lengthRaw / 100.0f;
-        if (0.0f == gAudioStreamEndPos)
+        if (gAudioStreamEndPos == 0.0f)
         {
             gAudioStreamEndPos = gAudioStreamEndPosInfinite;
         }

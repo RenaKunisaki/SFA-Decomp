@@ -684,11 +684,11 @@ void baddie_decodePlayerAttackFlags(EnemyState* state, u32 flags, f32 f, u16 hit
     {
         state->flags2F1 = (u8)(state->flags2F1 | 0x4);
     }
-    if (0.2f == f)
+    if (f == 0.2f)
     {
         state->flags2F1 = (u8)(state->flags2F1 | 0x8);
     }
-    else if (0.3f == f)
+    else if (f == 0.3f)
     {
         state->flags2F1 = (u8)(state->flags2F1 | 0x10);
     }
@@ -2301,7 +2301,7 @@ f32 sidekickToy_accelerateTowardTarget3D(GameObject* obj, f32 tx, f32 ty, f32 tz
     {
         obj->anim.velocityZ = maxVel;
     }
-    if (0.0f != drag)
+    if (drag != 0.0f)
     {
         obj->anim.velocityX = obj->anim.velocityX * powfBitEstimate(drag, timeDelta);
         obj->anim.velocityY = obj->anim.velocityY * powfBitEstimate(drag, timeDelta);
@@ -2347,7 +2347,7 @@ f32 sidekickToy_accelerateTowardTargetXZ(GameObject* obj, f32 tx, f32 ty, f32 tz
     {
         obj->anim.velocityZ = maxVel;
     }
-    if (0.0f != drag)
+    if (drag != 0.0f)
     {
         obj->anim.velocityX = obj->anim.velocityX * powfBitEstimate(drag, timeDelta);
         obj->anim.velocityZ = obj->anim.velocityZ * powfBitEstimate(drag, timeDelta);
@@ -2399,7 +2399,7 @@ void baddieTurnTowardLookDir(GameObject* node, void* sub, int divisor, f32 fa, f
         }
     }
 
-    if (0.0f != fb)
+    if (fb != 0.0f)
     {
         f32 dz2 = ((EnemyState*)sub)->lookDirZ * ((EnemyState*)sub)->lookDirZ;
         f32 dx2 = ((EnemyState*)sub)->lookDirX * ((EnemyState*)sub)->lookDirX;

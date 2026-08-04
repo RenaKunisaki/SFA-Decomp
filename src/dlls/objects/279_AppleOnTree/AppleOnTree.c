@@ -322,7 +322,7 @@ int appleontree_bounceGroundStep(GameObject* obj, AppleOnTreeState* state, f32 p
 }
 
 int appleontree_bounceWaterStep(GameObject* obj, AppleOnTreeState* state, f32 positionY) {
-    if (0.0f == state->extraAcceleration) {
+    if (state->extraAcceleration == 0.0f) {
         if (state->dropHeight - (state->positionY - positionY) <= 0.0f) {
             f32 b;
             f32 m = state->gravity;

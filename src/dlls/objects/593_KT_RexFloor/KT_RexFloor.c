@@ -328,7 +328,7 @@ void KT_RexFloorSwitch_update(GameObject* obj)
     {
         if (state->graceTimer != 0)
         {
-            if (0.0f == state->scrollSpeed)
+            if (state->scrollSpeed == 0.0f)
             {
                 state->scrollSpeed = 8.0f;
             }

@@ -231,7 +231,7 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
     {
         u8 n = ((GroundBaddiePlacement*)obj->anim.placementData)->aggression;
         scale = n;
-        if (0.0f == n)
+        if (n == 0.0f)
         {
             scale = 10.0f;
         }
@@ -474,7 +474,7 @@ void hoodedZyck_init(GameObject* obj, EnemyState* st)
     u32 amt;
     amt = ((GroundBaddiePlacement*)obj->anim.placementData)->aggression;
     ratio = amt;
-    if (0.0f == amt)
+    if (amt == 0.0f)
     {
         ratio = 10.0f;
     }

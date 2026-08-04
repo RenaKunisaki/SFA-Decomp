@@ -331,7 +331,7 @@ void FXEmit_update(GameObject* obj) {
                         state->disabled = 1;
                     }
                     distance = sqrtf(deltaX * deltaX + deltaY * deltaY + deltaZ * deltaZ);
-                    if (distance <= state->activationRange || 0.0f == state->activationRange) {
+                    if (distance <= state->activationRange || state->activationRange == 0.0f) {
                         FXEmit_emitEffect(obj);
                     }
                     obj->userData1 = -state->emitRate;

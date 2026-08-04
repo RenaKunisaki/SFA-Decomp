@@ -347,7 +347,7 @@ int DIMSnowHorn1_stateHandler08(GameObject* obj, DIMSnowHorn1State* state)
         if (inner->airMeterValue != 0 && state->baddie.moveSpeed > 0.0f)
         {
             if (state->baddie.pressedButtons != 0 ||
-                0.0f != state->baddie.moveInputX ||
+                state->baddie.moveInputX != 0.0f ||
                 0.0f != state->baddie.moveInputZ)
             {
                 state->baddie.moveSpeed = -state->baddie.moveSpeed;
@@ -358,7 +358,7 @@ int DIMSnowHorn1_stateHandler08(GameObject* obj, DIMSnowHorn1State* state)
         if (inner->airMeterValue != 0)
         {
             if (state->baddie.pressedButtons != 0 ||
-                0.0f != state->baddie.moveInputX ||
+                state->baddie.moveInputX != 0.0f ||
                 0.0f != state->baddie.moveInputZ)
             {
                 ObjAnim_SetCurrentMove((int)obj, 0x207, 0.0f, 0);

@@ -39,7 +39,7 @@ void DIMBossIceSmash_initLaunchState(GameObject* obj, DimBossIceSmashState* stat
         vy = obj->anim.localPosY - (f32)placement->homingTargetY;
         vz = obj->anim.localPosZ - (f32)placement->homingTargetZ;
         len = sqrtf(vz * vz + (vx * vx + vy * vy));
-        if (0.0f != len) {
+        if (len != 0.0f) {
             vx = vx / len;
             vy = vy / len;
             vz = vz / len;
@@ -213,7 +213,7 @@ void DIMBossIceSmash_update(GameObject* obj) {
                     ny = -obj->anim.velocityY;
                     nz = -obj->anim.velocityZ;
                     len = sqrtf(nz * nz + (nx * nx + ny * ny));
-                    if (0.0f != len) {
+                    if (len != 0.0f) {
                         inv = 1.0f / len;
                         nx = nx * inv;
                         ny = ny * inv;

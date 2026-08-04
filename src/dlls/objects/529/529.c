@@ -371,7 +371,7 @@ void wmwallcrawler_update(GameObject* obj)
                         }
                         sq = ((GameObject*)ob)->anim.velocityX * ((GameObject*)ob)->anim.velocityX +
                              ((GameObject*)ob)->anim.velocityZ * ((GameObject*)ob)->anim.velocityZ;
-                        if (0.0f != sq)
+                        if (sq != 0.0f)
                         {
                             speed = sqrtf(sq);
                         }
@@ -606,7 +606,7 @@ void wmwallcrawler_update(GameObject* obj)
                                 ((GameObject*)ob)->anim.rotX = ang + 0x7fff;
                                 sq = ((GameObject*)ob)->anim.velocityX * ((GameObject*)ob)->anim.velocityX +
                                      ((GameObject*)ob)->anim.velocityZ * ((GameObject*)ob)->anim.velocityZ;
-                                if (0.0f != sq)
+                                if (sq != 0.0f)
                                 {
                                     speed = sqrtf(sq);
                                 }

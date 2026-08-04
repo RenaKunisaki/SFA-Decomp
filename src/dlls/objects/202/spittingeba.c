@@ -120,7 +120,7 @@ void spittingEbaSpawnPollen(GameObject* obj, int state)
         cosVal = cosVal * spd;
         dx = b[0] - obj->anim.localPosX;
         dz = b[2] - obj->anim.localPosZ;
-        if (0.0f != dz)
+        if (dz != 0.0f)
         {
             ref = getAngle(dx, dz);
             angleToVec2Precise(ref, &cosPitch, &velY);

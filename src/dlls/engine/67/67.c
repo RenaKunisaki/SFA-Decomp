@@ -52,7 +52,7 @@ u8 CameraModeStaffAnim_samplePath(f32* outX, f32* height, f32* outZ, GameObject*
         gCameraModeStaffAnimState->pointsX[i] = work.localX;
         gCameraModeStaffAnimState->pointsZ[i] = work.localZ;
     }
-    if (0.0f != gCameraModeStaffAnimState->pathCurve.pathLength) {
+    if (gCameraModeStaffAnimState->pathCurve.pathLength != 0.0f) {
         pathT = gCameraModeStaffAnimState->pathCurve.pathDistance / gCameraModeStaffAnimState->pathCurve.pathLength;
     } else {
         pathT = 0.0f;

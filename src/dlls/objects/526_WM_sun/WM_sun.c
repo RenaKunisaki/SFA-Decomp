@@ -84,7 +84,7 @@ void wmsun_updateGlare(GameObject* obj)
         dy = obj->anim.localPosY - cam->y;
         dz = obj->anim.localPosZ - cam->z;
         len = sqrtf(dz * dz + (dx * dx + dy * dy));
-        if (0.0f != len)
+        if (len != 0.0f)
         {
             dx = dx / len;
             dy = dy / len;
@@ -111,7 +111,7 @@ void wmsun_updateGlare(GameObject* obj)
             dot = obj->anim.localPosX - cam->x;
             hz = obj->anim.localPosZ - cam->z;
             hlen = sqrtf(hz * hz + (dot * dot + hy));
-            if (0.0f != hlen)
+            if (hlen != 0.0f)
             {
                 dot = dot / hlen;
                 hy = hy / hlen;

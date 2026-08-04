@@ -257,7 +257,7 @@ void collectible_updateLooseMotion(GameObject* obj) {
         f32 inverseVelocityZ = -obj->anim.velocityZ;
         f32 speed = sqrtf(inverseVelocityX * inverseVelocityX + inverseVelocityY * inverseVelocityY +
                           inverseVelocityZ * inverseVelocityZ);
-        if (0.0f != speed) {
+        if (speed != 0.0f) {
             f32 inverseSpeed = 1.0f / speed;
             inverseVelocityX = inverseVelocityX * inverseSpeed;
             inverseVelocityY = inverseVelocityY * inverseSpeed;

@@ -295,7 +295,7 @@ int Effect7_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawnP
             cfg.startPosX = cfg.startPosX + spawnParams->posX;
             cfg.startPosY = cfg.startPosY + spawnParams->posY;
             cfg.startPosZ = cfg.startPosZ + spawnParams->posZ;
-            if (1.0f == spawnParams->scale)
+            if (spawnParams->scale == 1.0f)
             {
                 cfg.initialAlpha = 0xff;
             }

@@ -63,7 +63,7 @@ void VFP_MiniFire_update(GameObject* obj)
     ObjHitsPriorityState* linkedGfx;
     int i;
 
-    if (0.0f == state->baseY)
+    if (state->baseY == 0.0f)
     {
         trackGetNearestGroundOffset(obj, (obj)->anim.localPosX, (obj)->anim.localPosY, (obj)->anim.localPosZ, (f32*)state,
                              0);

@@ -111,7 +111,7 @@ void drawSkyStars(void)
         }
         else
         {
-            if (sunTransitionTime > 12000.0f || 0.0f == sunTransitionTime)
+            if (sunTransitionTime > 12000.0f || sunTransitionTime == 0.0f)
             {
                 return;
             }
@@ -213,7 +213,7 @@ void initSkyStars(void)
             starPosition.z = (int)
             randomGetRange(-5000, 5000);
         }
-        while (0.0f == starPosition.x && 0.0f == starPosition.y && 0.0f == starPosition.z);
+        while (starPosition.x == 0.0f && starPosition.y == 0.0f && starPosition.z == 0.0f);
         PSVECNormalize(&starPosition, &starPosition);
         PSVECScale(&starPosition, &starPosition, 5000.0f);
         constellationPoint->x = starPosition.x;
@@ -245,7 +245,7 @@ void initSkyStars(void)
                     starPosition.z = (int)
                     randomGetRange(-5000, 5000);
                 }
-                while (0.0f == starPosition.x && 0.0f == starPosition.y && 0.0f == starPosition.z);
+                while (starPosition.x == 0.0f && starPosition.y == 0.0f && starPosition.z == 0.0f);
                 PSVECNormalize(&starPosition, &starPosition);
                 PSVECScale(&starPosition, &starPosition, 5000.0f);
             }

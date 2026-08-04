@@ -209,7 +209,7 @@ void sc_levelcontrol_update(GameObject* obj) {
         }
     }
     if (state->fadeTimer && (player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
-        if (120.0f == state->fadeTimer) {
+        if (state->fadeTimer == 120.0f) {
             (*gScreenTransitionInterface)->start(0x73, 1);
         }
         state->fadeTimer -= timeDelta;
@@ -226,7 +226,7 @@ void sc_levelcontrol_update(GameObject* obj) {
             mainSetBits(0x7cf, 1);
         }
     } else if (state->exitTimer && (player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
-        if (120.0f == state->exitTimer) {
+        if (state->exitTimer == 120.0f) {
             (*gScreenTransitionInterface)->start(0x73, 1);
         }
         state->exitTimer -= timeDelta;

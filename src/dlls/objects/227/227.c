@@ -157,7 +157,7 @@ void Fireball_homeToTarget(GameObject* obj, FireballState* state, GameObject* ta
         t = mathSinf(dx);
         {
             f32 cosP = mathCosf(dx);
-            if (0.0f != cosP) {
+            if (cosP != 0.0f) {
                 t = t / cosP;
             }
         }
@@ -310,7 +310,7 @@ void Fireball_update(GameObject* obj) {
         obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
         return;
     }
-    if (0.0f == state->elapsedTime) {
+    if (state->elapsedTime == 0.0f) {
         state->flightDuration = 7.0f / Vec3_Length(&obj->anim.velocityX);
     }
     state->elapsedTime += timeDelta;

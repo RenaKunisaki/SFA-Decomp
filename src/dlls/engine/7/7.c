@@ -1348,7 +1348,7 @@ void newClouds(CloudSpawnParams* params, void* owner, f32 x, f32 y, f32 z)
     {
         params->driftMax = 0.0f;
     }
-    if (0.0f != params->driftMax)
+    if (params->driftMax != 0.0f)
     {
         ((NewCloud*)NC_CLOUD)->driftRate = 0.1f;
         {

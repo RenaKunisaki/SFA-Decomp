@@ -455,7 +455,7 @@ void CameraModeNormal_updateWallAvoidance(CameraObject* camera, GameObject* targ
             gCameraModeNormalState->avoidanceYawOffset = 0.0f;
         }
     }
-    if (0.0f != gCameraModeNormalState->avoidanceYawOffset) {
+    if (gCameraModeNormalState->avoidanceYawOffset != 0.0f) {
         spin = (s16)(int)gCameraModeNormalState->avoidanceYawOffset;
         if ((spin < -0x1e) || (0x1e < spin)) {
             f32 rad;

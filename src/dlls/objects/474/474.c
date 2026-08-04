@@ -89,7 +89,7 @@ void dll_1DA_update(GameObject* obj) {
         inverseVelocityZ = -obj->anim.velocityZ;
         collisionSpeed = sqrtf(inverseVelocityZ * inverseVelocityZ +
                                (inverseVelocityX * inverseVelocityX + inverseVelocityY * inverseVelocityY));
-        if (0.0f != collisionSpeed) {
+        if (collisionSpeed != 0.0f) {
             f32 inverseSpeed = 1.0f / collisionSpeed;
 
             inverseVelocityX = inverseVelocityX * inverseSpeed;

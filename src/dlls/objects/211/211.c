@@ -136,7 +136,7 @@ int LandedArwing_UpdateBounceFade(GameObject* obj, BaddieState* baddie)
         obj->anim.localPosZ = state->boundsMaxZ;
         obj->anim.velocityZ = 0.9f * -obj->anim.velocityZ;
     }
-    if (1.0f == obj->anim.currentMoveProgress)
+    if (obj->anim.currentMoveProgress == 1.0f)
     {
         ObjMsg_SendToObjects(0, 3, obj, 0xe0000, (u32)obj);
         Obj_FreeObject(obj);

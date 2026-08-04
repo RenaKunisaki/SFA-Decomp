@@ -339,7 +339,7 @@ void CameraModeCombat_update(CameraObject* camera) {
                             gCameraModeCombatState->followDistance = gCameraModeCombatState->followDistance + fa;
                             turnOnBlurFilter(target->anim.worldPosX, target->anim.worldPosY, target->anim.worldPosZ, 1,
                                              0);
-                            if (0.0f == camera->blendProgress) {
+                            if (camera->blendProgress == 0.0f) {
                                 ((BitFlags8*)&camera->smoothingFlags)->b0 = 1;
                             }
                             Obj_TransformWorldPointToLocal(camera->anim.worldPosX, camera->anim.worldPosY,

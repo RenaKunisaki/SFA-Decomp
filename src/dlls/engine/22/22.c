@@ -236,7 +236,7 @@ void screenTransition_holdThenFadeIn(int duration, int type)
 
 void screenTransition_fadeIn(int duration, int type)
 {
-    if (gScreenTransitionAlphaStep >= 0.0f || 0.0f == screenTransitionAlpha)
+    if (gScreenTransitionAlphaStep >= 0.0f || screenTransitionAlpha == 0.0f)
     {
         screenTransitionAlpha = SCREEN_TRANSITION_ALPHA_MAX;
     }
