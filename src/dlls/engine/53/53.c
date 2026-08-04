@@ -613,8 +613,9 @@ void SaveSelectScreen_render(int param)
         while (infoIndex < slotCount)
         {
             gameTextAppendStr(
-                *(char**)((char*)saveFileSelect_saveSlots + saveFileSelect_currentSlotIndex * 0x24 + taskTextOffset +
-                          0xc),
+                ((FrontendSaveSlot*)((char*)saveFileSelect_saveSlots +
+                                     saveFileSelect_currentSlotIndex * 0x24 + taskTextOffset))
+                    ->taskTexts[0],
                 *infoTextIds);
             infoTextIds++;
             taskTextOffset += 4;

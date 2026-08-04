@@ -831,9 +831,9 @@ static void mapBlockRender_setupShaderTextures(Shader* shader, int mode)
                     if (layer->scrollMtx != 0xff)
                     {
                         int scrollOffset = (u32)layer->scrollMtx * 0x10;
-                        tx = *(float*)((u8*)gMapTextureScrolls + scrollOffset) / 1048576.0f;
+                        tx = ((MapTextureScroll*)((u8*)gMapTextureScrolls + scrollOffset))->offsetX / 1048576.0f;
                         PSMTXTrans(texMatrix, tx,
-                                   *(float*)((u8*)gMapTextureScrolls + scrollOffset + 4) / 1048576.0f,
+                                   ((MapTextureScroll*)((u8*)gMapTextureScrolls + scrollOffset))->offsetY / 1048576.0f,
                                    0.0f);
                         texMtx = texMatrix;
                     }

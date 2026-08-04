@@ -254,14 +254,10 @@ void saveGame_unsaveObjectPos(GameObject* obj)
     slot = (SaveGameObjectPosition*)gSaveGameData + i;
     for (; i < SAVEGAME_OBJECT_POSITION_COUNT - 1; i++, slot++)
     {
-        *(u32*)((u8*)slot + SAVEGAME_OBJECT_POSITION_OFFSET + 0) =
-            *(u32*)((u8*)slot + SAVEGAME_OBJECT_POSITION_OFFSET + 16);
-        *(f32*)((u8*)slot + SAVEGAME_OBJECT_POSITION_OFFSET + 4) =
-            *(f32*)((u8*)slot + SAVEGAME_OBJECT_POSITION_OFFSET + 20);
-        *(f32*)((u8*)slot + SAVEGAME_OBJECT_POSITION_OFFSET + 8) =
-            *(f32*)((u8*)slot + SAVEGAME_OBJECT_POSITION_OFFSET + 24);
-        *(f32*)((u8*)slot + SAVEGAME_OBJECT_POSITION_OFFSET + 12) =
-            *(f32*)((u8*)slot + SAVEGAME_OBJECT_POSITION_OFFSET + 28);
+        ((SaveGameData*)slot)->positions[0].objectId = ((SaveGameData*)slot)->positions[1].objectId;
+        ((SaveGameData*)slot)->positions[0].x = ((SaveGameData*)slot)->positions[1].x;
+        ((SaveGameData*)slot)->positions[0].y = ((SaveGameData*)slot)->positions[1].y;
+        ((SaveGameData*)slot)->positions[0].z = ((SaveGameData*)slot)->positions[1].z;
     }
     *(u32*)(gSaveGameData + SAVEGAME_OBJECT_POSITION_DIRTY_OFFSET) = 0;
 }
@@ -559,10 +555,12 @@ s8 slot;
     mainSetBits(GAMEBIT_ITEM_Firefly_Disabled, 1);
 
     SAVEGAME_CHARACTER_POSITION(gSaveGameData)->x = defaultPos.x;
-    *(f32*)(gSaveGameData + gSaveGameData[SAVEGAME_CURRENT_CHARACTER_OFFSET] * 0x10 +
-            SAVEGAME_CHARACTER_POSITION_OFFSET + 4) = defaultPos.y;
-    *(f32*)(gSaveGameData + gSaveGameData[SAVEGAME_CURRENT_CHARACTER_OFFSET] * 0x10 +
-            SAVEGAME_CHARACTER_POSITION_OFFSET + 8) = defaultPos.z;
+    ((SaveGameData*)(gSaveGameData + gSaveGameData[SAVEGAME_CURRENT_CHARACTER_OFFSET] * 0x10))
+        ->characterPositions[0]
+        .y = defaultPos.y;
+    ((SaveGameData*)(gSaveGameData + gSaveGameData[SAVEGAME_CURRENT_CHARACTER_OFFSET] * 0x10))
+        ->characterPositions[0]
+        .z = defaultPos.z;
     ((SaveGameData*)gSaveGameData)->completionScore = 1;
 
     if (name != NULL)
