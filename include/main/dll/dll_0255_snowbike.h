@@ -23,7 +23,7 @@ typedef struct SnowBikeRouteFlags {
 /* Per-object extra state for the rideable SnowBike / CloudRunner bike.
  * Offsets recovered from SnowBike_init/SnowBike_update derefs; the
  * 0x178..0x3DC block is the gPathControlInterface curves-collision state
- * and the 0x428 byte carries the SnowBikeFlags bitfield overlay. */
+ * and routeFlags at 0x428 carries the route/ride bits. */
 typedef struct SnowBikeTrailPointPair
 {
     f32 startX;

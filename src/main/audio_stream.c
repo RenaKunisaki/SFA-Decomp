@@ -329,9 +329,9 @@ int AudioStream_Play(int id, void (*preparedCallback)(void))
             gAudioStreamEndPos = gAudioStreamEndPosInfinite;
         }
 
-        gAudioStreamMusicFadeFlagA = fadeTbl[(s->fadeBits >> 6) & 3] == 0 ? 0 : 1;
-        gAudioStreamMusicFadeFlagB = fadeTbl[(s->fadeBits >> 4) & 3] == 0 ? 0 : 1;
-        if (((u32)s->fadeBits >> 2) & 3)
+        gAudioStreamMusicFadeFlagA = fadeTbl[s->fadeModeA] == 0 ? 0 : 1;
+        gAudioStreamMusicFadeFlagB = fadeTbl[s->fadeModeB] == 0 ? 0 : 1;
+        if (s->stopObjectSounds)
         {
             Sfx_StopAllObjectSounds();
         }

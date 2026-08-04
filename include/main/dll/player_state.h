@@ -59,6 +59,12 @@ typedef enum SurfaceType {
     SURFACE_METAL         = 0x22
 } SurfaceType;
 
+typedef struct KnockBits
+{
+    u8 knock : 3;
+    u8 low : 5;
+} KnockBits;
+
 typedef struct PlayerState {
     union {
         BaddieState baddie;
@@ -323,7 +329,7 @@ typedef struct PlayerState {
     f32 knockbackTimer; /* knockback/stagger countdown (-= timeDelta*knockbackDrainRate); set on knock moves, gates knock FX/sfx (0x394/0x395) while >0, reset to 0 on expiry */
     f32 knockbackHitTimer; /* periodic countdown during knockback drag (-= timeDelta); on expiry fires an ObjHits position-hit and reloads */
     f32 knockbackDrainRate; /* drain multiplier for knockbackTimer (-= timeDelta*this); tracks velocity magnitude, clamped to a range */
-    u8 knockKindBits; /* KnockBits bitfield byte at 0x7a8 (knock:3 top / low:5): .knock set from knockKind; read as (>>5 & 7)-1 to index the knockback particle table */
+    KnockBits knockKindBits; /* 0x7A8: .knock is set from knockKind and read back as knock-1 to index the knockback particle table */
     u8 pad7A9[0x7B8 - 0x7A9];
     f32 aimInputX; /* smoothed aim-stick X (eased from baddie.moveInputX, clamped); drives aimScreenX and the world aim direction */
     f32 aimInputZ; /* smoothed aim-stick Z (eased from baddie.moveInputZ, clamped); drives aimScreenY and the world aim direction */

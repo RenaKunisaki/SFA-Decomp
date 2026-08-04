@@ -70,7 +70,10 @@ typedef struct MusicTrackSlot {
 
 typedef struct StreamEntry {
     u16 id;
-    u8 fadeBits;
+    u8 fadeModeA : 2;
+    u8 fadeModeB : 2;
+    u8 stopObjectSounds : 2;
+    u8 unusedFade : 2;
     u8 fullVolume : 1;
     u8 volume : 7;
     u16 lengthRaw;

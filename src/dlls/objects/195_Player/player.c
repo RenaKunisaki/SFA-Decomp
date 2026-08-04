@@ -507,12 +507,6 @@ typedef struct
     f32 x, y, z;
 } HitFxDesc;
 
-typedef struct
-{
-    u8 knock : 3;
-    u8 low : 5;
-} KnockBits;
-
 static inline void Player_ApplyStatusDamage(GameObject* obj, int param)
 {
     PlayerStatus* pc;
@@ -15131,7 +15125,7 @@ void playerProcessHitResponse(int obj, int inner, int state)
             ((PlayerState*)inner)->knockbackTimer = 300.0f;
             ((PlayerState*)inner)->knockbackHitTimer = 200.0f;
             ((PlayerState*)inner)->knockbackDrainRate = 1.0f;
-            ((KnockBits*)((char*)inner + 0x7a8))->knock = (u8)knockKind;
+            ((PlayerState*)inner)->knockKindBits.knock = (u8)knockKind;
         }
         if ((((PlayerState*)inner)->flags360 & 0x800) != 0 && keepKnock != 0)
         {
@@ -17699,7 +17693,7 @@ void playerRender(int obj, int a, int b, int c, int d, int flag)
             PlayerIntPair tbl = sPlayerKnockFxIds;
 
             objDoParticleFx((GameObject*)obj, 0.4f,
-                                   tbl.v[((((PlayerState*)inner)->knockKindBits >> 5) & 7) - 1] & 0xff,
+                                   tbl.v[((PlayerState*)inner)->knockKindBits.knock - 1] & 0xff,
                                    1.0f, NULL);
         }
         if ((((PlayerState*)inner)->pendingFxFlags & 1) != 0)
