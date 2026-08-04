@@ -6136,7 +6136,7 @@ int playerState1B(GameObject* obj, int state, f32 fv)
     }
     {
         int in2 = (int)obj->extra;
-        ((PlayerState*)in2)->flags360 &= ~PLAYER_FLAG_HITDETECT;
+        ((PlayerState*)in2)->flags360 &= -3;
         ((PlayerState*)in2)->flags360 |= 0x2000LL;
     }
     ((PlayerState*)state)->baddie.flags4 |= 0x100000;
@@ -6484,7 +6484,7 @@ int playerState19(GameObject* obj, int state)
     }
     {
         int inner2 = (int)obj->extra;
-        ((PlayerState*)inner2)->flags360 &= ~PLAYER_FLAG_HITDETECT;
+        ((PlayerState*)inner2)->flags360 &= -3;
         *(int*)&((PlayerState*)inner2)->flags360 |= 0x2000;
     }
     ((PlayerState*)state)->baddie.flags4 |= 0x100000;
@@ -6736,7 +6736,7 @@ int playerStateMountBike(GameObject* obj, int state, f32 fv)
     f32 j1[3];
     f32 wpos[3];
 
-    inner->flags360 &= ~PLAYER_FLAG_HITDETECT;
+    inner->flags360 &= -3;
     inner->flags360 |= 0x2000;
     ((PlayerState*)state)->baddie.flags4 |= 0x100000;
     {
@@ -7072,7 +7072,7 @@ int playerStateClimbWall(GameObject* obj, int stateArg)
     }
     {
         PlayerState* player = obj->extra;
-        player->flags360 &= ~PLAYER_FLAG_HITDETECT;
+        player->flags360 &= -3;
         player->flags360 |= 0x2000;
     }
     state->baddie.flags4 |= 0x100000;
@@ -16487,7 +16487,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
         ((PlayerState*)inner)->animState = -1;
     }
     ObjHits_DisableObject((GameObject*)obj);
-    ((PlayerState*)inner)->flags360 &= ~PLAYER_FLAG_HITDETECT;
+    ((PlayerState*)inner)->flags360 &= -3;
     if ((s8)seq->movementState != 0)
     {
         s8 c;
