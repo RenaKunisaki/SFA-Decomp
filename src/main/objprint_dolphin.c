@@ -764,7 +764,7 @@ u32 gObjCachedTexture;
 u8 gObjRenderSetupDone;
 u8 gObjRenderingShadowPass;
 u8 gObjOverrideColorPending;
-u32 curObjMtx;
+MtxPtr curObjMtx;
 u8 lbl_803DCC20;
 
 u32 lbl_803DB468 = 0xFFFFFFFF;
@@ -2147,7 +2147,7 @@ static void modelDoAltRenderInstrs(GameObject* obj, GameObject* obj2, u8* m, int
     int* am = (int*)Obj_GetActiveModel(obj);
     if (curObjMtx != 0)
     {
-        PSMTXCopy((MtxPtr)(f32*)curObjMtx, (MtxPtr)wm);
+        PSMTXCopy(curObjMtx, (MtxPtr)wm);
         curObjMtx = 0;
     }
     else
@@ -2327,7 +2327,7 @@ static void objRenderShadowModel(GameObject* obj, GameObject* obj2, u8* m, int p
     vm = Camera_GetViewMatrix();
     if (curObjMtx != 0)
     {
-        PSMTXCopy((MtxPtr)(f32*)curObjMtx, (MtxPtr)wm);
+        PSMTXCopy(curObjMtx, (MtxPtr)wm);
         curObjMtx = 0;
     }
     else
@@ -2604,7 +2604,7 @@ static void modelDoRenderInstrs(GameObject* obj, GameObject* obj2, u8* m, u8 pas
     vm = Camera_GetViewMatrix();
     if (curObjMtx != 0)
     {
-        PSMTXCopy((MtxPtr)(f32*)curObjMtx, (MtxPtr)wm);
+        PSMTXCopy(curObjMtx, (MtxPtr)wm);
         curObjMtx = 0;
     }
     else
@@ -3076,7 +3076,7 @@ void objSetOverrideColor(u8 r, u8 g, u8 b)
     gObjOverrideColor[2] = b;
 }
 
-void objSetCurrentMatrix(u32 x)
+void objSetCurrentMatrix(MtxPtr x)
 {
     curObjMtx = x;
 }
@@ -3084,7 +3084,7 @@ void objSetCurrentMatrix(u32 x)
 void objRenderFuzzShells(GameObject* obj)
 {
     int* model;
-    u32 savedMtx;
+    MtxPtr savedMtx;
     gObjFuzzStep = 1;
     model = (int*)Obj_GetActiveModel(obj);
     savedMtx = curObjMtx;
@@ -3107,7 +3107,7 @@ void objRenderFuzzShells(GameObject* obj)
 void objRenderFuzzShadowShells(GameObject* obj)
 {
     int* model;
-    u32 savedMtx;
+    MtxPtr savedMtx;
     gObjFuzzStep = 4;
     model = (int*)Obj_GetActiveModel(obj);
     savedMtx = curObjMtx;
@@ -3137,7 +3137,7 @@ void objRenderFuzz(GameObject* obj)
     u8 maxN;
     int cnt;
     int* model;
-    u32 savedMtx;
+    MtxPtr savedMtx;
     u8 strong;
     f32 dx, dy, dz, dist;
     Camera* cam = Camera_GetCurrent();
@@ -3165,12 +3165,12 @@ void objRenderFuzz(GameObject* obj)
         maxN = 3;
     }
     {
-        ModelFileHeader* m = (ModelFileHeader*)curObjMtx;
+        MtxPtr m = curObjMtx;
         if (m != 0)
         {
-            dx = *(f32*)&m->dataSize - (cam->x - playerMapOffsetX);
-            dy = *(f32*)&m->unk1C - cam->y;
-            dz = *(f32*)&m->normals - (cam->z - playerMapOffsetZ);
+            dx = m[0][3] - (cam->x - playerMapOffsetX);
+            dy = m[1][3] - cam->y;
+            dz = m[2][3] - (cam->z - playerMapOffsetZ);
         }
         else
         {
@@ -3341,7 +3341,7 @@ static void objRenderChild(GameObject* child, GameObject* parent, u8 isShadow)
     child->sphereMapIntensity = parent->sphereMapIntensity;
     if (!(child->anim.flags & OBJANIM_FLAG_HIDDEN))
     {
-        curObjMtx = (u32)m2;
+        curObjMtx = (MtxPtr)m2;
         if (isShadow == 0)
         {
             child->objectFlags |= OBJECT_OBJFLAG_RENDERED;

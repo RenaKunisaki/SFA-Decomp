@@ -17543,7 +17543,7 @@ void playerRenderFuzz(GameObject* obj, int p2, int fuzzPass)
     {
         objRenderFuzzShells(obj);
     }
-    objSetCurrentMatrix(0);
+    objSetCurrentMatrix(NULL);
     obj->anim.localPosY = obj->anim.localPosY - inner->sinkOffsetY;
     if ((inner->flags360 & 0x8000000) != 0)
     {

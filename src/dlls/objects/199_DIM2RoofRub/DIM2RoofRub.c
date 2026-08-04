@@ -176,7 +176,7 @@ void dim2roofrub_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, 
         PSMTXConcat(flipZ, cameraFlippedY, cameraFlippedYZ);
         PSMTXConcat(cameraTranslation, cameraFlippedYZ, mirroredCamera);
         PSMTXConcat(mirroredCamera, translatedWorld, renderMatrix);
-        objSetCurrentMatrix((u32)renderMatrix);
+        objSetCurrentMatrix(renderMatrix);
         objRenderModel(obj);
     } else {
         objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);

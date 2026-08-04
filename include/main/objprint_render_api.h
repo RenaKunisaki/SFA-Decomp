@@ -1,6 +1,7 @@
 #ifndef MAIN_OBJPRINT_RENDER_API_H_
 #define MAIN_OBJPRINT_RENDER_API_H_
 
+#include "dolphin/mtx.h"
 #include "types.h"
 
 typedef struct GameObject GameObject;
@@ -23,7 +24,7 @@ void objSetRenderingShadowPass(u8 enabled);
 void objUpdateHitVolumeTransforms(GameObject* obj);
 void objSetOverrideColor(u8 red, u8 green, u8 blue);
 void objRenderModel(GameObject* obj);
-void objSetCurrentMatrix(u32 mtx);
+void objSetCurrentMatrix(MtxPtr mtx);
 void modelInitMtxs(ModelFileHeader* modelFile, ObjModel* model);
 void modelBuildPosNrmMtxs(u8* modelFile, int* model, f32* matrix, f32* matrix2);
 int objMatrixToRotation(f32* matrix, s16* outX, s16* outY, s16* outZ);
