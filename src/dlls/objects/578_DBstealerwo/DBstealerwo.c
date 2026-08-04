@@ -511,7 +511,7 @@ int dbstealerworm_stateHandlerA0F(GameObject* obj, int baddie, f32 t)
         return 0;
     }
     ObjAnim_SampleRootCurvePhase((ObjAnimComponent*)obj, ((BaddieState*)baddie)->animSpeedA,
-                                 (float*)(baddie + 0x2a0));
+                                 &((BaddieState*)baddie)->moveSpeed);
     return 0;
 }
 

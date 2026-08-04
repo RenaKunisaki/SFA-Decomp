@@ -181,7 +181,7 @@ void hoodedZyck_updateIdle(GameObject* obj, int state)
         toPos[2] = (obj)->anim.localPosZ - 10.0f * cosYaw;
         groundHit = trackGetLineIntersect(fromPos, toPos, 0.0f, 3, (TrackBBoxHit*)hitOut,
                                        obj,
-                                       (u32) * (u8*)(state + 0x261),
+                                       (u32)((EnemyState*)state)->bboxTraceFlags,
                                        0xffffffff, 0xff, 0);
         noHit = !(groundHit & 0xff);
         if (!noHit || ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0))

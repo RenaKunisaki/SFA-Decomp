@@ -683,7 +683,7 @@ void dbegg_update(GameObject* obj)
             (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             break;
         case DBEGG_MODE_PICKUP_PROMPT:
-            if (Vec_xzDistance(&(obj)->anim.worldPosX, (f32*)(data + 8)) > 150.0f &&
+            if (Vec_xzDistance(&(obj)->anim.worldPosX, &((DbeggPlacement*)data)->base.posX) > 150.0f &&
                 (egg->flags119 & 2) == 0)
             {
                 playerObj = Obj_GetPlayerObject();

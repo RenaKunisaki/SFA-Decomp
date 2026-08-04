@@ -2168,9 +2168,9 @@ void enemy_steerVelocityToward(GameObject* obj, void* state, f32* desiredVec, f3
     if (curMag > 0.0f)
     {
         f32 inv = 1.0f / curMag;
-        curDir.x = ((f32*)state)[174] * inv;
-        curDir.y = ((f32*)state)[175] * inv;
-        curDir.z = ((f32*)state)[176] * inv;
+        curDir.x = ((EnemyState*)state)->lookDirX * inv;
+        curDir.y = ((EnemyState*)state)->lookDirY * inv;
+        curDir.z = ((EnemyState*)state)->lookDirZ * inv;
         PSVECNormalize(&curDir, &curDir);
     }
     else
