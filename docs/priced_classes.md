@@ -131,6 +131,25 @@ playerStateShootFireball 98.905, playerStateTryCastSpell 98.714, playerStateAimS
 **Tell.** Target `lis rS,K` into a saved reg + N x `addi rD,rS,lo` spanning `bl`/`bctrl`;
 ours repeats the pair per site.
 
+**ADDENDUM 2026-08-03 — the price above is DEAD; what survives of the class is a one-home
+recolour.** The "no fix exists" verdict was priced against per-site literal rematerialisation,
+and the enabling spelling has since landed: `ec4841324d` (2026-08-03) writes
+`spawnFlags = PARTFXFLAG_200000;` once and passes `spawnFlags + PARTFXFLAG_1` at both spawn
+sites in each of the four functions (`player.c` 3744/4049/4196/4435), so our compile hoists the
+`lis` into a saved register just as retail does — no rolled loop, no banned shape. The rows
+re-measure at `574310f3e0` (report `20dbc442e5`): playerState30 99.173 -> 99.960,
+playerStateShootFireball 98.905 -> 99.947, playerStateTryCastSpell 98.714 -> 99.938,
+playerStateAimStaff 99.320 -> 99.967. The residual in all four is `ndiff 3 / struc 0` — a
+single-home recolour of the hoisted-`lis` web (target r30 vs ours r26 in AimStaff, r28 vs r26 in
+State30 and ShootFireball, r30 vs r28 in TryCastSpell), i.e. §5's #108 class, not this one. A
+fresh 5-position out-of-tree declaration sweep of `spawnFlags` on the narrowest member
+(playerStateTryCastSpell, 4G band, the sub-cliff regime) came back completely flat at 3/0: the
+web is propagation-fed and no named-local key reaches it. Per-row detail is in
+`docs/band_width_worklist.md` (2026-08-03 rows tagged "STALE priced 4"). The mechanism paragraph
+stands as a compiler fact — MWCC still never CSEs the `lis` across a call when each site spells
+the literal — but the price it carried is retired: the source-level hoist was reachable all
+along, through a named flags local rather than a loop.
+
 ## 4b. Retail-deleted redundant ext before a narrow store in a nopeephole TU (compiler-side)
 
 **Mechanism.** The narrow-store extension rule (lane C9) is upheld: at `-opt nopeephole`,
