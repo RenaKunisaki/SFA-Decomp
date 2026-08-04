@@ -515,7 +515,7 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
 GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, int alt)
 {
     GameObject* source = obj;
-    u8* state = (u8*)obj->anim.placementData;
+    GroundBaddiePlacement* state = (GroundBaddiePlacement*)obj->anim.placementData;
     CollectibleSetup* setup;
     u16 ids1[4];
     u16 ids2[4];
@@ -535,7 +535,7 @@ GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, i
     {
         return 0;
     }
-    if ((((GroundBaddiePlacement*)state)->triggerId & 0xf00) != 0)
+    if ((state->triggerId & 0xf00) != 0)
     {
         idx = ((spawnType & 0xf00) >> 8) - 1;
         if (idx > 3)
@@ -545,7 +545,7 @@ GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, i
         setup = (CollectibleSetup*)Obj_AllocObjectSetup(sizeof(CollectibleSetup), ids1[idx]);
         scale = 30.0f;
     }
-    if ((((GroundBaddiePlacement*)state)->triggerId & 0xf000) != 0)
+    if ((state->triggerId & 0xf000) != 0)
     {
         idx = ((spawnType & 0xf000) >> 12) - 1;
         if (idx > 3)
@@ -555,7 +555,7 @@ GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, i
         setup = (CollectibleSetup*)Obj_AllocObjectSetup(sizeof(CollectibleSetup), ids2[idx]);
         scale = 30.0f;
     }
-    if ((int)(u8)((GroundBaddiePlacement*)state)->triggerId != 0)
+    if ((int)(u8)state->triggerId != 0)
     {
         switch (spawnType)
         {
@@ -634,10 +634,10 @@ GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, i
     {
         setup->spawnMode = 1;
     }
-    setup->base.color[0] = state[4];
-    setup->base.color[2] = state[6];
-    setup->base.color[1] = state[5];
-    setup->base.color[3] = state[7];
+    setup->base.color[0] = ((u8*)state)[4];
+    setup->base.color[2] = ((u8*)state)[6];
+    setup->base.color[1] = ((u8*)state)[5];
+    setup->base.color[3] = ((u8*)state)[7];
     gDll19NearestObj = objSetupObject(&setup->base, 5, obj->anim.mapEventSlot, -1, source->anim.parent);
     return gDll19NearestObj;
 }
