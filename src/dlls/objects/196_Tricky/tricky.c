@@ -5099,7 +5099,7 @@ typedef struct TrickyFnRow {
 void tricky_stateFollowPlayer(GameObject* obj, TrickyState* state) {
     u8* base;
     GameObject* found;
-    u8* other;
+    TrickyState* other;
     GameObject* target;
     TrickyState* ptr;
     int inWater;
@@ -5114,24 +5114,24 @@ void tricky_stateFollowPlayer(GameObject* obj, TrickyState* state) {
                 target = state->pendingFollowObj;
                 other = obj->extra;
                 if ((obj->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
-                    if ((((TrickyState*)other)->stateFlags & 0x10) == 0) {
-                        ((TrickyState*)other)->followObj = target;
-                        if (((TrickyState*)other)->targetPosPtr != &target->anim.worldPosX) {
-                            ((TrickyState*)other)->targetPosPtr = &target->anim.worldPosX;
+                    if ((other->stateFlags & 0x10) == 0) {
+                        other->followObj = target;
+                        if (other->targetPosPtr != &target->anim.worldPosX) {
+                            other->targetPosPtr = &target->anim.worldPosX;
                             {
                                 u32 m;
-                                u32 flags = ((TrickyState*)other)->stateFlags;
+                                u32 flags = other->stateFlags;
                                 m = ~0x400;
-                                ((TrickyState*)other)->stateFlags = flags & m;
+                                other->stateFlags = flags & m;
                             }
-                            ((TrickyState*)other)->linkedWalkGroup = 0;
+                            other->linkedWalkGroup = 0;
                         }
-                        other[0xa] = 0;
-                        other[0x8] = 10;
+                        ((u8*)other)[0xa] = 0;
+                        ((u8*)other)[0x8] = 10;
                     } else {
-                        ((TrickyState*)other)->pendingFollowRequest = 1;
-                        ((TrickyState*)other)->pendingFollowObj = target;
-                        ((TrickyState*)other)->stateFlags |= 0x10000LL;
+                        other->pendingFollowRequest = 1;
+                        other->pendingFollowObj = target;
+                        other->stateFlags |= 0x10000LL;
                     }
                 }
                 if (tricky_handleFeedOrTalk(obj, (int*)state) == 0 &&

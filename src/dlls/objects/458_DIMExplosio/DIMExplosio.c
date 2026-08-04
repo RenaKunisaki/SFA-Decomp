@@ -549,11 +549,11 @@ void explosion_init(GameObject* obj, DimExplosionPlacement* placementAddress) {
     Mtx mB;
     Mtx mA;
     int cursor;
-    int state = (int)obj->extra;
+    DimExplosionState* state = obj->extra;
     f32 scale;
     int i;
     int debrisCount;
-    ((DimExplosionState*)state)->flameCount = 0;
+    state->flameCount = 0;
     if (placementAddress->scaleParam == 0) {
         scale = 100.0f;
     } else {
@@ -565,28 +565,28 @@ void explosion_init(GameObject* obj, DimExplosionPlacement* placementAddress) {
     ((ExplosionSpawnFlameSpeedFirstFn)explosion_spawnFlame)((int)obj, 0.4f * scale, 0, obj->anim.localPosX,
                                                             obj->anim.localPosY, obj->anim.localPosZ);
     obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
-    ((DimExplosionState*)state)->modelKind =
+    state->modelKind =
         placementAddress->configFlags & DIM_EXPLOSION_MODEL_KIND_MASK;
-    Obj_SetActiveModelIndex(obj, ((DimExplosionState*)state)->modelKind);
+    Obj_SetActiveModelIndex(obj, state->modelKind);
     if (placementAddress->configFlags & DIM_EXPLOSION_CONFIG_HAS_GRAVITY) {
-        ((DimExplosionState*)state)->gravity = 0.1f;
+        state->gravity = 0.1f;
     } else {
-        ((DimExplosionState*)state)->gravity = sExplosionZero[0];
+        state->gravity = sExplosionZero[0];
     }
-    ((DimExplosionState*)state)->nearGround = 0;
+    state->nearGround = 0;
     if (trackGetNearestGroundOffset(obj, obj->anim.localPosX, 5.0f + obj->anim.localPosY, obj->anim.localPosZ,
-                             (f32*)(state + offsetof(DimExplosionState, groundY)), 0) == 0) {
-        if (((DimExplosionState*)state)->groundY < 20.0f) {
-            ((DimExplosionState*)state)->nearGround = 1;
+                             (f32*)((u8*)state + offsetof(DimExplosionState, groundY)), 0) == 0) {
+        if (state->groundY < 20.0f) {
+            state->nearGround = 1;
         }
-        ((DimExplosionState*)state)->groundY = obj->anim.localPosY - ((DimExplosionState*)state)->groundY;
+        state->groundY = obj->anim.localPosY - state->groundY;
     } else {
-        ((DimExplosionState*)state)->groundY = obj->anim.localPosY;
+        state->groundY = obj->anim.localPosY;
     }
     if (placementAddress->configFlags & DIM_EXPLOSION_CONFIG_SPAWNS_DEBRIS) {
         debrisCount = (int)((f32)(6.0f * scale) / 100.0f);
-        for (i = 0, cursor = state; i < debrisCount; i++) {
-            if (((DimExplosionState*)state)->nearGround != 0) {
+        for (i = 0, cursor = (int)state; i < debrisCount; i++) {
+            if (state->nearGround != 0) {
                 f32 mag = 2.0f * ((f32)randomGetRange(0x14, 0x28) * 0.01f) + 2.0f;
                 vsp.x = mag;
                 vsp.y = sExplosionZero[0];
@@ -629,53 +629,53 @@ void explosion_init(GameObject* obj, DimExplosionPlacement* placementAddress) {
             }
             cursor += sizeof(DimExplosionGravityDebris);
         }
-        ((DimExplosionState*)state)->debrisCount = i;
+        state->debrisCount = i;
     } else {
-        ((DimExplosionState*)state)->debrisCount = 0;
+        state->debrisCount = 0;
     }
-    ((DimExplosionState*)state)->light = 0;
+    state->light = 0;
     if (placementAddress->configFlags & DIM_EXPLOSION_CONFIG_HAS_LIGHT) {
-        ((DimExplosionState*)state)->light = objCreateLight(0, 1);
-        if ((void*)((DimExplosionState*)state)->light != NULL) {
-            modelLightStruct_setLightKind(((DimExplosionState*)state)->light, MODEL_LIGHT_KIND_POINT);
-            modelLightStruct_setPosition(((DimExplosionState*)state)->light, obj->anim.worldPosX, obj->anim.worldPosY,
+        state->light = objCreateLight(0, 1);
+        if ((void*)state->light != NULL) {
+            modelLightStruct_setLightKind(state->light, MODEL_LIGHT_KIND_POINT);
+            modelLightStruct_setPosition(state->light, obj->anim.worldPosX, obj->anim.worldPosY,
                                          obj->anim.worldPosZ);
-            modelLightStruct_setAffectsAabbLightSelection((ModelLightStruct*)((DimExplosionState*)state)->light, 1);
-            modelLightStruct_setEnabled(((DimExplosionState*)state)->light, 1, sExplosionZero[0]);
-            modelLightStruct_setDistanceAttenuation(((DimExplosionState*)state)->light, (f32)(1.5f * scale),
+            modelLightStruct_setAffectsAabbLightSelection((ModelLightStruct*)state->light, 1);
+            modelLightStruct_setEnabled(state->light, 1, sExplosionZero[0]);
+            modelLightStruct_setDistanceAttenuation(state->light, (f32)(1.5f * scale),
                                                     (f32)(sExplosionFlickerExponent[0] * scale));
-            modelLightStruct_setDiffuseColor(((DimExplosionState*)state)->light, 0xff, 0xeb, 0xa0, 0xff);
+            modelLightStruct_setDiffuseColor(state->light, 0xff, 0xeb, 0xa0, 0xff);
         }
     }
     obj->anim.alpha = 0xff;
     if (placementAddress->configFlags & DIM_EXPLOSION_CONFIG_HAS_RAYS) {
-        if (((DimExplosionState*)state)->nearGround == 0) {
-            ((DimExplosionState*)state)->rayCount = 2;
-            ((DimExplosionState*)state)->rays[0].yaw = randomGetRange(0, 0x4000);
-            ((DimExplosionState*)state)->rays[0].pitch = randomGetRange(0, 0x8000);
-            ((DimExplosionState*)state)->rays[1].yaw = ((DimExplosionState*)state)->rays[0].yaw + 0x4000;
-            ((DimExplosionState*)state)->rays[1].pitch = ((DimExplosionState*)state)->rays[0].pitch;
+        if (state->nearGround == 0) {
+            state->rayCount = 2;
+            state->rays[0].yaw = randomGetRange(0, 0x4000);
+            state->rays[0].pitch = randomGetRange(0, 0x8000);
+            state->rays[1].yaw = state->rays[0].yaw + 0x4000;
+            state->rays[1].pitch = state->rays[0].pitch;
         } else {
-            ((DimExplosionState*)state)->rayCount = 1;
-            ((DimExplosionState*)state)->rays[0].yaw = 0;
-            ((DimExplosionState*)state)->rays[0].pitch = 0;
+            state->rayCount = 1;
+            state->rays[0].yaw = 0;
+            state->rays[0].pitch = 0;
         }
     } else {
-        ((DimExplosionState*)state)->rayCount = 0;
+        state->rayCount = 0;
     }
-    ((DimExplosionState*)state)->halfLifeFired = 0;
-    ((DimExplosionState*)state)->frameCounter = 0;
-    ((DimExplosionState*)state)->lifeFrames = (int)(sExplosionLifeScale[0] * sqrtf(scale));
+    state->halfLifeFired = 0;
+    state->frameCounter = 0;
+    state->lifeFrames = (int)(sExplosionLifeScale[0] * sqrtf(scale));
     {
-        int clampedLifeFrames = ((DimExplosionState*)state)->lifeFrames;
+        int clampedLifeFrames = state->lifeFrames;
         if (clampedLifeFrames < 0) {
             clampedLifeFrames = 0;
         } else if (clampedLifeFrames > 0x3c) {
             clampedLifeFrames = 0x3c;
         }
-        ((DimExplosionState*)state)->lifeFrames = clampedLifeFrames;
+        state->lifeFrames = clampedLifeFrames;
     }
-    ((DimExplosionState*)state)->scale = scale;
+    state->scale = scale;
     obj->anim.rootMotionScale = sExplosionZero[0];
 }
 

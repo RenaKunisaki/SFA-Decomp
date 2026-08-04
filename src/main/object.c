@@ -1174,7 +1174,7 @@ u8* loadObjectFile(int id)
     extern int loadModLines(int idx, s16* outCount);
     int size;
     int base;
-    u8* buf;
+    ObjDef* buf;
     int n;
     s16 modLine;
 
@@ -1192,56 +1192,56 @@ u8* loadObjectFile(int id)
         base = offsets[id];
         size = (&offsets[id])[1] - base;
     }
-    buf = mmAlloc(size, 0xe, 0);
+    buf = (ObjDef*)mmAlloc(size, 0xe, 0);
     if (buf != 0)
     {
-        fileLoadToBufferOffset(MLDF_FILEID_OBJECTS_BIN, buf, base, size);
-        if (((ObjDef*)buf)->eventMoveTable != NULL)
+        fileLoadToBufferOffset(MLDF_FILEID_OBJECTS_BIN, (u8*)buf, base, size);
+        if (buf->eventMoveTable != NULL)
         {
-            ((ObjDef*)buf)->eventMoveTable = (s16*)((int)buf + (int)((ObjDef*)buf)->eventMoveTable);
+            buf->eventMoveTable = (s16*)((int)buf + (int)buf->eventMoveTable);
         }
-        if (((ObjDef*)buf)->hitReactMoveTable != NULL)
+        if (buf->hitReactMoveTable != NULL)
         {
-            ((ObjDef*)buf)->hitReactMoveTable =
-                (ObjHitReactMoveEntry*)((int)buf + (int)((ObjDef*)buf)->hitReactMoveTable);
+            buf->hitReactMoveTable =
+                (ObjHitReactMoveEntry*)((int)buf + (int)buf->hitReactMoveTable);
         }
-        if (((ObjDef*)buf)->weaponDaTable != NULL)
+        if (buf->weaponDaTable != NULL)
         {
-            ((ObjDef*)buf)->weaponDaTable = (s16*)((int)buf + (int)((ObjDef*)buf)->weaponDaTable);
+            buf->weaponDaTable = (s16*)((int)buf + (int)buf->weaponDaTable);
         }
-        ((ObjDef*)buf)->modelFileIds = (s32*)((int)buf + (int)((ObjDef*)buf)->modelFileIds);
-        ((ObjDef*)buf)->textureSlotDefs = (ObjTextureSlotDef*)((int)buf + (int)((ObjDef*)buf)->textureSlotDefs);
-        ((ObjDef*)buf)->jointData = (s8*)((int)buf + (int)((ObjDef*)buf)->jointData);
-        if (((ObjDef*)buf)->extraSetupData != NULL)
+        buf->modelFileIds = (s32*)((int)buf + (int)buf->modelFileIds);
+        buf->textureSlotDefs = (ObjTextureSlotDef*)((int)buf + (int)buf->textureSlotDefs);
+        buf->jointData = (s8*)((int)buf + (int)buf->jointData);
+        if (buf->extraSetupData != NULL)
         {
-            ((ObjDef*)buf)->extraSetupData = (u8*)((int)buf + (int)((ObjDef*)buf)->extraSetupData);
+            buf->extraSetupData = (u8*)((int)buf + (int)buf->extraSetupData);
         }
-        if (((ObjDef*)buf)->hitVolumes != NULL)
+        if (buf->hitVolumes != NULL)
         {
-            ((ObjDef*)buf)->hitVolumes = (ObjDefHitVolume*)((int)buf + (int)((ObjDef*)buf)->hitVolumes);
+            buf->hitVolumes = (ObjDefHitVolume*)((int)buf + (int)buf->hitVolumes);
         }
-        if (((ObjDef*)buf)->sequenceMap != NULL)
+        if (buf->sequenceMap != NULL)
         {
-            ((ObjDef*)buf)->sequenceMap = (s16*)((int)buf + (int)((ObjDef*)buf)->sequenceMap);
+            buf->sequenceMap = (s16*)((int)buf + (int)buf->sequenceMap);
         }
-        ((ObjDef*)buf)->attachPoints = (ObjAttachPoint*)((int)buf + (int)((ObjDef*)buf)->attachPoints);
-        ((ObjDef*)buf)->modLines = NULL;
-        ((ObjDef*)buf)->intersectionLines = NULL;
-        n = (s8)buf[0x5d];
+        buf->attachPoints = (ObjAttachPoint*)((int)buf + (int)buf->attachPoints);
+        buf->modLines = NULL;
+        buf->intersectionLines = NULL;
+        n = (s8)((u8*)buf)[0x5d];
         if (n > -1)
         {
-            ((ObjDef*)buf)->modLines = (struct MapHitLine*)loadModLines(n, &modLine);
-            ((ObjDef*)buf)->modLineCount = modLine;
+            buf->modLines = (struct MapHitLine*)loadModLines(n, &modLine);
+            buf->modLineCount = modLine;
             intersectModLineBuild((IntersectModLineObject*)buf);
         }
-        gObjFileBufferTable[id] = buf;
+        gObjFileBufferTable[id] = (u8*)buf;
         gObjFileRefCount[id] = 1;
     }
     else
     {
         return 0;
     }
-    return buf;
+    return (u8*)buf;
 }
 
 void objGetWeaponDa(u8* obj, int objType, ObjWeaponDaTable* weaponDaTable, int key, u8 load)
