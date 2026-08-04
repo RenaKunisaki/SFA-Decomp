@@ -1178,16 +1178,15 @@ void crawler_updateB(GameObject* obj, u8* state)
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId = 0;
     {
         int j = 1;
-        u8* p = (u8*)t18 + 0xc;
+        CrawlerSeq12* p = t18 + 1;
         int c;
         for (c = t18->moveId; c >= 1; c--)
         {
-            if (obj->anim.currentMove == *(u8*)(p + 8))
+            if (obj->anim.currentMove == p->moveId)
             {
-                p = (u8*)t18 + j * 0xc;
-                ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority =
-                    (s8) * (int*)(p + 4);
-                ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId = (s8) * (u8*)(p + 9);
+                p = t18 + j;
+                ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority = (s8)p->mask;
+                ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId = (s8)p->next;
                 if (((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority == 0x1f)
                 {
                     ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x40;
@@ -1198,7 +1197,7 @@ void crawler_updateB(GameObject* obj, u8* state)
                 }
                 break;
             }
-            p += 0xc;
+            p++;
             j += 1;
         }
     }
@@ -1230,7 +1229,7 @@ void crawler_update(GameObject* obj, u8* state)
     CrawlerSeq16* t6 = d[((EnemyState*)state)->userData2].t14;
     f32 cap;
     int i;
-    u8* p;
+    CrawlerSeq12* p;
     int j;
     int n;
 
@@ -1312,11 +1311,11 @@ void crawler_update(GameObject* obj, u8* state)
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority = 0;
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId = 0;
     j = 1;
-    p = (u8*)t8 + 0xc;
+    p = t8 + 1;
     n = t8->moveId;
     for (; j <= n; j++)
     {
-        if (obj->anim.currentMove == *(u8*)(p + 8))
+        if (obj->anim.currentMove == p->moveId)
         {
             ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority =
                 (s8)t8[j].mask;
@@ -1332,7 +1331,7 @@ void crawler_update(GameObject* obj, u8* state)
             }
             break;
         }
-        p += 0xc;
+        p++;
     }
 
     if ((((EnemyState*)state)->rootMotionFlags & 8) == 0 && (((EnemyState*)state)->familyData.crawler.flagsD & 0x10) == 0)
