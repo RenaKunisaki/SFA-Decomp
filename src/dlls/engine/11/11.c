@@ -1308,7 +1308,7 @@ void dll_0B_updateActiveEffects(void)
                     else
                     {
                         Sfx_PlayFromObject((GameObject*)((PartfxEffectState*)eff)->sourceObject,
-                                           (u16) * (s16*)(PENDING_SPAWNS + emOff + 0x14));
+                                           (u16)((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->param14);
                     }
                 }
                 if (((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->modelOrResource & 0x100000)
@@ -1577,7 +1577,7 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* context, int unused, int vertexCount,
             int bias;
             u8* dstc;
 
-            dstc = *(u8**)((u8*)arr[slot] + 0x84 + off);
+            dstc = (u8*)((PartfxEffectState*)((u8*)arr[slot] + off))->colorBuffers[0];
             bias = 0;
             j = 0;
             sd = colorData;
@@ -1616,7 +1616,7 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* context, int unused, int vertexCount,
             int j;
             s16* sb;
             u8* dstv;
-            dstv = *(u8**)((u8*)arr[slot] + 0x78 + off);
+            dstv = (u8*)((PartfxEffectState*)((u8*)arr[slot] + off))->vertexBuffers[0];
             sb = vertexData;
             for (j = 0; j < vertexCount; j++)
             {
