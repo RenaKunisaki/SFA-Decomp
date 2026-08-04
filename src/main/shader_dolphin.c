@@ -814,7 +814,7 @@ void setupHeatShimmerTevStages(char* p1)
     Texture* tex24;
     m1 = sHeatShimmerIndMtx1;
     m2 = sHeatShimmerIndMtx2[0];
-    tex24 = *(Texture**)(p1 + 0x24);
+    tex24 = ((Shader*)p1)->layers[0].texture;
     if (tex24 != 0)
     {
         void* obj = textureGetGXTexObj(tex24);

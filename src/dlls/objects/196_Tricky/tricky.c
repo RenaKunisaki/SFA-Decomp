@@ -3242,8 +3242,8 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t) {
                         ((AnimObjD2DripSetup*)o)->head.color[0] = 2;
                         ((AnimObjD2DripSetup*)o)->head.color[1] = 1;
                         ((AnimObjD2DripSetup*)o)->index = i;
-                        *(int*)(p + 0x700) = (int)objSetupObject((ObjPlacement*)o, 5, gobj->anim.mapEventSlot, -1,
-                                                                 (void*)gobj->anim.parentAddress);
+                        ((TrickyState*)p)->flameChildren[0] = objSetupObject(
+                            (ObjPlacement*)o, 5, gobj->anim.mapEventSlot, -1, (void*)gobj->anim.parentAddress);
                         p += 4;
                     }
                 }
@@ -3266,7 +3266,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t) {
                 int i = 0;
                 p = (u8*)t;
                 for (; i < 7; i++) {
-                    objSetAnimSpeedTo1((GameObject*)*(int*)(p + 0x700));
+                    objSetAnimSpeedTo1(((TrickyState*)p)->flameChildren[0]);
                     p += 4;
                 }
             }
@@ -5303,8 +5303,8 @@ int tricky_substateFlameBreath(GameObject* obj, TrickyState* state) {
                     ((FlameblastPlacement*)e)->base.color[0] = 2;
                     ((FlameblastPlacement*)e)->base.color[1] = 1;
                     ((FlameblastPlacement*)e)->streamIndex = i;
-                    *(u8**)(p + 0x700) = (u8*)objSetupObject((ObjPlacement*)e, 5, obj->anim.mapEventSlot,
-                                                             -1, obj->anim.parent);
+                    ((TrickyState*)p)->flameChildren[0] =
+                        objSetupObject((ObjPlacement*)e, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
                 }
                 Sfx_PlayFromObject(obj, SFXTRIG_en_cvdrip1c_3db);
                 Sfx_AddLoopedObjectSound((u32)obj, SFXTRIG_trpopn_c);

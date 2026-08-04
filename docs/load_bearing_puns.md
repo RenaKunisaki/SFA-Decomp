@@ -105,6 +105,22 @@ deliberate, not an oversight.
 | `(Curve*)&(...)->curve` (2 sites) | 99.386420 |
 | both casts rewritten (4 sites) | 99.073105 |
 
+### `dlls/engine/2/2.c` — `ObjSeq_start`, the cross-symbol reach
+
+`base + 0x2bd4 / 0x2bd8 / 0x2bdc` where `base = gObjSeqRuntimeBuffer` lands
+inside a **different `.bss` object**: `objSeqOverridePos[3]`, which
+`ObjSeq_setOverridePos` writes through its own symbol. Reading it back by that
+same symbol — the spelling the writer uses — is **not** free: 99.311295 →
+**99.011020** (size 2904 unchanged, `matched_code` unchanged, 4 extra
+instructions). Retail reaches the neighbour through the first object's symbol,
+so the relocation target *name* is load-bearing here even though the address is
+the same.
+
+The whole `base + 0x3XXX` cluster in this unit is the same thing: `SeqRunTables`
+and `ObjSeqRunBgState` are two composite overlays over a **run of adjacent .bss
+arrays**, not one struct. That makes it the `.bss`-order lane's question (A74),
+not a field-naming one.
+
 ### `454_DIMCannon/DIMCannon.c` — `modelRotation[1]`, 5 sites
 
 **Loses 8 bytes at an identical score (99.967674 both ways.)** The only entry
@@ -127,10 +143,6 @@ here that no score gate can see. This is why `obj_equal` is the gate.
 These were never measured because there is nothing to name them from. They are
 not load-bearing; they are simply unnamed.
 
-- `main/objprint_dolphin.c` `m + 0x44 / 0x48 / 0x4c / 0x50` — four floats inside
-  `ModelFileHeader.unk44[0x10]`, used as a PSMTXTrans pivot and a scale divisor.
-  **One reader in the whole tree**, no writer in code (the writer is the model
-  file). One site is not a majority.
 - `dlls/engine/2/maketex.c` `gSaveCardImageBuffer + 0x20 / 0x2a40`,
   `gSaveCardIoBuffer + 0xa40` — byte offsets into a serialized memory-card
   image. The offsets *are* the file format; no struct exists to name them with.
