@@ -785,11 +785,11 @@ static inline void drakorhoverpad_initPathCurve(GameObject* obj, u8* p)
 
 void drakorhoverpad_updateMain(GameObject* obj)
 {
-    u8* p = (obj)->extra;
+    DrakorHoverpadState* p = (obj)->extra;
     RomCurveWalker* curve;
     DrakorHoverpadUpdateMainPlacement* q = (DrakorHoverpadUpdateMainPlacement*)(obj)->anim.placementData;
-    DrakorHoverpadFlags* f = &((DrakorHoverpadState*)p)->flags;
-    DrakorHoverpadPathFlags* g = &((DrakorHoverpadState*)p)->pathFlags;
+    DrakorHoverpadFlags* f = &p->flags;
+    DrakorHoverpadPathFlags* g = &p->pathFlags;
     int evOut;
     Vec diff;
     f32 curvePos[3];
@@ -813,20 +813,20 @@ void drakorhoverpad_updateMain(GameObject* obj)
     if (f->bit20 == 0)
     {
         f->bit20 = mainGetBit(q->activateGameBit);
-        ((DrakorHoverpadState*)p)->targetSpeed = 0.0f;
+        p->targetSpeed = 0.0f;
         if (f->bit20 != 0)
         {
-            drakorhoverpad_initPathCurve(obj, p);
-            (obj)->anim.localPosX = ((DrakorHoverpadState*)p)->curve.posX;
-            (obj)->anim.localPosY = ((DrakorHoverpadState*)p)->curve.posY;
-            (obj)->anim.localPosZ = ((DrakorHoverpadState*)p)->curve.posZ;
-            ((DrakorHoverpadState*)p)->commandSpeed = (*(f32*)&gDrakorHoverpadSpeedStep);
+            drakorhoverpad_initPathCurve(obj, (u8*)p);
+            (obj)->anim.localPosX = p->curve.posX;
+            (obj)->anim.localPosY = p->curve.posY;
+            (obj)->anim.localPosZ = p->curve.posZ;
+            p->commandSpeed = (*(f32*)&gDrakorHoverpadSpeedStep);
             Sfx_PlayFromObject(obj, SFXTRIG_id_308);
             Sfx_PlayFromObject(obj, SFXTRIG_id_30a);
         }
         return;
     }
-    curve = &((DrakorHoverpadState*)p)->curve;
+    curve = &p->curve;
     if (g->f08 != 0)
     {
         angle = (s16)getAngle(sqrtf(curve->tangentX * curve->tangentX + curve->tangentZ * curve->tangentZ),
@@ -836,10 +836,10 @@ void drakorhoverpad_updateMain(GameObject* obj)
         limit = 0.1f * (0.7f * mathSinf(phase));
         if (f->b40 != 0)
         {
-            absH = (((DrakorHoverpadState*)p)->commandSpeed >= 0.0f) ? ((DrakorHoverpadState*)p)->commandSpeed : -((DrakorHoverpadState*)p)->commandSpeed;
-            absV = (((DrakorHoverpadState*)p)->speed >= 0.0f)
-                       ? ((DrakorHoverpadState*)p)->speed
-                       : -((DrakorHoverpadState*)p)->speed;
+            absH = (p->commandSpeed >= 0.0f) ? p->commandSpeed : -p->commandSpeed;
+            absV = (p->speed >= 0.0f)
+                       ? p->speed
+                       : -p->speed;
             if (absV > absH + (*(f32*)&gDrakorHoverpadSpeedStep))
             {
                 limit = limit + (*(f32*)&gDrakorHoverpadSpeedStep);
@@ -849,38 +849,38 @@ void drakorhoverpad_updateMain(GameObject* obj)
         {
             limit = limit + (*(f32*)&gDrakorHoverpadSpeedStep);
         }
-        ((DrakorHoverpadState*)p)->speed = ((DrakorHoverpadState*)p)->targetSpeed +
-                                                           (((DrakorHoverpadState*)p)->speed + wobbleY);
-        absV = ((DrakorHoverpadState*)p)->speed;
+        p->speed = p->targetSpeed +
+                                                           (p->speed + wobbleY);
+        absV = p->speed;
         absH = (absV >= 0.0f) ? absV : -absV;
         if (absH < limit)
         {
-            ((DrakorHoverpadState*)p)->speed = ((DrakorHoverpadState*)p)->commandSpeed;
+            p->speed = p->commandSpeed;
         }
         else
         {
-            ((DrakorHoverpadState*)p)->speed += (absV > ((DrakorHoverpadState*)p)->commandSpeed) ? -limit : limit;
+            p->speed += (absV > p->commandSpeed) ? -limit : limit;
         }
         ObjHits_SetHitVolumeSlot(&obj->anim, DRAKORHOVERPAD_HIT_VOLUME_SLOT, 1, 0);
     }
     else
     {
         ObjHits_DisableObject(obj);
-        ((DrakorHoverpadState*)p)->speed = ((DrakorHoverpadState*)p)->commandSpeed;
-        gDrakorHoverpadSteerMaxSpeed = (*(f32*)&gDrakorHoverpadSpeedStep) * ((DrakorHoverpadState*)p)->commandSpeed;
+        p->speed = p->commandSpeed;
+        gDrakorHoverpadSteerMaxSpeed = (*(f32*)&gDrakorHoverpadSpeedStep) * p->commandSpeed;
     }
-    if (((DrakorHoverpadState*)p)->speed < 0.0f)
+    if (p->speed < 0.0f)
     {
-        (*gRomCurveInterface)->setClosed((RomCurveWalker*)(p + 4), 1);
+        (*gRomCurveInterface)->setClosed((RomCurveWalker*)((u8*)p + 4), 1);
     }
     else
     {
-        (*gRomCurveInterface)->setClosed((RomCurveWalker*)(p + 4), 0);
+        (*gRomCurveInterface)->setClosed((RomCurveWalker*)((u8*)p + 4), 0);
     }
-    ((DrakorHoverpadState*)p)->targetSpeed = 0.0f;
-    if (((DrakorHoverpadState*)p)->speed != 0.0f)
+    p->targetSpeed = 0.0f;
+    if (p->speed != 0.0f)
     {
-        Curve_AdvanceAlongPath(&curve->curve, ((DrakorHoverpadState*)p)->speed);
+        Curve_AdvanceAlongPath(&curve->curve, p->speed);
         c = curve->reverse;
         if ((c == 0 && curve->atSegmentEnd != 0) || (c != 0 && curve->atSegmentEnd == 0))
         {
@@ -895,10 +895,10 @@ void drakorhoverpad_updateMain(GameObject* obj)
     curvePos[1] = curve->posY;
     curvePos[2] = curve->posZ;
     curvePos[1] = curvePos[1] + (1.0f + mathSinf(3.1415927f *
-                                                         (f32)(int)((DrakorHoverpadState*)p)->anglePhase /
+                                                         (f32)(int)p->anglePhase /
                                                          32768.0f));
-    ((DrakorHoverpadState*)p)->anglePhase =
-        (s16)(((DrakorHoverpadState*)p)->anglePhase + framesThisStep * 0x320);
+    p->anglePhase =
+        (s16)(p->anglePhase + framesThisStep * 0x320);
     if (g->f10 != 0)
     {
         nearest = objGetNearestTypeTo(BOSSDRAKOR_OBJGROUP, obj, 0);
@@ -950,7 +950,7 @@ void drakorhoverpad_updateMain(GameObject* obj)
             clamped = yawDelta;
         }
         c = (s16)clamped;
-        (obj)->anim.rotZ = (s16)((((DrakorHoverpadState*)p)->speed < 0.0f) ? c : -c);
+        (obj)->anim.rotZ = (s16)((p->speed < 0.0f) ? c : -c);
         (obj)->anim.rotX += (s16)((c < -0x100) ? -0x100 : (c > 0x100) ? 0x100 : c);
         c = (obj)->anim.rotY;
         if (c < -0x64)

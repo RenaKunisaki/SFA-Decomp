@@ -198,7 +198,7 @@ void ccLightfoot_update(GameObject* obj) {
     CCLightfootAnimTable* animTable = &gCCLightfootAnimTable;
     u32 singleTarget;
     CCLightfootState* state = obj->extra;
-    u32 targetObject;
+    GameObject* targetObject;
     s16 targetAngle;
     u32 candidateTarget;
     u32 targetActorAHandle;
@@ -263,7 +263,7 @@ void ccLightfoot_update(GameObject* obj) {
                         }
                         enemy_setTrackedObj((GameObject*)nearTarget, (GameObject*)state->playerObject);
                         enemy_setTrackedObj((GameObject*)farTarget, obj);
-                        targetObject = farTarget;
+                        targetObject = (GameObject*)farTarget;
                         distanceSquared = getXZDistanceSquared(&obj->anim.worldPosX,
                                                         (f32*)(farTarget + offsetof(GameObject, anim.worldPosX)));
                     } else {
@@ -278,10 +278,10 @@ void ccLightfoot_update(GameObject* obj) {
                                                 obj);
                         }
                         if (targetDistanceSquares[0] < targetDistanceSquares[1]) {
-                            targetObject = (u32)state->targetActorA;
+                            targetObject = state->targetActorA;
                             distanceSquared = targetDistanceSquares[0];
                         } else {
-                            targetObject = (u32)state->targetActorB;
+                            targetObject = state->targetActorB;
                             distanceSquared = targetDistanceSquares[1];
                         }
                     }
@@ -317,16 +317,16 @@ void ccLightfoot_update(GameObject* obj) {
                 } else {
                     enemy_setTrackedObj((GameObject*)singleTarget, (GameObject*)state->playerObject);
                 }
-                targetObject = singleTarget;
+                targetObject = (GameObject*)singleTarget;
                 distanceSquared =
                     getXZDistanceSquared(&obj->anim.worldPosX, (f32*)(singleTarget + offsetof(GameObject, anim.worldPosX)));
             } else {
-                targetObject = (u32)state->playerObject;
+                targetObject = state->playerObject;
                 distanceSquared = CC_LIGHTFOOT_DISTANCE_SENTINEL;
             }
         } while (0);
-        targetAngle = getAngle(-(((GameObject*)targetObject)->anim.localPosX - obj->anim.localPosX),
-                               -(((GameObject*)targetObject)->anim.localPosZ - obj->anim.localPosZ));
+        targetAngle = getAngle(-(targetObject->anim.localPosX - obj->anim.localPosX),
+                               -(targetObject->anim.localPosZ - obj->anim.localPosZ));
         angleDifference = (s16)(obj->anim.rotX - (u16)targetAngle);
         if (angleDifference > CC_LIGHTFOOT_HALF_TURN) {
             angleDifference = (s16)(angleDifference - CC_LIGHTFOOT_ANGLE_WRAP);
@@ -381,7 +381,7 @@ void ccLightfoot_update(GameObject* obj) {
             }
         }
         if ((state->flags & CC_LIGHTFOOT_FLAG_MOVE_COMPLETE) != 0) {
-            ccLightfoot_selectCombatPhase(state, (GameObject*)targetObject, distanceSquared);
+            ccLightfoot_selectCombatPhase(state, targetObject, distanceSquared);
         }
         break;
     case CC_LIGHTFOOT_PHASE_APPROACH:
@@ -400,11 +400,11 @@ void ccLightfoot_update(GameObject* obj) {
         break;
     case CC_LIGHTFOOT_PHASE_ENGAGE:
         if ((state->flags & CC_LIGHTFOOT_FLAG_MOVE_COMPLETE) != 0) {
-            ccLightfoot_selectCombatPhase(state, (GameObject*)targetObject, distanceSquared);
+            ccLightfoot_selectCombatPhase(state, targetObject, distanceSquared);
         }
         break;
     case CC_LIGHTFOOT_PHASE_GUARD:
-        if (((GameObject*)targetObject)->anim.currentMove != CC_LIGHTFOOT_TARGET_GUARD_MOVE) {
+        if (targetObject->anim.currentMove != CC_LIGHTFOOT_TARGET_GUARD_MOVE) {
             state->phase = CC_LIGHTFOOT_PHASE_STRIKE_WATCH;
         }
         if ((state->flags & CC_LIGHTFOOT_FLAG_MOVE_COMPLETE) != 0) {
@@ -412,26 +412,26 @@ void ccLightfoot_update(GameObject* obj) {
         }
         break;
     case CC_LIGHTFOOT_PHASE_GUARD_HELD:
-        if (((GameObject*)targetObject)->anim.currentMove != CC_LIGHTFOOT_TARGET_GUARD_MOVE) {
+        if (targetObject->anim.currentMove != CC_LIGHTFOOT_TARGET_GUARD_MOVE) {
             state->phase = CC_LIGHTFOOT_PHASE_STRIKE_WATCH;
         }
         break;
     case CC_LIGHTFOOT_PHASE_STRIKE_WATCH:
-        move = ((GameObject*)targetObject)->anim.currentMove;
+        move = targetObject->anim.currentMove;
         if (move == CC_LIGHTFOOT_TARGET_STRIKE_MOVE &&
-            ((GameObject*)targetObject)->anim.currentMoveProgress > CC_LIGHTFOOT_STRIKE_PROGRESS_THRESHOLD) {
+            targetObject->anim.currentMoveProgress > CC_LIGHTFOOT_STRIKE_PROGRESS_THRESHOLD) {
             state->phase = CC_LIGHTFOOT_PHASE_PARRY;
         } else if (move == CC_LIGHTFOOT_TARGET_GUARD_MOVE) {
             state->phase = CC_LIGHTFOOT_PHASE_GUARD;
         } else if ((state->flags & CC_LIGHTFOOT_FLAG_MOVE_COMPLETE) != 0) {
-            ccLightfoot_selectCombatPhase(state, (GameObject*)targetObject, distanceSquared);
+            ccLightfoot_selectCombatPhase(state, targetObject, distanceSquared);
         }
         break;
     case CC_LIGHTFOOT_PHASE_PARRY:
-        move = ((GameObject*)targetObject)->anim.currentMove;
+        move = targetObject->anim.currentMove;
         if (move != CC_LIGHTFOOT_TARGET_STRIKE_MOVE ||
             (move == CC_LIGHTFOOT_TARGET_STRIKE_MOVE &&
-             ((GameObject*)targetObject)->anim.currentMoveProgress < CC_LIGHTFOOT_STRIKE_PROGRESS_THRESHOLD)) {
+             targetObject->anim.currentMoveProgress < CC_LIGHTFOOT_STRIKE_PROGRESS_THRESHOLD)) {
             state->phase = CC_LIGHTFOOT_PHASE_RECOVER;
         }
         if ((state->flags & CC_LIGHTFOOT_FLAG_MOVE_COMPLETE) != 0) {
@@ -439,26 +439,26 @@ void ccLightfoot_update(GameObject* obj) {
         }
         break;
     case CC_LIGHTFOOT_PHASE_PARRY_HELD:
-        move = ((GameObject*)targetObject)->anim.currentMove;
+        move = targetObject->anim.currentMove;
         if (move != CC_LIGHTFOOT_TARGET_STRIKE_MOVE ||
             (move == CC_LIGHTFOOT_TARGET_STRIKE_MOVE &&
-             ((GameObject*)targetObject)->anim.currentMoveProgress < CC_LIGHTFOOT_STRIKE_PROGRESS_THRESHOLD)) {
+             targetObject->anim.currentMoveProgress < CC_LIGHTFOOT_STRIKE_PROGRESS_THRESHOLD)) {
             state->phase = CC_LIGHTFOOT_PHASE_RECOVER;
         }
         break;
     case CC_LIGHTFOOT_PHASE_RECOVER:
-        move = ((GameObject*)targetObject)->anim.currentMove;
+        move = targetObject->anim.currentMove;
         if (move == CC_LIGHTFOOT_TARGET_STRIKE_MOVE &&
-            ((GameObject*)targetObject)->anim.currentMoveProgress > CC_LIGHTFOOT_STRIKE_PROGRESS_THRESHOLD) {
+            targetObject->anim.currentMoveProgress > CC_LIGHTFOOT_STRIKE_PROGRESS_THRESHOLD) {
             state->phase = CC_LIGHTFOOT_PHASE_PARRY;
         } else if (move == CC_LIGHTFOOT_TARGET_GUARD_MOVE) {
             state->phase = CC_LIGHTFOOT_PHASE_GUARD;
         } else if ((state->flags & CC_LIGHTFOOT_FLAG_MOVE_COMPLETE) != 0) {
-            ccLightfoot_selectCombatPhase(state, (GameObject*)targetObject, distanceSquared);
+            ccLightfoot_selectCombatPhase(state, targetObject, distanceSquared);
         }
         break;
     case CC_LIGHTFOOT_PHASE_REACT:
-        ccLightfoot_selectCombatPhase(state, (GameObject*)targetObject, distanceSquared);
+        ccLightfoot_selectCombatPhase(state, targetObject, distanceSquared);
         break;
     case CC_LIGHTFOOT_PHASE_DORMANT:
         if (mainGetBit(CC_LIGHTFOOT_ENCOUNTER_TRIGGERED_GAMEBIT) != 0) {

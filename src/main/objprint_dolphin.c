@@ -1712,7 +1712,7 @@ static u8 addShaderLayerStages(u8* obj, u8* shader, u32* p3, int mask, int p5, i
 }
 static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
 {
-    int* op;
+    Shader* op;
     u32* refs;
     u32 idx;
     u8 shad;
@@ -1749,13 +1749,13 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     {
         return idx;
     }
-    op = (int*)ObjModel_GetRenderOp((ModelFileHeader*)*am, idx);
+    op = ObjModel_GetRenderOp((ModelFileHeader*)*am, idx);
     refs = (u32*)ObjModel_GetRenderOpTextureRefs((ObjModel*)am, idx);
     Rcp_ResetTextureStageState();
     envtex = 0;
-    if ((refs[0] != 0 || refs[1] != 0) && ((Shader*)op)->auxTextureIndex != 0)
+    if ((refs[0] != 0 || refs[1] != 0) && op->auxTextureIndex != 0)
     {
-        void* t = textureIdxToPtr(((Shader*)op)->auxTextureIndex);
+        void* t = textureIdxToPtr(op->auxTextureIndex);
         int nl = gObjSelectedLightCount + 1;
         if (refs[0] != 0)
         {
@@ -1765,7 +1765,7 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
         {
             nl += 1;
         }
-        envtex = addEnvMapBumpStages(t, nl, ((Shader*)op)->envMapParams, ((Shader*)op)->layers[0].textureIndex);
+        envtex = addEnvMapBumpStages(t, nl, op->envMapParams, op->layers[0].textureIndex);
         envtex &= 0xff;
     }
     if (refs[0] != 0)
@@ -1774,12 +1774,12 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     }
     if (refs[1] != 0)
     {
-        if (((Shader*)op)->unk1C != 0)
+        if (op->unk1C != 0)
         {
             color[0] = 0xff;
             color[1] = 0xff;
             color[2] = 0xff;
-            color[3] = ((Shader*)op)->reg2Alpha;
+            color[3] = op->reg2Alpha;
         }
         else
         {
@@ -1796,7 +1796,7 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
             {
                 hasBaseTexture = 0;
             }
-            addLightTexReg2Stage((void*)refs[1], hasBaseTexture, ((Shader*)op)->reg2TexSlot);
+            addLightTexReg2Stage((void*)refs[1], hasBaseTexture, op->reg2TexSlot);
         }
         if (color[3] != 0)
         {
@@ -1870,7 +1870,7 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
     }
     {
         u32 t18;
-        if ((t18 = ((Shader*)op)->textureId) != 0 && ((Shader*)op)->unk1C == 0 && refs[1] != 0)
+        if ((t18 = op->textureId) != 0 && op->unk1C == 0 && refs[1] != 0)
         {
             textureIdxToPtr(t18);
             addTexModulateReg2Stage();
@@ -1892,7 +1892,7 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
             }
             addLitColorStage(hasBaseTexture);
         }
-        if (((Shader*)op)->flags & SHADER_FLAG_DECAL_LAYER)
+        if (op->flags & SHADER_FLAG_DECAL_LAYER)
         {
             u8* l1 = Shader_getLayer((u8*)op, 1);
             {
@@ -1910,7 +1910,7 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
         getFogColorRgb(fogc);
         renderHeavyFog(fogc);
     }
-    if (((Shader*)op)->flags & SHADER_FLAG_PROJECTED_TEX_PASS)
+    if (op->flags & SHADER_FLAG_PROJECTED_TEX_PASS)
     {
         f32* vm = Camera_GetViewMatrix();
         Obj_BuildWorldTransformMatrix((GameObject*)obj, wm, 0);
@@ -1934,7 +1934,7 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
             addColorFadeStage((GXColor*)color);
         }
     }
-    if (((Shader*)op)->flags & SHADER_FLAG_WATER_CAUSTIC)
+    if (op->flags & SHADER_FLAG_WATER_CAUSTIC)
     {
         AttractMovie_AddVideoTevStages();
     }
@@ -1948,7 +1948,7 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
         else
         {
             u8 zon = 1;
-            if (((GameObject*)obj)->anim.renderAlpha < 0xff || (((Shader*)op)->flags & SHADER_FLAG_FORCE_BLEND) || shad)
+            if (((GameObject*)obj)->anim.renderAlpha < 0xff || (op->flags & SHADER_FLAG_FORCE_BLEND) || shad)
             {
                 u16 flags;
                 GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
@@ -1970,7 +1970,7 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
                     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
                 }
             }
-            else if (((Shader*)op)->flags & SHADER_FLAG_ALPHA_TEST_OPAQUE)
+            else if (op->flags & SHADER_FLAG_ALPHA_TEST_OPAQUE)
             {
                 GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
                 if (((ModelFileHeader*)p2)->flags & 0x400)
@@ -1996,14 +1996,14 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
                 }
                 GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
             }
-            if (((Shader*)op)->flags & SHADER_FLAG_ALPHA_TEST_OPAQUE)
+            if (op->flags & SHADER_FLAG_ALPHA_TEST_OPAQUE)
             {
                 zon = 0;
             }
             gxSetPeControl_ZCompLoc_(zon);
         }
     }
-    if (((Shader*)op)->flags & 8)
+    if (op->flags & 8)
     {
         GXSetCullMode(GX_CULL_BACK);
     }
