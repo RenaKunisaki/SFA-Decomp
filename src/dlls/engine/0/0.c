@@ -7201,14 +7201,14 @@ void mapScreenDrawHud(int unused1, int unused2, int unused3)
             revealedHeight = 0;
         }
         revealedHeight *= 0x10;
-        if (revealedHeight > ((TextSlot*)gTextBoxes)[12].maxHeight)
+        if (revealedHeight > gTextBoxes[12].maxHeight)
         {
-            revealedHeight = ((TextSlot*)gTextBoxes)[12].maxHeight;
+            revealedHeight = gTextBoxes[12].maxHeight;
         }
-        panelX = ((TextSlot*)gTextBoxes)[12].x;
-        panelY = ((TextSlot*)gTextBoxes)[12].y;
+        panelX = gTextBoxes[12].x;
+        panelY = gTextBoxes[12].y;
         height = revealedHeight;
-        width = ((TextSlot*)gTextBoxes)[12].maxWidth;
+        width = gTextBoxes[12].maxWidth;
         drawTexture(((HudTextures*)hudTextures)->tex28, panelX - 5, panelY - 5, panelAlpha, 0x100);
         drawScaledTexture(((HudTextures*)hudTextures)->tex34, panelX, panelY - 5, panelAlpha, 0x100, width, 5, 0);
         drawScaledTexture(((HudTextures*)hudTextures)->tex2C, panelX - 5, panelY, panelAlpha, 0x100, 5, height, 0);
@@ -7219,7 +7219,7 @@ void mapScreenDrawHud(int unused1, int unused2, int unused3)
                           3);
         drawScaledTexture(((HudTextures*)hudTextures)->tex28, panelX + width, panelY - 5, panelAlpha, 0x100, 5, 5, 1);
         drawScaledTexture(((HudTextures*)hudTextures)->tex28, panelX - 5, panelY + height, panelAlpha, 0x100, 5, 5, 2);
-        ((TextSlot*)gTextBoxes)[12].height = revealedHeight;
+        gTextBoxes[12].height = revealedHeight;
         {
             s8 firstAvailableHint;
             s8 progressHint;

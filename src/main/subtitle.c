@@ -122,7 +122,7 @@ static void subtitleBuildLineTable(void) {
     f32 delta;
     f32 curTime;
     GameTextDef* t;
-    u8* win;
+    GameTextBox* win;
     int m;
     int i;
     char* str;
@@ -146,7 +146,7 @@ static void subtitleBuildLineTable(void) {
         gameTextSetCharset(1, 1);
     }
     t = (GameTextDef*)gameTextGet(gGameTextPendingTextId);
-    win = (u8*)gTextBoxes + 0x140;
+    win = &gTextBoxes[10];
     gSubtitleLineCount = 0;
     gSubtitleBlockCount = 0;
     for (i = 0; i < SUBTITLE_LINE_COUNT; i++) {
@@ -159,7 +159,7 @@ static void subtitleBuildLineTable(void) {
             q = args[2] / 60;
             s[0]->times[gSubtitleLineCount] = (f32)(args[1] + args[0] * 60 + q);
         }
-        strLines = gameTextWrapLines(str, (f32)(u32) * (u16*)(win + 2), *(f32*)(win + 0xc), &count, NULL);
+        strLines = gameTextWrapLines(str, (f32)(u32)win->maxWidth, win->scale, &count, NULL);
         if (strLines != NULL) {
             for (k = 0; k < count; k++) {
                 s[0]->lines[gSubtitleLineCount++] = strLines[k];
