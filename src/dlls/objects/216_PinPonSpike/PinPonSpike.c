@@ -11,6 +11,7 @@
 #include "main/dll/partfx_interface.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
+#include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 
 #define PINPONSPIKE_HIT_VOLUME_SLOT 10

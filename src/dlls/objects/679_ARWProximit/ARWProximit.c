@@ -12,6 +12,7 @@
 #include "main/frame_timing.h"
 #include "main/model_light.h"
 #include "main/objfx.h"
+#include "sys/objects.h"
 #include "main/dll/ARW/dll_02A7_arwproximit.h"
 #include "dlls/object_descriptor.h"
 #include "main/vecmath.h"
@@ -80,7 +81,7 @@ void arwproximit_update(GameObject* obj)
     {
         GameObject* arwing = (GameObject*)getArwing();
         if (arwing == NULL)
-            arwing = (GameObject*)Obj_GetPlayerObject();
+            arwing = Obj_GetPlayerObject();
         if (Vec_distance(&objAnim->worldPosX, &arwing->anim.worldPosX) < ARW_PROXIMITY_TAUNT_DISTANCE)
         {
             headDisplayOpen(0xb);
@@ -94,7 +95,7 @@ void arwproximit_update(GameObject* obj)
     {
         GameObject* arwing = (GameObject*)getArwing();
         if (arwing == NULL)
-            arwing = (GameObject*)Obj_GetPlayerObject();
+            arwing = Obj_GetPlayerObject();
         if (Vec_distance(&objAnim->worldPosX, &arwing->anim.worldPosX) < ARW_PROXIMITY_ACTIVATE_DISTANCE)
         {
             state->light = objCreateLight(obj, 1);
@@ -125,7 +126,7 @@ void arwproximit_update(GameObject* obj)
         objAnim->alpha = alpha;
         arwing = (GameObject*)getArwing();
         if (arwing == NULL)
-            arwing = (GameObject*)Obj_GetPlayerObject();
+            arwing = Obj_GetPlayerObject();
         if (Vec_distance(&objAnim->worldPosX, &arwing->anim.worldPosX) < ARW_PROXIMITY_WARNING_DISTANCE)
         {
             if (state->light != NULL)

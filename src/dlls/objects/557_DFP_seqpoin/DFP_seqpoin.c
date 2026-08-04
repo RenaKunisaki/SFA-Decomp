@@ -12,6 +12,7 @@
 #include "main/dll/DF/dll_022D_dfpseqpoint.h"
 #include "main/objseq.h"
 #include "main/vecmath.h"
+#include "sys/objects.h"
 #include "dlls/object_descriptor.h"
 
 /* Placement trigger-mode selector (DfpSeqPointState::triggerMode). */
@@ -133,7 +134,7 @@ void DFP_seqpoint_update(GameObject* obj)
     int gameBit;
 
     self = obj;
-    player = (GameObject*)Obj_GetPlayerObject();
+    player = Obj_GetPlayerObject();
     state = self->extra;
     if (state->flags0F.b80 != 0)
     {
