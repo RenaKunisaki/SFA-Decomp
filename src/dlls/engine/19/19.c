@@ -1,4 +1,5 @@
 #include "main/dll/waterfx.h"
+#include "main/dll/baddie_state.h"
 #include "main/dll/ppcwgpipe_struct.h"
 #include "dolphin/gx/GXBump.h"
 #include "dolphin/gx/GXCull.h"
@@ -679,9 +680,9 @@ void waterfx_run(int frames)
  * shallow water when the object is moving fast enough, a splash burst), then
  * records that impact for waterfx_consumePendingImpactNearPoint to query.
  *
- * objHeader+0x00 holds the s16 heading used as the ripple rotation; objHeader
- * +0x10 is the object's Y (water plane) height. surface+0x1b4 is the local
- * water-surface height at the impact. impactPositions is one vec3 per limb.
+ * The object's anim.rotX is the ripple rotation and its anim.localPosY the
+ * water-plane height; the actor's BaddieState.waterDepth is added to it to
+ * reach the impact height. impactPositions is one vec3 per limb.
  */
 void waterfx_spawnImpactSurface(u8* objHeader, u16 limbMask, f32* impactPositions, u8* surface, f32 speed)
 {
@@ -693,19 +694,19 @@ void waterfx_spawnImpactSurface(u8* objHeader, u16 limbMask, f32* impactPosition
         {
             f32 px = pos[0];
             f32 pz = pos[2];
-            if (*(f32*)(surf + 0x1b4) < WATERFX_SHALLOW_DEPTH)
+            if (((BaddieState*)surf)->waterDepth < WATERFX_SHALLOW_DEPTH)
             {
                 if (speed > WATERFX_SPLASH_SPEED_THRESHOLD)
                 {
-                    waterfx_spawnSplashBurst(objHeader, px, *(f32*)(objHeader + 0x10) + *(f32*)(surf + 0x1b4), pz,
+                    waterfx_spawnSplashBurst(objHeader, px, ((GameObject*)objHeader)->anim.localPosY + ((BaddieState*)surf)->waterDepth, pz,
                                              WATERFX_ZERO);
                 }
             }
             gWaterfxRippleScale = WATERFX_DEFAULT_SCALE;
-            waterfx_spawnRipple(px, *(f32*)(objHeader + 0x10) + *(f32*)(surf + 0x1b4), pz, *(s16*)objHeader,
+            waterfx_spawnRipple(px, ((GameObject*)objHeader)->anim.localPosY + ((BaddieState*)surf)->waterDepth, pz, ((GameObject*)objHeader)->anim.rotX,
                                 WATERFX_ZERO, 4);
             gWaterfxPendingImpactPosition[0] = px;
-            gWaterfxPendingImpactPosition[1] = *(f32*)(objHeader + 0x10) + *(f32*)(surf + 0x1b4);
+            gWaterfxPendingImpactPosition[1] = ((GameObject*)objHeader)->anim.localPosY + ((BaddieState*)surf)->waterDepth;
             gWaterfxPendingImpactPosition[2] = pz;
             gWaterfxPendingImpactPositionValid = 1;
         }
