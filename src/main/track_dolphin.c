@@ -1936,8 +1936,11 @@ int trackResolveSurfacePenetration(f32* a, f32* b, f32* c, f32* p, f32 f1p, f32 
             case 8:
             case 0xa:
             {
-                f32 normalX = p[0];
-                f32 normalZ = p[2];
+                f32 normalZ;
+                f32 normalX;
+
+                normalX = p[0];
+                normalZ = p[2];
                 y = y - (p[3] + (b[2] * normalZ + (normalX * b[0] + b[1] * p[1])));
                 if (y > 0.0f)
                 {
@@ -1991,8 +1994,11 @@ int trackResolveSurfacePenetration(f32* a, f32* b, f32* c, f32* p, f32 f1p, f32 
             case 0xa:
             default:
             {
-                f32 normalX = p[0];
-                f32 normalZ = p[2];
+                f32 normalZ;
+                f32 normalX;
+
+                normalX = p[0];
+                normalZ = p[2];
                 y = y - (p[3] + (b[2] * normalZ + (normalX * b[0] + b[1] * p[1])));
                 if (y > 0.0f)
                 {
