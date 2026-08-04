@@ -58,7 +58,7 @@ void XyzAnimator_captureGeometry(XyzAnimatorPlacement* placement, XyzAnimatorSta
     groupDataOffset[0] = 0;
     triangleDataOffset[0] = groupDataOffset[0];
     for (; blockIndex < (int)(u32)blockData->polyGroupCount; blockIndex++) {
-        mapEntry = mapBlockGetPolygonGroup(blockAddress, blockIndex);
+        mapEntry = (u16*)mapBlockGetPolygonGroup(blockAddress, blockIndex);
         t = mapBlockGetPolygonGroupType(mapEntry);
         if ((int)placement->blockLayer == t) {
             *(s16*)(state->posABuffer + groupDataOffset[0]) = ((MapTriGroup*)mapEntry)->minY;
@@ -155,7 +155,7 @@ void XyzAnimator_applyToMapBlock(XyzAnimatorPlacement* placement, XyzAnimatorSta
     groupDataOffset[0] = 0;
     vertexOffset[0] = groupDataOffset[0];
     for (; polygonGroupIndex < (int)(u32)blockData->polyGroupCount; polygonGroupIndex++) {
-        mapEntry = mapBlockGetPolygonGroup(blockAddress, polygonGroupIndex);
+        mapEntry = (u16*)mapBlockGetPolygonGroup(blockAddress, polygonGroupIndex);
         polygonGroupType = mapBlockGetPolygonGroupType(mapEntry);
         if ((int)placement->blockLayer == polygonGroupType) {
             ((MapTriGroup*)mapEntry)->minY =

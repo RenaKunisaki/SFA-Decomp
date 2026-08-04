@@ -301,9 +301,9 @@ s32 SaveGame_getCamActionNo(void)
 {
     return ((SaveGameData*)gSaveGameData)->camActionNo;
 }
-void* saveGameGetEnvState(void)
+SaveGameEnvState* saveGameGetEnvState(void)
 {
-    return gSaveGameData + 0x6a8;
+    return (SaveGameEnvState*)(gSaveGameData + 0x6a8);
 }
 
 int loadGameOptions(void)

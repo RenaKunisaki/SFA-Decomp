@@ -1461,9 +1461,9 @@ void* mapBlockGetPolygon(MapBlockData* obj, int idx)
     return (char*)obj->gcPolygons + idx * 8;
 }
 
-void* mapBlockGetPolygonGroup(MapBlockData* obj, int idx)
+MapTriGroup* mapBlockGetPolygonGroup(MapBlockData* obj, int idx)
 {
-    return (char*)obj->polygonGroups + idx * 0x14;
+    return (MapTriGroup*)obj->polygonGroups + idx;
 }
 
 MapBlockBoundsRec* mapBlockGetDisplayListBounds(MapBlockData* obj, int idx)

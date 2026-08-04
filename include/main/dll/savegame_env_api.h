@@ -28,6 +28,6 @@ STATIC_ASSERT(offsetof(SaveGameEnvState, cloudPos) == 0x14);
 STATIC_ASSERT(offsetof(SaveGameEnvState, envFlags) == 0x40);
 STATIC_ASSERT(sizeof(SaveGameEnvState) == 0x44);
 
-void* saveGameGetEnvState(void);
+SaveGameEnvState* saveGameGetEnvState(void);
 
 #endif /* MAIN_DLL_SAVEGAME_ENV_API_H_ */

@@ -395,7 +395,7 @@ void skySetSlotFlag80(int flags, u8 mode)
     sky = (SkyState*)gSkyState;
     sky->lights[2].flags.unused80 =
         sky->lights[sky->currentLightIndex].flags.unused80;
-    env = saveGameGetEnvState();
+    env = (u8*)saveGameGetEnvState();
     if (getSaveGameLoadStatus() == 0)
     {
         for (i = 0; i < 2; i++)
@@ -446,7 +446,7 @@ void skySetLightIndex(int mode, f32 brightness)
     f32 fullBlend;
     int idx;
 
-    env = saveGameGetEnvState();
+    env = (u8*)saveGameGetEnvState();
     if (((SkyState*)gSkyState)->currentLightIndex != mode)
     {
         ((SkyState*)gSkyState)->previousLightIndex = ((SkyState*)gSkyState)->currentLightIndex;
@@ -472,7 +472,7 @@ void skySetLightIndex(int mode, f32 brightness)
             ((SkyLight*)(gSkyState + idx + 0x20))->flags.unused80;
         ((SkyState*)gSkyState)->lights[2].flags.visibility =
             ((SkyLight*)(gSkyState + idx + 0x20))->flags.visibility;
-        env2 = saveGameGetEnvState();
+        env2 = (u8*)saveGameGetEnvState();
         if (getSaveGameLoadStatus() == 0)
         {
             for (bit = 0; bit < 2; bit++)
@@ -1868,7 +1868,7 @@ void skyUpdateTimeOfDay(void)
     int idx;
 
     time = 0.0f;
-    env = saveGameGetEnvState();
+    env = (u8*)saveGameGetEnvState();
     if (gSkyState == NULL || gSkyObjectsInitialized == 0)
     {
         return;
@@ -2251,7 +2251,7 @@ void skyUpdateEnvfxAct(int a, int b, u8* cfg)
             ((SkyState*)gSkyState)->lights[((SkyState*)gSkyState)->currentLightIndex].flags.unused80;
         ((SkyState*)gSkyState)->lights[2].flags.visibility =
             ((SkyState*)gSkyState)->lights[((SkyState*)gSkyState)->currentLightIndex].flags.visibility;
-        env2 = saveGameGetEnvState();
+        env2 = (u8*)saveGameGetEnvState();
         if (getSaveGameLoadStatus() == 0)
         {
             for (i = 0; i < 2; i++)

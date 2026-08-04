@@ -1973,7 +1973,7 @@ void newclouds_updateEnvfxAct(GameObject* objA, GameObject* objB, u8* params)
 
     *(SnowVec3*)posA = lbl_802C1FA8;
     *(SnowVec3*)posB = lbl_802C1FB4;
-    env = saveGameGetEnvState();
+    env = (u8*)saveGameGetEnvState();
     if (params == NULL)
     {
         return;

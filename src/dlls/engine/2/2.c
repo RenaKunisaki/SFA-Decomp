@@ -706,7 +706,7 @@ extern u8 gObjSeqRuntimeBuffer[];
 void ObjSeq_setCamVars(int camA, int camB, int camC, int camD);
 int objSeqFindLabel(u8* seq, int label);
 int objSeqFindConditional(u8* seq, GameObject* seqState);
-void objCallSeqFn(GameObject* obj, GameObject* sourceObj, u8* seq, int action);
+void objCallSeqFn(GameObject* obj, GameObject* sourceObj, ObjSeqState* seq, int action);
 void objSeqDoBgCmds0D(u8* seq, GameObject* obj, int skipSpawns);
 void ObjSeq_SetupInitialPlaybackState(GameObject* obj, GameObject** seqObj, u8* seq, ObjSeqPlacement* placement, void** outAction);
 void ObjSeq_setXrot(int index, int xrot);
@@ -3489,7 +3489,7 @@ int objSeqFindConditional(u8* seq, GameObject* seqState)
     }
     return -1;
 }
-void objCallSeqFn(GameObject* obj, GameObject* sourceObj, u8* seq, int action)
+void objCallSeqFn(GameObject* obj, GameObject* sourceObj, ObjSeqState* seq, int action)
 {
     int callbackResult;
     s8 actionSlot;
@@ -3509,36 +3509,36 @@ void objCallSeqFn(GameObject* obj, GameObject* sourceObj, u8* seq, int action)
 
     if (obj->animEventCallback != NULL)
     {
-        callbackResult = (*(int (**)(GameObject*, GameObject*, u8*, int))&obj->animEventCallback)(obj, sourceObj, seq, action);
+        callbackResult = (*(int (**)(GameObject*, GameObject*, ObjSeqState*, int))&obj->animEventCallback)(obj, sourceObj, seq, action);
         if (callbackResult == 4)
         {
             gObjSeqStop = 1;
         }
         else if (callbackResult != 0)
         {
-            actionSlot = ((ObjSeqState*)seq)->slot;
+            actionSlot = seq->slot;
             if (gObjSeqSlotResults[actionSlot] < 2)
             {
                 gObjSeqSlotResults[actionSlot] = callbackResult;
             }
         }
-        ((ObjSeqState*)seq)->eventCount = 0;
-        ((ObjSeqState*)seq)->curEventId = 0;
+        seq->eventCount = 0;
+        seq->curEventId = 0;
     }
     else
     {
-        if ((s8)((ObjSeqState*)seq)->isCameraSeq != 0)
+        if ((s8)seq->isCameraSeq != 0)
         {
-            ((ObjSeqState*)seq)->movementState = 0;
+            seq->movementState = 0;
             return;
         }
 
-        movementState = (s8)((ObjSeqState*)seq)->movementState;
+        movementState = (s8)seq->movementState;
         if (movementState >= 4)
         {
-            if (ObjSeq_TurnToFacePlayer(obj, (ObjSeqState*)seq, 6, 0x1e, 0x50, -1, -1) != 0)
+            if (ObjSeq_TurnToFacePlayer(obj, seq, 6, 0x1e, 0x50, -1, -1) != 0)
             {
-                actionSlot = ((ObjSeqState*)seq)->slot;
+                actionSlot = seq->slot;
                 if (gObjSeqSlotResults[actionSlot] < 2)
                 {
                     gObjSeqSlotResults[actionSlot] = 1;
@@ -3549,29 +3549,29 @@ void objCallSeqFn(GameObject* obj, GameObject* sourceObj, u8* seq, int action)
         {
             if (movementState != 2)
             {
-                ((ObjSeqState*)seq)->posOffsetScale = 1.0f;
-                ((ObjSeqState*)seq)->posOffsetX =
+                seq->posOffsetScale = 1.0f;
+                seq->posOffsetX =
                     obj->anim.localPosX - sourceObj->anim.localPosX;
-                ((ObjSeqState*)seq)->posOffsetY =
+                seq->posOffsetY =
                     obj->anim.localPosY - sourceObj->anim.localPosY;
-                ((ObjSeqState*)seq)->posOffsetZ =
+                seq->posOffsetZ =
                     obj->anim.localPosZ - sourceObj->anim.localPosZ;
-                ((ObjSeqState*)seq)->movementState = 2;
+                seq->movementState = 2;
             }
             if ((s8)sourceModel[0x20] == 1)
             {
-                ((ObjSeqState*)seq)->posOffsetDecay = 0.016666668f;
-                actionSlot = ((ObjSeqState*)seq)->slot;
+                seq->posOffsetDecay = 0.016666668f;
+                actionSlot = seq->slot;
                 if (gObjSeqSlotResults[actionSlot] < 2)
                 {
                     gObjSeqSlotResults[actionSlot] = 1;
                 }
             }
-            ((ObjSeqState*)seq)->posOffsetScale =
-                ((ObjSeqState*)seq)->posOffsetScale - ((ObjSeqState*)seq)->posOffsetDecay * timeDelta;
-            if (((ObjSeqState*)seq)->posOffsetScale <= 0.0f)
+            seq->posOffsetScale =
+                seq->posOffsetScale - seq->posOffsetDecay * timeDelta;
+            if (seq->posOffsetScale <= 0.0f)
             {
-                ((ObjSeqState*)seq)->movementState = 0;
+                seq->movementState = 0;
             }
         }
     }
@@ -4134,7 +4134,7 @@ void ObjSeq_SetupInitialPlaybackState(GameObject* obj, GameObject** seqObj, u8* 
     obj->anim.rotX += ((ObjSeqState*)seq)->heading;
     if (*seqObj != obj && (s8)gObjSeqFnDispatched == 0)
     {
-        objCallSeqFn(*seqObj, obj, seq, ((u8*)(historyBase + 0x3c4c))[(s8)((ObjSeqState*)seq)->slot]);
+        objCallSeqFn(*seqObj, obj, (ObjSeqState*)seq, ((u8*)(historyBase + 0x3c4c))[(s8)((ObjSeqState*)seq)->slot]);
     }
 
     ObjSeq_ApplyLinkedObjectTransform(obj, *seqObj, seq);
@@ -5273,7 +5273,7 @@ int ObjSeq_update(GameObject* obj, f32 t)
         gObjSeqFnDispatched = 0;
         if (activeObj != obj)
         {
-            objCallSeqFn(activeObj, obj, (u8*)seq, ((u8*)(base + 0x3c4c))[state->slot]);
+            objCallSeqFn(activeObj, obj, seq, ((u8*)(base + 0x3c4c))[state->slot]);
             gObjSeqFnDispatched = 1;
         }
 
@@ -5533,7 +5533,7 @@ int ObjSeq_update(GameObject* obj, f32 t)
 
         if ((s8)gObjSeqFnDispatched == 0 && activeObj != obj)
         {
-            objCallSeqFn(activeObj, obj, (u8*)seq, ((u8*)(base + 0x3c4c))[state->slot]);
+            objCallSeqFn(activeObj, obj, seq, ((u8*)(base + 0x3c4c))[state->slot]);
         }
 
         if (state->sequenceControlFlags != 0)
