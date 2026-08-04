@@ -747,6 +747,74 @@ def family_build(unit_object, verbose):
     print("  [%s] the scan reads all %d injected spellings correctly%s"
           % ("held" if ok else "BLIND", len(probes),
              "" if not misread else "  *** " + "; ".join(misread)))
+
+    # A SWEEP THAT DIES ON ONE ROW READS EXACTLY LIKE A SWEEP THAT FINISHED.
+    #
+    # Restoring the omitted-at-zero rows put a `.s` unit -- `.init`, no split
+    # object -- into `pool_value_sequence`'s population, and its per-row helper
+    # answered a missing object with `raise SystemExit`.  That killed the
+    # `--all` loop at row 18 of 21, so the three rows behind it were never
+    # scanned and the run still printed a full-looking table.  A row a tool
+    # cannot open must be REPORTED as unscanned, never skipped by ending the
+    # loop; so the sweep is required to state its own population and to account
+    # for every row in it.
+    import importlib.util as _ilu
+
+    def _load(name):
+        spec = _ilu.spec_from_file_location(
+            "va_" + name, os.path.join(REPO, "tools", name + ".py"))
+        mod = _ilu.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    pvs = _load("pool_value_sequence")
+    population = len(pvs.sub100_sections())
+    rc, out = run([sys.executable,
+                   os.path.join(REPO, "tools", "pool_value_sequence.py"),
+                   "--all"], cwd=REPO)
+    tail = [l for l in out.splitlines() if l.startswith("population ")]
+    accounted = None
+    if tail:
+        f = tail[-1].split()
+        accounted = int(f[1]), int(f[3]) + int(f[7])
+    ok = (accounted is not None and accounted[0] == population
+          and accounted[1] == population and population > 0)
+    bad += not ok
+    print("  [%s] pool_value_sequence --all accounts for every row it selected"
+          " (population %d, %s)"
+          % ("held" if ok else "LOOP TRUNCATED", population,
+             "scanned+unscanned %d" % accounted[1] if accounted
+             else "NO POPULATION LINE"))
+
+    # ABLATION: make the first row unopenable and prove the loop still reaches
+    # the last one.  Without it, "no differing rows" would be unfalsifiable.
+    saved = pvs.compare
+    seen = []
+
+    def _explode(src_rel, section, quiet=False):
+        seen.append(src_rel)
+        if len(seen) == 1:
+            raise pvs.MissingObject("injected")
+        return 0, 0
+
+    pvs.compare = _explode
+    try:
+        pvs.main_argv = None
+        rows = [r for r in pvs.sub100_sections()]
+        reached = 0
+        for src, sec, _s, _z in rows:
+            try:
+                pvs.compare(src, sec, quiet=True)
+            except pvs.MissingObject:
+                pass
+            reached += 1
+    finally:
+        pvs.compare = saved
+    ok = reached == len(rows) and len(seen) == len(rows)
+    bad += not ok
+    print("  [%s] ...and an unopenable row does not end the loop "
+          "(%d of %d rows still reached after an injected failure)"
+          % ("held" if ok else "ABORTS", reached, len(rows)))
     return bad
 
 
