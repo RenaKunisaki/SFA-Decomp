@@ -37,6 +37,26 @@ Run these in order. Each one can end the round without a build.
    **Do not escalate a flat probe into a combination sweep** — the pair/triple `-opt` space is
    exhausted over all 89 units carrying sub-100 functions, zero candidates; see
    `docs/per_tu_flag_evidence.md`.
+1b. **When a probe cell is CLOSE but not byte-exact, diff the cell — the flag-cell diff method.**
+   Compile the function under the configured profile and under its best alternative cell, diff the
+   two OUR-side objects, NAME the transformation the flag performed, then try to reach that same
+   transformation from source with the profile left at its configured setting. This is the best
+   single-function method in the kit for identical-stream near-misses with a good flag cell: the
+   2026-08-03 pass went **2 matches + 5 mechanism-precise closures from 7 attempts**. The match to
+   copy is `objRenderModel` (lever 9 below) — the `-opt nolifetimes` diff named the multi-role
+   `alpha` web, and the source fix was NOT the variable split (every split probed 6-7 diffs) but a
+   CSE-folded extra occurrence. The closures each ended with the mechanism named, e.g.
+   `shadowVolumeBeginFrame` and `camcontrol_applyState` (byte-exact cells that crater siblings;
+   both residuals proven pure home swaps at identical stream — rotation confirmed at cell level,
+   source lane closed; worklist rows carry the detail). Two caveats, both measured:
+   - **Cell evidence is spelling-conditioned — re-verify the cell at HEAD before spending
+     spellings.** `camcontrol_applyState`'s byte-exact `+nopropagation` cell reproduces ONLY
+     against the pre-`792fbf6e2d` `clamped` spelling; the current literal spelling's noprop cell
+     equals base.
+   - **A flag can reach retail's rotation while minting a WRONG web.** `SnowBike_UpdateEngineFx`:
+     `+nolifetimes` reaches retail's copy-class rotation but mints a `vol` web (the 7-diff
+     residue) — so retail is lifetimes-ON at rotation offset 0, a pressure-counter STATE, not a
+     flag (`271a7c226d`: the two byte-exact flag cells are pressure states).
 2. **Rank by `structB`, never by missing bytes or by how close the percentage looks.**
    Missing bytes measure how much is wrong; `structB` measures how much is *reachable*.
    The near-flip band (>=99%, <100%) is **structurally empty** — six candidates triaged, all
@@ -55,6 +75,9 @@ Run these in order. Each one can end the round without a build.
      — the same C text sits on both sides of the split, so no spelling can select between them.
      11 spellings across 2 functions, 0 movement. `trickyDigTunnel` is an independent witness
      (its two inlined `trickyAdvanceNode` instances differ the same way).
+     **Amended 2026-08-03: the closure stands only where the same text sits on both sides of the
+     split.** The `li;mr` pair itself IS source-reachable when the function offers a qualifying
+     re-use of an earlier-defined local — see lever 12 (`e865ab2257`, `hudDrawButtons`).
    - **int->double conversion magic** — `lis rX,17200` (`0x43300000`) paired with
      `xoris rY,rY,32768`, stored as the high/low halves of a stack double. **CLOSED**:
      `pathcam_buildWindowSamples` (`dlls/engine/71`) is byte-reachable under `-opt nocse`, yet
@@ -77,6 +100,11 @@ Run these in order. Each one can end the round without a build.
    already been measured and recorded earlier in the same session, and was re-derived from
    scratch because the briefing didn't restate it. Both sides own this one — read the record
    before re-running a sweep, and restate known results when handing a target over.
+   **Prior records are also compiler-profile-conditioned.** Both historical `player.c` flags-mask
+   records were true — measured under `mw_version=GC/1.3` before `565f6ed47d` corrected the unit
+   to GC/2.0, where the same spellings emit differently. When a recorded "byte-identical" claim
+   contradicts current bytes, check the unit's compiler-profile HISTORY before suspecting the
+   record (or the source).
 4. **Read the unit's `mw_version` and cflags — and note whether the informative flag is
    *present* or *absent*.** This is asymmetric and the asymmetry matters:
    - flag **present** (e.g. `engine/86` builds `noschedule`) → a load-*position* difference
@@ -268,6 +296,11 @@ functions here punish the attempt by an order of magnitude more than the residua
 **Does not fire when** the two facts happen to agree — then there is nothing to trade and the
 lever is simply inert.
 
+**Amended 2026-08-03:** `renderOpMatrix`'s residual turned out to be reachable after all — by a
+DIFFERENT knob (lever 7's biased base, 99.942 -> 100.000), not by reversing the cast. The
+residual-is-the-price rule still holds against *reversing the cast*; before capping a cast-lever
+residual, check whether the base has pointer provenance and try lever 7 first.
+
 ### 6. Restore an inlined helper boundary to restore a local's lifetime
 
 **Shape.** Retail initializes one source loop counter and derives two strength-reduced offsets
@@ -297,6 +330,161 @@ add-point sequence into another inline helper regressed `pathSearchAddNeighbor` 
 sift-up block with the recovered helper regressed it to **99.194**. Splitting the sift-up body
 where it was otherwise inert also changed the raw object identity, so it was reverted. Require
 both lineage evidence and a measured gain at the exact call site.
+
+### 7. Biased-base add canon — a nonzero bias on the pointer operand flips the `add`
+
+**Shape.** A mirrored commutative `add` in an addressing computation: retail emits
+`add rP,rBase,rIdx` (base-first operands, index computed first) where every plain spelling emits
+`add rP,rIdx,rBase`. Screen: retail shows the `srawi`/`slwi` of the index FIRST, the base load
+second, then the base-first `add`; ours emits the mirrored `add`.
+
+**Source.** A nonzero-bias sub-sum on the pointer-provenance operand, named into a `u32`:
+
+```c
+u32 pAddr = idx + ((u32)ptr + K);      /* K != 0 — the bias IS the lever */
+... *(u8*)(pAddr - 1) ...              /* K folds into the deref displacements */
+```
+
+The bias K folds into the displacements (`0(rP)/1(rP)/2(rP)`), and naming the sum pins
+lifetimes-CSE on the biased base — one add, N derefs. The natural bias comes from restructuring
+which byte the cursor points at.
+
+**Measured.** `mapUnload` (pi) **99.692 -> 100.000** — which also restored all 124 jump-table
+addends and the whole 5960-byte `.data` section (`251df25fb9`). All seven `objprint_dolphin`
+sites fixed on the FIRST probe (`6c12122509`): `modelLoadMtxsToGx` **99.898 -> 100.000**,
+`renderOpMatrix` **99.942 -> 100.000**, `objRenderShadowModel` **99.956 -> 100.000**,
+`modelDoRenderInstrs` 99.905 -> 99.943 (residual a width-15 rotation plus pool naming); unit
+`matched_code` 47.30 -> 58.84. This broke the commutative-add-canon wall: the recorded "only
+`-opt nopropagation` reaches it" verdict (13-spelling sweep) is FALSE for bases with pointer
+provenance. Plausibility: the idiom was already matching in the same file family
+(`mapLoadDataFile`'s `slotPtrAddr`) — recovered source, not a contrivance.
+
+**Variant — bias in a SECOND local when the accumulator must own the add.** `allocLotsOfTextures`
+(newshadows) **98.023 -> 98.067** (`8880f42c25`): statement-split the accumulator (`off += step;`)
+so the `add` takes accumulator-first operands, then park the `+0x60` bias in a second named local
+(`off2`) to pin the `addi` eagerly instead of letting it sink into the store — six chains
+byte-exact including register numbers. Two forms, one family: bias-the-base pins CSE;
+bias-in-second-local pins the `addi`'s schedule.
+
+**Bounds, all measured.** Zero bias reverts to `add(idx, base)` — falsified directly on
+`modelLoadMtxsToGx`; the bias is the load-bearing element. The base needs only pointer
+PROVENANCE (a loaded pointer member fires), not a member address. **Does not fire when**
+LICM/strength reduction owns the base: `gameTextRun` (biasing LICM-hoists the base; the member
+form folds K first), `renderShadows` (int-add operand order inert, biased base hoists — one
+instruction from perfect, unreachable today), `mapLoadUnloadObjects` (inside a loop, strength
+reduction + LICM move the constant to the index side), `engine/24` (no add-canon site: the
+defect there is the base's own materialisation).
+
+### 8. A cast at the sum boundary forces association where grouping casts fail
+
+**Shape.** Retail associates `(base + idx*S) + i`; ours emits `(i + base) + idx*S`. Named
+intermediates, struct-arith and array-index spellings are all inert, and `(u32)` grouping casts
+do NOT block MWCC's ptr-arith reassociation of `base + idx + K` (measured on engine/2).
+
+**Source.** Put a cast at the boundary of the sum that must group first:
+
+```c
+((T*)(base + (u32)idx * S))->field[i]
+```
+
+The cast boundary is what keeps the sum in its own subtree.
+
+**Measured.** `playerStateAttack` (`526cd9a26c`, slot displacement `idx * 0xb0` grouped before
+the hit-window index): the association diff closed; the function's residual after it is a pure
+recolour (worklist row 99.908, `struc` 0).
+
+### 9. A CSE-folded EXTRA occurrence rotates scratch temps at zero instruction cost
+
+**Shape.** An identical-stream scratch permutation around a value computed once but stored from
+two arms — a named sum feeding compares plus an else-arm store.
+
+**Source.** Keep the named local for the compares, but spell the else-arm store as the FIELD's
+compound add: `ms->shadowAlpha += ms->shadowAlphaStep;`. CSE folds it into the one sum already
+computed — the instruction stream is unchanged — and the extra spelled occurrence walks the load
+temps back to retail's homes.
+
+**Measured.** `objRenderModel` **99.804 -> 100.000** (`77bc5d99d5`; base/lbz/lha temps back to
+retail's r3/r0/r4). Found by the flag-cell diff (screen step 1b): the `-opt nolifetimes` diff
+named the multi-role `alpha` web — but the variable split itself was NOT the lever; every
+split/merge spelling probed 6-7 diffs. A sub-lever of the association family.
+
+### 10. The N-return static helper — the legitimate spelling for a purged goto's edges
+
+**Shape.** Retail materialises a flag on each exit edge (`li r0,0` at the early-out, `li r0,1`
+on loop fall-through) with no pre-loop init and no saved register — the shape MWCC emits for an
+INLINED helper with multiple returns, not for a flag local initialised before the loop. Or: one
+arm's tail is branched INTO by another path — an edge a purged `goto` used to express and the
+purge's duplicated assignment could not.
+
+**Source.** Recover the scan/check as an explicitly-inline `static` helper whose returns ARE the
+edges. This may need the TU at `-inline noauto` so the explicit inline expands while nothing else
+is auto-inlined (386 moved `-inline off` -> `noauto`; every other function in the unit is
+byte-identical either way — a TU-level `configure.py` change, not a pragma).
+
+**Measured — two reversals of accepted goto-purge losses.** `mmpMoonRock_update`
+**99.516 -> 99.919**, unit 99.81216 -> 99.96870 (`7dcef9d5bd`, two-return spacing scan).
+`trickyBallMove` **99.637 -> 100.000 code AND data, and `245_SidekickBal` flipped Matching and
+LINKED** (`complete_code` -> 61.17; `aa95040337`): the three depth outcomes are the helper's
+three returns, the shared zero sits on its own fall-through, and the `floorY = 0` path branches
+INTO it.
+
+**The pool is DRAINED — do not sweep for more.** After both wins the whole goto pool (DLL, track
+and main) was swept: zero N-return targets remain. Every other member's goto is already
+structurally expressed (residuals belong to closed families) or is GOTO-LOCKED —
+`texture.c`'s pair carries retail's own dead `return; goto ...; goto ...;` trailing branches,
+and unreachable statements have no structured spelling (accepted trade). §6's warning stands:
+the tell is the exit-edge materialisation in the target asm, not a wish to factor.
+
+### 11. A to-be-coalesced copy in the then-arm preserves a branch skeleton
+
+**Shape.** Retail keeps the guard's own join as a separate jump — `cmplwi; bne- BODY; b JOIN` —
+where we fold to `beq- JOIN`. Every control-flow respelling folds: empty then/else, `!ptr`,
+`||`, do/while+break, switch-break, while+break, even a diagnostic goto — MWCC's frontend
+normalises any jump to the if's own join. The skeleton survives only when the then-arm holds
+code that is elided LATE, after branch layout.
+
+**Source.** An if/ELSE whose then-arm is a plain copy (`alignedCursor = cursor;`) that register
+coalescing deletes after layout, leaving the two-branch skeleton behind.
+
+**Measured.** `loadCharacter` **99.594 -> 99.763** (`505db2b3ce`).
+
+**The bound, and the class census.** The join use must NOT clobber the copy's home.
+`drlasercannon_aimAtTarget` is the only other candidate tree-territory-wide and it fails exactly
+there: `li r0,256` immediately after the abs kills the coalesce, and a corpus-proven
+repeat-the-subtraction spelling (MP4 `fn_1_4C74`, same profile, zero `mr`) fails for the same
+reason — the branch shape was a downstream symptom, not the defect. One win, one bounded
+negative, class nearly empty.
+
+### 12. Copy-survival is triggerable — separate zero statements, and only all-or-nothing
+
+- **`i = 0; k = 0;` as SEPARATE statements triggers the copy-survival `li; mr` pair; the chained
+  `i = k = 0` does not.** Applied in `hudDrawButtons` **99.140 -> 99.194** (`e865ab2257`) by
+  REUSING the already-defined-and-dead `i`/`k` instead of two fresh loop locals — compiler
+  evidence that retail's source reused earlier locals.
+- **The rule needs one qualifying earlier-defined local PER surviving copy, of the SAME width
+  class.** `mapScreenDrawHud` is blocked (only one earlier `int`; the rest are `s16`).
+- **Partial survival is worse than none.** `headDisplayDraw` got 1 of 2 copies to survive and
+  REGRESSED **98.80 -> 98.42** (band ripple). Fire it all-or-nothing.
+- Consistent with the chained-assign inertia on const-zero remat (the chained form never threads
+  the zero): the trigger is the statement split plus the qualifying re-use, not the zero itself.
+
+### 13. The u64-pair rule — compound assignment reuses the pair in place, and the wall it prices
+
+**The rule** (micro-probed under `render.c`'s exact flags): MWCC materialises the
+doomed-variable copy and reuses a u64 register PAIR in place IFF the redefinition is a COMPOUND
+assignment (`h &= x`); `h = h & x` and `h = hw & x` never do, independent of the other operand's
+type.
+
+**The wall it prices.** `modelRenderInterpolateRootTransform` needs compound-AND semantics, an
+unfoldable-but-not-address-taken mask, and the exact pressure balance SIMULTANEOUSLY — and every
+plausible-2002 spelling reaches at most two of three. A compound whose RHS is a
+compile-time-constant local is folded/remat'd at the use, killing retail's `64(r1)` spill slot
+and flipping three other stack homes to registers (frame −16); the only opaque spelling found (a
+pointer-laundered mask) reproduces the exact target loop-head stream but wrecks the frame from
+the other side (+16, dead double-store). Baseline `h = (u64)hw & maskConst` is a genuine local
+optimum: **96.682 stands** (one byte-neutral cast removal landed alongside, `bea49f14ba`). The
+refcorpus has ZERO `addc/adde` u64 arithmetic across 42k functions — no donor exists for this
+class. §4 above is the same function's operand-signedness lever; the two are independent.
 
 ## The signedness axis — CLOSED BOTH-SIDED by census, and three protected shapes
 
@@ -520,7 +708,19 @@ compiler temp with no source variable behind it, and backfires on one the compil
 
 **Source-level commutative operand order is inert.** Writing `a + b` versus `b + a` does not
 reach the emitted operand order; MWCC canonicalises before it matters. If a commutative pair is
-transposed, the knob is the cast lever above, not the source text.
+transposed, the knob is the cast lever above, not the source text. **Amended 2026-08-03: a
+second knob exists when the base has pointer provenance** — lever 7's nonzero bias flips the
+`add` operands where the cast lever and the source text cannot.
+
+**The variable-split lever's screen was WRONG — compare web structure against RETAIL's, never
+just count a local's sources.** All six flagged "multi-role local" rows probed **0-for-6** and
+were reverted (`2c45b65394`): the flagged locals already coalesce the way retail does, and the
+permutations live elsewhere (LICM'd table pointers, copy-emission order, dead-register reuse,
+address temps). The two historical wins had OUR source building ONE web where retail had TWO —
+that comparison is the screen. Sub-finding, a further confirmation of the wide-band rule:
+`waterfx_render`'s comma-reorder exactly reproduced retail's copy direction and update order and
+STILL scored worse (**99.428 -> 99.279**) — an emission-order fix inside an unresolved rotation
+costs more in alignment than it recovers.
 
 ## Gate reminders that cost real score today
 
@@ -663,6 +863,13 @@ transposed, the knob is the cast lever above, not the source text.
   first-use discriminator plus the 100%-function windows — but this is an unreachable **784-byte**
   entry, not a scoring artifact worth nothing. Price it accordingly if a future technique reaches
   emission order.
+- **Two mint-law refinements (2026-08-03, engine/7 probes, both measured).** A literal FOLDED at
+  parse mints NOTHING — `x * 1.0f` folds and leaves both `.text` and the pool unchanged, and a
+  dead `f32 one = 1.0f;` likewise — so "first use" in the dual emission rule means first
+  **SURVIVING** use. And within ONE statement, mint serials can deviate from textual order
+  (`6000*x/10+3000` mints 3000, 6000, 10); statement-level order remains strict across
+  statements. Keep this bullet in sync with the pool-mechanism entries alongside the reachability
+  one above.
 - **The distinct-values screen still answers a different, useful question.** Run its checks in the
   order **missing distinct values → duplicate inflation → size → order**: a merged TU is always
   smaller on our side, so checking size first misclassifies it.

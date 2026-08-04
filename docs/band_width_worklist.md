@@ -132,7 +132,7 @@ Retail shape reachable only through goto (or its comma-condition disguise) — b
 
 | fn | unit | size | fuzzy | ndiff | struc | band | #nm | recorded mechanism |
 |---|---|---|---|---|---|---|---|---|
-| mmpMoonRock_update | dlls/objects/386_MMP_moonroc/MMP_moonroc | 1736 | 99.919 | 6 | 0 | 5G/1F | 1 | structscan doc: only working spelling is a goto-in-disguise; accepted NonMatching |
+| mmpMoonRock_update | dlls/objects/386_MMP_moonroc/MMP_moonroc | 1736 | 99.919 | 6 | 0 | 5G/1F | 1 | goto reversed by the two-return helper (7dcef9d5bd); residual is a width-5 r27/r28 rotation, two 119-perm sweeps flat |
 | playerStateClimbWall | dlls/objects/195_Player/player | 2708 | 98.647 | 144 | 21 | 9G/4F | 22 | goto-recovery-candidate-pool (144 real words, 21 mnemonic) |
 
 ### per-function-opt-level (9)
