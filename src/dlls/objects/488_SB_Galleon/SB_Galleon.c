@@ -196,16 +196,16 @@ void SB_Galleon_updateFlight(GameObject* obj) {
         camShake = 120.0f;
         Sfx_StopObjectChannel((int)obj, 1);
         (*gCameraInterface)->releaseAction(&camShake, 0);
-        ((GameObject*)obj)->userData1 = 1;
+        obj->userData1 = 1;
         tx = state->homeX - 1600.0f;
         tz = 150.0f * mathCosf((3.14159265f * (f32)state->bobPhase) / 32768.0f) +
              state->homeZ;
         ty = 60.0f * mathSinf((3.14159265f * (f32)state->bobPhase) / 32768.0f) +
              (state->homeY - 300.0f);
         state->bobPhase = state->bobPhase + framesThisStep * 0xB6;
-        dx = tx - ((GameObject*)obj)->anim.localPosX;
-        dy = ty - ((GameObject*)obj)->anim.localPosY;
-        dz = tz - ((GameObject*)obj)->anim.localPosZ;
+        dx = tx - obj->anim.localPosX;
+        dy = ty - obj->anim.localPosY;
+        dz = tz - obj->anim.localPosZ;
         state->speed = 3.0f;
         dx *= 0.03125f;
         dy *= 0.03125f;
@@ -289,7 +289,7 @@ void SB_Galleon_updateFlight(GameObject* obj) {
         }
         break;
     case 1:
-        ((GameObject*)obj)->userData1 = 2;
+        obj->userData1 = 2;
         camShake = 120.0f;
         (*gCameraInterface)->releaseAction(&camShake, 0);
         if (state->headingLatch != 0) {
@@ -343,9 +343,9 @@ void SB_Galleon_updateFlight(GameObject* obj) {
             ty = 260.0f + tricky->anim.localPosY;
             break;
         }
-        tx = tx - ((GameObject*)obj)->anim.localPosX;
-        dy = ty - ((GameObject*)obj)->anim.localPosY;
-        tz = tz - ((GameObject*)obj)->anim.localPosZ;
+        tx = tx - obj->anim.localPosX;
+        dy = ty - obj->anim.localPosY;
+        tz = tz - obj->anim.localPosZ;
         state->speed = 3.0f;
         dist = sqrtf(tz * tz + (tx * tx + dy * dy));
         tx *= 0.0625f;
@@ -460,7 +460,7 @@ void SB_Galleon_updateFlight(GameObject* obj) {
         camShake = 120.0f;
         Sfx_StopObjectChannel((int)obj, 2);
         (*gCameraInterface)->releaseAction(&camShake, 0);
-        ((GameObject*)obj)->userData1 = 3;
+        obj->userData1 = 3;
         if (state->headingLatch != 0) {
             state->headingLatch -= 1;
         }
@@ -491,7 +491,7 @@ void SB_Galleon_updateFlight(GameObject* obj) {
             break;
         case 5:
             speedTarget = 10.0f;
-            ((GameObject*)obj)->userData1 = 4;
+            obj->userData1 = 4;
             tx = state->homeX - 1100.0f;
             tz = state->homeZ;
             ty = state->homeY - 100.0f;
@@ -533,7 +533,7 @@ void SB_Galleon_updateFlight(GameObject* obj) {
             state->speed + (speedTarget - state->speed) / 30.0f;
         dist = sqrtf(dx * dx + dz * dz);
         if ((state->phase == 5) && (dist < 3000.0f)) {
-            ((GameObject*)obj)->userData1 = 5;
+            obj->userData1 = 5;
         }
         if (dist < threshold) {
             if (state->phase == 5) {
@@ -543,7 +543,7 @@ void SB_Galleon_updateFlight(GameObject* obj) {
         }
         wrap = (getAngle(dx, dz) & 0xFFFF) + 0x8000;
         angY = getAngle(dy, dist) & 0xFFFF;
-        diff = wrap - (((GameObject*)obj)->anim.rotX & 0xFFFF);
+        diff = wrap - (obj->anim.rotX & 0xFFFF);
         if (diff > 0x8000) {
             diff = diff - 0xFFFF;
         }
@@ -554,14 +554,11 @@ void SB_Galleon_updateFlight(GameObject* obj) {
             state->turnRate + ((framesThisStep * (diff - state->turnRate)) >> 4);
         c = state->phase;
         if ((c == 3) || (c == 4)) {
-            ((GameObject*)obj)->anim.rotX =
-                ((GameObject*)obj)->anim.rotX + (state->turnRate * framesThisStep) / 0x3C;
+            obj->anim.rotX = obj->anim.rotX + (state->turnRate * framesThisStep) / 0x3C;
         } else if ((c == 6) || (c == 2)) {
-            ((GameObject*)obj)->anim.rotX =
-                ((GameObject*)obj)->anim.rotX + (state->turnRate * framesThisStep) / 0x78;
+            obj->anim.rotX = obj->anim.rotX + (state->turnRate * framesThisStep) / 0x78;
         } else {
-            ((GameObject*)obj)->anim.rotX =
-                ((GameObject*)obj)->anim.rotX + (state->turnRate * framesThisStep) / 0x3C;
+            obj->anim.rotX = obj->anim.rotX + (state->turnRate * framesThisStep) / 0x3C;
         }
         wrap = angY - (((GameObject*)obj)->anim.rotY & 0xFFFF);
         if (wrap > 0x8000) {
@@ -571,8 +568,8 @@ void SB_Galleon_updateFlight(GameObject* obj) {
             wrap = wrap + 0xFFFF;
         }
         obj->anim.rotY = obj->anim.rotY + ((wrap * framesThisStep) >> 6);
-        dx = state->homeX - ((GameObject*)obj)->anim.localPosX;
-        dz = state->homeZ - ((GameObject*)obj)->anim.localPosZ;
+        dx = state->homeX - obj->anim.localPosX;
+        dz = state->homeZ - obj->anim.localPosZ;
         sqrtf(dx * dx + dz * dz); /* The result is intentionally unused. */
         t = ((GameObject*)obj)->anim.rotZ;
         iv = (int)(0.45f * (f32)state->turnRate);
@@ -588,7 +585,7 @@ void SB_Galleon_updateFlight(GameObject* obj) {
         objPos.y = 0.0f;
         objPos.z = 0.0f;
         objPos.scale = 1.0f;
-        objPos.rotX = ((GameObject*)obj)->anim.rotX;
+        objPos.rotX = obj->anim.rotX;
         objPos.rotY = obj->anim.rotY;
         objPos.rotZ = obj->anim.rotZ;
         setMatrixFromObjectPos(mtx, &objPos);
@@ -608,10 +605,10 @@ void SB_Galleon_updateFlight(GameObject* obj) {
             state->posZ = state->posZ + state->driftZ;
         }
         ambB = 0.17f;
-        ((GameObject*)obj)->anim.localPosX = state->posX + state->swayX;
-        ((GameObject*)obj)->anim.localPosY = state->posY + state->swayY;
-        ((GameObject*)obj)->anim.localPosZ = state->posZ + state->swayZ +
-                                             (tricky->anim.localPosZ - state->refZ);
+        obj->anim.localPosX = state->posX + state->swayX;
+        obj->anim.localPosY = state->posY + state->swayY;
+        obj->anim.localPosZ =
+            state->posZ + state->swayZ + (tricky->anim.localPosZ - state->refZ);
         if (state->stage >= 7) {
             if (state->fadeTimer == 0) {
                 ObjHits_DisableObject(obj);
@@ -619,7 +616,7 @@ void SB_Galleon_updateFlight(GameObject* obj) {
             }
             state->fadeTimer += framesThisStep;
             if (state->fadeTimer > 0x41) {
-                ((GameObject*)obj)->anim.rotX = 0;
+                obj->anim.rotX = 0;
                 state->phase = 6;
                 (*gCloudActionInterface)->func10Nop(0);
                 (*gCloudActionInterface)->func11Nop(0);
@@ -628,9 +625,9 @@ void SB_Galleon_updateFlight(GameObject* obj) {
                     state->musicLatch = 1;
                 }
                 state->cameraState = 1;
-                ((GameObject*)obj)->anim.localPosX = spawnData->posX;
-                ((GameObject*)obj)->anim.localPosY = -1.0f;
-                ((GameObject*)obj)->anim.localPosZ = spawnData->posZ;
+                obj->anim.localPosX = spawnData->posX;
+                obj->anim.localPosY = -1.0f;
+                obj->anim.localPosZ = spawnData->posZ;
                 Sfx_StopObjectChannel((int)obj, 1);
                 (*gMapEventInterface)->setObjGroupStatus(obj->anim.hostedMapSlot, 2, 1);
                 (*gObjectTriggerInterface)->runSequence(0, obj, -1);
@@ -640,7 +637,7 @@ void SB_Galleon_updateFlight(GameObject* obj) {
         break;
     }
     default:
-        ((GameObject*)obj)->userData1 = 7;
+        obj->userData1 = 7;
         break;
     }
 
@@ -687,18 +684,14 @@ void SB_Galleon_updateFlight(GameObject* obj) {
             t = 0;
             wrap = t;
         }
-        ((GameObject*)obj)->anim.localPosX =
-            state->swayX * state->moveScale + state->posX;
-        ((GameObject*)obj)->anim.localPosY =
-            state->swayY * state->moveScale + state->posY;
-        ((GameObject*)obj)->anim.localPosZ =
-            state->swayZ * state->moveScale + state->posZ;
-        state->rollLatch = state->rollLatch +
-                                              ((framesThisStep * (t - state->rollLatch)) >> 5);
-        ((GameObject*)obj)->anim.rotY =
-            ((GameObject*)obj)->anim.rotY + ((framesThisStep * (wrap - ((GameObject*)obj)->anim.rotY)) >> 5);
-        ((GameObject*)obj)->anim.rotX = state->rollLatch + 0x4000;
-        ((GameObject*)obj)->anim.rotZ = ((GameObject*)obj)->anim.rotX - 0x4000;
+        obj->anim.localPosX = state->swayX * state->moveScale + state->posX;
+        obj->anim.localPosY = state->swayY * state->moveScale + state->posY;
+        obj->anim.localPosZ = state->swayZ * state->moveScale + state->posZ;
+        state->rollLatch =
+            state->rollLatch + ((framesThisStep * (t - state->rollLatch)) >> 5);
+        obj->anim.rotY = obj->anim.rotY + ((framesThisStep * (wrap - obj->anim.rotY)) >> 5);
+        obj->anim.rotX = state->rollLatch + 0x4000;
+        obj->anim.rotZ = obj->anim.rotX - 0x4000;
     }
 }
 

@@ -5361,7 +5361,7 @@ int playerState25(int obj, int state, f32 updateRate)
     }
     inner->targetYaw = (s16)(inner->targetYaw + (int)((f32)(int)inner->targetObjectBearing / 24.0f));
     inner->yaw = inner->targetYaw;
-    ((PlayerState*)inner)->flags360 |= 0x2000000LL;
+    inner->flags360 |= 0x2000000LL;
     playerUpdateCameraTargetLookAngles((GameObject*)obj, state, inner);
     return 0;
 }

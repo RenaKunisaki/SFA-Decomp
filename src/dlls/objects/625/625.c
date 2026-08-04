@@ -913,7 +913,7 @@ void drakorhoverpad_updateMain(GameObject* obj)
             {
                 yawDelta = 0x200;
             }
-            c = (s16)yawDelta;
+            c = yawDelta;
             (obj)->anim.rotX += (s16)c;
             if ((obj)->anim.rotY != 0)
             {
