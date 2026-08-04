@@ -12,6 +12,7 @@
 #include "main/mapEventTypes.h"
 #include "main/map_load.h"
 #include "main/objprint_render_api.h"
+#include "main/pi_dolphin_api.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/render_envfx_api.h"
 #include "main/shader_api.h"

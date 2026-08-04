@@ -15,6 +15,7 @@
 #include "main/mapEventTypes.h"
 #include "main/map_load.h"
 #include "main/object_render.h"
+#include "main/pi_dolphin_api.h"
 #include "main/render_envfx_api.h"
 #include "main/sky_api.h"
 #include "sys/objects.h"
