@@ -159,7 +159,7 @@ Function matches under a different opt profile (peephole/nocse/nopropagation/dea
 | atan2f_fast | main/acosf | 240 | 98.250 | 2 | 3 | 1G/5F | 3 | priced 1 dot-compare (peephole) family |
 | playerCacheMoveRootHeights | dlls/objects/195_Player/player | 352 | 97.045 | 3 | 5 | 5G/0F | 22 | player-cluster: 100.0 under nocse/nopropagation, TU-split evidence needed |
 | removeButtonObject | main/gameloop_buttonobj | 220 | 98.091 | 3 | 3 | 0G/0F | 1 | priced 1 dot-compare (peephole) family |
-| moveTricky | dlls/objects/196_Tricky/tricky | 2404 | 99.933 | 6 | 0 | 7G/2F | 6 | surplus-queue: -opt dead fixes it, craters siblings |
+| moveTricky | dlls/objects/196_Tricky/tricky | 2404 | 100.0 | 0 | 0 | 7G/2F | 6 | SOLVED via redefinition tell: first abs is a non-mutating temp `(td >= 0 ? td : -td) > K`; second updates in place, spelled `td = td >= 0 ? turnDelta : -td;` so the true-arm copy self-elides into td's home (plain ternary stops coalescing once two else-if arms share td) |
 | subtitleUpdateAndDraw | main/subtitle | 536 | 97.799 | 12 | 8 | 3G/0F | 1 | biased-base follow-up: source proven original, level compromise |
 | pathcam_buildWindowSamples | dlls/engine/71/71 | 1220 | 98.820 | 52 | 0 | 18G/0F | 1 | residual pass 08-03: byte-identical under nocse |
 | playerUpdate | dlls/objects/195_Player/player | 2372 | 98.432 | 147 | 2 | 3G/1F | 22 | player-cluster: 100.0 under nocse/nopropagation, TU-split evidence needed |
@@ -254,7 +254,7 @@ Width >=5 saved band, identical mnemonic stream: the rotation-offset model — e
 | voxmaps_visitRouteNeighbor | main/voxmaps | 2296 | 98.990 | 98 | 0 | 18G/0F | 3 | objseq-voxmaps-walls (rotation offset 2/3rd unreachable) |
 | ObjHits_CheckHitVolumes | main/objhits | 3592 | 99.382 | 101 | 0 | 18G/18F | 9 | objhits GROUND pass 08-03: all 9 T==C recolours, no lever site |
 | mapLoadDataFile | main/pi_dolphin | 8444 | 99.711 | 117 | 0 | 10G/0F | 2 | transposition pass 08-03: FOUR regional transpositions among {slot<<2 CSE temp, slotPtrAddr, slotSizeAddr, fi} + one anonymous -28008 addressing web at r22-vs-r28 (retail reuses the dead fileId param home); 60-variant decl-relocation sweep floor = baseline 117 (moves shift 123-393, never below); the r22 web has no named local behind it — ordering knobs provably dead |
-| playerBuildWallTransitionProbe | dlls/objects/195_Player/player | 1816 | 98.476 | 135 | 1 | 18G/3F | 22 | web-class-pun-effect 08-03 (one rotation off, width 18) |
+| playerBuildWallTransitionProbe | dlls/objects/195_Player/player | 1816 | 98.579 | 125 | 0 | 18G/3F | 22 | structural closed (12->0): loop-update order `pl; dp; cp; i`, block `dy` declared between best/best2, guard `(best2 < 0.0f || dy < best2)`; remainder is the width-18 rotation past the cliff |
 | trackBuildBlockTriangles | main/track_dolphin | 3060 | 98.476 | 148 | 2 | 18G/2F | 7 | signature: struc 0, band >=5, no recorded lever site |
 | ObjSeq_update | dlls/engine/2/2 | 3912 | 98.569 | 274 | 0 | 9G/4F | 5 | objseq-voxmaps-walls (rotation offset 2/3rd unreachable) |
 | player_SeqFn | dlls/objects/195_Player/player | 7416 | 98.971 | 334 | 104 | 11G/3F | 22 | player-cluster-walls (width 11) |
@@ -342,7 +342,7 @@ member). No row is misfiled — every row has a live ledger/memory anchor.
 | playerStateAttack | dlls/objects/195_Player/player | 2836 | 99.908 | 11 | 0 | 5G/2F | 22 | player-cluster coloring walls (web-class-pun-effect association win landed; residual recolour); swept inert in priced 26; verified |
 | boneParticleEffect_update | dlls/engine/24/24 | 1764 | 99.649 | 11 | 9 | 15G/6F | 1 | value-home-r0 / base-mat LO-fold wall (verified: C detours the base through r0 via a surviving mr, +1 instr) + priced 23b reverse-direction li/mr member |
 | objDrawShadowCasterMesh | main/shadow_dolphin | 1132 | 99.509 | 12 | 1 | 7G/2F | 2 | priced 23b li/mr remat family (named member) + r7/r8 scratch swap and one addi slide; verified |
-| gameTextFinalizeLoad | main/textrender_run | 1592 | 99.334 | 14 | 2 | 11G/0F | 4 | priced 15 order bucket: front-end addend canonicalisation (constant folds into the scaled index first), one slid addi inside a register perm; PRICED; verified |
+| gameTextFinalizeLoad | main/textrender_run | 1592 | 99.837 | 12 | 2 | 11G/0F | 4 | add-canon words closed by biased-base form C (value-use member decay: `numStrings * 4 + (u32)stringTable->offsets` emits base-first add + trailing addi; the priced-15 verdict predated the lever); residual is the coloured hdr-sum + one scratch swap, probed and walled |
 | GameUI_release | dlls/engine/0/0 | 336 | 98.929 | 14 | 0 | 7G/0F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
 | pauseMenuDrawStatusPage | dlls/engine/0/0 | 2692 | 99.851 | 19 | 0 | 8G/5F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
 | pauseMenuDrawGridCell | dlls/engine/0/0 | 1012 | 99.506 | 22 | 0 | 12G/7F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
