@@ -1110,7 +1110,7 @@ void HighTop_hitDetect(GameObject* obj)
 void HighTop_update(GameObject* obj)
 {
     HighTopRuntime* runtime;
-    char* state;
+    HighTopRuntime* state;
     register int self = (int)obj;
     state = ((GameObject*)self)->extra;
     runtime = (HighTopRuntime*)state;
@@ -1153,7 +1153,7 @@ void HighTop_update(GameObject* obj)
     hightop_playMovementSfx((GameObject*)self, runtime, runtime);
     characterDoEyeAnims((GameObject*)self, &runtime->eyeAnimState);
     objSoundUpdateMouth((GameObject*)(self), &runtime->modelSoundState);
-    dll_2E_updateLookAt((GameObject*)self, &((HighTopRuntime*)state)->lookController);
+    dll_2E_updateLookAt((GameObject*)self, &state->lookController);
     if (ObjTrigger_IsSet((GameObject*)self) != 0)
     {
         s8 substate;
@@ -1173,7 +1173,7 @@ void HighTop_update(GameObject* obj)
     }
     if (randomGetRange(0, 0x64) == 0)
     {
-        objSoundStartFromDef((GameObject*)self, &((HighTopRuntime*)state)->modelSoundState,
+        objSoundStartFromDef((GameObject*)self, &state->modelSoundState,
                             (ObjSoundDef*)&gHighTopConfigTable[randomGetRange(0, 2) * 6], 0);
     }
     if (runtime->flagsC49.b7 != 0)

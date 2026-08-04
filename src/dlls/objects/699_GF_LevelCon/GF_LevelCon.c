@@ -79,7 +79,7 @@ void gf_levelcon_findLinkedObjects(GameObject* obj)
     int* objects;
     int objectIndex;
     int objectCount;
-    int linkedObj;
+    GameObject* linkedObj;
 
     state->light = 0;
     state->scrollA = 0;
@@ -87,19 +87,19 @@ void gf_levelcon_findLinkedObjects(GameObject* obj)
     objects = ObjList_GetObjects(&objectIndex, &objectCount);
     for (; objectIndex < objectCount; objectIndex++)
     {
-        linkedObj = objects[objectIndex];
-        if ((GameObject*)linkedObj != obj && ((GameObject*)linkedObj)->anim.placementData != NULL)
+        linkedObj = (GameObject*)objects[objectIndex];
+        if ((GameObject*)linkedObj != obj && linkedObj->anim.placementData != NULL)
         {
-            switch (((GameObject*)linkedObj)->anim.placement->ident)
+            switch (linkedObj->anim.placement->ident)
             {
             case GFLEVELCON_LINK_LIGHT:
-                state->light = linkedObj;
+                state->light = (int)linkedObj;
                 break;
             case GFLEVELCON_LINK_SCROLL_A:
-                state->scrollA = linkedObj;
+                state->scrollA = (int)linkedObj;
                 break;
             case GFLEVELCON_LINK_SCROLL_B:
-                state->scrollB = linkedObj;
+                state->scrollB = (int)linkedObj;
                 break;
             }
         }

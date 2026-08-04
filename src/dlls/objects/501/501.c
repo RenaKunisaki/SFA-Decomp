@@ -76,7 +76,7 @@ void dll501_update(GameObject* obj) {
     int i;
     int objectCount;
     GameObject* current;
-    int linkedObject;
+    GameObject* linkedObject;
     int groupId2;
     int sameGroupCount;
 
@@ -105,7 +105,7 @@ void dll501_update(GameObject* obj) {
     while (i < objectCount) {
         current = (GameObject*)objects[i];
         if (current->seqIndex == groupId) {
-            linkedObject = (int)current;
+            linkedObject = current;
         }
         if (current->seqIndex == DLL1F5_SEQ_INDEX_PENDING &&
             current->anim.classId == DLL1F5_SEQUENCE_OBJECT_CLASS_ID &&
@@ -115,8 +115,8 @@ void dll501_update(GameObject* obj) {
         i++;
     }
 
-    if (sameGroupCount <= 1 && (void*)linkedObject != NULL && ((GameObject*)linkedObject)->seqIndex != -1) {
-        ((GameObject*)linkedObject)->seqIndex = -1;
+    if (sameGroupCount <= 1 && (void*)linkedObject != NULL && linkedObject->seqIndex != -1) {
+        linkedObject->seqIndex = -1;
         (*gObjectTriggerInterface)->endSequence(groupId2);
     }
     obj->seqIndex = -1;

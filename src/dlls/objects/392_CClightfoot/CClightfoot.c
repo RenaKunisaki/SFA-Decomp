@@ -200,7 +200,7 @@ void ccLightfoot_update(GameObject* obj) {
     CCLightfootState* state = obj->extra;
     GameObject* targetObject;
     s16 targetAngle;
-    u32 candidateTarget;
+    GameObject* candidateTarget;
     u32 targetActorAHandle;
     u32 farTarget;
     u32 nearTarget;
@@ -231,11 +231,11 @@ void ccLightfoot_update(GameObject* obj) {
                 targetValid = mainGetBit(((GameObject*)targetActorAHandle)->anim.placementData[0xC]) != 0 ? 0 : 1;
             }
             if (targetValid != 0) {
-                candidateTarget = (u32)state->targetActorB;
+                candidateTarget = state->targetActorB;
                 if (!(enemy_getHealthFraction((GameObject*)candidateTarget) > 0.0f)) {
                     targetValid = 0;
                 } else {
-                    targetValid = mainGetBit(((GameObject*)candidateTarget)->anim.placementData[0xC]) != 0 ? 0 : 1;
+                    targetValid = mainGetBit(candidateTarget->anim.placementData[0xC]) != 0 ? 0 : 1;
                 }
                 if (targetValid != 0) {
                     distanceSquared =
@@ -288,20 +288,20 @@ void ccLightfoot_update(GameObject* obj) {
                     break;
                 }
             }
-            candidateTarget = (u32)state->targetActorA;
+            candidateTarget = state->targetActorA;
             if (!(enemy_getHealthFraction((GameObject*)candidateTarget) > 0.0f)) {
                 targetValid = 0;
             } else {
-                targetValid = mainGetBit(((GameObject*)candidateTarget)->anim.placementData[0xC]) != 0 ? 0 : 1;
+                targetValid = mainGetBit(candidateTarget->anim.placementData[0xC]) != 0 ? 0 : 1;
             }
             if (targetValid != 0) {
                 singleTarget = (u32)state->targetActorA;
             }
-            candidateTarget = (u32)state->targetActorB;
+            candidateTarget = state->targetActorB;
             if (!(enemy_getHealthFraction((GameObject*)candidateTarget) > 0.0f)) {
                 targetValid = 0;
             } else {
-                targetValid = mainGetBit(((GameObject*)candidateTarget)->anim.placementData[0xC]) != 0 ? 0 : 1;
+                targetValid = mainGetBit(candidateTarget->anim.placementData[0xC]) != 0 ? 0 : 1;
             }
             if (targetValid != 0) {
                 singleTarget = (u32)state->targetActorB;

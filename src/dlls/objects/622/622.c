@@ -130,11 +130,11 @@ int drshackle_renderAtPathPoint(GameObject* obj, int a, int b, int c, int d, int
 
     for (i = 0, a = (int)p; i < ((DrshackleState*)p)->slotCount; i++)
     {
-        char* entry = *(char**)a;
+        GameObject* entry = (GameObject*)*(char**)a;
         if (entry != NULL)
         {
-            ObjPath_GetPointWorldPosition(obj, p[i + 0x1b], &((GameObject*)entry)->anim.localPosX,
-                                          &((GameObject*)entry)->anim.localPosY, &((GameObject*)entry)->anim.localPosZ, 0);
+            ObjPath_GetPointWorldPosition(obj, p[i + 0x1b], &entry->anim.localPosX,
+                                          &entry->anim.localPosY, &entry->anim.localPosZ, 0);
         }
         a += 4;
     }
@@ -165,12 +165,12 @@ void drshackle_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visi
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
         for (i = 0; i < ((DrshackleState*)state)->slotCount; i++)
         {
-            int* entry = ((int**)state)[i];
+            GameObject* entry = (GameObject*)((int**)state)[i];
             if (entry != 0)
             {
-                ObjPath_GetPointWorldPosition(obj, state[i + 0x1b], &((GameObject*)entry)->anim.localPosX,
-                                              &((GameObject*)entry)->anim.localPosY,
-                                              &((GameObject*)entry)->anim.localPosZ, 0);
+                ObjPath_GetPointWorldPosition(obj, state[i + 0x1b], &entry->anim.localPosX,
+                                              &entry->anim.localPosY,
+                                              &entry->anim.localPosZ, 0);
             }
         }
     }
@@ -194,7 +194,7 @@ void drshackle_hitDetect(GameObject* obj)
 
 void drshackle_update(GameObject* obj)
 {
-    char* state = obj->extra;
+    DrshackleState* state = obj->extra;
     DrshacklePlacement* placement = (DrshacklePlacement*)obj->anim.placementData;
     int count;
     int sub;
@@ -206,20 +206,20 @@ void drshackle_update(GameObject* obj)
         while (count-- != 0)
         {
             sub = (int)((GameObject*)*list)->anim.placementData;
-            for (j = 0; j < ((DrshackleState*)state)->slotCount; j++)
+            for (j = 0; j < state->slotCount; j++)
             {
                 if (*(u8*)(sub + 0x18) == placement->pathObjGroupBase + j * 4)
                 {
-                    ((DrshackleState*)state)->pathSlots[j] = (GameObject*)*list;
-                    (*gObjectTriggerInterface)->runSequence(0, ((DrshackleState*)state)->pathSlots[j], -1);
+                    state->pathSlots[j] = (GameObject*)*list;
+                    (*gObjectTriggerInterface)->runSequence(0, state->pathSlots[j], -1);
                 }
             }
             list++;
         }
     }
-    if (((DrshackleState*)state)->flags1A.b0 != 0)
+    if (state->flags1A.b0 != 0)
     {
-        ((DrshackleState*)state)->flags1A.b0 = (mainGetBit(placement->activeGameBit) == 0);
+        state->flags1A.b0 = (mainGetBit(placement->activeGameBit) == 0);
     }
 }
 

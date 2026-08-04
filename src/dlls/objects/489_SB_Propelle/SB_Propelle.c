@@ -63,7 +63,7 @@ void SB_Propeller_update(GameObject* obj) {
     int parentTimer;
     int smokeCount;
     int frameIndex;
-    int hitObjectAddress;
+    GameObject* hitObjectAddress;
     SBPropellerState* state;
     PartFxSpawnParams spawnParams;
 
@@ -116,8 +116,8 @@ void SB_Propeller_update(GameObject* obj) {
         }
         if (galleonPhase == 1 && ObjHits_GetPriorityHit(obj, &hitObjectAddress, 0, 0) != 0 && obj->userData1 == 0 &&
             (void*)hitObjectAddress != NULL && (void*)hitObjectAddress != (void*)Obj_GetPlayerObject() &&
-            ((GameObject*)hitObjectAddress)->anim.romDefNo != SB_PROPELLER_SEQ_ID &&
-            ((GameObject*)hitObjectAddress)->anim.romDefNo != SB_OTHER_SEQ_ID &&
+            hitObjectAddress->anim.romDefNo != SB_PROPELLER_SEQ_ID &&
+            hitObjectAddress->anim.romDefNo != SB_OTHER_SEQ_ID &&
             (obj->userData1 = 0x14, obj->anim.parent != NULL) && (galleonStage == 2 || galleonStage == 5) &&
             obj->anim.romDefNo == SB_PROPELLER_SEQ_ID) {
             Obj_SetModelColorFadeRecursive(obj, 0xf, 200, 0, 0, 1);

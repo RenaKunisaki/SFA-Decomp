@@ -361,11 +361,11 @@ int dll_CE_updateSpitState(GameObject* obj, GroundBaddieState* state) {
         int* objects = ObjList_GetObjects(&objectIndex, &objectCount);
 
         while (objectIndex < objectCount) {
-            int siblingAddress = objects[objectIndex];
+            GameObject* siblingAddress = (GameObject*)objects[objectIndex];
 
             if ((void*)siblingAddress != (void*)obj &&
-                ((GameObject*)siblingAddress)->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
-                (*(DllCESiblingInterface**)((GameObject*)siblingAddress)->anim.dll)
+                siblingAddress->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
+                (*(DllCESiblingInterface**)siblingAddress->anim.dll)
                     ->handleMessage((GameObject*)siblingAddress, DLL_CE_MESSAGE_RELEASE, 0);
             }
             objectIndex++;

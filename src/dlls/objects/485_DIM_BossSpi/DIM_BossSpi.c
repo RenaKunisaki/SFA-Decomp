@@ -158,12 +158,12 @@ void DIMbossspit_hitDetect(void) {
 }
 
 void DIMbossspit_update(GameObject* obj) {
-    int stateAddress;
+    DIMbossSpitState* stateAddress;
     int i;
     s16 glowAlpha;
     ModelLightStruct* light;
 
-    stateAddress = (int)obj->extra;
+    stateAddress = obj->extra;
     if (*(s16*)stateAddress == DIMBOSSSPIT_PHASE_FLIGHT) {
         obj->userData1 -= framesThisStep;
         if (obj->userData1 < 0) {
@@ -196,7 +196,7 @@ void DIMbossspit_update(GameObject* obj) {
     } else {
         DIMbossspit_updateBurst(obj);
     }
-    light = ((DIMbossSpitState*)stateAddress)->light;
+    light = stateAddress->light;
     if (light != NULL && light->glowType != 0 && light->enabled != 0) {
         glowAlpha = (s16)(light->glowAlpha + light->glowAlphaStep);
         if (glowAlpha < 0) {
@@ -206,10 +206,10 @@ void DIMbossspit_update(GameObject* obj) {
             glowAlpha = (s16)(glowAlpha + randomGetRange(DIMBOSSSPIT_GLOW_RANDOM_MIN, DIMBOSSSPIT_GLOW_RANDOM_MAX));
             if (glowAlpha > DIMBOSSSPIT_GLOW_ALPHA_MAX) {
                 glowAlpha = DIMBOSSSPIT_GLOW_ALPHA_MAX;
-                ((DIMbossSpitState*)stateAddress)->light->glowAlphaStep = 0;
+                stateAddress->light->glowAlphaStep = 0;
             }
         }
-        ((DIMbossSpitState*)stateAddress)->light->glowAlpha = glowAlpha;
+        stateAddress->light->glowAlpha = glowAlpha;
     }
     return;
 }

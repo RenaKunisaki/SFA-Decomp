@@ -102,13 +102,13 @@ void DIMLogFire_free(GameObject* obj, int freeMode) {
 
 void DIMLogFire_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     DimLogFireState* state;
-    int* subObject;
+    ObjAnimComponent* subObject;
 
     if ((s32)visible != 0) {
         state = obj->extra;
-        subObject = (int*)state->subObject;
+        subObject = (ObjAnimComponent*)state->subObject;
         if (subObject != NULL) {
-            ObjModel* model = (ObjModel*)((ObjAnimComponent*)subObject)->banks[((ObjAnimComponent*)subObject)->bankIndex];
+            ObjModel* model = (ObjModel*)subObject->banks[subObject->bankIndex];
             model->bufferFlags = (u16)(model->bufferFlags & ~0x8);
             ((GameObject*)state->subObject)->anim.renderAlpha = obj->anim.renderAlpha;
             objRenderModelAndHitVolumes((GameObject*)state->subObject, renderArg2, renderArg3, renderArg4, renderArg5,

@@ -355,10 +355,10 @@ int DIMbossAnim_updatePlayerHitReaction(GameObject* obj, BaddieState* runtime) {
 }
 
 int DIMbossAnim_finishDefeat(GameObject* obj, BaddieState* p2) {
-    int state;
+    GroundBaddieState* state;
 
     Obj_GetPlayerObject();
-    state = (int)obj->extra;
+    state = obj->extra;
 
     if ((s32)p2->moveJustStartedB != 0) {
         p2->targetObj = 0;
@@ -368,8 +368,8 @@ int DIMbossAnim_finishDefeat(GameObject* obj, BaddieState* p2) {
         obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
         obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~0x80;
         ObjMsg_SendToObject(Obj_GetPlayerObject(), 0xE0000, obj, 0);
-        mainSetBits(((GroundBaddieState*)state)->gameBitB, 0);
-        mainSetBits(((GroundBaddieState*)state)->gameBitA, 1);
+        mainSetBits(state->gameBitB, 0);
+        mainSetBits(state->gameBitA, 1);
         if (obj->anim.placementData == NULL) {
             Obj_FreeObject(obj);
             return 0;

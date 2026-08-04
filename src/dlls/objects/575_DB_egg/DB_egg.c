@@ -470,18 +470,18 @@ void dbegg_render(GameObject* obj, int p1, int p2, int p3, int p4, s8 visible)
 
 void dbegg_hitDetect(GameObject* obj)
 {
-    u8* state;
+    DbEggState* state;
     int hit;
     hit = ObjHits_GetPriorityHit(obj, 0, 0, 0);
     state = (obj)->extra;
     if (hit == 0x12)
     {
-        if (((DbEggState*)state)->mode != 4)
+        if (state->mode != 4)
         {
             Obj_GetPlayerObject();
         }
     }
-    if (((DbEggState*)state)->mode != 9)
+    if (state->mode != 9)
     {
         void* hitFrom = &(obj)->anim.previousLocalPosX;
         void* hitTo = &(obj)->anim.localPosX;
@@ -524,8 +524,8 @@ void dbegg_update(GameObject* obj)
 #define hitState ((ObjHitsPriorityState*)(obj)->anim.hitReactState)
     GameObject* player;
     DbEggState* egg;
-    int placement;
-    int pickupState;
+    DbeggPlacement* placement;
+    DbEggState* pickupState;
     int i;
     int n;
     GameObject* playerObj;
@@ -687,18 +687,18 @@ void dbegg_update(GameObject* obj)
                 (egg->flags119 & 2) == 0)
             {
                 playerObj = Obj_GetPlayerObject();
-                pickupState = (int)obj->extra;
-                placement = (obj)->anim.placementDataAddress;
+                pickupState = obj->extra;
+                placement = (DbeggPlacement*)(obj)->anim.placementDataAddress;
                 objFreeObjectType((int)obj, DBEGG_OBJGROUP);
-                ((DbEggState*)pickupState)->mode = DBEGG_MODE_RELEASED;
+                pickupState->mode = DBEGG_MODE_RELEASED;
                 mainSetBits(0x3c4, 1);
                 mainSetBits(0x86d, 1);
                 (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
-                mainSetBits(((DbeggPlacement*)placement)->triggerGameBit, 1);
-                ((DbEggState*)pickupState)->msg11C = -1;
-                ((DbEggState*)pickupState)->msg11E = 0;
-                ((DbEggState*)pickupState)->msg120 = 1.0f;
-                ObjMsg_SendToObject(playerObj, DBEGG_MSG_IN_RANGE, obj, pickupState + 0x11c);
+                mainSetBits(placement->triggerGameBit, 1);
+                pickupState->msg11C = -1;
+                pickupState->msg11E = 0;
+                pickupState->msg120 = 1.0f;
+                ObjMsg_SendToObject(playerObj, DBEGG_MSG_IN_RANGE, obj, (int)pickupState + 0x11c);
                 (obj)->userData2 = 0;
             }
             else if (getButtonsJustPressed(0) & PAD_BUTTON_A)
@@ -855,21 +855,21 @@ void dbegg_update(GameObject* obj)
                 {
                     if ((egg->flags119 & 1) == 0)
                     {
-                        int placement;
-                        int pickupState;
+                        DbeggPlacement* placement;
+                        DbEggState* pickupState;
                         GameObject* playerObj = Obj_GetPlayerObject();
-                        pickupState = (int)obj->extra;
-                        placement = (obj)->anim.placementDataAddress;
+                        pickupState = obj->extra;
+                        placement = (DbeggPlacement*)(obj)->anim.placementDataAddress;
                         objFreeObjectType((int)obj, DBEGG_OBJGROUP);
-                        ((DbEggState*)pickupState)->mode = DBEGG_MODE_RELEASED;
+                        pickupState->mode = DBEGG_MODE_RELEASED;
                         mainSetBits(0x3c4, 1);
                         mainSetBits(0x86d, 1);
                         (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
-                        mainSetBits(((DbeggPlacement*)placement)->triggerGameBit, 1);
-                        ((DbEggState*)pickupState)->msg11C = -1;
-                        ((DbEggState*)pickupState)->msg11E = 0;
-                        ((DbEggState*)pickupState)->msg120 = 1.0f;
-                        ObjMsg_SendToObject(playerObj, DBEGG_MSG_IN_RANGE, obj, pickupState + 0x11c);
+                        mainSetBits(placement->triggerGameBit, 1);
+                        pickupState->msg11C = -1;
+                        pickupState->msg11E = 0;
+                        pickupState->msg120 = 1.0f;
+                        ObjMsg_SendToObject(playerObj, DBEGG_MSG_IN_RANGE, obj, (int)pickupState + 0x11c);
                     }
                     else
                     {

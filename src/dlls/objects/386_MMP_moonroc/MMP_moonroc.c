@@ -218,9 +218,9 @@ void mmpMoonRock_reconcilePlacement(GameObject* obj, u8 place, u8 mode) {
     state = obj->extra;
     list = ObjList_GetObjects(&i, &count);
     for (; i < count; i++) {
-        u32 otherObj = list[i];
-        if (otherObj != (u32)obj && ((GameObject*)otherObj)->anim.romDefNo == MMP_GEYSER_VENT_SEQUENCE_ID &&
-            Vec_distance(&obj->anim.worldPosX, &((GameObject*)otherObj)->anim.worldPosX) < 40.0f) {
+        GameObject* otherObj = (GameObject*)list[i];
+        if ((u32)otherObj != (u32)obj && otherObj->anim.romDefNo == MMP_GEYSER_VENT_SEQUENCE_ID &&
+            Vec_distance(&obj->anim.worldPosX, &otherObj->anim.worldPosX) < 40.0f) {
             ventPlacement = (MMPGeyserVentPlacement*)((GameObject*)list[i])->anim.placementData;
             rockPlacement = (MMPMoonRockPlacement*)obj->anim.placementData;
             pedestalCount = mainGetBit(MMP_MOON_ROCK_PEDESTAL_COUNT_GAMEBIT);

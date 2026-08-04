@@ -373,7 +373,7 @@ typedef struct TrickyCurveObjectDef
 void TrickyCurve_updateBurstTrigger(GameObject* obj)
 {
     TrickyCurveObjState* state;
-    int player;
+    GameObject* player;
     f32 dx;
     f32 dz;
     f32 dy;
@@ -385,14 +385,14 @@ void TrickyCurve_updateBurstTrigger(GameObject* obj)
     int burstParticles;
 
     state = (obj)->extra;
-    player = (int)Obj_GetPlayerObject();
+    player = Obj_GetPlayerObject();
     insideCount = 0;
     xSide = 0;
     ySide = 0;
     zSide = 0;
-    dx = ((GameObject*)player)->anim.localPosX - (obj)->anim.localPosX;
-    dy = ((GameObject*)player)->anim.localPosY - (obj)->anim.localPosY;
-    dz = ((GameObject*)player)->anim.localPosZ - (obj)->anim.localPosZ;
+    dx = player->anim.localPosX - (obj)->anim.localPosX;
+    dy = player->anim.localPosY - (obj)->anim.localPosY;
+    dz = player->anim.localPosZ - (obj)->anim.localPosZ;
 
     if ((state->gateGameBit != -1) &&
         (mainGetBit(state->gateGameBit) != 0))

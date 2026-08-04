@@ -45,12 +45,12 @@ void spitembeam_hitDetect(void)
 void spitembeam_update(GameObject* obj)
 {
     int* shop;
-    u8* def;
+    SpitembeamPlacement* def;
     ObjTextureRuntimeSlot* tex;
     f32 searchRadius;
 
     shop = (int*)obj->userData1;
-    def = (u8*)obj->anim.placementData;
+    def = (SpitembeamPlacement*)obj->anim.placementData;
     searchRadius = 10000.0f;
     if (shop == NULL)
     {
@@ -59,9 +59,9 @@ void spitembeam_update(GameObject* obj)
     else
     {
         if (SHOP_INTERFACE(shop)->isItemAvailable((GameObject*)shop,
-                                                  ((SpitembeamPlacement*)def)->itemIndex) == 0 ||
+                                                  def->itemIndex) == 0 ||
             SHOP_INTERFACE(shop)->isItemBought((GameObject*)shop,
-                                               ((SpitembeamPlacement*)def)->itemIndex) != 0)
+                                               def->itemIndex) != 0)
         {
             obj->anim.flags = (s16)(obj->anim.flags | OBJANIM_FLAG_HIDDEN);
             obj->objectFlags =

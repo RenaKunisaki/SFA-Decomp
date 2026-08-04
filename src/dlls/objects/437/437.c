@@ -900,10 +900,10 @@ void Lightfoot_update(GameObject* obj) {
         case 0x499AE:
         case 0x499AF:
             if (mainGetBit(0xC42) && mainGetBit(inner->groundBaddie.gameBitA) == 0) {
-                void* other = ObjList_FindObjectById(0x499B5);
+                GameObject* other = ObjList_FindObjectById(0x499B5);
 
                 if (other != NULL &&
-                    Vec_distance(&obj->anim.worldPosX, &((GameObject*)other)->anim.worldPosX) < 25.0f) {
+                    Vec_distance(&obj->anim.worldPosX, &other->anim.worldPosX) < 25.0f) {
                     mainSetBits(inner->groundBaddie.gameBitA, 1);
                     effectParams[3] = 0.0f;
                     effectParams[4] = 10.0f;
@@ -927,10 +927,10 @@ void Lightfoot_update(GameObject* obj) {
         case 0x499B1:
         case 0x499B2:
             if (mainGetBit(0xC46) && mainGetBit(inner->groundBaddie.gameBitA) == 0) {
-                void* other = ObjList_FindObjectById(0x499B6);
+                GameObject* other = ObjList_FindObjectById(0x499B6);
 
                 if (other != NULL &&
-                    Vec_distance(&obj->anim.worldPosX, &((GameObject*)other)->anim.worldPosX) < 25.0f) {
+                    Vec_distance(&obj->anim.worldPosX, &other->anim.worldPosX) < 25.0f) {
                     mainSetBits(inner->groundBaddie.gameBitA, 1);
                     effectParams[3] = 0.0f;
                     effectParams[4] = 10.0f;

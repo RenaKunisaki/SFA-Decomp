@@ -53,7 +53,7 @@ void chuka_update(GameObject* obj)
 {
     ChukaPlacement* data = (ChukaPlacement*)obj->anim.placementData;
     ChukaState* state = obj->extra;
-    int linkedObj;
+    GameObject* linkedObj;
     int* objList;
     int candidate;
     int i;
@@ -62,10 +62,10 @@ void chuka_update(GameObject* obj)
     int count;
     ObjAnimComponent* objAnim = &obj->anim;
 
-    linkedObj = state->linkedObject;
+    linkedObj = (GameObject*)state->linkedObject;
     if ((u32)linkedObj != 0)
     {
-        if (((GameObject*)linkedObj)->anim.flags & 0x40)
+        if (linkedObj->anim.flags & 0x40)
         {
             state->linkedObject = 0;
             return;
@@ -88,8 +88,8 @@ void chuka_update(GameObject* obj)
             return;
         }
     }
-    linkedObj = state->linkedObject;
-    (*(void (**)(int, u8*))(*((GameObject*)linkedObj)->anim.dll + 8))(linkedObj, gChukaModeTable);
+    linkedObj = (GameObject*)state->linkedObject;
+    (*(void (**)(int, u8*))(*linkedObj->anim.dll + 8))((int)linkedObj, gChukaModeTable);
     if (mainGetBit(GAMEBIT_DRBOT_SpellPuzzleActive) == 0)
     {
         state->mode = 0;

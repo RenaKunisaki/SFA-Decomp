@@ -142,7 +142,7 @@ void FXEmit_emitEffect(GameObject* obj) {
             (*gPartfxInterface)->spawnObject(obj, state->alternateEffectId, &args, spawnFlags, -1, NULL);
         }
     } else {
-        void* resource;
+        FXEmitModelResource* resource;
         s16 effectBank = state->effectBank;
 
         if (effectBank == FXEMIT_EFFECT_BANK_PARTICLE) {
@@ -157,10 +157,10 @@ void FXEmit_emitEffect(GameObject* obj) {
             resource = Resource_Acquire((state->effectId + FXEMIT_MODEL_RESOURCE_ID_BASE), 1);
             if (state->emitRate > 0) {
                 for (i = 0; i < state->emitRate; i++) {
-                    ((FXEmitModelResource*)resource)->vtable->spawnEffect(obj, 0, 0, spawnFlags, -1, 0);
+                    resource->vtable->spawnEffect(obj, 0, 0, spawnFlags, -1, 0);
                 }
             } else {
-                ((FXEmitModelResource*)resource)->vtable->spawnEffect(obj, 0, 0, spawnFlags, -1, 0);
+                resource->vtable->spawnEffect(obj, 0, 0, spawnFlags, -1, 0);
             }
             Resource_Release(resource);
         } else if (effectBank == FXEMIT_EFFECT_BANK_PROJECTILE) {

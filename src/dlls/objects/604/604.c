@@ -344,7 +344,7 @@ void snowclaw_syncMountTransform(GameObject* obj, GameObject* mount, int p2, int
 
 int snowclaw_animEventCallback(GameObject* obj, int a2, ObjSeqState* seq)
 {
-    int* sub;
+    GameObject* sub;
     int* inner;
     SnowclawState* s;
     int i;
@@ -368,14 +368,14 @@ int snowclaw_animEventCallback(GameObject* obj, int a2, ObjSeqState* seq)
         return 4;
     }
     obj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
-    sub = *(int**)inner;
+    sub = (GameObject*)*(int**)inner;
     s->mountAlpha = 0xff;
     if (sub != 0)
     {
-        s16 animFlags = ((GameObject*)sub)->anim.flags;
+        s16 animFlags = sub->anim.flags;
         if (animFlags & OBJANIM_FLAG_HIDDEN)
         {
-            ((GameObject*)sub)->anim.flags = animFlags & ~OBJANIM_FLAG_HIDDEN;
+            sub->anim.flags = animFlags & ~OBJANIM_FLAG_HIDDEN;
             SNOWCLAW_MOUNT_INTERFACE(sub)->setRiderMode((GameObject*)sub, 2);
         }
     }
@@ -423,7 +423,7 @@ int snowclaw_animEventCallback(GameObject* obj, int a2, ObjSeqState* seq)
             }
             break;
         case 1:
-            sub = *(int**)inner;
+            sub = (GameObject*)*(int**)inner;
             if (sub != 0)
             {
                 SNOWCLAW_MOUNT_INTERFACE(sub)->setRiderMode((GameObject*)sub, 0);

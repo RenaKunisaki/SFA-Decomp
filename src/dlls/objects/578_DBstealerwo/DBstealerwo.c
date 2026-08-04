@@ -620,7 +620,7 @@ int dbstealerworm_stateHandlerA0C(GameObject* obj, BaddieState* baddie, f32 t)
     int q;
     int* objs;
     int best;
-    int player;
+    GameObject* player;
     int o;
     int* cursor;
     int i;
@@ -641,11 +641,11 @@ int dbstealerworm_stateHandlerA0C(GameObject* obj, BaddieState* baddie, f32 t)
     logPrintf(tbl + 0x430, sub->savedTargetObj, sub->linkedObj);
     if (sub->savedTargetObject == NULL)
     {
-        player = (int)Obj_GetPlayerObject();
+        player = Obj_GetPlayerObject();
         obj = (GameObject*)sub->msgStack;
         msg0[0] = 0xf;
         msg0[1] = 1;
-        msg0[2] = player;
+        msg0[2] = (int)player;
         if (Stack_IsFull((RingBufferQueue*)obj) == 0)
         {
             Stack_Push((RingBufferQueue*)obj, msg0);
@@ -687,21 +687,21 @@ int dbstealerworm_stateHandlerA0C(GameObject* obj, BaddieState* baddie, f32 t)
     {
         dbstealerworm_avoidObjects(obj, (int*)(tbl + 0x344), (f32*)(tbl + 0x354), 4, frac);
     }
-    player = (int)Obj_GetPlayerObject();
-    ratio = (Vec_xzDistance(&obj->anim.worldPosX, &((GameObject*)player)->anim.worldPosX) - 60.0f) /
+    player = Obj_GetPlayerObject();
+    ratio = (Vec_xzDistance(&obj->anim.worldPosX, &player->anim.worldPosX) - 60.0f) /
             (0.05f * blob->aggression);
     n = (int)(ratio < 0.0f ? 0.0f : (ratio > 100.0f ? 100.0f : ratio));
     logPrintf(tbl + 0x444, n);
-    player = (int)Obj_GetPlayerObject();
+    player = Obj_GetPlayerObject();
     best = 0;
     bestD = 0.0f;
     objs = (int*)objGetAllOfType(c30, &cnt);
     for (i = 0, cursor = objs; i < cnt; i++)
     {
         o = *cursor;
-        if ((u32)o != player)
+        if ((u32)o != (u32)player)
         {
-            ds = vec3f_distanceSquared(&((GameObject*)player)->anim.worldPosX, &((GameObject*)o)->anim.worldPosX);
+            ds = vec3f_distanceSquared(&player->anim.worldPosX, &((GameObject*)o)->anim.worldPosX);
             if (ds > bestD)
             {
                 bestD = ds;
