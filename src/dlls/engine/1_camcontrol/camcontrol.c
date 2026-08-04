@@ -419,13 +419,13 @@ void camcontrol_initialiseTargetReticle(void) {
     }
 }
 
-static inline int camcontrol_isTargetCandidate(GameObject* obj, ObjHitVolumeRuntimeBounds* data) {
+static inline int camcontrol_isTargetCandidate(GameObject* obj, ObjHitVolumeRuntimeBounds* bounds) {
     int accept;
-    if (data != NULL && obj->anim.alpha == 0xff && !(obj->anim.resetHitboxFlags & 0x28) &&
+    if (bounds != NULL && obj->anim.alpha == 0xff && !(obj->anim.resetHitboxFlags & 0x28) &&
         ((obj->objectFlags & OBJECT_OBJFLAG_RENDERED) || (obj->anim.modelInstance->flags & 1)) &&
         !(obj->anim.flags & OBJANIM_FLAG_HIDDEN) && !(obj->objectFlags & OBJECT_OBJFLAG_FREED) &&
         (gCamcontrolTargetClassMask &
-         ((accept = 1) << (data[obj->hitVolumeIndex].flags & CAMCONTROL_TARGET_KIND_MASK)))) {
+         ((accept = 1) << (bounds[obj->hitVolumeIndex].flags & CAMCONTROL_TARGET_KIND_MASK)))) {
         return accept;
     }
     return 0;

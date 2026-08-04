@@ -314,13 +314,13 @@ void objKfAnimStop(ObjKfAnimState* state) {
     state->frame = -1;
 }
 
-void objSoundStart(u32 obj, void* p, u16 sfxId) {
+void objSoundStart(u32 obj, void* state, u16 sfxId) {
     if (Sfx_IsPlayingFromObjectChannel((GameObject*)obj, 0x10) == 0) {
         Sfx_PlayFromObjectChannel((GameObject*)obj, 0x10, sfxId);
-        ((ObjSoundState*)p)->timer = -1.0f;
-        ((ObjSoundState*)p)->pitch = -0x500;
-        ((ObjSoundState*)p)->active = 1;
-        ((ObjSoundState*)p)->blendWeight = 1.0f;
+        ((ObjSoundState*)state)->timer = -1.0f;
+        ((ObjSoundState*)state)->pitch = -0x500;
+        ((ObjSoundState*)state)->active = 1;
+        ((ObjSoundState*)state)->blendWeight = 1.0f;
     }
 }
 
@@ -764,7 +764,7 @@ void characterHeadLookRelax(GameObject* obj, void* state) {
     ((CharacterEyeAnimState*)state)->headTrackMode = 0;
 }
 
-void characterUpdateHeadLook(GameObject* obj, CharacterEyeAnimState* state, f32 val) {
+void characterUpdateHeadLook(GameObject* obj, CharacterEyeAnimState* state, f32 scale) {
     s16* found;
     int flag;
 
@@ -773,16 +773,16 @@ void characterUpdateHeadLook(GameObject* obj, CharacterEyeAnimState* state, f32 
         if (found[0] != 0) {
             found[0] = (s16)(found[0] * 3 / 4);
         }
-        if (val < 0.0f) {
-            val = -val;
+        if (scale < 0.0f) {
+            scale = -scale;
         }
-        if (val <= 0.1f) {
-            characterHeadLookIdle(obj, state, found, val);
+        if (scale <= 0.1f) {
+            characterHeadLookIdle(obj, state, found, scale);
         } else {
-            characterHeadLookAlert((int)obj, state, found, val);
+            characterHeadLookAlert((int)obj, state, found, scale);
         }
         state->headTrackMode = (s16)(u16)(u8)state->headTrackMode;
-        if (val > 0.1f) {
+        if (scale > 0.1f) {
             flag = 1;
         } else {
             flag = 0;
@@ -1041,7 +1041,7 @@ void objJointTracksCaptureCurrentAngles(GameObject* obj, int* keys, int count, u
     }
 }
 
-void characterAimHeadAtTarget(GameObject* obj, void* tgt, void* p3, int a, u8 inv, int b) {
+void characterAimHeadAtTarget(GameObject* obj, void* tgt, void* state, int limit, u8 inv, int mode) {
     s16 ang[2];
     s16* found[1];
     void* m[1];
@@ -1093,12 +1093,12 @@ void characterAimHeadAtTarget(GameObject* obj, void* tgt, void* p3, int a, u8 in
             }
             ang[1] = (s16)((s16)getAngle(dist, dy) - 0x3fff);
 
-            a = (s16)(182.04f * a);
-            channel = p3;
+            limit = (s16)(182.04f * limit);
+            channel = state;
             ap = ang;
-            prodB = 182.04f * b;
+            prodB = 182.04f * mode;
             minB = -(s16)(s32)prodB;
-            negA = -a;
+            negA = -limit;
             for (i = 0; i < 2; i++) {
                 int v;
                 int w;
@@ -1115,8 +1115,8 @@ void characterAimHeadAtTarget(GameObject* obj, void* tgt, void* p3, int a, u8 in
                 }
                 *ap = (s16)w;
                 channel->angle += *ap;
-                if (channel->angle > a) {
-                    channel->angle = a;
+                if (channel->angle > limit) {
+                    channel->angle = limit;
                 }
                 if (channel->angle < negA) {
                     channel->angle = negA;
@@ -1124,8 +1124,8 @@ void characterAimHeadAtTarget(GameObject* obj, void* tgt, void* p3, int a, u8 in
                 channel++;
                 ap++;
             }
-            found[0][1] = ((ObjJointTrackPair*)p3)->yaw.angle;
-            found[0][0] = ((ObjJointTrackPair*)p3)->pitch.angle;
+            found[0][1] = ((ObjJointTrackPair*)state)->yaw.angle;
+            found[0][0] = ((ObjJointTrackPair*)state)->pitch.angle;
         }
     }
 }
@@ -1260,10 +1260,10 @@ void objSetGlowColor(int red, int green, int blue, u8 alpha) {
     gObjGlowColorAlpha = alpha;
 }
 
-void objSetColorFilter(s16 a, s16 b, s16 c) {
-    gObjColorFilterRed = a;
-    gObjColorFilterGreen = b;
-    gObjColorFilterBlue = c;
+void objSetColorFilter(s16 red, s16 green, s16 blue) {
+    gObjColorFilterRed = red;
+    gObjColorFilterGreen = green;
+    gObjColorFilterBlue = blue;
     gObjColorFilterEnabled = 1;
 }
 
@@ -1439,6 +1439,6 @@ int objGetAlphaCompareThreshold(void) {
     return gObjAlphaCompareThreshold;
 }
 
-void objSetAlphaCompareThreshold(u8 x) {
-    gObjAlphaCompareThreshold = x;
+void objSetAlphaCompareThreshold(u8 alpha) {
+    gObjAlphaCompareThreshold = alpha;
 }

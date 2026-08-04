@@ -456,21 +456,21 @@ int DIMbossHitDetect_liftSlam(GameObject* obj, BaddieState* runtime) {
     return 0;
 }
 
-int DIMbossHitDetect_liftImpact(GameObject* obj, BaddieState* p2) {
+int DIMbossHitDetect_liftImpact(GameObject* obj, BaddieState* state) {
     f32 zeroProgress;
 
-    p2->moveSpeed = 0.008f;
+    state->moveSpeed = 0.008f;
     zeroProgress = 0.0f;
-    p2->animSpeedA = zeroProgress;
-    p2->animSpeedB = zeroProgress;
+    state->animSpeedA = zeroProgress;
+    state->animSpeedB = zeroProgress;
     ObjHits_SetHitVolumeSlot(&obj->anim, DIM2LIFT_HIT_VOLUME_SLOT_10, 1, -1);
 
-    if ((s32)p2->moveJustStartedA != 0) {
+    if ((s32)state->moveJustStartedA != 0) {
         ObjAnim_SetCurrentMove((int)obj, 15, 0.0f, 0);
-        p2->moveDone = 0;
+        state->moveDone = 0;
     }
 
-    if ((p2->eventFlags & BADDIE_EVENT_FOOTSTEP) != 0) {
+    if ((state->eventFlags & BADDIE_EVENT_FOOTSTEP) != 0) {
         gDIMbossSequenceFlags |= 0x4004;
         Sfx_PlayFromObject(obj, SFXTRIG_mn_dimbos46);
         CameraShake_Enable();
@@ -523,7 +523,7 @@ int DIMbossHitDetect_lungeAttack(GameObject* obj, BaddieState* runtime, f32 hitA
     return 0;
 }
 
-int DIMbossHitDetect_breathBurst(GameObject* obj, BaddieState* runtime, f32 arg) {
+int DIMbossHitDetect_breathBurst(GameObject* obj, BaddieState* runtime, f32 weight) {
     f32 progress;
     f32 animSpeed;
     if (runtime->moveJustStartedA != 0) {
@@ -545,11 +545,11 @@ int DIMbossHitDetect_breathBurst(GameObject* obj, BaddieState* runtime, f32 arg)
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_BREATH_BURST;
     }
     (*gPlayerInterface)->playSoundOnEvent0F(obj, runtime, 0, 5, lbl_80325AA0);
-    (*gPlayerInterface)->rotateTowardTarget(obj, runtime, arg, 0xf0);
+    (*gPlayerInterface)->rotateTowardTarget(obj, runtime, weight, 0xf0);
     return 0;
 }
 
-int DIMbossHitDetect_blueWhiteCapture(GameObject* obj, BaddieState* runtime, f32 arg) {
+int DIMbossHitDetect_blueWhiteCapture(GameObject* obj, BaddieState* runtime, f32 weight) {
     f32 progress;
     f32 animSpeed;
     if (runtime->moveJustStartedA != 0) {
@@ -573,11 +573,11 @@ int DIMbossHitDetect_blueWhiteCapture(GameObject* obj, BaddieState* runtime, f32
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_CAPTURE_BLUE_WHITE_VELOCITY;
     }
     (*gPlayerInterface)->playSoundOnEvent0F(obj, runtime, 0, 3, lbl_80325AA0);
-    (*gPlayerInterface)->rotateTowardTarget(obj, runtime, arg, 0xf0);
+    (*gPlayerInterface)->rotateTowardTarget(obj, runtime, weight, 0xf0);
     return 0;
 }
 
-int DIMbossHitDetect_blueWhiteEventCapture(GameObject* obj, BaddieState* runtime, f32 arg) {
+int DIMbossHitDetect_blueWhiteEventCapture(GameObject* obj, BaddieState* runtime, f32 weight) {
     f32 progress;
     f32 animSpeed;
     if (runtime->moveJustStartedA != 0) {
@@ -602,11 +602,11 @@ int DIMbossHitDetect_blueWhiteEventCapture(GameObject* obj, BaddieState* runtime
         runtime->eventFlags &= ~BADDIE_EVENT_LANDING;
     }
     (*gPlayerInterface)->playSoundOnEvent0F(obj, runtime, 0, 3, lbl_80325AA0);
-    (*gPlayerInterface)->rotateTowardTarget(obj, runtime, arg, 0xf0);
+    (*gPlayerInterface)->rotateTowardTarget(obj, runtime, weight, 0xf0);
     return 0;
 }
 
-int DIMbossHitDetect_randomSwipe(GameObject* obj, BaddieState* runtime, f32 arg) {
+int DIMbossHitDetect_randomSwipe(GameObject* obj, BaddieState* runtime, f32 weight) {
     int eventFlags;
     f32 animSpeed;
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DIM2LIFT_HIT_VOLUME_SLOT_9, 1, -1);
@@ -635,7 +635,7 @@ int DIMbossHitDetect_randomSwipe(GameObject* obj, BaddieState* runtime, f32 arg)
         gDIMbossSequenceFlags |= (DIMBOSS_SEQUENCE_FLAG_0001 | DIMBOSS_SEQUENCE_FLAG_0004);
     }
     (*gPlayerInterface)->playSoundOnEvent0F(obj, runtime, 0, randomGetRange(0, 1), lbl_80325AA0);
-    (*gPlayerInterface)->rotateTowardTarget(obj, runtime, arg, 0xf0);
+    (*gPlayerInterface)->rotateTowardTarget(obj, runtime, weight, 0xf0);
     return 0;
 }
 
@@ -1626,7 +1626,7 @@ void DIMboss_free(GameObject* obj) {
     Rcp_DisableHeatEffect();
 }
 
-void DIMboss_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, s8 shouldRender) {
+void DIMboss_render(GameObject* obj, u32 renderArg2, u32 renderArg3, u32 renderArg4, u32 renderArg5, s8 shouldRender) {
     DIMbossRuntime* runtime;
     ModelLightStruct* effect;
 
@@ -1635,7 +1635,7 @@ void DIMboss_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, s8 shouldRe
         return;
     }
 
-    objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
+    objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     DIMboss_updateSequenceEffects(obj, runtime);
     dll_2E_setTargetFromPathPoint(obj, &gDIMbossAnimController, 0);
 

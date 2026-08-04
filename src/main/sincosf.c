@@ -9,9 +9,9 @@ extern const float gSinCosCosCoeff2;
 extern const float gSinCosCosCoeff4;
 extern const float gSinCosCosCoeff6;
 
-void mathSinCosf(float x, float* outSin, float* outCos) {
+void mathSinCosf(float angle, float* outSin, float* outCos) {
     u16 quadrant;
-    float reducedAngle = trigReduceQuadrant(&quadrant, x);
+    float reducedAngle = trigReduceQuadrant(&quadrant, angle);
     float reducedSquared = reducedAngle * reducedAngle;
     float sinApprox =
         reducedAngle * (reducedSquared * (gSinCosSinCoeff5 * reducedSquared + gSinCosSinCoeff3) + gSinCosSinCoeff1);
@@ -21,24 +21,24 @@ void mathSinCosf(float x, float* outSin, float* outCos) {
 
     switch (quadrant & 6) {
         case 0:
-            sinApprox = (x >= 0.0f) ? sinApprox : -sinApprox;
+            sinApprox = (angle >= 0.0f) ? sinApprox : -sinApprox;
             *outSin = sinApprox;
             *outCos = cosApprox;
             break;
         case 2:
-            cosApprox = (x >= 0.0f) ? cosApprox : -cosApprox;
+            cosApprox = (angle >= 0.0f) ? cosApprox : -cosApprox;
             *outSin = cosApprox;
             *outCos = -sinApprox;
             break;
         case 4:
-            if (x >= 0.0f) {
+            if (angle >= 0.0f) {
                 sinApprox = -sinApprox;
             }
             *outSin = sinApprox;
             *outCos = -cosApprox;
             break;
         default:
-            if (x >= 0.0f) {
+            if (angle >= 0.0f) {
                 cosApprox = -cosApprox;
             }
             *outSin = cosApprox;

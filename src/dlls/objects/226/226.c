@@ -814,16 +814,16 @@ void staff_startSwipe(GameObject* obj, s16 idx, f32 arg2, f32 lengthScale) {
     ((StaffState*)slots)->activeSlot = slot;
 }
 
-void staff_setHitReactValue(GameObject* obj, s32 v) {
+void staff_setHitReactValue(GameObject* obj, s32 value) {
     s16* p = &((StaffState*)obj->extra)->hitReactValue;
-    if (v > 0xff) {
-        v = 0xff;
+    if (value > 0xff) {
+        value = 0xff;
     }
-    *p = v;
+    *p = value;
 }
 
-void staff_func10(GameObject* obj, s32 v) {
-    ((StaffState*)obj->extra)->fieldB2 = v;
+void staff_func10(GameObject* obj, s32 value) {
+    ((StaffState*)obj->extra)->fieldB2 = value;
 }
 
 void staff_func0F(void) {

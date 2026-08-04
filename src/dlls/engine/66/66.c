@@ -1149,7 +1149,7 @@ void CameraModeNormal_update(CameraObject* camera) {
                                    camera->anim.parent);
 }
 
-void CameraModeNormal_init(CameraObject* cam, int mode, CameraModeNormalInitSettings* data) {
+void CameraModeNormal_init(CameraObject* cam, int mode, CameraModeNormalInitSettings* settings) {
     GameObject* target;
     f32 vOutA;
     f32 vOutB;
@@ -1157,7 +1157,7 @@ void CameraModeNormal_init(CameraObject* cam, int mode, CameraModeNormalInitSett
     f32 vOutD;
     f32 fVal;
     u32 uVal;
-    CameraModeNormalInitSettings* p = data;
+    CameraModeNormalInitSettings* p = settings;
 
     gCameraModeNormalState->wallAvoidanceFlags.active = 0;
     gCameraModeNormalState->collisionState = 0;
@@ -1169,7 +1169,7 @@ void CameraModeNormal_init(CameraObject* cam, int mode, CameraModeNormalInitSett
     switch (mode) {
     case 0:
         memset(gCameraModeNormalState, 0, sizeof(CameraModeNormalState));
-        if (data != NULL) {
+        if (settings != NULL) {
             fVal = (f32)(u32)p->minDistanceWide;
             gCameraModeNormalState->minDistance = fVal;
             gCameraModeNormalState->targetMinDistance = fVal;
@@ -1220,7 +1220,7 @@ void CameraModeNormal_init(CameraObject* cam, int mode, CameraModeNormalInitSett
         cam->savedLocalPos.z = fVal;
         cam->anim.rotX = 0;
         cam->anim.rotZ = 0;
-        if (data != NULL) {
+        if (settings != NULL) {
             cam->fov = (f32)(u32)p->fovWide;
         }
         break;
@@ -1244,7 +1244,7 @@ void CameraModeNormal_init(CameraObject* cam, int mode, CameraModeNormalInitSett
         gCameraModeNormalState->transitionTimer = 0;
         break;
     case 2:
-        if (data != NULL) {
+        if (settings != NULL) {
             gCameraModeNormalState->targetTargetHeight = 35.0f;
             fVal = (f32)(u32)p->lowerHeightOffset;
             gCameraModeNormalState->baseLowerHeightOffset = fVal;
@@ -1300,7 +1300,7 @@ void CameraModeNormal_init(CameraObject* cam, int mode, CameraModeNormalInitSett
         gCameraModeNormalState->savedSlideLeftAmount = gCameraModeNormalState->slideLeftAmount;
         gCameraModeNormalState->savedDistanceAdjustRate = gCameraModeNormalState->distanceAdjustRate;
         gCameraModeNormalState->savedHeightAdjustRate = gCameraModeNormalState->heightAdjustRate;
-        if ((data != NULL) && (p->snapToTarget != 0)) {
+        if ((settings != NULL) && (p->snapToTarget != 0)) {
             camcontrol_getTargetPosition(cam, &target->anim, &cam->anim.worldPosX, &cam->anim.rotY);
             Obj_TransformWorldPointToLocal(cam->anim.worldPosX, cam->anim.worldPosY, cam->anim.worldPosZ,
                                            &cam->anim.localPosX, &cam->anim.localPosY, &cam->anim.localPosZ,
