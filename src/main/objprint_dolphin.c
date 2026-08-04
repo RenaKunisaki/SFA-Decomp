@@ -2266,7 +2266,7 @@ static void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
     bs.pos += 4;
     modelLoadMtxsToGx((int)m, am, &bs, cm);
     {
-        u8* dl;
+        ModelDisplayListEntry* dl;
         int idx;
         {
             u32 w;
@@ -2281,7 +2281,7 @@ static void modelDoAltRenderInstrs(int* obj, int* obj2, u8* m, int p4)
             idx = (w >> (pos & 7)) & 0xff;
         }
         dl = modelFileGetDisplayList(m, idx);
-        GXCallDisplayList(*(void**)dl, *(u16*)(dl + 4));
+        GXCallDisplayList(dl->dlist, dl->dlistSize);
     }
 }
 
@@ -2534,7 +2534,7 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
         break;
         case 2:
         {
-            u8* dl;
+            ModelDisplayListEntry* dl;
             u32 w;
             int pos = bs.pos;
             u8* p = (u8*)((pos >> 3) + bs.data);
@@ -2544,7 +2544,7 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
             bs.pos = pos + 8;
             dl = modelFileGetDisplayList(
                 m, ((ModelFileHeader*)m)->displayListCount + ((w >> (pos & 7)) & 0xff));
-            GXCallDisplayList(*(void**)dl, *(u16*)(dl + 4));
+            GXCallDisplayList(dl->dlist, dl->dlistSize);
         }
         break;
         case 4:
@@ -2947,7 +2947,7 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
         case 2:
             if ((passMask != 4 && passMask != 8) || gObjFuzzPassActive != 0)
             {
-                u8* dl;
+                ModelDisplayListEntry* dl;
                 u32 w;
                 int pos = bs.pos;
                 u32 pAddr = (pos >> 3) + ((u32)bs.data + 1);
@@ -2956,7 +2956,7 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
                 w |= *(u8*)(pAddr + 1) << 16;
                 bs.pos = pos + 8;
                 dl = modelFileGetDisplayList(m, (w >> (pos & 7)) & 0xff);
-                GXCallDisplayList(*(void**)dl, *(u16*)(dl + 4));
+                GXCallDisplayList(dl->dlist, dl->dlistSize);
             }
             else
             {

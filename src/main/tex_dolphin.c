@@ -1706,7 +1706,7 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
         {
             f32 fx = ((GameObject*)obj)->anim.localPosX;
             f32 fz = ((GameObject*)obj)->anim.localPosZ;
-            f32* outA;
+            TrackShadowTriangle* outA;
 
             if (id == 0)
             {
@@ -1714,7 +1714,7 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
                 fz -= offZ;
             }
             j = (s16)((TrackBlockDescriptor*)descBytes)->firstTriangle;
-            outA = (f32*)((char*)planesOut + outOff);
+            outA = (TrackShadowTriangle*)((char*)planesOut + outOff);
             while (j < (s16)((TrackBlockDescriptor*)descBytes)[1].firstTriangle && grp < 0x4b0 && total < 0xe10)
             {
                 if (triangleFlag & ((TrackTriangle*)triBuf + j)->flags)
@@ -1731,13 +1731,13 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
                     ((TrackP6Entry*)vertsOut)->relY2 =
                         __OSs16tof32(&((TrackTriangle*)triBuf + j)->vy[2]) - ((GameObject*)obj)->anim.localPosY;
                     ((TrackP6Entry*)vertsOut)->relZ2 = __OSs16tof32(&((TrackTriangle*)triBuf + j)->vz[2]) - fz;
-                    outA[0] = ((TrackTriangle*)triBuf + j)->planeN[0];
-                    outA[1] = ((TrackTriangle*)triBuf + j)->planeN[1];
-                    outA[2] = ((TrackTriangle*)triBuf + j)->planeN[2];
-                    *(u8*)((char*)outA + 0x10) = ((TrackTriangle*)triBuf + j)->flags;
+                    outA->normal.x = ((TrackTriangle*)triBuf + j)->planeN[0];
+                    outA->normal.y = ((TrackTriangle*)triBuf + j)->planeN[1];
+                    outA->normal.z = ((TrackTriangle*)triBuf + j)->planeN[2];
+                    outA->flags = ((TrackTriangle*)triBuf + j)->flags;
                     vertsOut += 0x24;
                     total += 3;
-                    outA = (f32*)((char*)outA + 0x14);
+                    outA++;
                     grp += 1;
                     outOff += 0x14;
                 }
@@ -1749,7 +1749,7 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
             f32* m = *(f32**)((char*)descBytes + 0xc);
             f32* p6start;
             int totalStart;
-            f32* outA;
+            TrackShadowTriangle* outA;
 
             lm[0] = m[0];
             lm[1] = m[4];
@@ -1766,7 +1766,7 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
             p6start = (f32*)vertsOut;
             totalStart = total;
             j = (s16)((TrackBlockDescriptor*)descBytes)->firstTriangle;
-            outA = (f32*)((char*)planesOut + outOff);
+            outA = (TrackShadowTriangle*)((char*)planesOut + outOff);
             while (j < (s16)((TrackBlockDescriptor*)descBytes)[1].firstTriangle && grp < 0x4b0 && total < 0xe10)
             {
                 if (triangleFlag & ((TrackTriangle*)triBuf + j)->flags)
@@ -1780,13 +1780,13 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
                     ((TrackP6Entry*)vertsOut)->relX2 = __OSs16tof32(&((TrackTriangle*)triBuf + j)->vx[2]);
                     ((TrackP6Entry*)vertsOut)->relY2 = __OSs16tof32(&((TrackTriangle*)triBuf + j)->vy[2]);
                     ((TrackP6Entry*)vertsOut)->relZ2 = __OSs16tof32(&((TrackTriangle*)triBuf + j)->vz[2]);
-                    outA[0] = ((TrackTriangle*)triBuf + j)->planeN[0];
-                    outA[1] = ((TrackTriangle*)triBuf + j)->planeN[1];
-                    outA[2] = ((TrackTriangle*)triBuf + j)->planeN[2];
-                    *(u8*)((char*)outA + 0x10) = ((TrackTriangle*)triBuf + j)->flags;
+                    outA->normal.x = ((TrackTriangle*)triBuf + j)->planeN[0];
+                    outA->normal.y = ((TrackTriangle*)triBuf + j)->planeN[1];
+                    outA->normal.z = ((TrackTriangle*)triBuf + j)->planeN[2];
+                    outA->flags = ((TrackTriangle*)triBuf + j)->flags;
                     vertsOut += 0x24;
                     total += 3;
-                    outA = (f32*)((char*)outA + 0x14);
+                    outA++;
                     grp += 1;
                     outOff += 0x14;
                 }

@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "game/objects/object.h"
+#include "main/vec_types.h"
 
 typedef struct TrackBlockDescriptor
 {
@@ -14,6 +15,15 @@ typedef struct TrackBlockDescriptor
     void* alternateMatrix;
     void* alternateCollisionMatrix;
 } TrackBlockDescriptor;
+
+typedef struct TrackShadowTriangle
+{
+    Vec3f normal;
+    f32 planeDistance;
+    s8 flags;
+    u8 pad11[3];
+} TrackShadowTriangle;
+
 struct TrackTriangle;
 
 void trackDolphin_buildSweptBounds(u32 *boundsOut,float *startPoints,float *endPoints,

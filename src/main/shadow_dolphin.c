@@ -100,14 +100,6 @@ s8 gShadowVolumesDirty = 10;
 s16 gSunMagnitude = 100;
 int gSunDirChanged = 1;
 
-typedef struct TrackShadowTriangle
-{
-    Vec3f normal;
-    f32 planeDistance;
-    s8 flags;
-    u8 pad11[3];
-} TrackShadowTriangle;
-
 #include "main/dll/ppcwgpipe_struct.h"
 
 extern volatile PPCWGPipe GXWGFifo : (0xCC008000);

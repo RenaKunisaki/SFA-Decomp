@@ -186,6 +186,14 @@ STATIC_ASSERT(offsetof(ModelFileHeader, textureCount) == 0xF2);
 STATIC_ASSERT(offsetof(ModelFileHeader, morphTargetCount) == 0xF9);
 STATIC_ASSERT(offsetof(ModelFileHeader, texMtxCount) == 0xFA);
 
+typedef struct ModelDisplayListEntry {
+    void* dlist;
+    u16 dlistSize;
+    u8 pad06[0x16];
+} ModelDisplayListEntry;
+
+STATIC_ASSERT(sizeof(ModelDisplayListEntry) == 0x1C);
+
 /* ModelFileHeader.hitVolumes entry: joint-space sphere transformed by the
  * joint matrix each update (objUpdateHitSpheres). */
 typedef struct ModelHitSphereDef {
