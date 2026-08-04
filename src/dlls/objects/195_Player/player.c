@@ -15141,10 +15141,10 @@ void playerProcessHitResponse(int obj, int inner, int state)
             if (gPlayerStepSfxTimer == 0)
             {
                 char* pt = (char*)Player_GetActiveModel(obj);
-                pt = *(char**)(pt + 0x50);
-                desc.x = playerMapOffsetX + *(f32*)(pt + surfIdx * 0x10 + 4);
-                desc.y = *(f32*)(pt + surfIdx * 0x10 + 8);
-                desc.z = playerMapOffsetZ + *(f32*)(pt + surfIdx * 0x10 + 0xc);
+                pt = (char*)((ObjModel*)pt)->hitSphereBufActive;
+                desc.x = playerMapOffsetX + ((ObjModelHitSphere*)(pt + surfIdx * 0x10))->pos[0];
+                desc.y = ((ObjModelHitSphere*)(pt + surfIdx * 0x10))->pos[1];
+                desc.z = playerMapOffsetZ + ((ObjModelHitSphere*)(pt + surfIdx * 0x10))->pos[2];
                 (*gPartfxInterface)->spawnObject((void*)obj, 0x328, &desc, 0x200001, -1, NULL);
                 desc.x -= ((GameObject*)obj)->anim.worldPosX;
                 desc.y -= ((GameObject*)obj)->anim.worldPosY;

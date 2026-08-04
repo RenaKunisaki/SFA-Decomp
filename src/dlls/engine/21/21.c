@@ -767,7 +767,8 @@ void curves_preparePointCollisionFrame(int obj, CurvesCollisionState* collision)
             while (iv[1] < ((int)collision->pointCounts >> CURVES_POINT_COUNT_SEGMENT_SHIFT))
             {
                 localPoint = (f32*)((u8*)collision->segmentLocalPoints + off[0]);
-                Matrix_TransformPoint(matrix, localPoint[0], localPoint[1], localPoint[2], (f32*)(wb[0] + 8),
+                Matrix_TransformPoint(matrix, localPoint[0], localPoint[1], localPoint[2],
+                                      ((CurvesCollisionState*)wb[0])->points[0],
                                       &collision->points[0][iv[0] + 1], &collision->points[0][iv[0] + 2]);
                 collision->segmentHitTypes[iv[1]] = -1;
                 wb[0] += 0xc;
@@ -847,7 +848,8 @@ void curves_updateLocalPointTransforms(int obj, CurvesCollisionState* collision)
         while (iv[1] < (collision->pointCounts & CURVES_POINT_COUNT_LOCAL_MASK))
         {
             localPoint = (f32*)((u8*)collision->localPointPositions + off[0]);
-            Matrix_TransformPoint(matrix, localPoint[0], localPoint[1], localPoint[2], (f32*)(wb[0] + 228),
+            Matrix_TransformPoint(matrix, localPoint[0], localPoint[1], localPoint[2],
+                                  ((CurvesCollisionState*)wb[0])->localPointWorld[0],
                                   &collision->localPointWorld[0][iv[0] + 1], &collision->localPointWorld[0][iv[0] + 2]);
             wb[0] += 0xc;
             off[0] += 0xc;
@@ -905,7 +907,8 @@ void curves_reset(GameObject* obj, CurvesCollisionState* collision)
         while (loopIdx[1] < (collision->pointCounts & CURVES_POINT_COUNT_LOCAL_MASK))
         {
             localPoint = (f32*)((u8*)collision->localPointPositions + off[0]);
-            Matrix_TransformPoint(matrix, localPoint[0], localPoint[1], localPoint[2], (f32*)(wb[0] + 228),
+            Matrix_TransformPoint(matrix, localPoint[0], localPoint[1], localPoint[2],
+                                  ((CurvesCollisionState*)wb[0])->localPointWorld[0],
                                   &collision->localPointWorld[0][loopIdx[0] + 1],
                                   &collision->localPointWorld[0][loopIdx[0] + 2]);
             wb[0] += 0xc;
@@ -918,9 +921,12 @@ void curves_reset(GameObject* obj, CurvesCollisionState* collision)
         one = CURVES_ONE;
         for (; loopIdx[0] < (collision->pointCounts & CURVES_POINT_COUNT_LOCAL_MASK); loopIdx[0]++)
         {
-            *(f32*)(worldBase + 276) = *(f32*)(worldBase + 228);
-            *(f32*)(worldBase + 280) = one + *(f32*)(worldBase + 232);
-            *(f32*)(worldBase + 284) = *(f32*)(worldBase + 236);
+            ((CurvesCollisionState*)worldBase)->localPointTarget[0][0] =
+                ((CurvesCollisionState*)worldBase)->localPointWorld[0][0];
+            ((CurvesCollisionState*)worldBase)->localPointTarget[0][1] =
+                one + ((CurvesCollisionState*)worldBase)->localPointWorld[0][1];
+            ((CurvesCollisionState*)worldBase)->localPointTarget[0][2] =
+                ((CurvesCollisionState*)worldBase)->localPointWorld[0][2];
             worldBase += 0xc;
         }
         trackInvalidateDynamicSlotsForObject(obj);
