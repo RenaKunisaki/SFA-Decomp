@@ -1873,36 +1873,36 @@ void beginLoadingMap(void)
             gHeatEffectFadeDirection = 1;
         else
             gHeatEffectFadeDirection = -1;
-        *(int*)(buf + 0x30) = 0;
-        *(f32*)(buf + 0xc) = 0.0f;
-        *(f32*)(buf + 0x10) = 0.0f;
-        *(f32*)(buf + 0x14) = 0.0f;
-        *(f32*)(buf + 0x18) = 0.0f;
-        *(f32*)(buf + 0x1c) = 0.0f;
-        *(f32*)(buf + 0x20) = 0.0f;
+        ((GameObject*)buf)->anim.parent = NULL;
+        ((GameObject*)buf)->anim.localPosX = 0.0f;
+        ((GameObject*)buf)->anim.localPosY = 0.0f;
+        ((GameObject*)buf)->anim.localPosZ = 0.0f;
+        ((GameObject*)buf)->anim.worldPosX = 0.0f;
+        ((GameObject*)buf)->anim.worldPosY = 0.0f;
+        ((GameObject*)buf)->anim.worldPosZ = 0.0f;
         {
             s16 index = environmentState->cloudEnvfxActIds[0];
             if (index != -1)
             {
-                *(f32*)(buf + 0xc) = (f32)environmentState->cloudPos[0][0];
-                *(f32*)(buf + 0x10) = (f32)environmentState->cloudPos[0][1];
-                *(f32*)(buf + 0x14) = (f32)environmentState->cloudPos[0][2];
+                ((GameObject*)buf)->anim.localPosX = (f32)environmentState->cloudPos[0][0];
+                ((GameObject*)buf)->anim.localPosY = (f32)environmentState->cloudPos[0][1];
+                ((GameObject*)buf)->anim.localPosZ = (f32)environmentState->cloudPos[0][2];
                 getEnvfxAct(buf, player, index & 0xFFFF, 0);
             }
             index = environmentState->cloudEnvfxActIds[1];
             if (index != -1)
             {
-                *(f32*)(buf + 0xc) = (f32)environmentState->cloudPos[1][0];
-                *(f32*)(buf + 0x10) = (f32)environmentState->cloudPos[1][1];
-                *(f32*)(buf + 0x14) = (f32)environmentState->cloudPos[1][2];
+                ((GameObject*)buf)->anim.localPosX = (f32)environmentState->cloudPos[1][0];
+                ((GameObject*)buf)->anim.localPosY = (f32)environmentState->cloudPos[1][1];
+                ((GameObject*)buf)->anim.localPosZ = (f32)environmentState->cloudPos[1][2];
                 getEnvfxAct(buf, player, index & 0xFFFF, 0);
             }
             index = environmentState->cloudEnvfxActIds[2];
             if (index != -1)
             {
-                *(f32*)(buf + 0xc) = (f32)environmentState->cloudPos[2][0];
-                *(f32*)(buf + 0x10) = (f32)environmentState->cloudPos[2][1];
-                *(f32*)(buf + 0x14) = (f32)environmentState->cloudPos[2][2];
+                ((GameObject*)buf)->anim.localPosX = (f32)environmentState->cloudPos[2][0];
+                ((GameObject*)buf)->anim.localPosY = (f32)environmentState->cloudPos[2][1];
+                ((GameObject*)buf)->anim.localPosZ = (f32)environmentState->cloudPos[2][2];
                 getEnvfxAct(buf, player, index & 0xFFFF, 0);
             }
         }
