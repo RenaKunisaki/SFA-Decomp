@@ -526,9 +526,9 @@ void wmsun_init(GameObject* obj, WmSunMapData* mapData)
         {
             j -= 2;
             i--;
-            *(s16*)((u8*)state->glareParams + j + 0x28) = 0;
-            *(s16*)((u8*)state->glareParams + j + 0x50) = randomGetRange(10, 0x14);
-            *(s16*)((u8*)state->glareParams + j + 0x78) = randomGetRange(0x50, 0xff);
+            ((WmSunGlareParams*)((u8*)state->glareParams + j))->angleOffsets[0] = 0;
+            ((WmSunGlareParams*)((u8*)state->glareParams + j))->flickerTimers[0] = randomGetRange(10, 0x14);
+            ((WmSunGlareParams*)((u8*)state->glareParams + j))->alphaValues[0] = randomGetRange(0x50, 0xff);
         }
         objAnim->alpha = 0;
         if (mapData->rootMotionScaleParam != 0)

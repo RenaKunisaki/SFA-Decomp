@@ -69,9 +69,9 @@ void XyzAnimator_captureGeometry(XyzAnimatorPlacement* placement, XyzAnimatorSta
                 dataOffset = vertexDataOffset[0];
                 for (index = 3; index != 0; index--) {
                     vertex = (Vec3s*)(blockData->vertices + (u32)*mapEntry * 6);
-                    *(s16*)(state->geometryBuffer + dataOffset) = vertex->x;
-                    *(s16*)(state->geometryBuffer + dataOffset + 2) = vertex->y;
-                    *(s16*)(state->geometryBuffer + dataOffset + 4) = vertex->z;
+                    ((Vec3s*)(state->geometryBuffer + dataOffset))->x = vertex->x;
+                    ((Vec3s*)(state->geometryBuffer + dataOffset))->y = vertex->y;
+                    ((Vec3s*)(state->geometryBuffer + dataOffset))->z = vertex->z;
                     dataOffset += 6;
                     mapEntry++;
                 }
@@ -169,9 +169,9 @@ void XyzAnimator_applyToMapBlock(XyzAnimatorPlacement* placement, XyzAnimatorSta
                 dataOffset = vertexIndex;
                 for (index = 3; index != 0; index--) {
                     vertex = (Vec3s*)(blockData->vertices + (u32)*mapEntry * 6);
-                    vertex->x = (s16)(scale * state->offsetX + (f32) * (s16*)(state->geometryBuffer + dataOffset));
-                    vertex->y = (s16)(scale * state->offsetY + (f32) * (s16*)(state->geometryBuffer + dataOffset + 2));
-                    vertex->z = (s16)(scale * state->offsetZ + (f32) * (s16*)(state->geometryBuffer + dataOffset + 4));
+                    vertex->x = (s16)(scale * state->offsetX + (f32)((Vec3s*)(state->geometryBuffer + dataOffset))->x);
+                    vertex->y = (s16)(scale * state->offsetY + (f32)((Vec3s*)(state->geometryBuffer + dataOffset))->y);
+                    vertex->z = (s16)(scale * state->offsetZ + (f32)((Vec3s*)(state->geometryBuffer + dataOffset))->z);
                     dataOffset += 6;
                     vertexIndex += 6;
                     vertexOffset[0] += 6;

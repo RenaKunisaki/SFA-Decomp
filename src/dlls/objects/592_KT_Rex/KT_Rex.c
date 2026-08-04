@@ -1703,21 +1703,21 @@ void ktrex_init(GameObject* obj, char* arg, int flag)
         cp = (RomCurveDef*)(*gRomCurveInterface)->getById(*pA);
         if (cp != NULL)
         {
-            *(f32*)((char*)gKTRexState + iv + 0x10) = cp->x;
-            *(f32*)((char*)gKTRexState + iv + 0x20) = cp->y;
-            *(f32*)((char*)gKTRexState + iv + 0x30) = cp->z;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneAX[0] = cp->x;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneAY[0] = cp->y;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneAZ[0] = cp->z;
             cp = (RomCurveDef*)(*gRomCurveInterface)->getById(*pB);
-            *(f32*)((char*)gKTRexState + iv + 0x40) = cp->x;
-            *(f32*)((char*)gKTRexState + iv + 0x50) = cp->y;
-            *(f32*)((char*)gKTRexState + iv + 0x60) = cp->z;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneBX[0] = cp->x;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneBY[0] = cp->y;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneBZ[0] = cp->z;
             cp = (RomCurveDef*)(*gRomCurveInterface)->getById(*pC);
-            *(f32*)((char*)gKTRexState + iv + 0x70) = cp->x;
-            *(f32*)((char*)gKTRexState + iv + 0x80) = cp->y;
-            *(f32*)((char*)gKTRexState + iv + 0x90) = cp->z;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneCX[0] = cp->x;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneCY[0] = cp->y;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneCZ[0] = cp->z;
             cp = (RomCurveDef*)(*gRomCurveInterface)->getById(*base);
-            *(f32*)((char*)gKTRexState + iv + 0xa0) = cp->x;
-            *(f32*)((char*)gKTRexState + iv + 0xb0) = cp->y;
-            *(f32*)((char*)gKTRexState + iv + 0xc0) = cp->z;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneDX[0] = cp->x;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneDY[0] = cp->y;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneDZ[0] = cp->z;
         }
         pA++;
         iv += 4;

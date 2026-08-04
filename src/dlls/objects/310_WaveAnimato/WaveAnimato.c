@@ -114,13 +114,13 @@ static void WaveAnimator_buildSharedTables(WaveAnimatorState* config) {
                 f32 v = *(f32*)((u8*)gWaveAnimatorHeightTable + heightCursor[0]);
                 if (v < colorSplitZero) {
                     t = (v - config->minHeight) / negMin;
-                    *(u8*)((u8*)gWaveAnimatorColorTable + colorCursor[0]) = 65.0f * t + 190.0f;
-                    *(u8*)((u8*)gWaveAnimatorColorTable + colorCursor[0] + 1) = 165.0f * t + 90.0f;
-                    *(u8*)((u8*)gWaveAnimatorColorTable + colorCursor[0] + 2) = 235.0f * t + 20.0f;
+                    ((WaveAnimatorColor*)((u8*)gWaveAnimatorColorTable + colorCursor[0]))->red = 65.0f * t + 190.0f;
+                    ((WaveAnimatorColor*)((u8*)gWaveAnimatorColorTable + colorCursor[0]))->green = 165.0f * t + 90.0f;
+                    ((WaveAnimatorColor*)((u8*)gWaveAnimatorColorTable + colorCursor[0]))->blue = 235.0f * t + 20.0f;
                 } else {
-                    *(u8*)((u8*)gWaveAnimatorColorTable + colorCursor[0]) = 255;
-                    *(u8*)((u8*)gWaveAnimatorColorTable + colorCursor[0] + 1) = 255;
-                    *(u8*)((u8*)gWaveAnimatorColorTable + colorCursor[0] + 2) = 255;
+                    ((WaveAnimatorColor*)((u8*)gWaveAnimatorColorTable + colorCursor[0]))->red = 255;
+                    ((WaveAnimatorColor*)((u8*)gWaveAnimatorColorTable + colorCursor[0]))->green = 255;
+                    ((WaveAnimatorColor*)((u8*)gWaveAnimatorColorTable + colorCursor[0]))->blue = 255;
                 }
             }
         }
