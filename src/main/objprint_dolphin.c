@@ -323,14 +323,14 @@ int objFuzzShellRenderCb(GameObject* obj, int* model, int ropIdx)
     Texture** shadowTable;
     int shadowStride;
     int shadowRows;
-    u8* rop;
+    Shader* rop;
     f32 fz;
     u8 v;
 
     mtxA = sObjFuzzShellIndMtxA;
     mtxB = sObjFuzzShellIndMtxB;
-    rop = (u8*)ObjModel_GetRenderOp((ModelFileHeader*)*model, ropIdx);
-    if ((((Shader*)rop)->flags & 0x200) == 0)
+    rop = ObjModel_GetRenderOp((ModelFileHeader*)*model, ropIdx);
+    if ((rop->flags & 0x200) == 0)
     {
         if ((gObjFuzzLayerIndex & 3) != 0)
         {
@@ -395,7 +395,7 @@ int objFuzzShellRenderCb(GameObject* obj, int* model, int ropIdx)
     GXSetTevAlphaIn(GX_TEVSTAGE2, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
     GXSetTevColorOp(GX_TEVSTAGE2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE2, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    selectTexture((Texture*)(textureIdxToPtr(((Shader*)rop)->indTextureId)), 2);
+    selectTexture((Texture*)(textureIdxToPtr(rop->indTextureId)), 2);
     GXSetTexCoordGen2(GX_TEXCOORD3, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     GXSetIndTexOrder(GX_INDTEXSTAGE1, GX_TEXCOORD3, GX_TEXMAP2);
     GXSetIndTexCoordScale(1, 0, 0);

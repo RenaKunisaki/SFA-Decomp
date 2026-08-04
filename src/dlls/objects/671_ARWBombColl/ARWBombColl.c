@@ -145,9 +145,9 @@ void ARWBombColl_update(GameObject* obj)
             }
             else
             {
-                int hit;
-                if (ObjHits_GetPriorityHit(obj, &hit, 0, 0) != 0 && (u32)hit != 0 &&
-                    (((GameObject*)hit)->anim.romDefNo == 0x604 || ((GameObject*)hit)->anim.romDefNo == ARW_ARWING_BOMB_OBJ))
+                GameObject* hit;
+                if (ObjHits_GetPriorityHit(obj, &hit, 0, 0) != 0 && hit != NULL &&
+                    (hit->anim.romDefNo == 0x604 || hit->anim.romDefNo == ARW_ARWING_BOMB_OBJ))
                 {
                     arwarwing_addScore(arw, 0xf);
                     flags->shotOpen = 1;

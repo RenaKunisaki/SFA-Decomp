@@ -609,7 +609,7 @@ void bossdrakor_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis)
 
 void bossdrakor_hitDetect(GameObject* obj)
 {
-    int inner = (int)obj->extra;
+    BossDrakorState* inner = obj->extra;
     BossdrakorPlacement* setup = (BossdrakorPlacement*)(obj)->anim.placementData;
     f32 hz;
     f32 hy;
@@ -619,10 +619,10 @@ void bossdrakor_hitDetect(GameObject* obj)
     int hit = ObjHits_GetPriorityHitWithPosition(obj, 0, 0, 0, &hx, &hy, &hz);
     if (hit == 0xf || hit == 0xe)
     {
-        if (((BossDrakorState*)inner)->flags198.b40)
+        if (inner->flags198.b40)
         {
             s->airMeterHandle -= 1;
-            ((BossDrakorState*)inner)->flags198.b08 = 1;
+            inner->flags198.b08 = 1;
             if (s->airMeterHandle < 0)
             {
                 mainSetBits(setup->defeatedGameBit, 1);

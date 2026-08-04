@@ -916,7 +916,7 @@ int dll_19_updateSequenceMovement(GameObject* obj, ObjSeqState* seq, char* st, v
     f32 dist;
     f32 nx;
     f32 nz;
-    char* t;
+    GameObject* t;
 
     ((BaddieState*)st)->heldButtons = 0;
     ((BaddieState*)st)->pressedButtons = 0;
@@ -941,13 +941,13 @@ int dll_19_updateSequenceMovement(GameObject* obj, ObjSeqState* seq, char* st, v
         f32 ez = seq->posOffsetZ - (obj)->anim.localPosZ;
         dist = sqrtf(ex * ex + ez * ez);
     }
-    t = (char*)((BaddieState*)st)->targetObj;
+    t = ((BaddieState*)st)->targetObj;
     if (t == NULL)
     {
         return 0;
     }
-    nx = ((GameObject*)t)->anim.localPosX - seq->posOffsetX;
-    nz = ((GameObject*)t)->anim.localPosZ - seq->posOffsetZ;
+    nx = t->anim.localPosX - seq->posOffsetX;
+    nz = t->anim.localPosZ - seq->posOffsetZ;
     {
         f32 total = sqrtf(nx * nx + nz * nz);
         f32 step = timeDelta * (total - dist);
