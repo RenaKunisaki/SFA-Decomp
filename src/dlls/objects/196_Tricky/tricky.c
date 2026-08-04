@@ -454,18 +454,18 @@ int trickySelectQueuedCommandTarget(TrickyState* state, int commandType) {
     bestFallbackTarget = NULL;
 
     for (i = 0, ref = (int)state; i < state->commandCount; ref += 8, i++) {
-        if (*(s8*)(ref + 0x74d) == commandType) {
+        if (((TrickyCommand*)(ref + 0x748))->type == commandType) {
             f32 dist = getXZDistanceSquared(&state->playerObj->anim.worldPosX,
-                                            &((GameObject*)*(int*)(ref + 0x748))->anim.worldPosX);
+                                            &((TrickyCommand*)(ref + 0x748))->targetObj->anim.worldPosX);
 
-            if (*(s8*)(ref + 0x74c) == 1) {
+            if (((TrickyCommand*)(ref + 0x748))->kind == 1) {
                 if (dist < bestPriorityDist) {
                     bestPriorityDist = dist;
-                    bestPriorityTarget = (GameObject*)*(int*)(ref + 0x748);
+                    bestPriorityTarget = ((TrickyCommand*)(ref + 0x748))->targetObj;
                 }
             } else if (dist < bestFallbackDist) {
                 bestFallbackDist = dist;
-                bestFallbackTarget = (GameObject*)*(int*)(ref + 0x748);
+                bestFallbackTarget = ((TrickyCommand*)(ref + 0x748))->targetObj;
             }
         }
     }
@@ -2039,7 +2039,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 stoppingRadius, TrickyState* 
                     TRICKY_SLOW_FOR_SHARP_ROUTE_TURN(obj, state, previousSpeed);
                     trickyAdvanceRouteTargetAhead(obj, &state->route, state->speed);
                     didMove = moveTricky(obj, &state->route.posX);
-                    switch (*(s8*)(prevNode + 0x1a)) {
+                    switch (((RomCurveDef*)prevNode)->unk1A) {
                     case 1:
                         node = state->route.nodeA0;
                         state->dirX = node->x - obj->anim.worldPosX;
@@ -3004,9 +3004,9 @@ void* trickyFindCirclingTarget(GameObject* obj, void* state);
 
 #define TRICKY_RETARGET(st, X)                                                                                         \
     {                                                                                                                  \
-        u32 px = (u32) & ((GameObject*)(X))->anim.worldPosX;                                                           \
-        if (*(u32*)((st) + 0x28) != px) {                                                                              \
-            *(u32*)((st) + 0x28) = px;                                                                                 \
+        f32* px = &((GameObject*)(X))->anim.worldPosX;                                                                 \
+        if (((TrickyState*)(st))->targetPosPtr != px) {                                                                \
+            ((TrickyState*)(st))->targetPosPtr = px;                                                                   \
             {                                                                                                          \
                 u32 m;                                                                                                 \
                 u32 flags = ((TrickyState*)(st))->stateFlags;                                                          \
@@ -3020,13 +3020,13 @@ void* trickyFindCirclingTarget(GameObject* obj, void* state);
 #define TRICKY_RESET_TAIL(st)                                                                                          \
     {                                                                                                                  \
         f32 z = 0.0f;                                                                                                  \
-        *(f32*)((st) + 0x71c) = z;                                                                                     \
-        *(f32*)((st) + 0x720) = z;                                                                                     \
-        *(u32*)((st) + offsetof(TrickyState, stateFlags)) &= 0xFFFFFFEFLL;                                             \
-        *(u32*)((st) + offsetof(TrickyState, stateFlags)) &= 0xFFFEFFFFLL;                                             \
-        *(u32*)((st) + offsetof(TrickyState, stateFlags)) &= 0xFFFDFFFFLL;                                             \
-        *(u32*)((st) + offsetof(TrickyState, stateFlags)) &= 0xFFFBFFFFLL;                                             \
-        *(s8*)((st) + 0xd) = 0xFF;                                                                                     \
+        ((TrickyState*)(st))->cooldownA = z;                                                                           \
+        ((TrickyState*)(st))->cooldownB.f = z;                                                                         \
+        ((TrickyState*)(st))->stateFlags &= 0xFFFFFFEFLL;                                                              \
+        ((TrickyState*)(st))->stateFlags &= 0xFFFEFFFFLL;                                                              \
+        ((TrickyState*)(st))->stateFlags &= 0xFFFDFFFFLL;                                                              \
+        ((TrickyState*)(st))->stateFlags &= 0xFFFBFFFFLL;                                                              \
+        ((TrickyState*)(st))->commandPhase = 0xFF;                                                                     \
     }
 #define TRICKY_RESET(st)                                                                                               \
     ((TrickyState*)(st))->stateIndex = 1;                                                                              \
@@ -3471,14 +3471,14 @@ const char sTrickyShouldNeverStopCirclingError[] = "error tricky should never st
 
 #define TRICKY_CLEAR_RESET_FLAGS(st)                                                                                   \
     {                                                                                                                  \
-        ((TrickyState*)(st))->stateFlags &= ~(u64)TRICKY_STATE_RESET_FLAG_10;                                  \
-        ((TrickyState*)(st))->stateFlags &= ~(u64)TRICKY_STATE_RESET_FLAG_10000;                               \
-        ((TrickyState*)(st))->stateFlags &= ~(u64)TRICKY_STATE_RESET_FLAG_20000;                               \
-        ((TrickyState*)(st))->stateFlags &= ~(u64)TRICKY_STATE_RESET_FLAG_40000;                               \
+        ((TrickyState*)(st))->stateFlags &= ~(u64)TRICKY_STATE_RESET_FLAG_10;                                          \
+        ((TrickyState*)(st))->stateFlags &= ~(u64)TRICKY_STATE_RESET_FLAG_10000;                                       \
+        ((TrickyState*)(st))->stateFlags &= ~(u64)TRICKY_STATE_RESET_FLAG_20000;                                       \
+        ((TrickyState*)(st))->stateFlags &= ~(u64)TRICKY_STATE_RESET_FLAG_40000;                                       \
         {                                                                                                              \
             s8 mm;                                                                                                     \
             mm = -1;                                                                                                   \
-            ((TrickyState*)(st))->commandPhase = mm;                                                            \
+            ((TrickyState*)(st))->commandPhase = mm;                                                                   \
         }                                                                                                              \
     }
 
@@ -6711,9 +6711,9 @@ int Tricky_updateSideCommandPrompts(GameObject* obj) {
         if (((TrickyState*)state)->commandRequestBits != 0) {
             for (i = 0; i < ((TrickyState*)state)->commandCount; i++) {
                 ref = state + i * 8;
-                cmdByte = *(char*)(ref + 0x74c);
+                cmdByte = ((TrickyCommand*)(ref + 0x748))->kind;
                 if (cmdByte == '\0') {
-                    if (((GameObject*)*(int*)(ref + 0x748))->anim.romDefNo == TRICKY_OBJ_BLUE_MUSHROOM) {
+                    if ((((TrickyCommand*)(ref + 0x748))->targetObj)->anim.romDefNo == TRICKY_OBJ_BLUE_MUSHROOM) {
                         promptB = true;
                     }
                     promptA = true;
@@ -6951,10 +6951,11 @@ void Tricky_render(GameObject* obj, int p2, int p3, int p4, int p5, char doRende
             pathPoint = pathPoint + 0xc;
             i = i + 1;
         } while (i < 4);
-        ObjPath_GetPointWorldPosition(obj, 8, (float*)(pathState + 0x408), (float*)(pathState + 0x40c),
-                                      (float*)(pathState + 0x410), 0);
+        ObjPath_GetPointWorldPosition(obj, 8, &((TrickyState*)pathState)->renderPosX,
+                                      &((TrickyState*)pathState)->renderPosY,
+                                      &((TrickyState*)pathState)->renderPosZ, 0);
         pathInfo = objFindJointPoseVector(obj, 0);
-        *(s16*)(pathState + 0x414) = pathInfo[1];
+        ((TrickyState*)pathState)->modelAnchorRotY = pathInfo[1];
         if ((((TrickyState*)state)->stateFlags & 0x10) != 0) {
             switch (((TrickyState*)state)->stateIndex) {
             case 2:
@@ -7054,15 +7055,15 @@ void Tricky_hitDetect(GameObject* obj) {
 
 /* Tricky sidekick command state machine and per-frame update. */
 #define TRICKY_RESET_COMMAND(state)                                                                                    \
-    *(u8*)((state) + 8) = 1;                                                                                           \
-    *(u8*)((state) + 0xa) = 0;                                                                                         \
+    ((TrickyState*)(state))->stateIndex = 1;                                                                           \
+    ((TrickyState*)(state))->substate = 0;                                                                             \
     z = 0.0f;                                                                                                          \
-    *(f32*)((state) + 0x71c) = z;                                                                                      \
-    *(f32*)((state) + 0x720) = z;                                                                                      \
-    *(u32*)((state) + 0x54) = *(u32*)((state) + 0x54) & (u64)~0x10U;                                                   \
-    *(u32*)((state) + 0x54) = *(u32*)((state) + 0x54) & (u64)~0x10000U;                                                \
-    *(u32*)((state) + 0x54) = *(u32*)((state) + 0x54) & (u64)~0x20000U;                                                \
-    *(u32*)((state) + 0x54) = *(u32*)((state) + 0x54) & (u64)~0x40000U;                                                \
+    ((TrickyState*)(state))->cooldownA = z;                                                                            \
+    ((TrickyState*)(state))->cooldownB.f = z;                                                                          \
+    ((TrickyState*)(state))->stateFlags = ((TrickyState*)(state))->stateFlags & (u64)~0x10U;                           \
+    ((TrickyState*)(state))->stateFlags = ((TrickyState*)(state))->stateFlags & (u64)~0x10000U;                        \
+    ((TrickyState*)(state))->stateFlags = ((TrickyState*)(state))->stateFlags & (u64)~0x20000U;                        \
+    ((TrickyState*)(state))->stateFlags = ((TrickyState*)(state))->stateFlags & (u64)~0x40000U;                        \
     ((TrickyState*)(state))->commandPhase = -1
 
 #define TRICKY_VOICE(obj, sfx, vol)                                                                                    \
@@ -7078,7 +7079,7 @@ void Tricky_hitDetect(GameObject* obj) {
     }
 
 #define TRICKY_SPAWN_FOOD_BUBBLE(obj, state)                                                                           \
-    if (*(void**)((state) + 0x7b8) == NULL) {                                                                          \
+    if (((TrickyState*)(state))->child == NULL) {                                                                      \
         int setup_;                                                                                                    \
         s8 used_[4];                                                                                                   \
         int slot_;                                                                                                     \
@@ -7086,14 +7087,14 @@ void Tricky_hitDetect(GameObject* obj) {
         used_[0] = -1;                                                                                                 \
         used_[1] = -1;                                                                                                 \
         used_[2] = -1;                                                                                                 \
-        if (*(void**)((state) + 0x7a8) != NULL) {                                                                      \
-            used_[((TrickyPackedSlots*)((state) + 0x7bc))->promptASlot] = 1;                                           \
+        if (((TrickyState*)(state))->childA != NULL) {                                                                 \
+            used_[((TrickyState*)(state))->packedSlots.promptASlot] = 1;                                               \
         }                                                                                                              \
-        if (*(void**)((state) + 0x7b0) != NULL) {                                                                      \
-            used_[((TrickyPackedSlots*)((state) + 0x7bc))->promptBSlot] = 1;                                           \
+        if (((TrickyState*)(state))->childB != NULL) {                                                                 \
+            used_[((TrickyState*)(state))->packedSlots.promptBSlot] = 1;                                               \
         }                                                                                                              \
-        if (*(void**)((state) + 0x7b8) != NULL) {                                                                      \
-            used_[((TrickyPackedSlots*)((state) + 0x7bc))->zzzSlot] = 1;                                               \
+        if (((TrickyState*)(state))->child != NULL) {                                                                  \
+            used_[((TrickyState*)(state))->packedSlots.zzzSlot] = 1;                                                   \
         }                                                                                                              \
         if (used_[0] == -1) {                                                                                          \
             slot_ = 0;                                                                                                 \
@@ -7106,14 +7107,15 @@ void Tricky_hitDetect(GameObject* obj) {
         } else {                                                                                                       \
             slot_ = -1;                                                                                                \
         }                                                                                                              \
-        ((TrickyPackedSlots*)((state) + 0x7bc))->zzzSlot = slot_;                                                      \
-        *(int*)((state) + 0x7b8) = (int)objSetupObject((ObjPlacement*)setup_, 4, -1, -1, *(void**)((obj) + 0x30));     \
-        ObjLink_AttachChild((GameObject*)(obj), *(GameObject**)((state) + 0x7b8),                                      \
-                            ((TrickyPackedSlots*)((state) + 0x7bc))->zzzSlot);                                         \
+        ((TrickyState*)(state))->packedSlots.zzzSlot = slot_;                                                          \
+        ((TrickyState*)(state))->child =                                                                               \
+            objSetupObject((ObjPlacement*)setup_, 4, -1, -1, ((GameObject*)(obj))->anim.parent);                       \
+        ObjLink_AttachChild((GameObject*)(obj), ((TrickyState*)(state))->child,                                        \
+                            ((TrickyState*)(state))->packedSlots.zzzSlot);                                             \
         z = 0.0f;                                                                                                      \
-        *(f32*)((state) + 0x7c0) = z;                                                                                  \
-        *(f32*)((state) + 0x7c4) = z;                                                                                  \
-        *(f32*)((state) + 0x7c8) = z;                                                                                  \
+        ((TrickyState*)(state))->childPhaseTimer0 = z;                                                                 \
+        ((TrickyState*)(state))->childPhaseTimer1 = z;                                                                 \
+        ((TrickyState*)(state))->childPhaseTimer2 = z;                                                                 \
     }
 
 void Tricky_update(int obj) {
@@ -7230,7 +7232,7 @@ void Tricky_update(int obj) {
                 trickyState->stateFlags = trickyState->stateFlags | TRICKY_STATE_FLAG_CHILDREN_CLEANUP;
                 childCursor = (u8*)state;
                 for (; childLoop.index < 7; childCursor += 4, childLoop.index++) {
-                    objSetAnimSpeedTo1((GameObject*)*(int*)(childCursor + 0x700));
+                    objSetAnimSpeedTo1(((TrickyState*)childCursor)->flameChildren[0]);
                 }
                 Sfx_RemoveLoopedObjectSound(obj, SFXTRIG_trpopn_c);
                 TRICKY_VOICE(obj, 0x29d, 0);
@@ -7251,7 +7253,7 @@ void Tricky_update(int obj) {
         ref = state;
         count = trickyState->commandCount;
         for (i = 0; i < count; i++, ref += 8) {
-            if (*(s8*)(ref + 0x74d) == cmd) {
+            if (((TrickyCommand*)(ref + 0x748))->type == cmd) {
                 found = 1;
                 break;
             }
@@ -7340,7 +7342,7 @@ void Tricky_update(int obj) {
                         ref = state;
                         count = trickyState->commandCount;
                         for (i = 0; i < count; i++, ref += 8) {
-                            if (*(s8*)(ref + 0x74d) == 3) {
+                            if (((TrickyCommand*)(ref + 0x748))->type == 3) {
                                 played = 1;
                             }
                         }
