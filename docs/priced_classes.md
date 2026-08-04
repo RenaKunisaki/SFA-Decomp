@@ -521,7 +521,7 @@ do not re-survey it.
 | --- | --- | --- | --- |
 | `679_ARWProximit` | 64 | retail mints `0.0f, 100.0f, 127.0f` ahead of `arwproximit_render`'s `1.0f`; all three are read only from inside `arwproximit_update` | 1-element-array form gives **120/120 data, all 9 functions still 100.0** — and trips `banned_shapes_check` as regrowth. RECOVERED in `015b98abbd`; measured price before that was 64 B |
 | `engine/68` | 128 | **not** a wrong constant: retail's `120.0f` at `.sdata2+0x44` is a plain literal of `firstPersonDoControls`, minted between `15360.0f` (0x40) and `16.0f` (0x48) | **RECOVERED at `ab2a7a3016` — see §18.** The 94.512 below is real and reproduces at today's baseline, but it prices the wrong variable: every probe here varied how the CONSTANT is spelled, and the sink needs a single-use TEMP. Delete the temp and the plain literal is free. Was: plain literal makes `.sdata2` byte-identical (64/192 -> **192/192**) but drops `firstPersonDoControls` 100.0 -> 94.512; tree 99.811676 -> 99.809730 |
-| `engine/7` | 232 | one missing 4-byte mint cascades: retail mints a `1.0f` at 0x0c as a front-end literal of `lightningGetRemainingFraction`, after its `0.0f` and before its two bias doubles. Ours has only the `0.0f`, so 0x0c stays a hole, every later slot shifts 4, and a second hole opens at 0x84 | the missing `1.0f` emits no code in retail's `fn1` either — recovering it needs a phantom minter. DECLINE |
+| `engine/7` | 232 | one missing 4-byte mint cascades: retail mints a `1.0f` at 0x0c as a front-end literal of `lightningGetRemainingFraction`, after its `0.0f` and before its two bias doubles. Ours has only the `0.0f`, so 0x0c stays a hole, every later slot shifts 4, and a second hole opens at 0x84 | the missing `1.0f` emits no code in retail's `fn1` either — recovering it needs a phantom minter. DECLINE. **See the 2026-08-03 addendum below the table: the phantom minter is now proven to have existed, and the row awaits an owner call** |
 | `237`, `704`, `model`/`modellight`, `213_Kaldachom`, `279_AppleOnTree`, `597`, `195_Player`, `intersect_render`, `main/object` | 88-784 | same class; several heads are led by a bias double, which cannot be declared at all | not probed individually — the class verdict covers them |
 
 `engine/68` carries a second, separate defect worth a code lane: `firstPersonDoControls` only
@@ -532,6 +532,57 @@ the constant MWCC sinks it and ~14 instructions move. The extern is a crutch, no
 Also measured there: file-scope `const f32` 94.512; function-local `static const f32` folds to a
 literal (data 192/192, code 94.512); `const f32 X[1]` restores 100.0 but the object lands at the
 declaration point (0x00) or at the start of the function's static run (0x20), never at 0x44.
+
+**ADDENDUM 2026-08-03 — the `engine/7` DECLINE's basis is superseded by the mint law; the row
+moves from "DECLINE — phantom minter" to an owner call.** The verdict above was written as a
+sight-decline: "the missing `1.0f` emits no code in retail's `fn1` either", with the phantom
+minter treated as a fabrication. Two facts measured since decide what that minter was
+(fold probes re-run out-of-tree today against the tree's `7.c`; the baseline object is
+byte-identical to `build/GSAE01/src/dlls/engine/7/7.o` in both `.text` and `.sdata2`):
+
+1. **A literal folded at parse mints nothing.** `/ totalFrames * 1.0f`, `/ totalFrames / 1.0f`
+   and a dead `f32 one = 1.0f;` inside `lightningGetRemainingFraction` each compile `.text`-
+   AND `.sdata2`-identical to baseline — §8b's dead-store row and §11's dead-initialiser
+   result, confirmed on this row's own slot. Minting requires the literal to survive to an
+   emitted use.
+2. **Every spelling that makes a `1.0f` survive in `fn1` changes `.text`** (probe set:
+   multiplication fold, dead local, early-return restructure, accumulator restructure — the
+   folding spellings mint nothing, the surviving ones move code), and `fn1` is byte-exact at
+   100.0. Retail's slot `lbl_803DF1A4` (`.sdata2+0x0c`) carries **28 refs and not one is in
+   `fn1`** — `fn1` spans `.text` 0x00-0x5c and the slot's first ref is 0x120, inside
+   `lightningDrawStrand`. The slot is a ghost where `fn1` is concerned.
+
+So no spelling of the surviving source reaches the slot, and §12's dichotomy — the only two
+origins for a word ahead of its first live loader are a file-scope constant and a dead static
+that `mwld` stripped — is decided by the reference-count spec: retail's pool holds ONE
+`3f800000` against those 28 loads, and a literal never dedups into a declared const, so a const
+origin would have left a second word. **By elimination, retail's TU carried a function body
+ahead of `fn1` that parsed `0.0f, 1.0f` with surviving uses and was dead-stripped by `mwld`** —
+the row's mechanism cell is thereby re-read: the 0x08/0x0c pair is that body's mint group, and
+`fn1`'s own `0.0f` dedups into it. This is the identical structure `558c86a421` and
+`997e72e3e1` adjudicate by byte-exactness ("the restored bodies take the section to byte-exact
+100.0 against retail, which is direct evidence that retail's TU minted those literals at
+exactly those points"). Probe, reproduced out-of-tree today: an uncalled `static` placed before
+`fn1` minting `0.0f` then `1.0f` (a two-branch clamp) takes `.sdata2` **byte-identical to the
+carve** (232/232, both holes closed; in-tree `matched_data` 984/1216 -> 1216/1216) with every
+surviving function's bytes unchanged.
+
+The honest counterweight, and why this is an owner call rather than an auto-land: unlike
+`997e72e3e1`, **git has no deleted body here** — the seven player/tricky ghosts were restored
+from history; this one would be written fresh. The body's *existence* is proven; its *content*
+is conjectured — any two-literal body with surviving uses reproduces the pool, so the
+byte-exact result certifies the mint structure, not the text. Landing it would enter
+`tools/banned_shapes_baseline.txt` under §7's `UNCALLED_STATIC_FN` adjudication with exactly
+that caveat on record.
+
+The elimination is this row's only. It does NOT transfer to the class row below, and not to
+`objects/332` (§2b's rotation row, §12d's cross-function list): there the moved words all have
+live loaders and the divergence is a pure rotation — retail heads `0.0f`, bias, `1.0f` ahead of
+our `0.01f`-led order while `babyCloudRunner_updateBurrowAnimation` holds 100.0 — so literal
+arrangements inside the existing functions remain unrefuted (the probe set above was never run
+there) and a stripped body is one candidate, not a forced conclusion. A row earns this upgrade
+only when both halves are measured: the ghost slot inside a byte-exact function's mint run, and
+the probe sweep showing every surviving spelling in that function moves `.text`.
 
 ### 8b. The intra-function half of the class: statement order, and why it is still priced
 
