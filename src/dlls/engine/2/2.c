@@ -3701,9 +3701,9 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
     GameObject* activeObj;
     u8* cmd;
     ObjSeqPlacement* model;
-    u8* animState;
+    ObjAnimState* animState;
     u8* act2;
-    u8* st2;
+    ObjAnimState* st2;
     u8* entry;
     s16* sfxTimerEntry;
     ObjSeqState* sfxState;
@@ -3754,10 +3754,10 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         {
             break;
         }
-        animState = (u8*)((ObjAnimBank*)action)->currentState;
+        animState = ((ObjAnimBank*)action)->currentState;
         if (activeObj->anim.currentMove == ((ObjSeqState*)seq)->moveId)
         {
-            if ((s8)((ObjAnimState*)animState)->frameType != 0)
+            if ((s8)animState->frameType != 0)
             {
                 restart = 0;
             }
@@ -3786,8 +3786,8 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         {
             break;
         }
-        ((ObjAnimState*)animState)->framePhase =
-            activeObj->anim.currentMoveProgress * ((ObjAnimState*)animState)->frameLength;
+        animState->framePhase =
+            activeObj->anim.currentMoveProgress * animState->frameLength;
         if (((ObjSeqState*)seq)->trackRunLength[10] != 0)
         {
             sub = ((ObjSeqState*)seq)->curFrame - 1;
@@ -3801,17 +3801,17 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         if (activeObj->anim.classId == 1)
         {
             act2 = ObjSeq_GetActiveModel(activeObj);
-            animState = (u8*)((ObjAnimBank*)act2)->currentState;
-            ((ObjAnimState*)animState)->lastBlendMoveIndex = -1;
-            ((ObjAnimState*)animState)->eventState = 0;
-            ((ObjAnimState*)animState)->prevEventState = 0;
-            st2 = (u8*)((ObjAnimBank*)act2)->activeState;
+            animState = ((ObjAnimBank*)act2)->currentState;
+            animState->lastBlendMoveIndex = -1;
+            animState->eventState = 0;
+            animState->prevEventState = 0;
+            st2 = ((ObjAnimBank*)act2)->activeState;
             if (st2 != NULL)
             {
-                ((ObjAnimState*)st2)->lastBlendMoveIndex = -1;
-                ((ObjAnimState*)st2)->eventCountdown = 0;
-                ((ObjAnimState*)st2)->eventState = 0;
-                ((ObjAnimState*)st2)->prevEventState = 0;
+                st2->lastBlendMoveIndex = -1;
+                st2->eventCountdown = 0;
+                st2->eventState = 0;
+                st2->prevEventState = 0;
             }
         }
         ((ObjSeqState*)seq)->fade = 1.0f;
