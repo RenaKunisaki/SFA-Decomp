@@ -490,8 +490,8 @@ void nameEntryTextDrawFunc(int x0, int y0, int x1, int y1, f32 u0, f32 v0, f32 u
     GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
     GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
     GXSetCullMode(GX_CULL_NONE);
-    GXSetScissor((int)((u32) * (f32*)(gTitleScreenMtx + 0xc) + 0x39),
-                 (int)((u32) * (f32*)(gTitleScreenMtx + 0x1c) + 0x4e), 0x104, 0x16);
+    GXSetScissor((int)((u32) ((MtxPtr)gTitleScreenMtx)[0][3] + 0x39),
+                 (int)((u32) ((MtxPtr)gTitleScreenMtx)[1][3] + 0x4e), 0x104, 0x16);
     GXBegin(GX_QUADS, GX_VTXFMT1, 4);
     GXWGFifo.s16 = (s16)(x0 - *(u32*)&gNameEntryScrollX * 4 + 0x208);
     GXWGFifo.s16 = y0;
