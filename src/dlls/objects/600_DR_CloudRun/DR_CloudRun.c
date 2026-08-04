@@ -301,7 +301,7 @@ int DR_CloudRunner_stateHandler07(GameObject* obj)
 int DR_CloudRunner_stateHandler06(GameObject* obj, CloudRunnerState* baddie)
 {
     CloudRunnerState* inner = (obj)->extra;
-    int hitState = (int)obj->anim.hitReactState;
+    ObjHitsPriorityState* hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
     baddie->baddie.flags0 |= 0x200000;
     if (baddie->baddie.moveJustStartedA != 0)
     {
@@ -314,7 +314,7 @@ int DR_CloudRunner_stateHandler06(GameObject* obj, CloudRunnerState* baddie)
         GameObject* newObj;
         ObjPlacement* setup;
         inner->flagsBB6 &= ~8;
-        ((ObjHitsPriorityState*)hitState)->flags = ((ObjHitsPriorityState*)hitState)->flags | 0x200;
+        hitState->flags = hitState->flags | 0x200;
         ObjAnim_SetCurrentMove((int)obj, 0xd, 0.0f, 0);
         baddie->baddie.moveSpeed = 0.011f;
         if (Obj_IsLoadingLocked() == 0)

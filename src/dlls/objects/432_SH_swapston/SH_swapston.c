@@ -644,22 +644,22 @@ void warpstone_update(GameObject* obj) {
 }
 
 void warpstone_init(GameObject* obj, const WarpStonePlacement* placement) {
-    int state;
+    WarpStoneState* state;
     s16 rotX;
 
-    state = (int)obj->extra;
+    state = obj->extra;
     rotX = (s16)(placement->rotXByte << 8);
     obj->anim.rotX = rotX;
     obj->animEventCallback = warpstone_SeqFn;
-    ((WarpStoneState*)state)->sequenceGameBit = GAMEBIT_SH_WarpStoneRelated015A;
-    ((WarpStoneState*)state)->resetGameBit = GAMEBIT_ITEM_RockCandyRelated0886;
+    state->sequenceGameBit = GAMEBIT_SH_WarpStoneRelated015A;
+    state->resetGameBit = GAMEBIT_ITEM_RockCandyRelated0886;
     ObjHits_EnableObject(obj);
     if (mainGetBit(GAMEBIT_SH_SawWarpStoneIntro) != 0 && mainGetBit(GAMEBIT_SH_WarpStoneRelated015A) != 0) {
-        ((WarpStoneState*)state)->activated = 1;
+        state->activated = 1;
     } else {
-        ((WarpStoneState*)state)->activated = 0;
+        state->activated = 0;
     }
-    mainSetBits(((WarpStoneState*)state)->resetGameBit, 0);
+    mainSetBits(state->resetGameBit, 0);
     *(int*)state = 0;
 }
 

@@ -1892,12 +1892,12 @@ s32 SnowBike_getRacePosition(GameObject* obj)
 
 f32 SnowBike_func13(GameObject* obj, f32* out)
 {
-    int state = (int)obj->extra;
+    SnowBikeState* state = obj->extra;
     f32 speed;
     *out = 5.0f;
-    speed = sqrtf(((SnowBikeState*)state)->localVelZ * ((SnowBikeState*)state)->localVelZ +
-                  (((SnowBikeState*)state)->localVelX * ((SnowBikeState*)state)->localVelX +
-                   ((SnowBikeState*)state)->localVelY * ((SnowBikeState*)state)->localVelY));
+    speed = sqrtf(state->localVelZ * state->localVelZ +
+                  (state->localVelX * state->localVelX +
+                   state->localVelY * state->localVelY));
     speed *= 0.2f;
     if (speed > 1.0f)
     {
@@ -1908,24 +1908,24 @@ f32 SnowBike_func13(GameObject* obj, f32* out)
 
 void SnowBike_getPlayerAnim(GameObject* obj, f32* outFloat, s32* outBool)
 {
-    int state = (int)obj->extra;
+    SnowBikeState* state = obj->extra;
     f32 value;
-    *outFloat = ((SnowBikeState*)state)->unk414 / 400.0f;
+    *outFloat = state->unk414 / 400.0f;
     value = *outFloat;
     *outFloat = (value < -1.0f) ? -1.0f : ((value > 1.0f) ? 1.0f : value);
-    *outBool = ((SnowBikeState*)state)->unk414 < 0.0f;
+    *outBool = state->unk414 < 0.0f;
 }
 
 void SnowBike_setMountState(GameObject* obj, int type)
 {
-    int state = (int)obj->extra;
+    SnowBikeState* state = obj->extra;
     u32 bit;
-    ((SnowBikeState*)state)->riderMode = type;
+    state->riderMode = type;
     if (type == 2)
     {
-        mainSetBits(((SnowBikeState*)state)->completionGameBit, 1);
-        SnowBike_ResetDynamics((int)obj, state);
-        bit = ((SnowBikeState*)state)->routeFlags.uiPrompt;
+        mainSetBits(state->completionGameBit, 1);
+        SnowBike_ResetDynamics((int)obj, (int)state);
+        bit = state->routeFlags.uiPrompt;
         if (bit != 0)
         {
             SnowBike_ResetAirMeter((SnowBikeState*)state);
@@ -1945,13 +1945,13 @@ s32 SnowBike_getMountState(GameObject* obj)
 
 void SnowBike_getCameraPosition(GameObject* obj, f32* x, f32* y, f32* z)
 {
-    int state = (int)obj->extra;
-    ((SnowBikeState*)state)->mountPosX = obj->anim.localPosX;
-    ((SnowBikeState*)state)->mountPosY = obj->anim.localPosY;
-    ((SnowBikeState*)state)->mountPosZ = obj->anim.localPosZ;
-    *x = ((SnowBikeState*)state)->mountPosX;
-    *y = ((SnowBikeState*)state)->mountPosY;
-    *z = ((SnowBikeState*)state)->mountPosZ;
+    SnowBikeState* state = obj->extra;
+    state->mountPosX = obj->anim.localPosX;
+    state->mountPosY = obj->anim.localPosY;
+    state->mountPosZ = obj->anim.localPosZ;
+    *x = state->mountPosX;
+    *y = state->mountPosY;
+    *z = state->mountPosZ;
 }
 
 int SnowBike_getDismountSide(void)
@@ -1966,10 +1966,10 @@ int SnowBike_canDismount(void)
 
 void SnowBike_getRiderPosition(GameObject* obj, f32* x, f32* y, f32* z)
 {
-    int state = (int)obj->extra;
-    *x = ((SnowBikeState*)state)->modelMtxPosX;
-    *y = ((SnowBikeState*)state)->modelMtxPosY;
-    *z = ((SnowBikeState*)state)->modelMtxPosZ;
+    SnowBikeState* state = obj->extra;
+    *x = state->modelMtxPosX;
+    *y = state->modelMtxPosY;
+    *z = state->modelMtxPosZ;
 }
 
 u8 SnowBike_getMountSide(GameObject* obj)
@@ -1979,13 +1979,13 @@ u8 SnowBike_getMountSide(GameObject* obj)
 
 u32 SnowBike_canMount(GameObject* obj)
 {
-    int state = (int)obj->extra;
-    u32 bit = ((SnowBikeState*)state)->routeFlags.b02;
+    SnowBikeState* state = obj->extra;
+    u32 bit = state->routeFlags.b02;
     if (bit != 0)
     {
         return 0;
     }
-    return ((SnowBikeState*)state)->playerInRange;
+    return state->playerInRange;
 }
 
 int SnowBike_getExtraSize(void)

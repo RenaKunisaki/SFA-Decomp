@@ -239,21 +239,21 @@ void explosion_render(GameObject* obj, int renderArg2, int renderArg3, int rende
     Mtx m3;
     Mtx m2;
     Mtx m1;
-    int state;
+    DimExplosionState* state;
     int model;
     int i;
     int cursor;
     colA = sExplosionQuadColorA[0];
     colB = lbl_803E8468;
-    state = (int)obj->extra;
+    state = obj->extra;
     model = (int)Obj_GetActiveModel(obj);
-    cursor = state;
+    cursor = (int)state;
     if (visible != 0) {
         GXClearVtxDesc();
         GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
         GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
         GXSetCurrentMtx(GX_PNMTX0);
-        for (i = 0, cursor = state; i < ((DimExplosionState*)state)->flameCount; i++) {
+        for (i = 0, cursor = (int)state; i < state->flameCount; i++) {
             if (((DimExplosionFlame*)cursor)->active != 0) {
                 void** tex;
                 int k;
@@ -286,8 +286,8 @@ void explosion_render(GameObject* obj, int renderArg2, int renderArg3, int rende
                 ((u8*)&colB)[3] = cv;
                 explosion_computeColor((f32)((DimExplosionFlame*)cursor)->age,
                                        (f32)((DimExplosionFlame*)cursor)->lifetime,
-                                       ((DimExplosionState*)state)->modelKind, (u8*)&colA);
-                tex = (void**)((int*)gExplosionTextures)[((DimExplosionState*)state)->modelKind];
+                                       state->modelKind, (u8*)&colA);
+                tex = (void**)((int*)gExplosionTextures)[state->modelKind];
                 for (k = 0; k < ((DimExplosionFlame*)cursor)->textureVariant; k++) {
                     tex = (void**)*tex;
                 }
@@ -321,13 +321,13 @@ void explosion_render(GameObject* obj, int renderArg2, int renderArg3, int rende
             }
             cursor += sizeof(DimExplosionFlame);
         }
-        if (((DimExplosionState*)state)->frameCounter < ((DimExplosionState*)state)->lifeFrames &&
-            ((DimExplosionState*)state)->rayCount != 0) {
-            for (i = 0; i < ((DimExplosionState*)state)->rayCount; i++) {
-                obj->anim.rotY = (s16)((DimExplosionState*)state)->rays[i].yaw;
-                obj->anim.rotX = (s16)((DimExplosionState*)state)->rays[i].pitch;
+        if (state->frameCounter < state->lifeFrames &&
+            state->rayCount != 0) {
+            for (i = 0; i < state->rayCount; i++) {
+                obj->anim.rotY = (s16)state->rays[i].yaw;
+                obj->anim.rotX = (s16)state->rays[i].pitch;
                 objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, visible);
-                if (i < ((DimExplosionState*)state)->rayCount - 1) {
+                if (i < state->rayCount - 1) {
                     ((ObjModel*)model)->bufferFlags &= ~8;
                 }
             }

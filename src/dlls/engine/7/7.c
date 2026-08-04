@@ -664,7 +664,7 @@ void snowCloudInitFlakes(f32* buf, f32 a, f32 b, int cloudId)
 void snowFreeSnowCloud(int cloudId)
 {
     SaveGameEnvState* env;
-    u8* p;
+    NewCloud* p;
     int i;
 
     env = saveGameGetEnvState();
@@ -675,25 +675,25 @@ void snowFreeSnowCloud(int cloudId)
     }
     for (i = 0; i < 8; i++)
     {
-        p = (u8*)gNewClouds[i];
-        if (p != NULL && cloudId == ((NewCloud*)p)->cloudId)
+        p = gNewClouds[i];
+        if (p != NULL && cloudId == p->cloudId)
         {
             break;
         }
     }
-    p = (u8*)gNewClouds[i];
+    p = gNewClouds[i];
     if (p == NULL || i == 8)
     {
         return;
     }
-    if (cloudId != ((NewCloud*)p)->cloudId)
+    if (cloudId != p->cloudId)
     {
         debugPrintf(sSnowFreeSnowCloudInvalidCloudId, cloudId);
         return;
     }
-    if (((NewCloud*)p)->flakes != NULL)
+    if (p->flakes != NULL)
     {
-        mm_free(((NewCloud*)p)->flakes);
+        mm_free(p->flakes);
         gNewClouds[i]->flakes = NULL;
     }
     if (gNewClouds[i] != NULL)
@@ -1039,11 +1039,11 @@ void snowCloudUpdateFlakes(u8* snow)
 
 static void snowReposSnowCloud(int cloudId)
 {
-    u8* p;
+    NewCloud* p;
     SnowFlake* part;
     Camera* cam;
     f32* m;
-    u8* q;
+    NewCloud* q;
     int i;
     int j;
     int dx;
@@ -1065,23 +1065,23 @@ static void snowReposSnowCloud(int cloudId)
     srand(randomGetRange(1, 0xffff));
     for (i = 0; i < 8; i++)
     {
-        p = (u8*)gNewClouds[i];
-        if (p != NULL && cloudId == ((NewCloud*)p)->cloudId)
+        p = gNewClouds[i];
+        if (p != NULL && cloudId == p->cloudId)
         {
             break;
         }
     }
-    p = (u8*)gNewClouds[i];
+    p = gNewClouds[i];
     if (p == NULL || i == 8)
     {
         return;
     }
-    if (cloudId != ((NewCloud*)p)->cloudId)
+    if (cloudId != p->cloudId)
     {
         debugPrintf(sSnowCloudErrorMessageBlock, cloudId);
         return;
     }
-    part = ((NewCloud*)p)->flakes;
+    part = p->flakes;
     cam = Camera_GetCurrent();
     dx = cam->worldX - ((NewCloud*)gNewClouds[i])->worldPosX;
     dy = cam->worldY - ((NewCloud*)gNewClouds[i])->worldPosY;
@@ -1090,11 +1090,11 @@ static void snowReposSnowCloud(int cloudId)
     sqrtf__inline((f32)distSq);
     ((NewCloud*)gNewClouds[i])->lightningTimer =
         (f32)((NewCloud*)gNewClouds[i])->lightningTimer - timeDelta;
-    q = (u8*)gNewClouds[cloudId];
-    if (((NewCloud*)q)->cloudType == 4 && (((NewCloud*)q)->lightningFlags & 0x38) != 0 &&
-        ((NewCloud*)q)->lightningTimer <= 0 && ((NewCloud*)q)->stationary == 0 && gActiveLightning == 0)
+    q = gNewClouds[cloudId];
+    if (q->cloudType == 4 && (q->lightningFlags & 0x38) != 0 &&
+        q->lightningTimer <= 0 && q->stationary == 0 && gActiveLightning == 0)
     {
-        if (((NewCloud*)q)->followCamera != 0 && cam != NULL)
+        if (q->followCamera != 0 && cam != NULL)
         {
             dir[0] = 0.0f;
             dir[1] = 0.0f;
@@ -1565,7 +1565,7 @@ void newclouds_run(void)
     void** clouds;
     u8** cloudSlot;
     int i;
-    u8* nearestCloud;
+    NewCloud* nearestCloud;
     u8 activeCount;
     int slotOffset;
     u8* p;
@@ -1762,7 +1762,7 @@ void newclouds_run(void)
                 if (mag < nearest)
                 {
                     nearest = mag;
-                    nearestCloud = D7_CLOUD;
+                    nearestCloud = (NewCloud*)D7_CLOUD;
                 }
             }
         }
@@ -1820,14 +1820,14 @@ void newclouds_run(void)
         gNewCloudOvercastFadeLevel = 0.0f;
     }
     gNewCloudSnowFlashAlpha = 0;
-    if (nearestCloud != NULL && ((NewCloud*)nearestCloud)->cloudType == 4)
+    if (nearestCloud != NULL && nearestCloud->cloudType == 4)
     {
         gNewCloudSnowFlashAlpha = 255.0f * gNewCloudOvercastFadeLevel;
         if (gNewCloudSnowFlashAlpha != 0)
         {
             rot = 3.142f *
                 (2.0f *
-                    -(6000.0f * (((NewCloud*)nearestCloud)->driftOffset / 10.0f) +
+                    -(6000.0f * (nearestCloud->driftOffset / 10.0f) +
                         3000.0f)) /
                 65536.0f;
             {
@@ -1837,7 +1837,7 @@ void newclouds_run(void)
                 ((f32*)clouds)[56] = zero;
             }
             viewRotationMatrix = Camera_GetViewRotationMatrix();
-            if (((NewCloud*)nearestCloud)->cloudType == 0)
+            if (nearestCloud->cloudType == 0)
             {
                 gNewCloudSnowFlashScroll = 0.125f * (-0.12f * timeDelta) + gNewCloudSnowFlashScroll;
                 gNewCloudSnowFlashScale = 1.5f;
