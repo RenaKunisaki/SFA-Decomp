@@ -446,12 +446,10 @@ void sh_staff_update(GameObject* obj) {
                 loadMapAndParent(SHSTAFF_PICKUP_MAP_ID);
             }
         }
-    } else {
-        if (state->pickupMapLoaded != 0) {
-            state->pickupMapLoaded = 0;
-            mapUnload(SHSTAFF_PICKUP_MAP_CELL, SHSTAFF_PICKUP_MAP_LOAD_FLAGS);
-            mainSetBits(GAMEBIT_STAFF_PICKUP_MAP_UNLOADED, 1);
-        }
+    } else if (state->pickupMapLoaded != 0) {
+        state->pickupMapLoaded = 0;
+        mapUnload(SHSTAFF_PICKUP_MAP_CELL, SHSTAFF_PICKUP_MAP_LOAD_FLAGS);
+        mainSetBits(GAMEBIT_STAFF_PICKUP_MAP_UNLOADED, 1);
     }
     setHudForceShowMask(0);
     state->hazeClimbT = 0.01f * timeDelta + state->hazeClimbT;

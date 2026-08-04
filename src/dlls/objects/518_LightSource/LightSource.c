@@ -137,11 +137,9 @@ void lightsource_update(GameObject* obj) {
                 Sfx_AddLoopedObjectSound((u32)obj, SFXTRIG_mushdizzylp12);
                 state->loopFlags.loopedSound = 1;
             }
-        } else {
-            if (state->loopFlags.loopedSound) {
-                Sfx_RemoveLoopedObjectSound((u32)obj, SFXTRIG_mushdizzylp12);
-                state->loopFlags.loopedSound = 0;
-            }
+        } else if (state->loopFlags.loopedSound) {
+            Sfx_RemoveLoopedObjectSound((u32)obj, SFXTRIG_mushdizzylp12);
+            state->loopFlags.loopedSound = 0;
         }
     }
 }

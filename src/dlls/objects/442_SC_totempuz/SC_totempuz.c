@@ -241,11 +241,9 @@ void sc_totempuzzle_update(GameObject* obj) {
                     state->angle += 65535.0f;
                     state->stepIndex = SC_TOTEM_PUZZLE_LAST_STEP_INDEX;
                 }
-            } else {
-                if (++state->stepIndex > SC_TOTEM_PUZZLE_LAST_STEP_INDEX) {
-                    state->angle -= 65535.0f;
-                    state->stepIndex = 0;
-                }
+            } else if (++state->stepIndex > SC_TOTEM_PUZZLE_LAST_STEP_INDEX) {
+                state->angle -= 65535.0f;
+                state->stepIndex = 0;
             }
         }
     } else {

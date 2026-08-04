@@ -678,11 +678,9 @@ void gunpowderBarrel_update(GameObject* obj) {
             timer_isEffectMode(state->linkedTimerObject) != 0 && state->linkedTimerObject->ownerObj == NULL) {
             ObjLink_AttachChild(obj, state->linkedTimerObject, 0);
         }
-    } else {
-        if (Obj_IsObjectAlive(state->linkedTimerObject) == 0 && state->linkedTimerObject != NULL) {
-            ObjLink_DetachChild(obj, state->linkedTimerObject);
-            state->linkedTimerObject = NULL;
-        }
+    } else if (Obj_IsObjectAlive(state->linkedTimerObject) == 0 && state->linkedTimerObject != NULL) {
+        ObjLink_DetachChild(obj, state->linkedTimerObject);
+        state->linkedTimerObject = NULL;
     }
     {
         u32 messageArgument;

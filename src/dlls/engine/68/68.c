@@ -120,10 +120,8 @@ void firstPersonExit(CameraObject* camera) {
         ((gCameraModeViewfinderState->yawCurve.start - gCameraModeViewfinderState->yawCurve.end) < -32768.0f)) {
         if (gCameraModeViewfinderState->yawCurve.start < 0.0f) {
             gCameraModeViewfinderState->yawCurve.start += 65535.0f;
-        } else {
-            if (gCameraModeViewfinderState->yawCurve.end < 0.0f) {
-                gCameraModeViewfinderState->yawCurve.end += 65535.0f;
-            }
+        } else if (gCameraModeViewfinderState->yawCurve.end < 0.0f) {
+            gCameraModeViewfinderState->yawCurve.end += 65535.0f;
         }
     }
     gCameraModeViewfinderState->pitchCurve.start = (f32)(s32)self->anim.rotY;
@@ -135,10 +133,8 @@ void firstPersonExit(CameraObject* camera) {
         ((gCameraModeViewfinderState->pitchCurve.start - gCameraModeViewfinderState->pitchCurve.end) < -32768.0f)) {
         if (gCameraModeViewfinderState->pitchCurve.start < 0.0f) {
             gCameraModeViewfinderState->pitchCurve.start += 65535.0f;
-        } else {
-            if (gCameraModeViewfinderState->pitchCurve.end < 0.0f) {
-                gCameraModeViewfinderState->pitchCurve.end += 65535.0f;
-            }
+        } else if (gCameraModeViewfinderState->pitchCurve.end < 0.0f) {
+            gCameraModeViewfinderState->pitchCurve.end += 65535.0f;
         }
     }
     curvesMove(&gCameraModeViewfinderState->transitionCurve);

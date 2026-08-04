@@ -581,10 +581,8 @@ int cfguardian_updateMain(GameObject* obj) {
                     obj->anim.velocityZ = damping * obj->anim.velocityZ;
                 }
             }
-        } else {
-            if (state->chatterState == CFGUARDIAN_CHATTER_PLAYING) {
-                state->chatterState = CFGUARDIAN_CHATTER_READY;
-            }
+        } else if (state->chatterState == CFGUARDIAN_CHATTER_PLAYING) {
+            state->chatterState = CFGUARDIAN_CHATTER_READY;
         }
         break;
     case CFGUARDIAN_STATE_FLY_TO_TALK: /* fly to the talk spot */

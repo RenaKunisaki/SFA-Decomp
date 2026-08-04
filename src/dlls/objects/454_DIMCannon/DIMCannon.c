@@ -330,10 +330,8 @@ int DIMCannon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
                 }
                 modelRotation[1] = (s16)(modelRotation[1] + aimDelta);
                 Sfx_KeepAliveLoopedObjectSound((u32)obj, SFXTRIG_gal_sailflap2);
-            } else {
-                if (state->previousAimDelta != 0) {
-                    Sfx_PlayFromObject(obj, SFXTRIG_cnplarlp);
-                }
+            } else if (state->previousAimDelta != 0) {
+                Sfx_PlayFromObject(obj, SFXTRIG_cnplarlp);
             }
             state->previousAimDelta = aimDelta;
             if (state->launchDelay > 0) {

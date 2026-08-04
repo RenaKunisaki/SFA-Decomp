@@ -477,15 +477,13 @@ void AppleOnTree_update(GameObject* obj) {
                 ((AppleOnTreeState*)state)->flags = ((AppleOnTreeState*)state)->flags | APPLE_ON_TREE_FLAG_INACTIVE;
                 ((AppleOnTreeState*)state)->elapsedTime = timeDelta;
                 ((AppleOnTreeState*)state)->animState = APPLE_ON_TREE_STATE_BURST;
+            } else if (frac > ((AppleOnTreeState*)state)->growthEnd) {
+                obj->anim.rootMotionScale = obj->anim.modelInstance->rootMotionScaleBase;
+                ((AppleOnTreeState*)state)->animState = APPLE_ON_TREE_STATE_RIPE;
             } else {
-                if (frac > ((AppleOnTreeState*)state)->growthEnd) {
-                    obj->anim.rootMotionScale = obj->anim.modelInstance->rootMotionScaleBase;
-                    ((AppleOnTreeState*)state)->animState = APPLE_ON_TREE_STATE_RIPE;
-                } else {
-                    fb = ((AppleOnTreeState*)obj->extra)->elapsedTime / ((AppleOnTreeState*)obj->extra)->phaseDuration;
-                    fb = fb * (1.0f / ((AppleOnTreeState*)obj->extra)->growthEnd);
-                    obj->anim.rootMotionScale = obj->anim.modelInstance->rootMotionScaleBase * fb;
-                }
+                fb = ((AppleOnTreeState*)obj->extra)->elapsedTime / ((AppleOnTreeState*)obj->extra)->phaseDuration;
+                fb = fb * (1.0f / ((AppleOnTreeState*)obj->extra)->growthEnd);
+                obj->anim.rootMotionScale = obj->anim.modelInstance->rootMotionScaleBase * fb;
             }
             break;
         case APPLE_ON_TREE_STATE_RIPE:
@@ -513,12 +511,10 @@ void AppleOnTree_update(GameObject* obj) {
                         particleIndex = particleIndex + 1;
                     } while (particleIndex < APPLE_ON_TREE_PARTICLE_BURST_COUNT);
                     ((AppleOnTreeState*)state)->animState = APPLE_ON_TREE_STATE_FALLING;
+                } else if ((*gSkyInterface)->getSunPosition(&sunTime) != 0) {
+                    ObjAnim_AdvanceCurrentMove((int)obj, -0.006f, timeDelta, 0);
                 } else {
-                    if ((*gSkyInterface)->getSunPosition(&sunTime) != 0) {
-                        ObjAnim_AdvanceCurrentMove((int)obj, -0.006f, timeDelta, 0);
-                    } else {
-                        ObjAnim_AdvanceCurrentMove((int)obj, 0.006f, timeDelta, 0);
-                    }
+                    ObjAnim_AdvanceCurrentMove((int)obj, 0.006f, timeDelta, 0);
                 }
             }
             break;

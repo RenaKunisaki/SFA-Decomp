@@ -281,12 +281,10 @@ void dll_200_updateMapAct1(GameObject* obj) {
                 state->sequenceMode = 2;
                 (*gObjectTriggerInterface)->runSequence(2, (void*)obj, -1);
                 buttonDisable(0, PAD_BUTTON_A);
-            } else {
-                if (mainGetBit(177) == 0 || mainGetBit(178) == 0 || mainGetBit(179) == 0) {
-                    state->sequenceMode = 1;
-                    (*gObjectTriggerInterface)->runSequence(1, (void*)obj, -1);
-                    buttonDisable(0, PAD_BUTTON_A);
-                }
+            } else if (mainGetBit(177) == 0 || mainGetBit(178) == 0 || mainGetBit(179) == 0) {
+                state->sequenceMode = 1;
+                (*gObjectTriggerInterface)->runSequence(1, (void*)obj, -1);
+                buttonDisable(0, PAD_BUTTON_A);
             }
         }
     }
