@@ -560,6 +560,13 @@ int lbl_803DB744[1] = {0};
 GXColor gObjSeqDefaultColor = {0x20, 0x20, 0x20, 0xFF};
 int lbl_803DB74C[1] = {0};
 
+typedef struct ObjSeqBgRotationCmd
+{
+    s16 index;
+    s16 xrot;
+    s16 yrot;
+} ObjSeqBgRotationCmd;
+
 typedef struct ObjSeqBgCmd
 {
     int object;
@@ -688,7 +695,7 @@ extern void ObjSeq_ApplyFrameCurves(GameObject* obj, GameObject* seqObj, u8* seq
 extern void ObjSeq_RebuildCurveStateToFrame(GameObject* obj, GameObject* seqObj, u8* seq, int mode);
 extern void ObjSeq_ApplyLinkedObjectTransform(GameObject* obj, GameObject* seqObj, u8* seq);
 extern void animatedObjFreeAndSavePlayerPos(GameObject* obj, GameObject* seqObj, u8* seq);
-extern s16 gObjSeqBgCmds[];
+extern ObjSeqBgRotationCmd gObjSeqBgCmds[];
 extern u8 objSeqXrotChanged[];
 extern s16 objSeqXrotValues[];
 extern s8 gObjSeqBoolFlags[];
@@ -771,7 +778,7 @@ extern char sObjSequenceMissingObjectFormat[];
 extern s8 gObjSeqJumpLatch[];
 int objSeqExecCmd06(GameObject* obj, GameObject* sourceObj, u8* seq, int cmd, s8 flag);
 
-extern u8 lbl_8039944C[];
+extern ObjSeqBgCmd lbl_8039944C[];
 int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmd, s8 flags, void* out);
 void* ObjSeq_ToggleCommand3Target(GameObject* obj, u8* seq, ObjSeqPlacement* placement);
 
@@ -4395,7 +4402,7 @@ void ObjSeq_RebuildCurveStateToFrame(GameObject* obj, GameObject* seqObj, u8* se
     }
 
     posp = &pos.x;
-    entry = (ObjSeqBgCmd*)lbl_8039944C;
+    entry = lbl_8039944C;
     while (state->curFrame < targetFrame)
     {
         state->curFrame += 1;
@@ -5705,9 +5712,9 @@ void ObjSeq_addBgCmd(int index, int xrot, int yrot)
     shortIndex = index;
     shortYrot = yrot;
     shortXrot = xrot;
-    gObjSeqBgCmds[count * 3] = shortIndex;
-    gObjSeqBgCmds[count * 3 + 2] = shortYrot;
-    gObjSeqBgCmds[gObjSeqBgCmdCount++ * 3 + 1] = shortXrot;
+    gObjSeqBgCmds[count].index = shortIndex;
+    gObjSeqBgCmds[count].yrot = shortYrot;
+    gObjSeqBgCmds[gObjSeqBgCmdCount++].xrot = shortXrot;
 }
 u8 gObjSeqRuntimeBuffer[0x2A80];
 int gObjSeqPreemptList[40][2];
@@ -5722,8 +5729,8 @@ s16 objSeqXrotValues[0x156];
 u8 objSeqXrotChanged[0x58];
 u8 lbl_80399E50[0x58];
 f32 objSeqOverridePos[0x259];
-u8 lbl_8039944C[0xA0];
-s16 gObjSeqBgCmds[0x5A];
+ObjSeqBgCmd lbl_8039944C[0xA0 / sizeof(ObjSeqBgCmd)];
+ObjSeqBgRotationCmd gObjSeqBgCmds[0x1E];
 
 
 #define OBJSEQ_SLOT_COUNT 85

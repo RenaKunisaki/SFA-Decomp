@@ -811,21 +811,21 @@ s8 SaveGame_findTransientMapBit(int mapId, int shift)
 void mapClearBit(int idx, int bit)
 {
     if (idx >= SAVEGAME_EXTENDED_MAP_THRESHOLD)
-        idx = *(u8*)((char*)gExtendedMapActLookup + idx - SAVEGAME_EXTENDED_MAP_THRESHOLD);
+        idx = gExtendedMapActLookup[idx - SAVEGAME_EXTENDED_MAP_THRESHOLD];
     gMapObjGroupStatuses[idx] &= ~(1 << bit);
 }
 
 void SaveGame_resetObjGroups(int idx)
 {
     if (idx >= SAVEGAME_EXTENDED_MAP_THRESHOLD)
-        idx = *(u8*)((char*)gExtendedMapActLookup + idx - SAVEGAME_EXTENDED_MAP_THRESHOLD);
+        idx = gExtendedMapActLookup[idx - SAVEGAME_EXTENDED_MAP_THRESHOLD];
     gMapObjGroupStatuses[idx] = 0;
 }
 
 u32 SaveGame_mapGetObjGroups(int idx)
 {
     if (idx >= SAVEGAME_EXTENDED_MAP_THRESHOLD)
-        idx = *(u8*)((char*)gExtendedMapActLookup + idx - SAVEGAME_EXTENDED_MAP_THRESHOLD);
+        idx = gExtendedMapActLookup[idx - SAVEGAME_EXTENDED_MAP_THRESHOLD];
     return gMapObjGroupStatuses[idx];
 }
 
@@ -833,7 +833,7 @@ void SaveGame_mapUpdateObjGroups(int idx)
 {
     u16 bit;
     if (idx >= SAVEGAME_EXTENDED_MAP_THRESHOLD)
-        idx = *(u8*)((char*)gExtendedMapActLookup + idx - SAVEGAME_EXTENDED_MAP_THRESHOLD);
+        idx = gExtendedMapActLookup[idx - SAVEGAME_EXTENDED_MAP_THRESHOLD];
     bit = gSaveGameMapObjGroupBits[idx];
     if (bit != 0)
     {
@@ -848,7 +848,7 @@ u16 SaveGame_getMapObjGroupBit(int idx)
 int SaveGame_gplayGetObjGroupStatus(int idx, int shift)
 {
     if (idx >= SAVEGAME_EXTENDED_MAP_THRESHOLD)
-        idx = *(u8*)((char*)gExtendedMapActLookup + idx - SAVEGAME_EXTENDED_MAP_THRESHOLD);
+        idx = gExtendedMapActLookup[idx - SAVEGAME_EXTENDED_MAP_THRESHOLD];
     if (idx != gSaveGameObjGroupCacheIdx[0])
     {
         gSaveGameObjGroupCacheIdx[0] = idx;
@@ -860,7 +860,7 @@ int SaveGame_gplayGetObjGroupStatus(int idx, int shift)
 u8 SaveGame_getMapAct(int idx)
 {
     if (idx >= SAVEGAME_EXTENDED_MAP_THRESHOLD)
-        idx = *(u8*)((char*)gExtendedMapActLookup + idx - SAVEGAME_EXTENDED_MAP_THRESHOLD);
+        idx = gExtendedMapActLookup[idx - SAVEGAME_EXTENDED_MAP_THRESHOLD];
     if (idx != gSaveGameMapActCacheIdx[0])
     {
         gSaveGameMapActCacheIdx[0] = idx;
@@ -881,13 +881,13 @@ void SaveGame_gplaySetAct(int idx, int act)
     int j;
     u16 bit;
     if (idx >= SAVEGAME_EXTENDED_MAP_THRESHOLD)
-        idx = *(u8*)((char*)gExtendedMapActLookup + idx - SAVEGAME_EXTENDED_MAP_THRESHOLD);
+        idx = gExtendedMapActLookup[idx - SAVEGAME_EXTENDED_MAP_THRESHOLD];
     mainSetBits(gSaveGameMapActBits[idx], act);
     gSaveGameMapActCacheIdx[0] = idx;
     *((s8*)&gSaveGameMapActCacheIdx + 1) = act;
     j = idx;
     if (j >= SAVEGAME_EXTENDED_MAP_THRESHOLD)
-        j = *(u8*)((char*)gExtendedMapActLookup + j - SAVEGAME_EXTENDED_MAP_THRESHOLD);
+        j = gExtendedMapActLookup[j - SAVEGAME_EXTENDED_MAP_THRESHOLD];
     bit = gSaveGameMapObjGroupBits[j];
     if (bit != 0)
     {
@@ -897,7 +897,7 @@ void SaveGame_gplaySetAct(int idx, int act)
 
 void SaveGame_setMapActLut(int val, int idx)
 {
-    *(u8*)((char*)gExtendedMapActLookup + idx - SAVEGAME_EXTENDED_MAP_THRESHOLD) = val;
+    gExtendedMapActLookup[idx - SAVEGAME_EXTENDED_MAP_THRESHOLD] = val;
 }
 
 void updateSavedHealth(void)

@@ -119,7 +119,7 @@ static inline ExpgfxSlot* Expgfx_GetSlot(int poolIndex, int slotIndex)
 
 static inline ExpgfxPlaneOffsets* Expgfx_GetPlaneOffsets(int setIndex)
 {
-    return &((ExpgfxPlaneOffsets*)gExpgfxStaticData)[setIndex];
+    return &gExpgfxStaticData[setIndex];
 }
 
 #define EXPGFX_POOL_ACTIVE_MASK_PTR(runtime, poolIndex) \
@@ -171,7 +171,10 @@ void viewFinderSetZoomTo50(void)
 #include "main/dll/partfx_interface.h"
 #include "dolphin/gx/GXGeometry.h"
 
-f32 gExpgfxStaticData[12] = {-5.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f};
+ExpgfxPlaneOffsets gExpgfxStaticData[EXPGFX_STATIC_PLANE_OFFSET_SET_COUNT] = {
+    {{-5.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f}},
+    {{50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f}},
+};
 
 s16 gExpgfxStaticPoolSlotTypeIds[80] = {
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0,
