@@ -366,6 +366,19 @@ so the `add` takes accumulator-first operands, then park the `+0x60` bias in a s
 byte-exact including register numbers. Two forms, one family: bias-the-base pins CSE;
 bias-in-second-local pins the `addi`'s schedule.
 
+**Third sub-form — value-use member decay (2026-08-04).** At a VALUE-use site (the sum is
+passed or stored, no derefs on it), `numStrings * 4 + (u32)stringTable->offsets` replaces
+`&stringTable->offsets[numStrings]` and emits retail's `slwi; add base-first; trailing addi K`
+— `gameTextFinalizeLoad` **99.334 -> 99.837**. Three forms now: bias-the-deref-base,
+bias-in-second-local, member-decay-at-value-use. **`docs/priced_classes.md` §15's pricing
+("MWCC always folds the constant into the scaled index") predates this family — re-screen a
+§15-era cap against all three forms before trusting it.** The 2026-08-04 re-screen of the six
+stale pricings closed every one WITH mechanism: `gameTextRun`, `renderShadows`, `newclouds`,
+`errorThreadFunc`, `objDrawShadowCasterMesh`, and `staffUpdateSegmentTransforms` — the last
+one's retail spelling is PROVEN via `nopropagation` byte-identity, i.e. the per-function-flag
+TU class, not a missing spelling. `newclouds_run`'s recorded trilemma is actually a
+quadrilemma: `+nolifetimes` reproduces the function but wrecks 4 siblings.
+
 **Bounds, all measured.** Zero bias reverts to `add(idx, base)` — falsified directly on
 `modelLoadMtxsToGx`; the bias is the load-bearing element. The base needs only pointer
 PROVENANCE (a loaded pointer member fires), not a member address. **Does not fire when**
@@ -485,6 +498,49 @@ the other side (+16, dead double-store). Baseline `h = (u64)hw & maskConst` is a
 optimum: **96.682 stands** (one byte-neutral cast removal landed alongside, `bea49f14ba`). The
 refcorpus has ZERO `addc/adde` u64 arithmetic across 42k functions — no donor exists for this
 class. §4 above is the same function's operand-signedness lever; the two are independent.
+
+### 14. The saved-register-redefinition tell — a "rotation" hiding a mis-decompilation
+
+**Shape.** In the TARGET asm, a saved register receives a SECOND definition mid-function —
+from a call result or a fresh computation, with disjoint lifetimes — and our source attributes
+the later uses to the FIRST variable. This presents as an operand-only "rotation" that `struc`-0
+classifiers cannot see, and it is not an allocation residue at all: it is a semantic
+mis-decompilation. Retail had TWO variables sharing one home; our source has one variable doing
+both jobs, and the downstream reads are reading the wrong value.
+
+**Source.** Give the second value its own local — and all three parts of the spelling are
+load-bearing, measured on the worked example: the compare-fix alone left **180** diff words;
+typing the new local to the coalescing width (`short` where retail's definition goes through
+`extsh`) left **14**; declaring it at the position that coalesces its web into the dead first
+variable's home left **0**.
+
+**Measured.** `expgfx_addremove` **99.938 -> 100.000 byte-exact** (its row in
+`docs/band_width_worklist.md` carries the semantics: retail redefines r24 from the
+`acquireResourceEntry` result and the final compare reads the resource-table index, not
+slotType). Screen over the 160 operand-only walls: **3 STRONG** (1 landed: `moveTricky`, lever
+15 below), **8 MEDIUM** (1 win: `playerBuildWallTransitionProbe`), **118 confirmed clean**.
+
+**Caution.** The spellings must be probe-derived, not guessed — all three first-guess spellings
+on the worked example regressed on compile. The tell licenses the *investigation* (read what the
+redefined register holds at each use), never a blind rewrite.
+
+### 15. The self-eliding true-arm copy — the spelling behind the empty-true-arm skeleton
+
+**Shape.** Retail's conditional in-place update emits the empty-true-arm skeleton:
+`cmpwi rN,0; blt L1; b L2; L1: neg rN,rN` — the true arm is empty, yet its branch structure
+survives. Lever 11's sibling: the skeleton survives because the true arm held a copy that
+register coalescing deleted after layout.
+
+**Source.** Assign the DEFINITION-SOURCE value in the true arm. `moveTricky`'s spelling is
+`td = td >= 0 ? turnDelta : -td;` — `td` was defined `extsh r26,r25` from `turnDelta`, so the
+true-arm copy self-elides into `td`'s home and leaves only the skeleton. The plain ternary
+(`td = td >= 0 ? td : -td;`) stops working once two else-if arms share `td`: its temp no longer
+coalesces into `td`'s home.
+
+**Class status: record for FUTURE code, not an open vein.** The image-wide screen found this
+the only clean instance. The one other skeleton site, `drlasercannon_aimAtTarget`, is blocked
+by its adjacent redundant-`extsh` wall (the same coalesce-killer lever 11 documents there) and
+nets negative.
 
 ## The signedness axis — CLOSED BOTH-SIDED by census, and three protected shapes
 
@@ -686,6 +742,26 @@ Reverted. Track the count alongside the percentage.
 **exactly inert** — propagation folds them — so it can be done for readability at zero byte cost,
 but it will not move a score.
 
+**A named pointer-to-local is never the spelling for retail's stack-address temp.** Retail's
+`addi rN,r1,K; stfs 0(rN)` shape is codegen address-temp reuse, not a nameable pointer: writing
+`f32* p = &local;` makes `p` a PINNED saved-register variable (the value-home-r0 shape) and
+re-rotates the whole band catastrophically. Corollary, same mechanism from the other side: a
+value retail pins to **r0** can never be a named local — r0 is not in any allocation tier a
+source name can reach.
+
+**A 0-based loop re-derivation DELETES a dead counter.** Where retail keeps a counter web alive
+past its last real use, rewriting the loop 0-based drops the web; only the `while (i++ < N)`
+form keeps it. Check which form retail's web implies before "normalising" a loop.
+
+**Block-scoping a local the lifetimes optimisation already block-scopes is byte-inert.** The
+CLAUDE.md hoist/push move reaches new orderings only when it changes what the optimiser sees;
+when lifetimes analysis already confines the value to the block, the source-level scope change
+is a no-op.
+
+**A dead `(f32)` conversion mints no `.sdata2` bias.** Casting an expression whose conversion
+folds away does not create the int↔float bias constant — consistent with the folded-literal
+mint refinement in the data section below (first SURVIVING use mints).
+
 The remaining four in this section are **Lane B's measurements**.
 
 **The statement split does not generalise to pool-constant placement.** Splitting a statement to
@@ -798,6 +874,21 @@ costs more in alignment than it recovers.
   falsely on `modelState`/`modelInstance`. One did, aborting a rename *after* `symbols.txt` and
   the header were already written — the partial-rename state that scores zero with a green
   build. Use `\bname\b`.
+- **An out-of-tree mini objdiff project scores a probe in milliseconds — use it instead of
+  diff-line proxies.** Write an `objdiff.json` whose target is the retail carve object and whose
+  base is the probe `.o`, then `objdiff-cli report generate`: true per-function
+  `fuzzy_match_percent` with no ninja run. Diff-line proxies MISRANK probes (same family as the
+  `fnbytes` misalignment trap above); when a spelling sweep needs a per-candidate score, this is
+  the cheap sound instrument.
+- **Compile the UNTOUCHED source at other opt levels before blaming the source.** One cheap
+  compile per level separates wrong-source from per-function-flag TU: if the unmodified source
+  reproduces retail under another profile, the spelling lane is closed and the residual belongs
+  to the flag/TU axis (`staffUpdateSegmentTransforms` was proven exactly this way — byte-identity
+  under `nopropagation`).
+- **Resolve `.sdata2` relocs to their slot VALUES before diffing probe `.text`.** Pool
+  renumbering between two probes fakes `.text` diffs — two byte-equivalent functions read as
+  different because their `R_PPC_EMB_SDA21` operands point at renumbered slots. Compare the
+  values the relocs resolve to, not the raw instruction words.
 
 ## The data axis: a section scores ALL-OR-NOTHING, and the trigger is DIFFERING BYTES
 
@@ -863,12 +954,14 @@ costs more in alignment than it recovers.
   first-use discriminator plus the 100%-function windows — but this is an unreachable **784-byte**
   entry, not a scoring artifact worth nothing. Price it accordingly if a future technique reaches
   emission order.
-- **Two mint-law refinements (2026-08-03, engine/7 probes, both measured).** A literal FOLDED at
+- **Three mint-law refinements (2026-08-03/04, all measured).** A literal FOLDED at
   parse mints NOTHING — `x * 1.0f` folds and leaves both `.text` and the pool unchanged, and a
   dead `f32 one = 1.0f;` likewise — so "first use" in the dual emission rule means first
-  **SURVIVING** use. And within ONE statement, mint serials can deviate from textual order
-  (`6000*x/10+3000` mints 3000, 6000, 10); statement-level order remains strict across
-  statements. Keep this bullet in sync with the pool-mechanism entries alongside the reachability
+  **SURVIVING** use (a dead `(f32)` conversion likewise mints no int↔float bias). Within ONE
+  statement, mint serials can deviate from textual order (`6000*x/10+3000` mints 3000, 6000,
+  10); statement-level order remains strict across statements. And in a guarded clamp
+  `if (x < K1) x = K2;`, **K2 mints before K1** — the assignment's constant precedes the
+  compare's. Keep this bullet in sync with the pool-mechanism entries alongside the reachability
   one above.
 - **The distinct-values screen still answers a different, useful question.** Run its checks in the
   order **missing distinct values → duplicate inflation → size → order**: a merged TU is always
