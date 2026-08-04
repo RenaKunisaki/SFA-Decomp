@@ -867,7 +867,7 @@ GameObject* ObjList_FindNearestObjectByDefNo(GameObject* obj, int defNo, float* 
     int objectCount;
     float invalidDistance;
     float distanceSq;
-    u32 otherObj;
+    GameObject* otherObj;
     int objectIndex;
     int* objects;
     int* walker;
@@ -883,9 +883,9 @@ GameObject* ObjList_FindNearestObjectByDefNo(GameObject* obj, int defNo, float* 
         walker = objects + startIndex;
 
         while (objectIndex < objectCount) {
-            otherObj = *walker;
-            if (((defNo == ((GameObject*)otherObj)->anim.romDefNo) && ((int)obj != otherObj)) &&
-                (distanceSq = vec3f_distanceSquared(&(obj)->anim.worldPosX, &((GameObject*)otherObj)->anim.worldPosX),
+            otherObj = (GameObject*)*walker;
+            if (((defNo == otherObj->anim.romDefNo) && ((u32)obj != (u32)otherObj)) &&
+                (distanceSq = vec3f_distanceSquared(&(obj)->anim.worldPosX, &otherObj->anim.worldPosX),
                  distanceSq < *maxDistanceSq)) {
                 *maxDistanceSq = distanceSq;
                 foundObj = (GameObject*)*walker;

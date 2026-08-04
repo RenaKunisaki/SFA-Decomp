@@ -372,7 +372,7 @@ void ShaderDef_free(int* def)
 void shaderInit(u8* def, ModelRenderOpTextureRefs* textures, GameObject* obj, int shaderFlags)
 {
     RcpDistortSlot* slot;
-    void* s;
+    Texture* s;
 
     if (((Shader*)def)->reg1Texture != NULL)
     {
@@ -380,8 +380,8 @@ void shaderInit(u8* def, ModelRenderOpTextureRefs* textures, GameObject* obj, in
             slot = &gRcpDistortSlots[6 - (obj->lightColorSlot + 1)];
         else
             slot = &gRcpDistortSlots[5];
-        s = slot->texture;
-        (((Texture*)s)->refCount)++;
+        s = (Texture*)slot->texture;
+        (s->refCount)++;
         textures->texture0 = slot->texture;
     }
     if (((Shader*)def)->reg2Texture == NULL)
@@ -390,8 +390,8 @@ void shaderInit(u8* def, ModelRenderOpTextureRefs* textures, GameObject* obj, in
         slot = gRcpDistortSlots;
     else
         slot = &gRcpDistortSlots[((Shader*)def)->reg2TexSlot >> 1];
-    s = slot->texture;
-    (((Texture*)s)->refCount)++;
+    s = (Texture*)slot->texture;
+    (s->refCount)++;
     textures->texture1 = slot->texture;
 }
 

@@ -2723,7 +2723,7 @@ int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int* model, f3
     int k22;
     u8* blk;
     s16 *xs, *ys, *zs;
-    int hdr;
+    ModelFileHeader* hdr;
     int deg;
     int flag20;
     int flag8;
@@ -2731,7 +2731,7 @@ int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int* model, f3
     int count;
     int flag4;
 
-    hdr = *model;
+    hdr = (ModelFileHeader*)*model;
 
     Matrix_TransformPoint(desc->currentMatrix, x0, y0, z0, &xa, &ytmp, &za);
     Matrix_TransformPoint(desc->currentMatrix, x0, y0, z1, &xb, &y0, &zb);
@@ -2765,7 +2765,7 @@ int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int* model, f3
     if (zd > z1)
         z1 = zd;
 
-    count = ((ModelFileHeader*)hdr)->collisionBlockCount;
+    count = hdr->collisionBlockCount;
     i = 0;
     flag20 = flags & 0x20;
     flag8 = flags & 8;
@@ -2819,7 +2819,7 @@ int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int* model, f3
             {
                 s16* v = ObjModel_GetBaseVertexCoords((ModelFileHeader*)hdr, *tw);
                 f32 fx, fy, fz;
-                if (((ModelFileHeader*)hdr)->flags & 0x800)
+                if (hdr->flags & 0x800)
                 {
                     fx = v[0] * scale;
                     fy = v[1] * scale;

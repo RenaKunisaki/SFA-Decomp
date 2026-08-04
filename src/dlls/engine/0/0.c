@@ -769,7 +769,7 @@ void cMenuPlayTrickyCommandSfx(GameObject* obj)
 
 void gameUiLoadResources(void)
 {
-    char* base = lbl_803A87F0;
+    CMenuHud* base = (CMenuHud*)lbl_803A87F0;
     if (gameUiResourcesLoaded == 0)
     {
         GameObject** ringModels;
@@ -786,8 +786,8 @@ void gameUiLoadResources(void)
 
         rotation = 0;
         i = 0;
-        ringModels = ((CMenuHud*)base)->ringModels;
-        ringIcons = ((CMenuHud*)base)->ringIcons;
+        ringModels = base->ringModels;
+        ringIcons = base->ringIcons;
         x = 0.0f;
         y = 35.0f;
         z = -200.0f;
@@ -850,7 +850,7 @@ void gameUiLoadResources(void)
 
         j = 4;
         ids = &gGameUiHudAnimObjIds[4];
-        menuObjects = ((CMenuHud*)base)->menuObjects;
+        menuObjects = base->menuObjects;
         z = 0.0f;
         y = -5.0f;
         addressLimit = 0x90000000;
@@ -3611,7 +3611,7 @@ int cMenuSetItems(CMenuItemDef* itemsArg, char useTricky)
     s16* dst;
     int count;
     int* wordP;
-    u8* base;
+    CMenuHud* base;
     u8* flP;
     int wordOff;
     s16* w1;
@@ -3624,14 +3624,14 @@ int cMenuSetItems(CMenuItemDef* itemsArg, char useTricky)
     int i;
     s16 saved[CMENU_ITEM_SLOT_COUNT];
 
-    base = (u8*)lbl_803A87F0;
-    ids = ((CMenuHud*)base)->textureIds;
+    base = (CMenuHud*)lbl_803A87F0;
+    ids = base->textureIds;
     w1 = ids;
     dst = saved;
     w2 = dst;
-    stP = ((CMenuHud*)base)->textIds;
+    stP = base->textIds;
     w3 = stP;
-    flP = ((CMenuHud*)base)->itemFlags;
+    flP = base->itemFlags;
     w4 = flP;
     for (i = 0; i < CMENU_ITEM_SLOT_COUNT; i++)
     {
@@ -3647,7 +3647,7 @@ int cMenuSetItems(CMenuItemDef* itemsArg, char useTricky)
     }
     count = 0;
     wordOff = 0;
-    wordP = ((CMenuHud*)base)->ownedBits;
+    wordP = base->ownedBits;
     *wordP = -1;
     if (useTricky == 0)
     {
@@ -3661,22 +3661,22 @@ int cMenuSetItems(CMenuItemDef* itemsArg, char useTricky)
                 {
                     if (src[1] < 0 || mainGetBit(src[1]) == 0)
                     {
-                        *(s16*)(base + halfOff[0] + 0x948) = src[3];
-                        *(int*)(base + wordOff + 0x848) = src[0];
-                        *(int*)(base + wordOff + 0x748) = src[2];
-                        *(int*)(base + wordOff + 0x648) = src[1];
-                        *(u8*)(base + count + 0x448) = active;
-                        *(s16*)(base + halfOff[0] + 0x548) = src[6];
-                        *(s16*)(base + halfOff[0] + 0x5c8) = src[5];
-                        *(u8*)(base + count + 0x508) = *(u8*)(src + 7);
-                        *(u8*)(base + count + 0x4c8) = ((u8*)src)[0xf];
+                        *(s16*)((char*)base + halfOff[0] + 0x948) = src[3];
+                        *(int*)((char*)base + wordOff + 0x848) = src[0];
+                        *(int*)((char*)base + wordOff + 0x748) = src[2];
+                        *(int*)((char*)base + wordOff + 0x648) = src[1];
+                        *(u8*)((char*)base + count + 0x448) = active;
+                        *(s16*)((char*)base + halfOff[0] + 0x548) = src[6];
+                        *(s16*)((char*)base + halfOff[0] + 0x5c8) = src[5];
+                        *(u8*)((char*)base + count + 0x508) = *(u8*)(src + 7);
+                        *(u8*)((char*)base + count + 0x4c8) = ((u8*)src)[0xf];
                         if (src[2] < 0 || mainGetBit(src[2]) == 0)
                         {
-                            *(u8*)(count + 0x488 + base) = 1;
+                            *(u8*)(count + 0x488 + (char*)base) = 1;
                         }
                         else
                         {
-                            *(u8*)(count + 0x488 + base) = 0;
+                            *(u8*)(count + 0x488 + (char*)base) = 0;
                         }
                         count++;
                         wordOff += 4;
@@ -3689,22 +3689,22 @@ int cMenuSetItems(CMenuItemDef* itemsArg, char useTricky)
                     {
                         gCMenuForcedSelIndex = count;
                     }
-                    *(s16*)(base + halfOff[0] + 0x948) = src[3];
-                    *(int*)(base + wordOff + 0x848) = src[0];
-                    *(int*)(base + wordOff + 0x748) = src[2];
-                    *(int*)(base + wordOff + 0x648) = src[1];
-                    *(u8*)(base + count + 0x448) = active;
-                    *(s16*)(base + halfOff[0] + 0x548) = src[6];
-                    *(s16*)(base + halfOff[0] + 0x5c8) = src[5];
-                    *(u8*)(base + count + 0x508) = *(u8*)(src + 7);
-                    *(u8*)(base + count + 0x4c8) = ((u8*)src)[0xf];
+                    *(s16*)((char*)base + halfOff[0] + 0x948) = src[3];
+                    *(int*)((char*)base + wordOff + 0x848) = src[0];
+                    *(int*)((char*)base + wordOff + 0x748) = src[2];
+                    *(int*)((char*)base + wordOff + 0x648) = src[1];
+                    *(u8*)((char*)base + count + 0x448) = active;
+                    *(s16*)((char*)base + halfOff[0] + 0x548) = src[6];
+                    *(s16*)((char*)base + halfOff[0] + 0x5c8) = src[5];
+                    *(u8*)((char*)base + count + 0x508) = *(u8*)(src + 7);
+                    *(u8*)((char*)base + count + 0x4c8) = ((u8*)src)[0xf];
                     if (src[2] < 0 || mainGetBit(src[2]) == 0)
                     {
-                        *(u8*)(count + 0x488 + base) = 1;
+                        *(u8*)(count + 0x488 + (char*)base) = 1;
                     }
                     else
                     {
-                        *(u8*)(count + 0x488 + base) = 0;
+                        *(u8*)(count + 0x488 + (char*)base) = 0;
                     }
                     count++;
                     wordOff += 4;
@@ -3730,10 +3730,10 @@ int cMenuSetItems(CMenuItemDef* itemsArg, char useTricky)
         {
             src = items;
             idsW = ids;
-            aW = ((CMenuHud*)base)->auxiliaryValues;
-            cW = ((CMenuHud*)base)->auxiliaryBytes;
-            dW = ((CMenuHud*)base)->closeMode;
-            eW = ((CMenuHud*)base)->enabled;
+            aW = base->auxiliaryValues;
+            cW = base->auxiliaryBytes;
+            dW = base->closeMode;
+            eW = base->enabled;
             actionMask = gTrickyHudActionMask;
             yItem = yButtonItem;
             for (; *src > -1; src += 8)
@@ -3783,7 +3783,7 @@ int cMenuSetItems(CMenuItemDef* itemsArg, char useTricky)
     }
     i = 0;
     w1 = ids;
-    texP2 = (void**)((CMenuHud*)base)->itemTextures;
+    texP2 = (void**)base->itemTextures;
     texW = texP2;
     do
     {
@@ -6704,7 +6704,7 @@ int pauseMenuUpdateMapScroll(void)
 /* Returns whether the current player can appear in the pause-menu carousel. */
 int pauseMenuIsFox(void)
 {
-    void* s;
+    GameObject* s;
     void* inner;
     u8 lookup;
     u8 i;
@@ -6716,14 +6716,14 @@ int pauseMenuIsFox(void)
     is_zero = objIsCurModelNotZero(s) == 0;
     if (is_zero)
         return 0;
-    inner = ((GameObject*)s)->anim.parent;
+    inner = s->anim.parent;
     if (inner != NULL)
     {
         lookup = *((u8*)inner + 0xac);
     }
     else
     {
-        lookup = coordsToMapCell(((GameObject*)s)->anim.localPosX, ((GameObject*)s)->anim.localPosZ);
+        lookup = coordsToMapCell(s->anim.localPosX, s->anim.localPosZ);
     }
     for (i = 0; i < 9; i++)
     {
@@ -8418,13 +8418,13 @@ void GameUI_hudDraw(int a, int b, int c)
             f32 sx, sy;
             if (playerGetAimScreenPos((GameObject*)(player), &sx, &sy) != 0)
             {
-                void* tex;
+                Texture* tex;
                 f32 scale, x, y;
                 textureUpdateAnimationFrame(gGameUiBlinkTexture, &gGameUiBlinkAnimFlags, &gGameUiBlinkAnimFrame);
                 tex = gGameUiBlinkTexture;
                 scale = 0.5f;
-                x = sx - scale * (f32)(u32) ((Texture*)tex)->width;
-                y = sy - scale * (f32)(u32) ((Texture*)tex)->height;
+                x = sx - scale * (f32)(u32) tex->width;
+                y = sy - scale * (f32)(u32) tex->height;
                 drawTexture(tex, x, y, 0x96, 0x100);
             }
             hudDrawStatusBarsAndCounters(a, b, c);

@@ -834,11 +834,11 @@ void skySetBaseColor(int flags, u8 red, u8 green, u8 blue, u8 moonScale, u8 ambi
 
 void skySetLightsEnabled(int flags, u8 enabled, int startComplete)
 {
-    u8* sky;
+    SkyState* sky;
     u32 flagBit;
     u8 stateActive;
 
-    sky = gSkyState;
+    sky = (SkyState*)gSkyState;
     if (sky == NULL)
     {
         return;
@@ -848,21 +848,21 @@ void skySetLightsEnabled(int flags, u8 enabled, int startComplete)
     {
         if ((flags & (1 << flagBit)) != 0)
         {
-            sky = gSkyState;
-            stateActive = ((SkyState*)sky)->lights[flagBit].flags.active;
+            sky = (SkyState*)gSkyState;
+            stateActive = sky->lights[flagBit].flags.active;
             if (stateActive != enabled)
             {
                 if (startComplete != 0)
                 {
-                    ((SkyState*)sky)->lights[flagBit].unk9C = 1.0f;
+                    sky->lights[flagBit].unk9C = 1.0f;
                 }
                 else
                 {
-                    ((SkyState*)sky)->lights[flagBit].unk9C = 0.0f;
+                    sky->lights[flagBit].unk9C = 0.0f;
                 }
             }
-            sky = gSkyState;
-            ((SkyState*)sky)->lights[flagBit].flags.active = enabled;
+            sky = (SkyState*)gSkyState;
+            sky->lights[flagBit].flags.active = enabled;
         }
     }
 }
@@ -955,24 +955,24 @@ void skyGetAmbientColor(int slot, u8* red, u8* green, u8* blue)
 void skyApplyLightSlot(int slot)
 {
     int offset;
-    u8* sky;
+    SkyState* sky;
 
     if (gSkySunLight != NULL)
     {
         offset = slot * 0xa4;
-        sky = gSkyState + offset;
-        modelLightStruct_setDirection(gSkySunLight, ((SkyState*)sky)->lights[0].directionX,
-                                      ((SkyState*)sky)->lights[0].directionY, ((SkyState*)sky)->lights[0].directionZ);
+        sky = (SkyState*)(gSkyState + offset);
+        modelLightStruct_setDirection(gSkySunLight, sky->lights[0].directionX,
+                                      sky->lights[0].directionY, sky->lights[0].directionZ);
         modelLightStruct_setDiffuseColor(gSkySunLight, gSkyState[offset + 0x78], gSkyState[offset + 0x79],
                                          gSkyState[offset + 0x7a], 0xff);
     }
     if (gSkyMoonLight != NULL)
     {
         offset = slot * 0xa4;
-        sky = gSkyState + offset;
-        modelLightStruct_setDirection(gSkyMoonLight, ((SkyState*)sky)->lights[0].moonDirectionX,
-                                      ((SkyState*)sky)->lights[0].moonDirectionY,
-                                      ((SkyState*)sky)->lights[0].moonDirectionZ);
+        sky = (SkyState*)(gSkyState + offset);
+        modelLightStruct_setDirection(gSkyMoonLight, sky->lights[0].moonDirectionX,
+                                      sky->lights[0].moonDirectionY,
+                                      sky->lights[0].moonDirectionZ);
         modelLightStruct_setDiffuseColor(gSkyMoonLight, gSkyState[offset + 0x80], gSkyState[offset + 0x81],
                                          gSkyState[offset + 0x82], 0xff);
     }
@@ -1555,7 +1555,7 @@ void skyRenderTimeOfDayBackdrop(void)
     int* sky;
     int texA;
     int texB;
-    u8* texC;
+    Texture* texC;
     Camera* cam;
     GameObject* player;
     int cell;
@@ -1694,11 +1694,11 @@ void skyRenderTimeOfDayBackdrop(void)
         gradA = channel[idxA];
         gradB = channel[idxB];
         gSkyCurrentAmbientColor.b = (u8)(int)(tc * (f32)(gradB - gradA) + (f32)(u32)gradA);
-        texC = (u8*)sky[((SkyTimeBlend*)sky)->texSel + 2];
+        texC = (Texture*)sky[((SkyTimeBlend*)sky)->texSel + 2];
         cam = Camera_GetCurrent();
         frac = Camera_GetFovY();
         frac = frac / 2.0f;
-        texHeightF = (f32)(u32)((Texture*)texC)->height;
+        texHeightF = (f32)(u32)texC->height;
         sinProd = texHeightF * frac / 180.0f;
         sinProd *= 3.0f;
         sinProd *= mathCosf(3.1415927f * (f32)-cam->worldRoll / 32768.0f);
@@ -1723,7 +1723,7 @@ void skyRenderTimeOfDayBackdrop(void)
         GXSetNumTevStages(1);
         screenRes = getScreenResolution();
         sinProd *= 2.0f;
-        texHeight = ((Texture*)texC)->height;
+        texHeight = texC->height;
         v = angle / (32.0f * (f32)texHeight);
         drawOrthoTexturedQuad(0, 0, (screenRes & 0xffff) << 2, (screenRes >> 16) << 2, 0.0f, v,
                            1.0f, v - sinProd / (f32)texHeight, -0x18f);

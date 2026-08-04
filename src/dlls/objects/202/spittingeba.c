@@ -91,7 +91,7 @@ void spittingEbaSpawnPollen(GameObject* obj, int state)
 {
     u32 loadLocked;
     int ref;
-    u16* setup;
+    ObjPlacement* setup;
     f32 spd;
     f32 t;
     f32 dx;
@@ -132,14 +132,14 @@ void spittingEbaSpawnPollen(GameObject* obj, int state)
         {
             velY = 0.0f;
         }
-        setup = (u16*)Obj_AllocObjectSetup(0x24, DUSTER_CHILD_OBJ_POLLEN_SPIT);
-        ((ObjPlacement*)setup)->posX = a[0];
-        ((ObjPlacement*)setup)->posY = a[1];
-        ((ObjPlacement*)setup)->posZ = a[2];
-        ((ObjPlacement*)setup)->color[0] = 1;
-        ((ObjPlacement*)setup)->color[1] = 1;
-        ((ObjPlacement*)setup)->color[2] = 0xff;
-        ((ObjPlacement*)setup)->color[3] = 0xff;
+        setup = Obj_AllocObjectSetup(0x24, DUSTER_CHILD_OBJ_POLLEN_SPIT);
+        setup->posX = a[0];
+        setup->posY = a[1];
+        setup->posZ = a[2];
+        setup->color[0] = 1;
+        setup->color[1] = 1;
+        setup->color[2] = 0xff;
+        setup->color[3] = 0xff;
         ref = (int)objSetupObject((ObjPlacement*)setup, 5, -1, -1, 0);
         if ((void*)ref != NULL)
         {

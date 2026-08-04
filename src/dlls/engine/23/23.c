@@ -982,21 +982,21 @@ int SaveGame_gplayDidTimeExpire(int id)
 
 void SaveGame_gplayAddTime(int id, f32 time)
 {
-    u8* base;
+    SaveGameData* base;
     u8* p;
     s16 count;
     int i;
     f32 total;
     if (id == -1)
         return;
-    base = gSaveGameData;
-    count = ((SaveGameData*)base)->timeEntryCount;
+    base = (SaveGameData*)gSaveGameData;
+    count = base->timeEntryCount;
     if (count == 0x100)
         return;
     total = 2e+01f * time;
-    total += ((SaveGameData*)base)->playTime;
+    total += base->playTime;
     i = 0;
-    p = base;
+    p = (u8*)base;
     for (; i < count; i++)
     {
         if (((SaveGameData*)p)->timeEntries[0].objId == id)
@@ -1005,7 +1005,7 @@ void SaveGame_gplayAddTime(int id, f32 time)
     }
     if (i == count)
     {
-        ((SaveGameData*)base)->timeEntryCount++;
+        base->timeEntryCount++;
     }
     *(int*)((int)gSaveGameData + 0x6f0 + (i << 3)) = id;
     *(f32*)((int)gSaveGameData + 0x6f4 + (i << 3)) = total;

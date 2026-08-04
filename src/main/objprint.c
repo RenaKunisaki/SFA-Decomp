@@ -396,7 +396,7 @@ ObjTextureRuntimeSlot* objFindTexture(GameObject* obj, int target, int unusedMat
 }
 
 void objGetJointWorldPosition(GameObject* obj, int key, f32* outPosition) {
-    int* table;
+    ObjDef* table;
     int i;
     int k;
     int n;
@@ -405,13 +405,13 @@ void objGetJointWorldPosition(GameObject* obj, int key, f32* outPosition) {
 
     table = (void*)(obj)->anim.modelInstance;
     i = 0;
-    n = (s32)(u32)((ObjDef*)table)->jointCount;
+    n = (s32)(u32)table->jointCount;
     for (k = 0; k < n; k++) {
-        if (key == (int)(*(u8**)&((ObjDef*)table)->jointData)[i]) {
-            joint = (*(u8**)&((ObjDef*)table)->jointData + i + OBJPRINT_ACTIVE_BANK_INDEX(obj))[1];
+        if (key == (int)(*(u8**)&table->jointData)[i]) {
+            joint = (*(u8**)&table->jointData + i + OBJPRINT_ACTIVE_BANK_INDEX(obj))[1];
             break;
         }
-        i = i + ((ObjDef*)table)->modelCount + 1;
+        i = i + table->modelCount + 1;
     }
     model = (ObjModelJointMatrix*)Obj_GetActiveModel(obj);
     model = ObjModel_GetJointMatrix((u8*)model, joint);
@@ -1280,15 +1280,15 @@ void staffUpdateSegmentTransforms(int staffArg, GameObject* objArg, int modelArg
     char* base;
     u8* model;
     int obj;
-    char* staff;
+    GameObject* staff;
 
-    staff = (char*)staffArg;
+    staff = (GameObject*)staffArg;
     obj = (int)objArg;
     model = (u8*)modelArg;
 
-    if (OBJPRINT_MODEL_INSTANCE(staff)->attachPointCount >= 2 && ((GameObject*)staff)->anim.classId == 0x2d) {
+    if (OBJPRINT_MODEL_INSTANCE(staff)->attachPointCount >= 2 && staff->anim.classId == 0x2d) {
         int off;
-        base = (char*)((GameObject*)staff)->extra;
+        base = (char*)staff->extra;
         i = 0;
         k = 1;
         off = 0x18;
@@ -1339,17 +1339,17 @@ void staffUpdateSegmentTransforms(int staffArg, GameObject* objArg, int modelArg
             va[0] = *(f32*)(r + 0x6c);
             va[1] = *(f32*)(r + 0x74);
             va[2] = *(f32*)(r + 0x7c);
-            (*(void (**)(int, int, Vec*))(*(int*)((GameObject*)staff)->anim.dll + 0x28))((int)staff, obj, &vb);
+            (*(void (**)(int, int, Vec*))(*(int*)staff->anim.dll + 0x28))((int)staff, obj, &vb);
             va[0] = va[0] - vb.x;
             va[1] = va[1] - vb.y;
             va[2] = va[2] - vb.z;
-            ((GameObject*)staff)->anim.rotX = getAngle(va[0], va[2]);
+            staff->anim.rotX = getAngle(va[0], va[2]);
             {
                 f32 dx = va[0] * va[0];
                 f32 dz = va[2] * va[2];
-                ((GameObject*)staff)->anim.rotY = (s16)(-getAngle(va[1], sqrtf(dx + dz)) + 0x4000);
+                staff->anim.rotY = (s16)(-getAngle(va[1], sqrtf(dx + dz)) + 0x4000);
             }
-            ((GameObject*)staff)->anim.rotZ = 0;
+            staff->anim.rotZ = 0;
         }
     }
 }
