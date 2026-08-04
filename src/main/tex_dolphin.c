@@ -506,10 +506,10 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Sha
     int byteBase;
 
     {
-        u8* texGlobals;
+        TexShadowRow* texGlobals;
         MapBlockBoundsRec* bounds[1];
 
-        texGlobals = gLightmapDrawQueue;
+        texGlobals = (TexShadowRow*)gLightmapDrawQueue;
         bitPos = state->bit;
         {
             int off = bitPos >> 3;
@@ -525,7 +525,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Sha
         {
             return;
         }
-        if (mapBlockBounds_ComputeAndTestPlanes(bounds[0], block, (FrustumPlane*)(texGlobals + 0x987c),
+        if (mapBlockBounds_ComputeAndTestPlanes(bounds[0], block, (FrustumPlane*)((u8*)texGlobals + 0x987c),
                                                 FRUSTUM_PLANE_COUNT, &minX, &minY, &minZ, &maxX, &maxY, &maxZ) == 0)
         {
             return;
@@ -539,7 +539,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Sha
 
                 lightmapQueueShadowRow(bounds[0], block, bounds[0]->selector);
                 shadowType = 5;
-                *(int*)((u8*)&((TexShadowRow*)texGlobals)->type +
+                *(int*)((u8*)&texGlobals->type +
                          gLightmapDrawQueueCount * sizeof(TexShadowRow)) = shadowType;
                 gLightmapDrawQueueCount = gLightmapDrawQueueCount + 1;
             }
@@ -549,7 +549,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Sha
 
                 lightmapQueueShadowRow(bounds[0], block, bounds[0]->selector);
                 shadowType = 4;
-                *(int*)((u8*)&((TexShadowRow*)texGlobals)->type +
+                *(int*)((u8*)&texGlobals->type +
                          gLightmapDrawQueueCount * sizeof(TexShadowRow)) = shadowType;
                 gLightmapDrawQueueCount = gLightmapDrawQueueCount + 1;
             }
@@ -638,7 +638,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Sha
                         else
                         {
                             u8 mirrorVisible = mapBlockBounds_ComputeAndTestPlanes(
-                                bounds[0], block, (FrustumPlane*)(texGlobals + 0x9818), FRUSTUM_PLANE_COUNT, &minX, &minY,
+                                bounds[0], block, (FrustumPlane*)((u8*)texGlobals + 0x9818), FRUSTUM_PLANE_COUNT, &minX, &minY,
                                 &minZ, &maxX, &maxY, &maxZ);
                             if ((mirrorVisible != 0 && (u8)visArg != 0) || (mirrorVisible == 0 && (u8)visArg == 0))
                             {
@@ -674,7 +674,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Sha
 
                 lightmapQueueShadowRow(bounds[0], block, 0x17);
                 shadowType = 6;
-                *(int*)((u8*)&((TexShadowRow*)texGlobals)->type +
+                *(int*)((u8*)&texGlobals->type +
                          gLightmapDrawQueueCount * sizeof(TexShadowRow)) = shadowType;
                 gLightmapDrawQueueCount = gLightmapDrawQueueCount + 1;
             }

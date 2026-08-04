@@ -1625,12 +1625,12 @@ void modelInitBones(f32 scale, void* model)
     int off;
     int boneOff;
     f32* sumP;
-    u8* hdr;
+    ModelFileHeader* hdr;
     ModelJointWork* tbl;
     int i;
     int parent;
     f32* src;
-    u8* bone;
+    ModelBone* bone;
     f32 zero;
     f32 sc;
     f32 w;
@@ -1641,16 +1641,16 @@ void modelInitBones(f32 scale, void* model)
     f32 v;
     f32 pv;
     f32 sums[152];
-    u8* m = model;
+    ObjModel* m = model;
 
     sc = scale;
-    hdr = *(u8**)m;
-    if ((!((ModelFileHeader*)hdr)->flags & 0x1000) || (((ModelFileHeader*)hdr)->jointCount == 0))
+    hdr = (ModelFileHeader*)*(u8**)m;
+    if ((!hdr->flags & 0x1000) || (hdr->jointCount == 0))
     {
         return;
     }
     {
-        if ((src = (f32*)((ModelFileHeader*)hdr)->unk18) != NULL && (tbl = ((ObjModel*)m)->jointWorkspace) != NULL)
+        if ((src = (f32*)hdr->unk18) != NULL && (tbl = m->jointWorkspace) != NULL)
         {
             zero = 0.0f;
             tbl->radii[0] = src[0] * sc;
@@ -1667,15 +1667,15 @@ void modelInitBones(f32 scale, void* model)
             off = 4;
             boneOff = 0x1c;
             sumP = &sums[1];
-            for (; i < ((ObjModel*)m)->file->jointCount; srcP++, off += 4, boneOff += 0x1c, sumP++, i++)
+            for (; i < m->file->jointCount; srcP++, off += 4, boneOff += 0x1c, sumP++, i++)
             {
                 *(f32*)((u8*)tbl->radii + off) = sc * *srcP;
                 *(f32*)((u8*)tbl->radiiSq + off) = *(f32*)((u8*)tbl->radii + off) * *(f32*)((u8*)tbl->radii + off);
-                bone = ((ModelFileHeader*)hdr)->jointData + boneOff;
-                parent = ((ModelBone*)bone)->parent;
-                vx = ((ModelBone*)bone)->head[0];
-                vy = ((ModelBone*)bone)->head[1];
-                vz = ((ModelBone*)bone)->head[2];
+                bone = (ModelBone*)(hdr->jointData + boneOff);
+                parent = bone->parent;
+                vx = bone->head[0];
+                vy = bone->head[1];
+                vz = bone->head[2];
                 len = sqrtf(vx * vx + vy * vy + vz * vz);
                 *(f32*)((u8*)tbl->boneLengths + off) = sc * len;
                 v = *(f32*)((u8*)tbl->boneLengths + off);
@@ -1683,7 +1683,7 @@ void modelInitBones(f32 scale, void* model)
                 {
                     *(f32*)((u8*)tbl->boneLengths + off) = 0.1f;
                 }
-                w = *(f32*)(((ModelFileHeader*)hdr)->unk1C + off);
+                w = *(f32*)(hdr->unk1C + off);
                 if (w >= 1.0f)
                 {
                     *(f32*)((u8*)tbl->boneLengths + off) *= w;
@@ -2429,9 +2429,9 @@ void Obj_UpdateModelBlendStates(void)
     int k;
     int i;
     int j;
-    u8* obj;
+    GameObject* obj;
     u8* child;
-    u8* m;
+    ObjModel* m;
     GameObject* c0;
     u8* bp;
     ObjModelState* modelState;
@@ -2439,7 +2439,7 @@ void Obj_UpdateModelBlendStates(void)
     i = 0;
     for (; i < gObjCount; i++)
     {
-        obj = (u8*)gObjList[i];
+        obj = gObjList[i];
         objAnim = (ObjAnimComponent*)obj;
         if (obj != 0 && objAnim->modelInstance != NULL)
         {
@@ -2451,31 +2451,31 @@ void Obj_UpdateModelBlendStates(void)
             k = 0;
             for (; k < objAnim->modelInstance->modelCount; k++)
             {
-                m = (u8*)objAnim->banks[k];
+                m = (ObjModel*)objAnim->banks[k];
                 if (m != 0)
                 {
-                    ((ObjModel*)m)->bufferFlags &= ~8;
-                    if (((ObjModel*)m)->file->morphTargetCount != 0)
+                    m->bufferFlags &= ~8;
+                    if (m->file->morphTargetCount != 0)
                     {
-                        ObjModel_AdvanceBlendChannels(m, timeDelta);
+                        ObjModel_AdvanceBlendChannels((u8*)m, timeDelta);
                     }
                 }
             }
             j = 0;
-            for (; j < ((GameObject*)obj)->childCount; j++)
+            for (; j < obj->childCount; j++)
             {
-                child = (u8*)((GameObject*)obj)->childObjs[j];
+                child = (u8*)obj->childObjs[j];
                 childAnim = (ObjAnimComponent*)child;
                 if (child != 0 && childAnim->modelInstance != NULL)
                 {
                     k = 0;
                     for (; k < childAnim->modelInstance->modelCount; k++)
                     {
-                        m = (u8*)childAnim->banks[k];
+                        m = (ObjModel*)childAnim->banks[k];
                         if (m != 0)
                         {
-                            ((ObjModel*)m)->bufferFlags &= ~8;
-                            if (((ObjModel*)m)->file->morphTargetCount != 0)
+                            m->bufferFlags &= ~8;
+                            if (m->file->morphTargetCount != 0)
                             {
                                 c0 = (GameObject*)(((GameObject*)child)->pendingParentObj);
                                 if (c0 != 0)
@@ -2488,7 +2488,7 @@ void Obj_UpdateModelBlendStates(void)
                                 }
                                 if (c0 == 0 || (bp != 0 && *(s8*)(bp + 0x56) == 0))
                                 {
-                                    ObjModel_AdvanceBlendChannels(m, timeDelta);
+                                    ObjModel_AdvanceBlendChannels((u8*)m, timeDelta);
                                 }
                             }
                         }
