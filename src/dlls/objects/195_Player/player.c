@@ -1407,7 +1407,7 @@ void staffToggle(GameObject* obj, int a)
     {
         if ((void*)gPlayerPathObject != NULL)
         {
-            *(s16*)((char*)gPlayerPathObject + 6) |= 0x4000;
+            ((GameObject*)gPlayerPathObject)->anim.flags |= 0x4000;
             if ((void*)gPlayerPathObject != NULL && ((PlayerState*)inner)->flags3F4.b40)
             {
                 inner->staffActionRequest = 1;
@@ -1431,7 +1431,7 @@ void staffToggle(GameObject* obj, int a)
                 inner->staffActionRequest = 4;
                 ((PlayerState*)inner)->flags3F4.b08 = 1;
             }
-            *(s16*)((char*)gPlayerPathObject + 6) &= ~0x4000;
+            ((GameObject*)gPlayerPathObject)->anim.flags &= ~0x4000;
             mainSetBits(GAMEBIT_ITEM_SuperQuake_Disabled, 0);
             mainSetBits(GAMEBIT_ITEM_Spell0961_Disabled, 0);
             mainSetBits(GAMEBIT_ITEM_SharpClawDisguise_Disabled, 0);
@@ -1524,7 +1524,7 @@ void playerGetFxOffsets(GameObject* obj, f32** outFxOffsets)
     {
         return;
     }
-    *outFxOffsets = &inner->fxOffsetX;
+    *outFxOffsets = inner->footPoints[0];
 }
 
 f32 playerGetAnimSpeed(GameObject* obj)
@@ -5642,7 +5642,7 @@ int playerState1F(GameObject* obj, int state, f32 fv)
     {
         if (ObjHits_GetPriorityHit(obj, &hit, 0, 0))
         {
-            inner->targetYaw = (s16)getAngle(-*(f32*)((char*)hit + 0x24), -*(f32*)((char*)hit + 0x2c));
+            inner->targetYaw = (s16)getAngle(-((GameObject*)hit)->anim.velocityX, -((GameObject*)hit)->anim.velocityZ);
             inner->yaw = inner->targetYaw;
         }
         ObjAnim_SetCurrentMove((int)obj, 0x407, 0.0f, 0);
@@ -5995,7 +5995,7 @@ int playerState1D(int obj, PlayerState* state, f32 fv)
                 a = inner->stickTargetX;
                 b = inner->stickTargetY;
             }
-            res = (*(u8 (*)(int, int, int, f32, f32))(*(int*)(*(int*)(*(int*)((char*)sub + 0x68)) + 0x20)))(
+            res = (*(u8 (*)(int, int, int, f32, f32))(*(int*)((char*)((GameObject*)sub)->anim.dll[0] + 0x20)))(
                 sub, obj, direction, a, b);
             if (res == 1)
             {
@@ -6654,7 +6654,7 @@ int playerStateOnBike(GameObject* obj, int state)
     }
     if ((inner->moveSequenceFlags & 0x4) != 0)
     {
-        ObjAnim_SetMoveProgress(&obj->anim, *(f32*)((char*)sub + 0x98));
+        ObjAnim_SetMoveProgress(&obj->anim, ((GameObject*)sub)->anim.currentMoveProgress);
         ((PlayerState*)state)->baddie.moveSpeed = 0.0f;
     }
     else
@@ -12304,17 +12304,17 @@ void playerFireCloudRunnerProjectile(GameObject* obj, int state, f32 aimInputZ, 
         setup->color[1] = 1;
         setup->color[2] = 0xff;
         setup->color[3] = 0xff;
-        setup->posX = *(f32*)((char*)slot + 0xc);
-        setup->posY = *(f32*)((char*)slot + 0x10);
-        setup->posZ = *(f32*)((char*)slot + 0x14);
+        setup->posX = ((GameObject*)slot)->anim.localPosX;
+        setup->posY = ((GameObject*)slot)->anim.localPosY;
+        setup->posZ = ((GameObject*)slot)->anim.localPosZ;
         Sfx_PlayFromObject(obj, SFXTRIG_staff_rocket_hitdirt);
         o = objSetupObject(setup, 5, -1, -1, NULL);
         if (o != NULL)
         {
-            *(s16*)((char*)o + 6) |= 0x2000;
+            ((GameObject*)o)->anim.flags |= 0x2000;
             res = getScreenResolution();
             halfH = res >> 17;
-            *(s16*)((char*)o + 0) = *(s16*)((char*)slot + 0);
+            ((GameObject*)o)->anim.rotX = ((GameObject*)slot)->anim.rotX;
             t = Camera_GetFovY();
             t *= 91.022f;
             fov = (3.1415927f * t) / 32768.0f;
@@ -12331,19 +12331,19 @@ void playerFireCloudRunnerProjectile(GameObject* obj, int state, f32 aimInputZ, 
             v[1] = ycomp / len;
             v[2] = 100.0f / len;
             Matrix_TransformVector(Camera_GetWorldMatrix(), v, v);
-            *(f32*)((char*)o + 0x24) = v[0] * (scale = -40.0f);
-            *(f32*)((char*)o + 0x28) = v[1] * scale;
-            *(f32*)((char*)o + 0x2c) = v[2] * scale;
+            ((GameObject*)o)->anim.velocityX = v[0] * (scale = -40.0f);
+            ((GameObject*)o)->anim.velocityY = v[1] * scale;
+            ((GameObject*)o)->anim.velocityZ = v[2] * scale;
             mix = 2.0f;
-            *(f32*)((char*)o + 0xc) = *(f32*)((char*)o + 0x18) =
-                mix * *(f32*)((char*)o + 0x24) + *(f32*)((char*)slot + 0xc);
-            *(f32*)((char*)o + 0x10) = *(f32*)((char*)o + 0x1c) =
-                mix * *(f32*)((char*)o + 0x28) + *(f32*)((char*)slot + 0x10);
-            *(f32*)((char*)o + 0x14) = *(f32*)((char*)o + 0x20) =
-                mix * *(f32*)((char*)o + 0x2c) + *(f32*)((char*)slot + 0x14);
-            *(s16*)((char*)o + 2) = *(s16*)((char*)slot + 2) / 2;
-            *(s16*)((char*)o + 0) = -*(s16*)((char*)slot + 0);
-            *(int*)((char*)o + 0xf4) = 0x64;
+            ((GameObject*)o)->anim.localPosX = ((GameObject*)o)->anim.worldPosX =
+                mix * ((GameObject*)o)->anim.velocityX + ((GameObject*)slot)->anim.localPosX;
+            ((GameObject*)o)->anim.localPosY = ((GameObject*)o)->anim.worldPosY =
+                mix * ((GameObject*)o)->anim.velocityY + ((GameObject*)slot)->anim.localPosY;
+            ((GameObject*)o)->anim.localPosZ = ((GameObject*)o)->anim.worldPosZ =
+                mix * ((GameObject*)o)->anim.velocityZ + ((GameObject*)slot)->anim.localPosZ;
+            ((GameObject*)o)->anim.rotY = ((GameObject*)slot)->anim.rotY / 2;
+            ((GameObject*)o)->anim.rotX = -((GameObject*)slot)->anim.rotX;
+            ((GameObject*)o)->userData1 = 0x64;
         }
     }
 }
@@ -12415,8 +12415,8 @@ void staffShootFireball(GameObject* obj, int state, f32 unused)
         setup->color[3] = 0xff;
         if (((PlayerState*)state)->baddie.targetObj != NULL)
         {
-            ObjPath_GetPointWorldPosition(gPlayerPathObject, 0, (f32*)((char*)setup + 0x8), (f32*)((char*)setup + 0xc),
-                                          (f32*)((char*)setup + 0x10), 0);
+            ObjPath_GetPointWorldPosition(gPlayerPathObject, 0, &setup->posX, &setup->posY,
+                                          &setup->posZ, 0);
         }
         else
         {
@@ -13318,8 +13318,8 @@ int playerCheckCommonTransitions(int obj, int state, int inner, f32 fv)
             pos.y = 0.0f;
             pos.z = 0.0f;
             setMatrixFromObjectPos(mtx, &pos);
-            Matrix_TransformPoint(mtx, a, 0.0f, -b, (f32*)((char*)inner + 0x4c8), &dummy,
-                                  (f32*)((char*)inner + 0x4cc));
+            Matrix_TransformPoint(mtx, a, 0.0f, -b, &((PlayerState*)inner)->smoothVelX, &dummy,
+                                  &((PlayerState*)inner)->smoothVelZ);
             ((PlayerState*)inner)->flags3F0.b80 = 0;
             ((PlayerState*)inner)->flags3F0.b40 = 0;
             ((PlayerState*)inner)->flags3F0.b10 = 0;
@@ -14521,8 +14521,8 @@ void staffAnimate(int obj, void* state, f32 dt)
             {
                 Object_ObjAnimSetMove(obj, ((GameObject*)obj)->anim.currentMove,
                                       ((GameObject*)obj)->anim.currentMoveProgress, 0);
-                p = *(void**)((char*)state + 0x4b8);
-                if (p != NULL && (*(s16*)((char*)p + 0x44) == 0x1c || *(s16*)((char*)p + 0x44) == 0x2a))
+                p = ((PlayerState*)state)->cameraTargetObject;
+                if (p != NULL && (((GameObject*)p)->anim.classId == 0x1c || ((GameObject*)p)->anim.classId == 0x2a))
                 {
                     Object_ObjAnimSetMove(obj, 0x82, 0.0f, 0);
                 }
@@ -14552,8 +14552,8 @@ void staffAnimate(int obj, void* state, f32 dt)
             {
                 Object_ObjAnimSetMove(obj, ((GameObject*)obj)->anim.currentMove,
                                       ((GameObject*)obj)->anim.currentMoveProgress, 0);
-                p = *(void**)((char*)state + 0x4b8);
-                if (p != NULL && (*(s16*)((char*)p + 0x44) == 0x1c || *(s16*)((char*)p + 0x44) == 0x2a))
+                p = ((PlayerState*)state)->cameraTargetObject;
+                if (p != NULL && (((GameObject*)p)->anim.classId == 0x1c || ((GameObject*)p)->anim.classId == 0x2a))
                 {
                     Object_ObjAnimSetMove(obj, 0x82, 0.99f, 0);
                 }
@@ -17718,18 +17718,18 @@ void playerRender(int obj, int a, int b, int c, int d, int flag)
                     vel[0] = 0.05f * ((GameObject*)obj)->anim.velocityX;
                     vel[1] = 0.05f * ((GameObject*)obj)->anim.velocityY;
                     vel[2] = 0.05f * ((GameObject*)obj)->anim.velocityZ;
-                    pfx.x = 8.0f * ((GameObject*)obj)->anim.velocityX + ((PlayerState*)inner)->fxOffsetX;
-                    pfx.y = 8.0f * ((GameObject*)obj)->anim.velocityY + ((PlayerState*)inner)->fxOffsetY;
-                    pfx.z = 8.0f * ((GameObject*)obj)->anim.velocityZ + ((PlayerState*)inner)->fxOffsetZ;
+                    pfx.x = 8.0f * ((GameObject*)obj)->anim.velocityX + ((PlayerState*)inner)->footPoints[0][0];
+                    pfx.y = 8.0f * ((GameObject*)obj)->anim.velocityY + ((PlayerState*)inner)->footPoints[0][1];
+                    pfx.z = 8.0f * ((GameObject*)obj)->anim.velocityZ + ((PlayerState*)inner)->footPoints[0][2];
                     pfx.scale = 0.7f;
                     pfx.mode = gPlayerSurfacePfxModeTable[((PlayerState*)inner)->surfaceType];
                     for (n = 5; n != 0; n--)
                     {
                         (*gPartfxInterface)->spawnObject((void*)obj, 0x7e6, &pfx, 0x200001, -1, vel);
                     }
-                    pfx.x = 8.0f * ((GameObject*)obj)->anim.velocityX + ((PlayerState*)inner)->fxOffset2X;
-                    pfx.y = 8.0f * ((GameObject*)obj)->anim.velocityY + ((PlayerState*)inner)->fxOffset2Y;
-                    pfx.z = 8.0f * ((GameObject*)obj)->anim.velocityZ + ((PlayerState*)inner)->fxOffset2Z;
+                    pfx.x = 8.0f * ((GameObject*)obj)->anim.velocityX + ((PlayerState*)inner)->footPoints[1][0];
+                    pfx.y = 8.0f * ((GameObject*)obj)->anim.velocityY + ((PlayerState*)inner)->footPoints[1][1];
+                    pfx.z = 8.0f * ((GameObject*)obj)->anim.velocityZ + ((PlayerState*)inner)->footPoints[1][2];
                     pfx.scale = 0.7f;
                     pfx.mode = gPlayerSurfacePfxModeTable[((PlayerState*)inner)->surfaceType];
                     for (n = 5; n != 0; n--)

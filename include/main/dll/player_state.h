@@ -76,12 +76,7 @@ typedef struct PlayerState {
     int playerStatus; /* PlayerStatus*; kept integer while raw decomp arithmetic remains */
     u32 flags360; /* player state flag word; bits 2/0x2000/0x800000/0x2000000... */
     u8 pad364[0x3C4 - 0x364];
-    f32 fxOffsetX;
-    f32 fxOffsetY;
-    f32 fxOffsetZ;
-    f32 fxOffset2X;
-    f32 fxOffset2Y;
-    f32 fxOffset2Z;
+    f32 footPoints[2][3];
     int moveSlots; /* MoveSlot/HitDesc array base; indexed by moveSlotIndex, stride 0xB0 */
     int pendingParentObj;
     u8 pad3E4[0x3E8 - 0x3E4];
@@ -454,6 +449,7 @@ STATIC_ASSERT(offsetof(PlayerStatus, money) == 0x8);
 STATIC_ASSERT(offsetof(PlayerState, playerStatus) == 0x35C);
 STATIC_ASSERT(offsetof(PlayerState, targetYaw) == 0x478);
 STATIC_ASSERT(offsetof(PlayerState, heldObj) == 0x7F8);
+STATIC_ASSERT(offsetof(PlayerState, footPoints) == 0x3C4);
 STATIC_ASSERT(offsetof(PlayerState, pendingFxFlags) == 0x8D8);
 
 #endif /* MAIN_DLL_PLAYER_STATE_H_ */
