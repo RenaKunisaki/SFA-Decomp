@@ -401,7 +401,7 @@ void objGetJointWorldPosition(GameObject* obj, int key, f32* outPosition) {
     int k;
     int n;
     int joint;
-    int model;
+    ObjModelJointMatrix* model;
 
     table = (void*)(obj)->anim.modelInstance;
     i = 0;
@@ -413,11 +413,11 @@ void objGetJointWorldPosition(GameObject* obj, int key, f32* outPosition) {
         }
         i = i + ((ObjDef*)table)->modelCount + 1;
     }
-    model = (int)Obj_GetActiveModel(obj);
-    model = (int)ObjModel_GetJointMatrix((u8*)model, joint);
-    outPosition[0] = ((ObjModelJointMatrix*)model)->translationX;
-    outPosition[1] = ((ObjModelJointMatrix*)model)->translationY;
-    outPosition[2] = ((ObjModelJointMatrix*)model)->translationZ;
+    model = (ObjModelJointMatrix*)Obj_GetActiveModel(obj);
+    model = ObjModel_GetJointMatrix((u8*)model, joint);
+    outPosition[0] = model->translationX;
+    outPosition[1] = model->translationY;
+    outPosition[2] = model->translationZ;
     outPosition[0] += playerMapOffsetX;
     outPosition[2] += playerMapOffsetZ;
 }

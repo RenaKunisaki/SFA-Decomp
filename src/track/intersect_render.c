@@ -1077,7 +1077,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
 {
     Mtx mtx_54;
     Mtx mtx_24;
-    void* renderOp;
+    Shader* renderOp;
     void* tex;
     void* model;
     GXColor temp;
@@ -1143,7 +1143,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
     GXSetNumTexGens(3);
     GXSetNumTevStages(2);
 
-    alpha_byte = (((Shader*)renderOp)->alpha * ((u8*)obj_a)[0x37]) >> 8;
+    alpha_byte = (renderOp->alpha * ((u8*)obj_a)[0x37]) >> 8;
     temp.a = alpha_byte;
     GXSetTevKColor(GX_KCOLOR0, temp);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
@@ -1159,8 +1159,8 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
     {
         u8 zCompLoc = 1;
         int ref1;
-        if (((u8*)obj_a)[0x37] < 0xff || (((Shader*)renderOp)->flags & 0x40000000) != 0 ||
-            ((Shader*)renderOp)->alpha < 0xff)
+        if (((u8*)obj_a)[0x37] < 0xff || (renderOp->flags & 0x40000000) != 0 ||
+            renderOp->alpha < 0xff)
         {
             GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
             if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
@@ -1208,7 +1208,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
         }
         else
         {
-            if ((((Shader*)renderOp)->flags & 0x400) != 0)
+            if ((renderOp->flags & 0x400) != 0)
             {
                 GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
                 if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
@@ -1267,7 +1267,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
                 ((GXSetAlphaCompareIntFn)GXSetAlphaCompare)(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
             }
         }
-        if ((((Shader*)renderOp)->flags & 0x400) != 0)
+        if ((renderOp->flags & 0x400) != 0)
         {
             zCompLoc = 0;
         }

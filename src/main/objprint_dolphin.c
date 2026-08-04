@@ -2320,7 +2320,7 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
     int* am;
     f32* vm;
     u8 did;
-    int* op;
+    Shader* op;
     u32 sh;
 
     am = (int*)Obj_GetActiveModel((GameObject*)obj);
@@ -2418,14 +2418,14 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
         GXLoadPosMtxImm((const f32 (*)[4])cm, gObjGxPosMtxIdTable[9]);
     }
     {
-        u8* o;
-        u8* nxt;
-        o = (u8*)obj;
-        while ((nxt = (u8*)((GameObject*)o)->ownerObj) != NULL)
+        GameObject* o;
+        GameObject* nxt;
+        o = (GameObject*)obj;
+        while ((nxt = o->ownerObj) != NULL)
         {
             o = nxt;
         }
-        sh = ((u8*)((GameObject*)o)->anim.modelState->shadowCastSlot)[0x65];
+        sh = ((u8*)o->anim.modelState->shadowCastSlot)[0x65];
         if (sh == 0xff)
         {
             GXSetTevColor(GX_TEVREG2, *(GXColor*)&lbl_803DB468);
@@ -2509,11 +2509,11 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
                 bs.pos = pos + 1;
                 GXSetVtxDesc(GX_VA_POS, (((int)(w >> (pos & 7)) & 1) ? GX_INDEX16 : GX_INDEX8));
             }
-            if (((Shader*)op)->vtxAttrFlags & 1)
+            if (op->vtxAttrFlags & 1)
             {
                 bs.pos += 1;
             }
-            if (((Shader*)op)->vtxAttrFlags & 2)
+            if (op->vtxAttrFlags & 2)
             {
                 bs.pos += 1;
             }
@@ -2529,7 +2529,7 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
             w |= p[1] << 8;
             w |= p[2] << 16;
             bs.pos = pos + 6;
-            op = (int*)ObjModel_GetRenderOp((ModelFileHeader*)m, (w >> (pos & 7)) & 0x3f);
+            op = ObjModel_GetRenderOp((ModelFileHeader*)m, (w >> (pos & 7)) & 0x3f);
         }
         break;
         case 2:
@@ -2818,14 +2818,14 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
         GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
         {
             u32 sh;
-            u8* o;
-            u8* nxt;
-            o = (u8*)obj;
-            while ((nxt = (u8*)((GameObject*)o)->ownerObj) != NULL)
+            GameObject* o;
+            GameObject* nxt;
+            o = (GameObject*)obj;
+            while ((nxt = o->ownerObj) != NULL)
             {
                 o = nxt;
             }
-            sh = ((u8*)((GameObject*)o)->anim.modelState->shadowCastSlot)[0x65];
+            sh = ((u8*)o->anim.modelState->shadowCastSlot)[0x65];
             if (sh == 0xff)
             {
                 GXSetTevColor(GX_TEVREG2, *(GXColor*)&lbl_803DB468);

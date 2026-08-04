@@ -371,7 +371,7 @@ SkyDllInterface sky_funcs = {
 void skySetSlotFlag80(int flags, u8 mode)
 {
     u8* env;
-    u8* sky;
+    SkyState* sky;
     int i;
     u8* entry;
 
@@ -391,9 +391,9 @@ void skySetSlotFlag80(int flags, u8 mode)
             }
         }
     }
-    sky = gSkyState;
-    ((SkyState*)sky)->lights[2].flags.unused80 =
-        ((SkyState*)sky)->lights[((SkyState*)sky)->currentLightIndex].flags.unused80;
+    sky = (SkyState*)gSkyState;
+    sky->lights[2].flags.unused80 =
+        sky->lights[sky->currentLightIndex].flags.unused80;
     env = saveGameGetEnvState();
     if (getSaveGameLoadStatus() == 0)
     {
@@ -1334,7 +1334,7 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
     f32 moonT;
     SkyRotQ q2;
     u8 vis;
-    u8* model;
+    ObjModel* model;
     SkyState* sky;
 
     cam = Camera_GetCurrent();
@@ -1523,8 +1523,8 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
             }
             if (vis == 0 && (u8)visible != 0)
             {
-                model = (u8*)Obj_GetActiveModel(gSkySunObject);
-                ((ObjModel*)model)->bufferFlags &= ~8;
+                model = Obj_GetActiveModel(gSkySunObject);
+                model->bufferFlags &= ~8;
                 objRender(a, b, c, d, gSkySunObject, 1);
             }
         }
@@ -1540,8 +1540,8 @@ void renderSunAndMoon(int a, int b, int c, int d, int visible)
             }
             if (vis == 0 && (u8)visible != 0)
             {
-                model = (u8*)Obj_GetActiveModel(gSkyMoonObject);
-                ((ObjModel*)model)->bufferFlags &= ~8;
+                model = Obj_GetActiveModel(gSkyMoonObject);
+                model->bufferFlags &= ~8;
                 objRender(a, b, c, d, gSkyMoonObject, 1);
             }
         }
@@ -1999,7 +1999,7 @@ void skyLoadLights(void)
 
 void skyResetState(void)
 {
-    u8* tex0;
+    Texture* tex0;
     int i;
     int j;
 
@@ -2043,9 +2043,9 @@ void skyResetState(void)
     ((SkyState*)gSkyState)->handle = textureLoadAsset(((SkyState*)gSkyState)->skyTextureIds[1]);
     ((SkyState*)gSkyState)->textureId0 = 0xc38;
     ((SkyState*)gSkyState)->textureId1 = 0xc38;
-    tex0 = *(u8**)gSkyState;
-    ((SkyState*)gSkyState)->texture0 = textureAlloc(((Texture*)tex0)->width, ((Texture*)tex0)->height, 6, 0, 0, 1, 0, 1, 1);
-    ((SkyState*)gSkyState)->texture1 = textureAlloc(((Texture*)tex0)->width, ((Texture*)tex0)->height, 6, 0, 0, 1, 0, 1, 1);
+    tex0 = (Texture*)*(u8**)gSkyState;
+    ((SkyState*)gSkyState)->texture0 = textureAlloc(tex0->width, tex0->height, 6, 0, 0, 1, 0, 1, 1);
+    ((SkyState*)gSkyState)->texture1 = textureAlloc(tex0->width, tex0->height, 6, 0, 0, 1, 0, 1, 1);
     for (i = 0; i < 3; i++)
     {
         for (j = 0; j < 3; j++)

@@ -1126,7 +1126,7 @@ f32 dll_19_func05(GameObject* obj, f32 px, f32 pz, f32 range, GameObject* mover)
  * target, updating the wide-turn flag. */
 void dll_19_getTargetGeometry(GameObject* obj, GameObject* target, int div, u16* outYaw, u16* outDelta, u16* outDist)
 {
-    char* st = (obj)->extra;
+    Dll19State* st = (obj)->extra;
     f32 d[3];
     f32* dp = d;
     s16* ovr;
@@ -1167,11 +1167,11 @@ void dll_19_getTargetGeometry(GameObject* obj, GameObject* target, int div, u16*
         *outDelta = delta;
         if ((u16)delta < 0x31c4 || (u16)delta > 0xce3b)
         {
-            ((Dll19State*)st)->flags &= ~DLL19_FLAG_YAW_ALIGNED;
+            st->flags &= ~DLL19_FLAG_YAW_ALIGNED;
         }
         else
         {
-            ((Dll19State*)st)->flags |= DLL19_FLAG_YAW_ALIGNED;
+            st->flags |= DLL19_FLAG_YAW_ALIGNED;
         }
         *outYaw = (u16)delta / (0x10000 / (u8)div);
         *outDist = sqrtf(dp[2] * dp[2] + (dp[0] * dp[0] + dp[1] * dp[1]));
