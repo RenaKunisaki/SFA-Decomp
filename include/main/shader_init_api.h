@@ -6,6 +6,6 @@
 typedef struct GameObject GameObject;
 typedef struct ModelRenderOpTextureRefs ModelRenderOpTextureRefs;
 
-void shaderInit(u8* definition, ModelRenderOpTextureRefs* textures, GameObject* object, int flags);
+void shaderInit(u8* definition, ModelRenderOpTextureRefs* textures, GameObject* object, int shaderFlags);
 
 #endif /* MAIN_SHADER_INIT_API_H_ */

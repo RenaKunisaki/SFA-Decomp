@@ -26,12 +26,15 @@ STATIC_ASSERT(offsetof(ShaderLayer, scrollMtx) == 0x06);
 
 typedef struct Shader
 {
-    u8 pad00[0x0C];
+    u8 pad00[0x08];
+    void* reg1Texture;
     u8 alpha;
-    u8 pad0D[0x18 - 0x0D];
+    u8 pad0D[0x14 - 0x0D];
+    void* reg2Texture;
     s32 textureId;
     u32 unk1C;
-    u8 pad20[0x22 - 0x20];
+    u8 reg2TexSlot;
+    u8 pad21;
     u8 reg2Alpha;
     u8 pad23;
     ShaderLayer layers[2];
@@ -48,9 +51,12 @@ typedef struct Shader
 } Shader;
 
 STATIC_ASSERT(sizeof(Shader) == 0x44);
+STATIC_ASSERT(offsetof(Shader, reg1Texture) == 0x08);
 STATIC_ASSERT(offsetof(Shader, alpha) == 0x0C);
+STATIC_ASSERT(offsetof(Shader, reg2Texture) == 0x14);
 STATIC_ASSERT(offsetof(Shader, textureId) == 0x18);
 STATIC_ASSERT(offsetof(Shader, unk1C) == 0x1C);
+STATIC_ASSERT(offsetof(Shader, reg2TexSlot) == 0x20);
 STATIC_ASSERT(offsetof(Shader, reg2Alpha) == 0x22);
 STATIC_ASSERT(offsetof(Shader, layers) == 0x24);
 STATIC_ASSERT(offsetof(Shader, auxTextureIndex) == 0x34);
