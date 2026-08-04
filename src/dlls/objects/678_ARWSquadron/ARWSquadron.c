@@ -5,6 +5,7 @@
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/maketex_timer_api.h"
+#include "main/objhits.h"
 #include "main/obj_path.h"
 #include "main/vecmath.h"
 #include "main/dll/dll_0282_barrelgener.h"
@@ -282,7 +283,7 @@ void arwsquadron_spawnProjectile(GameObject* obj, int pathIdx, int angle, int fl
 void arwsquadron_handleDamage(GameObject* obj, ArwSquadronState* squad)
 {
     SquadCmdFlags* flags = &squad->flags.cmd;
-    int hitObj;
+    GameObject* hitObj;
     u32 hitVol;
     GameObject* arwing;
 

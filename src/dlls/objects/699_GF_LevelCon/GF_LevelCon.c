@@ -15,6 +15,7 @@
 #include "main/map_load.h"
 #include "main/model_engine.h"
 #include "main/obj_list.h"
+#include "main/pi_dolphin_api.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/screen_transition.h"
 #include "main/sky_api.h"

@@ -12,6 +12,7 @@
 #include "main/mapEventTypes.h"
 #include "main/dll/DF/dll_022D_dfpseqpoint.h"
 #include "main/objseq.h"
+#include "main/pi_dolphin_api.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
