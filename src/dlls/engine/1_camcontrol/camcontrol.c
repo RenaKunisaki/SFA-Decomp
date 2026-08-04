@@ -449,7 +449,7 @@ GameObject* camcontrol_findBestTarget(CamcontrolCameraState* cameraState, ObjAni
     int count;
     GameObject* player;
     u8 canTarget;
-    ObjHitVolumeRuntimeBounds* data;
+    ObjHitVolumeRuntimeBounds* bounds;
     ObjHitVolumeRuntimeBounds* entry;
     ObjDefHitVolume* row;
     GameObject* best;
@@ -471,15 +471,15 @@ GameObject* camcontrol_findBestTarget(CamcontrolCameraState* cameraState, ObjAni
     ptr += idx;
     for (; idx < objCount; ptr++, idx++) {
         obj = *ptr;
-        data = obj->anim.hitVolumeBounds;
-        accept = camcontrol_isTargetCandidate(obj, data);
+        bounds = obj->anim.hitVolumeBounds;
+        accept = camcontrol_isTargetCandidate(obj, bounds);
         if (accept == 0) {
             continue;
         }
         if ((int)obj->anim.modelInstance->hitVolumes[obj->hitVolumeIndex].priorityUnsigned < bestPri) {
             continue;
         }
-        if ((obj->anim.resetHitboxFlags & 0x80) || (data[obj->hitVolumeIndex].flags & 0x80)) {
+        if ((obj->anim.resetHitboxFlags & 0x80) || (bounds[obj->hitVolumeIndex].flags & 0x80)) {
             dy = 0.0f;
         } else {
             dy = focus->worldPosY - obj->anim.hitVolumeTransforms[obj->hitVolumeIndex].centerY;
@@ -493,7 +493,7 @@ GameObject* camcontrol_findBestTarget(CamcontrolCameraState* cameraState, ObjAni
         dx = focus->worldPosX - obj->anim.hitVolumeTransforms[obj->hitVolumeIndex].centerX;
         dz = focus->worldPosZ - obj->anim.hitVolumeTransforms[obj->hitVolumeIndex].centerZ;
         distsq = dx * dx + dz * dz;
-        entry = &data[obj->hitVolumeIndex];
+        entry = &bounds[obj->hitVolumeIndex];
         range = (f32)(int)(entry->bounds[2] << 2);
         if (!(distsq < range * range)) {
             continue;
