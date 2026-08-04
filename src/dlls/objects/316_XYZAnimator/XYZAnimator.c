@@ -68,7 +68,7 @@ void XyzAnimator_captureGeometry(XyzAnimatorPlacement* placement, XyzAnimatorSta
             triangle = *mapEntry;
             vertexDataOffset[0] = triangleDataOffset[0];
             for (; triangle < triangleEnd; triangle++) {
-                mapEntry = mapBlockGetPolygon((int*)blockAddress, triangle);
+                mapEntry = mapBlockGetPolygon(blockAddress, triangle);
                 dataOffset = vertexDataOffset[0];
                 for (index = 3; index != 0; index--) {
                     vertex = (Vec3s*)(blockData->vertices + (u32)*mapEntry * 6);
@@ -168,7 +168,7 @@ void XyzAnimator_applyToMapBlock(XyzAnimatorPlacement* placement, XyzAnimatorSta
             vertexIndex = vertexOffset[0];
             scale = 8.0f;
             for (; triangle < triangleEnd; triangle++) {
-                mapEntry = mapBlockGetPolygon((int*)blockAddress, triangle);
+                mapEntry = mapBlockGetPolygon(blockAddress, triangle);
                 dataOffset = vertexIndex;
                 for (index = 3; index != 0; index--) {
                     vertex = (Vec3s*)(blockData->vertices + (u32)*mapEntry * 6);

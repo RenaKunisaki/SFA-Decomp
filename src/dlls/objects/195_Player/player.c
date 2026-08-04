@@ -16175,7 +16175,7 @@ void playerItemGetAnimFn(int obj, int inner, int state)
     int param = 0;
     int msg;
 
-    while (ObjMsg_Pop((void*)obj, (u32*)&msg, (u32*)&p, (u32*)&param) != 0)
+    while (ObjMsg_Pop((GameObject*)obj, (u32*)&msg, (u32*)&p, (u32*)&param) != 0)
     {
         switch (msg)
         {
@@ -18331,7 +18331,7 @@ void objLoadPlayerFromSave(int obj)
     objAddObjectType(obj, 0);
     objAddObjectType(obj, PLAYER_OBJGROUP);
     objSetSlot((GameObject*)obj, 0x3c);
-    ObjMsg_AllocQueue((void*)obj, 0x14);
+    ObjMsg_AllocQueue((GameObject*)obj, 0x14);
     ((GameObject*)obj)->animEventCallback = (void*)player_SeqFn;
     ((GameObject*)obj)->anim.placementData = 0;
     inner->heldObj = 0;

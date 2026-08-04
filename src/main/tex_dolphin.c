@@ -1456,14 +1456,14 @@ int mapBlockCountTrianglesByType(MapBlockData* block, int type)
     return total;
 }
 
-void* mapBlockGetPolygon(int* obj, int idx)
+void* mapBlockGetPolygon(MapBlockData* obj, int idx)
 {
-    return (char*)((int**)obj)[0x4c / 4] + idx * 8;
+    return (char*)obj->gcPolygons + idx * 8;
 }
 
-void* mapBlockGetPolygonGroup(void* obj, int idx)
+void* mapBlockGetPolygonGroup(MapBlockData* obj, int idx)
 {
-    return (char*)((int**)obj)[0x50 / 4] + idx * 0x14;
+    return (char*)obj->polygonGroups + idx * 0x14;
 }
 
 MapBlockBoundsRec* mapBlockGetDisplayListBounds(MapBlockData* obj, int idx)

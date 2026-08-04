@@ -150,7 +150,7 @@ void SB_ShipHead_update(GameObject* obj) {
             }
         }
     }
-    if ((int)ObjMsg_Pop((void*)obj, (u32*)&message, (u32*)messageSender, (u32*)&messageParam) != 0) {
+    if ((int)ObjMsg_Pop(obj, (u32*)&message, (u32*)messageSender, (u32*)&messageParam) != 0) {
         switch (message) {
         case 0x130001:
             break;
@@ -241,7 +241,7 @@ void SB_ShipHead_init(GameObject* obj) {
     SBShipHeadState* state = obj->extra;
 
     objAddObjectType((u32)obj, SB_SHIP_HEAD_OBJECT_GROUP);
-    ObjMsg_AllocQueue((void*)obj, 10);
+    ObjMsg_AllocQueue(obj, 10);
     state->health = 4;
     state->swayB += 1.0f;
     state->swayA += 10.0f;

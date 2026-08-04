@@ -421,13 +421,13 @@ void objTypeInit(void) {
     return;
 }
 
-int ObjMsg_Peek(void* obj, u32* outMessage, u32* outSender, u32* outParam) {
+int ObjMsg_Peek(GameObject* obj, u32* outMessage, u32* outSender, u32* outParam) {
     ObjMsgQueue* queue;
 
     if (obj == 0x0) {
         return 0;
     }
-    queue = *(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET);
+    queue = obj->msgQueue;
     if ((queue != (ObjMsgQueue*)0x0) && (queue->count != 0)) {
         if (outMessage != 0x0) {
             *outMessage = queue->entries[0].message;
@@ -443,7 +443,7 @@ int ObjMsg_Peek(void* obj, u32* outMessage, u32* outSender, u32* outParam) {
     return 0;
 }
 
-int ObjMsg_Pop(void* obj, u32* outMessage, u32* outSender, u32* outParam) {
+int ObjMsg_Pop(GameObject* obj, u32* outMessage, u32* outSender, u32* outParam) {
     ObjMsgQueue* queue;
     ObjMsgQueueCursor* slot;
     u32 i;
@@ -451,7 +451,7 @@ int ObjMsg_Pop(void* obj, u32* outMessage, u32* outSender, u32* outParam) {
     if (obj == 0x0) {
         return 0;
     }
-    queue = *(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET);
+    queue = obj->msgQueue;
     if ((queue != (ObjMsgQueue*)0x0) && (queue->count != 0)) {
         queue->count = queue->count - 1;
         if (outMessage != 0x0) {
@@ -498,7 +498,7 @@ void ObjMsg_SendToNearbyObjects(int targetId, float radius, u32 flags, void* sen
         obj = (GameObject*)objects[objectIndex];
         if (((obj != sender) || (includeSender == 0)) && ((obj->anim.romDefNo == (s16)targetId || (matchAny != 0))) &&
             ((Vec_distance(&s->anim.worldPosX, &obj->anim.worldPosX) < radius && (obj != 0x0)) &&
-             (queue = *(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET), queue != (ObjMsgQueue*)0x0))) {
+             (queue = obj->msgQueue, queue != (ObjMsgQueue*)0x0))) {
             count = queue->count;
             if (count < queue->capacity) {
                 slot = (ObjMsgQueueCursor*)((u8*)queue + ((count + count + count) << 2));
@@ -533,7 +533,7 @@ void ObjMsg_SendToObjects(int targetId, u32 flags, void* sender, u32 message, u3
             if (((obj != sender) || ((maskedFlags & OBJMSG_SEND_INCLUDE_SENDER) == 0)) &&
                 (((maskedFlags & OBJMSG_SEND_MATCH_ANY) != 0 || (targetId == obj->anim.romDefNo))) &&
                 ((obj != 0x0 &&
-                  (queue = *(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET), queue != (ObjMsgQueue*)0x0)))) {
+                  (queue = obj->msgQueue, queue != (ObjMsgQueue*)0x0)))) {
                 count = queue->count;
                 if (count < queue->capacity) {
                     slot = (ObjMsgQueueCursor*)((u8*)queue + ((count + count + count) << 2));
@@ -553,7 +553,7 @@ void ObjMsg_SendToObjects(int targetId, u32 flags, void* sender, u32 message, u3
             if (((obj != sender) || ((maskedFlags & OBJMSG_SEND_INCLUDE_SENDER) == 0)) &&
                 (((maskedFlags & OBJMSG_SEND_MATCH_ANY) != 0 || (targetId == obj->anim.classId))) &&
                 ((obj != 0x0 &&
-                  (queue = *(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET), queue != (ObjMsgQueue*)0x0)))) {
+                  (queue = obj->msgQueue, queue != (ObjMsgQueue*)0x0)))) {
                 count = queue->count;
                 if (count < queue->capacity) {
                     slot = (ObjMsgQueueCursor*)((u8*)queue + ((count + count + count) << 2));
@@ -581,7 +581,7 @@ u32 ObjMsg_SendToObject(GameObject* obj, u32 message, void* sender, u32 param) {
     if (obj == NULL) {
         return 0;
     }
-    queue = *(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET);
+    queue = obj->msgQueue;
     if (queue != (ObjMsgQueue*)0x0) {
         count = queue->count;
         if (count < queue->capacity) {
@@ -598,16 +598,16 @@ u32 ObjMsg_SendToObject(GameObject* obj, u32 message, void* sender, u32 param) {
     return 0;
 }
 
-void ObjMsg_AllocQueue(void* obj, int capacity) {
+void ObjMsg_AllocQueue(GameObject* obj, int capacity) {
     int queueBytes;
     ObjMsgQueue* queue;
 
-    if (((capacity != 0) && (obj != 0x0)) && (*(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET) == (ObjMsgQueue*)0x0)) {
+    if (((capacity != 0) && (obj != 0x0)) && (obj->msgQueue == (ObjMsgQueue*)0x0)) {
         queueBytes = (capacity * 3 + 2) * 4;
         queue = (ObjMsgQueue*)mmAlloc(queueBytes, 0xe, 0);
         queue->count = 0;
         queue->capacity = capacity;
-        *(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET) = queue;
+        obj->msgQueue = queue;
     }
     return;
 }

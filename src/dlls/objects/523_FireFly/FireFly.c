@@ -335,7 +335,7 @@ void firefly_update(GameObject* obj)
 
     state = obj->extra;
     def = (FireFlyMapData*)obj->anim.placement;
-    while (ObjMsg_Pop((void*)obj, (u32*)msg, NULL, NULL) != 0)
+    while (ObjMsg_Pop(obj, (u32*)msg, NULL, NULL) != 0)
     {
         switch (msg[0])
         {

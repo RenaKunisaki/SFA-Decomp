@@ -5,6 +5,8 @@
 #include "global.h"
 #include "main/objanim_internal.h"
 
+typedef struct ObjMsgQueue ObjMsgQueue;
+
 /*
  * GameObject - the engine-wide object record passed around as "obj" /
  * "int obj" / "u8 *obj" throughout src/main and the DLLs. Its head
@@ -50,7 +52,8 @@ struct GameObject {
         classes reuse the slot as f32 scratch via launders) */
     void* childObjs[5];      /* obj+0xC8..0xD8 child-object slots, childCount used;
         Obj_*ModelColorFadeRecursive walks them (childScan += 4 loop) */
-    void* unkDC;
+    ObjMsgQueue* msgQueue; /* obj+0xDC per-object message queue, allocated by
+        ObjMsg_AllocQueue and released in the object free path */
     u8 unkE0[4];
     u8 hitVolumeIndex;   /* index into anim.hitVolumeBounds/hitVolumeTransforms +
         modelInstance->hitVolumes (active hit-volume node) */

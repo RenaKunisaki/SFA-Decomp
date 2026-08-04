@@ -547,7 +547,7 @@ void collectible_update(GameObject* obj) {
             return;
         }
     }
-    while (ObjMsg_Pop((void*)obj, (u32*)&messageId, (u32*)&messageParam, NULL) != 0) {
+    while (ObjMsg_Pop(obj, (u32*)&messageId, (u32*)&messageParam, NULL) != 0) {
         switch (messageId) {
         case COLLECTIBLE_MSG_PICKUP:
             collectible_applyPickup(obj);

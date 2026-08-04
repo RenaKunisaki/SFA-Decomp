@@ -3067,7 +3067,7 @@ u8 doEdges;
 
     {
         MapBlockData* c0 = cells[0];
-        void* p = mapBlockGetPolygon((int*)c0, 0);
+        void* p = mapBlockGetPolygon(c0, 0);
         dmaflip = 0;
         offA = 0;
         cacheAllocAndCopy((u8*)p, c0->nPolygons << 3, &offA, &offB, 0x2000);
@@ -3105,7 +3105,7 @@ u8 doEdges;
             int c13, c14;
             dmaflip ^= 0x2000;
             nextBase = dmaflip + 0x2000;
-            p = mapBlockGetPolygon((int*)next, 0);
+            p = mapBlockGetPolygon(next, 0);
             offA = dmaflip;
             c13 = cacheAllocAndCopy((u8*)p, next->nPolygons << 3, &offA, &offB, nextBase);
             c14 = cacheAllocAndCopy((u8*)next->vertices, next->vertexCount * 6, &offB, &offC, nextBase);

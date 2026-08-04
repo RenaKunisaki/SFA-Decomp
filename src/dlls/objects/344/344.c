@@ -688,7 +688,7 @@ void gunpowderBarrel_update(GameObject* obj) {
         u32 message;
         message = 0;
         messageArgument = 0;
-        while (ObjMsg_Pop((void*)obj, &message, 0, &messageArgument) != 0) {
+        while (ObjMsg_Pop(obj, &message, 0, &messageArgument) != 0) {
             switch (message) {
             case GUNPOWDER_BARREL_MESSAGE_PLAYER_HELD:
                 gunpowderBarrel_setPlayerHeldState(obj, 1);

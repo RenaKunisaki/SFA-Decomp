@@ -868,7 +868,7 @@ void cfguardian_init(GameObject* obj, CfGuardianPlacement* placement) {
     if (state == NULL) {
         return;
     }
-    ObjMsg_AllocQueue((void*)obj, CFGUARDIAN_MESSAGE_QUEUE_CAPACITY);
+    ObjMsg_AllocQueue(obj, CFGUARDIAN_MESSAGE_QUEUE_CAPACITY);
     state->questState = mainGetBit(GAMEBIT_CFGUARDIAN_QUEST_STATE);
     obj->userData1 = 1;
     obj->animEventCallback = cfguardian_sequenceCallback;

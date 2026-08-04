@@ -2332,7 +2332,7 @@ void dbstealerworm_update(GameObject* obj)
                 stk.msg = 0;
                 stk.argA = 0;
                 sub2 = ((GroundBaddieState*)obj->extra)->control;
-                while (ObjMsg_Pop((void*)obj, &stk.msg, (u32*)&stk.argB, &stk.msg + 1) != 0)
+                while (ObjMsg_Pop(obj, &stk.msg, (u32*)&stk.argB, &stk.msg + 1) != 0)
                 {
                     if (stk.msg == 0x11 && sub2->msgSlotIndex != -1)
                     {

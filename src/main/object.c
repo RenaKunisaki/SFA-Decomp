@@ -1050,10 +1050,10 @@ static void objFreeObjdef(u8* obj, int flag)
             mm_free(shadowMesh);
         }
     }
-    if (*(void**)&((GameObject*)obj)->unkDC != NULL)
+    if (*(void**)&((GameObject*)obj)->msgQueue != NULL)
     {
-        mm_free(((GameObject*)obj)->unkDC);
-        *(int*)&((GameObject*)obj)->unkDC = 0;
+        mm_free(((GameObject*)obj)->msgQueue);
+        *(int*)&((GameObject*)obj)->msgQueue = 0;
     }
     modelCount = ((ObjAnimComponent*)obj)->modelInstance->modelCount;
     for (j = 0; j < modelCount; j++)

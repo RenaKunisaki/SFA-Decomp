@@ -952,7 +952,7 @@ void tumbleweed_init(GameObject* obj, TumbleweedPlacement* placement) {
     objAddObjectType((int)obj, TUMBLEWEED_OBJECT_GROUP);
     objAddObjectType((int)obj, TUMBLEWEED_SECONDARY_OBJECT_GROUP);
     ObjHits_DisableObject(obj);
-    ObjMsg_AllocQueue((void*)obj, 1);
+    ObjMsg_AllocQueue(obj, 1);
     if (obj->anim.romDefNo == TUMBLEWEED_TYPE_3) {
         state->flags |= TUMBLEWEED_EFFECT_FLAG_HIT_PULSE;
     }
