@@ -73,7 +73,7 @@ MWCC GC/1.3+ elides a redundant load/store-forward whenever the address's proven
 | beginLoadingMap | main/shader | 2324 | 99.776 | 7 | 4 | 3G/0F | 8 | symbol-provenance-load-cse (the 6-fn reload family) |
 | sceneDraw | main/lightmap | 1500 | 98.880 | 19 | 13 | 4G/0F | 3 | symbol-provenance-load-cse (the 6-fn reload family) |
 | loadCharacter | main/object | 2612 | 99.763 | 27 | 0 | 12G/1F | 1 | loadCharacter residual after 505db2b3ce win: copy/load swap + inverted branch |
-| worldplanet_update | dlls/objects/466_WORLDplanet/WORLDplanet | 3136 | 99.152 | 34 | 18 | 13G/9F | 1 | worldplanet: 4 independent defects incl. -1 elision |
+| worldplanet_update | dlls/objects/466_WORLDplanet/WORLDplanet | 3136 | 99.152 | 34 | 18 | 13G/9F | 1 | 4 defects, all individually walled: -1 elision (symbol-provenance); index-vs-base held (indexing spelling measured 98.871); 13G/9F rotation (120-perm flat); objId spill (escaping-local split flips the site to mr r29 but re-rotates the band 34->145 regions, 98.406 — variable-split bound) |
 | drlasercannon_aimAtTarget | dlls/objects/609_DR_LaserCan/DR_LaserCan | 940 | 97.660 | 36 | 36 | 6G/1F | 1 | double-extsh fold; fix is a main-owned getAngle prototype question |
 | voxmaps_updateActiveMap | main/voxmaps | 776 | 97.412 | 38 | 33 | 8G/0F | 3 | symbol-provenance-load-cse (the 6-fn reload family) |
 | ObjSeq_start | dlls/engine/2/2 | 2904 | 99.311 | 50 | 15 | 18G/3F | 5 | symbol-provenance-load-cse (the 6-fn reload family) |
@@ -197,7 +197,7 @@ Width >=5 saved band, identical mnemonic stream: the rotation-offset model — e
 | ObjHitbox_SetStateIndex | main/objhits | 140 | 98.857 | 6 | 0 | 0G/0F | 9 | objhits GROUND pass 08-03: all 9 T==C recolours, no lever site |
 | waterfx_drawSplashBurst | dlls/engine/19/19 | 664 | 99.789 | 7 | 0 | 5G/12F | 2 | signature: struc 0, band >=5, no recorded lever site |
 | pauseMenuDraw | dlls/engine/0/0 | 4564 | 99.956 | 8 | 0 | 5G/0F | 14 | flag-probed 2026-08-03: no profile; 6 sites = width-5 pressure recolour (merge probe re-rotates), 2 = add-canon folded by copy-prop at single-use sites |
-| expgfx_addremove | dlls/engine/10_expgfx/expgfx | 2576 | 99.938 | 8 | 0 | 10G/0F | 4 | signature: struc 0, band >=5, no recorded lever site |
+| expgfx_addremove | dlls/engine/10_expgfx/expgfx | 2576 | 100.0 | 0 | 0 | 10G/0F | 4 | SOLVED: saved-register-redefinition tell — retail redefines r24 (extsh from acquireResourceEntry result) and the final compare reads the resource-table index, not slotType; fix = separate short local declared into the dead home. The struc-0 signature HID a semantic mis-decompilation; screen other struc-0 rows for double-defined saved homes |
 | ObjHits_CollectSkeletonHitsXZ | main/objhits | 1124 | 99.786 | 8 | 0 | 15G/7F | 9 | objhits GROUND pass 08-03: all 9 T==C recolours, no lever site |
 | InvHit_update | dlls/objects/241_InvHit/InvHit | 1024 | 99.844 | 8 | 0 | 5G/3F | 1 | refreshed-flip-frontier 08-02 (width noted per fn) |
 | ObjHits_CollectSkeletonHits3D | main/objhits | 988 | 99.757 | 8 | 0 | 15G/5F | 9 | objhits GROUND pass 08-03: all 9 T==C recolours, no lever site |

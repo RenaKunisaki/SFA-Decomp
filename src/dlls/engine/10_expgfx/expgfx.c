@@ -4247,9 +4247,9 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
     short poolIndex;
     short slotIndex;
     s16 texT0;
-    int resourceTableIndex;
     s16 texS1;
     s16 texS0;
+    short resourceTableIndex;
     f32 scaleVal;
     u32 sourceModeValue;
 
@@ -4299,7 +4299,7 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
         slot->renderFlags = config->renderFlags;
         slot->stateBits.bits.initPhase = 0;
 
-        resourceTableIndex = (int)(short)expgfx_acquireResourceEntry(config->texture.parts.textureId);
+        resourceTableIndex = expgfx_acquireResourceEntry(config->texture.parts.textureId);
         if (resourceTableIndex < 0)
         {
             expgfxRemove(runtime->slotPoolBases[poolIndex], poolIndex, slotIndex, 1, 1);
@@ -4488,7 +4488,7 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
             }
         }
 
-        if (slotType == 1)
+        if (resourceTableIndex == 1)
         {
             gExpgfxSlotType1Count = gExpgfxSlotType1Count + 1;
             gExpgfxSlotType1Average = gExpgfxSlotType1Sum / gExpgfxSlotType1Count;
