@@ -119,7 +119,7 @@ void SB_ShipGun_update(GameObject* obj) {
     GameObject* player;
     GameObject** objects;
     GameObject* cloudRunner;
-    int galleon;
+    GameObject* galleon;
     SBShipGunState* state;
     int galleonStage;
     int hasPriorityHit;
@@ -159,9 +159,9 @@ void SB_ShipGun_update(GameObject* obj) {
                 }
             }
         }
-        galleon = (int)obj->anim.parent;
-        if (((void*)galleon != NULL) && (((GameObject*)galleon)->anim.romDefNo == SB_SHIPGUN_GALLEON_ALIAS_OBJECT_TYPE)) {
-            galleonStage = SB_GALLEON_VTBL(galleon)->getStage(galleon);
+        galleon = obj->anim.parent;
+        if (((void*)galleon != NULL) && (galleon->anim.romDefNo == SB_SHIPGUN_GALLEON_ALIAS_OBJECT_TYPE)) {
+            galleonStage = SB_GALLEON_VTBL(galleon)->getStage((int)galleon);
         } else {
             galleonStage = 0;
             state->phase = SB_SHIPGUN_PHASE_EXPLODED;
@@ -170,7 +170,7 @@ void SB_ShipGun_update(GameObject* obj) {
         phase = state->phase;
         switch (phase) {
         case SB_SHIPGUN_PHASE_IDLE:
-            if (((void*)galleon != NULL) && SB_GALLEON_VTBL(galleon)->getPhase(galleon) == 0) {
+            if (((void*)galleon != NULL) && SB_GALLEON_VTBL(galleon)->getPhase((int)galleon) == 0) {
                 if (placement->noWakeDelay == 0) {
                     state->phase = SB_SHIPGUN_PHASE_ACTIVE;
                     state->fireTimer = SB_SHIPGUN_WAKE_DELAY;
@@ -183,7 +183,7 @@ void SB_ShipGun_update(GameObject* obj) {
             break;
         case SB_SHIPGUN_PHASE_ACTIVE: {
             ((ObjHitsPriorityState*)obj->anim.hitReactState)->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
-            galleonPhase = SB_GALLEON_VTBL(galleon)->getPhase(galleon);
+            galleonPhase = SB_GALLEON_VTBL(galleon)->getPhase((int)galleon);
             if ((galleonPhase == 0) && (hasPriorityHit = ObjHits_GetPriorityHit(obj, 0, 0, 0), hasPriorityHit != 0)) {
                 Obj_SetModelColorFadeRecursive(obj, SB_SHIPGUN_HIT_REACT_TYPE, SB_SHIPGUN_HIT_REACT_POWER, 0, 0, 1);
                 Sfx_PlayFromObject(obj, SB_SHIPGUN_HIT_SFX);
@@ -192,14 +192,14 @@ void SB_ShipGun_update(GameObject* obj) {
                     state->health -= 1;
                     state->phase = SB_SHIPGUN_PHASE_DEATH_TRIGGER;
                     if ((void*)galleon != NULL) {
-                        SB_GALLEON_VTBL(galleon)->onPartDestroyed(galleon);
+                        SB_GALLEON_VTBL(galleon)->onPartDestroyed((int)galleon);
                     }
                 } else if (state->hitCount == SB_SHIPGUN_SECOND_DAMAGE_HIT_COUNT) {
                     Sfx_PlayFromObject(obj, SB_SHIPGUN_SECOND_DAMAGE_SFX);
                     state->health -= 1;
                     state->phase = SB_SHIPGUN_PHASE_DEATH_TRIGGER;
                     if ((void*)galleon != NULL) {
-                        SB_GALLEON_VTBL(galleon)->onPartDestroyed(galleon);
+                        SB_GALLEON_VTBL(galleon)->onPartDestroyed((int)galleon);
                     }
                 }
             }
@@ -303,7 +303,7 @@ void SB_ShipGun_update(GameObject* obj) {
         }
         case SB_SHIPGUN_PHASE_SMOLDERING:
             ((ObjHitsPriorityState*)obj->anim.hitReactState)->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;
-            if (((void*)galleon != NULL) && SB_GALLEON_VTBL(galleon)->getPhase(galleon) == 0) {
+            if (((void*)galleon != NULL) && SB_GALLEON_VTBL(galleon)->getPhase((int)galleon) == 0) {
                 if (placement->noWakeDelay == 0) {
                     if (SB_SHIPGUN_FAST_FIRE_GALLEON_STAGE <= galleonStage) {
                         state->phase = SB_SHIPGUN_PHASE_ACTIVE;

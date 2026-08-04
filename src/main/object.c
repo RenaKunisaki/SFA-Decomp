@@ -828,7 +828,7 @@ void mapSetupPlayer(void)
     u8* base;
     int playerNo;
     int mapType;
-    u8* obj;
+    GameObject* obj;
     SaveGameCharacterPosition* pos;
     f32 x, y, z;
     int uiDll;
@@ -877,7 +877,7 @@ void mapSetupPlayer(void)
                 if (obj != 0)
                 {
                     Obj_RegisterObject((GameObject*)obj, 1);
-                    OSReport((char*)(base + 0x5c), ((GameObject*)obj)->anim.modelInstance->name);
+                    OSReport((char*)(base + 0x5c), obj->anim.modelInstance->name);
                 }
             }
         }
