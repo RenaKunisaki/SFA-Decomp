@@ -1762,7 +1762,7 @@ void SnowBike_ResetDynamics(int obj, register int state)
     s->localVelZLimit = fc;
     flags->pathActive = 0;
     flags->impulseLatch = 0;
-    *(u32*)(state + 0x42c) = 0;
+    s->linkedObj = 0;
     s->collisionFxTimer = fz;
     s->collisionFxDamping = 1.0f;
 }
