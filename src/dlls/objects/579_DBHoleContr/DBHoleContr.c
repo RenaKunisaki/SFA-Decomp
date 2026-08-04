@@ -23,7 +23,7 @@ int dbholecontrol1_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
     void* res;
     int* objs;
     int count;
-    int data = obj->anim.placementDataAddress;
+    Dbholecontrol1Placement* data = (Dbholecontrol1Placement*)obj->anim.placementDataAddress;
     int i;
 
     for (i = 0; i < animUpdate->eventCount; i++)
@@ -31,7 +31,7 @@ int dbholecontrol1_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
         switch (animUpdate->eventIds[i])
         {
         case 1:
-            if (mainGetBit((s32)((Dbholecontrol1Placement*)data)->triggerSeqId + 2601) != 0)
+            if (mainGetBit((s32)data->triggerSeqId + 2601) != 0)
                 continue;
             if (Obj_IsLoadingLocked() == 0)
                 continue;
@@ -50,7 +50,7 @@ int dbholecontrol1_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
         }
     }
 
-    if (mainGetBit(((Dbholecontrol1Placement*)data)->hideGameBit) != 0 || lbl_803DDCE0 != 0)
+    if (mainGetBit(data->hideGameBit) != 0 || lbl_803DDCE0 != 0)
     {
         objs = (int*)objGetAllOfType(DBEGG_OBJGROUP, &count);
         ObjMsg_SendToObjects(0, 3, obj, 17, 0);

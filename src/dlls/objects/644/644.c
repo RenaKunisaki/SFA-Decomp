@@ -187,12 +187,12 @@ void shopitem_renderSparkle(GameObject* obj, int p2, int p3, int p4, int p5)
 
 void shopitem_onSeqFree(GameObject* obj)
 {
-    int state = (int)obj->extra;
+    ShopItemState* state = obj->extra;
     int def = obj->anim.placementDataAddress;
-    PushcartState97* b = &((ShopItemState*)state)->flags97;
+    PushcartState97* b = &state->flags97;
     if (b->flag_40 == 0)
     {
-        GameObject* vptr = (GameObject*)((ShopItemState*)state)->vendorObj;
+        GameObject* vptr = (GameObject*)state->vendorObj;
         ShopInterface* cls = SHOP_INTERFACE(vptr);
         if (cls->isItemBought(vptr, ((ShopItemDef*)def)->itemSlot) != 0)
         {
@@ -201,7 +201,7 @@ void shopitem_onSeqFree(GameObject* obj)
     }
     setHudForceShowMask(0);
     {
-        GameObject* vptr2 = (GameObject*)((ShopItemState*)state)->vendorObj;
+        GameObject* vptr2 = (GameObject*)state->vendorObj;
         ShopInterface* cls2 = SHOP_INTERFACE(vptr2);
         cls2->setItemIndex(vptr2, -1);
     }
@@ -303,7 +303,7 @@ void shopitem_hitDetect(void)
 
 void shopitem_update(GameObject* obj)
 {
-    int def = (obj)->anim.placementDataAddress;
+    ShopItemDef* def = (ShopItemDef*)(obj)->anim.placementDataAddress;
     void* player = Obj_GetPlayerObject();
     int state = (int)obj->extra;
     f32 range = 10000.0f;
@@ -334,9 +334,9 @@ void shopitem_update(GameObject* obj)
             if ((u32)item != 0)
             {
                 if (SHOP_INTERFACE(item)->isItemAvailable((GameObject*)item,
-                                                          ((ShopItemDef*)def)->itemSlot) == 0 ||
+                                                          def->itemSlot) == 0 ||
                     SHOP_INTERFACE(s->vendorObj)
-                            ->isItemBought((GameObject*)s->vendorObj, ((ShopItemDef*)def)->itemSlot) != 0)
+                            ->isItemBought((GameObject*)s->vendorObj, def->itemSlot) != 0)
                 {
                     s->flags97.flag_40 = 1;
                     (obj)->anim.flags = (s16)((obj)->anim.flags | OBJANIM_FLAG_HIDDEN);
@@ -344,7 +344,7 @@ void shopitem_update(GameObject* obj)
                     (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                 }
                 s->helpTextId = (s16)SHOP_INTERFACE(s->vendorObj)
-                                    ->getItemTextId((GameObject*)s->vendorObj, ((ShopItemDef*)def)->itemSlot);
+                                    ->getItemTextId((GameObject*)s->vendorObj, def->itemSlot);
             }
         }
         else
@@ -358,9 +358,9 @@ void shopitem_update(GameObject* obj)
             {
                 money = playerGetMoney(player);
                 price = SHOP_INTERFACE(s->vendorObj)
-                            ->getItemPrice((GameObject*)s->vendorObj, ((ShopItemDef*)def)->itemSlot);
+                            ->getItemPrice((GameObject*)s->vendorObj, def->itemSlot);
                 SHOP_INTERFACE(s->vendorObj)
-                    ->setItemIndex((GameObject*)s->vendorObj, ((ShopItemDef*)def)->itemSlot);
+                    ->setItemIndex((GameObject*)s->vendorObj, def->itemSlot);
                 switch ((obj)->anim.romDefNo)
                 {
                 case SHOPITEM_SEQ_BSPLINE:

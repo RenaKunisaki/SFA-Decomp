@@ -985,15 +985,15 @@ void ShopKeeper_free(GameObject* obj)
 
 void ShopKeeper_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
-    int state = *(int*)&(obj)->extra;
+    ShopkeeperState* state = obj->extra;
     f32 fxParams[4];
     fxParams[0] = 1.0f;
-    if (((ShopkeeperState*)state)->baddie.controlMode != 7 && visible != 0)
+    if (state->baddie.controlMode != 7 && visible != 0)
     {
         objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
-        dll_2E_setTargetFromPathPoint(obj, &((ShopkeeperState*)state)->moveLib, 0);
+        dll_2E_setTargetFromPathPoint(obj, &state->moveLib, 0);
     }
-    if ((((ShopkeeperState*)state)->flags9D4 & SHOPKEEPER_FLAG_TICK) != 0)
+    if ((state->flags9D4 & SHOPKEEPER_FLAG_TICK) != 0)
     {
         (*gBoneParticleEffectInterface)->spawnEffect((void*)obj, 0x7ef, fxParams, 0x50, NULL);
     }
@@ -1040,16 +1040,16 @@ void ShopKeeper_update(GameObject* obj)
 
 void ShopKeeper_init(GameObject* obj)
 {
-    int state = *(int*)&(obj)->extra;
+    ShopkeeperState* state = obj->extra;
     (obj)->objectFlags |= SHOPKEEPER_OBJFLAG_HITDETECT_DISABLED;
     (obj)->animEventCallback = ShopKeeper_SeqFn;
     (obj)->anim.modelState->flags |= 0x810;
-    ((ShopkeeperState*)state)->bobAmplitude = 0.1f * (f32)(s32)randomGetRange(0xF, 0x23);
-    ((ShopkeeperState*)state)->msgStack = Queue_Alloc(4, 4);
-    ((ShopkeeperState*)state)->opacity = 0xFF;
-    ((ShopkeeperState*)state)->textTimer = 300.0f;
-    dll_2E_initState(obj, &((ShopkeeperState*)state)->moveLib, -0x1C71, 0x3555, 2);
-    ((ShopkeeperState*)state)->moveLib.modeBits |= 0x12;
+    state->bobAmplitude = 0.1f * (f32)(s32)randomGetRange(0xF, 0x23);
+    state->msgStack = Queue_Alloc(4, 4);
+    state->opacity = 0xFF;
+    state->textTimer = 300.0f;
+    dll_2E_initState(obj, &state->moveLib, -0x1C71, 0x3555, 2);
+    state->moveLib.modeBits |= 0x12;
 }
 
 void ShopKeeper_release(void)

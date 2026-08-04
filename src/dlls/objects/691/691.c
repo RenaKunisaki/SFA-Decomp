@@ -63,7 +63,7 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
     VortexSetup* setup = (VortexSetup*)obj->anim.placementData;
     f32 objScale;
     ObjTextureRuntimeSlot* texture;
-    int model;
+    ObjModel* model;
     f32 objY;
     f32 dt;
     s16 objRotY;
@@ -134,7 +134,7 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
             (*gPartfxInterface)->spawnObject((void*)obj, VORTEX_PARTFX_A, &particleArgs, 2, -1, NULL);
         }
 
-        model = (int)Obj_GetActiveModel(obj);
+        model = Obj_GetActiveModel(obj);
         objScale = obj->anim.rootMotionScale;
         objAlpha = obj->anim.alpha;
         objRotY = obj->anim.rotX;
@@ -147,7 +147,7 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
             obj->anim.rootMotionScale = ((f32)setup->radiusParam / VORTEX_RADIUS_PARAM_SCALE) *
                                         (state->alpha * (state->radiusScale[i] * objScale));
             obj->anim.renderAlpha = state->alpha * (state->alphaScale[i] * (f32)(u32)objAlpha);
-            ((ObjModel*)model)->bufferFlags = (u16)(((ObjModel*)model)->bufferFlags & ~8);
+            model->bufferFlags = (u16)(model->bufferFlags & ~8);
             objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, VORTEX_FULL_ALPHA);
         }
         obj->anim.rootMotionScale = objScale;
@@ -168,7 +168,7 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
             texture->offsetS -= 10000;
         }
 
-        model = (int)Obj_GetActiveModel(obj);
+        model = Obj_GetActiveModel(obj);
         objScale = obj->anim.rootMotionScale;
         objAlpha = obj->anim.alpha;
         objRotY = obj->anim.rotX;
@@ -183,7 +183,7 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
                 f32 radius = VORTEX_DIMPIT_VERTICAL_OFFSET * state->radiusScale[i];
                 obj->anim.localPosY = objY - radius * state->alpha;
             }
-            ((ObjModel*)model)->bufferFlags = (u16)(((ObjModel*)model)->bufferFlags & ~8);
+            model->bufferFlags = (u16)(model->bufferFlags & ~8);
             objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, VORTEX_FULL_ALPHA);
         }
         obj->anim.rootMotionScale = objScale;
@@ -210,7 +210,7 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
             (*gPartfxInterface)->spawnObject((void*)obj, VORTEX_PARTFX_B, &particleArgs, 2, -1, NULL);
         }
 
-        model = (int)Obj_GetActiveModel(obj);
+        model = Obj_GetActiveModel(obj);
         objScale = obj->anim.rootMotionScale;
         objAlpha = obj->anim.alpha;
         objRotY = obj->anim.rotX;
@@ -225,7 +225,7 @@ void Vortex_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
                 f32 radius = VORTEX_DEFAULT_VERTICAL_OFFSET * state->radiusScale[i];
                 obj->anim.localPosY = radius * state->alpha + objY;
             }
-            ((ObjModel*)model)->bufferFlags = (u16)(((ObjModel*)model)->bufferFlags & ~8);
+            model->bufferFlags = (u16)(model->bufferFlags & ~8);
             objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, VORTEX_FULL_ALPHA);
         }
         obj->anim.rootMotionScale = objScale;

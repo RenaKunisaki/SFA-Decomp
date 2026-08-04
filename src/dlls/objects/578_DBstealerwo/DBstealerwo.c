@@ -112,7 +112,7 @@ int dbstealerworm_stateHandlerB06(GameObject* obj, BaddieState* baddie)
 
     GroundBaddieState* state = (obj)->extra;
     DbStealerwormControl* sub;
-    int data = (obj)->anim.placementDataAddress;
+    GroundBaddiePlacement* data = (GroundBaddiePlacement*)(obj)->anim.placementDataAddress;
     int count;
     const DbStealerwormScript* entry;
     char* ptr;
@@ -130,21 +130,21 @@ int dbstealerworm_stateHandlerB06(GameObject* obj, BaddieState* baddie)
         }
         else
         {
-            if (((GroundBaddiePlacement*)data)->base.ident == 0xFFFFFFFF)
+            if (data->base.ident == 0xFFFFFFFF)
             {
                 Obj_FreeObject(obj);
                 return 0;
             }
-            entry = &gDbStealerwormScriptTable[((GroundBaddiePlacement*)data)->unk24];
+            entry = &gDbStealerwormScriptTable[data->unk24];
             count = entry->stepCount;
             for (; count != 0;)
             {
                 Stack_Push(sub->msgStack, (int*)&entry->steps[--count]);
             }
             sub->msgAdvance = 1;
-            (obj)->anim.localPosX = ((GroundBaddiePlacement*)data)->base.posX;
-            (obj)->anim.localPosY = ((GroundBaddiePlacement*)data)->base.posY;
-            (obj)->anim.localPosZ = ((GroundBaddiePlacement*)data)->base.posZ;
+            (obj)->anim.localPosX = data->base.posX;
+            (obj)->anim.localPosY = data->base.posY;
+            (obj)->anim.localPosZ = data->base.posZ;
         }
         switch (sub->msgMode)
         {
@@ -211,7 +211,7 @@ int dbstealerworm_stateHandlerB05(GameObject* obj, BaddieState* baddie)
 {
     GroundBaddieState* state = (obj)->extra;
     DbStealerwormControl* sub;
-    int data = (obj)->anim.placementDataAddress;
+    GroundBaddiePlacement* data = (GroundBaddiePlacement*)(obj)->anim.placementDataAddress;
     const DbStealerwormScript* base;
     int routeIndex;
     GameObject* found;
@@ -240,9 +240,9 @@ int dbstealerworm_stateHandlerB05(GameObject* obj, BaddieState* baddie)
         if (sub->routeCursor == NULL)
         {
             sub->routeCursor = sub->cfg->steps;
-            (obj)->anim.localPosX = ((GroundBaddiePlacement*)data)->base.posX;
-            (obj)->anim.localPosY = ((GroundBaddiePlacement*)data)->base.posY;
-            (obj)->anim.localPosZ = ((GroundBaddiePlacement*)data)->base.posZ;
+            (obj)->anim.localPosX = data->base.posX;
+            (obj)->anim.localPosY = data->base.posY;
+            (obj)->anim.localPosZ = data->base.posZ;
         }
         if (sub->routeCursor->mode != 0)
         {
@@ -1539,7 +1539,7 @@ int dbstealerworm_stateHandlerA06(GameObject* obj, BaddieState* baddie)
 
 
     GroundBaddieState* sub = (obj)->extra;
-    int data = (obj)->anim.placementDataAddress;
+    GroundBaddiePlacement* data = (GroundBaddiePlacement*)(obj)->anim.placementDataAddress;
     DbStealerwormControl* control = (DbStealerwormControl*)sub->control;
     BaddieState* bs = baddie;
 
@@ -1572,8 +1572,8 @@ int dbstealerworm_stateHandlerA06(GameObject* obj, BaddieState* baddie)
     if ((obj)->anim.currentMoveProgress > 0.8f)
     {
         int popBuf;
-        gameBitIncrement(((GroundBaddiePlacement*)data)->gameBitA);
-        if (((u32)((GroundBaddiePlacement*)data)->base.ident + 0x10000) == 0xffff)
+        gameBitIncrement(data->gameBitA);
+        if (((u32)data->base.ident + 0x10000) == 0xffff)
         {
             Obj_FreeObject(obj);
             return 0;
@@ -1582,11 +1582,11 @@ int dbstealerworm_stateHandlerA06(GameObject* obj, BaddieState* baddie)
         {
             Stack_Pop(control->msgStack, &popBuf);
         }
-        if (((GroundBaddiePlacement*)data)->respawnDelay == 0)
+        if (data->respawnDelay == 0)
         {
-            (*gMapEventInterface)->addTime(((GroundBaddiePlacement*)data)->base.ident, 360.0f);
+            (*gMapEventInterface)->addTime(data->base.ident, 360.0f);
         }
-        sub->configFlags |= ((GroundBaddiePlacement*)data)->flags;
+        sub->configFlags |= data->flags;
     }
     (*gPlayerInterface)->playSoundOnEvent0F(obj, baddie, 0, 2, gDbStealerwormDeathFootstepSfx);
     (*gPlayerInterface)->playSoundOnEvent0F(obj, baddie, 7, 0, gDbStealerwormBurrowFootstepSfx);

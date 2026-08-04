@@ -520,7 +520,7 @@ char sAnimGreaterMessage[11] = " GREATER \n\000";
 
 void dbegg_update(GameObject* obj)
 {
-    int data = (obj)->anim.placementDataAddress;
+    DbeggPlacement* data = (DbeggPlacement*)(obj)->anim.placementDataAddress;
 #define hitState ((ObjHitsPriorityState*)(obj)->anim.hitReactState)
     GameObject* player;
     DbEggState* egg;
@@ -607,11 +607,11 @@ void dbegg_update(GameObject* obj)
                 (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                 (obj)->anim.velocityX =
                     (obj)->anim.velocityX +
-                    (((DbeggPlacement*)data)->base.posX - (obj)->anim.localPosX) / (fz = 1000.0f);
+                    (data->base.posX - (obj)->anim.localPosX) / (fz = 1000.0f);
                 (obj)->anim.velocityY =
-                    (obj)->anim.velocityY + (((DbeggPlacement*)data)->base.posY - (obj)->anim.localPosY) / fz;
+                    (obj)->anim.velocityY + (data->base.posY - (obj)->anim.localPosY) / fz;
                 (obj)->anim.velocityZ =
-                    (obj)->anim.velocityZ + (((DbeggPlacement*)data)->base.posZ - (obj)->anim.localPosZ) / fz;
+                    (obj)->anim.velocityZ + (data->base.posZ - (obj)->anim.localPosZ) / fz;
                 if (mainGetBit(0x44d) != 0)
                 {
                     egg->mode = DBEGG_MODE_CURVE_INIT;
@@ -683,7 +683,7 @@ void dbegg_update(GameObject* obj)
             (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             break;
         case DBEGG_MODE_PICKUP_PROMPT:
-            if (Vec_xzDistance(&(obj)->anim.worldPosX, &((DbeggPlacement*)data)->base.posX) > 150.0f &&
+            if (Vec_xzDistance(&(obj)->anim.worldPosX, &data->base.posX) > 150.0f &&
                 (egg->flags119 & 2) == 0)
             {
                 playerObj = Obj_GetPlayerObject();
@@ -794,7 +794,7 @@ void dbegg_update(GameObject* obj)
             }
             break;
         case DBEGG_MODE_GATED_RESPAWN:
-            if (mainGetBit(((DbeggPlacement*)data)->activateGameBit) != 0)
+            if (mainGetBit(data->activateGameBit) != 0)
             {
                 objAddObjectType((int)obj, DBEGG_OBJGROUP);
                 egg->mode = DBEGG_MODE_FALLING;
@@ -803,14 +803,14 @@ void dbegg_update(GameObject* obj)
         case DBEGG_MODE_HOMING:
             ObjHits_DisableObject(obj);
             (obj)->anim.velocityX = (obj)->anim.velocityX +
-                                    (((DbeggPlacement*)data)->base.posX - (obj)->anim.localPosX) / (fz = 2500.0f);
+                                    (data->base.posX - (obj)->anim.localPosX) / (fz = 2500.0f);
             (obj)->anim.velocityY =
-                (obj)->anim.velocityY + (((DbeggPlacement*)data)->base.posY - (obj)->anim.localPosY) / fz;
+                (obj)->anim.velocityY + (data->base.posY - (obj)->anim.localPosY) / fz;
             (obj)->anim.velocityZ =
-                (obj)->anim.velocityZ + (((DbeggPlacement*)data)->base.posZ - (obj)->anim.localPosZ) / fz;
-            d[0] = (obj)->anim.localPosX - ((DbeggPlacement*)data)->base.posX;
-            d[1] = (obj)->anim.localPosY - ((DbeggPlacement*)data)->base.posY;
-            d[2] = (obj)->anim.localPosZ - ((DbeggPlacement*)data)->base.posZ;
+                (obj)->anim.velocityZ + (data->base.posZ - (obj)->anim.localPosZ) / fz;
+            d[0] = (obj)->anim.localPosX - data->base.posX;
+            d[1] = (obj)->anim.localPosY - data->base.posY;
+            d[2] = (obj)->anim.localPosZ - data->base.posZ;
             Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_baddie_eba_smallswipe1);
             fz = *(f32*)((int)d + 8);
             fz = fz >= 0.0f ? fz : -fz;
@@ -820,9 +820,9 @@ void dbegg_update(GameObject* obj)
             {
                 ObjHits_EnableObject(obj);
                 egg->mode = DBEGG_MODE_SETTLED;
-                (obj)->anim.localPosX = ((DbeggPlacement*)data)->base.posX;
-                (obj)->anim.localPosY = ((DbeggPlacement*)data)->base.posY;
-                (obj)->anim.localPosZ = ((DbeggPlacement*)data)->base.posZ;
+                (obj)->anim.localPosX = data->base.posX;
+                (obj)->anim.localPosY = data->base.posY;
+                (obj)->anim.localPosZ = data->base.posZ;
             }
             else
             {
@@ -840,7 +840,7 @@ void dbegg_update(GameObject* obj)
         {
             (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             ObjHits_DisableObject(obj);
-            if (mainGetBit(((DbeggPlacement*)data)->triggerGameBit) != 0)
+            if (mainGetBit(data->triggerGameBit) != 0)
             {
                 egg->flags119 &= ~9;
                 (obj)->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
