@@ -78,7 +78,7 @@ extern s16 gDIMSnowHorn1LocomotionMoveIds[4];
 
 extern f32 gDIMSnowHorn1ModelMtx[16];
 extern void* gDIMSnowHorn1DefaultStateHandler;
-extern int gDIMSnowHorn1StateHandlers[];
+extern void* gDIMSnowHorn1StateHandlers[];
 extern u8 gDIMSnowHorn1ConfigTable[];
 extern void* gDIMSnowHorn1Texture;
 extern s16 gDIMSnowHorn1TextureId;

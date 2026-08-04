@@ -41,7 +41,7 @@
 #include "dolphin/pad.h"
 
 f32 gDIMSnowHorn1ModelMtx[16];
-int gDIMSnowHorn1StateHandlers[12];
+void* gDIMSnowHorn1StateHandlers[12];
 void* gDIMSnowHorn1DefaultStateHandler;
 void* gDIMSnowHorn1Texture;
 
@@ -1551,18 +1551,18 @@ void DIMSnowHorn1_initialise(void)
     s16* src;
     void** dst;
     int i;
-    ((void**)gDIMSnowHorn1StateHandlers)[0] = (void*)DIMSnowHorn1_stateHandler00;
-    ((void**)gDIMSnowHorn1StateHandlers)[1] = (void*)DIMSnowHorn1_stateHandler01;
-    ((void**)gDIMSnowHorn1StateHandlers)[2] = (void*)DIMSnowHorn1_stateHandler02;
-    ((void**)gDIMSnowHorn1StateHandlers)[3] = (void*)DIMSnowHorn1_stateHandler03;
-    ((void**)gDIMSnowHorn1StateHandlers)[4] = (void*)DIMSnowHorn1_stateHandler04;
-    ((void**)gDIMSnowHorn1StateHandlers)[5] = (void*)DIMSnowHorn1_stateHandler05;
-    ((void**)gDIMSnowHorn1StateHandlers)[6] = (void*)DIMSnowHorn1_stateHandler06;
-    ((void**)gDIMSnowHorn1StateHandlers)[7] = (void*)DIMSnowHorn1_stateHandler07;
-    ((void**)gDIMSnowHorn1StateHandlers)[8] = (void*)DIMSnowHorn1_stateHandler08;
-    ((void**)gDIMSnowHorn1StateHandlers)[9] = (void*)DIMSnowHorn1_stateHandler09;
-    ((void**)gDIMSnowHorn1StateHandlers)[10] = (void*)DIMSnowHorn1_stateHandler0A;
-    ((void**)gDIMSnowHorn1StateHandlers)[11] = (void*)DIMSnowHorn1_stateHandler0B;
+    gDIMSnowHorn1StateHandlers[0] = DIMSnowHorn1_stateHandler00;
+    gDIMSnowHorn1StateHandlers[1] = DIMSnowHorn1_stateHandler01;
+    gDIMSnowHorn1StateHandlers[2] = DIMSnowHorn1_stateHandler02;
+    gDIMSnowHorn1StateHandlers[3] = DIMSnowHorn1_stateHandler03;
+    gDIMSnowHorn1StateHandlers[4] = DIMSnowHorn1_stateHandler04;
+    gDIMSnowHorn1StateHandlers[5] = DIMSnowHorn1_stateHandler05;
+    gDIMSnowHorn1StateHandlers[6] = DIMSnowHorn1_stateHandler06;
+    gDIMSnowHorn1StateHandlers[7] = DIMSnowHorn1_stateHandler07;
+    gDIMSnowHorn1StateHandlers[8] = DIMSnowHorn1_stateHandler08;
+    gDIMSnowHorn1StateHandlers[9] = DIMSnowHorn1_stateHandler09;
+    gDIMSnowHorn1StateHandlers[10] = DIMSnowHorn1_stateHandler0A;
+    gDIMSnowHorn1StateHandlers[11] = DIMSnowHorn1_stateHandler0B;
     gDIMSnowHorn1DefaultStateHandler = (void*)DIMSnowHorn1_defaultStateHandler;
     src = &gDIMSnowHorn1TextureId;
     dst = &gDIMSnowHorn1Texture;

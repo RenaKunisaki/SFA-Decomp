@@ -1314,14 +1314,14 @@ void DR_CloudRunner_release(void)
 
 void DR_CloudRunner_initialise(void)
 {
-    ((void**)gDRCloudRunnerStateHandlers)[0] = DR_CloudRunner_stateHandler00;
-    ((void**)gDRCloudRunnerStateHandlers)[1] = DR_CloudRunner_stateHandler01;
-    ((void**)gDRCloudRunnerStateHandlers)[2] = DR_CloudRunner_stateHandler02;
-    ((void**)gDRCloudRunnerStateHandlers)[3] = DR_CloudRunner_stateHandler03;
-    ((void**)gDRCloudRunnerStateHandlers)[4] = DR_CloudRunner_stateHandler04;
-    ((void**)gDRCloudRunnerStateHandlers)[5] = DR_CloudRunner_stateHandler05;
-    ((void**)gDRCloudRunnerStateHandlers)[6] = DR_CloudRunner_stateHandler06;
-    ((void**)gDRCloudRunnerStateHandlers)[7] = DR_CloudRunner_stateHandler07;
+    gDRCloudRunnerStateHandlers[0] = DR_CloudRunner_stateHandler00;
+    gDRCloudRunnerStateHandlers[1] = DR_CloudRunner_stateHandler01;
+    gDRCloudRunnerStateHandlers[2] = DR_CloudRunner_stateHandler02;
+    gDRCloudRunnerStateHandlers[3] = DR_CloudRunner_stateHandler03;
+    gDRCloudRunnerStateHandlers[4] = DR_CloudRunner_stateHandler04;
+    gDRCloudRunnerStateHandlers[5] = DR_CloudRunner_stateHandler05;
+    gDRCloudRunnerStateHandlers[6] = DR_CloudRunner_stateHandler06;
+    gDRCloudRunnerStateHandlers[7] = DR_CloudRunner_stateHandler07;
     gDRCloudRunnerDefaultStateHandler = DR_CloudRunner_defaultStateHandler;
 }
 
