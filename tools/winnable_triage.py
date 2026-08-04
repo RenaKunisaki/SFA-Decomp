@@ -24,7 +24,7 @@ for u in report["units"]:
     if not un.startswith("main/"):
         continue
     for f in u.get("functions", []):
-        fz = f.get("fuzzy_match_percent", 100.0)
+        fz = f.get("fuzzy_match_percent", 0.0)
         if fz < 100.0 and fz >= float(sys.argv[1] if len(sys.argv) > 1 else 90.0):
             targets.append((fz, un, f.get("name", "")))
 targets.sort()

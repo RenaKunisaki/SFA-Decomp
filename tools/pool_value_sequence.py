@@ -110,7 +110,7 @@ def sub100_sections() -> list[tuple[str, str, float, int]]:
         for sec in unit.get("sections", []):
             if sec["name"] == ".text":
                 continue
-            score = sec.get("fuzzy_match_percent", 100.0)
+            score = sec.get("fuzzy_match_percent", 0.0)
             size = int(sec.get("size", 0))
             if score < 100.0 and size:
                 rows.append((src, sec["name"], score, size))

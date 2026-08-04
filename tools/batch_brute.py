@@ -36,7 +36,7 @@ for u in report["units"]:
     if base in EXCLUDE_UNITS:
         continue
     for f in u.get("functions", []):
-        fz = f.get("fuzzy_match_percent", 100.0)
+        fz = f.get("fuzzy_match_percent", 0.0)
         if MIN <= fz < 100.0:
             targets.append((fz, base, f.get("name", "")))
 targets.sort()  # lowest fuzzy first = most headroom

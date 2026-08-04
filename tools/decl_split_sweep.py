@@ -614,7 +614,7 @@ def main():
     def md5o():
         return hashlib.md5(src_o.read_bytes()).hexdigest()
 
-    keep = install_restore_guard(src_file, original)
+    write, keep = install_restore_guard(src_file, original)
 
     # pristine baseline, rebuilt from the on-disk original (a peer or a prior
     # run can leave a stale .o, and a stale baseline lets a REGRESSION win)
@@ -633,11 +633,13 @@ def main():
         n = len(b["items"])
 
         # ---- THE CONTROL: split alone, original order, must be byte-identical
-        src_file.write_bytes(render_split(src, b, list(range(n)), mask)
-                             .encode("latin-1"))
+        if not write(render_split(src, b, list(range(n)), mask)
+                     .encode("latin-1")):
+            raise SystemExit("aborted: the source file was edited by another "
+                             "process mid-sweep")
         if not rebuild(unit["object"], args.version):
             print(f"# block {bi}: SPLIT DID NOT COMPILE -- skipping")
-            src_file.write_bytes(original)
+            write(original)
             continue
         split_md5 = md5o()
         split_fz = fuzzy_measure(unit, args.symbol, args.version)
@@ -688,8 +690,10 @@ def main():
             if time.time() - t0 > args.time_budget:
                 print("# time budget reached")
                 break
-            src_file.write_bytes(render_split(src, b, list(order), mask)
-                                 .encode("latin-1"))
+            if not write(render_split(src, b, list(order), mask)
+                         .encode("latin-1")):
+                raise SystemExit("aborted: the source file was edited by "
+                                 "another process mid-sweep")
             if not rebuild(unit["object"], args.version):
                 continue
             fz = fuzzy_measure(unit, args.symbol, args.version)
@@ -716,7 +720,7 @@ def main():
         if BM.report_side_effect_reorders(movable, list(order),
                                           f"(block {bi}, unsplit items only)") \
                 and not args.allow_side_effect_reorder:
-            src_file.write_bytes(original)
+            write(original)
             rebuild(unit["object"], args.version)
             print("\nNOT APPLIED: the winning ordering reorders side effects.")
             return
@@ -726,7 +730,7 @@ def main():
         print(f"\nAPPLIED block {bi} order {list(order)}: "
               f"{base_fz:.6f} -> {best[0]:.6f}")
     else:
-        src_file.write_bytes(original)
+        write(original)
         rebuild(unit["object"], args.version)
         print(f"\nno improvement over baseline {base_fz:.6f}; restored")
 

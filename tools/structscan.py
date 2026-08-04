@@ -178,11 +178,11 @@ def main():
         if not cu or not cu.get("base_path"):
             continue
         fns = [f for f in (unit.get("functions") or []) if f]
-        remaining = sum(1 for f in fns if f.get("fuzzy_match_percent", 100) < 100)
+        remaining = sum(1 for f in fns if f.get("fuzzy_match_percent", 0.0) < 100)
         if args.sole and remaining != 1:
             continue
         for f in fns:
-            fuzzy = f.get("fuzzy_match_percent", 100.0)
+            fuzzy = f.get("fuzzy_match_percent", 0.0)
             size = int(f.get("size", 0))
             if fuzzy >= 100.0 or size < args.min_size:
                 continue

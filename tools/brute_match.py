@@ -646,7 +646,7 @@ def _apply_op(order: list, op) -> list:
 
 
 # ------------------------------------------- side effects in an initialiser
-CALL_TOKEN_RE = re.compile(r"(?<![\w>.])([A-Za-z_]\w*)\s*\(")
+CALL_TOKEN_RE = re.compile(r"(?<!\w)([A-Za-z_]\w*)\s*\(")
 NON_CALL_KEYWORDS = {"sizeof", "if", "while", "for", "switch", "return",
                      "defined", "asm", "offsetof", "__alignof__"}
 
@@ -684,6 +684,14 @@ def initialiser_calls(item: str) -> list[str]:
     A cast does not match: in `(u32)(p)` the identifier is inside the parens
     and is followed by `)`, not `(`.  A macro that expands to a cast DOES
     match, which is the conservative direction -- the reader can clear it.
+
+    An INDIRECT call through a struct member matches too -- `p->fn(x)`,
+    `s.fn(x)`, `tbl[i].fn(x)`.  It is only the `(` that distinguishes a member
+    CALL from a member READ, so a lookbehind that excluded `>` and `.` went
+    blind to every interface dispatch in the tree, which is exactly the class
+    whose purity cannot be established from the source at all:
+    `(*gCameraInterface)->getCamera()` resolves to a DLL vtable slot.  Being
+    blind where the answer is least knowable is the wrong direction to fail in.
     """
     eq = initialiser_eq(item)
     if eq < 0:
@@ -867,6 +875,14 @@ def install_restore_guard(src_file: Path, original: bytes):
     the process is hard-killed (SIGTERM/SIGKILL, a wrapper timeout, a closed
     terminal) the next invocation finds the sidecar and restores from it before
     doing anything else.  atexit + SIGINT/SIGTERM handle the recoverable cases.
+
+    Restoring is CONDITIONAL on the file still holding the bytes this process
+    last wrote.  Without that test the exit path reverts the file to `original`
+    whatever is on disk, so a peer lane that edited the same file inside our
+    sweep window loses its work silently -- and this is the most-run tool in
+    the tree.  `stmt_sweep` grew the check when it was written; the copy here
+    did not, which is the same fix-at-one-paste-site shape the zero-key read
+    had.  Both now refuse and say so, keeping the sidecar for reconciliation.
     """
     import atexit
     import os
@@ -875,31 +891,37 @@ def install_restore_guard(src_file: Path, original: bytes):
     bak = src_file.with_suffix(src_file.suffix + ".brutebak")
     bak.write_bytes(original)
 
-    state = {"done": False}
+    state = {"done": False, "last": original, "keepbak": False}
 
     def restore(*_a):
         if state["done"]:
             return
         state["done"] = True
         try:
-            if src_file.read_bytes() != original:
-                src_file.write_bytes(original)
+            on_disk = src_file.read_bytes()
         except OSError:
-            pass
+            return
+        if on_disk == original:
+            return
+        if on_disk != state["last"]:
+            print(f"\n!! {src_file.name} was modified by another process "
+                  f"during this sweep -- NOT restoring.\n"
+                  f"!! pristine bytes are preserved in {bak.name}; "
+                  f"reconcile by hand.", file=sys.stderr)
+            state["keepbak"] = True
+            return
+        src_file.write_bytes(original)
 
     def finish():
         restore()
-        try:
-            bak.unlink()
-        except OSError:
-            pass
+        if not state["keepbak"]:
+            try:
+                bak.unlink()
+            except OSError:
+                pass
 
     def on_signal(signum, _frame):
-        restore()
-        try:
-            bak.unlink()
-        except OSError:
-            pass
+        finish()
         os._exit(130)
 
     atexit.register(finish)
@@ -912,6 +934,24 @@ def install_restore_guard(src_file: Path, original: bytes):
         except (ValueError, OSError):
             pass
 
+    def write(data: bytes) -> bool:
+        """Write `data`, but only while the file still holds OUR last bytes."""
+        try:
+            on_disk = src_file.read_bytes()
+        except OSError:
+            on_disk = state["last"]
+        if on_disk != state["last"]:
+            print(f"\n!! {src_file.name} changed underneath this sweep "
+                  f"(peer edit) -- refusing to write.\n"
+                  f"!! pristine bytes preserved in {bak.name}.",
+                  file=sys.stderr)
+            state["done"] = True
+            state["keepbak"] = True
+            return False
+        state["last"] = data
+        src_file.write_bytes(data)
+        return True
+
     def keep(newbytes: bytes):
         """Adopt `newbytes` as the value to leave on disk (a confirmed win)."""
         state["done"] = True
@@ -921,7 +961,7 @@ def install_restore_guard(src_file: Path, original: bytes):
         except OSError:
             pass
 
-    return keep
+    return write, keep
 
 
 def recover_stale_backup(src_file: Path):
@@ -1044,7 +1084,7 @@ def main():
             print(newsrc[blocks[bi]["start"]:blocks[bi]["start"] + 300])
         return
 
-    keep = install_restore_guard(src_file, original)
+    write, keep = install_restore_guard(src_file, original)
 
     # baseline measure. ALWAYS rebuild cur_o from the on-disk (original) source
     # first: in a multi-agent tree the .o can be stale (a peer rebuilt it, or a
@@ -1099,8 +1139,15 @@ def main():
     t0 = time.time()
     stop = False
 
+    class PeerEdit(Exception):
+        pass
+
     def trial(orders):
-        src_file.write_bytes(render(orders).encode("latin-1"))
+        # A refused write means a peer edited the file. Abort loudly: an
+        # aborted sweep that returns quietly reads exactly like an exhausted
+        # one, and every "N orderings, 0 hits" count downstream would be wrong.
+        if not write(render(orders).encode("latin-1")):
+            raise PeerEdit()
         if not rebuild(unit["object"], args.version):
             return None
         px, reg = proxy()
@@ -1173,9 +1220,12 @@ def main():
                               "  <== best")
             else:
                 print(f"\n# cross-product skipped ({combos} combos > cap)")
+    except PeerEdit:
+        raise SystemExit("aborted: the source file was edited by another "
+                         "process mid-sweep")
     finally:
         # never leave a permutation on disk while deciding
-        src_file.write_bytes(original)
+        write(original)
 
     print(f"\n# orderings BUILT {n_built}, rejected by the compiler "
           f"{n_failed} (planned {total}) -- a row whose declarations "
@@ -1195,7 +1245,7 @@ def main():
                                        f"(block {bi})"):
             flagged = True
     if flagged and not args.allow_side_effect_reorder:
-        src_file.write_bytes(original)
+        write(original)
         rebuild(unit["object"], args.version)
         print("\n# NOT APPLIED: the winning ordering reorders side effects.")
         return
@@ -1203,7 +1253,8 @@ def main():
     # commit gate: true fuzzy must strictly rise
     if held and cur_fz > base_fz + 1e-4:
         newbytes = render(held).encode("latin-1")
-        src_file.write_bytes(newbytes)
+        if not write(newbytes):
+            return
         rebuild(unit["object"], args.version)
         confirm = fuzzy()
         print(f"\n# APPLIED: fuzzy {base_fz:.4f}% -> {confirm:.4f}%")
@@ -1212,7 +1263,7 @@ def main():
         if confirm <= base_fz + 1e-4:
             print("# WARNING: re-measured fuzzy did NOT confirm the gain -- "
                   "restoring original.")
-            src_file.write_bytes(original)
+            write(original)
             rebuild(unit["object"], args.version)
         else:
             keep(newbytes)

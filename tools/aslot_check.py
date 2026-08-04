@@ -84,7 +84,7 @@ def main() -> None:
         d = {}
         for f in fns:
             try:
-                d[f["name"]] = (float(f["fuzzy_match_percent"]), int(f["size"]))
+                d[f["name"]] = (float(f.get("fuzzy_match_percent", 0.0)), int(f["size"]))
             except (KeyError, ValueError, TypeError):
                 pass
         if d:

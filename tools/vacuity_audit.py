@@ -77,6 +77,11 @@ import tempfile
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PY = sys.executable
 
+# The measure objdiff omits when it is 0.0.  Held in a name so the ablation
+# that demonstrates the pre-fix unguarded read is not itself flagged by the
+# scan that looks for one.
+ZERO_KEY = "fuzzy_match_percent"
+
 
 # ------------------------------------------------------------------ ELF32 BE
 #
@@ -542,10 +547,12 @@ def family_build(unit_object, verbose):
         except Exception:
             handled = False
         # ABLATION: the pre-fix unguarded read must still blow up, or the
-        # tolerance above is somebody else's doing.
+        # tolerance above is somebody else's doing.  The key goes through a
+        # name, not a literal, so this demonstration of the defect is not
+        # itself an instance of it for the scan further down.
         try:
             u_ = unitfuzzy.measure(None, None)
-            float(u_["functions"][0]["fuzzy_match_percent"])
+            float(u_["functions"][0][ZERO_KEY])
             ablated_raises = False
         except KeyError:
             ablated_raises = True
@@ -579,7 +586,7 @@ def family_build(unit_object, verbose):
             m = unitfuzzy.measure(u, "GSAE01")
         except Exception:
             continue
-        got = next((f["fuzzy_match_percent"]
+        got = next((f.get("fuzzy_match_percent")
                     for f in (m.get("functions") or []) if f["name"] == fn),
                    None)
         checked += 1
@@ -592,62 +599,154 @@ def family_build(unit_object, verbose):
     print("  [%s] unitfuzzy agrees with report.json on %d/%d sub-100 "
           "functions" % ("held" if ok else "DIVERGES", agreed, checked))
 
-    # THE SAME TRAP, EVERYWHERE ELSE IT WAS PASTED.  `fuzzy_measure` was fixed
-    # where the defect was noticed; `stmt_sweep`, `permsweep` and
-    # `probe_spelling` each carried their own copy of the identical unguarded
-    # read and none of them was touched.  A fix applied at one call site is not
-    # a fix, so the rule is checked over every tool that RANKS a probe: either
-    # the file never subscripts the key, or it tests for the key first (the
-    # `score_delta_gate` / `flag_probe` shape).
+    # THE SAME TRAP, EVERYWHERE ELSE IT WAS PASTED -- AND THE OTHER POLARITY.
+    #
+    # `fuzzy_measure` was fixed where the defect was noticed; `stmt_sweep`,
+    # `permsweep` and `probe_spelling` each carried their own copy of the
+    # identical unguarded read and none was touched.  Enumerating fourteen
+    # ranking tools by name fixed that round and reproduced the shape one level
+    # up: the SCOPE was a hand-written list, so a reader outside it is invisible
+    # exactly the way a paste site outside the fix was.  The scope is now
+    # DERIVED -- every tool that reads one of these keys is in it.
+    #
+    # And the rule is bigger than the key it was found on.  `report.json`
+    # SERIALISES NO ZERO, at any level: `fuzzy_match_percent`,
+    # `complete_units`, `matched_code`, `matched_data`, `matched_functions`,
+    # `total_code` and `total_data` are all simply absent when they are 0, and
+    # NONE of them is ever present-as-zero.  So the key set is derived from the
+    # live report too, and both failure modes are checked:
+    #
+    #   * a bare subscript  -> KeyError, kills a sweep mid-run, and an aborted
+    #     sweep reads exactly like an exhausted one;
+    #   * `.get(key, 100.0)` -> reports the WORST rows as perfect and a
+    #     `< 100.0` filter then drops them in silence.  This one is worse: a
+    #     crash is loud, a screen that finds nothing looks like a clean tree.
     import ast
 
-    def unguarded(text):
+    rep_doc = rep
+    omit_keys = set()
+    for u in rep_doc["units"]:
+        for scope_ in ([u.get("measures") or {}] + list(u.get("functions") or [])
+                       + list(u.get("sections") or [])):
+            for k in ("fuzzy_match_percent", "complete_units", "matched_code",
+                      "matched_data", "matched_functions", "total_code",
+                      "total_data"):
+                if k not in scope_ and any(k in s for s in
+                                           (rep_doc["measures"],)):
+                    omit_keys.add(k)
+    present_zero = [(u["name"], k) for u in rep_doc["units"]
+                    for k, v in (u.get("measures") or {}).items() if v == 0]
+    ok = bool(omit_keys) and not present_zero
+    bad += not ok
+    print("  [%s] report.json serialises no zero: %d measure keys go ABSENT, "
+          "0 are present-as-zero (%d present-as-zero found)"
+          % ("held" if ok else "PREMISE BROKEN", len(omit_keys),
+             len(present_zero)))
+
+    def _guarded_keys(tree):
+        """Keys the file tests for with `in` / `not in` -- AST, so the guard is
+        found whichever quote style wrote it."""
+        out = set()
+        for n in ast.walk(tree):
+            if isinstance(n, ast.Compare) and isinstance(n.left, ast.Constant) \
+               and isinstance(n.left.value, str) \
+               and any(isinstance(o, (ast.In, ast.NotIn)) for o in n.ops):
+                out.add(n.left.value)
+        return out
+
+    def offences(text, keys):
+        """(bare-subscript keys, [(key, default)] positive defaults)."""
         try:
             tree = ast.parse(text)
         except SyntaxError:
-            return False
-        subs = [n for n in ast.walk(tree)
-                if isinstance(n, ast.Subscript)
-                and isinstance(getattr(n, "slice", None), ast.Constant)
-                and n.slice.value == "fuzzy_match_percent"]
-        if not subs:
-            return False
-        return '"fuzzy_match_percent" in ' not in text and \
-               '"fuzzy_match_percent" not in ' not in text
+            return set(), []
+        guarded = _guarded_keys(tree)
+        bare, defaults = set(), []
+        for n in ast.walk(tree):
+            if isinstance(n, ast.Subscript) \
+               and isinstance(getattr(n, "slice", None), ast.Constant) \
+               and n.slice.value in keys and n.slice.value not in guarded:
+                base = n.value
+                chain = isinstance(base, ast.Subscript) \
+                    and isinstance(getattr(base, "slice", None), ast.Constant) \
+                    and base.slice.value == "measures"
+                if not chain:
+                    bare.add(n.slice.value)
+            if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) \
+               and n.func.attr == "get" and len(n.args) > 1 \
+               and isinstance(n.args[0], ast.Constant) \
+               and n.args[0].value in keys \
+               and isinstance(n.args[1], ast.Constant) \
+               and isinstance(n.args[1].value, (int, float)) \
+               and not isinstance(n.args[1].value, bool) \
+               and n.args[1].value > 0:
+                defaults.append((n.args[0].value, n.args[1].value))
+        return bare, defaults
 
-    RANKERS = ("brute_match.py", "decl_split_sweep.py", "stmt_sweep.py",
-               "expr_sweep.py", "perm_solve.py", "deep_decl.py",
-               "slot_oracle.py", "permsweep.py", "probe_spelling.py",
-               "flag_probe.py", "batch_brute.py", "operand_sweep.py",
-               "score_delta_gate.py", "unitfuzzy.py")
-    offenders = []
-    checked_files = 0
-    for tool in RANKERS:
-        path = os.path.join(REPO, "tools", tool)
-        if not os.path.exists(path):
+    tools_dir = os.path.join(REPO, "tools")
+    readers, bare_off, dflt_off = [], [], []
+    for fn_ in sorted(os.listdir(tools_dir)):
+        if not fn_.endswith(".py"):
             continue
-        checked_files += 1
-        if unguarded(open(path).read()):
-            offenders.append(tool)
-    ok = not offenders and checked_files >= 10
+        text = open(os.path.join(tools_dir, fn_)).read()
+        if not any(k in text for k in omit_keys):
+            continue
+        readers.append(fn_)
+        b, d = offences(text, omit_keys)
+        if b:
+            bare_off.append((fn_, sorted(b)))
+        if d:
+            dflt_off.append((fn_, d))
+    ok = not bare_off and len(readers) >= 30
     bad += not ok
-    print("  [%s] no ranking tool reads fuzzy_match_percent unguarded "
-          "(%d files checked)%s"
-          % ("held" if ok else "UNGUARDED", checked_files,
-             "" if not offenders else "  *** " + ", ".join(offenders)))
+    print("  [%s] no tool subscripts an omitted-at-zero measure unguarded "
+          "(%d readers discovered)%s"
+          % ("held" if ok else "UNGUARDED", len(readers),
+             "" if not bare_off else "  *** " + ", ".join(
+                 "%s%s" % (f, k) for f, k in bare_off)))
+    ok = not dflt_off
+    bad += not ok
+    print("  [%s] ...and none DEFAULTS one to a positive value, which would "
+          "report a 0.0 row as perfect%s"
+          % ("held" if ok else "WRONG DEFAULT",
+             "" if not dflt_off else "  *** " + ", ".join(
+                 "%s%s" % (f, d) for f, d in dflt_off)))
 
-    # ABLATION: the scan must SEE one.  A checker that finds nothing because it
-    # is looking in the wrong place is indistinguishable from a clean tree.
-    saw = unguarded("def f(r):\n    return float(r['fuzzy_match_percent'])\n")
-    quiet = unguarded("def f(r):\n    return float(r.get('fuzzy_match_percent') or 0)\n")
-    guarded_ok = unguarded('def f(r):\n'
-                           '    if "fuzzy_match_percent" in r:\n'
-                           '        return float(r["fuzzy_match_percent"])\n')
-    ok = saw and not quiet and not guarded_ok
+    # ABLATION.  A checker that finds nothing because it is looking in the
+    # wrong place is indistinguishable from a clean tree, so every arm gets an
+    # injected subject -- including the two spellings that must NOT fire and
+    # the single-quoted guard the old textual test could not see.
+    K = "fuzzy_match_percent"
+    probes = [
+        ("bare subscript caught", "def f(r):\n    return float(r['%s'])\n" % K,
+         True, False),
+        (".get with no default passes", "def f(r):\n    return r.get('%s')\n" % K,
+         False, False),
+        (".get(key, 0.0) passes", "def f(r):\n    return r.get('%s', 0.0)\n" % K,
+         False, False),
+        (".get(key, -1.0) passes (the MISSING sentinel)",
+         "def f(r):\n    return r.get('%s', -1.0)\n" % K, False, False),
+        (".get(key, 100.0) caught",
+         "def f(r):\n    return r.get('%s', 100.0)\n" % K, False, True),
+        ("single-quoted `in` guard passes",
+         "def f(r):\n    if '%s' in r:\n        return r['%s']\n" % (K, K),
+         False, False),
+        ("double-quoted `in` guard passes",
+         'def f(r):\n    if "%s" in r:\n        return r["%s"]\n' % (K, K),
+         False, False),
+        ("a ['measures'] chain passes",
+         "def f(u):\n    return u['measures']['%s']\n" % K, False, False),
+    ]
+    misread = []
+    for label, text, want_bare, want_dflt in probes:
+        b, d = offences(text, {K})
+        if bool(b) != want_bare or bool(d) != want_dflt:
+            misread.append(label)
+    ok = not misread
     bad += not ok
-    print("  [%s] ...and the scan catches an injected unguarded read, passes "
-          "`.get`, and passes an `in`-guarded subscript (%s/%s/%s)"
-          % ("held" if ok else "BLIND", saw, quiet, guarded_ok))
+    print("  [%s] the scan reads all %d injected spellings correctly%s"
+          % ("held" if ok else "BLIND", len(probes),
+             "" if not misread else "  *** " + "; ".join(misread)))
     return bad
 
 
@@ -877,6 +976,44 @@ def family_parser(verbose):
     for t in quiet:
         print("        *** flagged: %s" % t)
 
+    # THE CALLS THE DETECTOR COULD NOT SEE.  Only the `(` tells a member CALL
+    # apart from a member READ, so a lookbehind that skipped an identifier
+    # preceded by `>` or `.` went blind to every indirect dispatch -- and this
+    # tree dispatches its DLL interfaces exactly that way.  Those are the calls
+    # whose purity is LEAST establishable from source, so they are the last
+    # ones a conservative detector may miss.
+    indirect = [
+        "int* cam = (int*)(*gCameraInterface)->getCamera();",
+        "PauseMenuCharacterState* s = mapEvents->getCurCharacterState();",
+        "int pt = (int)(*gRomCurveInterface)->getById(found);",
+        "f32 v = iface.getValue(obj);",
+        "int r = handlers[i].run(a);",
+    ]
+    unseen = [t for t in indirect if not B.initialiser_calls(t)]
+    ok = not unseen
+    bad += not ok
+    print("  [%s] an INDIRECT call through a struct member is a call "
+          "(%d/%d seen)" % ("held" if ok else "BLIND",
+                            len(indirect) - len(unseen), len(indirect)))
+    for t in unseen:
+        print("        *** missed: %s" % t)
+
+    # ABLATION: restore the lookbehind that excluded `>` and `.` and require
+    # every one of those subjects to go dark again, so the detection above is
+    # the fix doing work and not the regex being permissive for another reason.
+    saved_re = B.CALL_TOKEN_RE
+    try:
+        B.CALL_TOKEN_RE = re.compile(r"(?<![\w>.])([A-Za-z_]\w*)\s*\(")
+        went_dark = [t for t in indirect if not B.initialiser_calls(t)]
+        still_seen = B.initialiser_calls("int w = plainCall(1);")
+    finally:
+        B.CALL_TOKEN_RE = saved_re
+    ok = len(went_dark) == len(indirect) and still_seen == ["plainCall"]
+    bad += not ok
+    print("  [%s] the pre-fix lookbehind misses all %d of them while still "
+          "seeing a direct call (%d dark)"
+          % ("held" if ok else "VACUOUS", len(indirect), len(went_dark)))
+
     # ABLATION: a detector that never finds a call reports nothing at all and
     # looks exactly like a clean tree, so blind the call scanner and require
     # the flag to disappear.
@@ -891,6 +1028,41 @@ def family_parser(verbose):
     print("  [%s] blinding the call scanner makes the flag vanish, so the "
           "flag comes from the CALL (%s)"
           % ("held" if ok else "VACUOUS", blinded))
+
+    # THE OTHER THING A SWEEP CAN DESTROY: A PEER'S EDIT.
+    #
+    # Every sweeper writes variants into a real source file and restores at
+    # exit.  `stmt_sweep` compares the on-disk bytes against the bytes IT last
+    # wrote before restoring, so a peer lane that edited the same file inside
+    # the sweep window is not reverted; the copy in `brute_match` -- the tool
+    # the fleet actually runs, and the one `decl_split_sweep` imports -- did
+    # not, and silently overwrote the peer with its own pristine copy.  No
+    # score gate can see a lost edit either, so the guard gets subjects.
+    import tempfile as _tf
+    from pathlib import Path as _Path
+    for mod_name, mod in (("brute_match", B),
+                          ("stmt_sweep", __import__("stmt_sweep"))):
+        d = _tf.mkdtemp(prefix="vac_guard_")
+        f = os.path.join(d, "probe.c")
+        orig = b"int a;\n"
+        open(f, "wb").write(orig)
+        got = mod.install_restore_guard(_Path(f), orig)
+        w, _k = got if isinstance(got, tuple) else (None, got)
+        arity_ok = w is not None
+        peer_refused = own_ok = False
+        if arity_ok:
+            own_ok = w(b"int b;\n") and open(f, "rb").read() == b"int b;\n"
+            open(f, "wb").write(b"/* peer lane */\nint a;\n")   # peer edit
+            peer_refused = (w(b"int c;\n") is False
+                            and open(f, "rb").read() == b"/* peer lane */\nint a;\n")
+        for ok_, msg in (
+                (arity_ok, "%s's restore guard hands back a tracked writer"
+                           % mod_name),
+                (own_ok, "  ...which writes while the file still holds our bytes"),
+                (peer_refused, "  ...and REFUSES once a peer has edited it")):
+            bad += not ok_
+            print("  [%s] %s" % ("held" if ok_ else "CLOBBERS", msg))
+        shutil.rmtree(d, ignore_errors=True)
 
     # And the gate must be wired into both sweepers, not merely defined.
     wired = 0

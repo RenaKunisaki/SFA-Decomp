@@ -93,7 +93,7 @@ def main() -> int:
         if args.unit and args.unit not in unit["name"]:
             continue
         fns = [f for f in unit.get("functions", [])
-               if f.get("fuzzy_match_percent", 100.0) < 100.0]
+               if f.get("fuzzy_match_percent", 0.0) < 100.0]
         if not fns:
             continue
 
@@ -120,11 +120,12 @@ def main() -> int:
             if score <= 0:
                 continue
             size = int(f["size"])
-            wb = size * (1.0 - f["fuzzy_match_percent"] / 100.0)
+            fz = f.get("fuzzy_match_percent", 0.0)
+            wb = size * (1.0 - fz / 100.0)
             if wb < args.min_wb:
                 continue
             rows.append((score, wb, unit["name"], name,
-                         f["fuzzy_match_percent"], xd, addd))
+                         fz, xd, addd))
 
     rows.sort(key=lambda r: (-r[0] * r[1]))
     print(f"{'unit':30} {'function':40} {'fuzzy':>8} {'wB':>7} {'xΔ':>4} {'addΔ':>5}")

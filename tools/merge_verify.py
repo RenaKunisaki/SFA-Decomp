@@ -115,13 +115,16 @@ def main():
 
     m = measures()
     if m:
-        print(f"[5] fuzzy {m['fuzzy_match_percent']:.6f}  fns {m['matched_functions']}  "
-              f"complete {m['complete_units']}/{m['total_units']}  data {m['matched_data_percent']:.5f}")
+        # report.json omits EVERY zero measure, so read through a default.
+        g = lambda k: m.get(k) or 0
+        print(f"[5] fuzzy {g('fuzzy_match_percent'):.6f}  fns {g('matched_functions')}  "
+              f"complete {g('complete_units')}/{g('total_units')}  "
+              f"data {g('matched_data_percent'):.5f}")
         if a.baseline and pathlib.Path(a.baseline).exists():
             b = json.loads(pathlib.Path(a.baseline).read_text())["measures"]
             for k, fmt in (("fuzzy_match_percent", "%+.6f"), ("matched_functions", "%+d"),
                            ("complete_units", "%+d"), ("matched_data_percent", "%+.5f")):
-                print(f"      {k:24s} {fmt % (m[k] - b[k])}")
+                print(f"      {k:24s} {fmt % ((m.get(k) or 0) - (b.get(k) or 0))}")
     return 1 if fail else 0
 
 

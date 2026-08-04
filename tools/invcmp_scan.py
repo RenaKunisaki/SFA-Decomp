@@ -113,9 +113,9 @@ def main():
         cfg = by_src.get(sp[4:] if sp.startswith("src/") else sp)
         if cfg is None:
             continue
-        syms = [(f["name"], f.get("fuzzy_match_percent", 100.0))
+        syms = [(f["name"], f.get("fuzzy_match_percent", 0.0))
                 for f in u.get("functions", [])
-                if f.get("fuzzy_match_percent", 100.0) < 100.0]
+                if f.get("fuzzy_match_percent", 0.0) < 100.0]
         if not syms:
             continue
         obj_tgt = REPO / cfg["object"]
