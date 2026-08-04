@@ -168,27 +168,27 @@ void gunpowderBarrel_launchAtTarget(GameObject* obj, u8 usePlayerStrength) {
 
 void gunpowderBarrel_setPlayerHeldState(GameObject* obj, u8 heldByPlayer) {
     GunpowderBarrelState* state;
-    int objectAddress = (int)obj;
+    GameObject* objectAddress = obj;
     ObjHitsPriorityState* hitState;
-    state = ((GameObject*)objectAddress)->extra;
-    hitState = (ObjHitsPriorityState*)((GameObject*)objectAddress)->anim.hitReactState;
+    state = objectAddress->extra;
+    hitState = (ObjHitsPriorityState*)objectAddress->anim.hitReactState;
     if (heldByPlayer != 0) {
         hitState->lateralResponseWeight = 1;
         hitState->axialResponseWeight = 1;
-        ((GameObject*)objectAddress)->anim.resetHitboxFlags =
-            (u8)(((GameObject*)objectAddress)->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
+        objectAddress->anim.resetHitboxFlags =
+            (u8)(objectAddress->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
         state->heldFlags.playerHeld = 1;
         state->motionFlags = state->motionFlags & ~GUNPOWDER_BARREL_MOTION_FLAG_IN_FLIGHT;
         ObjHits_SetFlags((ObjAnimComponent*)objectAddress, OBJHITS_PRIORITY_STATE_IMMOVABLE | 0x80);
         ObjHits_ClearSourceMask((ObjAnimComponent*)objectAddress, 1);
-        ObjHits_EnableObject((GameObject*)objectAddress);
-        ObjHits_SyncObjectPositionIfDirty((GameObject*)objectAddress);
+        ObjHits_EnableObject(objectAddress);
+        ObjHits_SyncObjectPositionIfDirty(objectAddress);
     } else {
-        hitState->lateralResponseWeight = ((GameObject*)objectAddress)->anim.modelInstance->lateralResponseWeight;
-        hitState->axialResponseWeight = ((GameObject*)objectAddress)->anim.modelInstance->axialResponseWeight;
+        hitState->lateralResponseWeight = objectAddress->anim.modelInstance->lateralResponseWeight;
+        hitState->axialResponseWeight = objectAddress->anim.modelInstance->axialResponseWeight;
         state->heldFlags.playerHeld = 0;
-        ((GameObject*)objectAddress)->anim.resetHitboxFlags =
-            (u8)(((GameObject*)objectAddress)->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
+        objectAddress->anim.resetHitboxFlags =
+            (u8)(objectAddress->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
         ObjHits_ClearFlags((ObjAnimComponent*)objectAddress, OBJHITS_PRIORITY_STATE_IMMOVABLE);
         state->motionFlags = state->motionFlags | GUNPOWDER_BARREL_MOTION_FLAG_SLEEPING;
     }

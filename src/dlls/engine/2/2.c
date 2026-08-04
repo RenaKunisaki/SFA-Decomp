@@ -996,7 +996,7 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
     GameObject* parent;
     u8* srcSeq;
     ObjSeqAnimPlacement* setup;
-    u8* seq;
+    ObjSeqState* seq;
     int size;
     s16 heading;
     int camArg;
@@ -1255,36 +1255,36 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
             newObj = objSetupObject(&setup->base, 5, -1, -1, parent);
             newObj->seqIndex = -2;
             seq = newObj->extra;
-            ((ObjSeqState*)seq)->heading = heading;
-            ((ObjSeqState*)seq)->flags = -1;
-            ((ObjSeqState*)seq)->flags = ((ObjSeqState*)seq)->flags & ~0x400;
-            ((ObjSeqState*)seq)->conditionOpcodes[0] = 0;
-            ((ObjSeqState*)seq)->conditionOpcodes[1] = 0;
-            ((ObjSeqState*)seq)->conditionOpcodes[2] = 0;
-            ((ObjSeqState*)seq)->conditionOpcodes[3] = 0;
+            seq->heading = heading;
+            seq->flags = -1;
+            seq->flags = seq->flags & ~0x400;
+            seq->conditionOpcodes[0] = 0;
+            seq->conditionOpcodes[1] = 0;
+            seq->conditionOpcodes[2] = 0;
+            seq->conditionOpcodes[3] = 0;
             if (walk2->flags & 1)
             {
-                ((ObjSeqState*)seq)->flags = ((ObjSeqState*)seq)->flags & ~1;
+                seq->flags = seq->flags & ~1;
             }
             if (walk2->flags & 2)
             {
-                ((ObjSeqState*)seq)->flags = ((ObjSeqState*)seq)->flags & ~2;
+                seq->flags = seq->flags & ~2;
             }
             if (walk2->flags & 4)
             {
-                ((ObjSeqState*)seq)->heading = 0;
+                seq->heading = 0;
             }
             if (walk2->flags & 8)
             {
-                ((ObjSeqState*)seq)->flags = ((ObjSeqState*)seq)->flags & ~0x100;
+                seq->flags = seq->flags & ~0x100;
             }
             if (walk2->flags & 0x80)
             {
-                ((ObjSeqState*)seq)->stateFlags = ((ObjSeqState*)seq)->stateFlags | 4;
+                seq->stateFlags = seq->stateFlags | 4;
             }
             if (walk2->flags & 0x40)
             {
-                ((ObjSeqState*)seq)->stateFlags = ((ObjSeqState*)seq)->stateFlags | 2;
+                seq->stateFlags = seq->stateFlags | 2;
             }
             if (walk2->flags & 0x2000)
             {
@@ -1297,7 +1297,7 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
                     gObjSeqCamOwnerSeqIndex = obj->seqIndex;
                     curSeqNo = slot;
                 }
-                ((ObjSeqState*)seq)->movementState = 4;
+                seq->movementState = 4;
                 if (camArg == 0)
                 {
                     camArg = walk2->flags & 0xf00;
@@ -1307,14 +1307,14 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
             }
             else
             {
-                ((ObjSeqState*)seq)->movementState = -1;
+                seq->movementState = -1;
             }
-            if ((objId == OBJSEQ_KRYSTAL_OBJ || objId == OBJSEQ_SABRE_OBJ) && (((ObjSeqState*)seq)->flags & 1))
+            if ((objId == OBJSEQ_KRYSTAL_OBJ || objId == OBJSEQ_SABRE_OBJ) && (seq->flags & 1))
             {
                 playerSetInCutscene(player);
             }
-            ((ObjSeqState*)seq)->targetObjId = walk2->targetObjId;
-            ((ObjSeqState*)seq)->savedFlags = ((ObjSeqState*)seq)->flags;
+            seq->targetObjId = walk2->targetObjId;
+            seq->savedFlags = seq->flags;
             if (idx == 0)
             {
                 *(u8*)((u8*)&st->cmdFlags[0] + obj->seqIndex) = walk2->flags;

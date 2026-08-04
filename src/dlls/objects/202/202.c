@@ -836,7 +836,7 @@ void iceBaddie_spawnIceBall(GameObject* obj, IceBaddieControl* control) {
 }
 
 void iceBaddie_updateControlEffects(GameObject* obj, GroundBaddieState* state) {
-    int controlAddress = (int)state->control;
+    IceBaddieControl* controlAddress = state->control;
     int paletteIndex;
     u8* particleArgs;
     int i;
@@ -844,11 +844,11 @@ void iceBaddie_updateControlEffects(GameObject* obj, GroundBaddieState* state) {
     f32 contactScale;
 
     if (obj->anim.romDefNo == 99) {
-        ((IceBaddieControl*)controlAddress)->fxScale = 1.7f;
+        controlAddress->fxScale = 1.7f;
         shakeScale = 2.0f;
     } else {
         contactScale = 1.0f;
-        ((IceBaddieControl*)controlAddress)->fxScale = contactScale;
+        controlAddress->fxScale = contactScale;
         shakeScale = contactScale;
     }
     paletteIndex = 0;
@@ -859,48 +859,48 @@ void iceBaddie_updateControlEffects(GameObject* obj, GroundBaddieState* state) {
         }
     }
     particleArgs = &gIceBaddieParticleArgsTable[paletteIndex * 3];
-    if ((((IceBaddieControl*)controlAddress)->effectFlags & ICEBADDIE_FX_SPAWN_ICEBALL) != 0) {
-        iceBaddie_spawnIceBall(obj, (IceBaddieControl*)controlAddress);
-        ((IceBaddieControl*)controlAddress)->effectFlags &= ~ICEBADDIE_FX_SPAWN_ICEBALL;
+    if ((controlAddress->effectFlags & ICEBADDIE_FX_SPAWN_ICEBALL) != 0) {
+        iceBaddie_spawnIceBall(obj, controlAddress);
+        controlAddress->effectFlags &= ~ICEBADDIE_FX_SPAWN_ICEBALL;
     }
-    if ((((IceBaddieControl*)controlAddress)->effectFlags & ICEBADDIE_FX_BURST) != 0 &&
+    if ((controlAddress->effectFlags & ICEBADDIE_FX_BURST) != 0 &&
         (state->configFlags & 0x40) == 0) {
         for (i = 0; i < 4; i++) {
             (*gPartfxInterface)
-                ->spawnObject((void*)obj, ICEBADDIE_PARTICLE_CONTACT, &((IceBaddieControl*)controlAddress)->particlePositionX, 0x200001, -1,
+                ->spawnObject((void*)obj, ICEBADDIE_PARTICLE_CONTACT, &controlAddress->particlePositionX, 0x200001, -1,
                               particleArgs);
         }
     }
-    if ((((IceBaddieControl*)controlAddress)->effectFlags & ICEBADDIE_FX_PUFF) != 0 &&
+    if ((controlAddress->effectFlags & ICEBADDIE_FX_PUFF) != 0 &&
         (state->configFlags & 0x40) == 0) {
         (*gPartfxInterface)
-            ->spawnObject((void*)obj, ICEBADDIE_PARTICLE_PUFF, &((IceBaddieControl*)controlAddress)->particlePositionX, 0x200001, -1,
+            ->spawnObject((void*)obj, ICEBADDIE_PARTICLE_PUFF, &controlAddress->particlePositionX, 0x200001, -1,
                           particleArgs);
     }
-    if ((((IceBaddieControl*)controlAddress)->effectFlags & ICEBADDIE_FX_IMPACT) != 0) {
+    if ((controlAddress->effectFlags & ICEBADDIE_FX_IMPACT) != 0) {
         CameraShake_Enable();
         CameraShake_SetOffset(2.0f * shakeScale);
         for (i = 0; i < 0x28; i++) {
             (*gPartfxInterface)
-                ->spawnObject((void*)obj, ICEBADDIE_PARTICLE_PUFF, &((IceBaddieControl*)controlAddress)->particlePositionX, 0x200001, -1,
+                ->spawnObject((void*)obj, ICEBADDIE_PARTICLE_PUFF, &controlAddress->particlePositionX, 0x200001, -1,
                               particleArgs);
         }
     }
-    if ((((IceBaddieControl*)controlAddress)->effectFlags & ICEBADDIE_FX_LANDING) != 0) {
+    if ((controlAddress->effectFlags & ICEBADDIE_FX_LANDING) != 0) {
         CameraShake_Enable();
         CameraShake_SetOffset(3.0f * shakeScale);
         for (i = 0; i < 0x28; i++) {
             (*gPartfxInterface)
-                ->spawnObject((void*)obj, ICEBADDIE_PARTICLE_PUFF, &((IceBaddieControl*)controlAddress)->particlePositionX, 0x200001, -1,
+                ->spawnObject((void*)obj, ICEBADDIE_PARTICLE_PUFF, &controlAddress->particlePositionX, 0x200001, -1,
                               particleArgs);
         }
         for (i = 0; i < 10; i++) {
             (*gPartfxInterface)
-                ->spawnObject((void*)obj, ICEBADDIE_PARTICLE_DEBRIS, &((IceBaddieControl*)controlAddress)->particlePositionX, 0x200001, -1,
+                ->spawnObject((void*)obj, ICEBADDIE_PARTICLE_DEBRIS, &controlAddress->particlePositionX, 0x200001, -1,
                               particleArgs);
         }
     }
-    ((IceBaddieControl*)controlAddress)->effectFlags = 0;
+    controlAddress->effectFlags = 0;
 }
 
 void iceBaddie_updateEffectAnchors(GameObject* obj, GroundBaddieState* state) {

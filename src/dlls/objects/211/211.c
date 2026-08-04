@@ -1186,7 +1186,7 @@ void* gLandedArwingDefaultStateHandler;
 void dll_D3_update(GameObject* obj)
 {
     DllD3Placement* trans;
-    int* state;
+    GroundBaddieState* state;
     LandedArwingState* extra;
     GameObject* player;
     int hitCount;
@@ -1201,7 +1201,7 @@ void dll_D3_update(GameObject* obj)
 
     trans = (DllD3Placement*)(obj->anim.placementDataAddress);
     state = obj->extra;
-    extra = (LandedArwingState*)((GroundBaddieState*)state)->control;
+    extra = (LandedArwingState*)state->control;
     player = Obj_GetPlayerObject();
     searchRadius = 1e+06f;
 
@@ -1247,55 +1247,55 @@ void dll_D3_update(GameObject* obj)
 
     ObjAnim_AdvanceCurrentMove((int)obj, extra->animSpeed, timeDelta, NULL);
 
-    if (((GroundBaddieState*)state)->targetState != 1)
+    if (state->targetState != 1)
     {
         rc = (int)(*gBaddieControlInterface)
                  ->findAggroTarget(obj, state,
-                                   (f32)(u32)((GroundBaddieState*)state)->aggroRange, 0x8000);
+                                   (f32)(u32)state->aggroRange, 0x8000);
         if (rc != 0u)
         {
             (*gBaddieControlInterface)
-                ->startHitReaction(obj, state, &((GroundBaddieState*)state)->routeNav,
-                                   ((GroundBaddieState*)state)->gameBitB, NULL, 0, 1, 0, -1);
-            ((GroundBaddieState*)state)->baddie.targetObj = (void*)rc;
-            ((GroundBaddieState*)state)->baddie.hasTarget = 0;
-            ((GroundBaddieState*)state)->targetState = 1;
-            ((GroundBaddieState*)state)->subMode = 2;
+                ->startHitReaction(obj, state, &state->routeNav,
+                                   state->gameBitB, NULL, 0, 1, 0, -1);
+            state->baddie.targetObj = (void*)rc;
+            state->baddie.hasTarget = 0;
+            state->targetState = 1;
+            state->subMode = 2;
         }
 
-        if ((u32)((GroundBaddieState*)state)->baddie.targetObj != 0 && ((GroundBaddieState*)state)->targetState == 2)
+        if ((u32)state->baddie.targetObj != 0 && state->targetState == 2)
         {
-            if (((GroundBaddieState*)state)->baddie.targetDistance <= (f32)(u32)((GroundBaddieState*)state)->aggroRange)
+            if (state->baddie.targetDistance <= (f32)(u32)state->aggroRange)
             {
-                ((GroundBaddieState*)state)->targetState = 1;
+                state->targetState = 1;
             }
         }
     }
 
-    if (((GroundBaddieState*)state)->baddie.targetObj != 0u)
+    if (state->baddie.targetObj != 0u)
     {
-        dx = ((GameObject*)(((GroundBaddieState*)state)->baddie.targetObj))->anim.worldPosX -
+        dx = ((GameObject*)(state->baddie.targetObj))->anim.worldPosX -
              obj->anim.worldPosX;
-        dy = ((GameObject*)(((GroundBaddieState*)state)->baddie.targetObj))->anim.worldPosY -
+        dy = ((GameObject*)(state->baddie.targetObj))->anim.worldPosY -
              obj->anim.worldPosY;
-        dz = ((GameObject*)(((GroundBaddieState*)state)->baddie.targetObj))->anim.worldPosZ -
+        dz = ((GameObject*)(state->baddie.targetObj))->anim.worldPosZ -
              obj->anim.worldPosZ;
-        ((GroundBaddieState*)state)->baddie.targetDistance = sqrtf(dz * dz + (dx * dx + dy * dy));
+        state->baddie.targetDistance = sqrtf(dz * dz + (dx * dx + dy * dy));
     }
 
     (*gBaddieControlInterface)
-        ->processMessages(obj, state, &((GroundBaddieState*)state)->routeNav,
-                          ((GroundBaddieState*)state)->gameBitB, NULL, 0, 0, 0);
+        ->processMessages(obj, state, &state->routeNav,
+                          state->gameBitB, NULL, 0, 0, 0);
 
-    hits = (int)((GroundBaddieState*)state)->baddie.hitPoints;
+    hits = (int)state->baddie.hitPoints;
     if (hits > 0)
     {
         (*gBaddieControlInterface)
             ->updateHitReaction(obj, state, (void*)((int)state + 0x35c),
-                                ((GroundBaddieState*)state)->gameBitB, gStaffActionHitReactionMoves,
+                                state->gameBitB, gStaffActionHitReactionMoves,
                                 gStaffActionHitReactionDamage, 0,
                                 &gStaffActionHitLightParams);
-        if ((int)((GroundBaddieState*)state)->baddie.hitPoints < hits)
+        if ((int)state->baddie.hitPoints < hits)
         {
             (*(LandedArwingStaffInterface**)((GameObject*)player->childObjs[0])->anim.dll)
                 ->getSwipeTextureIndex((GameObject*)player->childObjs[0]);
@@ -1309,13 +1309,13 @@ void dll_D3_update(GameObject* obj)
     (*gBaddieControlInterface)
         ->updateGravity(obj, state, 0.0f, -1);
 
-    ((GroundBaddieState*)state)->savedPendingParentObj = obj->pendingParentObj;
+    state->savedPendingParentObj = obj->pendingParentObj;
     obj->pendingParentObj = 0;
 
     (*gPlayerInterface)->update(obj, state, timeDelta, timeDelta, gLandedArwingStateHandlers,
                                 &gLandedArwingDefaultStateHandler);
 
-    obj->pendingParentObj = ((GroundBaddieState*)state)->savedPendingParentObj;
+    obj->pendingParentObj = state->savedPendingParentObj;
 
     if (extra->flags92.scriptTargetActive == 0u && extra->surfaceMode == 6)
     {

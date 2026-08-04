@@ -525,7 +525,7 @@ void staffDrawSwipe(GameObject* obj, StaffState* swipe) {
 }
 void staff_setupSwipe(int unused1, StaffState* swipe, int unused3, int objArg) {
     ObjWeaponDaTable* weaponDaTable;
-    u8* slot;
+    StaffSwipeSlot* slot;
     GameObject* obj;
     ObjAnimState* model2;
     s16* tbl;
@@ -560,15 +560,15 @@ void staff_setupSwipe(int unused1, StaffState* swipe, int unused3, int objArg) {
         weaponDaTable = obj->anim.weaponDaTable;
         if (weaponDaTable != NULL && weaponDaTable->byteCount > 0) {
             f32 sw;
-            slot = (u8*)swipe->activeSlot;
+            slot = swipe->activeSlot;
             count = (int)(2.0f * model2->frameLength);
-            prog = ((StaffSwipeSlot*)slot)->lengthScale * model2->frameLength;
-            if (((StaffSwipeSlot*)slot)->flags & 1) {
+            prog = slot->lengthScale * model2->frameLength;
+            if (slot->flags & 1) {
                 swipe->anchorX = obj->anim.worldPosX;
                 swipe->anchorY = obj->anim.worldPosY;
                 swipe->anchorZ = obj->anim.worldPosZ;
                 swipe->progress = 0.0f;
-                ((StaffSwipeSlot*)slot)->flags &= ~1;
+                slot->flags &= ~1;
             }
             sw = swipe->progress;
             m4 = model2->framePhase;
@@ -601,7 +601,7 @@ void staff_setupSwipe(int unused1, StaffState* swipe, int unused3, int objArg) {
                 step = 1.0f / count2;
                 first = 1;
                 while (count2 != 0) {
-                    if (((StaffSwipeSlot*)slot)->endIndex == 2998) {
+                    if (slot->endIndex == 2998) {
                         count2 = 0;
                     } else {
                         frac += 0.1f;
@@ -664,7 +664,7 @@ void staff_setupSwipe(int unused1, StaffState* swipe, int unused3, int objArg) {
                             }
                             first = 0;
                         }
-                        vp = (SwipeVertex*)(((StaffSwipeSlot*)slot)->vertexData + ((StaffSwipeSlot*)slot)->endIndex * 20);
+                        vp = (SwipeVertex*)(slot->vertexData + slot->endIndex * 20);
                         vp[0].x = Curve_EvalBSpline(ptBx, frac, NULL);
                         vp[0].y = Curve_EvalBSpline(ptBy, frac, NULL);
                         vp[0].z = Curve_EvalBSpline(ptBz, frac, NULL);
@@ -690,8 +690,8 @@ void staff_setupSwipe(int unused1, StaffState* swipe, int unused3, int objArg) {
                             f32 clamped = (t < 0.0f) ? 0.0f : ((t > 255.0f) ? 255.0f : t);
                             vp[1].alpha = 255.0f - clamped;
                         }
-                        ((StaffSwipeSlot*)slot)->vertexCount += 2;
-                        ((StaffSwipeSlot*)slot)->endIndex += 2;
+                        slot->vertexCount += 2;
+                        slot->endIndex += 2;
                         count2 -= 1;
                     }
                 }
