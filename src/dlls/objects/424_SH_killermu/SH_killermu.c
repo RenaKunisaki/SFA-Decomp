@@ -165,7 +165,7 @@ void EnemyMushroom_update(GameObject* obj) {
     obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     state->stateFlags |= ENEMY_MUSHROOM_STATE_FLAG_ACTIVE;
 
-    if (objIsFrozen((u8*)obj)) {
+    if (objIsFrozen(obj)) {
         hitType = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitSphereIndex, &hitVolume, &hitInfo.x,
                                                      &hitInfo.y, &hitInfo.z);
         if (hitType != 0 && hitType != OBJHITS_SHAPE_MODEL_HIT_VOLUMES) {

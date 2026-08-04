@@ -469,7 +469,7 @@ void EdibleMushroom_update(GameObject* obj) {
     player = Obj_GetPlayerObject();
     enemy = getTrickyObject();
 
-    if (objIsFrozen((u8*)obj) != 0) {
+    if (objIsFrozen(obj) != 0) {
         return;
     }
 

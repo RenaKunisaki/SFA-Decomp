@@ -300,7 +300,7 @@ void MagicPlant_update(GameObject* obj) {
     }
 
     obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
-    if (objIsFrozen((u8*)obj) != 0) {
+    if (objIsFrozen(obj) != 0) {
         hitKind = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitSphereIndex, &hitVolume, &lightParams.posX,
                                                      &lightParams.posY, &lightParams.posZ);
         if ((hitKind != 0) && (hitKind != MAGICPLANT_HIT_KIND_FADE_IN)) {

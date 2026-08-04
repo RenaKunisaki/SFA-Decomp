@@ -447,9 +447,9 @@ void Obj_Shatter(GameObject* obj)
     (*gBoneParticleEffectInterface)->spawnEffect(obj, 0x7fc, NULL, 0x32, NULL);
 }
 
-int objIsFrozen(u8* obj)
+int objIsFrozen(GameObject* obj)
 {
-    return ((GameObject*)obj)->colorFadeFlags & OBJ_COLOR_FADE_FLAG_FROZEN;
+    return obj->colorFadeFlags & OBJ_COLOR_FADE_FLAG_FROZEN;
 }
 
 void Obj_StartModelFadeIn(GameObject* obj, int frames)

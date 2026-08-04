@@ -267,7 +267,7 @@ void firepipe_updateState(GameObject* obj)
         }
     }
 
-    if (objIsFrozen((u8*)obj) != 0)
+    if (objIsFrozen(obj) != 0)
     {
         flags->emitting = 0;
         flags->restartPending = 1;

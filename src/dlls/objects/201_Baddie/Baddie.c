@@ -2642,7 +2642,7 @@ void enemy_update(GameObject* obj)
             return;
         }
     }
-    if (objIsFrozen((u8*)obj) != 0)
+    if (objIsFrozen(obj) != 0)
     {
         baddie_updateWhileFrozen(obj, (u8*)state, 1);
         return;
