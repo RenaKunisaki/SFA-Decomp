@@ -486,8 +486,7 @@ void sky2_run(void)
     f32 colorMax;
     int k;
     int d;
-    int bestKnotOffset;
-    int secondKnotOffset;
+    int knotOffset;
     u16 angle;
     int range;
     int redInt;
@@ -503,6 +502,7 @@ void sky2_run(void)
     f32 t;
     f32 u;
     f32 directionWeight;
+    f32 weight;
     f32 zero;
     f32 c158;
     f32 c154;
@@ -713,25 +713,19 @@ void sky2_run(void)
                     k++;
                 } while (k < 8);
                 zero = 0.0f;
-                if (zero < best.x)
+                for (k = 0; k < 2; k++)
                 {
-                    p = *pp + (bestKnotOffset = idx.best * 4);
-                    r = ((SkySlotAnim*)p)->cur[0] * best.x + r;
-                    g = ((SkySlotAnim*)p)->cur[0xb] * best.x + g;
-                    b = ((SkySlotAnim*)p)->cur[0x16] * best.x + b;
-                    knot = (f32*)(*pp + bestKnotOffset + 0x1fc);
-                    sa = *knot * best.x + sa;
-                    sb = ((SkySlotAnim*)p)->cur2[0xb] * best.x + sb;
-                }
-                if (best.y > zero)
-                {
-                    p = *pp + (secondKnotOffset = idx.second * 4);
-                    r = ((SkySlotAnim*)p)->cur[0] * best.y + r;
-                    g = ((SkySlotAnim*)p)->cur[0xb] * best.y + g;
-                    b = ((SkySlotAnim*)p)->cur[0x16] * best.y + b;
-                    knot = (f32*)(*pp + secondKnotOffset + 0x1fc);
-                    sa = *knot * best.y + sa;
-                    sb = ((SkySlotAnim*)p)->cur2[0xb] * best.y + sb;
+                    weight = (&best.x)[k];
+                    if (weight > zero)
+                    {
+                        p = *pp + (knotOffset = (&idx.best)[k] * 4);
+                        r = ((SkySlotAnim*)p)->cur[0] * weight + r;
+                        g = ((SkySlotAnim*)p)->cur[0xb] * weight + g;
+                        b = ((SkySlotAnim*)p)->cur[0x16] * weight + b;
+                        knot = (f32*)(*pp + knotOffset + 0x1fc);
+                        sa = *knot * weight + sa;
+                        sb = ((SkySlotAnim*)p)->cur2[0xb] * weight + sb;
+                    }
                 }
             }
             if (r > 255.0f)
