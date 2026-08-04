@@ -387,7 +387,7 @@ void skySetSlotFlag80(int flags, u8 mode)
             {
                 entry = gSkyState;
                 entry = entry + i * 0xa4;
-                ((SkyBlendStateFlags*)(entry + 0xc1))->unused80 = 0;
+                ((SkyLight*)(entry + 0x20))->flags.unused80 = 0;
             }
         }
     }
@@ -462,21 +462,21 @@ void skySetLightIndex(int mode, f32 brightness)
             ((SkyState*)gSkyState)->lightBlendRate = fullBlend;
             ((SkyState*)gSkyState)->lightBlendFactor = fullBlend;
         }
-        cloudMode = ((SkyBlendStateFlags*)(gSkyState + (idx = mode * 0xa4) + 0xc1))->cloud;
+        cloudMode = ((SkyLight*)(gSkyState + (idx = mode * 0xa4) + 0x20))->flags.cloud;
         if (cloudMode != 0)
         {
             setDrawCloudsAndLights(cloudMode - 1);
         }
         ((SkyState*)gSkyState)->lights[2].flags.unused80 =
-            ((SkyBlendStateFlags*)(gSkyState + idx + 0xc1))->unused80;
+            ((SkyLight*)(gSkyState + idx + 0x20))->flags.unused80;
         ((SkyState*)gSkyState)->lights[2].flags.visibility =
-            ((SkyBlendStateFlags*)(gSkyState + idx + 0xc1))->visibility;
+            ((SkyLight*)(gSkyState + idx + 0x20))->flags.visibility;
         env2 = saveGameGetEnvState();
         if (getSaveGameLoadStatus() == 0)
         {
             for (bit = 0; bit < 2; bit++)
             {
-                if ((u32)((gSkyState[bit * 0xa4 + 0xc1] >> 7) & 1) != 0)
+                if (((SkyState*)gSkyState)->lights[bit].flags.unused80 != 0)
                 {
                     env2[0x40] |= 2 << bit;
                 }
@@ -1176,7 +1176,7 @@ void skyUpdateLightingFromTimeOfDay(void)
             zero = 0.0f;
             dayStart = 18000.0f;
             lightSlotOffset = 0xa4 * slotIndex;
-            if ((u32)((gSkyState[lightSlotOffset + 0xc1] >> 7) & 1) != 0)
+            if (((SkyState*)gSkyState)->lights[slotIndex].flags.unused80 != 0)
             {
                 blendAlpha = 0xc8;
                 moonIntensity = 0;
@@ -1659,7 +1659,7 @@ void skyRenderTimeOfDayBackdrop(void)
         }
         blendTextures(((SkyTimeBlend*)gSkyState)->texB, ((SkyTimeBlend*)gSkyState)->texA, tc,
                       (void*)(*(int**)&gSkyState)[((SkyTimeBlend*)gSkyState)->texSel + 2]);
-        ((SkyBlendStateFlags*)(gSkyState + 0x255))->unused80 = 1;
+        ((SkyState*)gSkyState)->fadeFlags.fadePending = 1;
         sky = *(int**)&gSkyState;
         blend = ((SkyTimeBlend*)sky)->blend;
         if (blend)
@@ -2184,12 +2184,12 @@ void skyUpdateEnvfxAct(int a, int b, u8* cfg)
                 }
                 if (((Sky2Config*)cfg)->cloudBlendMode != 0)
                 {
-                    ((SkyBlendStateFlags*)(gSkyState + iofs + 0xc1))->cloud =
+                    ((SkyLight*)(gSkyState + iofs + 0x20))->flags.cloud =
                         (((Sky2Config*)cfg)->cloudBlendMode & 1) + 1;
                 }
                 else
                 {
-                    ((SkyBlendStateFlags*)(gSkyState + iofs + 0xc1))->cloud = 0;
+                    ((SkyLight*)(gSkyState + iofs + 0x20))->flags.cloud = 0;
                 }
             }
             envp++;
@@ -2223,7 +2223,7 @@ void skyUpdateEnvfxAct(int a, int b, u8* cfg)
             ((SkyState*)gSkyState)->texture1 = (void*)*(int*)((u8*)&((SkyState*)gSkyState)->texture0 + ((SkyState*)gSkyState)->swapTexIndex * 4);
             *(int*)((u8*)&((SkyState*)gSkyState)->texture0 + ((SkyState*)gSkyState)->swapTexIndex * 4) = tmp;
             ((SkyState*)gSkyState)->unk250 = -1;
-            if ((((u32)(u8)((SkyState*)gSkyState)->flags255 >> 7) & 1) != 0)
+            if (((SkyState*)gSkyState)->fadeFlags.fadePending != 0)
             {
                 ((SkyState*)gSkyState)->fadeFactor = 1.0f;
                 if (((Sky2Config*)cfg)->fadeDurationA != 0)

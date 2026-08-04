@@ -15,8 +15,8 @@
  * render emits the trailing particle spray on a frame cadence.
  *
  * Curve/velocity state lives in the object's extra block
- * (DrakorHoverpadState, 0x17c bytes); the two flag bytes at 0x178/0x179
- * are DrakorHoverpadFlags / DrakorHoverpadPathFlags.
+ * (DrakorHoverpadState, 0x17c bytes), whose flags / pathFlags members
+ * carry the ride and path-event bits.
  */
 #include "main/dll/dll_0271_drakorhoverpad.h"
 #include "dolphin/mtx/vec.h"
@@ -53,7 +53,7 @@ f32 lbl_803DC304 = -40.0f;
 void drakorhoverpad_resetPendingMotion(GameObject* obj)
 {
     u8* p = obj->extra;
-    DrakorHoverpadPathFlags* g = (DrakorHoverpadPathFlags*)(p + 0x179);
+    DrakorHoverpadPathFlags* g = &((DrakorHoverpadState*)p)->pathFlags;
     if (g->p6 != 0)
     {
         g->p6 = 0;
@@ -169,7 +169,7 @@ int drakorhoverpad_getDismountSide(void)
 int drakorhoverpad_canDismount(GameObject* obj)
 {
     u8* p = obj->extra;
-    return ((p[0x179] >> 2) & 1) == 0;
+    return ((DrakorHoverpadState*)p)->pathFlags.f04 == 0;
 }
 
 void drakorhoverpad_getRiderPosition(GameObject* obj, f32* ox, f32* oy, f32* oz)
@@ -187,7 +187,7 @@ int drakorhoverpad_getMountSide(void)
 int drakorhoverpad_canMount(GameObject* obj)
 {
     u8* p = obj->extra;
-    return (p[0x179] >> 2) & 1;
+    return ((DrakorHoverpadState*)p)->pathFlags.f04;
 }
 
 static void drakorhoverpad_setupPathCurve(GameObject* obj, u8* p)
@@ -416,7 +416,7 @@ ObjectDescriptor24 gDrakorHoverPadObjDescriptor = {
 int drakorhoverpad_init(GameObject* obj)
 {
     u8* p = (obj)->extra;
-    DrakorHoverpadFlags* f = (DrakorHoverpadFlags*)(p + 0x178);
+    DrakorHoverpadFlags* f = &((DrakorHoverpadState*)p)->flags;
 
     if (f->b40 == 0)
     {
@@ -457,8 +457,8 @@ int drakorhoverpad_init(GameObject* obj)
 int drakorhoverpad_handlePathPointEvent(GameObject* obj, u8 eventCode, u8 subCode, void* out)
 {
     u8* p = (obj)->extra;
-    DrakorHoverpadFlags* f = (DrakorHoverpadFlags*)(p + 0x178);
-    DrakorHoverpadPathFlags* g = (DrakorHoverpadPathFlags*)(p + 0x179);
+    DrakorHoverpadFlags* f = &((DrakorHoverpadState*)p)->flags;
+    DrakorHoverpadPathFlags* g = &((DrakorHoverpadState*)p)->pathFlags;
     GameObject* player;
     f32 shakeMag;
     f32 absP;
@@ -788,8 +788,8 @@ void drakorhoverpad_updateMain(GameObject* obj)
     u8* p = (obj)->extra;
     RomCurveWalker* curve;
     DrakorHoverpadUpdateMainPlacement* q = (DrakorHoverpadUpdateMainPlacement*)(obj)->anim.placementData;
-    DrakorHoverpadFlags* f = (DrakorHoverpadFlags*)(p + 0x178);
-    DrakorHoverpadPathFlags* g = (DrakorHoverpadPathFlags*)(p + 0x179);
+    DrakorHoverpadFlags* f = &((DrakorHoverpadState*)p)->flags;
+    DrakorHoverpadPathFlags* g = &((DrakorHoverpadState*)p)->pathFlags;
     int evOut;
     Vec diff;
     f32 curvePos[3];
@@ -975,8 +975,8 @@ void drakorhoverpad_updateMain(GameObject* obj)
 void drakorhoverpad_initMain(GameObject* obj, void* desc)
 {
     u8* p = (obj)->extra;
-    DrakorHoverpadFlags* f = (DrakorHoverpadFlags*)(p + 0x178);
-    DrakorHoverpadPathFlags* g = (DrakorHoverpadPathFlags*)(p + 0x179);
+    DrakorHoverpadFlags* f = &((DrakorHoverpadState*)p)->flags;
+    DrakorHoverpadPathFlags* g = &((DrakorHoverpadState*)p)->pathFlags;
     DrakorHoverpadUpdateMainPlacement* d = (DrakorHoverpadUpdateMainPlacement*)desc;
     f32 initialSpeed;
 

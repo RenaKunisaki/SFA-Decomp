@@ -19,6 +19,11 @@ typedef struct SkyBlendStateFlags
     u8 rest : 3;
 } SkyBlendStateFlags;
 
+typedef struct SkyFadeFlags {
+    u8 fadePending : 1;
+    u8 rest : 7;
+} SkyFadeFlags;
+
 typedef struct SkyLight {
     union {
         struct {
@@ -109,7 +114,7 @@ typedef struct SkyState {
     u8 unk252;
     u8 unk253;
     u8 unk254;
-    s8 flags255; /* 0x255: sky-fade flags byte; bit7 selects computed fadeRate vs instant flag */
+    SkyFadeFlags fadeFlags; /* 0x255: fadePending selects computed fadeRate over the instant flag */
     u8 unk256[2];
 } SkyState;
 

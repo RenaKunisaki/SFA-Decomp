@@ -303,12 +303,12 @@ u32 LandedArwing_UpdateFlightChase(GameObject* obj, BaddieState* state)
     }
     else
     {
-        if (sub->flags92.hitSurfaceType13 != 0)
+        if (sub->flags92.scriptTargetActive != 0)
         {
             targetMode = LANDED_ARWING_TARGET_SCRIPT;
             if ((s32)sub->scriptTimer <= framesThisStep)
             {
-                sub->flags92.hitSurfaceType13 = 0;
+                sub->flags92.scriptTargetActive = 0;
             }
             else
             {
@@ -1317,14 +1317,14 @@ void dll_D3_update(GameObject* obj)
 
     obj->pendingParentObj = ((GroundBaddieState*)state)->savedPendingParentObj;
 
-    if (extra->flags92.hitSurfaceType13 == 0u && extra->surfaceMode == 6)
+    if (extra->flags92.scriptTargetActive == 0u && extra->surfaceMode == 6)
     {
         hitCount = trackGetLineIntersect(&obj->anim.previousLocalPosX, &obj->anim.localPosX,
                                       6.0f, 0, (TrackBBoxHit*)hitResult, obj, -0x7c, -1, 0xff,
                                       0);
         if (hitCount != 0 && ((TrackBBoxHit*)hitResult)->surfaceType == 13)
         {
-            extra->flags92.hitSurfaceType13 = 1;
+            extra->flags92.scriptTargetActive = 1;
             extra->scriptTimer = (u16)(randomGetRange(10, 0xf) * 0x3c);
         }
     }

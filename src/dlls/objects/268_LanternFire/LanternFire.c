@@ -14,7 +14,6 @@
 #define LANTERN_FIREFLY_OBJECT_GROUP              0x30
 #define LANTERN_FIREFLY_ACTIVE_COUNT_GAMEBIT      0x698
 #define LANTERN_FIREFLY_PLAYER_FOLLOW_MOTION_MODE 1
-#define LANTERN_FIREFLY_ACTIVE_OBJECT_MODE        1u
 #define LANTERN_FIREFLY_LIGHT_STATE_A             1
 #define LANTERN_FIREFLY_LIGHT_STATE_B             4
 #define LANTERN_FIREFLY_EFFECT_GLOW_A             0x19F
@@ -33,8 +32,8 @@
 #define LANTERN_FIREFLY_RANDOM_ANGLE_MAX          0xFDE8
 #define LANTERN_FIREFLY_DEFAULT_WANDER_RANGE      4
 #define LANTERN_FIREFLY_LIGHT_ANGLE_SHIFT         11
-#define LANTERN_FIREFLY_OBJECT_MODE(state)        ((state)->modeFlags.motionMode)
-#define LANTERN_FIREFLY_IS_ACTIVE(state)          (LANTERN_FIREFLY_OBJECT_MODE(state) == LANTERN_FIREFLY_ACTIVE_OBJECT_MODE)
+#define LANTERN_FIREFLY_IS_FOLLOWING_PLAYER(state)                                                          \
+    ((state)->modeFlags.motionMode == LANTERN_FIREFLY_PLAYER_FOLLOW_MOTION_MODE)
 
 static f32 sLanternFireFlyEffectSpawnTimerThreshold = 60.0f;
 static u8 sLanternFireFlyLightActive;
@@ -183,7 +182,7 @@ void LanternFireFly_free(GameObject* obj, int flag) {
         ModelLightStruct_free(state->light);
         state->light = NULL;
     }
-    if (flag == 0 && state->light != NULL && LANTERN_FIREFLY_OBJECT_MODE(state) != LANTERN_FIREFLY_ACTIVE_OBJECT_MODE) {
+    if (flag == 0 && state->light != NULL && state->modeFlags.motionMode != LANTERN_FIREFLY_PLAYER_FOLLOW_MOTION_MODE) {
         sLanternFireFlyLightActive = 0;
     }
     objFreeObjectType((int)obj, LANTERN_FIREFLY_OBJECT_GROUP);
@@ -235,7 +234,7 @@ void LanternFireFly_update(GameObject* obj) {
     obj->anim.localPosY = state->anchorY + Curve_EvalBSpline(state->controlY, state->splineT, NULL);
     obj->anim.localPosZ = state->anchorZ + Curve_EvalBSpline(state->controlZ, state->splineT, NULL);
 
-    if (LANTERN_FIREFLY_IS_ACTIVE(state)) {
+    if (LANTERN_FIREFLY_IS_FOLLOWING_PLAYER(state)) {
         state->speed = (f32)(0.0015f * Vec_distance((void*)&obj->anim.worldPosX,
                                                     &((GameObject*)Obj_GetPlayerObject())->anim.worldPosX) +
                              0.0001f);
@@ -243,7 +242,7 @@ void LanternFireFly_update(GameObject* obj) {
     state->splineT += state->speed * timeDelta;
 
     if ((state->stateId == LANTERN_FIREFLY_LIGHT_STATE_A || state->stateId == LANTERN_FIREFLY_LIGHT_STATE_B) &&
-        LANTERN_FIREFLY_IS_ACTIVE(state) && state->lightSpawned == 0) {
+        LANTERN_FIREFLY_IS_FOLLOWING_PLAYER(state) && state->lightSpawned == 0) {
         ModelLightStruct* light;
 
         state->lightSpawned = 1;
@@ -259,7 +258,7 @@ void LanternFireFly_update(GameObject* obj) {
             modelLightStruct_setAffectsAabbLightSelection(light, 1);
         }
         state->light = light;
-        if (!LANTERN_FIREFLY_IS_ACTIVE(state)) {
+        if (!LANTERN_FIREFLY_IS_FOLLOWING_PLAYER(state)) {
             sLanternFireFlyLightActive = 1;
         }
     }
@@ -276,7 +275,7 @@ void LanternFireFly_update(GameObject* obj) {
     velocityPtr[1] = velocityPtr[1] * stepScale;
     velocityPtr[2] = velocityPtr[2] * stepScale;
 
-    if (LANTERN_FIREFLY_IS_ACTIVE(state)) {
+    if (LANTERN_FIREFLY_IS_FOLLOWING_PLAYER(state)) {
         Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_pk_lightcritter_lp);
         if ((f32)state->timer > sLanternFireFlyEffectSpawnTimerThreshold) {
             if (state->stateId == LANTERN_FIREFLY_LIGHT_STATE_A || state->stateId == LANTERN_FIREFLY_LIGHT_STATE_B) {

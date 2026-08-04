@@ -18,7 +18,7 @@ typedef struct LandedArwingMovementFlags {
   u8 surfaceOrientationReady : 1;
   u8 airborne : 1;
   u8 contactCallbackRegistered : 1;
-  u8 hitSurfaceType13 : 1;
+  u8 scriptTargetActive : 1;
 } LandedArwingMovementFlags;
 
 typedef struct LandedArwingState {

@@ -4,7 +4,7 @@
 #include "types.h"
 #include "main/lightningeffect.h"
 
-typedef struct
+typedef struct PushcartState97
 {
     u8 flag_80 : 1;
     u8 flag_40 : 1;
@@ -28,10 +28,10 @@ typedef struct ShopItemState
     int vendorObj; /* 0x90: nearest group-9 shop manager */
     s16 helpTextId; /* 0x94 */
     u8 pad96;
-    u8 flags97; /* 0x97: PushcartState97 overlay */
+    PushcartState97 flags97; /* 0x97 */
     LightningEffect* lightningHandles[10]; /* 0x98: per-spark lightning effect handles */
     f32 lightningTimers[10];  /* 0xC0: per-spark age timers */
-    u8 flagsE8; /* 0xE8: PushcartState97 overlay (sparkle render path) */
+    PushcartState97 flagsE8; /* 0xE8: sparkle render path */
     u8 padE9[0xEC - 0xE9];
 } ShopItemState;
 
