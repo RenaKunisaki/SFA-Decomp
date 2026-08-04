@@ -3,6 +3,7 @@
 #include "main/frame_timing.h"
 #include "main/hud_visibility_api.h"
 #include "sys/objects.h"
+#include "main/render_flags.h"
 #include "main/shader_api.h"
 #include "main/shader_map_api.h"
 #include "main/sky_api.h"
@@ -61,16 +62,6 @@ void sceneDrawTransparentPolys(void);
 
 #include "main/lightmap_internal.h"
 
-
-extern u32 renderFlags;
-/* Global renderFlags bits (decoded by the accessor fns below: shouldDrawShadows,
- * shouldDrawClouds, getDrawDistanceFlag, isOvercast, setPendingMapLoad,
- * setStarsHidden). */
-#define RENDERFLAG_WIDESCREEN      0x8
-#define RENDERFLAG_DRAW_CLOUDS     0x10
-#define RENDERFLAG_DRAW_DISTANCE   0x10000
-#define RENDERFLAG_OVERCAST        0x40000
-#define RENDERFLAG_HIDE_STARS      0x80000
 
 extern f32 gLightmapDegToBamScale;
 

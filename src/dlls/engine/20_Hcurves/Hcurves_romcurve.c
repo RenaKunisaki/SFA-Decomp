@@ -51,8 +51,6 @@ int RomCurve_getControlPointId(RomCurveDef* curve, int exclude, int pickIdx);
 int RomCurve_segmentIntersectsOriginRayXZ(f32 x, f32 unusedY, f32 z, RomCurveDef* a, RomCurveDef* b, f32 unusedW);
 
 RomCurveDef* romCurves[ROMCURVE_MAX_CURVES];
-extern ObjfsaPatch gObjfsaPatches[0x3000 / sizeof(ObjfsaPatch)];
-extern ObjfsaWalkGroup gObjfsaWalkGroups[0x1C48 / sizeof(ObjfsaWalkGroup)];
 
 #define OBJFSA_CORNER(BASE, OFF, POSOFF) (f32)((f32) * (s8*)(OFF) * scale + *(f32*)((BASE) + (POSOFF)))
 #define OBJFSA_SET_PLANE(P, K, XA, ZA)                                                                                 \

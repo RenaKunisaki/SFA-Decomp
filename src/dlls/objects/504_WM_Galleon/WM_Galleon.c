@@ -3,6 +3,7 @@
 
 #include "main/dll/dll_0011_screens.h"
 #include "main/frame_timing.h"
+#include "main/gameloop_internal.h"
 #include "main/mapEventTypes.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
@@ -37,7 +38,6 @@ u32 gWmGalleonFrameStep = 3;
 #define WM_GALLEON_MAP_EVENT_GROUP_COUNT    5
 
 void* gWmGalleonResource;
-extern void* gDll12Interface;
 s8 gWMGalleonShowScreen;
 
 ObjectDescriptor gWM_GalleonObjDescriptor = {
