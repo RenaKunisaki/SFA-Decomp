@@ -29,7 +29,6 @@
 #include "main/track_dolphin_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
-#include "string.h"
 #include "main/camera.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_stop_channel_api.h"
@@ -195,7 +194,7 @@ ObjectDescriptor14 gPushableObjDescriptor = {
     (ObjectDescriptorCallback)pushable_render,          /* render */
     (ObjectDescriptorCallback)pushable_free,            /* free */
     (ObjectDescriptorCallback)pushable_getObjectTypeId, /* getObjectTypeId */
-    (ObjectDescriptorCallback)pushable_getExtraSize,    /* slot09 */
+    pushable_getExtraSize,    /* slot09 */
     (ObjectDescriptorCallback)pushable_push,        /* slot0A */
     (ObjectDescriptorCallback)pushable_isWithinCullDistance,          /* slot0B */
     (ObjectDescriptorCallback)pushable_setModelFlag,      /* slot0C */
@@ -215,33 +214,33 @@ static void pushable_driftEyePos(f32* pos, f32 driftSpeed, f32 limit)
     }
 }
 
-int pushable_updateCurtain(int obj, PushableState* state) {
+int pushable_updateCurtain(GameObject* obj, PushableState* state) {
     int placement;
     GameObject* player;
 
-    placement = ((GameObject*)obj)->anim.placementDataAddress;
+    placement = obj->anim.placementDataAddress;
     player = Obj_GetPlayerObject();
     if (((state->flags & PUSHABLE_FLAG_PUSH_LOCKED) != 0) || (playerGetStateValue(player, 10) != 0)) {
-        Sfx_StopObjectChannel((GameObject*)obj, 8);
+        Sfx_StopObjectChannel(obj, 8);
         return 0;
     }
-    Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_treedrum16);
+    Sfx_PlayFromObject(obj, SFXTRIG_treedrum16);
     state->flags |= PUSHABLE_FLAG_MOVED;
     if ((state->flags & PUSHABLE_FLAG_AIRBORNE) == 0) {
-        pushable_resolveCollisions((GameObject*)obj, state);
+        pushable_resolveCollisions(obj, state);
     }
-    if (((GameObject*)obj)->anim.localPosX <= PUSHABLE_CURTAIN_TRIGGER_X + ((ObjPlacement*)placement)->posX) {
+    if (obj->anim.localPosX <= PUSHABLE_CURTAIN_TRIGGER_X + ((ObjPlacement*)placement)->posX) {
         mainSetBits(state->gameBit, 1);
         state->flags |= PUSHABLE_FLAG_PUSH_LOCKED;
-        ((GameObject*)obj)->anim.localPosX = (f32)(((ObjPlacement*)placement)->posX - PUSHABLE_CURTAIN_POSITION_X);
-        ((GameObject*)obj)->anim.localPosY = ((ObjPlacement*)placement)->posY;
-        ((GameObject*)obj)->anim.localPosZ = (f32)(PUSHABLE_CURTAIN_POSITION_Z + ((ObjPlacement*)placement)->posZ);
-        Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_curtainopen16);
+        obj->anim.localPosX = (f32)(((ObjPlacement*)placement)->posX - PUSHABLE_CURTAIN_POSITION_X);
+        obj->anim.localPosY = ((ObjPlacement*)placement)->posY;
+        obj->anim.localPosZ = (f32)(PUSHABLE_CURTAIN_POSITION_Z + ((ObjPlacement*)placement)->posZ);
+        Sfx_PlayFromObject(obj, SFXTRIG_curtainopen16);
     }
     if (mainGetBit(GAMEBIT_PushableRelated0A1A) != 0) {
-        ((GameObject*)obj)->anim.localPosX = ((ObjPlacement*)placement)->posX;
-        ((GameObject*)obj)->anim.localPosY = ((ObjPlacement*)placement)->posY;
-        ((GameObject*)obj)->anim.localPosZ = ((ObjPlacement*)placement)->posZ;
+        obj->anim.localPosX = ((ObjPlacement*)placement)->posX;
+        obj->anim.localPosY = ((ObjPlacement*)placement)->posY;
+        obj->anim.localPosZ = ((ObjPlacement*)placement)->posZ;
     }
     return 0;
 }
@@ -550,7 +549,7 @@ void pushable_resolveCollisions(GameObject* obj, PushableState* state) {
     memcpy(state->cornerWorld, worldPoints, state->pointCount * sizeof(Vec3f));
 }
 
-u32 pushable_SeqFn(GameObject* obj, s16* referenceTransform, ObjSeqState* animUpdate) {
+u32 pushable_SeqFn(GameObject* obj, MatrixTransform* referenceTransform, ObjSeqState* animUpdate) {
     u32 gameBitValue;
     GameObject* player;
     PushableState* state;
@@ -562,30 +561,30 @@ u32 pushable_SeqFn(GameObject* obj, s16* referenceTransform, ObjSeqState* animUp
     state = obj->extra;
     state->savePosDelay = PUSHABLE_SEQUENCE_SAVE_DELAY;
     if (obj->seqIndex != -1) {
-        (*gCameraInterface)->setTargetReticleOverride((int)obj);
+        (*gCameraInterface)->setTargetReticleOverride(obj);
     }
     animUpdate->savedFlags = -1;
     if ((s8)animUpdate->movementState != 0) {
         if ((s8)animUpdate->movementState != 2) {
             animUpdate->posOffsetScale = PUSHABLE_UNIT_SCALE;
-            animUpdate->posOffsetX = obj->anim.localPosX - *(f32*)(referenceTransform + 6);
-            animUpdate->posOffsetY = obj->anim.localPosY - *(f32*)(referenceTransform + 8);
-            animUpdate->posOffsetZ = obj->anim.localPosZ - *(f32*)(referenceTransform + 10);
-            animUpdate->rotOffsetX = obj->anim.rotX - (u16)*referenceTransform;
+            animUpdate->posOffsetX = obj->anim.localPosX - referenceTransform->x;
+            animUpdate->posOffsetY = obj->anim.localPosY - referenceTransform->y;
+            animUpdate->posOffsetZ = obj->anim.localPosZ - referenceTransform->z;
+            animUpdate->rotOffsetX = obj->anim.rotX - (u16)referenceTransform->rotX;
             if (0x8000 < animUpdate->rotOffsetX) {
                 animUpdate->rotOffsetX = animUpdate->rotOffsetX - 0xffff;
             }
             if (animUpdate->rotOffsetX < -0x8000) {
                 animUpdate->rotOffsetX = animUpdate->rotOffsetX + 0xffff;
             }
-            animUpdate->rotOffsetY = obj->anim.rotY - (u16)referenceTransform[1];
+            animUpdate->rotOffsetY = obj->anim.rotY - (u16)referenceTransform->rotY;
             if (0x8000 < animUpdate->rotOffsetY) {
                 animUpdate->rotOffsetY = animUpdate->rotOffsetY - 0xffff;
             }
             if (animUpdate->rotOffsetY < -0x8000) {
                 animUpdate->rotOffsetY = animUpdate->rotOffsetY + 0xffff;
             }
-            animUpdate->rotOffsetZ = (u16)referenceTransform[2] - (u16)obj->anim.rotZ;
+            animUpdate->rotOffsetZ = (u16)referenceTransform->rotZ - (u16)obj->anim.rotZ;
             if (0x8000 < animUpdate->rotOffsetZ) {
                 animUpdate->rotOffsetZ = animUpdate->rotOffsetZ - 0xffff;
             }
@@ -841,14 +840,14 @@ int pushable_push(GameObject* obj, GameObject* target, int active, f32 pushX, f3
             localPoint = (f32*)state;
             delta = deltas;
             for (; pointIndex < state->pointCount; pointIndex++) {
-                Obj_TransformLocalPointToWorld(*(f32*)((char*)localPoint + 0x18), *(f32*)((char*)localPoint + 0x1c),
-                                               *(f32*)((char*)localPoint + 0x20), worldPoint, worldPoint + 1,
+                Obj_TransformLocalPointToWorld(localPoint[6], localPoint[7],
+                                               localPoint[8], worldPoint, worldPoint + 1,
                                                worldPoint + 2, obj);
                 delta[0] = obj->anim.localPosX - worldPoint[0];
                 delta[1] = obj->anim.localPosY - worldPoint[1];
                 delta[2] = obj->anim.localPosZ - worldPoint[2];
                 worldPoint += 3;
-                localPoint = (f32*)((char*)localPoint + 0xc);
+                localPoint += 3;
                 delta += 3;
             }
         }
@@ -900,10 +899,10 @@ int pushable_push(GameObject* obj, GameObject* target, int active, f32 pushX, f3
         pointIndex = 0;
         localPoint = (f32*)state;
         for (; pointIndex < state->pointCount; pointIndex++) {
-            Matrix_TransformPoint(modelMtx, *(f32*)((char*)localPoint + 0x18), *(f32*)((char*)localPoint + 0x1c),
-                                  *(f32*)((char*)localPoint + 0x20), (f32*)((char*)localPoint + 0x78),
-                                  (f32*)((char*)localPoint + 0x7c), (f32*)((char*)localPoint + 0x80));
-            localPoint = (f32*)((char*)localPoint + 0xc);
+            Matrix_TransformPoint(modelMtx, localPoint[6], localPoint[7],
+                                  localPoint[8], &localPoint[30],
+                                  &localPoint[31], &localPoint[32]);
+            localPoint += 3;
         }
     }
     {
@@ -1257,7 +1256,7 @@ void pushable_init(GameObject* obj, PushableObjectDef* setup) {
     state->pointCount = 0;
     activeModelSlot = (int*)((ObjAnimComponent*)obj)->banks[((ObjAnimComponent*)obj)->bankIndex];
     model = (ModelFileHeader*)*activeModelSlot;
-    state->unkB0 = *(int*)&setup->unk1C;
+    state->unkB0 = setup->unk1C;
     state->scale = (f32) * &setup->scaleRaw / PUSHABLE_SCALE_DENOM;
     state->scale = state->scale * obj->anim.modelInstance->rootMotionScaleBase;
     state->cullDistance = state->scale * (f32)modelFileHeaderGetCullDistance((ModelFileHeader*)*activeModelSlot) +

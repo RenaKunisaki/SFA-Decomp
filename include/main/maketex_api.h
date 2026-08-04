@@ -30,7 +30,7 @@ s16 ObjSeq_getGlobal1(void);
 void ObjSeq_setGlobal1(s16 x);
 s16 ObjSeq_getGlobal2(void);
 void ObjSeq_setGlobal2(s16 x);
-int ObjSeq_SetObjs(int objs, int arg, int flags);
+int ObjSeq_SetObjs(int objs, GameObject* arg, int flags);
 int ObjSeq_setOverridePos(f32 x, f32 y, f32 z);
 int ObjSeq_SetCoordinateSpace(int unused, int space);
 int ObjSeq_TurnToFacePlayer(GameObject* obj, struct ObjSeqState* state, s16 turnDegrees, s16 yawThreshold,

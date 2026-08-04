@@ -29,6 +29,7 @@
 #include "main/vecmath.h"
 #include "dolphin/os/OSFastCast.h"
 
+static u32 sGQR7Config;
 int gModelTabEntryCount;
 s16* gModelResourceBuffer;
 int* gModelAnimOffsetTable;
@@ -40,13 +41,6 @@ u32* gModelAnimDataOffsetTable;
 f32 gModelChainJitterScale;
 
 u16 gModelCopyChunkWordLimit = 0x2A0;
-#define GX_BM_BLEND 1
-#define GX_BL_ONE 1
-#define GX_BL_SRCALPHA 4
-#define GX_LO_NOOP 5
-#define GX_AOP_AND 0
-#define GX_LEQUAL 3
-#define GX_ALWAYS 7
 #define MODEL_BONEXFORM_HAS_X 0x2000
 #define MODEL_BONEXFORM_HAS_Y 0x4000
 #define MODEL_BONEXFORM_HAS_Z 0x8000
@@ -104,8 +98,6 @@ static inline void* modelGetBoneMtx(ObjModel* model, int idx);
 void ObjModel_TransformVerticesWithTranslation(u8* m1, u8* m2, u8* src, int d1, int d2, int count);
 void ObjModel_TransformVerticesLinear(u8* m1, u8* m2, u8* src, int d1, int d2, int count);
 void ObjModel_TransformQuadVerticesLinear(u8* m1, u8* m2, u8* src, int d1, int d2, int count);
-static u32 sGQR7Config;
-
 void modelApplyBoneTransform(u8* p, u8* out, u16 n, u8** pd, u8** pe, int f, u16 pos)
 {
     u8* a = *pd;
@@ -811,7 +803,7 @@ static inline void* modelGetBoneMtx(ObjModel* model, int idx)
     return base + joint * sizeof(ObjModelJointMatrix);
 }
 
-void* modelLoad_layoutBuffers(u8* p, int b, int isType1, int c)
+void* modelLoad_layoutBuffers(u8* p, int b, int isType1, u8* c)
 {
     int o2;
     u8* out2;
@@ -824,7 +816,7 @@ void* modelLoad_layoutBuffers(u8* p, int b, int isType1, int c)
     u8* q;
     f32 f;
 
-    out = (u8*)c;
+    out = c;
     if (p == 0)
     {
         return 0;
@@ -1168,7 +1160,7 @@ static void modelChainUpdateNodes(ObjModel* model, ModelFileHeader* file, ObjMod
         entry->nodes[i].pos.z = work.z;
     }
 }
-static void modelChainApplyDampingAndJitter(ObjModel* model, int unused, ObjModelChain* chain,
+static void modelChainApplyDampingAndJitter(ObjModel* model, ModelFileHeader* unused, ObjModelChain* chain,
                                            ObjModelChainEntry* entry)
 {
     Vec vec;
@@ -1222,7 +1214,7 @@ static void modelChainApplyDampingAndJitter(ObjModel* model, int unused, ObjMode
     }
 }
 
-static void modelChainInitNodesFromJoints(int* obj, int b, int* desc)
+static void modelChainInitNodesFromJoints(int* obj, ModelFileHeader* b, int* desc)
 {
     int i;
 
@@ -1236,9 +1228,9 @@ static void modelChainInitNodesFromJoints(int* obj, int b, int* desc)
         u32 n;
         int lim;
 
-        *(f32*)(entry + 0x18) = *(f32*)(*(int*)(b + 0x3c) + jointIdx * 0x1c + 4);
-        *(f32*)&((ObjModel*)entry)->vtxBuf[0] = *(f32*)(*(int*)(b + 0x3c) + jointIdx * 0x1c + 8);
-        *(f32*)&((ObjModel*)entry)->vtxBuf[1] = *(f32*)(*(int*)(b + 0x3c) + jointIdx * 0x1c + 0xc);
+        *(f32*)(entry + 0x18) = *(f32*)((int)b->jointData + jointIdx * 0x1c + 4);
+        *(f32*)&((ObjModel*)entry)->vtxBuf[0] = *(f32*)((int)b->jointData + jointIdx * 0x1c + 8);
+        *(f32*)&((ObjModel*)entry)->vtxBuf[1] = *(f32*)((int)b->jointData + jointIdx * 0x1c + 0xc);
 
         idx = jointIdx;
         hdr = *(u8**)obj;
@@ -1339,11 +1331,11 @@ void ObjModelChain_Update(int* model, int animState, ObjModelChain* chain, ObjMo
         {
             if (chain->firstUpdateDone == 0)
             {
-                modelChainInitNodesFromJoints(model, animState, (int*)((u8*)chain->entries + off));
+                modelChainInitNodesFromJoints(model, (ModelFileHeader*)animState, (int*)((u8*)chain->entries + off));
             }
             if (getHudHiddenFrameCount() == 0)
             {
-                modelChainApplyDampingAndJitter((ObjModel*)model, animState, chain,
+                modelChainApplyDampingAndJitter((ObjModel*)model, (ModelFileHeader*)animState, chain,
                                                 (ObjModelChainEntry*)((u8*)chain->entries + off));
                 modelChainUpdateNodes((ObjModel*)model, (ModelFileHeader*)animState, chain,
                                       (ObjModelChainEntry*)((u8*)chain->entries + off), callback, i);
@@ -1370,9 +1362,9 @@ void ObjModelChain_SetOrigin(ObjModelChain* chain, f32 x, f32 y, f32 z)
     chain->damping = y;
     chain->gravityY = z;
 }
-void __set_debug_bba(u8* p)
+void ObjModelChain_ResetFirstUpdate(ObjModelChain* chain)
 {
-    p[0x19] = 0;
+    chain->firstUpdateDone = 0;
 }
 
 void ObjModelChain_AdvancePhase(ObjModelChain* chain)
@@ -1860,8 +1852,6 @@ int ObjModel_HasActiveBlendChannels(ObjModel* model)
     return 0;
 }
 
-typedef f32 Mtx[3][4];
-
 void ObjModel_SetBlendChannelWeight(ObjModel* model, int channel, f32 weight)
 {
     ObjModelBlendChannel* ch;
@@ -2164,7 +2154,7 @@ void* animLoadFromTable(u8* hdr, int id, int idx, u8* out)
     }
     return buf;
 }
-void* loadAnimation(int hdr, s16 id, int b, u8* bufout)
+void* loadAnimation(ModelFileHeader* hdr, s16 id, int b, u8* bufout)
 {
     int tmp;
     int size;
@@ -2173,7 +2163,7 @@ void* loadAnimation(int hdr, s16 id, int b, u8* bufout)
     int i;
     u32 ftype;
 
-    if ((getLoadedFileFlags(0) & 0x100000) != 0 && (ftype = *(u16*)(hdr + 4)) != 1 && ftype != 3)
+    if ((getLoadedFileFlags(0) & 0x100000) != 0 && (ftype = hdr->modelId) != 1 && ftype != 3)
     {
         return 0;
     }
@@ -2248,7 +2238,7 @@ Shader* ObjModel_GetRenderOp(ModelFileHeader* model, int renderOpIndex)
     return &model->renderOps[renderOpIndex];
 }
 
-u8* gModelCacheBuffersA[4];
+extern u8* gModelCacheBuffersA[4];
 u8* gModelCacheBuffersB[6];
 
 u16 modelFileHeaderGetCullDistance(ModelFileHeader* modelFile)
@@ -2718,12 +2708,6 @@ void ObjModel_TouchModelCache(void)
     }
 }
 
-typedef struct
-{
-    u8 pad[0xc];
-    u8* buf;
-} AnimBufSel;
-
 void ObjModel_Release(u8* model)
 {
     u8* header;
@@ -2769,7 +2753,7 @@ void ObjModel_Release(u8* model)
     }
 }
 
-void* ObjModel_LoadAnimData(u8* p, int b, int c)
+void* ObjModel_LoadAnimData(u8* p, int b, u8* c)
 {
     void* m = modelLoad_layoutBuffers(p, b, p[0] == 1, c);
     modelAnimResetState(m, ((ObjModel*)m)->animStateA);
@@ -2861,7 +2845,6 @@ void ObjModel_InitResourceCaches(void)
     }
     lbl_803DCB58 = 0;
 }
-
 
 void ObjModel_InitScratchBuffers(void)
 {
@@ -3064,18 +3047,6 @@ void ObjModel_TransformVerticesWithTranslation(u8* m1, u8* m2, u8* src, int d1, 
     }
 }
 
-typedef struct
-{
-    u8 _0[0xc];
-    int bufs[2];
-} MdlSelBufs;
-
-typedef struct
-{
-    u8 _0[0x34];
-    int vals[2];
-} ChF34;
-
 void ObjModel_TransformVerticesLinear(u8* m1, u8* m2, u8* src, int d1, int d2, int count)
 {
     f32* ma = (f32*)m1;
@@ -3218,3 +3189,5 @@ int ObjModel_GetUnpackedResourceSize(u8* resource, int baseSize)
 Vec gModelJitterAxis = { 1.0f, 0.0f, 0.0f };
 
 char sModelAnimationBufferOverflowWarning[] = "Warning: Model animation buffer overflow!! size=%d\n";
+
+u8* gModelCacheBuffersA[4];

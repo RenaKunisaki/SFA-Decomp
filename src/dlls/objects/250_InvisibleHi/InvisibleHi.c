@@ -64,7 +64,6 @@ void InvisibleHitSwitch_update(GameObject* obj) {
         }
     }
 
-    /* Keep the local so MWCC emits the target's unordered float comparison. */
     if (state->delayedTriggerTimer != zeroTimer) {
         state->delayedTriggerTimer = state->delayedTriggerTimer - timeDelta;
         if (state->delayedTriggerTimer < INVISIBLE_HIT_SWITCH_DELAY_WINDOW) {

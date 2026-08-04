@@ -72,7 +72,7 @@ static const u8 gDREarthWarriorPathSetupParam[4] = {1, 1, 1, 1};
 
 static void DR_EarthWarrior_setupPathState(u8* pathState, DREarthWarriorInitData* base, EarthWarriorSub* warrior)
 {
-    (*gPathControlInterface)->setup(pathState, 4, base->unkC, base->unk3C, (void*)gDREarthWarriorPathSetupParam);
+    (*gPathControlInterface)->setup(pathState, 4, base->segmentLocalPoints, base->segmentRadii, (void*)gDREarthWarriorPathSetupParam);
     warrior->aimAccumY = 0.0f;
     warrior->aimHalfY = (f32)warrior->yawTurnDir;
 }
@@ -85,8 +85,8 @@ void DR_EarthWarrior_feed(GameObject* obj, int mode)
     case 1:
         state->sub.energy += 4;
         objSoundStartTimed(obj, &state->modelSoundState, 0x291, 0x1000, -1, 1);
-        state->sub.unk8EC = 4.32f;
-        lbl_8033527C[4].maxSpeed = state->sub.unk8EC;
+        state->sub.maxSpeed = 4.32f;
+        gDREarthWarriorSpeedRows[4].maxSpeed = state->sub.maxSpeed;
         break;
     default:
         break;
@@ -259,7 +259,7 @@ int DR_EarthWarrior_stateHandler03(GameObject* obj, BaddieState* baddie)
             state->sub.energy -= 1;
             if (state->sub.energy <= 0)
             {
-                state->sub.unk8EC = lbl_803DC76C;
+                state->sub.maxSpeed = lbl_803DC76C;
                 CameraShake_Enable();
                 CameraShake_SetOffset(1.0f);
                 playerAddHealth(Obj_GetPlayerObject(), -1);
@@ -469,8 +469,8 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, EarthWarriorState* controlle
         }
         warrior->soundId = (warrior->attackStage > 3) ? 0xa : 8;
         {
-            f32 v294 = controllerState->baddie.animSpeedC;
-            if (v294 < (&warrior->configRow[0].minSpeed)[i2])
+            f32 animSpeedC = controllerState->baddie.animSpeedC;
+            if (animSpeedC < (&warrior->configRow[0].minSpeed)[i2])
             {
                 if (warrior->attackPhase == 4)
                 {
@@ -485,7 +485,7 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, EarthWarriorState* controlle
                     warrior->attackPhase -= 4;
                 }
             }
-            else if (v294 >= (&warrior->configRow[0].maxSpeed)[i2])
+            else if (animSpeedC >= (&warrior->configRow[0].maxSpeed)[i2])
             {
                 if (warrior->attackPhase < 0x14)
                 {
@@ -493,7 +493,7 @@ int DR_EarthWarrior_stateHandler02(GameObject* obj, EarthWarriorState* controlle
                     {
                         blend = 0.85f;
                     }
-                    if (v294 < warrior->animSpeedMax)
+                    if (animSpeedC < warrior->animSpeedMax)
                     {
                         warrior->attackPhase += 4;
                     }
@@ -533,7 +533,7 @@ int DR_EarthWarrior_stateHandler01(GameObject* obj, BaddieState* baddie)
         baddie->animSpeedC = 0.0f;
     }
     baddie->animSpeedA -= interpolate(baddie->animSpeedA, warrior->animSpeedASmoothing, timeDelta);
-    if (baddie->animSpeedA <= lbl_8033527C[1].minSpeed)
+    if (baddie->animSpeedA <= gDREarthWarriorSpeedRows[1].minSpeed)
     {
         baddie->animSpeedA = 0.0f;
     }
@@ -1113,8 +1113,8 @@ void DR_EarthWarrior_init(GameObject* obj, DREarthWarriorPlacement* def)
     state->baddie.gravity = 0.17f;
     pathState = (u8*)&state->baddie + 4;
     (*gPathControlInterface)->init(pathState, 0, 0x48683, 1);
-    (*gPathControlInterface)->setup(pathState, 4, base->unkC, base->unk3C, &stk);
-    (*gPathControlInterface)->setLocalPointCollision(pathState, 1, base->unk4C, base->unk64, 8);
+    (*gPathControlInterface)->setup(pathState, 4, base->segmentLocalPoints, base->segmentRadii, &stk);
+    (*gPathControlInterface)->setLocalPointCollision(pathState, 1, base->localPointPositions, base->localPointRadii, 8);
     pathState[0x264] = 0x28;
     (*gPathControlInterface)->attachObject(obj, pathState);
     ObjHits_EnableObject(obj);
@@ -1123,10 +1123,10 @@ void DR_EarthWarrior_init(GameObject* obj, DREarthWarriorPlacement* def)
     dll_2E_setMoveTables(&state->moveLib, &r1, &r2, 2);
     dll_2E_setLookAtMaxDistance(&state->moveLib, 150.0f);
     state->moveLib.modeBits |= 2;
-    state->sub.unk8EC = 4.32f;
+    state->sub.maxSpeed = 4.32f;
     state->sub.energy = def->energyCapacity;
     state->sub.moveTable = (const s16*)base->moveTable;
-    state->sub.configRow = (const EWSpeedRange*)base->configRow;
+    state->sub.configRow = base->configRow;
     {
         f32 v = 1.0f;
         state->sub.unk834 = v;
@@ -1200,52 +1200,44 @@ u8 gDREarthWarriorInitData[132] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00, 0x00, 0x09, 0x00, 0x00, 0x00, 0x0A,
 };
 
-EWSpeedRange lbl_8033527C[6] = {
+EWSpeedRange gDREarthWarriorSpeedRows[6] = {
     {0.005f, 0.24000001f}, {0.192f, 1.2960001f}, {1.248f, 2.256f},
     {2.2080002f, 3.408f},  {3.3600001f, 4.32f},  {4.3f, 4.32f},
 };
 
-u8 gDREarthWarriorRowIndices[960] = {
-    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-    1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 0, 2, 0, 2, 0, 2, 0, 22, 0, 22,
-    0, 22, 0, 22, 0, 22, 0, 22, 0, 22, 0, 22, 0, 22, 0, 22, 0, 22, 0, 22, 0, 4, 0, 4,
-    0, 4, 0, 4, 0, 4, 0, 4, 0, 4, 0, 4, 0, 2, 0, 2, 0, 2, 0, 2, 0, 2, 0, 28,
-    0, 27, 0, 2, 65, 64, 0, 0, 65, 64, 0, 0, 65, 64, 0, 0, 65, 64, 0, 0, 65, 64, 0, 0,
-    65, 64, 0, 0, 65, 64, 0, 0, 65, 64, 0, 0, 65, 64, 0, 0, 65, 64, 0, 0, 65, 64, 0, 0,
-    65, 64, 0, 0, 65, 64, 0, 0, 65, 64, 0, 0, 65, 64, 0, 0, 65, 64, 0, 0, 65, 64, 0, 0,
-    65, 64, 0, 0, 65, 80, 0, 0, 65, 128, 0, 0, 66, 0, 0, 0, 66, 0, 0, 0, 66, 0, 0, 0,
-    66, 0, 0, 0, 66, 0, 0, 0, 66, 0, 0, 0, 66, 0, 0, 0, 66, 0, 0, 0, 66, 0, 0, 0,
-    66, 0, 0, 0, 66, 0, 0, 0, 66, 0, 0, 0, 66, 0, 0, 0, 66, 0, 0, 0, 66, 0, 0, 0,
-    66, 0, 0, 0, 66, 0, 0, 0, 66, 0, 0, 0, 66, 0, 0, 0, 66, 0, 0, 0, 66, 0, 0, 0,
-    65, 128, 0, 0, 65, 128, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0,
-    65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0,
-    65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0,
-    65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0,
-    65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0,
-    65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0,
-    65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0, 65, 32, 0, 0, 64, 224, 0, 0,
-    64, 224, 0, 0, 64, 224, 0, 0, 64, 224, 0, 0, 64, 224, 0, 0, 64, 224, 0, 0, 64, 224, 0, 0,
-    64, 224, 0, 0, 64, 224, 0, 0, 64, 224, 0, 0, 64, 224, 0, 0, 64, 224, 0, 0, 64, 224, 0, 0,
-    64, 208, 0, 0, 64, 192, 0, 0, 64, 176, 0, 0, 64, 160, 0, 0, 64, 153, 153, 154, 64, 128, 0, 0,
-    64, 102, 102, 102, 64, 89, 153, 154, 64, 89, 153, 154, 64, 89, 153, 154, 64, 89, 153, 154, 64, 89, 153, 154,
-    64, 89, 153, 154, 64, 89, 153, 154, 64, 89, 153, 154, 64, 89, 153, 154, 64, 89, 153, 154, 64, 89, 153, 154,
-    64, 89, 153, 154, 64, 89, 153, 154, 64, 89, 153, 154, 64, 89, 153, 154, 64, 89, 153, 154, 64, 89, 153, 154,
-    64, 89, 153, 154, 64, 89, 153, 154, 64, 89, 153, 154, 64, 89, 153, 154, 64, 89, 153, 154, 64, 89, 153, 154,
-    64, 89, 153, 154, 64, 89, 153, 154, 64, 89, 153, 154, 65, 0, 0, 0, 65, 0, 0, 0, 64, 160, 0, 0,
-    64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0,
-    64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0,
-    64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0,
-    64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0,
-    64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0,
-    64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0, 64, 160, 0, 0,
-    64, 160, 0, 0, 64, 160, 0, 0, 65, 96, 0, 0, 65, 96, 0, 0, 65, 96, 0, 0, 65, 96, 0, 0,
-    65, 96, 0, 0, 65, 96, 0, 0, 65, 96, 0, 0, 65, 96, 0, 0, 65, 96, 0, 0, 65, 96, 0, 0,
-    65, 96, 0, 0, 65, 96, 0, 0, 65, 96, 0, 0, 65, 80, 0, 0, 65, 64, 0, 0, 65, 48, 0, 0,
-    65, 32, 0, 0, 65, 25, 153, 154, 65, 0, 0, 0, 64, 230, 102, 102, 64, 217, 153, 154, 64, 217, 153, 154,
-    64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154,
-    64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154,
-    64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154,
-    64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154, 64, 217, 153, 154,
+u8 gDREarthWarriorRowIndices[36] = {
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 1, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+};
+
+u16 lbl_803352D0[32] = {
+    2, 2, 2, 2, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22, 22,
+    4, 4, 4, 4, 4, 4, 4, 4, 2, 2, 2, 2, 2, 28, 27, 2,
+};
+
+f32 lbl_80335310[215] = {
+    12.0f, 12.0f, 12.0f, 12.0f, 12.0f, 12.0f, 12.0f, 12.0f, 12.0f, 12.0f,
+    12.0f, 12.0f, 12.0f, 12.0f, 12.0f, 12.0f, 12.0f, 12.0f, 13.0f, 16.0f,
+    32.0f, 32.0f, 32.0f, 32.0f, 32.0f, 32.0f, 32.0f, 32.0f, 32.0f, 32.0f,
+    32.0f, 32.0f, 32.0f, 32.0f, 32.0f, 32.0f, 32.0f, 32.0f, 32.0f, 32.0f,
+    32.0f, 16.0f, 16.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f,
+    10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f,
+    10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f,
+    10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f, 10.0f,
+    10.0f, 10.0f, 7.0f, 7.0f, 7.0f, 7.0f, 7.0f, 7.0f, 7.0f, 7.0f,
+    7.0f, 7.0f, 7.0f, 7.0f, 7.0f, 6.5f, 6.0f, 5.5f, 5.0f, 4.8f,
+    4.0f, 3.6f, 3.4f, 3.4f, 3.4f, 3.4f, 3.4f, 3.4f, 3.4f, 3.4f,
+    3.4f, 3.4f, 3.4f, 3.4f, 3.4f, 3.4f, 3.4f, 3.4f, 3.4f, 3.4f,
+    3.4f, 3.4f, 3.4f, 3.4f, 3.4f, 3.4f, 3.4f, 3.4f, 8.0f, 8.0f,
+    5.0f, 5.0f, 5.0f, 5.0f, 5.0f, 5.0f, 5.0f, 5.0f, 5.0f, 5.0f,
+    5.0f, 5.0f, 5.0f, 5.0f, 5.0f, 5.0f, 5.0f, 5.0f, 5.0f, 5.0f,
+    5.0f, 5.0f, 5.0f, 5.0f, 5.0f, 5.0f, 5.0f, 5.0f, 5.0f, 5.0f,
+    5.0f, 5.0f, 5.0f, 5.0f, 5.0f, 5.0f, 5.0f, 5.0f, 5.0f, 14.0f,
+    14.0f, 14.0f, 14.0f, 14.0f, 14.0f, 14.0f, 14.0f, 14.0f, 14.0f, 14.0f,
+    14.0f, 14.0f, 13.0f, 12.0f, 11.0f, 10.0f, 9.6f, 8.0f, 7.2f, 6.8f,
+    6.8f, 6.8f, 6.8f, 6.8f, 6.8f, 6.8f, 6.8f, 6.8f, 6.8f, 6.8f,
+    6.8f, 6.8f, 6.8f, 6.8f, 6.8f, 6.8f, 6.8f, 6.8f, 6.8f, 6.8f,
+    6.8f, 6.8f, 6.8f, 6.8f, 6.8f,
 };
 
 s32 gEarthWarriorTailChainJointIndices[4] = {0x17, 0x18, 0x19, 0x1A};

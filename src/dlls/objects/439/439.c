@@ -99,7 +99,7 @@ void sc_musictree_spawnAmbientEffect(GameObject* obj, ScMusicTreeState* state, i
         effectPlacement->fallEndFraction = SC_MUSIC_TREE_AMBIENT_EFFECT_FALL_END;
         effectPlacement->landedEndFraction = SC_MUSIC_TREE_AMBIENT_EFFECT_LANDED_END;
         effectPlacement->fadeEndFraction = SC_MUSIC_TREE_AMBIENT_EFFECT_FADE_END;
-        effectPlacement->unk25 = SC_MUSIC_TREE_AMBIENT_EFFECT_ACCELERATION;
+        effectPlacement->waterAccelerationPercent = SC_MUSIC_TREE_AMBIENT_EFFECT_ACCELERATION;
         effectPlacement->despawnGameBit = SC_MUSIC_TREE_AMBIENT_EFFECT_NO_DESPAWN_BIT;
         effectPlacement->unk18 = 0;
         state->ambientEffectHandles[pathIndex] =

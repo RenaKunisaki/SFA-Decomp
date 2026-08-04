@@ -3,7 +3,6 @@
 
 void OSReport(const char* msg);
 
-BOOL usr_puts_serial(const char* msg);
 
 BOOL usr_puts_serial(const char* msg)
 {

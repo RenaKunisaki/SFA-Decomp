@@ -95,7 +95,7 @@ int sh_staff_getExtraSize(void) {
 }
 
 void sh_staff_free(GameObject* obj, int freeArg) {
-    int* state = obj->extra;
+    ShStaffState* state = obj->extra;
     int* child;
     int i;
 
@@ -105,7 +105,7 @@ void sh_staff_free(GameObject* obj, int freeArg) {
 
     i = 0;
     for (; i < SHSTAFF_HAZE_CHILD_COUNT; i++) {
-        child = *(int**)((char*)state + i * 4 + offsetof(ShStaffState, hazeChildren));
+        child = (int*)state->hazeChildren[i];
         if (child != NULL) {
             ((GameObject*)child)->anim.flags = (s16)(((GameObject*)child)->anim.flags | OBJANIM_FLAG_HIDDEN);
         }
@@ -385,10 +385,10 @@ void sh_staff_deactivate(GameObject* obj, ShStaffState* state, int clearChildren
         staffToggle((GameObject*)player, 1);
         playerPutAwayStaff((GameObject*)player, 1);
         for (i = 0; i < SHSTAFF_HAZE_CHILD_COUNT; i++) {
-            child = *(void**)((char*)state + i * 4 + offsetof(ShStaffState, hazeChildren));
+            child = (void*)state->hazeChildren[i];
             if (child != NULL) {
                 ((GameObject*)child)->anim.flags = (s16)(((GameObject*)child)->anim.flags | OBJANIM_FLAG_HIDDEN);
-                *(int*)((char*)state + i * 4 + offsetof(ShStaffState, hazeChildren)) = 0;
+                state->hazeChildren[i] = 0;
             }
         }
     }
@@ -400,7 +400,7 @@ void sh_staff_update(GameObject* obj) {
     ShStaffState* state = obj->extra;
     ShStaffPlacement* placement = (ShStaffPlacement*)obj->anim.placementData;
     GameObject* player = Obj_GetPlayerObject();
-    f32 distanceSq = getXZDistance(&obj->anim.worldPosX, &player->anim.worldPosX);
+    f32 distanceSq = getXZDistanceSquared(&obj->anim.worldPosX, &player->anim.worldPosX);
     u8 currentPhase = state->phase;
 
     if (currentPhase == SHSTAFF_PHASE_IDLE) {
@@ -429,7 +429,7 @@ void sh_staff_update(GameObject* obj) {
             }
         }
     } else if (currentPhase == SHSTAFF_PHASE_ARMED) {
-        if (ObjTrigger_IsSet((int)obj) != 0) {
+        if (ObjTrigger_IsSet(obj) != 0) {
             GameObject* target = objGetNearestTypeTo(SHSTAFF_TARGET_OBJGROUP, obj, 0);
             (*gObjectTriggerInterface)->runSequence(0, (void*)target, -1);
             state->phase = SHSTAFF_PHASE_PICKUP;

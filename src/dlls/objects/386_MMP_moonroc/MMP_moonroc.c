@@ -344,14 +344,34 @@ void mmpMoonRock_render(GameObject* obj, int renderArg2, int renderArg3, int ren
 void mmpMoonRock_hitDetect(void) {
 }
 
+static inline u8 mmpMoonRock_spacingIsClear(GameObject* obj, int stateAddress) {
+    u32* list;
+    int count;
+    int i;
+    f32 minimumSpacing;
+    MMPMoonRockPlacement* objects;
+
+    objects = (MMPMoonRockPlacement*)objGetAllOfType(CARRYABLE_OBJECT_GROUP, &count);
+    i = 0;
+    list = (u32*)objects;
+    minimumSpacing = 40.0f;
+    for (; i < count; i++) {
+        GameObject* otherRock = (GameObject*)*list;
+        if (otherRock != obj && otherRock->anim.romDefNo == MMP_MOON_ROCK_SEQUENCE_ID &&
+            Vec_xzDistance(&obj->anim.worldPosX, &otherRock->anim.worldPosX) < minimumSpacing) {
+            (*gCarryableInterface)->setDropDisabled((void*)stateAddress, 1);
+            return 0;
+        }
+        list++;
+    }
+    return 1;
+}
+
 void mmpMoonRock_update(GameObject* obj) {
     MMPMoonRockState* state = obj->extra;
     u8 isHeld;
     int particleHeight;
-    int count;
-    int i;
     int stateAddress;
-    u32* list;
     MMPMoonRockPlacement* placementOrObjects = (MMPMoonRockPlacement*)obj->anim.placementData;
     if (objPosToMapBlockIdx(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ) == -1) {
         return;
@@ -411,24 +431,7 @@ void mmpMoonRock_update(GameObject* obj) {
         }
         stateAddress = (int)obj->extra;
         (*gCarryableInterface)->setDropDisabled((void*)stateAddress, 0);
-        {
-            f32 minimumSpacing;
-            placementOrObjects = (MMPMoonRockPlacement*)objGetAllOfType(CARRYABLE_OBJECT_GROUP, &count);
-            i = 0;
-            list = (u32*)placementOrObjects;
-            minimumSpacing = 40.0f;
-            spacingClear = 1;
-            for (; i < count; i++) {
-                GameObject* otherRock = (GameObject*)*list;
-                if (otherRock != obj && otherRock->anim.romDefNo == MMP_MOON_ROCK_SEQUENCE_ID &&
-                    Vec_xzDistance(&obj->anim.worldPosX, &otherRock->anim.worldPosX) < minimumSpacing) {
-                    (*gCarryableInterface)->setDropDisabled((void*)stateAddress, 1);
-                    spacingClear = 0;
-                    break;
-                }
-                list++;
-            }
-        }
+        spacingClear = mmpMoonRock_spacingIsClear(obj, stateAddress);
         if (spacingClear != 0) {
             state->flags |= MMP_MOON_ROCK_FLAG_ACTION_PENDING;
         }
@@ -494,7 +497,7 @@ void mmpMoonRock_init(GameObject* obj, const MMPMoonRockPlacement* placement) {
     u8 kind;
 
     obj->objectFlags = obj->objectFlags | OBJECT_OBJFLAG_HITDETECT_DISABLED;
-    *(s16*)&state->flags = 0;
+    state->flags = 0;
     state->kind = mainGetBit(placement->kindGameBit);
     kind = state->kind;
     if (kind != 0) {

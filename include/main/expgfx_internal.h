@@ -2,7 +2,7 @@
 #define MAIN_EXPGFX_INTERNAL_H_
 
 #include "global.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/objanim_internal.h"
 
 #define EXPGFX_POOL_COUNT 0x50
@@ -35,7 +35,6 @@
 #define EXPGFX_SLOT_TABLE_INDEX_MASK 0x7F
 #define EXPGFX_BYTE_VALUE_MASK 0xff
 #define EXPGFX_SEQUENCE_COUNTER_MAX 30000
-#define EXPGFX_BOUNDS_TEMPLATE_SIZE sizeof(ExpgfxBounds)
 
 #define EXPGFX_RESOURCE_TABLE_OFFSET 0x000
 #define EXPGFX_POOL_BOUNDS_OFFSET 0x200
@@ -45,7 +44,7 @@
 #define EXPGFX_POOL_SOURCE_MODES_OFFSET 0xE80
 #define EXPGFX_POOL_SOURCE_IDS_OFFSET 0xED0
 #define EXPGFX_TRACKED_SOURCE_FRAME_MASKS_OFFSET 0x1010
-#define EXPGFX_POOL_BOUNDS_TEMPLATE_IDS_OFFSET 0x1020
+#define EXPGFX_POOL_PLANE_OFFSET_SET_IDS_OFFSET 0x1020
 #define EXPGFX_POOL_ACTIVE_COUNTS_OFFSET 0x1070
 #define EXPGFX_POOL_ACTIVE_MASKS_OFFSET 0x10C0
 #define EXPGFX_SLOT_POOL_BASES_OFFSET 0x1200
@@ -144,8 +143,8 @@
 #define EXPGFX_SOURCE_SEQID_MATCH_ALL 0xD4
 #define EXPGFX_QUAD_TEXCOORD_MAX 0x80
 #define EXPGFX_QUEUE_DEPTH_SLOT_TYPE_MASK 0x21
-#define EXPGFX_STATIC_BOUNDS_TEMPLATE_COUNT \
-  (EXPGFX_STATIC_POOL_SLOT_TYPE_IDS_OFFSET / sizeof(ExpgfxBounds))
+#define EXPGFX_STATIC_PLANE_OFFSET_SET_COUNT \
+  (EXPGFX_STATIC_POOL_SLOT_TYPE_IDS_OFFSET / sizeof(ExpgfxPlaneOffsets))
 
 typedef struct ExpgfxBounds {
   float minX;
@@ -155,6 +154,10 @@ typedef struct ExpgfxBounds {
   float minZ;
   float maxZ;
 } ExpgfxBounds;
+
+typedef struct ExpgfxPlaneOffsets {
+  f32 offsets[6];
+} ExpgfxPlaneOffsets;
 
 typedef struct ExpgfxPoolSourcePosition {
   u8 pad00[0x0C];
@@ -320,7 +323,7 @@ STATIC_ASSERT(offsetof(ExpgfxResourceHandle, linkGroup) == 0x14);
  * less error-prone.
  */
 typedef struct ExpgfxStaticDataLayout {
-  ExpgfxBounds boundsTemplates[EXPGFX_STATIC_BOUNDS_TEMPLATE_COUNT];
+  ExpgfxPlaneOffsets planeOffsetSets[EXPGFX_STATIC_PLANE_OFFSET_SET_COUNT];
   s16 poolSlotTypeIds[EXPGFX_POOL_COUNT];
   u8 poolFrameFlags[EXPGFX_POOL_COUNT];
   u8 pad120[EXPGFX_STATIC_QUAD_TEMPLATE_A_OFFSET -
@@ -352,7 +355,7 @@ typedef struct ExpgfxRuntimeDataLayout {
   u8 poolSourceModes[EXPGFX_POOL_COUNT];
   u32 poolSourceIds[EXPGFX_POOL_COUNT];
   s64 trackedSourceFrameMasks[2];
-  u8 poolBoundsTemplateIds[EXPGFX_POOL_COUNT];
+  u8 poolPlaneOffsetSetIds[EXPGFX_POOL_COUNT];
   s8 poolActiveCounts[EXPGFX_POOL_COUNT];
   u32 poolActiveMasks[EXPGFX_POOL_COUNT];
   u32 slotPoolBases[EXPGFX_POOL_COUNT];
@@ -364,7 +367,7 @@ STATIC_ASSERT(offsetof(ExpgfxRuntimeDataLayout, expTab) == EXPGFX_EXPTAB_OFFSET)
 STATIC_ASSERT(offsetof(ExpgfxRuntimeDataLayout, poolSourceModes) == EXPGFX_POOL_SOURCE_MODES_OFFSET);
 STATIC_ASSERT(offsetof(ExpgfxRuntimeDataLayout, poolSourceIds) == EXPGFX_POOL_SOURCE_IDS_OFFSET);
 STATIC_ASSERT(offsetof(ExpgfxRuntimeDataLayout, trackedSourceFrameMasks) == EXPGFX_TRACKED_SOURCE_FRAME_MASKS_OFFSET);
-STATIC_ASSERT(offsetof(ExpgfxRuntimeDataLayout, poolBoundsTemplateIds) == EXPGFX_POOL_BOUNDS_TEMPLATE_IDS_OFFSET);
+STATIC_ASSERT(offsetof(ExpgfxRuntimeDataLayout, poolPlaneOffsetSetIds) == EXPGFX_POOL_PLANE_OFFSET_SET_IDS_OFFSET);
 STATIC_ASSERT(offsetof(ExpgfxRuntimeDataLayout, poolActiveCounts) == EXPGFX_POOL_ACTIVE_COUNTS_OFFSET);
 STATIC_ASSERT(offsetof(ExpgfxRuntimeDataLayout, poolActiveMasks) == EXPGFX_POOL_ACTIVE_MASKS_OFFSET);
 STATIC_ASSERT(offsetof(ExpgfxRuntimeDataLayout, slotPoolBases) == EXPGFX_SLOT_POOL_BASES_OFFSET);
@@ -466,26 +469,10 @@ STATIC_ASSERT(offsetof(ExpgfxSlot, stateBits) == 0x8B);
 STATIC_ASSERT(offsetof(ExpgfxSlot, colorByte0) == 0x8C);
 STATIC_ASSERT(offsetof(ExpgfxSlot, renderX) == 0x90);
 
-/*
- * These arrays are still linker-backed by recovered addresses, but the pool
- * roles are stable enough to use semantic aliases across the expgfx corridor.
- */
-#define gExpgfxBoundsTemplates DAT_80310458
-#define gExpgfxSpawnConfig DAT_8039caf8
-#define gExpgfxInlineAttachedSource DAT_8039cb58
-#define gProjgfxDefaultAttachedSource DAT_8039cff8
-#define gExpgfxPoolSlotTypeIds gExpgfxSlotTypeIds
-#define gExpgfxPoolFrameFlags DAT_80310528
-#define gExpgfxPoolBounds DAT_8039b9b8
-#define gExpgfxPoolSourceIds gExpgfxSlotSourceIds
-#define gExpgfxPoolSourceModes DAT_8039c638
-#define gExpgfxPoolBoundsTemplateIds DAT_8039c7d8
-#define gExpgfxPoolActiveCounts gExpgfxSlotActiveCounts
-#define gExpgfxPoolActiveMasks gExpgfxSlotActiveMasks
 #define EXPGFX_STATIC_DATA ((ExpgfxStaticDataLayout *)gExpgfxStaticData)
 #define EXPGFX_RUNTIME_DATA ((ExpgfxRuntimeDataLayout *)gExpgfxRuntimeData)
 
-extern u8 gExpgfxStaticData[];
+extern f32 gExpgfxStaticData[];
 extern u8 gExpgfxRuntimeData[];
 extern ExpgfxTableEntry gExpgfxTableEntries[];
 extern ObjAnimComponent* gExpgfxTrackedPoolSourceIds[];

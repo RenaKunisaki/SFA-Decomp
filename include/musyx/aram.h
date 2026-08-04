@@ -1,7 +1,7 @@
 #ifndef MUSYX_ARAM_H_
 #define MUSYX_ARAM_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 typedef void* (*AramUploadCallback)(u32 sourceOffset, u32 size);
 

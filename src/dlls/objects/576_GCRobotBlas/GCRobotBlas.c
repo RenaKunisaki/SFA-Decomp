@@ -10,6 +10,7 @@
  * free/release/initialise) are no-ops; getExtraSize reports
  * sizeof(GCRobotBlastState).
  */
+#include "dlls/object_descriptor.h"
 #include "main/dll/blastflags4_types.h"
 #include "main/objfx.h"
 #include "main/dll/dll_0240_gcrobotblast.h"
@@ -83,17 +84,19 @@ void GCRobotBlast_initialise(void)
 {
 }
 
-u32 gGCRobotBlastObjDescriptor[14] = {0x00000000,
-                        0x00000000,
-                        0x00000000,
-                        0x000d0000,
-                        (u32)GCRobotBlast_initialise,
-                        (u32)GCRobotBlast_release,
-                        0x00000000,
-                        (u32)GCRobotBlast_init,
-                        (u32)GCRobotBlast_update,
-                        (u32)GCRobotBlast_hitDetect,
-                        (u32)GCRobotBlast_render,
-                        (u32)GCRobotBlast_free,
-                        (u32)GCRobotBlast_getObjectTypeId,
-                        (u32)GCRobotBlast_getExtraSize};
+ObjectDescriptor gGCRobotBlastObjDescriptor = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_14_SLOTS,
+    GCRobotBlast_initialise,
+    GCRobotBlast_release,
+    0,
+    (ObjectDescriptorCallback)GCRobotBlast_init,
+    GCRobotBlast_update,
+    GCRobotBlast_hitDetect,
+    GCRobotBlast_render,
+    GCRobotBlast_free,
+    (ObjectDescriptorCallback)GCRobotBlast_getObjectTypeId,
+    GCRobotBlast_getExtraSize,
+};

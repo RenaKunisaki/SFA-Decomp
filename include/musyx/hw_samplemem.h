@@ -1,7 +1,7 @@
 #ifndef MUSYX_HW_SAMPLEMEM_H_
 #define MUSYX_HW_SAMPLEMEM_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "musyx/data_ref.h"
 
 typedef struct SalHooks {

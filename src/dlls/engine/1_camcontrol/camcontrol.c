@@ -14,7 +14,6 @@
 #include "main/obj_query.h"
 #include "main/pad.h"
 #include "main/voxmaps.h"
-#include "string.h"
 #include "dlls/objects/261_LargeCrate.h"
 #include "main/dll/objfx.h"
 #include "main/audio/sfx_trigger_ids.h"
@@ -540,10 +539,7 @@ GameObject* camcontrol_findBestTarget(CamcontrolCameraState* cameraState, ObjAni
             worldTo[0] = best->anim.hitVolumeTransforms[best->hitVolumeIndex].jointX;
             worldTo[1] = best->anim.hitVolumeTransforms[best->hitVolumeIndex].jointY;
             worldTo[2] = best->anim.hitVolumeTransforms[best->hitVolumeIndex].jointZ;
-            /*
-             * These remain 12-byte stack slots: narrowing them to VoxPos changes MWCC's retail stack layout.
-             * The voxmap APIs access only the leading three s16 coordinates.
-             */
+            /* The voxmap APIs access only the leading three s16 coordinates. */
             voxmaps_worldToGrid(worldFrom, (s16*)gridFromStorage);
             voxmaps_worldToGrid(worldTo, (s16*)gridToStorage);
             if ((u8)voxmaps_traceLine((VoxPos*)gridFromStorage, (VoxPos*)gridToStorage, (VoxPos*)traceOutStorage,
@@ -1091,13 +1087,13 @@ int Camera_isZooming(void) {
     return gCamcontrolCamera->blendProgress > 0.0f;
 }
 
-void Camera_setTargetReticleOverride(int target) {
-    gCamcontrolCamera->targetReticleOverride = (GameObject*)target;
+void Camera_setTargetReticleOverride(GameObject* target) {
+    gCamcontrolCamera->targetReticleOverride = target;
 }
 
-void Camera_setTarget(int target) {
-    gCamcontrolCamera->overrideTarget = (GameObject*)target;
-    gCamcontrolCamera->currentTarget = (GameObject*)target;
+void Camera_setTarget(GameObject* target) {
+    gCamcontrolCamera->overrideTarget = target;
+    gCamcontrolCamera->currentTarget = target;
 }
 
 int Camera_getTarget(void) {

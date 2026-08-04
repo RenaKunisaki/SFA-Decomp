@@ -66,7 +66,7 @@ STATIC_ASSERT(offsetof(DllCESiblingInterface, handleMessage) == DLL_CE_MESSAGE_C
 #define DLL_CE_COORDINATION_HIDDEN    0x2
 
 PartFxSpawnParams gDllCEHitReactionScratch;
-ChukChukStateHandler gChukChukCheckHandlers[6];
+DllCEStateHandler gDllCECheckHandlers[6];
 
 int gDllCEHitReactionMoves[30] = {
     5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 2, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5,
@@ -121,7 +121,7 @@ void iceBaddie_installStateHandlers(void) {
     gIceBaddieStateHandlersB[7] = iceBaddie_stateHandlerB07;
 }
 
-int chukChuk_checkChooseAttackState(GameObject* obj, GroundBaddieState* state) {
+int dll_CE_checkChooseAttackState(GameObject* obj, GroundBaddieState* state) {
     int objectCount;
     int objectIndex;
     GroundBaddieState* objectState;
@@ -178,7 +178,7 @@ int chukChuk_checkChooseAttackState(GameObject* obj, GroundBaddieState* state) {
     return 0;
 }
 
-int chukChuk_checkSubmergeState(GameObject* obj, GroundBaddieState* state) {
+int dll_CE_checkSubmergeState(GameObject* obj, GroundBaddieState* state) {
     GroundBaddieState* objectState = obj->extra;
 
     if (state->baddie.moveJustStartedB != 0) {
@@ -196,7 +196,7 @@ int chukChuk_checkSubmergeState(GameObject* obj, GroundBaddieState* state) {
     return 0;
 }
 
-int chukChuk_checkYieldState(GameObject* obj, GroundBaddieState* state) {
+int dll_CE_checkYieldState(GameObject* obj, GroundBaddieState* state) {
     GroundBaddieState* objectState;
 
     if (state->baddie.moveJustStartedB != 0) {
@@ -212,7 +212,7 @@ int chukChuk_checkYieldState(GameObject* obj, GroundBaddieState* state) {
     return 0;
 }
 
-int chukChuk_checkDeathState(GameObject* obj, GroundBaddieState* state) {
+int dll_CE_checkDeathState(GameObject* obj, GroundBaddieState* state) {
     GroundBaddieState* objectState = obj->extra;
     f32 zero;
     DllCEControl* control;
@@ -223,9 +223,9 @@ int chukChuk_checkDeathState(GameObject* obj, GroundBaddieState* state) {
         control->soundTimer = zero;
         control->nextSoundTime = zero;
         (*gPlayerInterface)->setState(obj, state, 6);
-        *(int*)&state->baddie.targetObj = 0;
+        state->baddie.targetObj = 0;
         state->baddie.physicsActive = 0;
-        *(s8*)&state->baddie.hasTarget = 0;
+        state->baddie.hasTarget = 0;
         ObjHits_DisableObject(obj);
         obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     } else if (state->baddie.moveDone != '\0') {
@@ -239,7 +239,7 @@ int chukChuk_checkDeathState(GameObject* obj, GroundBaddieState* state) {
     return 0;
 }
 
-int chukChuk_checkHealthState(GameObject* obj, GroundBaddieState* state) {
+int dll_CE_checkHealthState(GameObject* obj, GroundBaddieState* state) {
     (void)obj;
 
     if (state->baddie.hitPoints < 1) {
@@ -251,8 +251,8 @@ int chukChuk_checkHealthState(GameObject* obj, GroundBaddieState* state) {
     return 0;
 }
 
-int chukChuk_checkTargetState(GameObject* obj, GroundBaddieState* state) {
-    if (*(int**)&state->baddie.targetObj != NULL) {
+int dll_CE_checkTargetState(GameObject* obj, GroundBaddieState* state) {
+    if ((int*)state->baddie.targetObj != NULL) {
         if (state->baddie.moveJustStartedB != 0) {
             f32 zero = 0.0f;
 
@@ -267,7 +267,7 @@ int chukChuk_checkTargetState(GameObject* obj, GroundBaddieState* state) {
     return 0;
 }
 
-int chukChuk_updateWindupState(GameObject* obj, GroundBaddieState* state) {
+int dll_CE_updateWindupState(GameObject* obj, GroundBaddieState* state) {
     GroundBaddieState* objectState;
     f32 speed;
 
@@ -299,7 +299,7 @@ int chukChuk_updateWindupState(GameObject* obj, GroundBaddieState* state) {
     return 0;
 }
 
-int chukChuk_updateAlertState(GameObject* obj, GroundBaddieState* state) {
+int dll_CE_updateAlertState(GameObject* obj, GroundBaddieState* state) {
     int* objects;
     int objectCount;
     int objectIndex;
@@ -346,7 +346,7 @@ int chukChuk_updateAlertState(GameObject* obj, GroundBaddieState* state) {
     return 0;
 }
 
-int chukChuk_updateSpitState(GameObject* obj, GroundBaddieState* state) {
+int dll_CE_updateSpitState(GameObject* obj, GroundBaddieState* state) {
     GroundBaddieState* objectState = obj->extra;
     int objectCount;
     int objectIndex;
@@ -392,7 +392,7 @@ int chukChuk_updateSpitState(GameObject* obj, GroundBaddieState* state) {
     return 0;
 }
 
-int chukChuk_updateState3(GameObject* obj, GroundBaddieState* state) {
+int dll_CE_updateState3(GameObject* obj, GroundBaddieState* state) {
     if (state->baddie.moveJustStartedA != 0) {
         ObjHits_EnableObject(obj);
     }
@@ -409,7 +409,7 @@ int chukChuk_updateState3(GameObject* obj, GroundBaddieState* state) {
     return 0;
 }
 
-int chukChuk_updateAttackState(GameObject* obj, GroundBaddieState* state) {
+int dll_CE_updateAttackState(GameObject* obj, GroundBaddieState* state) {
     int objectCount;
     int objectIndex;
     GroundBaddieState* objectState;
@@ -451,7 +451,7 @@ int chukChuk_updateAttackState(GameObject* obj, GroundBaddieState* state) {
     return 0;
 }
 
-int chukChuk_updateSubmergeState(GameObject* obj, GroundBaddieState* state) {
+int dll_CE_updateSubmergeState(GameObject* obj, GroundBaddieState* state) {
     GroundBaddieState* objectState;
     DllCEControl* control;
 
@@ -472,9 +472,9 @@ int chukChuk_updateSubmergeState(GameObject* obj, GroundBaddieState* state) {
     if (state->baddie.moveDone != '\0') {
         mainSetBits(objectState->gameBitB, 0);
         ObjAnim_SetCurrentMove((int)obj, 8, 0.0f, 0);
-        *(int*)&state->baddie.targetObj = 0;
+        state->baddie.targetObj = 0;
         state->baddie.physicsActive = 0;
-        *(s8*)&state->baddie.hasTarget = 0;
+        state->baddie.hasTarget = 0;
         objectState->targetState = 0;
         if ((control->coordinationFlags & DLL_CE_COORDINATION_HIDDEN) == 0) {
             obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
@@ -483,7 +483,7 @@ int chukChuk_updateSubmergeState(GameObject* obj, GroundBaddieState* state) {
     return 0;
 }
 
-int chukChuk_updateEmergeState(GameObject* obj, GroundBaddieState* state) {
+int dll_CE_updateEmergeState(GameObject* obj, GroundBaddieState* state) {
     GroundBaddieState* objectState;
     DllCEControl* control;
     int eventFlags;
@@ -522,7 +522,7 @@ int chukChuk_updateEmergeState(GameObject* obj, GroundBaddieState* state) {
     return 0;
 }
 
-void chukChuk_spawnIceBall(GameObject* obj, GroundBaddieState* state) {
+void dll_CE_spawnIceBall(GameObject* obj, GroundBaddieState* state) {
     f32 duration;
     f32 distanceRatio;
     ObjPlacement* setup;
@@ -549,12 +549,12 @@ void chukChuk_spawnIceBall(GameObject* obj, GroundBaddieState* state) {
                 duration;
             projectile->anim.velocityZ =
                 (((GameObject*)state->baddie.targetObj)->anim.localPosZ - obj->anim.localPosZ) / duration;
-            *(int*)&projectile->ownerObj = (int)obj;
+            projectile->ownerObj = (void*)obj;
         }
     }
 }
 
-void chukChuk_acquireTarget(GameObject* obj, GroundBaddieState* objectState, GroundBaddieState* state) {
+void dll_CE_acquireTarget(GameObject* obj, GroundBaddieState* objectState, GroundBaddieState* state) {
     DllCEControl* control = objectState->control;
     GameObject* target;
 
@@ -566,7 +566,7 @@ void chukChuk_acquireTarget(GameObject* obj, GroundBaddieState* objectState, Gro
         (*gBaddieControlInterface)
             ->startHitReaction(obj, state, &((GroundBaddieState*)objectState)->routeNav, objectState->gameBitB, NULL, 0, 0, 8,
                                disabledSoundId);
-        *(int*)&state->baddie.targetObj = (int)target;
+        state->baddie.targetObj = (void*)target;
         state->baddie.hasTarget = 0;
         objectState->targetState = 1;
     } else {
@@ -596,7 +596,7 @@ void chukChuk_acquireTarget(GameObject* obj, GroundBaddieState* objectState, Gro
     }
 }
 
-void chukChuk_updateTargeting(GameObject* obj, int objectStateAddress, int stateAddress) {
+void dll_CE_updateTargeting(GameObject* obj, GroundBaddieState* objectStateAddress, GroundBaddieState* stateAddress) {
     GameObject* player;
     char* target;
     int hitReactionUpdated;
@@ -607,30 +607,30 @@ void chukChuk_updateTargeting(GameObject* obj, int objectStateAddress, int state
 
     (void)deltaAddress;
     player = Obj_GetPlayerObject();
-    target = *(char**)&((GroundBaddieState*)stateAddress)->baddie.targetObj;
+    target = (char*)stateAddress->baddie.targetObj;
     if (target != NULL) {
         delta.x = ((GameObject*)target)->anim.worldPosX - obj->anim.worldPosX;
         delta.y = ((GameObject*)target)->anim.worldPosY - obj->anim.worldPosY;
         delta.z = ((GameObject*)target)->anim.worldPosZ - obj->anim.worldPosZ;
-        ((GroundBaddieState*)stateAddress)->baddie.targetDistance =
+        stateAddress->baddie.targetDistance =
             sqrtf(delta.z * delta.z + (delta.x * delta.x + delta.y * delta.y));
     }
 
-    if ((((GroundBaddieState*)objectStateAddress)->configFlags & 0x20) == 0) {
+    if ((objectStateAddress->configFlags & 0x20) == 0) {
         (*gBaddieControlInterface)
-            ->pollCameraTarget(obj, (void*)stateAddress, &((GroundBaddieState*)objectStateAddress)->flags400, 2, 3,
-                               ((GroundBaddieState*)objectStateAddress)->soundIdA,
-                               ((GroundBaddieState*)objectStateAddress)->soundIdB);
+            ->pollCameraTarget(obj, stateAddress, &objectStateAddress->flags400, 2, 3,
+                               objectStateAddress->soundIdA,
+                               objectStateAddress->soundIdB);
     }
 
     (*gBaddieControlInterface)
-        ->processMessages(obj, (void*)stateAddress, (void*)(objectStateAddress + 0x35c),
-                          ((GroundBaddieState*)objectStateAddress)->gameBitB, NULL, 0, 0, 8);
+        ->processMessages(obj, stateAddress, &objectStateAddress->routeNav,
+                          objectStateAddress->gameBitB, NULL, 0, 0, 8);
 
     hitReactionUpdated =
         (*gBaddieControlInterface)
-            ->updateHitReaction(obj, (void*)stateAddress, &((GroundBaddieState*)objectStateAddress)->routeNav,
-                                ((GroundBaddieState*)objectStateAddress)->gameBitB, gDllCEHitReactionMoves,
+            ->updateHitReaction(obj, stateAddress, &objectStateAddress->routeNav,
+                                objectStateAddress->gameBitB, gDllCEHitReactionMoves,
                                 gDllCEHitReactionDamage, 1, &gDllCEHitReactionScratch);
 
     if (hitReactionUpdated != 0) {
@@ -739,13 +739,13 @@ void dll_CE_update(GameObject* obj, int unusedA, int unusedB) {
         } else if ((state->configFlags & 0x10) != 0 && (*gSkyInterface)->getSunPosition(&sunTime) == 0) {
             state->targetState = 0;
         } else {
-            chukChuk_updateTargeting(obj, (int)state, (int)state);
+            dll_CE_updateTargeting(obj, state, state);
             if (state->targetState == 0) {
-                chukChuk_acquireTarget(obj, state, state);
+                dll_CE_acquireTarget(obj, state, state);
             } else {
                 control = state->control;
                 if ((control->effectFlags & DLL_CE_EFFECT_PROJECTILE) != 0) {
-                    chukChuk_spawnIceBall(obj, state);
+                    dll_CE_spawnIceBall(obj, state);
                 }
                 if ((control->effectFlags & DLL_CE_EFFECT_DUST) != 0) {
                     (*gPartfxInterface)->spawnObject((void*)obj, DLL_CE_PARTFX_DUST, NULL, 1, -1, NULL);
@@ -763,7 +763,7 @@ void dll_CE_update(GameObject* obj, int unusedA, int unusedB) {
                 state->savedPendingParentObj = obj->pendingParentObj;
                 obj->pendingParentObj = 0;
                 (*gPlayerInterface)
-                    ->update(obj, state, timeDelta, timeDelta, gChukChukMoveHandlers, gChukChukCheckHandlers);
+                    ->update(obj, state, timeDelta, timeDelta, gDllCEMoveHandlers, gDllCECheckHandlers);
                 obj->pendingParentObj = state->savedPendingParentObj;
             }
             obj->anim.localPosY = placement->base.posY - 2.0f;
@@ -771,7 +771,7 @@ void dll_CE_update(GameObject* obj, int unusedA, int unusedB) {
     }
 }
 
-ChukChukStateHandler gChukChukMoveHandlers[8];
+DllCEStateHandler gDllCEMoveHandlers[8];
 
 void dll_CE_init(GameObject* obj, DllCEPlacement* placement, int flags) {
     GroundBaddieState* state;
@@ -802,17 +802,17 @@ void dll_CE_release(void) {
 }
 
 void dll_CE_initialise(void) {
-    gChukChukMoveHandlers[0] = chukChuk_updateEmergeState;
-    gChukChukMoveHandlers[1] = chukChuk_updateSubmergeState;
-    gChukChukMoveHandlers[2] = chukChuk_updateAttackState;
-    gChukChukMoveHandlers[3] = chukChuk_updateState3;
-    gChukChukMoveHandlers[4] = chukChuk_updateSpitState;
-    gChukChukMoveHandlers[5] = chukChuk_updateAlertState;
-    gChukChukMoveHandlers[6] = chukChuk_updateWindupState;
-    gChukChukCheckHandlers[0] = chukChuk_checkTargetState;
-    gChukChukCheckHandlers[1] = chukChuk_checkHealthState;
-    gChukChukCheckHandlers[2] = chukChuk_checkDeathState;
-    gChukChukCheckHandlers[3] = chukChuk_checkYieldState;
-    gChukChukCheckHandlers[4] = chukChuk_checkSubmergeState;
-    gChukChukCheckHandlers[5] = chukChuk_checkChooseAttackState;
+    gDllCEMoveHandlers[0] = dll_CE_updateEmergeState;
+    gDllCEMoveHandlers[1] = dll_CE_updateSubmergeState;
+    gDllCEMoveHandlers[2] = dll_CE_updateAttackState;
+    gDllCEMoveHandlers[3] = dll_CE_updateState3;
+    gDllCEMoveHandlers[4] = dll_CE_updateSpitState;
+    gDllCEMoveHandlers[5] = dll_CE_updateAlertState;
+    gDllCEMoveHandlers[6] = dll_CE_updateWindupState;
+    gDllCECheckHandlers[0] = dll_CE_checkTargetState;
+    gDllCECheckHandlers[1] = dll_CE_checkHealthState;
+    gDllCECheckHandlers[2] = dll_CE_checkDeathState;
+    gDllCECheckHandlers[3] = dll_CE_checkYieldState;
+    gDllCECheckHandlers[4] = dll_CE_checkSubmergeState;
+    gDllCECheckHandlers[5] = dll_CE_checkChooseAttackState;
 }

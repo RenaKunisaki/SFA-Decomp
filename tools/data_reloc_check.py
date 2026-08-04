@@ -86,6 +86,7 @@ import struct
 import sys
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from scope_guard import require_nonempty
 import sda_reloc_check as S
 from sda_reloc_check import ROOT, LBL_RE, Obj, load_retail_addrs
 
@@ -174,6 +175,7 @@ def main():
     pct = {u["name"]: u["measures"].get("fuzzy_match_percent", 0) for u in rep["units"]}
     units = [u for u in json.load(open(os.path.join(ROOT, "objdiff.json")))["units"]
              if "base_path" in u and "target_path" in u]
+    require_nonempty(pats, [u["name"] for u in units])
 
     findings = []
     n_units = n_secs = n_words = n_ptr = n_asym = n_size = n_perm = n_interior = 0

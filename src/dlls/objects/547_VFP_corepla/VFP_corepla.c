@@ -56,9 +56,9 @@ void VFP_coreplat_update(void)
 {
 }
 
-void VFP_coreplat_init(GameObject* obj, int data)
+void VFP_coreplat_init(GameObject* obj, VfpCorePlatformPlacement* data)
 {
-    VfpCorePlatformPlacement* def = (VfpCorePlatformPlacement*)data;
+    VfpCorePlatformPlacement* def = data;
     VfpCorePlatformState* state = obj->extra;
 
     obj->anim.rotX = (((s32)def->rotXByte) << 8);

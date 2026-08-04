@@ -101,7 +101,7 @@ void drakord_thornbush_hitDetect(GameObject* obj)
         if (hit != 0)
         {
             if (hitObj->anim.romDefNo != 0x35f &&
-                *(void**)&inner->lastHitObj != (void*)hitObj &&
+                (void*)inner->lastHitObj != (void*)hitObj &&
                 arrayIndexOf(inner->hitTable, 2, hit) != -1)
             {
                 inner->lastHitObj = (int)hitObj;
@@ -177,7 +177,7 @@ void drakord_thornbush_update(GameObject* obj)
         if (timerCountDown(&inner->growth) != 0)
         {
             (obj)->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
-            ((ByteFlags*)((char*)inner + 0x79))->b80 = 1;
+            inner->flags79.b80 = 1;
             if (*(u32*)&((ObjPlacement*)setup)->ident == 0xffffffff)
             {
                 Obj_FreeObject(obj);
@@ -187,9 +187,9 @@ void drakord_thornbush_update(GameObject* obj)
     else
     {
         Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_drak_pain2);
-        if (((ByteFlags*)((char*)inner + 0x79))->b80)
+        if (inner->flags79.b80)
         {
-            ((ByteFlags*)((char*)inner + 0x79))->b80 = 0;
+            inner->flags79.b80 = 0;
         }
         switch ((obj)->anim.romDefNo)
         {
@@ -242,7 +242,7 @@ void drakord_thornbush_init(GameObject* obj, u8* init)
     (obj)->anim.rotY = (s16)(((DrakordThornbushPlacement*)init)->rotYByte << 8);
     if (*(u32*)&((ObjPlacement*)init)->ident == 0xffffffff)
     {
-        ((ByteFlags*)((char*)inner + 0x79))->b80 = 1;
+        inner->flags79.b80 = 1;
     }
     storeZeroToFloatParam(&inner->growth);
     storeZeroToFloatParam(&inner->regrowTimer);

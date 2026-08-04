@@ -45,7 +45,7 @@ int sh_beacon_sequenceCallback(GameObject* obj) {
 }
 
 int sh_beacon_resetFadeTimerCallback(GameObject* obj) {
-    ((ShBeaconState*)*(int*)&obj->extra)->fadeTimer = 6.0f;
+    ((ShBeaconState*)(int)obj->extra)->fadeTimer = 6.0f;
     return 1;
 }
 
@@ -66,28 +66,28 @@ void sh_beacon_free(GameObject* obj, int keepChild) {
 
 void sh_beacon_update(GameObject* obj) {
     ShBeaconState* state;
-    int placementAddress;
+    ShBeaconPlacement* placement;
     GameObject* tricky;
     ObjPlacement* twinklePlacement;
     int pulseMode;
     ShBeaconState* ignitingState;
 
     state = obj->extra;
-    placementAddress = obj->anim.placementDataAddress;
+    placement = (ShBeaconPlacement*)obj->anim.placementData;
     switch (state->mode) {
     case SH_BEACON_MODE_UNLIT:
         if (((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) &&
             ((*gGameUIInterface)->isItemBeingUsed(GAMEBIT_ITEM_FireWeed_Count) != 0)) {
             gameBitDecrement(GAMEBIT_ITEM_FireWeed_Count);
-            mainSetBits(((ShBeaconPlacement*)placementAddress)->igniteGameBit, 1);
+            mainSetBits(placement->igniteGameBit, 1);
             if (Obj_IsLoadingLocked() != 0) {
                 twinklePlacement = Obj_AllocObjectSetup(SH_BEACON_TWINKLE_SETUP_SIZE, SH_BEACON_TWINKLE_OBJECT_ID);
                 twinklePlacement->posX = obj->anim.localPosX;
                 twinklePlacement->posY = obj->anim.localPosY;
                 twinklePlacement->posZ = obj->anim.localPosZ;
                 twinklePlacement->color[0] = 2;
-                twinklePlacement->color[1] = *(u8*)(obj->anim.placementDataAddress + offsetof(ObjPlacement, color[1]));
-                twinklePlacement->color[3] = *(u8*)(obj->anim.placementDataAddress + offsetof(ObjPlacement, color[3]));
+                twinklePlacement->color[1] = obj->anim.placement->color[1];
+                twinklePlacement->color[3] = obj->anim.placement->color[3];
                 state->twinkleObject = loadObjectAtObject(obj, twinklePlacement);
             }
             (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
@@ -139,8 +139,7 @@ void sh_beacon_update(GameObject* obj) {
             TRICKY_INTERFACE(tricky)->sideCommandEnable((GameObject*)tricky, obj, 1, 4);
         }
     } else {
-        if ((mainGetBit(GAMEBIT_ITEM_MoonPassKey_Got) != 0) ||
-            (((ShBeaconPlacement*)placementAddress)->litGameBit != GAMEBIT_Always1)) {
+        if ((mainGetBit(GAMEBIT_ITEM_MoonPassKey_Got) != 0) || (placement->litGameBit != GAMEBIT_Always1)) {
             obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         } else {
             obj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
@@ -153,7 +152,7 @@ void sh_beacon_update(GameObject* obj) {
         }
         if ((state->fadeTimer <= 0.0f) && (state->mode == SH_BEACON_MODE_IGNITING)) {
             state->mode = SH_BEACON_MODE_LIT;
-            mainSetBits(((ShBeaconPlacement*)placementAddress)->litGameBit, 1);
+            mainSetBits(placement->litGameBit, 1);
             if ((mainGetBit(GAMEBIT_SH_FireWeed_190) != 0) && (mainGetBit(GAMEBIT_SH_FireWeed_191) != 0) &&
                 (mainGetBit(GAMEBIT_SH_FireWeed_192) != 0)) {
                 Sfx_PlayFromObject(0, SFXTRIG_mpick1_b);
@@ -187,8 +186,8 @@ void sh_beacon_init(GameObject* obj, const ShBeaconPlacement* placement) {
         twinklePlacement->posY = obj->anim.localPosY;
         twinklePlacement->posZ = obj->anim.localPosZ;
         twinklePlacement->color[0] = 2;
-        twinklePlacement->color[1] = *(u8*)(obj->anim.placementDataAddress + offsetof(ObjPlacement, color[1]));
-        twinklePlacement->color[3] = *(u8*)(obj->anim.placementDataAddress + offsetof(ObjPlacement, color[3]));
+        twinklePlacement->color[1] = obj->anim.placement->color[1];
+        twinklePlacement->color[3] = obj->anim.placement->color[3];
         state->twinkleObject = loadObjectAtObject(obj, twinklePlacement);
     }
 

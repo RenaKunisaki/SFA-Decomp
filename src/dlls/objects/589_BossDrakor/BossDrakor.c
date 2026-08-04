@@ -104,7 +104,7 @@ STATIC_ASSERT(offsetof(BossDrakorSpellStoneInterface, setState) == 0x20);
 
 int bossdrakor_seqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
-    int inner = *(int*)&(obj)->extra;
+    int inner = (int)obj->extra;
     int i;
     GameObject* target;
     int eventId;
@@ -609,7 +609,7 @@ void bossdrakor_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis)
 
 void bossdrakor_hitDetect(GameObject* obj)
 {
-    int inner = *(int*)&(obj)->extra;
+    int inner = (int)obj->extra;
     BossdrakorPlacement* setup = (BossdrakorPlacement*)(obj)->anim.placementData;
     f32 hz;
     f32 hy;
@@ -690,7 +690,7 @@ void bossdrakor_update(GameObject* obj)
     int curveArg;
     BossDrakorState* drakorState;
 
-    state = *(int*)&obj->extra;
+    state = (int)obj->extra;
     drakorState = (BossDrakorState*)state;
     curveArg = 0x29;
     if (((BossDrakorState*)state)->flags198.b10)
@@ -710,7 +710,7 @@ void bossdrakor_update(GameObject* obj)
         obj->anim.localPosY = drakorState->curveWalker.posY;
         ((BossDrakorState*)state)->flags198.b20 = 1;
         drakorState->repeatCount = 0;
-        meterState = (BossDrakorState*)*(int*)&obj->extra;
+        meterState = (BossDrakorState*)(int)obj->extra;
         meterState->flags198.b20 = 1;
         (*gGameUIInterface)->initAirMeter(meterState->airMeterHandle, BOSSDRAKOR_AIRMETER_BGTEXTURE);
         (*gGameUIInterface)->runAirMeter(meterState->airMeterHandle);
@@ -951,7 +951,7 @@ void bossdrakor_update(GameObject* obj)
 }
 void bossdrakor_init(GameObject* obj, BossdrakorPlacement* init)
 {
-    int inner = *(int*)&(obj)->extra;
+    int inner = (int)obj->extra;
     f32 fz;
     BossDrakorState* s = (BossDrakorState*)inner;
     if (init->curveAdvanceStep == 0)

@@ -16,7 +16,6 @@
 #include "main/object_transform.h"
 #include "main/pad.h"
 #include "main/vecmath.h"
-#include "string.h"
 
 enum CameraModePathCurveType {
     CAMERA_MODE_PATH_CURVE_TYPE_MOVE_8 = 8,

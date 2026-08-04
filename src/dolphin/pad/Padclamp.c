@@ -12,7 +12,6 @@ PADClampRegion ClampRegion = {
 
 
 // prototypes
-void ClampStick(s8* px, s8* py, s8 max, s8 xy, s8 min);
 
 void ClampStick(s8* px, s8* py, s8 max, s8 xy, s8 min) {
     int x = *px;

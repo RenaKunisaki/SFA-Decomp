@@ -3,6 +3,6 @@
 
 #include "global.h"
 
-void tricky_stateGoToWarpPoint(u8* self, u8* state);
+void tricky_stateGoToWarpPoint(u8* self, TrickyState* state);
 
 #endif /* MAIN_DLL_MMP_CRATERCRITTER_H_ */

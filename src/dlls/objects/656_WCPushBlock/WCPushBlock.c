@@ -35,7 +35,6 @@
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx.h"
-#include "main/gamebit_ids.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
 
@@ -107,7 +106,7 @@ int wcpushblock_getExtraSize(void)
 int wcpushblock_getObjectTypeId(GameObject* obj)
 {
     ObjAnimComponent* objAnim = &obj->anim;
-    int modelIndex = *(s8*)(obj->anim.placementDataAddress + WCPUSHBLOCK_MODEL_INDEX_OFFSET);
+    int modelIndex = ((WCPushBlockSetup*)obj->anim.placementData)->modelIndex;
     int modelCount = objAnim->modelInstance->modelCount;
 
     if (modelIndex >= modelCount)
@@ -594,7 +593,7 @@ void wcpushblock_init(GameObject* obj, WCPushBlockSetup* setup)
     WCPushBlockRuntimeState* state = obj->extra;
 
     objAnim->alpha = 0;
-    *(u8*)&objAnim->bankIndex = setup->modelIndex;
+    objAnim->bankIndex = setup->modelIndex;
     if (objAnim->bankIndex >= objAnim->modelInstance->modelCount)
     {
         objAnim->bankIndex = 0;

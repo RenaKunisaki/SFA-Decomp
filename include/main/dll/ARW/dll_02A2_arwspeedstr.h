@@ -41,9 +41,6 @@ void ARWSpeedStr_update(GameObject* obj);
 void ARWSpeedStr_release(void);
 void ARWSpeedStr_initialise(void);
 
-void dll_2A3_setSpeed(GameObject* obj, int speed);
-void dll_2A3_setVelocity(GameObject* obj, Vec3f* velocity);
-
 extern ObjectDescriptor gARWSpeedStrObjDescriptor;
 
 #endif

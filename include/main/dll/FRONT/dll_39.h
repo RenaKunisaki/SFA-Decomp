@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_FRONT_DLL_39_H_
 #define MAIN_DLL_FRONT_DLL_39_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/dll/FRONT/title_menu.h"
 
 typedef struct NAttractModeMovieDims {
@@ -32,7 +32,7 @@ void n_rareware_release(void);
 void n_rareware_initialise(void);
 void n_attractmode_releaseMovieBuffers(void);
 void n_attractmode_prepareMovie(void);
-void TitleMenu_render(int param_1);
+void TitleMenu_render(int obj);
 void TitleMenu_frameEnd(void);
 
 #endif /* MAIN_DLL_FRONT_DLL_39_H_ */

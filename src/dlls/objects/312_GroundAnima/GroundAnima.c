@@ -400,7 +400,7 @@ ObjectDescriptor14 gGroundAnimatorObjDescriptor = {
     (ObjectDescriptorCallback)GroundAnimator_render,
     (ObjectDescriptorCallback)GroundAnimator_free,
     0,
-    (ObjectDescriptorCallback)GroundAnimator_getExtraSize,
+    GroundAnimator_getExtraSize,
     (ObjectDescriptorCallback)GroundAnimator_applyPress,
     (ObjectDescriptorCallback)GroundAnimator_isFullySunk,
     (ObjectDescriptorCallback)GroundAnimator_getMagicCaveIndex,

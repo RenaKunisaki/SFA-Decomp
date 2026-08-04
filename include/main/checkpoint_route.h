@@ -2,7 +2,7 @@
 #define MAIN_CHECKPOINT_ROUTE_H_
 
 #include "global.h"
-#include "ghidra_import.h"
+#include "types.h"
 
 typedef struct CheckpointRouteEntry {
     u8 pad00[0x08];

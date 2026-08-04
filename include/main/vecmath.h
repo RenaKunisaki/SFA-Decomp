@@ -24,7 +24,7 @@ void Vec3_Cross(f32 *lhs, f32 *rhs, f32 *out);
 void Vec3_ReflectAgainstNormal(f32 *normal, f32 *velocity, f32 *out);
 f32 Vec3_Normalize(f32 *vector);
 void basisVectorsToEulerAngles(f32* a, f32* b, s16* out0, s16* out1, s16* out2);
-f32 getXZDistance(f32* a, f32* b);
+f32 getXZDistanceSquared(f32* a, f32* b);
 void mtx44ScaleRow1(f32* matrix, f32 scale);
 void mtx44Transpose(f32* src, f32* dst);
 void Matrix_TransformPoint(const f32* matrix, f32 x, f32 y, f32 z, f32* outX, f32* outY, f32* outZ);
@@ -36,7 +36,7 @@ void setMatrixFromObjectPos(f32 *mtx, const MatrixTransform *transform);
 int RandomTimer_UpdateRangeTrigger(void *timer, f32 lo, f32 hi);
 int randomGetRange(int min, int max);
 int getAngle(f32 deltaX, f32 deltaZ);
-int cos16(s16 angle);
+int sin16(s16 angle);
 int atan2Angle16(f32 y, f32 x);
 int atan2i(int y, int x);
 

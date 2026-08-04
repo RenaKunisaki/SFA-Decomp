@@ -1,6 +1,6 @@
 /*
  * DLL 0x107 - unreachable wind-lift/blow-vent object (no OBJECTS.bin def
- * references it: retail cut content). TU = 0x80185868..0x8018646C.
+ * references it: retail cut content).
  */
 #include "dlls/objects/263.h"
 
@@ -211,7 +211,7 @@ void windLift107_update(GameObject* obj) {
     char carryActive;
     u8 contactFlags;
 
-    placement = *(WindLift107Placement**)&obj->anim.placementData;
+    placement = (WindLift107Placement*)obj->anim.placementData;
     clockScale = 1.0f;
     (*gSkyInterface)->getClockTime(&clockScale);
     state = obj->extra;
@@ -394,7 +394,7 @@ void windLift107_update(GameObject* obj) {
     obj->anim.worldPosZ = obj->anim.localPosZ;
     state->timer -= framesThisStep;
     if (state->carryState != WINDLIFT107_CARRY_IDLE) {
-        if (getXZDistance(&obj->anim.worldPosX, &placement->base.posX) >=
+        if (getXZDistanceSquared(&obj->anim.worldPosX, &placement->base.posX) >=
             (f32)(state->leashRange * state->leashRange)) {
             f32 zero = 0.0f;
             obj->anim.velocityX = zero;

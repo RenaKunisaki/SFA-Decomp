@@ -29,15 +29,16 @@ which now carries prose evidence notes, so they have been dropped.
 | metric | count |
 |---|---|
 | manifest rows (descriptor slots 0x000-0x2C0) | 705 |
-| with retail def name(s) | 408 |
-| no retail name (infrastructure) | 297 |
+| with retail def name(s) | 409 |
+| no retail name (infrastructure) | 296 |
 | current path already canonical | 684 |
 | proposal still differs | 21 |
 | name-conflicts (disambiguated) | 0 |
-| naming contradictions (appendix) | 19 |
-| unit-owned headers recorded (appendix) | 112 |
+| naming contradictions (appendix) | 0 |
+| naming contradictions arbitrated (appendix) | 25 |
+| unit-owned headers recorded (appendix) | 109 |
 
-Expansion status over the 705 rows: NO-RETAIL-NAME 288, COMPLETE 264, CONFIRMED 81, RAW 62, GUESSED 7, DOL-RECOVERED 3
+Expansion status over the 705 rows: NO-RETAIL-NAME 287, COMPLETE 263, CONFIRMED 81, RAW 62, GUESSED 7, DOL-RECOVERED 5
 
 The 21 rows whose proposal still differs are all engine slots
 0x000-0x014, and every one of those proposals predates the move to the
@@ -101,7 +102,7 @@ any of them is acted on.
 | 0x031 | — | NO-RETAIL-NAME | dlls/engine/49/49.c | = (canonical) | Complete DOL-confirmed TU; map rows restored from DLL 60 |
 | 0x032 | — | NO-RETAIL-NAME | dlls/engine/50/50.c | = (canonical) | Complete DOL-confirmed TU; data tail restored from DLL 46 |
 | 0x033 | — | NO-RETAIL-NAME | dlls/engine/51/51.c | = (canonical) | Complete DOL-confirmed TU; data tail restored from DLL 46 |
-| 0x034 | — | NO-RETAIL-NAME | dlls/engine/52/52.c | = (canonical) | Complete DOL-confirmed TU |
+| 0x034 | n_attractmode | DOL-RECOVERED | dlls/engine/52_n_attractmode/n_attractmode.c | = (canonical) | Complete DOL-confirmed TU; retail `OSPanic(__FILE__)` literal `n_attractmode.c` at 0x8031A38C sits in this TU's own string pool |
 | 0x035 | — | NO-RETAIL-NAME | dlls/engine/53/53.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x036 | — | NO-RETAIL-NAME | dlls/engine/54/54.c | = (canonical) | Complete DOL-confirmed TU |
 | 0x037 | — | NO-RETAIL-NAME | dlls/engine/55/55.c | = (canonical) | Complete DOL-confirmed TU |
@@ -259,12 +260,12 @@ any of them is acted on.
 | 0x0CF | CannonClaw (+CannonClawO) | COMPLETE | dlls/objects/207_CannonClaw/CannonClaw.c | = (canonical) | — |
 | 0x0D0 | Grimble | COMPLETE | dlls/objects/208_Grimble/Grimble.c | = (canonical) | — |
 | 0x0D1 | TumbleWeedB | COMPLETE | dlls/objects/209_TumbleWeedB/TumbleWeedB.c | = (canonical) | — |
-| 0x0D2 | Tumbleweed1 (+Tumbleweed2, Tumbleweed3, Tumbleweed4) | COMPLETE | dlls/objects/209_TumbleWeedB/TumbleWeedB.c | = (canonical) | Slot 210 was rejoined into the 209 TumbleWeedB TU; `src/dlls/dlls.txt` still scaffolds slot 210 |
+| 0x0D2 | Tumbleweed1 (+Tumbleweed2, Tumbleweed3, Tumbleweed4) | COMPLETE | dlls/objects/209_TumbleWeedB/TumbleWeedB.c | = (canonical) | Slot 210 was rejoined into the 209 TumbleWeedB TU; `src/dlls/dlls.txt` still scaffolds slot 210. Proven, not assumed: `lbl_803E2F5C/60/64/68/70` in `.sdata2` are each referenced from both halves, and MWCC interns a float constant once per TU, so two TUs would need two copies |
 | 0x0D3 | — | NO-RETAIL-NAME | dlls/objects/211/211.c | = (canonical) | — |
 | 0x0D4 | SkeetlaWall | COMPLETE | dlls/objects/212_SkeetlaWall/SkeetlaWall.c | = (canonical) | — |
 | 0x0D5 | Kaldachom | COMPLETE | dlls/objects/213_Kaldachom/Kaldachom.c | = (canonical) | — |
 | 0x0D6 | KaldachomMe | COMPLETE | dlls/objects/214_KaldachomMe/KaldachomMe.c | = (canonical) | — |
-| 0x0D7 | kaldachompspit (+KaldachomSp, FireCrawler) | GUESSED | dlls/objects/215/215.c | = (canonical) | — |
+| 0x0D7 | kaldachomspit (+KaldachomSp, FireCrawler) | GUESSED | dlls/objects/215/215.c | = (canonical) | — |
 | 0x0D8 | PinPonSpike | CONFIRMED | dlls/objects/216_PinPonSpike/PinPonSpike.c | = (canonical) | — |
 | 0x0D9 | Pollen | COMPLETE | dlls/objects/217_Pollen/Pollen.c | = (canonical) | — |
 | 0x0DA | PollenFragment (+DRHomingMis) | CONFIRMED | dlls/objects/218/218.c | = (canonical) | — |
@@ -478,7 +479,7 @@ any of them is acted on.
 | 0x1AA | BombPlantSp | COMPLETE | dlls/objects/426_BombPlantSp/BombPlantSp.c | = (canonical) | Exact complete six-function TU with its terminal descriptor-plus-padding record, retail-proven BombPlantSp object identity, producer-backed 0x24-byte setup layout, typed 0x2B4-byte state and embedded path-control block, canonical unit header, and full data/small-data ownership; the generated source path remains unchanged |
 | 0x1AB | BombPlantin | COMPLETE | dlls/objects/427_BombPlantin/BombPlantin.c | = (canonical) | — |
 | 0x1AC | SH_queenear | COMPLETE | dlls/objects/428_SH_queenear/SH_queenear.c | = (canonical) | — |
-| 0x1AD | SH_thorntail | COMPLETE | dlls/objects/429_SH_thorntai/SH_thorntai.c | = (canonical) | — |
+| 0x1AD | SH_thorntail | COMPLETE | dlls/objects/429_SH_thorntai/SHthorntail.c | = (canonical) | Source name from the retail `OSPanic(__FILE__)` literal `SHthorntail.c` at 0x80327488, in this TU's own .data; the object def name keeps the folder |
 | 0x1AE | SH_LevelControl | COMPLETE | dlls/objects/430_SH_LevelCon/SH_LevelCon.c | = (canonical) | — |
 | 0x1AF | SH_swaplift | COMPLETE | dlls/objects/431_SH_swaplift/SH_swaplift.c | = (canonical) | — |
 | 0x1B0 | SH_swapston | COMPLETE | dlls/objects/432_SH_swapston/SH_swapston.c | = (canonical) | — |
@@ -609,16 +610,16 @@ any of them is acted on.
 | 0x22D | DFP_seqpoin | COMPLETE | dlls/objects/557_DFP_seqpoin/DFP_seqpoin.c | = (canonical) | Exact recovered retail basename |
 | 0x22E | — | COMPLETE | dlls/objects/558/558.c | = (canonical) | No recovered retail basename |
 | 0x22F | DFP_floorba | COMPLETE | dlls/objects/559_DFP_floorba/DFP_floorba.c | = (canonical) | Exact recovered retail basename |
-| 0x230 | DFP_wallbar | COMPLETE | dlls/objects/560_DFP_wallbar/DFP_wallbar.c | = (canonical) | Exact recovered retail basename; internal chuka_* symbols retained |
-| 0x231 | DFP_ForceAw | COMPLETE | dlls/objects/561_DFP_ForceAw/DFP_ForceAw.c | = (canonical) | Exact recovered retail basename; confirmed combined TU |
+| 0x230 | DFP_wallbar | COMPLETE | dlls/objects/560_DFP_wallbar/DFP_wallbar.c | = (canonical) | Exact recovered retail basename; internal chuka_* symbols retained — `chuka` is the TU's retail source basename (`dll/baddie/chuka.c`, debug filename evidence) |
+| 0x231 | DFP_ForceAw | COMPLETE | dlls/objects/561_DFP_ForceAw/DFP_ForceAw.c | = (canonical) | Exact recovered retail basename; confirmed combined TU — `TrickyCurve` is the TU's retail source basename (`dll/TrickyCurve.c`, covering 0x231+0x232) |
 | 0x232 | DFP_RotateP | COMPLETE | dlls/objects/562_DFP_RotateP/DFP_RotateP.c | = (canonical) | Exact recovered retail basename; confirmed combined TU |
 | 0x233 | DFP_Statue1 | COMPLETE | dlls/objects/563_DFP_Statue1/DFP_Statue1.c | = (canonical) | Exact recovered retail basename; confirmed combined TU |
 | 0x234 | DFP_PerchSw | COMPLETE | dlls/objects/564_DFP_PerchSw/DFP_PerchSw.c | = (canonical) | Exact recovered retail basename; diagnostic string follows descriptor in retail data order |
 | 0x235 | DFP_TargetB | COMPLETE | dlls/objects/565_DFP_TargetB/DFP_TargetB.c | = (canonical) | Exact truncated retail basename; confirmed complete TU |
-| 0x236 | DFP_LaserBe | COMPLETE | dlls/objects/566_DFP_LaserBe/DFP_LaserBe.c | = (canonical) | Exact retail basename; diagnostic strings follow descriptor in retail data order |
+| 0x236 | DFP_LaserBe | COMPLETE | dlls/objects/566_DFP_LaserBe/laser.c | = (canonical) | Object-def basename keeps the folder; source name from the retail `<laser.c Init>` literal at 0x80329C20, printed by this TU's own init slot (the three `<textblock.c Init>` siblings are Rare's copy-paste from DLL 0x239) |
 | 0x237 | DFPSpPl | COMPLETE | dlls/objects/567_DFPSpPl/DFPSpPl.c | = (canonical) | Exact retail basename; internal laser symbols retained |
 | 0x238 | LINKA_levco | COMPLETE | dlls/objects/568_LINKA_levco/LINKA_levco.c | = (canonical) | Exact retail basename; internal FireObject symbols retained |
-| 0x239 | — | COMPLETE | dlls/objects/569/569.c | = (canonical) | No recovered DLL basename; DFP_TextblockObj and KP_textbloc are object aliases; diagnostic string follows descriptor |
+| 0x239 | textblock | DOL-RECOVERED | dlls/objects/569/textblock.c | = (canonical) | No OBJECTS.bin basename, so the folder stays numeric; source name from the retail `<textblock.c Init>` literal at 0x80329CF0, the TU's only string, printed by its own init slot; DFP_TextblockObj and KP_textbloc are object aliases |
 | 0x23A | DFP_Platfor | COMPLETE | dlls/objects/570_DFP_Platfor/DFP_Platfor.c | = (canonical) | Exact truncated retail basename; diagnostic strings follow descriptor |
 | 0x23B | DFP_Lightni | COMPLETE | dlls/objects/571_DFP_Lightni/DFP_Lightni.c | = (canonical) | Exact truncated retail basename; next-slot DFP_PowerSl helper removed |
 | 0x23C | DFP_PowerSl | COMPLETE | dlls/objects/572_DFP_PowerSl/DFP_PowerSl.c | = (canonical) | Exact retail basename; leading helper restored from DLL 571 |
@@ -650,7 +651,7 @@ any of them is acted on.
 | 0x256 | DIMSnowHorn1 | CONFIRMED | dlls/objects/598_DIMSnowHorn/DIMSnowHorn.c | = (canonical) | Descriptor is followed by the retail-ordered `gDIMSnowHorn1ZeroOffset` constant |
 | 0x257 | DR_EarthWarrior | CONFIRMED | dlls/objects/599_DR_EarthWar/DR_EarthWar.c | = (canonical) | — |
 | 0x258 | DR_CloudRunner | CONFIRMED | dlls/objects/600_DR_CloudRun/DR_CloudRun.c | = (canonical) | Descriptor is followed by the retail-ordered `sOnCloudFormat` diagnostic string |
-| 0x259 | SB_Cloudrunner | CONFIRMED | dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c | = (canonical) | Complete DOL-confirmed TU including its three leading `WCPushBlock_*` helpers |
+| 0x259 | SB_Cloudrunner | CONFIRMED | dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c | = (canonical) | Complete DOL-confirmed TU including its three leading `SB_CloudRunner_*` ride helpers |
 | 0x25A | StaticCamera | CONFIRMED | dlls/objects/602_StaticCamer/StaticCamer.c | = (canonical) | — |
 | 0x25B | MSPlantingS | RAW | dlls/objects/603_MSPlantingS/MSPlantingS.c | = (canonical) | Complete DOL-confirmed 14-function TU |
 | 0x25C | — | NO-RETAIL-NAME | dlls/objects/604/604.c | = (canonical) | Complete exact SnowClaw-family TU; descriptor precedes the retail-ordered compiler jump table |
@@ -761,34 +762,117 @@ any of them is acted on.
 
 ## Appendix: naming contradictions
 
-Dlls whose hosted fn symbols carry a prefix matching NONE of the
-dll's retail def names (evidence only — symbol naming vs retail truth
-needs human arbitration before any rename). `cross-dll` = the prefix
-matches ANOTHER dll's retail name (strong mislabel evidence);
-`unrelated` = matches nothing — a mislabel OR a deliberate
-descriptive family name (e.g. `collectible`, `softbody`).
+All 18 rows this appendix once carried (7 `cross-dll`, 11 `unrelated`)
+have been arbitrated; every decision, with its evidence, is in the
+arbitrated table below. The census classes were: `cross-dll` = the
+dominant fn prefix matches ANOTHER dll's retail name (strong mislabel
+evidence); `unrelated` = matches nothing — a mislabel OR a deliberate
+descriptive family name. The arbitration found the cross-dll class was
+almost entirely false alarms: two rows were a misspelling of the dll's
+OWN retail name, two were retail SOURCE basenames recovered from the
+debug build's filename list, and three were apt family/export names
+whose prefix merely collided with alias strings in other dlls' def
+lists. No hosted-function misattribution was found.
 
-| dll | retail name(s) | dominant fn prefix | class | host |
+## Appendix: arbitrated naming contradictions (decided and renamed)
+
+Seven queued items were arbitrated against one discriminator:
+
+> A foreign-branded function referenced **only by its hosting unit** is a
+> misattribution. One referenced **only by the sibling DLL whose brand it
+> wears** is a legitimate hosted callback — retail routinely compiled an
+> object's callback into a neighbouring DLL's translation unit.
+
+Reference counts come from `python3 tools/pairing_check.py --refs <name>`;
+carve ranges from `config/GSAE01/splits.txt`. Every rename below was applied
+to all four region `symbols.txt` files and measured byte-neutral
+(`tools/unitfuzzy.py` unchanged on every referencing unit).
+
+| dll | old brand | new brand | evidence | verdict |
 |---|---|---|---|---|
-| 0x0D6 | KaldachomMe | `kaldachompme_*` | cross-dll (names dll 0x0D5) | dlls/objects/214_KaldachomMe/KaldachomMe.c |
-| 0x0D7 | KaldachomSp, FireCrawler | `kaldachompspit_*` | cross-dll (names dll 0x0D5) | dlls/objects/215/215.c |
-| 0x11C | LINKStaffLe, StaffAction, StaffBoostP, StaffBoulde, StaffLeverO, StaffLeverT | `staffactivated_*` | cross-dll (names dll 0x0E2) | dlls/objects/284/284.c |
-| 0x230 | DFP_wallbar | `chuka_*` | cross-dll (names dll 0x0CD) | dlls/objects/560_DFP_wallbar/DFP_wallbar.c |
-| 0x231 | DFP_ForceAw | `TrickyCurve_*` | cross-dll (names dll 0x0C4) | dlls/objects/561_DFP_ForceAw/DFP_ForceAw.c |
-| 0x232 | DFP_RotateP | `sfxplayer_*` | cross-dll (names dll 0x133) | dlls/objects/562_DFP_RotateP/DFP_RotateP.c |
-| 0x294 | WCMoonTempl, WCSunTemple | `wctemple_*` | cross-dll (names dll 0x0FB,0x110,0x112,0x296,0x297) | dlls/objects/660/660.c |
-| 0x2BD | Androssleft, Androssrigh | `androsshand_*` | cross-dll (names dll 0x2BC) | dlls/objects/701/701.c |
-| 0x0C9 | GuardClaw, GCRobotPatr, Vambat, Firebat, HagabonMK2, Mikaladon, SpittingEba, MutatedEba, snowworm, snowworm_ba, Whirlpool, Rachnop, PinPon, WB, Weevil, BattleDroid, Kooshy, HoodedZyck, FireCrawler, RedEye, ShadowHunte, SwampStride, sharpclawSn, sharpclawGr, sharpclawSo, sharpclawCo, sharpclawAs, sharpclawSh, BossGeneral | `enemy_*` | unrelated | dlls/objects/201_Baddie/Baddie.c |
-| 0x0ED | CFCloudCalP, CFPickKryst, CFPowerCrys, CFPowerRoom, CFExplosive, CF_ChestSpe, WCSunStone, WCMoonStone, WCGoldTrexT, WCSilverTre, DIMBridgeCo, DIMShackleK, DIMAlpineRo, DIMTruthHor, DIM2CellKey, DIM2SilverK, DIM2GoldKey, CCfireCryst, CCgoldbar, NW_SmallSca, NW_trickyba, NW_alpinero, SH_MediumSc, SH_LargeSca, SH_MMPkey, SH_NWkey, SC_block_tr, SC_block_sq, SC_block_ci, SB_Key, SB_Spellsto, WM_MediumSc, WM_consoles, GM_TokenPic, PadlockKey, GuardPass, Spellstone, EnergyEgg, Apple, MoonSeedCol, WM_PureMagi | `collectible_*` | unrelated | dlls/objects/237/237.c |
-| 0x108 | EndObject | `Dummy108_*` | unrelated | dlls/objects/264_EndObject/EndObject.c |
-| 0x10E | DieDuster, DieFox, DieKrystal | `deathseq_*` | unrelated | dlls/objects/270/270.c |
-| 0x11A | DRDebrisGir, DRDebrisPip, LINKSnowTre, LINKSnowLog, nw_testobj, SC_DummyTri, SC_DummySqu, SC_DummyCir, SC_throne, AlienTreePa, SnowBush, SnowLog, SulphurCrys, CobwebCorne, CobwebCeili, CobwebEdge, GrassWeedCl, GrassSupaCh, FernBush, FernCurly, WaterLillyF | `decoration11a_*` | unrelated | dlls/objects/282/282.c |
-| 0x1BD | SC_paypoint, SPWell | `paymentkiosk_*` | unrelated | dlls/objects/445/445.c |
-| 0x237 | DFPSpPl | `laserObj_*` | unrelated | dlls/objects/567_DFPSpPl/DFPSpPl.c |
-| 0x238 | LINKA_levco | `fireObj_*` | unrelated | dlls/objects/568_LINKA_levco/LINKA_levco.c |
-| 0x284 | SPFruitSmal, SPEggSmall, SPFruitLarg, SPEggLarge, SPBombSpore, SPMoonSeed, SPLantern, SPBlueArtef, SPBlueMushr, SPSwapGift, SPPda, SPBinocular, SPFireFly, SPFuelCell, SPSidekickB, SPDusterHol, SPStaffHitB, SPMapTTH, SPMapMMP, SPMapLF, SPMapCRF, SPMapDIM, SPMapWC, SPMapDR, SPMapKP, SPMapOFP, SPMapSW, SPMapVFP, SPMapCC, SPReplayDis | `shopitem_*` | unrelated | dlls/objects/644/644.c |
-| 0x2AD | LINKSnowGra, SH_YellowWh, SH_BlueWhit, SH_RedYello, SH_BlueFlow, WM_drape, DFSH_Spirit, BlueFernFlo, WhiteFernFl, YellowFernF, AlienSpore, BlueFlowerP, BlueWhiteFl, RedYellowFl, YellowWhite, BullRush, BullRushClu, LongGrassCl, DragonRockG, AlienGrassC, SnowGrass, SnowBullrus, HangingPlan, WaterLillyL | `softbody_*` | unrelated | dlls/objects/685/685.c |
-| 0x2C0 | FrontFox, FrontPeppy, FrontSlippy, FrontRob, FrontFalco, FrontPilots, FrontPlanet | `titlescreen_*` | unrelated | dlls/objects/704/704.c |
+| 0x232 DFP_RotateP | `sfxplayer_*` | `DFP_RotateP_*` | All twelve functions are the object's own descriptor callback set (`init`/`update`/`free`/`render`/`hitDetect`/`release`/`initialise`/`getExtraSize`/`getObjectTypeId`) and every one is referenced only by its own unit. The real sfxPlayer is dll 0x133 at `.text` 0x80198194-0x80198A00 with a complete, disjoint `SfxPlayer_*` family and its own `SfxPlayerState`; 0x232's `getExtraSize` returns 0xA. No sibling reference exists in either direction. | misattribution — renamed |
+| 0x259 SB_Cloudrunner | `WCPushBlock_*` | `SB_CloudRunner_*` | The three helpers are self-referenced only. The unit's private `WCPushBlockState` view is field-for-field the unit's own `SBCloudRunnerState` (0x10 target object, 0x2C rotX accumulator, 0x2E rotZ accumulator, 0x60, 0x64, 0x65, 0x70 stick X, 0x78), i.e. a second view of the same 0x84-byte extra block. The real WCPushBlock (dll 0x290) is a tile-grid sliding puzzle block with `WCPushBlockRuntimeState`/`WCPushBlockSetup` and a `wcpushblock_*` family, shares no state, no data and no call edge, and is not a ride at all — so the source's "retooled from the WC push-block ride" note had no support and was removed as folklore. | misattribution — renamed |
+| 0x1E0 DIM_Boss | `DIM2icicle_*` | `DIMboss_*` | Six functions, self-referenced only, all taking `DIMbossRuntime*`/`DIMbossEffectMarker*`; the TU's own brand is `DIMboss_*`/`DIMbossAnim_*`/`DIMbossHitDetect_*` with `gDIM_BossObjDescriptor`. The whole `Dim2Icicle*` data family they use (`gDim2IcicleHitDescTemplate` 0x802C2348, `gDim2IcicleMeltEntries` 0x803259E0, `gDim2IcicleSequenceSfx` 0x80325AB8, `gDim2IcicleDustFxSource` 0x803AC97C, `gDim2IcicleHitFxBuffer` 0x803AC994, `gDim2IcicleHitCooldown` 0x803DDB8C) lies inside 0x1E0's own `.rodata`/`.data`/`.bss`/`.sbss` carve, not 0x1DD's. dll 0x1DD DIM2Icicle is a separate 0x414-byte TU at 0x801B93FC with its own `dim2icicle_*` family. | misattribution — renamed |
+| 0x1E8 SB_Galleon | `DBprotection_*` | `SB_Galleon_*` | `updateFlight`/`updateEnvfxGameBits`/`updateShield` are self-referenced only and operate on `SBGalleonState`. `getCameraState` was arbitrated separately because it is a genuine cross-DLL export (0x1E9 SB_Propelle, 0x1EA SB_ShipHead, `195_Player`, `engine/68`) — but the hosted-callback reading needs the referencing sibling to *be* the branded DLL, and the brand `DBprotectZo` is not a DLL at all: it is one of the 46 object defs handled by dll 0x12E (`302`, brand `CFLightWall_*`), whose code never calls it. Same verdict as the other three; all four callers are galleon consumers. | misattribution — renamed |
+| 0x1BC SC_totemstr | `platform1_control` | `sc_totemstrength_animEventCallback` | Self-referenced only (definition plus one `obj->animEventCallback =` install), body is entirely the LightFoot Test-of-Strength minigame over `ScTotemStrengthState`. The real platform1 is dll 0x23A (`570_DFP_Platfor`), a stub object whose retail `.rodata` string `"<platform1 draw>No Longer supported \n"` proves the name and whose own update slot is `platform1_controlUnsupported`. Renamed to match the direct sibling convention (`sc_totempuzzle_animEventCallback` in 0x1BA). | misattribution — renamed |
+| 0x1AE SH_LevelCon | `SCGameBitLatch_*` | `GameBitLatch_*` | Defined in the SH level-control TU and consumed by 23 units for `_Update` and 11 for `_UpdateInverted`, spanning CF, DIM, SH, CC, WC, NW, DIM2, IM, WM, LINK, LINKB, DR, CR, VFP, SC, DBSH, GPSH, ECSH, MMSH, MMP, DFP, SB and DFSH. The body is a generic game-bit latch with an optional `Music_Trigger` and a 4-byte mask state; `SC` names neither the host nor any dominant consumer (SC contributes 2 of the 90 relocs). `SCGameBitLatchState` renamed to `GameBitLatchState` with it. | generic helper — renamed |
+| — | `SkyEnvFxRampTables` | (name kept) | Declared in `include/dlls/objects/430_SH_LevelCon.h` but referenced only by dlls 0x172, 0x173 and 0x18B; SH_LevelCon spells the same four 28-entry ramps inline inside its own `ShLevelControlTables` at +0x24/+0x5C/+0x94/+0xCC. Header-home misplacement, not a naming error. Moved to `include/main/sky.h` beside its only consumer `skySetEnvFxRampTables`. | header rehomed |
+
+The three data-symbol follow-ups deferred out of the same seven are **done**. Each
+carries the verdict of its function family, was applied to all four region
+`symbols.txt` files at that region's own address, and measured byte-neutral: every
+referencing unit holds its pre-rename `fuzzy_match_percent`, every allocated
+section of every rebuilt object is byte-identical, `pairing_check.py` reports 0
+retail-only symbols, and the FORCEACTIVE warning list is unchanged at 17.
+
+| dll | old symbol | new symbol | section | GSAE01 | GSAE01_rev1 | GSAJ01 | GSAP01 |
+|---|---|---|---|---|---|---|---|
+| 0x232 | `gSfxplayerObjDescriptor` | `gDFP_RotatePObjDescriptor` | `.data` | 0x80329AA0 | 0x8032A6E0 | 0x80329BC0 | 0x8032B420 |
+| 0x1E0 | `gDim2IcicleHitDescTemplate` | `gDIMbossHitDescTemplate` | `.rodata` | 0x802C2348 | 0x802C2AC8 | 0x802C2448 | 0x802C2CC8 |
+| 0x1E0 | `gDim2IcicleMeltEntries` | `gDIMbossMeltEntries` | `.data` | 0x803259E0 | 0x80326620 | 0x80325B00 | 0x80327360 |
+| 0x1E0 | `gDim2IcicleSequenceSfx` | `gDIMbossSequenceSfx` | `.data` | 0x80325AB8 | 0x803266F8 | 0x80325BD8 | 0x80327438 |
+| 0x1E0 | `gDim2IcicleDustFxSource` | `gDIMbossDustFxSource` | `.bss` | 0x803AC97C | 0x803AD5DC | 0x803ACA9C | 0x803AE2DC |
+| 0x1E0 | `gDim2IcicleHitFxBuffer` | `gDIMbossHitFxBuffer` | `.bss` | 0x803AC994 | 0x803AD5F4 | 0x803ACAB4 | 0x803AE2F4 |
+| 0x1E0 | `gDim2IcicleHitCooldown` | `gDIMbossHitCooldown` | `.sbss` | 0x803DDB8C | 0x803DE80C | 0x803DDCAC | 0x803DF54C |
+| 0x1E8 | `gDBprotectionTransitionPending` | `gSB_GalleonTransitionPending` | `.sbss` | 0x803DDC2C | 0x803DE8AC | 0x803DDD4C | 0x803DF5EC |
+
+The 0x1E0 census above understated the family at five: `gDim2IcicleSequenceSfx`
+(`.data` 0x80325AB8) is defined and used by the same unit and lies in the same
+carve, so it renamed with the other five rather than leaving the TU spelling two
+brands at once.
+
+One `Dim2Icicle` name remains and is deliberate: `gDim2IcicleLightDuration`
+(`.sdata2` 0x803E4C74) exists only in the retail carve. No source names it — our
+object emits that pool word anonymously — so a rename there would move a
+`symbols.txt` line with no source counterpart. It is left for whenever the pool
+word acquires a spelling.
+
+### Second wave: the remaining 18 census rows
+
+The same discriminator was applied to the 7 `cross-dll` rows and the 11
+`unrelated` rows still in the census. Reference counts are retail-carve
+relocations (the `pairing_check.py --refs` measure); "self-referenced"
+means every reloc naming the function comes from the hosting unit's own
+carved object (descriptor installs included). Retail OBJECTS.bin name
+fields are the spelling authority; `docs/orig/source_gap_packet_briefs/`
+(debug-build source-filename evidence) and `docs/boundary_audit.md` are
+the source-basename authority.
+
+| dll | old brand | new brand | evidence | verdict |
+|---|---|---|---|---|
+| 0x0D6 KaldachomMe | `kaldachompme_*`, `KaldaChompMe_*` | `kaldachomme_*`, `KaldachomMe_*` | The census "cross-dll (names 0x0D5)" flag was a parse artifact of a misspelling, not a misattribution: retail OBJECTS.bin spells the family `Kaldachom`/`KaldachomMe`/`KaldachomSp` (no "p" — the `KaldaChomp` spelling matches the community wiki DLL list, `docs/wiki/DLLs.md`, not retail). Attribution is correct — the nine callbacks are installed by the unit's own descriptor and self-referenced, and `kaldachomme_setLinkedMouthMode` is a genuine export consumed only by parent dll 0x0D5 (3 relocs from 213_Kaldachom), the mouth-link API a parent jaw would drive. Renamed for spelling only, including `KALDACHOMME_LINKED_MODE_*` and the `KaldachomMe*` types. | own name misspelled — renamed |
+| 0x0D7 KaldachomSp | `kaldachompspit_*`, `KaldaChompSpit_*` | `kaldachomspit_*`, `KaldachomSpit_*` | Same misspelling parse artifact. `kaldachomspit_burst` is self-referenced (x3); the nine callbacks are the unit's own descriptor set. The brand is 0x0D7's OWN retail name `KaldachomSp` (11-char truncation, expansion "Spit" GUESSED) plus the wiki "p". Renamed for spelling only; the manifest expansion row was corrected with it. | own name misspelled — renamed |
+| 0x11C (Staff* six) | `staffactivated_*` | (name kept) | Apt family name, not a mislabel of dll 0x0E2: the descriptor callback set (`init`/`update`/`free`/`render`/`getExtraSize`/`getObjectTypeId`) plus `updateLiftHeight` is self-referenced, and the eight-function accessor API (`get/setLiftHeight`, `getMode`, `getPullRateMode`, `calcInteractionTargetXZ`, `set/isGameBitMirror*`, `spawnMapEventDebris`) is referenced exclusively by 195_Player — the staff wielder driving staff-ACTIVATED objects (LINKStaffLe, StaffAction, StaffBoostP, StaffBoulde, StaffLeverO/T). Dll 0x0E2 (the staff item itself; debug filename list has only `dll/dll_E2.c` for it) references none of them. | confirmed apt |
+| 0x230 DFP_wallbar | `chuka_*` | (name kept) | `chuka` is the RETAIL SOURCE basename for this TU: the debug build's filename list carries `chuka.c` (global-unique, `dll/baddie/chuka.c` — briefs 06/07), and `docs/boundary_audit.md` places 0x230's TU exactly there (0x8020637C boundary anim.c→chuka.c; neighbouring 0x22F DFP_floorba sits at the chuka.c→chukachuck.c boundary — the matching floor bar). All ten functions self-referenced/self-installed. No live collision: dll 0x0CD's code is entirely `IceBall_*`; `ChukaChuck` is merely a def name handled there. | confirmed apt (retail source name) |
+| 0x231 DFP_ForceAw | `TrickyCurve_*` | (name kept) | `TrickyCurve` is the retail source basename: `dll/TrickyCurve.c` appears in the debug filename list covering 0x231+0x232 (boundary_audit: the 0x232 TU transitions TrickyCurve.c→sfxplayer.c at 0x80207CE4, so 0x231 lies wholly inside TrickyCurve.c). Distinct file from `dll/tricky.c` (dll 0x0C4 Tricky). All fourteen functions self-referenced. | confirmed apt (retail source name) |
+| 0x294 (WC temples) | `wctemple_*` | (name kept) | Apt family name for the DLL's own two retail defs WCMoonTempl + WCSunTemple; all nine functions self-referenced. The census cross-dll flag arose only from `WCTemple*` alias strings inside other multi-object DLLs' def lists (0x0FB/0x110/0x112/0x296/0x297), none of which reference these functions. | confirmed apt |
+| 0x2BD (Andross hands) | `androsshand_*` | (name kept) | Apt family name for the DLL's own defs Androssleft + Androssrigh. `spawnShot`/`handleDamage` self-referenced; `androsshand_setState` is a legitimate hosted export consumed x18 by sibling 0x2BC (700_Andross) — the boss core driving its hands, exactly the sibling-consumer pattern the discriminator accepts. | confirmed apt |
+| 0x0C9 (29 enemies) | `enemy_*` | (name kept) | Deliberate generic-framework family name: the unit hosts 29 enemy retail defs (GuardClaw … BossGeneral); no single def name could brand the shared code. | confirmed apt |
+| 0x0ED (41 collectibles) | `collectible_*` | (name kept) | Same pattern over 41 collectible defs (keys, scarabs, Spellstone, EnergyEgg, …). | confirmed apt |
+| 0x108 EndObject | `Dummy108_*` | `EndObject_*` (already done) | Stale row: the unit was renamed to `EndObject_*`, matching its retail def, before this wave; `Dummy108` no longer exists in symbols or source. | resolved earlier |
+| 0x10E (Die* three) | `deathseq_*` (now `DeathSeq_*`) | (name kept) | Apt family name for DieDuster/DieFox/DieKrystal — the death-sequence objects. | confirmed apt |
+| 0x11A (21 props) | `decoration11a_*` | (name kept) | Apt slot-suffixed family name for a 21-def decoration grab-bag (debris, snow trees, cobwebs, ferns, …). | confirmed apt |
+| 0x1BD SC_paypoint, SPWell | `paymentkiosk_*` (now `PaymentKiosk_*`) | (name kept) | Apt: both defs are scarab-payment stations. | confirmed apt |
+| 0x237 DFPSpPl | `laserObj_*` | `DFPSpPl_*` (already done) | Stale row: renamed to the retail def before this wave; only the `LaserObjectMapData` type name recalls the old brand. | resolved earlier |
+| 0x238 LINKA_levco | `fireObj_*` | `LinkALevControl_*` (already done) | Stale row: renamed to the retail def before this wave. | resolved earlier |
+| 0x284 (30 shop items) | `shopitem_*` | (name kept) | Apt family name over the SP* shop stock defs. | confirmed apt |
+| 0x2AD (24 plants) | `softbody_*` (now `SoftBody_*`) | (name kept) | Apt: the unit is the soft-body plant/cloth simulation over 24 flora/drape defs. | confirmed apt |
+| 0x2C0 (Front* seven) | `titlescreen_*` (now `titleScreen*`) | (name kept) | Apt: the seven Front* defs are the title-screen pilots/planet. | confirmed apt |
+
+Second-wave data-symbol renames (spelling only, applied to all four region
+`symbols.txt` files at each region's own address; every referencing unit holds
+its exact pre-rename `report.json` score):
+
+| dll | old symbol | new symbol | section | GSAE01 | GSAE01_rev1 | GSAJ01 | GSAP01 |
+|---|---|---|---|---|---|---|---|
+| 0x0D6 | `gKaldaChompOne` | `gKaldachomOne` | `.sdata2` | 0x803E30D0 | 0x803E3D68 | 0x803E31F0 | 0x803E4AB0 |
+| 0x0D6 | `gKaldaChompZero` | `gKaldachomZero` | `.sdata2` | 0x803E30D4 | 0x803E3D6C | 0x803E31F4 | 0x803E4AB4 |
+| 0x0D6 | `gKaldaChompLinkedMouthStep` | `gKaldachomLinkedMouthStep` | `.sdata2` | 0x803E30D8 | 0x803E3D70 | 0x803E31F8 | 0x803E4AB8 |
+
+The two descriptors landed with the wave: `gKaldachomMeObjDescriptor`
+(`.data` 0x80320458) and `gKaldachomSpObjDescriptor` (`.data` 0x80320490),
+including their two reference lines in `src/main/modelEngine.c`'s
+resource-descriptor table.
 
 ## Appendix: canonical-format files whose proposal differs
 
@@ -917,16 +1001,193 @@ more as they are recovered.
 | 0x1FF | dlls/objects/511/511.c | include/dlls/objects/511.h |
 | 0x200 | dlls/objects/512/512.c | include/dlls/objects/512.h |
 | 0x201 | dlls/objects/513_WM_colrise/WM_colrise.c | include/dlls/objects/513_WM_colrise.h |
-| 0x202 | dlls/objects/514/514.c | include/dlls/objects/514.h |
-| 0x203 | dlls/objects/515/515.c | include/dlls/objects/515.h |
 | 0x204 | dlls/objects/516_WM_Torch/WM_Torch.c | include/dlls/objects/516_WM_Torch.h |
-| 0x205 | dlls/objects/517_WM_Vein/WM_Vein.c | include/dlls/objects/517_WM_Vein.h |
 | 0x206 | dlls/objects/518_LightSource/LightSource.c | include/dlls/objects/518_LightSource.h |
 | 0x207 | dlls/objects/519_WM_Worm/WM_Worm.c | include/dlls/objects/519_WM_Worm.h |
-| 0x208 | dlls/objects/520_WM_Wallpowe/WM_Wallpowe.c | include/dlls/objects/520_WM_Wallpowe.h |
 | 0x209 | dlls/objects/521_WM_LevelCon/WM_LevelCon.c | include/dlls/objects/521_WM_LevelCon.h |
 | 0x20A | dlls/objects/522_WM_GeneralS/WM_GeneralS.c | include/dlls/objects/522_WM_GeneralS.h |
 | 0x22F | dlls/objects/559_DFP_floorba/DFP_floorba.c | include/main/dll/baddie/dll_022F_dfpfloorbar.h |
+| 0x232 | dlls/objects/562_DFP_RotateP/DFP_RotateP.c | include/dlls/objects/562_DFP_RotateP.h |
 | 0x235 | dlls/objects/565_DFP_TargetB/DFP_TargetB.c | include/main/dll/dll_0235_dfptargetblock.h |
 | 0x259 | dlls/objects/601_SB_Cloudrun/SB_Cloudrun.c | include/main/dll/WC/dll_0259_sbcloudrunner.h |
 | 0x287 | dlls/objects/647_SPScarab/SPScarab.c | include/main/dll/SP/dll_0287_spscarab.h |
+
+## Deciding file identity: the oracles and the rename gate
+
+A wrong filename is byte-identical to a right one and invisible to every
+score gate in this project, so file identity has to be settled on
+evidence and then *proved not to have moved anything*.  What follows is
+the method, with the populations it has been run against.
+
+### The four oracles
+
+**1. Rare's own self-naming strings.**  Only two shapes name a file, and
+both are Rare-authored: an `OSPanic(__FILE__, __LINE__, msg)` file
+argument (`n_attractmode.c`, `SHthorntail.c`, `camcontrol.c`,
+`dvdfs.c`, `expgfx.c`), and a `<name.c Init>` / `<name.c -- fn>`
+diagnostic prefix (`laser.c`, `textblock.c`, `objanim.c`, `DIMBoss.c`).
+Scan the **DOL**, never the source: the tags that live only as
+`char x[] = {0x..}` hex blobs are invisible to a source grep and fall out
+of a binary scan for free.  Sibling tags that do *not* spell the `.c`
+(`<platform1 Init>`, `<dfperchwitch Init>`, the fifteen `<projNNN Do>`)
+name the module, not the file -- Rare wrote the `.c` when they meant the
+file, and that asymmetry is the whole argument.  Population: 57
+angle-bracket tags plus 17 bare `*.c` tokens across all DOL segments.
+
+**2. String-pool ownership.**  With `-str reuse` -- this project's flag
+-- MWCC GC/2.0 emits string literals as anonymous `@N` objects and
+addresses them off the *section* base: `lis rX,HA(...data.0);
+addi rN,rX,LO(...data.0); addi r3,rN,off`.  A TU only ever emits a
+`...data.0`-relative reference to a string **it emitted itself**, so the
+literal and the code that reads it are in the same TU, and the literal's
+offset within `.data` is fixed by how much initialised data the TU
+declares ahead of the first use.  This is what proved
+`src/n_attractmode.c` and `dlls/engine/52/52.c` were one TU.
+
+**3. `.sdata2` interning.**  MWCC interns a float constant once per TU.
+If one `.sdata2` word is referenced from both candidate halves of a
+suspected split, the halves are one TU -- two TUs would each carry their
+own copy.  This is what proved DLL 0x0D1 and 0x0D2 genuinely share the
+`TumbleWeedB.c` TU rather than needing a cut.
+
+**4. Anonymous data may not cross a TU boundary.**  A jumptable belongs
+to the function that switches on it; an `@N` literal belongs to the TU
+that emitted it.  A relocation from unit A into an anonymous object
+carved to unit B means the carve or the file boundary is wrong.
+Population: 360 jumptable relocations in the DOL, 348 TU-local; the 12
+that cross are the known decomp scaffolding splits
+(`objprint_dolphin.c` -> `pi_dolphin.c`, `textrender_run.c` ->
+`textrender.c`), which is what this oracle detects and does not by
+itself condemn -- those source files do not claim a retail name.
+
+A fifth check is cheap and worth running as a screen rather than an
+oracle: `gResourceDescriptors` at `.data:0x802C6300` is indexed by DLL
+id, so every descriptor should land in a unit whose path carries that
+id.  706 slots, 2 null, 703 agree, 1 flagged -- and the one flag
+(0x0D2 above) is real structure, not an error.
+
+### The rename gate
+
+A file move renames the objdiff unit, so it always reads as LOST + NEW.
+That is acceptable when, and only when:
+
+- every LOST unit pairs 1:1 with a NEW unit at the **same carve**
+  (identical section start/end in `config/*/splits.txt`);
+- the two objects are `EQUAL` under `tools/obj_equal.py --no-syms`, the
+  only difference being the `STT_FILE` symbol, which lives in no
+  allocated section;
+- per-function `fuzzy_match_percent` is identical on both sides, and the
+  unit's `matched_code` / `matched_data` / complete flag do not move;
+- `tools/obj_equal.py --tree` against a **pristine control worktree at
+  the same parent** reports 0 differ over every shared object;
+- the forced link (`rm build/GSAE01/main.{dol,elf}`) still gives
+  sha1 `e750e8e894707a52446118a4b84f1b58b677b269`;
+- the report's `matched_code`, `matched_data` and `complete_units` are
+  unchanged -- a *merge* is the one exception, where `complete_units`
+  and `total_units` each drop by the number of units absorbed.
+
+Two housekeeping items ride along and are easy to miss: all four
+`config/<version>/splits.txt` carry the unit key and must move together,
+and `tools/banned_shapes_baseline.txt` is keyed by path, so a rename
+that skips it shows up as regrowth.
+
+## The `.sdata2` interning oracle, swept tree-wide
+
+The oracle in the previous section was used once, on DLL 0x0D1/0x0D2.
+Running it over every unit turns it into a mechanical TU-boundary
+detector, so it is worth recording what a full sweep costs and what it
+finds.
+
+### Two corrections to the method
+
+`@N` names are **section-local and renumbered per TU**, so the same
+`@69` is a different object in every unit.  Resolving relocation targets
+through a name-keyed symbol map collapses them and manufactures
+cross-unit "sharing" out of nothing: the first pass of this sweep
+reported 33 shared addresses, of which 15 were `@N` collisions between
+units as unrelated as `OSCache.c` and `GXLight.c`.  Resolve only
+`lbl_<addr>` names (the address is in the name) and globals that are
+unique tree-wide.
+
+A four-byte comparison is not enough to separate two pools.  `43300000`
+is the high word of **both** int-to-double bias doubles
+(`4330000000000000` for unsigned, `4330000080000000` for signed), so a
+word-wise duplicate test reports a collision between two units that hold
+*different* constants.  Compare doubles as eight bytes at eight-byte
+alignment.
+
+### The control: MWCC does not fold, and the linker does not either
+
+Counted across the whole `.sdata2` (10169 words), `0.0f` occupies
+**1394** separate slots, `1.0f` 553, `0.5f` 154, `255.0f` 127,
+`100.0f` 145, `0.01f` 130, `120.0f` 44, `640.0f` 13; the two bias
+doubles occupy 210 and 390.  Every TU that needs a constant gets its own
+copy.  That is what makes a *shared address* evidence at all, and it
+also gives the oracle a second, stronger form:
+
+> **Separation proof.** If two candidate halves each hold the same value
+> at a *different* address, they are two TUs — one TU would have
+> interned it once.
+
+The union form (one address read from both halves) and the separation
+form disagree only when a carve boundary is misplaced, which is itself
+worth knowing.
+
+### Yield
+
+8690 distinct `.sdata2` addresses are referenced from `.text`; **18** are
+referenced from more than one object, forming **four** candidate groups,
+each of which is a *contiguous* run in `.text` order.  All four were
+screened for a shared compiler invocation, because a retail TU had one.
+None survived:
+
+| candidate one-TU group | evidence | verdict |
+|---|---|---|
+| `gametext` + `gametext_measurebyid` + `gametext_tail` + `MWTrace` + `textrender` + `textrender_gettext` + `textrender_run` | 5 shared words incl. both bias doubles | no shared invocation: `textrender_gettext`'s `nopropagation` is load-bearing for `gameTextGet` alone (100.0 -> 97.455, −660) |
+| `shader` + `lightmap` + `lightmap_initmapblocks` + `lightmap_draw` + `tex_dolphin` | 11 shared words in the uncarved block 0x803DEBB0–0x803DEC58; `texture` reads only below it and `shadow_dolphin` only above it, so the pool's edges are the TU's edges | no shared invocation over 12 flag sets; best is `nopeephole,noschedule` + `-inline noauto` at −3336, and the only set that keeps `lightmap_initmapblocks` at 100.0 costs −18932 |
+| `Landed_Arwi` (0x11B) + `284` (0x11C) | 2 shared words, and both already compile under one flag set at 100.0 | **refuted by the separation proof**: `20.0f` is interned twice, at 0x803E3BA0 and 0x803E3BF0 |
+| `650` + `651` | 1 shared word, no duplicate values | no shared invocation: `650` at 100.0 needs propagation, `651` at 100.0 needs `nocse,nopropagation`; best −188 |
+
+`-inline noauto` is inert on the textrender group and worth 4120 bytes
+on the shader/lightmap group, where the default `-inline auto` takes
+`lightmap_draw` to 81.5 — a merged unit really does need a flag its
+halves did not, but needing one is not the same as having one.
+
+### `.data` emission order is strict source order
+
+Established while testing the `objprint_dolphin` + `pi_dolphin` merge,
+and reusable anywhere a merged or reordered TU has to reproduce a `.data`
+carve: MWCC GC/2.0 emits `.data` objects in the order the *source text*
+produces them — a file-scope initialised array at its **declaration**,
+and a jumptable or string literal at the **function that owns it**.
+Nothing is grouped or sorted.  Reading a target `.data` layout therefore
+reads back the original declaration order directly.
+
+For that pair the retail order is: the three `objprint` arrays, then all
+of `pi_dolphin`'s tables, then the five jumptables of the last
+`objprint` functions, with `"ERROR: asset index overflow "` between the
+third and fourth because the function that prints it sits between
+`defragMemory` and `mapUnload`.  Hoisting the declarations to match, and
+returning that string to a literal at its use site, makes the merged
+`.data` byte-exact over all 0x17d0 bytes.
+
+### `objprint_dolphin.c` + `pi_dolphin.c` is one TU, and the merge is blocked on one row
+
+Three independent oracles agree: five jumptables carved to
+`pi_dolphin`'s `.data` are owned by `objprint_dolphin` functions
+(`ObjLoad_GetDvdCommandBlockStatus`, `defragMemory`, `mapUnload`); both
+halves define their own ABI-identical `struct MldfTables`; and the
+merged `.data` is byte-exact.  Every section is contiguous across the
+boundary.  The merge builds, links, and reproduces 88 of 89 functions —
+`objRenderModel` even improves, 99.804 -> 99.935.
+
+It is not landed because there is no shared invocation.  Our
+`objprint_dolphin` carries `nolifetimes` and `pi_dolphin` does not, and
+the flag is not free either way: with it, `initLoadFiles` and
+`loadAndDecompressDataFile` fall off 100.0 (−8172); without it,
+`mergeTableFiles` does (−1708).  Thirteen flag sets were tried and none
+holds both.  With the merged unit on `pi_dolphin`'s flags the sole
+residual in `mergeTableFiles` is a scratch-GPR permutation — `w1` in r6
+against r11 and `v` in r9 against r6 — after a decl-order sweep already
+recovered `dst` (99.157 -> 99.403).  One `#108` row stands between this
+merge and a clean landing.

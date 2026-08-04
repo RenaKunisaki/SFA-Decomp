@@ -4,8 +4,6 @@
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 
-typedef struct RingState RingState;
-
 typedef struct ARWBombCollSetup
 {
     ObjPlacement base;
@@ -42,9 +40,5 @@ void ARWBombColl_release(void);
 void ARWBombColl_initialise(void);
 void ARWBombColl_update(GameObject* obj);
 void arwbombcoll_setLifetime(GameObject* obj, int lifetime);
-
-void arwbombcoll_updateMovingAxis(GameObject* obj, RingState* state);
-void Ring_onCollect(GameObject* obj, RingState* state, GameObject* arwing);
-int arwbombcoll_checkArwingCollision(GameObject* obj, RingState* state, int arwing);
 
 #endif

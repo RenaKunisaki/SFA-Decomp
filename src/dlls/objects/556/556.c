@@ -95,7 +95,7 @@ int dll_22C_getObjectTypeId(void)
     return 0x0;
 }
 
-void dll_22C_free(int obj)
+void dll_22C_free(GameObject* obj)
 {
     (*gExpgfxInterface)->freeSource2((u32)obj);
     getLActions((void*)obj, (void*)obj, 0, 0, 0, 0);
@@ -111,9 +111,9 @@ void dll_22C_hitDetect_nop(void)
 {
 }
 
-void dll_22C_update(int obj)
+void dll_22C_update(GameObject* obj)
 {
-    GameObject* object = (GameObject*)obj;
+    GameObject* object = obj;
     ObjPlacement* placement = object->anim.placement;
     Dll22CState* blob = object->extra;
     GameObject* player;
@@ -135,9 +135,9 @@ void dll_22C_update(int obj)
         {
             if (object->anim.localPosY < 60.0f + placement->posY)
             {
-                if (Sfx_IsPlayingFromObjectChannel((GameObject*)obj, 8) == 0)
+                if (Sfx_IsPlayingFromObjectChannel(obj, 8) == 0)
                 {
-                    Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_id_116);
+                    Sfx_PlayFromObject(obj, SFXTRIG_id_116);
                     blob->sfxLatch = 1;
                 }
                 object->anim.localPosY += timeDelta;
@@ -145,7 +145,7 @@ void dll_22C_update(int obj)
                 {
                     object->anim.localPosY = 60.0f + placement->posY;
                     blob->mode = DLL22C_MODE_HOLD_SETUP;
-                    Sfx_StopObjectChannel((GameObject*)obj, 8);
+                    Sfx_StopObjectChannel(obj, 8);
                 }
             }
         }
@@ -189,18 +189,18 @@ void dll_22C_update(int obj)
                 if (object->anim.localPosY == 60.0f + placement->posY)
                 {
                     blob->mode = DLL22C_MODE_DESCEND;
-                    if (Sfx_IsPlayingFromObjectChannel((GameObject*)obj, 8) == 0)
+                    if (Sfx_IsPlayingFromObjectChannel(obj, 8) == 0)
                     {
-                        Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_liftloop);
+                        Sfx_PlayFromObject(obj, SFXTRIG_liftloop);
                         blob->sfxLatch = 1;
                     }
                 }
                 else if (object->anim.localPosY == placement->posY - 1228.0f)
                 {
                     blob->mode = DLL22C_MODE_ASCEND;
-                    if (Sfx_IsPlayingFromObjectChannel((GameObject*)obj, 8) == 0)
+                    if (Sfx_IsPlayingFromObjectChannel(obj, 8) == 0)
                     {
-                        Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_liftloop);
+                        Sfx_PlayFromObject(obj, SFXTRIG_liftloop);
                         blob->sfxLatch = 1;
                     }
                 }
@@ -234,14 +234,14 @@ void dll_22C_update(int obj)
             {
                 object->anim.localPosY = placement->posY - heightOffset;
                 blob->mode = DLL22C_MODE_HOLD;
-                Sfx_StopObjectChannel((GameObject*)obj, 8);
+                Sfx_StopObjectChannel(obj, 8);
                 blob->pauseTimer = 0x64;
             }
             Vec_xzDistance(&object->anim.worldPosX, &player->anim.worldPosX);
         }
         else
         {
-            Sfx_StopObjectChannel((GameObject*)obj, 8);
+            Sfx_StopObjectChannel(obj, 8);
             Vec_xzDistance(&object->anim.worldPosX, &player->anim.worldPosX);
             blob->mode = DLL22C_MODE_HOLD;
             blob->pauseTimer = 0x64;
@@ -258,7 +258,7 @@ void dll_22C_update(int obj)
                 object->anim.localPosY = heightOffset + placement->posY;
                 blob->mode = DLL22C_MODE_HOLD;
                 blob->pauseTimer = 0x64;
-                Sfx_StopObjectChannel((GameObject*)obj, 8);
+                Sfx_StopObjectChannel(obj, 8);
             }
             Vec_xzDistance(&object->anim.worldPosX, &player->anim.worldPosX);
         }
@@ -266,7 +266,7 @@ void dll_22C_update(int obj)
         {
             blob->mode = DLL22C_MODE_HOLD;
             blob->pauseTimer = 0x64;
-            Sfx_StopObjectChannel((GameObject*)obj, 8);
+            Sfx_StopObjectChannel(obj, 8);
             Vec_xzDistance(&object->anim.worldPosX, &player->anim.worldPosX);
         }
         break;

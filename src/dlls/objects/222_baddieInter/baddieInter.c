@@ -84,7 +84,7 @@ void BaddieInterestP_update(GameObject* obj) {
                 candidatePlacement = (BaddieInterestPPlacement*)candidate->anim.placementData;
                 if (candidatePlacement != NULL) {
                     foundTarget = 0;
-                    if (targetLinkId == *(u32*)&candidatePlacement->base.ident || targetLinkId == 0) {
+                    if (targetLinkId == candidatePlacement->base.ident || targetLinkId == 0) {
                         foundTarget = 1;
                     }
                 } else {

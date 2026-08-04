@@ -54,7 +54,7 @@ int VFP_lavastar_getObjectTypeId(void)
     return 0x0;
 }
 
-void VFP_lavastar_free(int obj)
+void VFP_lavastar_free(GameObject* obj)
 {
     (*gExpgfxInterface)->freeSource2((u32)obj);
     (*gModgfxInterface)->freeSourceEffects((void*)obj);
@@ -97,12 +97,12 @@ void VFP_lavastar_update(GameObject* obj)
     state->particleToggle ^= 1;
 }
 
-void VFP_lavastar_init(GameObject* obj, int def)
+void VFP_lavastar_init(GameObject* obj, VfpLavaStarMapData* def)
 {
     VfpLavaStarState* state;
     VfpLavaStarMapData* mapData;
 
-    mapData = (VfpLavaStarMapData*)def;
+    mapData = def;
     state = obj->extra;
     state->gameBit = mapData->gameBit;
     state->verticalVelocity = 0.1f * (f32)randomGetRange(10, 0x19);

@@ -1,5 +1,6 @@
 #define OBJFSA_PATCH_EXIT_U16
 #define TRACK_BBOX_FLAGS_S8
+#include "dlls/object_descriptor.h"
 #include "dolphin/os/OSReport.h"
 #include "main/dll/rom_curve_def.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
@@ -12,7 +13,6 @@
 #include "main/vecmath_distance_api.h"
 #include "main/vecmath.h"
 #include "main/shader_api.h"
-#include "string.h"
 
 int nRomCurves;
 RomCurveDef* gRomCurveLastFindStart;
@@ -45,8 +45,8 @@ void RomCurve_initialise(void);
 #define ROMCURVE_HALF                 0.5f
 #define ROMCURVE_FIND_DISTANCE_INITIAL 3.4028235e38f
 
-int RomCurve_getUnblockedControlPointId(int curve, int exclude, int pickIdx);
-int RomCurve_getControlPointId(int curve, int exclude, int pickIdx);
+int RomCurve_getUnblockedControlPointId(RomCurveDef* curve, int exclude, int pickIdx);
+int RomCurve_getControlPointId(RomCurveDef* curve, int exclude, int pickIdx);
 int RomCurve_segmentIntersectsOriginRayXZ(f32 x, f32 unusedY, f32 z, RomCurveDef* a, RomCurveDef* b, f32 unusedW);
 
 RomCurveDef* romCurves[ROMCURVE_MAX_CURVES];
@@ -164,7 +164,7 @@ static inline u16 Objfsa_GetLinkedWalkGroup(u16 patchGroupId, u32 currentWalkGro
     return patchGroupId & 0xff;
 }
 
-static inline int Objfsa_FindRomCurveById(int curveId)
+static inline RomCurveDef* Objfsa_FindRomCurveById(int curveId)
 {
     int hi;
     int lo;
@@ -173,7 +173,7 @@ static inline int Objfsa_FindRomCurveById(int curveId)
 
     if (curveId < 0)
     {
-        return 0;
+        return NULL;
     }
 
     hi = nRomCurves - 1;
@@ -182,21 +182,21 @@ static inline int Objfsa_FindRomCurveById(int curveId)
     while (hi >= lo)
     {
         mid = (hi + lo) >> 1;
-        if (id > ((RomCurveDef*)romCurves[mid])->id)
+        if (id > romCurves[mid]->id)
         {
             lo = mid + 1;
         }
-        else if (id < ((RomCurveDef*)romCurves[mid])->id)
+        else if (id < romCurves[mid]->id)
         {
             hi = mid - 1;
         }
         else
         {
-            return (int)romCurves[mid];
+            return romCurves[mid];
         }
     }
 
-    return 0;
+    return NULL;
 }
 
 static inline u32 RomCurve_GetId(RomCurveDef* curve)
@@ -275,10 +275,10 @@ static inline RomCurveDef* RomCurve_FindByIdWithLimit(u32 curveId, int lim)
     return NULL;
 }
 
-static inline int Objfsa_RomCurveIsBlocked(int curve)
+static inline int Objfsa_RomCurveIsBlocked(RomCurveDef* curve)
 {
     int slot;
-    RomCurveDef* c = (RomCurveDef*)curve;
+    RomCurveDef* c = curve;
 
     for (slot = 0; slot < 4; slot++)
     {
@@ -354,7 +354,7 @@ static inline f32 RomCurveNode_GetHermiteTangent(void** nodePtr, int angleOffset
     return 2.0f * trig;
 }
 
-static inline int RomCurve_pickRandomControlPointId_2A(int curve)
+static inline int RomCurve_pickRandomControlPointId_2A(RomCurveDef* curve)
 {
     int count;
     u32 mask;
@@ -366,10 +366,10 @@ static inline int RomCurve_pickRandomControlPointId_2A(int curve)
     mask = 1;
     for (i = 0; i < 4; i = i + 1)
     {
-        if ((-1 < ((RomCurveDef*)curve)->linkIds[i]) && ((((RomCurveDef*)curve)->blockedLinkMask & mask) == 0) &&
-            (((RomCurveDef*)curve)->linkIds[i] != -1))
+        if ((-1 < curve->linkIds[i]) && ((curve->blockedLinkMask & mask) == 0) &&
+            (curve->linkIds[i] != -1))
         {
-            candidates[count++] = ((RomCurveDef*)curve)->linkIds[i];
+            candidates[count++] = curve->linkIds[i];
         }
         mask = mask << 1;
     }
@@ -384,7 +384,7 @@ static inline int RomCurve_pickRandomControlPointId_2A(int curve)
     return result;
 }
 
-static inline int RomCurve_pickRandomControlPointId_2B(int curve)
+static inline int RomCurve_pickRandomControlPointId_2B(RomCurveDef* curve)
 {
     int count;
     u32 mask;
@@ -396,10 +396,10 @@ static inline int RomCurve_pickRandomControlPointId_2B(int curve)
     mask = 1;
     for (i = 0; i < 4; i = i + 1)
     {
-        if ((-1 < ((RomCurveDef*)curve)->linkIds[i]) && ((((RomCurveDef*)curve)->blockedLinkMask & mask) != 0) &&
-            (((RomCurveDef*)curve)->linkIds[i] != -1))
+        if ((-1 < curve->linkIds[i]) && ((curve->blockedLinkMask & mask) != 0) &&
+            (curve->linkIds[i] != -1))
         {
-            candidates[count++] = ((RomCurveDef*)curve)->linkIds[i];
+            candidates[count++] = curve->linkIds[i];
         }
         mask = mask << 1;
     }
@@ -450,9 +450,9 @@ int RomCurve_initFromCurveId(RomCurveWalker* state, GameObject* unusedObj, int s
                     RomCurveInterface* unusedInterface)
 {
     char* stateBytes;
-    u32 currentCurve;
+    RomCurveDef* currentCurve;
     int nextId;
-    u32 nextCurve;
+    RomCurveDef* nextCurve;
     f32 t;
 
     if (state == NULL)
@@ -464,8 +464,8 @@ int RomCurve_initFromCurveId(RomCurveWalker* state, GameObject* unusedObj, int s
         stateBytes = (char*)state;
         if (state->reverse != 0)
         {
-            *(s32*)&state->nodeA0 = Objfsa_FindRomCurveById(startCurveId);
-            nextId = RomCurve_pickRandomControlPointId_2A(*(s32*)&state->nodeA0);
+            state->nodeA0 = Objfsa_FindRomCurveById(startCurveId);
+            nextId = RomCurve_pickRandomControlPointId_2A(state->nodeA0);
             if (nextId == -1)
             {
                 return 1;
@@ -474,7 +474,7 @@ int RomCurve_initFromCurveId(RomCurveWalker* state, GameObject* unusedObj, int s
         }
 
         currentCurve = Objfsa_FindRomCurveById(startCurveId);
-        *(s32*)&state->nodeA0 = currentCurve;
+        state->nodeA0 = currentCurve;
         if (currentCurve == 0)
         {
             state->nodeA0 = NULL;
@@ -483,11 +483,11 @@ int RomCurve_initFromCurveId(RomCurveWalker* state, GameObject* unusedObj, int s
 
         if (state->reverse != 0)
         {
-            nextId = RomCurve_pickRandomControlPointId_2B(*(s32*)&state->nodeA0);
+            nextId = RomCurve_pickRandomControlPointId_2B(state->nodeA0);
         }
         else
         {
-            nextId = RomCurve_pickRandomControlPointId_2A(*(s32*)&state->nodeA0);
+            nextId = RomCurve_pickRandomControlPointId_2A(state->nodeA0);
         }
         if (nextId == -1)
         {
@@ -495,7 +495,7 @@ int RomCurve_initFromCurveId(RomCurveWalker* state, GameObject* unusedObj, int s
         }
 
         nextCurve = Objfsa_FindRomCurveById(nextId);
-        *(s32*)&state->nodeA4 = nextCurve;
+        state->nodeA4 = nextCurve;
         if (nextCurve == 0)
         {
             state->nodeA4 = NULL;
@@ -520,7 +520,7 @@ int RomCurve_initFromCurveId(RomCurveWalker* state, GameObject* unusedObj, int s
     return 1;
 }
 
-int RomCurve_getControlPointId(int curve, int exclude, int pickIdx)
+int RomCurve_getControlPointId(RomCurveDef* curve, int exclude, int pickIdx)
 {
     int candidates[4];
     int neighbor;
@@ -529,8 +529,8 @@ int RomCurve_getControlPointId(int curve, int exclude, int pickIdx)
     int i;
     for (i = 0; i < 4; i++)
     {
-        neighbor = ((RomCurveDef*)curve)->linkIds[i];
-        if (neighbor > -1 && ((s32)((RomCurveDef*)curve)->blockedLinkMask & mask) != 0 && neighbor != exclude)
+        neighbor = curve->linkIds[i];
+        if (neighbor > -1 && ((s32)curve->blockedLinkMask & mask) != 0 && neighbor != exclude)
         {
             candidates[count++] = neighbor;
         }
@@ -549,7 +549,7 @@ int RomCurve_getControlPointId(int curve, int exclude, int pickIdx)
     return -1;
 }
 
-int RomCurve_getUnblockedControlPointId(int curve, int exclude, int pickIdx)
+int RomCurve_getUnblockedControlPointId(RomCurveDef* curve, int exclude, int pickIdx)
 {
     int candidates[4];
     int neighbor;
@@ -558,8 +558,8 @@ int RomCurve_getUnblockedControlPointId(int curve, int exclude, int pickIdx)
     int i;
     for (i = 0; i < 4; i++)
     {
-        neighbor = ((RomCurveDef*)curve)->linkIds[i];
-        if (neighbor > -1 && ((s32)((RomCurveDef*)curve)->blockedLinkMask & mask) == 0 && neighbor != exclude)
+        neighbor = curve->linkIds[i];
+        if (neighbor > -1 && ((s32)curve->blockedLinkMask & mask) == 0 && neighbor != exclude)
         {
             candidates[count++] = neighbor;
         }
@@ -582,7 +582,7 @@ int RomCurve_goNextPointIndexed(RomCurveWalker* state, int pickIdx)
 {
     char* stateBytes;
     int nextId;
-    int nextCurve;
+    RomCurveDef* nextCurve;
     f32 t;
 
     if (state == NULL)
@@ -604,17 +604,17 @@ int RomCurve_goNextPointIndexed(RomCurveWalker* state, int pickIdx)
 
     if (state->reverse != 0)
     {
-        nextId = RomCurve_getControlPointId(*(s32*)&state->nodeA0, -1, pickIdx);
+        nextId = RomCurve_getControlPointId(state->nodeA0, -1, pickIdx);
     }
     else
     {
-        nextId = RomCurve_getUnblockedControlPointId(*(s32*)&state->nodeA0, -1, pickIdx);
+        nextId = RomCurve_getUnblockedControlPointId(state->nodeA0, -1, pickIdx);
     }
 
     if (nextId != -1)
     {
         nextCurve = Objfsa_FindRomCurveById(nextId);
-        *(s32*)&state->nodeA4 = nextCurve;
+        state->nodeA4 = nextCurve;
         if (state->nodeA4 != NULL)
         {
             if (state->reverse != 0)
@@ -741,7 +741,7 @@ u8 RomCurve_goNextPoint(RomCurveWalker* state)
 {
     char* stateBytes;
     int neighborId;
-    int nextCurve;
+    RomCurveDef* nextCurve;
     float t;
 
     if (state == NULL)
@@ -762,18 +762,18 @@ u8 RomCurve_goNextPoint(RomCurveWalker* state)
 
     if (state->reverse != 0)
     {
-        neighborId = RomCurve_pickRandomControlPointId_2B(*(s32*)&state->nodeA0);
+        neighborId = RomCurve_pickRandomControlPointId_2B(state->nodeA0);
     }
     else
     {
-        neighborId = RomCurve_pickRandomControlPointId_2A(*(s32*)&state->nodeA0);
+        neighborId = RomCurve_pickRandomControlPointId_2A(state->nodeA0);
     }
 
     if (neighborId != -1)
     {
         nextCurve = Objfsa_FindRomCurveById(neighborId);
 
-        *(s32*)&state->nodeA4 = nextCurve;
+        state->nodeA4 = nextCurve;
         if (state->nodeA4 != NULL)
         {
             if (state->reverse != 0)
@@ -811,9 +811,9 @@ int RomCurve_initCurve(RomCurveWalker* state, GameObject* obj, int* curveTypes, 
 {
     char* stateBytes;
     int curveId;
-    u32 currentCurve;
+    RomCurveDef* currentCurve;
     int nextId;
-    u32 nextCurve;
+    RomCurveDef* nextCurve;
     RomCurveDef* distanceCurve;
     f32 dx;
     f32 dy;
@@ -832,8 +832,8 @@ int RomCurve_initCurve(RomCurveWalker* state, GameObject* obj, int* curveTypes, 
     {
         if (state->reverse != 0)
         {
-            *(s32*)&state->nodeA0 = Objfsa_FindRomCurveById(curveId);
-            nextId = RomCurve_pickRandomControlPointId_2A(*(s32*)&state->nodeA0);
+            state->nodeA0 = Objfsa_FindRomCurveById(curveId);
+            nextId = RomCurve_pickRandomControlPointId_2A(state->nodeA0);
             if (nextId == -1)
             {
                 return 1;
@@ -842,7 +842,7 @@ int RomCurve_initCurve(RomCurveWalker* state, GameObject* obj, int* curveTypes, 
         }
 
         currentCurve = Objfsa_FindRomCurveById(curveId);
-        *(s32*)&state->nodeA0 = currentCurve;
+        state->nodeA0 = currentCurve;
         if (currentCurve == 0)
         {
             state->nodeA0 = NULL;
@@ -851,11 +851,11 @@ int RomCurve_initCurve(RomCurveWalker* state, GameObject* obj, int* curveTypes, 
 
         if (state->reverse != 0)
         {
-            nextId = RomCurve_pickRandomControlPointId_2B(*(s32*)&state->nodeA0);
+            nextId = RomCurve_pickRandomControlPointId_2B(state->nodeA0);
         }
         else
         {
-            nextId = RomCurve_pickRandomControlPointId_2A(*(s32*)&state->nodeA0);
+            nextId = RomCurve_pickRandomControlPointId_2A(state->nodeA0);
         }
         if (nextId == -1)
         {
@@ -863,7 +863,7 @@ int RomCurve_initCurve(RomCurveWalker* state, GameObject* obj, int* curveTypes, 
         }
 
         nextCurve = Objfsa_FindRomCurveById(nextId);
-        *(s32*)&state->nodeA4 = nextCurve;
+        state->nodeA4 = nextCurve;
         if (nextCurve == 0)
         {
             state->nodeA4 = NULL;
@@ -1182,7 +1182,7 @@ int Objfsa_GetNearestAdjacentLink(RomCurveDef* curve, int preferredNeighborId, f
     RomCurveSegmentProjection segment;
     int i;
     int neighborId;
-    int neighborCurve;
+    RomCurveDef* neighborCurve;
     int slot;
     float dx;
     float dy;
@@ -1207,9 +1207,9 @@ int Objfsa_GetNearestAdjacentLink(RomCurveDef* curve, int preferredNeighborId, f
             neighborCurve = Objfsa_FindRomCurveById(neighborId);
             if ((void*)neighborCurve != NULL)
             {
-                segment.endX = ((RomCurveDef*)neighborCurve)->x;
-                segment.endY = ((RomCurveDef*)neighborCurve)->y;
-                segment.endZ = ((RomCurveDef*)neighborCurve)->z;
+                segment.endX = neighborCurve->x;
+                segment.endY = neighborCurve->y;
+                segment.endZ = neighborCurve->z;
 
                 RomCurve_distanceToSegment(x, y, z, &segment);
                 dx = segment.nearestX - x;
@@ -1291,7 +1291,7 @@ int curves_findEnclosingLoopOfType17(f32 x, f32 y, f32 z)
     return -1;
 }
 
-f32 curves_getPathLength(u32 startNode, u32 endNode, f32* posA, f32* posB, f32 t1, f32 t2)
+f32 curves_getPathLength(RomCurveDef* startNode, RomCurveDef* endNode, f32* posA, f32* posB, f32 t1, f32 t2)
 {
     int cand1[4];
     int cand2[4];
@@ -1299,11 +1299,11 @@ f32 curves_getPathLength(u32 startNode, u32 endNode, f32* posA, f32* posB, f32 t
     int done;
     f32 total;
     int count;
-    int next;
-    u32 cur;
+    RomCurveDef* next;
+    RomCurveDef* cur;
     int reachedForward;
     int blocked;
-    int found;
+    RomCurveDef* found;
     int nextId;
     f32 dx;
     f32 dy;
@@ -1336,7 +1336,7 @@ f32 curves_getPathLength(u32 startNode, u32 endNode, f32* posA, f32* posB, f32 t
             }
             else
             {
-                count = RomCurve_CollectUnblockedLinks((RomCurveDef*)found, cand1);
+                count = RomCurve_CollectUnblockedLinks(found, cand1);
                 if (count != 0)
                 {
                     nextId = cand1[randomGetRange(0, count - 1)];
@@ -1364,7 +1364,7 @@ f32 curves_getPathLength(u32 startNode, u32 endNode, f32* posA, f32* posB, f32 t
             posB = tmpPos;
         }
 
-        count = RomCurve_CollectUnblockedLinks((RomCurveDef*)startNode, cand2);
+        count = RomCurve_CollectUnblockedLinks(startNode, cand2);
         if (count != 0)
         {
             nextId = cand2[randomGetRange(0, count - 1)];
@@ -1375,9 +1375,9 @@ f32 curves_getPathLength(u32 startNode, u32 endNode, f32* posA, f32* posB, f32 t
         }
         found = Objfsa_FindRomCurveById(nextId);
         startNode = found;
-        dx = ((RomCurveDef*)found)->x - posA[0];
-        dy = ((RomCurveDef*)found)->y - posA[1];
-        dz = ((RomCurveDef*)found)->z - posA[2];
+        dx = found->x - posA[0];
+        dy = found->y - posA[1];
+        dz = found->z - posA[2];
         total = sqrtf(dx * dx + dy * dy + dz * dz);
         done = 0;
 
@@ -1386,14 +1386,14 @@ f32 curves_getPathLength(u32 startNode, u32 endNode, f32* posA, f32* posB, f32 t
             if (startNode == endNode)
             {
                 done = 1;
-                dx = posB[0] - ((RomCurveDef*)startNode)->x;
-                dy = posB[1] - ((RomCurveDef*)startNode)->y;
-                dz = posB[2] - ((RomCurveDef*)startNode)->z;
+                dx = posB[0] - startNode->x;
+                dy = posB[1] - startNode->y;
+                dz = posB[2] - startNode->z;
                 total = total + sqrtf(dx * dx + dy * dy + dz * dz);
             }
             else
             {
-                count = RomCurve_CollectUnblockedLinks((RomCurveDef*)startNode, cand3);
+                count = RomCurve_CollectUnblockedLinks(startNode, cand3);
                 if (count != 0)
                 {
                     nextId = cand3[randomGetRange(0, count - 1)];
@@ -1403,9 +1403,9 @@ f32 curves_getPathLength(u32 startNode, u32 endNode, f32* posA, f32* posB, f32 t
                     nextId = -1;
                 }
                 next = Objfsa_FindRomCurveById(nextId);
-                dx = ((RomCurveDef*)next)->x - ((RomCurveDef*)startNode)->x;
-                dy = ((RomCurveDef*)next)->y - ((RomCurveDef*)startNode)->y;
-                dz = ((RomCurveDef*)next)->z - ((RomCurveDef*)startNode)->z;
+                dx = next->x - startNode->x;
+                dy = next->y - startNode->y;
+                dz = next->z - startNode->z;
                 total = total + sqrtf(dx * dx + dy * dy + dz * dz);
                 startNode = next;
             }
@@ -1420,17 +1420,17 @@ f32 curves_getPathLength(u32 startNode, u32 endNode, f32* posA, f32* posB, f32 t
 }
 
 
-void curves_getPos(int curve, float* outX, float* outY, float* outZ, f32 phase)
+void curves_getPos(RomCurveDef* curve, float* outX, float* outY, float* outZ, f32 phase)
 {
     f32 dx;
     f32 dy;
     f32 dz;
     int linkId;
-    int c2;
+    RomCurveDef* c2;
     int candidates[4];
     int count;
 
-    count = RomCurve_CollectUnblockedLinks((RomCurveDef*)curve, candidates);
+    count = RomCurve_CollectUnblockedLinks(curve, candidates);
     if (count != 0)
     {
         linkId = candidates[randomGetRange(0, count - 1)];
@@ -1443,18 +1443,18 @@ void curves_getPos(int curve, float* outX, float* outY, float* outZ, f32 phase)
 
     if ((void*)c2 == NULL)
     {
-        *outX = ((RomCurveDef*)curve)->x;
-        *outY = ((RomCurveDef*)curve)->y;
-        *outZ = ((RomCurveDef*)curve)->z;
+        *outX = curve->x;
+        *outY = curve->y;
+        *outZ = curve->z;
     }
     else
     {
-        dy = ((RomCurveDef*)c2)->y - ((RomCurveDef*)curve)->y;
-        dz = ((RomCurveDef*)c2)->z - ((RomCurveDef*)curve)->z;
-        dx = ((RomCurveDef*)c2)->x - ((RomCurveDef*)curve)->x;
-        *outX = dx * phase + ((RomCurveDef*)curve)->x;
-        *outY = dy * phase + ((RomCurveDef*)curve)->y;
-        *outZ = dz * phase + ((RomCurveDef*)curve)->z;
+        dy = c2->y - curve->y;
+        dz = c2->z - curve->z;
+        dx = c2->x - curve->x;
+        *outX = dx * phase + curve->x;
+        *outY = dy * phase + curve->y;
+        *outZ = dz * phase + curve->z;
     }
 }
 
@@ -1474,7 +1474,7 @@ static inline int RomCurve_hasNoOpenLink(RomCurveDef* curve)
     return 1;
 }
 
-int RomCurve_findProjectedCurveFromStart(int curve, f32 x, f32 y, f32 z, f32* outPhase)
+RomCurveDef* RomCurve_findProjectedCurveFromStart(RomCurveDef* curve, f32 x, f32 y, f32 z, f32* outPhase)
 {
     int projected;
     int linkId;
@@ -1488,9 +1488,9 @@ int RomCurve_findProjectedCurveFromStart(int curve, f32 x, f32 y, f32 z, f32* ou
     int n;
     int k;
 
-    while (RomCurve_hasNoOpenLink((RomCurveDef*)curve) == 0)
+    while (RomCurve_hasNoOpenLink(curve) == 0)
     {
-        RomCurve_getAdjacentWindow((RomCurveDef*)curve, adjacentWindow);
+        RomCurve_getAdjacentWindow(curve, adjacentWindow);
         projected = RomCurve_projectPointToAdjacentWindow(
             adjacentWindow, x, y, z, &lateralOffset, &verticalOffset, &phase);
         if (projected != 0 && lateralOffset > -300.0f && lateralOffset < 300.0f &&
@@ -1504,8 +1504,8 @@ int RomCurve_findProjectedCurveFromStart(int curve, f32 x, f32 y, f32 z, f32* ou
         mask[0] = 1;
         for (k = 0; k < 4; k++)
         {
-            n = ((RomCurveDef*)curve)->linkIds[k];
-            if (n > -1 && ((s8)((RomCurveDef*)curve)->blockedLinkMask & mask[0]) == 0 && n != 0)
+            n = curve->linkIds[k];
+            if (n > -1 && ((s8)(curve)->blockedLinkMask & mask[0]) == 0 && n != 0)
             {
                 candidates[count[0]++] = n;
             }
@@ -2960,54 +2960,107 @@ void RomCurve_release(void)
 void RomCurve_initialise(void)
 {
 }
+typedef struct RomCurveDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback curvesInitialise;
+    ObjectDescriptorCallback add;
+    ObjectDescriptorCallback remove;
+    ObjectDescriptorCallback getCurves;
+    ObjectDescriptorCallback find;
+    ObjectDescriptorCallback findNearObj;
+    ObjectDescriptorCallback getById;
+    ObjectDescriptorCallback curvesFind;
+    ObjectDescriptorCallback distToObj;
+    ObjectDescriptorCallback distXZ;
+    ObjectDescriptorCallback getLastFindSegment;
+    ObjectDescriptorCallback isPoint;
+    ObjectDescriptorCallback isNotPoint;
+    ObjectDescriptorCallback getRandomLinkedOfTypes;
+    ObjectDescriptorCallback findLinkTowardNearestOfType;
+    ObjectDescriptorCallback findByAction;
+    ObjectDescriptorCallback slot13;
+    ObjectDescriptorCallback findNearestOfType16;
+    ObjectDescriptorCallback isPointInsideLoop;
+    ObjectDescriptorCallback findEnclosingLoopOfType17;
+    ObjectDescriptorCallback getRandomUnblockedLink;
+    ObjectDescriptorCallback getLinkIds;
+    ObjectDescriptorCallback getFarthestAdjacentLink;
+    ObjectDescriptorCallback getRandomBlockedLink;
+    ObjectDescriptorCallback getNearestAdjacentLink;
+    ObjectDescriptorCallback findShortestPathLink;
+    ObjectDescriptorCallback getAdjacentWindow;
+    ObjectDescriptorCallback buildAdjacentWindowPoints;
+    ObjectDescriptorCallback countRandomPoints;
+    ObjectDescriptorCallback buildRandomPoints;
+    ObjectDescriptorCallback projectPointToAdjacentWindow;
+    ObjectDescriptorCallback findProjectedCurveFromStart;
+    ObjectDescriptorCallback getPos;
+    ObjectDescriptorCallback getPathLength;
+    ObjectDescriptorCallback initCurve;
+    ObjectDescriptorCallback goNextPoint;
+    ObjectDescriptorCallback setClosed;
+    ObjectDescriptorCallback setNextNode;
+    ObjectDescriptorCallback goNextPointIndexed;
+    ObjectDescriptorCallback getUnblockedControlPointId;
+    ObjectDescriptorCallback getControlPointId;
+    ObjectDescriptorCallback initFromCurveId;
+} RomCurveDllInterface;
 
-void* RomCurve_funcs[49] = {(void*)0,
-                          (void*)0,
-                          (void*)0,
-                          (void*)0x2C0000,
-                          (void*)RomCurve_initialise,
-                          (void*)RomCurve_release,
-                          (void*)0,
-                          (void*)curves_initialise,
-                          (void*)RomCurve_add,
-                          (void*)RomCurve_remove,
-                          (void*)RomCurve_getCurves,
-                          (void*)RomCurve_find,
-                          (void*)curves_findNearObj,
-                          (void*)RomCurve_getById,
-                          (void*)curves_find,
-                          (void*)curves_distToObj,
-                          (void*)curves_distXZ,
-                          (void*)RomCurve_getLastFindSegment,
-                          (void*)curves_isPoint,
-                          (void*)curves_isNotPoint,
-                          (void*)RomCurve_getRandomLinkedOfTypes,
-                          (void*)RomCurve_findLinkTowardNearestOfType,
-                          (void*)curves_findByAction,
-                          (void*)RomCurve_func13,
-                          (void*)curves_findNearestOfType16,
-                          (void*)curves_isPointInsideLoop,
-                          (void*)curves_findEnclosingLoopOfType17,
-                          (void*)RomCurve_getRandomUnblockedLink,
-                          (void*)RomCurve_getLinkIds,
-                          (void*)RomCurve_getFarthestAdjacentLink,
-                          (void*)RomCurve_getRandomBlockedLink,
-                          (void*)Objfsa_GetNearestAdjacentLink,
-                          (void*)RomCurve_findShortestPathLink,
-                          (void*)RomCurve_getAdjacentWindow,
-                          (void*)RomCurve_buildAdjacentWindowPoints,
-                          (void*)RomCurve_countRandomPoints,
-                          (void*)RomCurve_buildRandomPoints,
-                          (void*)RomCurve_projectPointToAdjacentWindow,
-                          (void*)RomCurve_findProjectedCurveFromStart,
-                          (void*)curves_getPos,
-                          (void*)curves_getPathLength,
-                          (void*)RomCurve_initCurve,
-                          (void*)RomCurve_goNextPoint,
-                          (void*)RomCurve_setClosed,
-                          (void*)RomCurve_setNextNode,
-                          (void*)RomCurve_goNextPointIndexed,
-                          (void*)RomCurve_getUnblockedControlPointId,
-                          (void*)RomCurve_getControlPointId,
-                          (void*)RomCurve_initFromCurveId};
+RomCurveDllInterface RomCurve_funcs = {
+    0,
+    0,
+    0,
+    0x2C0000,
+    (ObjectDescriptorCallback)RomCurve_initialise,
+    (ObjectDescriptorCallback)RomCurve_release,
+    0,
+    (ObjectDescriptorCallback)curves_initialise,
+    (ObjectDescriptorCallback)RomCurve_add,
+    (ObjectDescriptorCallback)RomCurve_remove,
+    (ObjectDescriptorCallback)RomCurve_getCurves,
+    (ObjectDescriptorCallback)RomCurve_find,
+    (ObjectDescriptorCallback)curves_findNearObj,
+    (ObjectDescriptorCallback)RomCurve_getById,
+    (ObjectDescriptorCallback)curves_find,
+    (ObjectDescriptorCallback)curves_distToObj,
+    (ObjectDescriptorCallback)curves_distXZ,
+    (ObjectDescriptorCallback)RomCurve_getLastFindSegment,
+    (ObjectDescriptorCallback)curves_isPoint,
+    (ObjectDescriptorCallback)curves_isNotPoint,
+    (ObjectDescriptorCallback)RomCurve_getRandomLinkedOfTypes,
+    (ObjectDescriptorCallback)RomCurve_findLinkTowardNearestOfType,
+    (ObjectDescriptorCallback)curves_findByAction,
+    (ObjectDescriptorCallback)RomCurve_func13,
+    (ObjectDescriptorCallback)curves_findNearestOfType16,
+    (ObjectDescriptorCallback)curves_isPointInsideLoop,
+    (ObjectDescriptorCallback)curves_findEnclosingLoopOfType17,
+    (ObjectDescriptorCallback)RomCurve_getRandomUnblockedLink,
+    (ObjectDescriptorCallback)RomCurve_getLinkIds,
+    (ObjectDescriptorCallback)RomCurve_getFarthestAdjacentLink,
+    (ObjectDescriptorCallback)RomCurve_getRandomBlockedLink,
+    (ObjectDescriptorCallback)Objfsa_GetNearestAdjacentLink,
+    (ObjectDescriptorCallback)RomCurve_findShortestPathLink,
+    (ObjectDescriptorCallback)RomCurve_getAdjacentWindow,
+    (ObjectDescriptorCallback)RomCurve_buildAdjacentWindowPoints,
+    (ObjectDescriptorCallback)RomCurve_countRandomPoints,
+    (ObjectDescriptorCallback)RomCurve_buildRandomPoints,
+    (ObjectDescriptorCallback)RomCurve_projectPointToAdjacentWindow,
+    (ObjectDescriptorCallback)RomCurve_findProjectedCurveFromStart,
+    (ObjectDescriptorCallback)curves_getPos,
+    (ObjectDescriptorCallback)curves_getPathLength,
+    (ObjectDescriptorCallback)RomCurve_initCurve,
+    (ObjectDescriptorCallback)RomCurve_goNextPoint,
+    (ObjectDescriptorCallback)RomCurve_setClosed,
+    (ObjectDescriptorCallback)RomCurve_setNextNode,
+    (ObjectDescriptorCallback)RomCurve_goNextPointIndexed,
+    (ObjectDescriptorCallback)RomCurve_getUnblockedControlPointId,
+    (ObjectDescriptorCallback)RomCurve_getControlPointId,
+    (ObjectDescriptorCallback)RomCurve_initFromCurveId,
+};
 char sCurvesMaxRomCurvesExceeded[36] = "curves.c: MAX_ROMCURVES exceeded!!\n\000";

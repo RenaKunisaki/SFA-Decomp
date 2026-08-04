@@ -23,8 +23,19 @@ regen afterwards.
 
 Usage:
   python3 tools/brute_match.py <unit> <symbol> [-v GSAE01]
-      [--max-variants N] [--time-budget SECONDS] [--strategy swaps|moves|all]
+      [--max-variants N] [--time-budget SECONDS]
+      [--strategy swaps|moves|all|radius2|radius2only]
       [--dry-run] [--apply-best]
+
+  --strategy radius2      radius 1 (every swap and every move) followed by
+                          every composition of TWO INDEPENDENT edits -- pairs
+                          with disjoint supports, smallest total disturbance
+                          first.  n<=5 blocks get the full symmetric group.
+  --strategy radius2only  the same two-edit compositions WITHOUT the radius-1
+                          prefix.  On a big block that prefix alone exceeds any
+                          sane cap (81 items = 3240 swaps before a single
+                          move), so a capped `radius2` run never reaches
+                          radius 2; use this once radius 1 is known swept.
 
   --dry-run       parse + print the decl block and the variants it WOULD try,
                   build nothing.
@@ -45,13 +56,19 @@ Notes:
     whole run and a hard kill is repaired on the next invocation, so a killed
     sweep can never leave the target file mid-permutation.
 
-WHY NESTED SCOPES MATTER: the saved-GPR band is filled r31-downward in two
-phases -- webs that never reach a loop header go first, in reverse
-first-definition order, then everything else in DECLARATION order.  A local
-declared inside a loop body is exactly the kind of web that phase split makes
-order-sensitive, and it is exactly what this tool used to skip.  Any historical
+WHY NESTED SCOPES MATTER: declaration order is the key to register assignment,
+and a local declared inside a loop body is a declaration like any other -- it
+just is not in the block this tool used to look at.  Any historical
 "declaration order is inert" verdict for a function with inner-scope
 declarations was measured against the top-level block only and is void.
+
+(A "two-phase saved band" was once asserted here as the mechanism.  It has been
+REFUTED by measurement and must not be reinstated: the saved band is contiguous
+and monotone downward, and the FPR band has no separate law.)
+
+WHY A CAP IS NOT A ZERO: an 81-item block is 3240 swaps before a single move,
+so any run under a cap -- or under one --strategy -- leaves most of the block
+unvisited.  A row swept that way is UNSWEPT, not inert.
 """
 from __future__ import annotations
 
@@ -224,7 +241,14 @@ def fuzzy_measure(unit: dict, symbol: str, version: str,
             continue
         for f in (u.get("functions") or []):
             if f["name"] == symbol:
-                return float(f["fuzzy_match_percent"])
+                # objdiff OMITS fuzzy_match_percent when it is 0.0, so a
+                # variant that drops the function to zero has no key at all --
+                # three rows in the tree are already in that state.  Reading it
+                # unguarded raised KeyError out of the measure call and killed
+                # the sweep mid-run, and a sweep that dies part-way reads
+                # exactly like a sweep that finished and found nothing.  The
+                # absent key means 0.0, which is also the right ranking.
+                return float(f.get("fuzzy_match_percent") or 0.0)
         return -1.0
     return -1.0
 
@@ -308,6 +332,18 @@ def find_function_body(src: str, name: str):
             k += 1
         k += 1
         k2 = skip_ws_comments(src, k)
+        # K&R-style definition: the parameter declarations sit between the close
+        # paren and the body.  Without this a K&R row is reported as "could not
+        # locate", which reads exactly like a row that was swept and found
+        # inert, so it silently leaves the population.
+        while k2 < n and src[k2] not in "{;":
+            semi = src.find(";", k2)
+            if semi < 0:
+                break
+            brace = src.find("{", k2)
+            if 0 <= brace < semi:
+                break
+            k2 = skip_ws_comments(src, semi + 1)
         # allow attribute / trailing tokens up to a '{' or ';'
         if k2 < n and src[k2] == "{":
             # find matching close brace
@@ -427,6 +463,17 @@ def looks_like_decl(core: str) -> bool:
             stop = min(stop, p)
     head = rest[:stop]
     if "(" in head:
+        return False
+    # A DECLARATION INTRODUCES A NAME.  `tri->edgeOutBits = 0;` and
+    # `cfg.startPosX += p->x;` match the `Ident ... ident` shape above but
+    # declare nothing -- they are STATEMENTS, and absorbing them into a
+    # declaration block means the sweepers permute side-effecting stores
+    # against each other.  No gate in this project can see that: objdiff,
+    # obj_equal and the forced link all compare retail's BYTES, never its
+    # MEANING, so a reordered pair of stores that happens to score better
+    # would have landed as a "declaration ordering".  Member access in the
+    # declarator position is the tell, and no C declaration has one.
+    if "->" in head or "." in head:
         return False
     # head must contain another identifier (the variable name), possibly via '*'
     import re as _re
@@ -563,6 +610,40 @@ def collect_decl_blocks(src: str, body_open: int, body_end: int, min_items: int 
 
 
 # ------------------------------------------------------------ variant gen
+def _elementary_ops(n: int):
+    """Every radius-1 declaration edit, with the index range it disturbs.
+
+    A swap of positions a,b moves exactly those two declarations and leaves
+    everything between them where it was, so its support is {a, b}.  A move of
+    i to j shifts every declaration between i and j by one, so its support is
+    the whole closed interval.  Two ops with DISJOINT supports commute, which
+    is what makes "apply both to the base" well defined.
+    """
+    ops = []
+    for a, b in itertools.combinations(range(n), 2):
+        ops.append(("swap", (a, b), frozenset((a, b))))
+    for i in range(n):
+        for j in range(n):
+            if i == j:
+                continue
+            ops.append(("move", (i, j), frozenset(range(min(i, j),
+                                                       max(i, j) + 1))))
+    return ops
+
+
+def _apply_op(order: list, op) -> list:
+    kind, arg, _ = op
+    o = list(order)
+    if kind == "swap":
+        a, b = arg
+        o[a], o[b] = o[b], o[a]
+    else:
+        i, j = arg
+        x = o.pop(i)
+        o.insert(j, x)
+    return o
+
+
 def gen_variants(n: int, strategy: str, cap: int, seed: int = 12345):
     """Yield orderings (as tuples of indices) excluding the identity first."""
     base = tuple(range(n))
@@ -574,6 +655,54 @@ def gen_variants(n: int, strategy: str, cap: int, seed: int = 12345):
         if t not in seen:
             seen.add(t)
             out.append(t)
+
+    if strategy in ("radius2", "radius2only") and n <= 5:
+        # Small enough to be exhaustive: radius 2 is a subset of the full
+        # symmetric group, and at n<=5 the whole group is 119 orderings, so
+        # sweep it and be done rather than reason about a radius at all.
+        for p in itertools.permutations(range(n)):
+            add(list(p))
+        return [base] + out[: max(0, cap - 1)]
+
+    if strategy in ("radius2", "radius2only"):
+        # Radius 1 first, so a radius-2 run is a strict superset of the
+        # sweeps that came before it and its own zero is comparable to
+        # theirs.  Then every composition of TWO INDEPENDENT elementary
+        # edits: disjoint supports, so the pair commutes and is genuinely
+        # two edits rather than one edit spelled twice.  Anything a single
+        # edit already reaches is deduped away by `add`.
+        ops = _elementary_ops(n)
+        for op in ops:
+            add(_apply_op(list(base), op))
+        if strategy == "radius2only":
+            # On a big block the radius-1 prefix alone exceeds any sane cap
+            # (an 81-item block has 3240 swaps before a single move), so a
+            # capped `radius2` run never reaches radius 2 at all.  This mode
+            # drops the prefix and spends the whole budget on the two-edit
+            # compositions, for rows whose radius 1 has already been swept.
+            seen |= {tuple(o) for o in out}
+            out = []
+        # Pair only ops with a SMALL support.  A pair of long-range moves
+        # disturbs most of the list and is a different animal from "the dev
+        # declared these two the other way round"; it also makes the pair
+        # enumeration O(n^4) on the big blocks for no plausibility.  Swaps
+        # always qualify (support 2); moves qualify out to distance 3.
+        small = [o for o in ops if len(o[2]) <= 4]
+        pairs = []
+        for x in range(len(small)):
+            for y in range(x + 1, len(small)):
+                if small[x][2] & small[y][2]:
+                    continue
+                pairs.append((len(small[x][2]) + len(small[y][2]), x, y))
+        # smallest total disturbance first: a two-swap edit is far likelier
+        # to be the thing a 2002 dev's declaration list actually differs by
+        # than a pair of long-range moves.
+        pairs.sort()
+        for _w, x, y in pairs:
+            if len(out) >= cap - 1:
+                break
+            add(_apply_op(_apply_op(list(base), small[x]), small[y]))
+        return [base] + out[: max(0, cap - 1)]
 
     if strategy in ("swaps", "all"):
         for a, b in itertools.combinations(range(n), 2):
@@ -601,8 +730,25 @@ def gen_variants(n: int, strategy: str, cap: int, seed: int = 12345):
 
 # ------------------------------------------------------------------- build
 def rebuild(unit_object: str, version: str) -> bool:
+    """Recompile one unit's src .o.
+
+    By default this goes through tools/direct_build.py, which recovers the
+    unit's compile command from ninja ONCE and then runs it directly: ninja's
+    global build-dir mutex otherwise serialises every probe of every concurrent
+    sweep onto a single invocation, which pins a ten-worker fleet on a ten-core
+    box at a load average of 3.9.  The object produced is byte-identical (the
+    command is ninja's own), and direct_build falls back to locked_ninja when
+    the command cannot be recovered.  Set SFA_BRUTE_LOCKED_NINJA=1 to force the
+    old path.
+    """
     rel = unit_object.replace(f"build/{version}/obj/", f"build/{version}/src/")
     src_o = REPO / rel
+    if not os.environ.get("SFA_BRUTE_LOCKED_NINJA"):
+        try:
+            from direct_build import direct_build
+            return direct_build(unit_object, version)
+        except Exception:
+            pass
     try:
         src_o.unlink()
     except FileNotFoundError:
@@ -697,7 +843,8 @@ def main():
     ap.add_argument("-v", "--version", default="GSAE01")
     ap.add_argument("--max-variants", type=int, default=60)
     ap.add_argument("--time-budget", type=float, default=900.0)
-    ap.add_argument("--strategy", choices=["swaps", "moves", "all"],
+    ap.add_argument("--strategy",
+                    choices=["swaps", "moves", "all", "radius2", "radius2only"],
                     default="all")
     ap.add_argument("--dry-run", action="store_true")
     ap.add_argument("--apply-best", action="store_true")
@@ -835,6 +982,18 @@ def main():
     held: dict[int, tuple] = {}
     cur_fz, cur_px = base_fz, base_proxy
     results = []          # (fuzzy, proxy, reg, block_index, order)
+    # PLANNED IS NOT SWEPT.  The variant plan is syntactic: it permutes the
+    # declaration TEXT and does not look at initialisers, so on a block whose
+    # declarations initialise from each other (`float y = f(&bits); float y2 =
+    # y * y;`) most orderings are use-before-declaration and do not compile.
+    # Those are skipped, correctly -- but a summary that reports the PLANNED
+    # count makes such a row read as "N orderings, inert" when its legal
+    # neighbourhood was smaller, and sometimes empty.  Measured over the 201
+    # sub-100 rows: 68 of them carry at least one initialiser that reads
+    # another declaration in the same block, 213 declarations in all, and nine
+    # rows (the trig family, mathTanf) have NO legal reordering whatsoever.
+    # So both numbers are reported, always.
+    n_built = n_failed = 0
     t0 = time.time()
     stop = False
 
@@ -863,8 +1022,10 @@ def main():
                     break
                 res = trial({**held, bi: order})
                 if res is None:
+                    n_failed += 1
                     print(f"[b{bi} {vi:3d}] BUILD FAIL {list(order)}")
                     continue
+                n_built += 1
                 fz, px, reg = res
                 results.append((fz, px, reg, bi, order))
                 flag = ""
@@ -913,6 +1074,11 @@ def main():
     finally:
         # never leave a permutation on disk while deciding
         src_file.write_bytes(original)
+
+    print(f"\n# orderings BUILT {n_built}, rejected by the compiler "
+          f"{n_failed} (planned {total}) -- a row whose declarations "
+          f"initialise from each other has a smaller legal neighbourhood than "
+          f"the plan, and 'planned' is never the swept count")
 
     print("\n# ranked by FUZZY (top 12):")
     for fz, px, reg, bi, order in sorted(results, key=lambda r: (-r[0], -r[1]))[:12]:

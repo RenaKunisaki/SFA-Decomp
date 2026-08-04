@@ -1,3 +1,4 @@
+#include "dlls/object_descriptor.h"
 #include "game/objects/object.h"
 #include "main/frame_timing.h"
 #include "main/audio/audio_control_api.h"
@@ -10,10 +11,11 @@
 #include "main/map_load.h"
 #include "main/mm.h"
 #include "main/dll/savegame.h"
+#include "main/dll/savegame_env_api.h"
+#include "main/dll/player_state.h"
 #include "main/dll/player_status.h"
 #include "main/mapEventTypes.h"
 #include "dolphin/os/OSReboot.h"
-#include "string.h"
 #include "main/gamebits.h"
 #include "main/dll/tricky_api.h"
 #include "main/textrender_api.h"
@@ -39,7 +41,8 @@ typedef struct SaveGameTimeEntry
 
 typedef struct SaveGameData
 {
-    u8 pad0[0x1C - 0x0];
+    PlayerStatus characterStatus[2];
+    u8 pad18[0x1C - 0x18];
     char playerName[4];
     u8 currentCharacter;
     u8 newFileFlag;
@@ -58,13 +61,15 @@ typedef struct SaveGameData
     u8 pad564[0x684 - 0x564];
     SaveGameCharacterPosition characterPositions[2];
     s16 camActionNo;
-    u8 pad6A6[0x6EC - 0x6A6];
+    u8 pad6A6[0x6A8 - 0x6A6];
+    SaveGameEnvState env;
     s16 timeEntryCount; /* 0x6ec: number of valid entries in timeEntries */
     u8 pad6EE[0x6F0 - 0x6EE];
     SaveGameTimeEntry timeEntries[(0xF70 - 0x6F0) / 8]; /* 0x6f0: time-attack record table */
 } SaveGameData;
 
 STATIC_ASSERT(offsetof(SaveGameData, playerName) == 0x1C);
+STATIC_ASSERT(sizeof(((SaveGameData*)0)->characterStatus) == 0x18);
 STATIC_ASSERT(offsetof(SaveGameData, currentCharacter) == 0x20);
 STATIC_ASSERT(offsetof(SaveGameData, positions) == 0x168);
 STATIC_ASSERT(offsetof(SaveGameData, taskHintIds) == 0x558);
@@ -86,17 +91,16 @@ STATIC_ASSERT(sizeof(SaveGameData) == 0xF70);
 #define SAVEGAME_COMPLETION_SCORE_MAX         0xbb
 #define SAVE_SCORE_FILE_STRIDE                0x28
 #define SAVE_SCORE_TABLE_OFFSET               0x1c
-#define SAVE_SCORE_ENTRY_COUNT                5
 /* number of on-disk save-game slots */
 #define SAVEGAME_SLOT_COUNT              3
 #define SAVEGAME_MAP_COUNT               0x78
 #define SAVEGAME_EXTENDED_MAP_THRESHOLD  0x50
+#define SAVEGAME_EXTENDED_MAP_COUNT      (SAVEGAME_MAP_COUNT - SAVEGAME_EXTENDED_MAP_THRESHOLD)
 #define SAVEGAME_TRANSIENT_MAP_BIT_COUNT 20
 #define SAVEGAME_TRANSIENT_MAP_BIT_TTL   3
 
 enum
 {
-    SAVEGAME_EMPTY_TASK_HINT = -1,
     SAVEGAME_DEFAULT_VOLUME = 0x7f,
 };
 
@@ -108,13 +112,6 @@ typedef struct SaveGameRomListPosition
     f32 z;
     u32 objectId;
 } SaveGameRomListPosition;
-
-typedef struct SaveScoreEntry
-{
-    u32 score : 31;
-    u32 flag : 1;
-    u8 initials[4];
-} SaveScoreEntry;
 
 typedef struct SaveScoreFile
 {
@@ -154,29 +151,35 @@ const Vec3f gSaveGameDefaultPosition = {
 
 void loadMapForCurrentSaveGame(void);
 
-u8 gSaveGameData[0xF70];
-u8 saveData[SAVE_DATA_SIZE];
-u32 gMapObjGroupStatuses[0x78];
-u8 gExtendedMapActLookup[0x28];
+u32 gMapObjGroupStatuses[SAVEGAME_MAP_COUNT];
+extern u8 gExtendedMapActLookup[SAVEGAME_EXTENDED_MAP_COUNT];
 
-MapBitTransient gTransientMapBits[0x3C / sizeof(MapBitTransient)];
+MapBitTransient gTransientMapBits[SAVEGAME_TRANSIENT_MAP_BIT_COUNT];
 
-typedef struct SaveGameMapState
+typedef struct SaveGameRecord
 {
-    MapBitTransient transient[SAVEGAME_TRANSIENT_MAP_BIT_COUNT]; /* 0x000 */
-    u32 groupStatuses[SAVEGAME_MAP_COUNT];                       /* 0x03C */
-    u8 extendedMapActLookup[40];                                 /* 0x21C */
-} SaveGameMapState;
+    MapBitTransient transientMapBits[SAVEGAME_TRANSIENT_MAP_BIT_COUNT];
+    u32 mapObjGroupStatuses[SAVEGAME_MAP_COUNT];
+    u8 extendedMapActLookup[SAVEGAME_EXTENDED_MAP_COUNT];
+    SaveData options;
+    SaveGameData game;
+} SaveGameRecord;
 
-#define gSaveGameMapState (*(SaveGameMapState*)gTransientMapBits)
+STATIC_ASSERT(offsetof(SaveGameRecord, mapObjGroupStatuses) == 0x3C);
+STATIC_ASSERT(offsetof(SaveGameRecord, extendedMapActLookup) == 0x21C);
+STATIC_ASSERT(offsetof(SaveGameRecord, options) == 0x244);
+STATIC_ASSERT(offsetof(SaveGameRecord, game) == 0x328);
+STATIC_ASSERT(sizeof(SaveGameRecord) == 0x1298);
 
-static inline s8 saveGame_findTransientMapBit(int mapId, int shift, const SaveGameMapState* state)
+#define gSaveGameRecord (*(SaveGameRecord*)gTransientMapBits)
+
+static inline s8 saveGame_findTransientMapBit(int mapId, int shift, const SaveGameRecord* record)
 {
     int i;
 
     for (i = 0; i < SAVEGAME_TRANSIENT_MAP_BIT_COUNT; i++)
     {
-        if (mapId == state->transient[i].mapId && shift == state->transient[i].shift)
+        if (mapId == record->transientMapBits[i].mapId && shift == record->transientMapBits[i].shift)
         {
             return i;
         }
@@ -184,16 +187,16 @@ static inline s8 saveGame_findTransientMapBit(int mapId, int shift, const SaveGa
     return -1;
 }
 
-static inline void saveGame_addTransientMapBit(int mapId, int shift, SaveGameMapState* state)
+static inline void saveGame_addTransientMapBit(int mapId, int shift, SaveGameRecord* record)
 {
     int i;
     MapBitTransient* transient;
 
     for (i = 0; i < SAVEGAME_TRANSIENT_MAP_BIT_COUNT; i++)
     {
-        if (state->transient[i].mapId == -1)
+        if (record->transientMapBits[i].mapId == -1)
         {
-            (transient = &state->transient[i])->mapId = mapId;
+            (transient = &record->transientMapBits[i])->mapId = mapId;
             transient->shift = shift;
             transient->timer = SAVEGAME_TRANSIENT_MAP_BIT_TTL;
             return;
@@ -311,16 +314,16 @@ int loadGameOptions(void)
     int loadResult;
 
     loadResult = maybeTryLoadSave(saveData);
-    if ((loadResult == 0) || (saveData[0] == '\0'))
+    if ((loadResult == 0) || (((SaveData*)saveData)->optionsValid == 0))
     {
         memset(saveData, 0, SAVE_DATA_SIZE);
-        saveData[6] = 0;
-        saveData[2] = 1;
-        saveData[8] = 1;
-        saveData[0] = 1;
-        saveData[10] = SAVEGAME_DEFAULT_VOLUME;
-        saveData[11] = SAVEGAME_DEFAULT_VOLUME;
-        saveData[12] = SAVEGAME_DEFAULT_VOLUME;
+        ((SaveData*)saveData)->widescreenEnabled = 0;
+        ((SaveData*)saveData)->subtitlesEnabled = 1;
+        ((SaveData*)saveData)->rumbleEnabled = 1;
+        ((SaveData*)saveData)->optionsValid = 1;
+        ((SaveData*)saveData)->musicVolume = SAVEGAME_DEFAULT_VOLUME;
+        ((SaveData*)saveData)->sfxVolume = SAVEGAME_DEFAULT_VOLUME;
+        ((SaveData*)saveData)->speechVolume = SAVEGAME_DEFAULT_VOLUME;
     }
     return loadResult;
 }
@@ -341,13 +344,13 @@ void gplaySaveGame(int param)
     {
         gSaveGameCurrentSlot = 0;
     }
-    if ((s8)gSaveGameWorkBuffer[0] < 1)
+    if (((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[0].health < 1)
     {
-        gSaveGameWorkBuffer[0] = 1;
+        ((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[0].health = 1;
     }
-    if ((s8)gSaveGameWorkBuffer[0xc] < 1)
+    if (((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[1].health < 1)
     {
-        gSaveGameWorkBuffer[0xc] = 1;
+        ((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[1].health = 1;
     }
     _saveGame((u8)gSaveGameCurrentSlot, gSaveGameWorkBuffer, saveData);
 }
@@ -374,13 +377,13 @@ void saveGame_save(void)
     {
         gSaveGameCurrentSlot = 0;
     }
-    if ((s8)gSaveGameWorkBuffer[0] < 1)
+    if (((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[0].health < 1)
     {
-        gSaveGameWorkBuffer[0] = 1;
+        ((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[0].health = 1;
     }
-    if ((s8)gSaveGameWorkBuffer[0xc] < 1)
+    if (((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[1].health < 1)
     {
-        gSaveGameWorkBuffer[0xc] = 1;
+        ((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[1].health = 1;
     }
     _saveGame((u8)gSaveGameCurrentSlot, gSaveGameWorkBuffer, saveData);
 }
@@ -507,32 +510,32 @@ s8 slot;
 
     save = gSaveGameData;
     save[SAVEGAME_CURRENT_CHARACTER_OFFSET] = 0;
-    save[0] = 0xc;
-    save[1] = 0xc;
-    *(u16*)(save + 6) = 0x19;
-    *(u16*)(save + 4) = 0;
-    save[0xa] = 1;
-    *(s8*)(save + 0x692) = -1;
-    save[0xc] = 0xc;
-    save[0xd] = 0xc;
-    *(u16*)(save + 0x12) = 0x19;
-    *(u16*)(save + 0x10) = 0;
-    save[0x16] = 1;
-    *(s8*)(save + 0x6a2) = -1;
+    ((SaveGameData*)save)->characterStatus[0].health = 0xc;
+    ((SaveGameData*)save)->characterStatus[0].maxHealth = 0xc;
+    ((SaveGameData*)save)->characterStatus[0].maxMagic = 0x19;
+    ((SaveGameData*)save)->characterStatus[0].magic = 0;
+    ((SaveGameData*)save)->characterStatus[0].healCountMax = 1;
+    ((SaveGameData*)save)->characterPositions[0].mapDataFileId = -1;
+    ((SaveGameData*)save)->characterStatus[1].health = 0xc;
+    ((SaveGameData*)save)->characterStatus[1].maxHealth = 0xc;
+    ((SaveGameData*)save)->characterStatus[1].maxMagic = 0x19;
+    ((SaveGameData*)save)->characterStatus[1].magic = 0;
+    ((SaveGameData*)save)->characterStatus[1].healCountMax = 1;
+    ((SaveGameData*)save)->characterPositions[1].mapDataFileId = -1;
     save[0x19] = 0x14;
     ((SaveGameData*)save)->camActionNo = -1;
-    *(f32*)(save + 0x6a8) = 4.3e+04f;
-    *(s16*)(save + 0x6ac) = -1;
-    *(s16*)(save + 0x6ae) = -1;
-    *(s16*)(save + 0x6b2) = -1;
-    *(s16*)(save + 0x6b4) = -1;
-    *(s16*)(save + 0x6b6) = -1;
-    *(s16*)(save + 0x6b8) = -1;
-    *(s16*)(save + 0x6ba) = -1;
-    *(s8*)(save + 0x6e9) = -1;
-    *(s8*)(save + 0x6ea) = -1;
-    *(s8*)(save + 0x6eb) = -1;
-    save[0x6e8] = 9;
+    ((SaveGameData*)save)->env.unk00 = 4.3e+04f;
+    ((SaveGameData*)save)->env.skyEnvfxActIds[0] = -1;
+    ((SaveGameData*)save)->env.skyEnvfxActIds[1] = -1;
+    ((SaveGameData*)save)->env.cloudActionEnvfxActId = -1;
+    ((SaveGameData*)save)->env.sky2EnvfxActId = -1;
+    ((SaveGameData*)save)->env.cloudEnvfxActIds[0] = -1;
+    ((SaveGameData*)save)->env.cloudEnvfxActIds[1] = -1;
+    ((SaveGameData*)save)->env.cloudEnvfxActIds[2] = -1;
+    ((SaveGameData*)save)->env.cloudStationary[0] = -1;
+    ((SaveGameData*)save)->env.cloudStationary[1] = -1;
+    ((SaveGameData*)save)->env.cloudStationary[2] = -1;
+    ((SaveGameData*)save)->env.envFlags = 9;
     save[0x23] = 0;
     save[SAVEGAME_NEW_FILE_FLAG_OFFSET] = 1;
 
@@ -702,14 +705,14 @@ int saveSelect_getInfo(void* outPtr)
 
 void SaveGame_gplaySetObjGroupStatus(int mapId, int groupBit, int enabled)
 {
-    SaveGameMapState* s[1];
+    SaveGameRecord* s[1];
     u8 createTransient;
     u32 newStatus;
     int oldStatus;
     u32 bit;
     int i;
 
-    s[0] = &gSaveGameMapState;
+    s[0] = &gSaveGameRecord;
     createTransient = 0;
 
     if (mapId >= SAVEGAME_EXTENDED_MAP_THRESHOLD)
@@ -753,7 +756,7 @@ void SaveGame_gplaySetObjGroupStatus(int mapId, int groupBit, int enabled)
         {
             if ((oldStatus & (1 << groupBit)) == 0)
             {
-                u32* gp = s[0]->groupStatuses;
+                u32* gp = s[0]->mapObjGroupStatuses;
                 for (i = 0; i < SAVEGAME_MAP_COUNT; i++)
                 {
                     if (gSaveGameMapObjGroupBits[i] == gSaveGameMapObjGroupBits[mapId])
@@ -765,7 +768,7 @@ void SaveGame_gplaySetObjGroupStatus(int mapId, int groupBit, int enabled)
         }
         else
         {
-            u32* gp = s[0]->groupStatuses;
+            u32* gp = s[0]->mapObjGroupStatuses;
             for (i = 0; i < SAVEGAME_MAP_COUNT; i++)
             {
                 if (gSaveGameMapObjGroupBits[i] == gSaveGameMapObjGroupBits[mapId])
@@ -803,7 +806,7 @@ void SaveGame_updateTransientMapBits(void)
 
 s8 SaveGame_findTransientMapBit(int mapId, int shift)
 {
-    return saveGame_findTransientMapBit(mapId, shift, &gSaveGameMapState);
+    return saveGame_findTransientMapBit(mapId, shift, &gSaveGameRecord);
 }
 
 void mapClearBit(int idx, int bit)
@@ -900,8 +903,9 @@ void SaveGame_setMapActLut(int val, int idx)
 
 void updateSavedHealth(void)
 {
-    int idx = ((SaveGameData*)gSaveGameData)->currentCharacter * 12;
-    *((u8*)gSaveGameData + idx) = gSaveGameWorkBuffer[idx];
+    int idx = ((SaveGameData*)gSaveGameData)->currentCharacter;
+    ((SaveGameData*)gSaveGameData)->characterStatus[idx].health =
+        ((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[idx].health;
 }
 f32 SaveGame_getPlayTime(void)
 {
@@ -950,7 +954,7 @@ f32 SaveGame_gplayGetTimeRemaining(int id)
     count = ((SaveGameData*)p)->timeEntryCount;
     for (; i < count; i++)
     {
-        if (((SaveGameTimeEntry*)(p + 0x6f0))->objId == id)
+        if (((SaveGameData*)p)->timeEntries[0].objId == id)
         {
             p = gSaveGameData;
             return ((SaveGameTimeEntry*)(p + 0x6f0))[i].time - ((SaveGameData*)p)->playTime;
@@ -971,7 +975,7 @@ int SaveGame_gplayDidTimeExpire(int id)
     count = ((SaveGameData*)p)->timeEntryCount;
     for (i = 0; i < count; i++)
     {
-        if (((SaveGameTimeEntry*)(p + 0x6f0))->objId == id)
+        if (((SaveGameData*)p)->timeEntries[0].objId == id)
             return 0;
         p += 8;
     }
@@ -997,7 +1001,7 @@ void SaveGame_gplayAddTime(int id, f32 time)
     p = base;
     for (; i < count; i++)
     {
-        if (((SaveGameTimeEntry*)(p + 0x6f0))->objId == id)
+        if (((SaveGameData*)p)->timeEntries[0].objId == id)
             break;
         p += 8;
     }
@@ -1017,7 +1021,7 @@ void* SaveGame_getSidekickStats(void)
 void* SaveGame_getCurCharPos(void)
 {
     int idx = ((SaveGameData*)gSaveGameData)->currentCharacter;
-    return gSaveGameData + idx * 16 + 0x684;
+    return &((SaveGameData*)gSaveGameData)->characterPositions[idx];
 }
 
 void* SaveGame_getPlayerStats(void)
@@ -1050,8 +1054,8 @@ void loadMapForCurrentSaveGame(void)
     stopRumble2();
     resetYbutton();
     base = (char*)gSaveGameData + ((SaveGameData*)gSaveGameData)->currentCharacter * 16;
-    mapLoadByCoords(((SaveGameCharacterPosition*)(base + 0x684))->x, ((SaveGameCharacterPosition*)(base + 0x684))->y,
-                    ((SaveGameCharacterPosition*)(base + 0x684))->z, ((SaveGameCharacterPosition*)(base + 0x684))->mapLayer);
+    mapLoadByCoords(((SaveGameData*)base)->characterPositions[0].x, ((SaveGameData*)base)->characterPositions[0].y,
+                    ((SaveGameData*)base)->characterPositions[0].z, ((SaveGameData*)base)->characterPositions[0].mapLayer);
     if (getCurUiDll() != 4)
     {
         loadUiDll(1);
@@ -1122,10 +1126,10 @@ void SaveGame_gplayRestartPoint(f32* pos, s16 angle, int b691, int flag)
 
 void SaveGame_gplayGotoSavegame(void)
 {
-    if ((s8)gSaveGameWorkBuffer[0] < 1)
-        gSaveGameWorkBuffer[0] = 1;
-    if ((s8)gSaveGameWorkBuffer[0xc] < 1)
-        gSaveGameWorkBuffer[0xc] = 1;
+    if (((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[0].health < 1)
+        ((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[0].health = 1;
+    if (((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[1].health < 1)
+        ((SaveGameData*)gSaveGameWorkBuffer)->characterStatus[1].health = 1;
     memcpy(gSaveGameData, gSaveGameWorkBuffer, SAVEGAME_ACTIVE_SIZE);
     loadMapForCurrentSaveGame();
 }
@@ -1181,8 +1185,9 @@ void SaveGame_release(void)
 
 void SaveGame_initialise(void)
 {
-    s8* base = (s8*)gTransientMapBits;
-    memset(base + 0x328, 0, SAVEGAME_LIVE_BUFFER_SIZE);
+    SaveGameRecord* record = &gSaveGameRecord;
+
+    memset(&record->game, 0, sizeof(record->game));
     if (!(((SaveGameData*)gSaveGameWorkBuffer)->newFileFlag & 0x80))
     {
         memset(gSaveGameWorkBuffer, 0, SAVEGAME_ACTIVE_SIZE);
@@ -1190,34 +1195,34 @@ void SaveGame_initialise(void)
     pRestartPoint = 0;
     gSaveGameMapActCacheIdx[0] = -1;
     gSaveGameObjGroupCacheIdx[0] = -1;
-    memset(base + 0x244, 0, 0xe4);
-    base[0x24a] = 0;
-    base[0x246] = 1;
-    base[0x24c] = 1;
-    base[0x244] = 1;
-    base[0x24e] = SAVEGAME_DEFAULT_VOLUME;
-    base[0x24f] = SAVEGAME_DEFAULT_VOLUME;
-    base[0x250] = SAVEGAME_DEFAULT_VOLUME;
-    base[0x00] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x03] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x06] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x09] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x0c] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x0f] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x12] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x15] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x18] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x1b] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x1e] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x21] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x24] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x27] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x2a] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x2d] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x30] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x33] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x36] = SAVEGAME_EMPTY_TASK_HINT;
-    base[0x39] = SAVEGAME_EMPTY_TASK_HINT;
+    memset(&record->options, 0, sizeof(record->options));
+    record->options.widescreenEnabled = 0;
+    record->options.subtitlesEnabled = 1;
+    record->options.rumbleEnabled = 1;
+    record->options.optionsValid = 1;
+    record->options.musicVolume = SAVEGAME_DEFAULT_VOLUME;
+    record->options.sfxVolume = SAVEGAME_DEFAULT_VOLUME;
+    record->options.speechVolume = SAVEGAME_DEFAULT_VOLUME;
+    record->transientMapBits[0].mapId = -1;
+    record->transientMapBits[1].mapId = -1;
+    record->transientMapBits[2].mapId = -1;
+    record->transientMapBits[3].mapId = -1;
+    record->transientMapBits[4].mapId = -1;
+    record->transientMapBits[5].mapId = -1;
+    record->transientMapBits[6].mapId = -1;
+    record->transientMapBits[7].mapId = -1;
+    record->transientMapBits[8].mapId = -1;
+    record->transientMapBits[9].mapId = -1;
+    record->transientMapBits[10].mapId = -1;
+    record->transientMapBits[11].mapId = -1;
+    record->transientMapBits[12].mapId = -1;
+    record->transientMapBits[13].mapId = -1;
+    record->transientMapBits[14].mapId = -1;
+    record->transientMapBits[15].mapId = -1;
+    record->transientMapBits[16].mapId = -1;
+    record->transientMapBits[17].mapId = -1;
+    record->transientMapBits[18].mapId = -1;
+    record->transientMapBits[19].mapId = -1;
 }
 
 u16 gSaveGameMapActBits[120] = {
@@ -1243,60 +1248,124 @@ u16 gSaveGameMapObjGroupBits[120] = {
     0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
     0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
 };
+typedef struct SaveGameDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback slot03;
+    ObjectDescriptorCallback slot04;
+    ObjectDescriptorCallback slot05;
+    ObjectDescriptorCallback slot06;
+    ObjectDescriptorCallback slot07;
+    ObjectDescriptorCallback slot08;
+    ObjectDescriptorCallback gplaySavePoint;
+    ObjectDescriptorCallback gplayGotoSavegame;
+    ObjectDescriptorCallback gplayRestartPoint;
+    ObjectDescriptorCallback gplayGotoRestartPoint;
+    ObjectDescriptorCallback gplayClearRestartPoint;
+    ObjectDescriptorCallback gplayGetRestartGameNotCleared;
+    ObjectDescriptorCallback slot0F;
+    ObjectDescriptorCallback slot10;
+    ObjectDescriptorCallback slot11;
+    ObjectDescriptorCallback getMapAct;
+    ObjectDescriptorCallback gplaySetAct;
+    ObjectDescriptorCallback setMapActLut;
+    ObjectDescriptorCallback gplayGetObjGroupStatus;
+    ObjectDescriptorCallback gplaySetObjGroupStatus;
+    ObjectDescriptorCallback getMapObjGroupBit;
+    ObjectDescriptorCallback mapUpdateObjGroups;
+    ObjectDescriptorCallback mapGetObjGroups;
+    ObjectDescriptorCallback resetObjGroups;
+    ObjectDescriptorCallback gplayAddTime;
+    ObjectDescriptorCallback gplayDidTimeExpire;
+    ObjectDescriptorCallback gplayGetTimeRemaining;
+    ObjectDescriptorCallback updateTimes;
+    ObjectDescriptorCallback getCurChar;
+    ObjectDescriptorCallback setCharacter;
+    ObjectDescriptorCallback slot21;
+    ObjectDescriptorCallback slot22;
+    ObjectDescriptorCallback slot23;
+    ObjectDescriptorCallback getState;
+    ObjectDescriptorCallback getPlayerStats;
+    ObjectDescriptorCallback getCurCharPos;
+    ObjectDescriptorCallback getSidekickStats;
+    ObjectDescriptorCallback slot28;
+    ObjectDescriptorCallback slot29;
+    ObjectDescriptorCallback slot2A;
+    ObjectDescriptorCallback slot2B;
+    ObjectDescriptorCallback slot2C;
+    ObjectDescriptorCallback getPlayTime;
+    ObjectDescriptorCallback slot2E;
+    ObjectDescriptorCallback slot2F;
+    ObjectDescriptorCallback slot30;
+    ObjectDescriptorCallback slot31;
+    ObjectDescriptorCallback slot32;
+    ObjectDescriptorCallback slot33;
+} SaveGameDllInterface;
 
-void* SaveGame_funcs[56] = {(void*)0x00000000,
-                          (void*)0x00000000,
-                          (void*)0x00000000,
-                          (void*)0x00330000,
-                          SaveGame_initialise,
-                          SaveGame_release,
-                          (void*)0x00000000,
-                          (void*)0x00000000,
-                          (void*)0x00000000,
-                          (void*)0x00000000,
-                          (void*)0x00000000,
-                          (void*)0x00000000,
-                          SaveGame_func08_nop,
-                          SaveGame_gplaySavePoint,
-                          SaveGame_gplayGotoSavegame,
-                          SaveGame_gplayRestartPoint,
-                          SaveGame_gplayGotoRestartPoint,
-                          SaveGame_gplayClearRestartPoint,
-                          SaveGame_gplayGetRestartGameNotCleared,
-                          (void*)0x00000000,
-                          (void*)0x00000000,
-                          (void*)0x00000000,
-                          SaveGame_getMapAct,
-                          SaveGame_gplaySetAct,
-                          SaveGame_setMapActLut,
-                          SaveGame_gplayGetObjGroupStatus,
-                          SaveGame_gplaySetObjGroupStatus,
-                          SaveGame_getMapObjGroupBit,
-                          SaveGame_mapUpdateObjGroups,
-                          SaveGame_mapGetObjGroups,
-                          SaveGame_resetObjGroups,
-                          SaveGame_gplayAddTime,
-                          SaveGame_gplayDidTimeExpire,
-                          SaveGame_gplayGetTimeRemaining,
-                          SaveGame_updateTimes,
-                          SaveGame_getCurChar,
-                          SaveGame_setCharacter,
-                          (void*)0x00000000,
-                          (void*)0x00000000,
-                          (void*)0x00000000,
-                          SaveGame_getState,
-                          SaveGame_getPlayerStats,
-                          SaveGame_getCurCharPos,
-                          SaveGame_getSidekickStats,
-                          (void*)0x00000000,
-                          (void*)0x00000000,
-                          (void*)0x00000000,
-                          (void*)0x00000000,
-                          (void*)0x00000000,
-                          SaveGame_getPlayTime,
-                          (void*)0x00000000,
-                          (void*)0x00000000,
-                          (void*)0x00000000,
-                          (void*)0x00000000,
-                          (void*)0x00000000,
-                          (void*)0x00000000};
+SaveGameDllInterface SaveGame_funcs = {
+    0,
+    0,
+    0,
+    0x00330000,
+    (ObjectDescriptorCallback)SaveGame_initialise,
+    (ObjectDescriptorCallback)SaveGame_release,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)SaveGame_func08_nop,
+    (ObjectDescriptorCallback)SaveGame_gplaySavePoint,
+    (ObjectDescriptorCallback)SaveGame_gplayGotoSavegame,
+    (ObjectDescriptorCallback)SaveGame_gplayRestartPoint,
+    (ObjectDescriptorCallback)SaveGame_gplayGotoRestartPoint,
+    (ObjectDescriptorCallback)SaveGame_gplayClearRestartPoint,
+    (ObjectDescriptorCallback)SaveGame_gplayGetRestartGameNotCleared,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)SaveGame_getMapAct,
+    (ObjectDescriptorCallback)SaveGame_gplaySetAct,
+    (ObjectDescriptorCallback)SaveGame_setMapActLut,
+    (ObjectDescriptorCallback)SaveGame_gplayGetObjGroupStatus,
+    (ObjectDescriptorCallback)SaveGame_gplaySetObjGroupStatus,
+    (ObjectDescriptorCallback)SaveGame_getMapObjGroupBit,
+    (ObjectDescriptorCallback)SaveGame_mapUpdateObjGroups,
+    (ObjectDescriptorCallback)SaveGame_mapGetObjGroups,
+    (ObjectDescriptorCallback)SaveGame_resetObjGroups,
+    (ObjectDescriptorCallback)SaveGame_gplayAddTime,
+    (ObjectDescriptorCallback)SaveGame_gplayDidTimeExpire,
+    (ObjectDescriptorCallback)SaveGame_gplayGetTimeRemaining,
+    (ObjectDescriptorCallback)SaveGame_updateTimes,
+    (ObjectDescriptorCallback)SaveGame_getCurChar,
+    (ObjectDescriptorCallback)SaveGame_setCharacter,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)SaveGame_getState,
+    (ObjectDescriptorCallback)SaveGame_getPlayerStats,
+    (ObjectDescriptorCallback)SaveGame_getCurCharPos,
+    (ObjectDescriptorCallback)SaveGame_getSidekickStats,
+    0,
+    0,
+    0,
+    0,
+    0,
+    (ObjectDescriptorCallback)SaveGame_getPlayTime,
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+};
+
+u8 gSaveGameData[SAVEGAME_LIVE_BUFFER_SIZE];
+u8 saveData[SAVE_DATA_SIZE];
+u8 gExtendedMapActLookup[SAVEGAME_EXTENDED_MAP_COUNT];

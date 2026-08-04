@@ -2,7 +2,7 @@
 #define MAIN_DLL_DF_DLL_0230_DFPWALLBAR_H_
 
 #include "game/objects/object.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "game/objects/object_setup.h"
 
 typedef struct ChukaPlacement

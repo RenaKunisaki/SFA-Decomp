@@ -1,7 +1,7 @@
 #ifndef MUSYX_HW_BREAK_H_
 #define MUSYX_HW_BREAK_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 void hwBreak(int voiceIndex);
 

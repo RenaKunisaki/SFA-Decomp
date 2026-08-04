@@ -52,9 +52,9 @@ int VFPDragHead_getObjectTypeId(void)
     return 0x0;
 }
 
-void VFPDragHead_free(int obj)
+void VFPDragHead_free(GameObject* obj)
 {
-    (*gExpgfxInterface)->freeSource2(obj);
+    (*gExpgfxInterface)->freeSource2((u32)obj);
     (*gModgfxInterface)->freeSourceEffects((void*)obj);
     if (gVfpDragHeadResource != NULL)
     {
@@ -137,9 +137,9 @@ void VFPDragHead_update(GameObject* obj)
     }
 }
 
-void VFPDragHead_init(GameObject* obj, int data)
+void VFPDragHead_init(GameObject* obj, VfpDragHeadPlacement* data)
 {
-    VfpDragHeadPlacement* def = (VfpDragHeadPlacement*)data;
+    VfpDragHeadPlacement* def = data;
     VfpDragHeadState* state = (obj)->extra;
     if ((obj)->anim.romDefNo == 0x3c5)
     {

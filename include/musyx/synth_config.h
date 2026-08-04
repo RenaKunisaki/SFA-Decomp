@@ -1,7 +1,7 @@
 #ifndef MUSYX_SYNTH_CONFIG_H_
 #define MUSYX_SYNTH_CONFIG_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 typedef struct SynthInfo {
     u32 sampleRate;

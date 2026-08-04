@@ -1,6 +1,6 @@
 #include "dolphin/types.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/k_tan.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.h"
+#include "main/math_8029312c.h"
+#include "main/trig_float_helpers.h"
 #include "main/acosf.h"
 #include "main/acosf_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
@@ -136,7 +136,7 @@ static inline u32 float_bits(const float *value) {
     return ((const FloatWord *)value)->bits;
 }
 
-float __kernel_cos(float y, float x) {
+float atan2f_fast(float y, float x) {
     float absoluteX = __fabsf(x);
     float absoluteY = __fabsf(y);
     float axisRatio;

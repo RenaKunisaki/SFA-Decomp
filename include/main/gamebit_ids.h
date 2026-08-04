@@ -875,7 +875,7 @@ enum GameBitId {
     GAMEBIT_WM_SpiritPlace5Ready = 0xCB6,                /* table 2; gates spirit-place 5 and its return pad */
     GAMEBIT_ITEM_Spirit6_Released = 0xCB7,               /* table 2; hint 423; hint: "Andross Revealed" */
     GAMEBIT_WM_SpiritPlace6Ready = 0xCB8,                /* table 2; gates spirit-place 6 and its return pad */
-    GAMEBIT_SHRINE_MUSIC_LOCK = 0xCBB,                   /* Krazoa-shrine music lock: set (success-gated in GPSH) when a Krazoa shrine object (MMSH/ECSH/DFSH/DBSH/GPSH) frees; every area's level-control DLL watches it via SCGameBitLatch_Update to start/stop MUSICTRIG_PU3_Adventure_c4 and hand back its own ambient music, and it also raises audio.c's SFX reverb bus and suppresses doorf4's door-close SFX during the transition */
+    GAMEBIT_SHRINE_MUSIC_LOCK = 0xCBB,                   /* Krazoa-shrine music lock: set (success-gated in GPSH) when a Krazoa shrine object (MMSH/ECSH/DFSH/DBSH/GPSH) frees; every area's level-control DLL watches it via GameBitLatch_Update to start/stop MUSICTRIG_PU3_Adventure_c4 and hand back its own ambient music, and it also raises audio.c's SFX reverb bus and suppresses doorf4's door-close SFX during the transition */
     GAMEBIT_ITEM_SpellStone_Disabled = 0xCBC,            /* table 2; dims them in the menu */
     GAMEBIT_SawFuelCell = 0xCBE,                         /* table 2 */
     GAMEBIT_SB_KrystalBoardedGalleon = 0xCBF,            /* table 0; hint 245 */
@@ -921,7 +921,7 @@ enum GameBitId {
     GAMEBIT_CFRelated0DCA = 0xDCA,                       /* table 0 */
     GAMEBIT_CFRaceRelated0DCB = 0xDCB,                   /* table 0 */
     GAMEBIT_LINKD_ObjGroups = 0xDD1,                     /* table 3; size 32 */
-    GAMEBIT_GPSH_TestKnowledgeRunning = 0xDD2,           /* GPSH shrine (Test Of Knowledge) trial-active latch - set on activation, cleared on solve/timeout/reset; gates MUSICTRIG_krazoa_tunnel_2 via SCGameBitLatch_Update, mirroring GAMEBIT_ECSH_TestObservRunning */
+    GAMEBIT_GPSH_TestKnowledgeRunning = 0xDD2,           /* GPSH shrine (Test Of Knowledge) trial-active latch - set on activation, cleared on solve/timeout/reset; gates MUSICTRIG_krazoa_tunnel_2 via GameBitLatch_Update, mirroring GAMEBIT_ECSH_TestObservRunning */
     GAMEBIT_ITEM_CheatToken0_Got = 0xDDC,                /* table 2; Display Credits */
     GAMEBIT_ITEM_CheatToken3_Got = 0xDDD,                /* table 2; Dino Language */
     GAMEBIT_ITEM_CheatToken2_Got = 0xDDE,                /* table 2; Music Test */

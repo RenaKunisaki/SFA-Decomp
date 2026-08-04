@@ -60,7 +60,7 @@ enum
 
 u8 gWallCrawlerHitCount;
 extern u16 gWallCrawlerVariantFlags[];
-extern u8 gWallCrawlerPointCollision[];
+extern f32 gWallCrawlerPointCollision[];
 
 /* overlay of state->hitBits */
 typedef struct
@@ -739,7 +739,7 @@ void wmwallcrawler_initialise(void)
 }
 
 u16 gWallCrawlerVariantFlags[8] = {0x0000, 0x0002, 0x0004, 0x0001, 0x000C, 0x03F7, 0x0167, 0x050C};
-u8 gWallCrawlerPointCollision[12] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
+f32 gWallCrawlerPointCollision[3] = {0.0f, 0.0f, 0.0f};
 
 ObjectDescriptor10WithPadding gWM_WallCrawlerObjDescriptor = {
     {

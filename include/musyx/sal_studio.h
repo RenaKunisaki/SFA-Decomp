@@ -1,7 +1,7 @@
 #ifndef MUSYX_SAL_STUDIO_H_
 #define MUSYX_SAL_STUDIO_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "musyx/dsp_voice.h"
 
 u32 salInitDspCtrl(u8 numVoices, u8 numStudios, u32 defaultStudioDPL2);

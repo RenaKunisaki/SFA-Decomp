@@ -10,23 +10,8 @@ typedef enum Dll85Variant {
     DLL85_VARIANT_BURST = 4,
 } Dll85Variant;
 
-typedef struct Dll85EffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} Dll85EffectVertex;
-
-STATIC_ASSERT(offsetof(Dll85EffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(Dll85EffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(Dll85EffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(Dll85EffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(Dll85EffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(Dll85EffectVertex) == 0x0A);
-
 typedef struct Dll85EffectResourceView {
-    Dll85EffectVertex vertices[4];
+    ModgfxEffectVertex vertices[4];
     s16 triangles[2][3];
     s16 sequenceParams[7];
     s16 opaqueTail;
@@ -47,7 +32,7 @@ s16 gDll85IndexPair23[2] = {2, 3};
 extern u8 gDll85EffectResourceData[sizeof(Dll85EffectResourceView)];
 
 void dll_85_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)(int)gDll85EffectResourceData;
     s16* resourceHalfwords = (s16*)resourceData;
     GfxCmd* commandCursor;
@@ -215,7 +200,7 @@ void dll_85_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* s
     packet.sequenceParams[4] = *(s16*)&resourceData[offsetof(Dll85EffectResourceView, sequenceParams[4])];
     packet.sequenceParams[5] = *(s16*)&resourceData[offsetof(Dll85EffectResourceView, sequenceParams[5])];
     packet.sequenceParams[6] = *(s16*)&resourceData[offsetof(Dll85EffectResourceView, sequenceParams[6])];
-    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxPointerSpawnPacket, entries));
+    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxSpawnPacket, entries));
     if (variant == DLL85_VARIANT_BURST) {
         packet.flags = 0x4004400;
     } else {

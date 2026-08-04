@@ -10,7 +10,7 @@
 #include "track/intersect_screen_api.h"
 #include "track/intersect_whirlpool_api.h"
 #include "main/projected_shadow.h"
-#include "ghidra_import.h"
+#include "types.h"
 
 void* surfaceSfxGetRecord(u32 i);
 void waterFxUpdate(f32 step);
@@ -51,8 +51,8 @@ void drawSnowFlashOverlay(f32 s1, u8 flashAlpha, void* vec, f32 s2, u8 alpha0, u
 void doHeatEffect(u8 alpha);
 void renderMotionBlur(f32 alpha);
 void doBlurFilter(f32 wx, f32 wy, f32 wz, u8 param4, u8 param5);
-void setupWaterReflectionTev(int handle1, int handle2);
-void setupReflectionDistortTev(int param_1);
+void setupWaterReflectionTev(Texture* handle1, Texture* handle2);
+void setupReflectionDistortTev(Texture* texHandle);
 void setupReflectionBumpDistortTev(void* texture);
 void setupWaterCausticTev(void);
 void loadReflectionTexMtxs(void);

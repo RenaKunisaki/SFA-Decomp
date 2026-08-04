@@ -23,13 +23,12 @@
 #include "main/objhits.h"
 #include "main/pad.h"
 #include "main/vecmath.h"
-#include "string.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 
 extern char sSidekickBallYVelDepthFormat[];
 extern char sSidekickBallDotFormat[];
-extern u8 gSidekickBallPathPointData[];
+extern f32 gSidekickBallPathPointData[];
 
 #define SIDEKICKBALL_MESSAGE_PLAYER_GRAB 0x100010
 
@@ -231,7 +230,7 @@ void SidekickBall_update(GameObject* obj) {
     int trickyFlagsMask;
     int triggered;
 
-    state = (SidekickBallState*)*(int*)&obj->extra;
+    state = (SidekickBallState*)(int)obj->extra;
     obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
     state->onPathPoint = 0;
 
@@ -264,7 +263,7 @@ void SidekickBall_update(GameObject* obj) {
     case SIDEKICK_BALL_HELD:
         obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED;
         triggered = 0;
-        if ((buttonGetDisabled(0) & PAD_BUTTON_A) == 0u && obj->userData2 == 0 && ObjTrigger_IsSet((int)obj) != 0) {
+        if ((buttonGetDisabled(0) & PAD_BUTTON_A) == 0u && obj->userData2 == 0 && ObjTrigger_IsSet(obj) != 0) {
             ObjHits_DisableObject(obj);
             triggered = 1;
         }
@@ -296,6 +295,23 @@ void SidekickBall_update(GameObject* obj) {
     (*gPathControlInterface)->update(obj, state, timeDelta);
     (*gPathControlInterface)->apply(obj, state);
     (*gPathControlInterface)->advance(obj, state, timeDelta);
+}
+
+static inline int sidekickBall_updateFloorDepth(GameObject* obj, SidekickBallState* state) {
+    if (state->floorHeight > 0.0f) {
+        state->floorY = state->floorBaseY;
+        state->floorDepth = state->floorHeight;
+        return 1;
+    }
+    if (sidekickBall_floatsNotEqual(state->floorY, 0.0f)) {
+        if (obj->anim.localPosY > state->floorY) {
+            state->floorY = 0.0f;
+        } else {
+            state->floorDepth = state->floorY - obj->anim.localPosY;
+            return 1;
+        }
+    }
+    return 0;
 }
 
 u8 trickyBallMove(GameObject* obj) {
@@ -338,21 +354,7 @@ u8 trickyBallMove(GameObject* obj) {
         hasMovementDelta = 1;
     }
 
-    if (state->floorHeight > 0.0f) {
-        state->floorY = state->floorBaseY;
-        state->floorDepth = state->floorHeight;
-        hasFloorDepth = 1;
-    } else if (sidekickBall_floatsNotEqual(state->floorY, 0.0f)) {
-        if (obj->anim.localPosY > state->floorY) {
-            state->floorY = 0.0f;
-            hasFloorDepth = 0;
-        } else {
-            state->floorDepth = state->floorY - obj->anim.localPosY;
-            hasFloorDepth = 1;
-        }
-    } else {
-        hasFloorDepth = 0;
-    }
+    hasFloorDepth = sidekickBall_updateFloorDepth(obj, state);
 
     if (hasFloorDepth != 0) {
         obj->anim.velocityX *= SIDEKICKBALL_FLOOR_DAMPING;
@@ -449,7 +451,7 @@ void SidekickBall_init(GameObject* obj) {
     mainSetBits(GAMEBIT_ITEM_TrickyBall_Usable, 0);
 }
 
-u8 gSidekickBallPathPointData[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
+f32 gSidekickBallPathPointData[3] = {0.0f, 0.0f, 0.0f};
 
 ObjectDescriptor gSidekickBallObjDescriptor = {
     0,                                             /* reserved0 */

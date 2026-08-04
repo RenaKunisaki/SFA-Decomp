@@ -21,7 +21,7 @@ typedef struct Dll19State
     u8 pad90[0x94 - 0x90];
     f32 unk94;
     u8 pad98[0x261 - 0x98];
-    u8 unk261;
+    u8 bboxTraceFlags; /* bbox trace filter handed to trackGetLineIntersect */
     u8 pad262[0x298 - 0x262];
     f32 unk298;
     u8 pad29C[0x2B8 - 0x29C];

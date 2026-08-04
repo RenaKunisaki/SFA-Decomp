@@ -34,8 +34,8 @@ typedef struct CloudRunnerState {
     u8 spawnVariant; /* 0xbb4: variant selector from spawn-setup byte +0x19; gates init (case 0 = early-out) */
     u8 padBB5;
     u8 flagsBB6; /* 0xbb6: bit flags (|=4, &=~8) */
-    u8 unkBB7;
-    u8 unkBB8;
+    u8 dismountSide;
+    u8 mountSide;
     u8 padBB9;
     s16 headingAngle; /* 0xbba: yaw; loaded from/stored to anim.rotX, turned toward target by moveInputX */
     s16 pitchAngle;

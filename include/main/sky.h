@@ -8,11 +8,6 @@
 
 typedef struct Texture Texture;
 
-typedef struct SkyVec3
-{
-    f32 x, y, z;
-} SkyVec3;
-
 typedef struct SkyRotQ
 {
     s16 rx, ry, rz;
@@ -96,6 +91,19 @@ typedef struct SkyTimeBlend
     u8 texSel;        /* 0x251 */
 } SkyTimeBlend;
 
+typedef struct SkyEnvFxRampTables {
+    s16 groupA[28];
+    s16 groupB[28];
+    s16 groupC[28];
+    s16 groupD[28];
+} SkyEnvFxRampTables;
+
+STATIC_ASSERT(offsetof(SkyEnvFxRampTables, groupA) == 0x00);
+STATIC_ASSERT(offsetof(SkyEnvFxRampTables, groupB) == 0x38);
+STATIC_ASSERT(offsetof(SkyEnvFxRampTables, groupC) == 0x70);
+STATIC_ASSERT(offsetof(SkyEnvFxRampTables, groupD) == 0xA8);
+STATIC_ASSERT(sizeof(SkyEnvFxRampTables) == 0xE0);
+
 int skyGetDayNo(void);
 void skySetDayNo(int value);
 void skyRefreshPlayerEnvFx(void);
@@ -137,7 +145,7 @@ int dll_06_func07_ret_0(void);
 void sky2_release(void);
 void skyLoadLights(void);
 void sky2ApplyFog(int obj);
-void sky2ApplyTextColor(int obj);
+void sky2ApplyTextColor(void* context);
 void sky2ApplyModelTint(GameObject* obj);
 void skyApplyPlayerEnvFx(u8 idx);
 void sky2BlendTowardTargetColor(s32* red, s32* green, s32* blue);

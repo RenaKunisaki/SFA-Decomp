@@ -40,13 +40,12 @@
 #include "sys/objects.h"
 #include "dlls/object_descriptor.h"
 #include "main/model.h"
-#include "main/dll/baddie/dll_003C_TumbleweedBush.h"
+#include "main/dll/dll_003C_link_api.h"
 #include "main/dll/FRONT/dll_39.h"
 #include "main/objseq.h"
-#include "main/dll/FRONT/dll_0034_n_filemenu.h"
+#include "main/dll/FRONT/dll_0034_n_attractmode.h"
 #include "main/dll/dll_003D_titlemenuitem.h"
 #include "main/dll/dll_0057_cameramodetitle.h"
-#include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/printf.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/gamebit_ids.h"
@@ -141,9 +140,6 @@ volatile PPCWGPipe GXWGFifo : (0xCC008000);
 extern u8 gTitleScreenSfxFlagGrid[0x48];
 extern u8 gTitleScreenMtx[0x34];
 extern TitleAnimMoves gTitleScreenAnimMoves[];
-extern f32 hudMatrix[4][4];
-extern f32 lbl_803E2300;
-void titleScreenPlayActorSfx(GameObject* obj, u8* arr);
 
 void titleScreenPlayActorSfx(GameObject* obj, u8* arr)
 {
@@ -327,7 +323,7 @@ void titleScreenShowCopyright(u8 arg)
     }
 }
 
-void* gTitleScreenTextures[TITLE_SCREEN_TEXTURE_COUNT];
+extern void* gTitleScreenTextures[TITLE_SCREEN_TEXTURE_COUNT];
 
 void titleScreenDrawMenuFrame(int alpha, int hideHighlight, u32 showArrows)
 {
@@ -405,7 +401,7 @@ void titleScreenDrawMenuFrame(int alpha, int hideHighlight, u32 showArrows)
         int yb = (int)mtx[7];
         i = 0;
         texs = (Texture**)gTitleScreenTextures;
-        sc3 = lbl_803E2300;
+        sc3 = 268.0f;
         do
         {
             tex = texs[4];
@@ -469,8 +465,6 @@ void titleScreenDrawMenuFrame(int alpha, int hideHighlight, u32 showArrows)
         drawTexture(gTitleScreenTextures[16], (f32)(r = xb + 0x2f), (f32)(int)(yb + 0x4b), 0xff, 0xff);
     }
 }
-
-u8 gTitleScreenMtx[0x34];
 
 /* Sets the name-entry text scroll offsets (x is applied in 4-px steps). */
 void nameEntrySetScroll(u32 a, u32 b)
@@ -976,8 +970,6 @@ void titleScreenSetMenuActive(s8 arg)
     gTitleScreenMenuActive = arg;
 }
 
-u8 gTitleScreenSfxFlagGrid[0x48];
-
 /* Two-byte state push (no equality check): copy gTitleScreenMenuSelection to
  * gTitleScreenPrevMenuSelection and write new value. */
 void titleScreenSetMenuSelection(s8 arg)
@@ -1095,3 +1087,7 @@ ObjectDescriptor10WithPadding gTitleScreenObjDescriptor = {
     },
     0,
 };
+
+u8 gTitleScreenMtx[0x34];
+void* gTitleScreenTextures[TITLE_SCREEN_TEXTURE_COUNT];
+u8 gTitleScreenSfxFlagGrid[0x48];

@@ -34,7 +34,6 @@ extern u32 __PADSpec;
 #define OS_EXCEPTIONTABLE_ADDR 0x3000
 #define OS_DBJUMPPOINT_ADDR 0x60
 // memory locations for important stuff
-#define OS_CACHED_REGION_PREFIX 0x8000
 #define OS_BI2_DEBUG_ADDRESS 0x800000F4
 #define OS_BI2_DEBUGFLAG_OFFSET 0xC
 #define PAD3_BUTTON_ADDR 0x800030E4

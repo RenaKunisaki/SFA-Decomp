@@ -111,11 +111,7 @@ u8 gNwMammothHitReactEntriesData[40] = {
     0x00, 0x00, 0x00, 0x00, 0x3C, 0x44, 0x9B, 0xA6, 0x00, 0x00, 0x00, 0x00,
 };
 
-u8 gNwMammothPathSetupDataA[] = {
-    0xC1, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0xC1, 0xA0, 0x00, 0x00, 0x41, 0x40, 0x00, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0xC1, 0xA0, 0x00, 0x00, 0x41, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-    0x41, 0xA0, 0x00, 0x00, 0xC1, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x41, 0xA0, 0x00, 0x00,
-};
+f32 gNwMammothPathSetupDataA[12] = {-12.0f, 0.0f, -20.0f, 12.0f, 0.0f, -20.0f, 12.0f, 0.0f, 20.0f, -12.0f, 0.0f, 20.0f};
 
 u8 gNwMammothPathSetupDataB[] = {
     0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -304,7 +300,7 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
             Sfx_PlayFromObject(obj, SFXTRIG_skeep_mumb);
             state->sfxTimer -= 900.0f;
         }
-        if (ObjTrigger_IsSet((int)obj) != 0) {
+        if (ObjTrigger_IsSet(obj) != 0) {
             (*gObjectTriggerInterface)->runSequence(3, (void*)nearestObj, -1);
             state->runtimeFlags = state->runtimeFlags | NW_MAMMOTH_RUNTIME_MENU_LOCK;
             state->stateIndex = 0xd;
@@ -333,7 +329,7 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
                 }
                 {
                     int* o2 = (int*)ObjList_FindObjectById(gNwMammothBushObjectIds[i]);
-                    if ((int*)playerGetTargetObject((GameObject*)*(int*)&state->playerObject) == o2) {
+                    if ((int*)playerGetTargetObject((GameObject*)(int)state->playerObject) == o2) {
                         enemy_setTrackedObj((GameObject*)o2, state->playerObject);
                     } else {
                         tw = tumbleweedbush_findNearestActive(&((GameObject*)o2)->anim.worldPosX);
@@ -360,10 +356,10 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
             }
             state->triggerList = gNwMammothGatekeeperCollectionTriggerList;
             if (state->trackedObject == NULL) {
-                short* setup = obj->anim.placementData;
+                NwMammothPlacement* setup = (NwMammothPlacement*)obj->anim.placementData;
                 if (tw2 != NULL && tw2->anim.romDefNo == 0x3fb) {
-                    if (getXZDistance(&obj->anim.worldPosX, &tw2->anim.worldPosX) <
-                        (f32)(s32)(setup[0xC] * setup[0xC])) {
+                    if (getXZDistanceSquared(&obj->anim.worldPosX, &tw2->anim.worldPosX) <
+                        (f32)(s32)(setup->triggerDistance * setup->triggerDistance)) {
                         if (Sfx_IsPlayingFromObjectChannel(obj, 0x10) == 0) {
                             Sfx_PlayFromObject(obj, SFXTRIG_mammoth_snowstep);
                         }
@@ -384,7 +380,7 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
         break;
     }
     case 0xe:
-        if (getXZDistance(&state->spawnPosX, &state->trackedObject->anim.worldPosX) < 6.25f) {
+        if (getXZDistanceSquared(&state->spawnPosX, &state->trackedObject->anim.worldPosX) < 6.25f) {
             Sfx_PlayFromObject(obj, SFXTRIG_mammoth_annoyed);
             tumbleweedbush_activatePiece(state->trackedObject);
             state->stateIndex = 0xf;
@@ -541,7 +537,7 @@ void NW_mammoth_updateArtifactQuest(GameObject* obj, NwMammothState* state, NwMa
     switch (state->stateIndex) {
     case 4:
         state->triggerList = gNwMammothArtifactState4TriggerList;
-        if (ObjTrigger_IsSetById((int)obj, 418) != 0) {
+        if (ObjTrigger_IsSetById(obj, 418) != 0) {
             state->runtimeFlags = state->runtimeFlags | NW_MAMMOTH_RUNTIME_MENU_LOCK;
             mainSetBits(GAMEBIT_SnowHornArtifact19D, 1);
             mainSetBits(GAMEBIT_ITEM_NWSnowHornArtifact_Used, 1);
@@ -579,7 +575,7 @@ void NW_mammoth_updateFeedQuest(GameObject* obj, NwMammothState* state, NwMammot
         state->triggerList = gNwMammothFeedState1TriggerList;
         switch (mainGetBit(GAMEBIT_ITEM_AlpineRoot_Used)) {
         case 0:
-            if (ObjTrigger_IsSetById((int)obj, 1398) != 0) {
+            if (ObjTrigger_IsSetById(obj, 1398) != 0) {
                 mainSetBits(GAMEBIT_ITEM_AlpineRoot_Used, 1);
                 gameBitDecrement(GAMEBIT_ITEM_IMAlpineRoot_Count);
                 (*gObjectTriggerInterface)->runSequence(2, obj, -1);
@@ -597,7 +593,7 @@ void NW_mammoth_updateFeedQuest(GameObject* obj, NwMammothState* state, NwMammot
         break;
     case 2:
         state->triggerList = gNwMammothFeedState2TriggerList;
-        if (ObjTrigger_IsSetById((int)obj, 1398) != 0) {
+        if (ObjTrigger_IsSetById(obj, 1398) != 0) {
             mainSetBits(GAMEBIT_ITEM_AlpineRoot_Used, 2);
             gameBitDecrement(GAMEBIT_ITEM_IMAlpineRoot_Count);
             (*gObjectTriggerInterface)->runSequence(4, obj, -1);
@@ -688,7 +684,7 @@ void NW_mammoth_update(GameObject* obj, int unusedArg) {
             hitReactEntries = &tables[0]->normalHitReactEntry;
         }
         state->hitReactState =
-            ObjHitReact_Update((int)obj, hitReactEntries, 1, state->hitReactState, &state->hitReactStepScale);
+            ObjHitReact_Update(obj, hitReactEntries, 1, state->hitReactState, &state->hitReactStepScale);
         if (state->hitReactState != 0) {
             characterHeadLookRelax(obj, &state->eyeAnim);
             characterDoEyeAnims(obj, &state->eyeAnim);
@@ -742,7 +738,7 @@ void NW_mammoth_update(GameObject* obj, int unusedArg) {
     NW_mammoth_updateEyeTracking(obj, state,
                                  tables[0]->stateFlags[state->stateIndex] & NW_MAMMOTH_STATE_FLAG_TRIGGER_REFRESH);
     state->runtimeFlags = state->runtimeFlags & ~NW_MAMMOTH_RUNTIME_TRIGGER_REFRESH;
-    if (((state->runtimeFlags & NW_MAMMOTH_RUNTIME_MENU_LOCK) == 0) && (ObjTrigger_IsSet((int)obj) != 0)) {
+    if (((state->runtimeFlags & NW_MAMMOTH_RUNTIME_MENU_LOCK) == 0) && (ObjTrigger_IsSet(obj) != 0)) {
         triggerIndex = randomGetRange(NW_MAMMOTH_TRIGGER_RANDOM_MIN, *state->triggerList);
         state->runtimeFlags = state->runtimeFlags | NW_MAMMOTH_RUNTIME_TRIGGER_REFRESH;
         (*gObjectTriggerInterface)->runSequence(state->triggerList[triggerIndex], obj, -1);

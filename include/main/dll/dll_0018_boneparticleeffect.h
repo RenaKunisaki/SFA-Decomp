@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_0018_BONEPARTICLEEFFECT_H_
 #define MAIN_DLL_DLL_0018_BONEPARTICLEEFFECT_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/dll/boneparticleeffect_interface.h"
 #include "game/objects/object.h"
 

@@ -83,7 +83,7 @@ void linkLevelControl_updateAreaMusic(GameObject* obj) {
                 Music_Trigger(MUSICTRIG_KP_Text, 1);
             }
         }
-        SCGameBitLatch_Update(&state->musicLatch, 1, -1, -1, LINK_GAMEBIT_AREA_48_DISABLED, MUSICTRIG_Teleport);
+        GameBitLatch_Update(&state->musicLatch, 1, -1, -1, LINK_GAMEBIT_AREA_48_DISABLED, MUSICTRIG_Teleport);
         break;
     }
 }

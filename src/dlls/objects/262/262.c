@@ -1,6 +1,6 @@
 /*
  * Scarab (DLL 0x106) - GreenScarab/RedScarab/GoldScarab/RainScarab money
- * beetles. TU = 0x801843C0..0x80185868.
+ * beetles.
  */
 #include "dlls/objects/262.h"
 #include "dolphin/mtx/vec.h"

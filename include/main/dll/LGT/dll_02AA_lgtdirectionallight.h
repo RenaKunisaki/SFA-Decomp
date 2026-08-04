@@ -74,7 +74,16 @@ struct DirectionalLightObjDescriptorLayout
     u32 reserved2;
     u32 slotCountAndFlags;
     void (*callbacks[10])(void);
-    char debugStrings[0xE0];
+    char debugModeYaw[12];
+    char debugAngleFormat[12];
+    char debugModePitch[16];
+    char debugModeDiffuseRed[28];
+    char debugColourFormat[12];
+    char debugModeDiffuseGreen[28];
+    char debugModeDiffuseBlue[28];
+    char debugModeSpecularRed[28];
+    char debugModeSpecularGreen[32];
+    char debugModeSpecularBlue[28];
 };
 
 extern const f32 gDirectionalLightInitialDirection[4];
@@ -84,7 +93,7 @@ void directionallight_debugEdit(GameObject* obj, DirectionalLightState* state);
 int directionallight_getExtraSize(void);
 int directionallight_getObjectTypeId(void);
 void directionallight_free(GameObject* obj);
-void directionallight_render(int obj, int p2, int p3, int p4, int p5, f32 scale);
+void directionallight_render(GameObject* obj, int p2, int p3, int p4, int p5, f32 scale);
 void directionallight_hitDetect(void);
 void directionallight_update(GameObject* obj);
 void directionallight_init(GameObject* obj, DirectionalLightSetup* setup);

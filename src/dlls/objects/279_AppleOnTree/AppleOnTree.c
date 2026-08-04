@@ -64,6 +64,14 @@ static inline void appleontree_markFallen(GameObject* obj) {
     }
 }
 
+static void appleontree_setFallScale(AppleOnTreeState* state, f32 fallProgress) {
+    if (fallProgress >= 1.0f) {
+        state->fallScale = 1.0f;
+    } else {
+        state->fallScale = 0.75f * fallProgress + 0.25f;
+    }
+}
+
 ObjectDescriptor13 gAppleOnTreeObjDescriptor = {
     0,
     0,
@@ -417,7 +425,7 @@ void AppleOnTree_update(GameObject* obj) {
     f32 sunTime;
     int message;
 
-    state = *(int*)&obj->extra;
+    state = (int)obj->extra;
     placement = obj->anim.placementDataAddress;
     message = 0;
     if ((((AppleOnTreeState*)state)->flags & APPLE_ON_TREE_FLAG_PICKUP_PENDING) != 0) {
@@ -427,7 +435,7 @@ void AppleOnTree_update(GameObject* obj) {
                 playerAddHealth(Obj_GetPlayerObject(), (int)((AppleOnTreeState*)state)->healthRestore);
                 itemPickupDoParticleFx(obj, 1.0f, 0xff, 0x28);
                 Sfx_PlayFromObject((int)obj, SFXTRIG_cam90_c);
-                val = *(int*)&obj->extra;
+                val = (int)obj->extra;
                 if (obj->anim.flags & OBJANIM_FLAG_OWNS_PLACEMENT_DATA) {
                     Obj_FreeObject(obj);
                 } else {
@@ -457,7 +465,7 @@ void AppleOnTree_update(GameObject* obj) {
                                 (gameBitValue = mainGetBit((int)((AppleOnTreePlacement*)placement)->despawnGameBit),
                                  gameBitValue != 0)))) {
                 int burstIndex;
-                state = *(int*)&obj->extra;
+                state = (int)obj->extra;
                 burstIndex = 0;
                 do {
                     (*gPartfxInterface)->spawnObject(obj, APPLE_ON_TREE_PARTICLE_BURST, NULL, 2, -1, NULL);
@@ -485,7 +493,7 @@ void AppleOnTree_update(GameObject* obj) {
             if ((val != 0) || ((((AppleOnTreePlacement*)placement)->despawnGameBit != APPLE_ON_TREE_GAME_BIT_NONE &&
                                 (gameBitValue = mainGetBit((int)((AppleOnTreePlacement*)placement)->despawnGameBit),
                                  gameBitValue != 0)))) {
-                state = *(int*)&obj->extra;
+                state = (int)obj->extra;
                 particleIndex = 0;
                 do {
                     (*gPartfxInterface)->spawnObject(obj, APPLE_ON_TREE_PARTICLE_BURST, NULL, 2, -1, NULL);
@@ -516,7 +524,7 @@ void AppleOnTree_update(GameObject* obj) {
             break;
         case APPLE_ON_TREE_STATE_FALLING:
             if (frac > ((AppleOnTreeState*)state)->fallEnd) {
-                val = *(int*)&obj->extra;
+                val = (int)obj->extra;
                 texture = objFindTexture(obj, 0, 0);
                 texture->textureId = 0;
                 ((AppleOnTreeState*)val)->fallScale = 1.0f;
@@ -525,7 +533,7 @@ void AppleOnTree_update(GameObject* obj) {
                 ((AppleOnTreeState*)state)->animState = APPLE_ON_TREE_STATE_LANDED;
             } else {
                 f32 fallProgress;
-                val = *(int*)&obj->extra;
+                val = (int)obj->extra;
                 fallProgress = -(((AppleOnTreeState*)val)->phaseDuration * ((AppleOnTreeState*)val)->ripeEnd -
                                  ((AppleOnTreeState*)val)->elapsedTime) /
                                (((AppleOnTreeState*)val)->phaseDuration *
@@ -598,7 +606,7 @@ void AppleOnTree_update(GameObject* obj) {
             break;
         case APPLE_ON_TREE_STATE_BURST:
             if (fb > 180.0f) {
-                placement = *(int*)&obj->extra;
+                placement = (int)obj->extra;
                 if (obj->anim.flags & OBJANIM_FLAG_OWNS_PLACEMENT_DATA) {
                     Obj_FreeObject(obj);
                 } else {
@@ -613,7 +621,7 @@ void AppleOnTree_update(GameObject* obj) {
         case APPLE_ON_TREE_STATE_FADEOUT:
             frac = 60.0f;
             if (fb > frac) {
-                placement = *(int*)&obj->extra;
+                placement = (int)obj->extra;
                 if (obj->anim.flags & OBJANIM_FLAG_OWNS_PLACEMENT_DATA) {
                     Obj_FreeObject(obj);
                 } else {
@@ -653,7 +661,7 @@ void AppleOnTree_init(GameObject* obj, AppleOnTreePlacement* placement) {
         progress = (f32)placement->landedEndFraction / 100.0f;
         state->landedEnd = progress + state->fallEnd;
         state->fadeEnd = (f32)placement->fadeEndFraction / 100.0f;
-        state->waterAcceleration = (f32)placement->unk25 / 100.0f;
+        state->waterAcceleration = (f32)placement->waterAccelerationPercent / 100.0f;
         state->waterAcceleration *= 2.0f;
         state->fallScale = 1.0f;
         state->healthRestore = 0;

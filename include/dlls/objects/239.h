@@ -71,7 +71,7 @@ typedef struct PushableObjectDef {
     ObjPlacement base; /* 0x00 */
     s16 gameBit;       /* 0x18 */
     s16 gameBit2;      /* 0x1A */
-    void* unk1C;       /* 0x1C */
+    s32 unk1C;         /* 0x1C */
     u16 scaleRaw;      /* 0x20 */
     u8 rotXByte;       /* 0x22 */
     s8 requiredHitId;  /* 0x23: triggering hit-region ID; -1 = none */
@@ -149,12 +149,12 @@ STATIC_ASSERT(sizeof(PushableObjectDef) == 0x28);
 STATIC_ASSERT(offsetof(PushableRadii, values) == 0x0);
 STATIC_ASSERT(sizeof(PushableRadii) == 0x10);
 
-int pushable_updateCurtain(int obj, PushableState* state);
+int pushable_updateCurtain(GameObject* obj, PushableState* state);
 void pushable_initWcPushBlock(GameObject* obj, PushableState* state);
 int pushable_updateMagicGem(GameObject* obj, PushableState* state);
 void pushable_initMagicGem(GameObject* obj, PushableState* state);
 void pushable_resolveCollisions(GameObject* obj, PushableState* state);
-u32 pushable_SeqFn(GameObject* obj, s16* referenceTransform, struct ObjSeqState* animUpdate);
+u32 pushable_SeqFn(GameObject* obj, struct MatrixTransform* referenceTransform, struct ObjSeqState* animUpdate);
 void pushable_handleMsgs(GameObject* obj, int unused);
 int pushable_isRestored(GameObject* obj);
 void pushable_setModelFlag(GameObject* obj, int modelNo);

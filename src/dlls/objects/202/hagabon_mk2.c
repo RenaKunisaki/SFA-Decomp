@@ -22,7 +22,6 @@
 #include "main/player_control_interface.h"
 #include "main/vecmath.h"
 #include "main/voxmaps.h"
-#include "string.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 #include "main/dll/baddie_state.h"
@@ -40,7 +39,6 @@
 #include "main/dll/rom_curve_interface.h"
 #include "main/gamebits.h"
 #include "main/dll/objfsa.h"
-#include "main/gamebit_ids.h"
 #include "main/dll/newseqobj_baddie.h"
 #include "main/dll/baddie_frozen.h"
 #include "main/game_ui_interface.h"
@@ -50,7 +48,7 @@
 #include "main/dll/player_target.h"
 #include "main/dll/player_api.h"
 #include "dlls/objects/225_WispBaddie.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.h"
+#include "main/trig_float_helpers.h"
 #include "main/obj_link.h"
 #include "main/objfx.h"
 #include "main/objtexture.h"
@@ -82,7 +80,6 @@
 #include "main/dll/hagabon_mk2.h"
 #include "main/dll/snowworm.h"
 #include "main/dll/baddiewhirlpool.h"
-#include "track/intersect_whirlpool_api.h"
 
 /* Baddie-family animation data shared with the sequence-driver TUs. */
 
@@ -102,23 +99,16 @@ static inline int hoodedZyck_getAngleDelta(GameObject* obj, GameObject* target)
     return d;
 }
 
-extern u8 gHagabonMK2ModelChain0BoneIds[];
+extern s32 gHagabonMK2ModelChain0BoneIds[];
 
-extern u8 gHagabonMK2ModelChain1BoneIds[];
+extern s32 gHagabonMK2ModelChain1BoneIds[];
 
-extern u8 gHagabonMK2ModelChain2BoneIds[];
+extern s32 gHagabonMK2ModelChain2BoneIds[];
 
-extern u8 gHagabonMK2ModelChain3BoneIds[];
+extern s32 gHagabonMK2ModelChain3BoneIds[];
 
-extern u8 gHagabonMK2ModelChain4BoneIds[];
+extern s32 gHagabonMK2ModelChain4BoneIds[];
 
-typedef struct CrawlerModelChainList
-{
-    u8* modelIds;
-    s32 count;
-} CrawlerModelChainList;
-
-STATIC_ASSERT(sizeof(CrawlerModelChainList) == 8);
 
 #define FIRECRAWLER_OBJFLAG_RENDERED     0x800
 #define FIRECRAWLER_OBJFLAG_PARENT_SLACK 0x1000
@@ -174,15 +164,15 @@ static inline void crawler_createEngineLight(GameObject* obj, u8* state)
 
 int gHagabonMK2CurveInitData[2] = {2, 3};
 
-CrawlerModelChainList gHagabonMK2ModelChain0 = {gHagabonMK2ModelChain0BoneIds, 6};
+ObjModelChainDesc gHagabonMK2ModelChain0 = {gHagabonMK2ModelChain0BoneIds, 6};
 
-CrawlerModelChainList gHagabonMK2ModelChain1 = {gHagabonMK2ModelChain1BoneIds, 6};
+ObjModelChainDesc gHagabonMK2ModelChain1 = {gHagabonMK2ModelChain1BoneIds, 6};
 
-CrawlerModelChainList gHagabonMK2ModelChain2 = {gHagabonMK2ModelChain2BoneIds, 6};
+ObjModelChainDesc gHagabonMK2ModelChain2 = {gHagabonMK2ModelChain2BoneIds, 6};
 
-CrawlerModelChainList gHagabonMK2ModelChain3 = {gHagabonMK2ModelChain3BoneIds, 6};
+ObjModelChainDesc gHagabonMK2ModelChain3 = {gHagabonMK2ModelChain3BoneIds, 6};
 
-CrawlerModelChainList gHagabonMK2ModelChain4 = {gHagabonMK2ModelChain4BoneIds, 5};
+ObjModelChainDesc gHagabonMK2ModelChain4 = {gHagabonMK2ModelChain4BoneIds, 5};
 
 u8 gCrawlerSeqTable[] = {
     0x40, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x3F, 0x80, 0x00, 0x00, 0x00, 0x00,
@@ -191,22 +181,17 @@ u8 gCrawlerSeqTable[] = {
     0x00, 0x00, 0x02, 0x04, 0x05, 0x00, 0x40, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x00, 0x00, 0x00,
 };
 
-u8 gHagabonMK2ModelChain0BoneIds[0x18] = {0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x02, 0x00, 0x00, 0x00, 0x03,
-                         0x00, 0x00, 0x00, 0x04, 0x00, 0x00, 0x00, 0x05, 0x00, 0x00, 0x00, 0x06};
+s32 gHagabonMK2ModelChain0BoneIds[6] = {1, 2, 3, 4, 5, 6};
 
-u8 gHagabonMK2ModelChain1BoneIds[0x18] = {0x00, 0x00, 0x00, 0x0c, 0x00, 0x00, 0x00, 0x0d, 0x00, 0x00, 0x00, 0x0e,
-                         0x00, 0x00, 0x00, 0x0f, 0x00, 0x00, 0x00, 0x10, 0x00, 0x00, 0x00, 0x11};
+s32 gHagabonMK2ModelChain1BoneIds[6] = {12, 13, 14, 15, 16, 17};
 
-u8 gHagabonMK2ModelChain2BoneIds[0x18] = {0x00, 0x00, 0x00, 0x12, 0x00, 0x00, 0x00, 0x13, 0x00, 0x00, 0x00, 0x14,
-                         0x00, 0x00, 0x00, 0x15, 0x00, 0x00, 0x00, 0x16, 0x00, 0x00, 0x00, 0x17};
+s32 gHagabonMK2ModelChain2BoneIds[6] = {18, 19, 20, 21, 22, 23};
 
-u8 gHagabonMK2ModelChain3BoneIds[0x18] = {0x00, 0x00, 0x00, 0x18, 0x00, 0x00, 0x00, 0x19, 0x00, 0x00, 0x00, 0x1a,
-                         0x00, 0x00, 0x00, 0x1b, 0x00, 0x00, 0x00, 0x1c, 0x00, 0x00, 0x00, 0x1d};
+s32 gHagabonMK2ModelChain3BoneIds[6] = {24, 25, 26, 27, 28, 29};
 
-u8 gHagabonMK2ModelChain4BoneIds[0x14] = {0x00, 0x00, 0x00, 0x07, 0x00, 0x00, 0x00, 0x08, 0x00, 0x00,
-                         0x00, 0x09, 0x00, 0x00, 0x00, 0x0a, 0x00, 0x00, 0x00, 0x0b};
+s32 gHagabonMK2ModelChain4BoneIds[5] = {7, 8, 9, 10, 11};
 
-void* gCrawlerModelChainIds[] = {
+ObjModelChainDesc* gCrawlerModelChainIds[] = {
     &gHagabonMK2ModelChain0, &gHagabonMK2ModelChain1, &gHagabonMK2ModelChain2, &gHagabonMK2ModelChain3, &gHagabonMK2ModelChain4,
 };
 
@@ -408,8 +393,8 @@ void hagabonMK2_updateB(GameObject* obj, u8* state)
 
     {
         s16 t;
-        if (*(GameObject**)&((EnemyState*)state)->lastHitObject != NULL &&
-            ((t = (*(GameObject**)&((EnemyState*)state)->lastHitObject)->anim.romDefNo) == 0x1f || t == 0))
+        if ((GameObject*)((EnemyState*)state)->lastHitObject != NULL &&
+            ((t = ((GameObject*)((EnemyState*)state)->lastHitObject)->anim.romDefNo) == 0x1f || t == 0))
         {
             Sfx_PlayFromObject(obj, SFXTRIG_fball2_c);
         }
@@ -424,7 +409,7 @@ void hagabonMK2_update(GameObject* obj, u8* state)
     int i;
     f32 pw;
 
-    if (*(GameObject**)&((EnemyState*)state)->lastHitObject != NULL && *(GameObject**)&((EnemyState*)state)->lastHitObject == ((EnemyState*)state)->trackedObj)
+    if ((GameObject*)((EnemyState*)state)->lastHitObject != NULL && (GameObject*)((EnemyState*)state)->lastHitObject == ((EnemyState*)state)->trackedObj)
     {
         ((EnemyState*)state)->flags2E4 |= 0x10000LL;
         ((EnemyState*)state)->crawler.warpTimer = 180.0f;
@@ -509,8 +494,8 @@ void hagabonMK2_update(GameObject* obj, u8* state)
     {
         Sfx_StopFromObject(obj, SFXTRIG_baddie_rach_death);
     }
-    if (*(GameObject**)&((EnemyState*)state)->lastHitObject != NULL && ((*(GameObject**)&((EnemyState*)state)->lastHitObject)->anim.romDefNo == 0x1f ||
-                                                (*(GameObject**)&((EnemyState*)state)->lastHitObject)->anim.romDefNo == 0))
+    if ((GameObject*)((EnemyState*)state)->lastHitObject != NULL && (((GameObject*)((EnemyState*)state)->lastHitObject)->anim.romDefNo == 0x1f ||
+                                                ((GameObject*)((EnemyState*)state)->lastHitObject)->anim.romDefNo == 0))
     {
         Sfx_PlayFromObject(obj, SFXTRIG_fball2_c);
     }

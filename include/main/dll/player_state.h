@@ -1,9 +1,10 @@
 #ifndef MAIN_DLL_PLAYER_STATE_H_
 #define MAIN_DLL_PLAYER_STATE_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "global.h"
 #include "game/objects/object.h"
+#include "main/byte_flags.h"
 #include "main/dll/baddie_state.h"
 
 typedef struct PlayerStatus {
@@ -14,7 +15,12 @@ typedef struct PlayerStatus {
     s16 magic;
     s16 maxMagic;
     u8 money;
+    u8 healCount;
+    u8 healCountMax; /* the pause-menu status line prints "x %d/%d" from this pair */
+    u8 padB;
 } PlayerStatus;
+
+STATIC_ASSERT(sizeof(PlayerStatus) == 12);
 
 /*
  * PlayerState - player.c's obj+0xB8 "inner" record. The head is the
@@ -24,16 +30,16 @@ typedef struct PlayerStatus {
  * 0x8E0 covers every observed access - the true allocation may be larger.
  */
 /* PlayerState.flags360 bit names. */
-#define PLAYER_FLAG_AIM_READY 0x400         /* aim-screen coords valid: set after aim-position calc, gates the aimScreenX/Y getter */
-#define PLAYER_FLAG_GUARDING 0x800         /* player is holding a guard: the damage handler applies knockback only when this is clear, and when it is set forces damage to 0 and latches the blocked-hit reaction instead. Set (never cleared in decompiled source) by playerState39 and by the guard-hold branch of playerStateMoving, both of which re-assert it every frame while they run. */
-#define PLAYER_FLAG_WATER_SPLASH_PENDING 0x20000 /* queued water-entry FX: set on water-entry, gates spawnSplashBurst/spawnRipple then self-clears */
-#define PLAYER_FLAG_WORLDPOS_OVERRIDE 0x8000000 /* anim.modelState overrideWorldPos active: gates the localPos<->overrideWorldPos swap during render */
-#define PLAYER_FLAG_LOCKED 0x200000         /* player controls locked (set/cleared by playerLock; gates pad-input processing) */
-#define PLAYER_FLAG_HITDETECT 0x2           /* attack hit-detection active: set after ObjHitDetect setup, gates the objHitDetectFn sweep; cleared on state entry */
-#define PLAYER_FLAG_NO_POS_VELOCITY 0x2000  /* suppress position-derived velocity: when set, velocityY is NOT recomputed from (worldPos-previousWorldPos)/dt; set on scripted-move state entry */
-#define PLAYER_FLAG_LEDGE_DETECTED 0x100    /* nearby wall/ledge found: cleared at sweep start, set when the proximity sweep detects a blocking surface (records surfaceNormal); read via playerGetStateValue case 11 */
-#define PLAYER_FLAG_TELEPORTED 0x800000     /* position/yaw hard-set: set after any teleport/pos/yaw override, gates the snap-facing-to-heading branch then consumed */
-#define PLAYER_FLAG_HEADING_LOCK 0x1000000  /* freeze input heading: when set, lastInputHeading is NOT updated from live input; set during committed turn/locomotion moves */
+#define PLAYER_FLAG_AIM_READY 0x400LL                /* aim-screen coords valid: set after aim-position calc, gates the aimScreenX/Y getter */
+#define PLAYER_FLAG_GUARDING 0x800                  /* player is holding a guard: the damage handler applies knockback only when this is clear, and when it is set forces damage to 0 and latches the blocked-hit reaction instead. Set (never cleared in decompiled source) by playerState39 and by the guard-hold branch of playerStateMoving, both of which re-assert it every frame while they run. */
+#define PLAYER_FLAG_WATER_SPLASH_PENDING 0x20000LL  /* queued water-entry FX: set on water-entry, gates spawnSplashBurst/spawnRipple then self-clears */
+#define PLAYER_FLAG_WORLDPOS_OVERRIDE 0x8000000LL   /* anim.modelState overrideWorldPos active: gates the localPos<->overrideWorldPos swap during render */
+#define PLAYER_FLAG_LOCKED 0x200000LL                /* player controls locked (set/cleared by playerLock; gates pad-input processing) */
+#define PLAYER_FLAG_HITDETECT 0x2LL                  /* attack hit-detection active: set after ObjHitDetect setup, gates the objHitDetectFn sweep; cleared on state entry */
+#define PLAYER_FLAG_NO_POS_VELOCITY 0x2000LL         /* suppress position-derived velocity: when set, velocityY is NOT recomputed from (worldPos-previousWorldPos)/dt; set on scripted-move state entry */
+#define PLAYER_FLAG_LEDGE_DETECTED 0x100             /* nearby wall/ledge found: cleared at sweep start, set when the proximity sweep detects a blocking surface (records surfaceNormal); read via playerGetStateValue case 11 */
+#define PLAYER_FLAG_TELEPORTED 0x800000LL            /* position/yaw hard-set: set after any teleport/pos/yaw override, gates the snap-facing-to-heading branch then consumed */
+#define PLAYER_FLAG_HEADING_LOCK 0x1000000LL         /* freeze input heading: when set, lastInputHeading is NOT updated from live input; set during committed turn/locomotion moves */
 
 /*
  * Collision surface type (Polygon Group +0x11; see docs/wiki/Maps.md
@@ -49,7 +55,7 @@ typedef enum SurfaceType {
     SURFACE_ICE           = 0x0D, /* slippery velSmoothRateBase */
     SURFACE_WATER         = 0x0E,
     SURFACE_LAVA          = 0x1A, /* periodic burn damage */
-    SURFACE_CONVEYOR      = 0x1D, /* pushes toward CFGUARDIAN_OBJGROUP */
+    SURFACE_CONVEYOR      = 0x1D, /* pushes along the nearest conveyor's scroll vector */
     SURFACE_METAL         = 0x22
 } SurfaceType;
 
@@ -62,7 +68,7 @@ typedef struct PlayerState {
         };
     };
     int playerStatus; /* PlayerStatus*; kept integer while raw decomp arithmetic remains */
-    int flags360; /* player state flag word; bits 2/0x2000/0x800000/0x2000000... */
+    u32 flags360; /* player state flag word; bits 2/0x2000/0x800000/0x2000000... */
     u8 pad364[0x3C4 - 0x364];
     f32 fxOffsetX;
     f32 fxOffsetY;
@@ -76,19 +82,28 @@ typedef struct PlayerState {
     u8 maxMagicUsed;
     u8 pad3E9[0x3EC - 0x3E9];
     f32 randomTimer3EC;
-    u8 flags3F0; /* state flag byte (bits read via >>N&1 and a ByteFlags overlay): bit4/5 move-mode gates, bit6/7 etc. */
-    u8 flags3F1; /* state flag byte: bit0/bit4/bit5 gate locomotion/yaw-arc paths */
-    u8 unk3F2;
-    u8 flags3F3; /* state flag byte: bits 1/2/3 queried by accessor getters */
-    u8 flags3F4; /* state flag byte: bit6 = path-follow/scripted-move gate */
+    union {
+        u8 flagByte3F0; /* whole-byte view: loaded once where several bits are tested together */
+        ByteFlags flags3F0; /* bit4/5 move-mode gates, bit6/7 etc. */
+    };
+    union {
+        u8 flagByte3F1; /* whole-byte view: loaded once where several bits are tested together */
+        ByteFlags flags3F1; /* bit0/bit4/bit5 gate locomotion/yaw-arc paths */
+    };
+    ByteFlags flags3F2;
+    ByteFlags flags3F3;
+    ByteFlags flags3F4;
     u8 pad3F5[0x3F6 - 0x3F5];
-    u8 unk3F6;
+    ByteFlags flags3F6;
     u8 fallSeverity; /* fall/landing severity tier (0-3) set from the fall height-difference (hdiff vs lbl_803E8104/8108/810C thresholds); selects the landing move/sfx (move 0xa/0x90) and at >=2 fires camera shake + a ground-impact ObjHits; reset to 0 on state change */
     union {
         int moveAnimTable; /* raw address view retained for incomplete call sites */
         s16* moveAnimIds;  /* anim/move-id table fed to ObjAnim_SetCurrentMove */
     };
-    u8 pad3FC[0x400 - 0x3FC];
+    union {
+        int prevMoveAnimTable; /* raw address view retained for incomplete call sites */
+        s16* prevMoveAnimIds;  /* moveAnimIds as of the previous playerSetMovingAnims call; compared against moveAnimIds to detect a locomotion-table switch */
+    };
     int moveParams; /* ptr to a 0x60 locomotion-parameter block (gPlayerDefaultMoveParams); deref'd as f32 speed thresholds/limits at +4/+c/+10/+14/+18/+1c */
     f32 maxSpeed;
     f32 currentSpeed; /* player current movement speed; clamped to [0, maxSpeed], scaled by friction */
@@ -135,8 +150,8 @@ typedef struct PlayerState {
     int lastInputHeading;
     int bodyLeanRateSigned;
     int bodyLeanRate;
-    u16 lookAtTimer; /* countdown gating look-at-nearby; reloads random 0x78-0xf0 frames on expiry */
-    u16 lookAtRandOffset; /* companion random 0-0x28 set alongside lookAtTimer reload */
+    s16 lookAtTimer; /* countdown gating look-at-nearby; reloads random 0x78-0xf0 frames on expiry */
+    s16 lookAtRandOffset; /* companion random 0-0x28 set alongside lookAtTimer reload */
     int targetObjectBearing;    /* signed relative bearing to cameraTargetObject (targetObjectYaw - targetYaw, wrapped to +-0x8000) */
     int targetObjectBearingAbs; /* abs(targetObjectBearing); compared against 0x4000 (~90deg) to gate facing-target logic */
     int targetObjectYaw;        /* heading from player toward cameraTargetObject (getAngle(-dx,-dz)) */
@@ -161,7 +176,7 @@ typedef struct PlayerState {
     u8 pad4E2[0x4E4 - 0x4E2];
     s8 climbStep; /* discrete climb/step level (++ up, -- down by moveInputZ); climbTargetY = climbStep*climbStepHeight + climbBaseY; >3 switches A-button icon */
     s8 climbStepCount; /* 0x4e5: total number of climb steps for the current climbable; climbStep >= climbStepCount-3 (within 3 of the top) selects the top-of-climb transition */
-    u8 climbingUp; /* 0x4e6: climb direction, 1 while ascending (forward Y lerp start->target), 0 while descending (reverse lerp) */
+    s8 climbingUp; /* 0x4e6: climb direction, 1 while ascending (forward Y lerp start->target), 0 while descending (reverse lerp) */
     s8 climbSampleDone; /* 0x4e7: one-shot latch for the climb move's initial joint-transform sampling; while 0 (and moveId<=1) samples the start/end root motion into moveStartPosY then sets to 1 */
     f32 climbEndLocalY; /* target local-Y for the ledge climb-up/down move (case 6/7): anim.localPosY is lerped w*(climbEndLocalY - localPosY)+localPosY by currentMoveProgress, snapped to climbEndLocalY on moveDone; also the camera-focus Y (paired with climbBaseY in camBuf, and gPlayerClimbEndY = climbEndLocalY + offset) */
     f32 climbBaseY; /* base local-Y for the climb-step lerp: climbTargetY = climbStep*climbStepHeight + climbBaseY */
@@ -265,7 +280,7 @@ typedef struct PlayerState {
     s8 stickEdgeLatch; /* 0x681: latched flag set to 1 when the stick/collision edge-probe vtable returns result 5 (the case with no latchedStickDir code), reset to 0 when a valid collision surface is captured (with hitObj) and on state resets; read to allow the stick-driven move to proceed even when the 0x100 button is not held */
     u8 surfaceDir; /* dominant surface-normal axis+sign (0=+X,1=-X,2=+Z,3=-Z); picks the wall slide/climb anim variant */
     u8 pad683[0x684 - 0x683];
-    int interactObject; /* object the player is interacting with; ObjMsg_SendToObject recipient, cleared after */
+    u32 interactObject; /* object the player is interacting with; ObjMsg_SendToObject recipient, cleared after */
     s16 unk688;
     u8 pad68A[0x6A4 - 0x68A];
     f32 unk6A4;
@@ -328,8 +343,8 @@ typedef struct PlayerState {
     f32 unk7FC;
     u8 isHoldingObject; /* 1 while carrying a held object (set with heldObj on pickup msgs 0x100008/0x100010); cleared to 0 on release/state resets */
     u8 pad801[0x806 - 0x801];
-    u16 staffAnimState; /* staff grow/shrink anim state machine (staffAnimate): 0/1=shrink,2=grow,3=settle,0xf=variant */
-    u16 hitIntervalTimer; /* countdown (-= dt) reset to 0x3c on expiry, firing a periodic ObjHits record */
+    s16 staffAnimState; /* staff grow/shrink anim state machine (staffAnimate): 0/1=shrink,2=grow,3=settle,0xf=variant */
+    s16 hitIntervalTimer; /* countdown (-= dt) reset to 0x3c on expiry, firing a periodic ObjHits record */
     s16 animState;
     s16 queuedItemCommand; /* primary queued item/use command id from ObjMsg 0x80002; -1 = none; processed by playerProcessQueuedItemCommand */
     s16 deferredItemCommand; /* item command (0x2d/0x5ce) deferred while a target object is engaged; -1 = none; consumed/cleared once resolved */
@@ -372,7 +387,7 @@ typedef struct PlayerState {
     f32 pushVelX; /* planar push/displacement velocity X: eased toward a target push via interpolate, decayed by powfBitEstimate, snapped to 0 near zero; added to the transformed world position */
     f32 pushVelZ;
     int stateHandler; /* staged state/anim handler fn-ptr (stored as int); copied into baddie.stateExitFn on anim change */
-    u16 unk89C;
+    s16 unk89C;
     u8 pad89E[0x8A0 - 0x89E];
     u16 periodicHitTimer; /* accumulates dt; on crossing 0x78 wraps (-=0x78) and fires a periodic ObjHits position-hit */
     u8 moveVariantIndex; /* index into moveAnimTable->moves[]/angles[] (0xff = none) */

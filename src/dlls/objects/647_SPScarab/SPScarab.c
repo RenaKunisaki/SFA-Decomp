@@ -11,6 +11,7 @@
  * interface vtable. Two kinds (placement->kind 0/1) differ only in sfx,
  * particle mode and the trailing dust-burst count.
  */
+#include "main/dll/SP/dll_0285_spshop.h"
 #include "main/dll/SP/dll_0287_spscarab.h"
 #include "main/frame_timing.h"
 #include "sys/objects.h"
@@ -124,7 +125,7 @@ void SPScarab_update(GameObject* obj)
         obj->anim.rotX = angle;
     }
 
-    if (getXZDistance(&Obj_GetPlayerObject()->anim.worldPosX,
+    if (getXZDistanceSquared(&Obj_GetPlayerObject()->anim.worldPosX,
                       &obj->anim.worldPosX) <
         100.0f)
     {
@@ -137,7 +138,7 @@ void SPScarab_update(GameObject* obj)
             int notifyArgB = (placement->kind == 0) ? 1 : 0;
             int vendorObj = state->vendorObj;
             int notifyArgA = (placement->kind == 0) ? 0 : 1;
-            (*(void (**)(int, int, int))(*(int*)(*(int*)(vendorObj + 0x68)) + 0x50))(vendorObj, notifyArgA, notifyArgB);
+            SHOP_INTERFACE(vendorObj)->func16((GameObject*)vendorObj, notifyArgA, notifyArgB);
         }
     }
 
@@ -173,7 +174,7 @@ void SPScarab_init(GameObject* obj, SpscarabPlacement* def)
     (obj)->anim.velocityX = -mathSinf(3.1415927f * (f32)(s32)(obj)->anim.rotX / 32768.0f);
     (obj)->anim.velocityZ = -mathCosf(3.1415927f * (f32)(s32)(obj)->anim.rotX / 32768.0f);
 
-    objAnim->bankIndex = (s8)(1 - *(u8*)&def->kind);
+    objAnim->bankIndex = (s8)(1 - def->kind);
 
     state->groundY = (f32)(s32)def->groundY;
     state->speedScale = 0.4f + randomGetRange(0, 0x64) / 100.0f;

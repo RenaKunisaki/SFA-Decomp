@@ -34,16 +34,23 @@ typedef struct FireFlyState
     f32 splineSpeed;       /* 0x44: dT per frame, re-rolled each segment */
     f32 proximityAlpha;    /* 0x48: glow brightness, eased toward the near/far bound */
     f32 playerRadius;      /* 0x4C: player XZ distance that brightens the glow */
-    u8 pad50[0x66 - 0x50]; /* 0x50: wander parameters managed by LgtFireFlyRec helpers */
+    f32 radius;            /* 0x50: wander radius the next target is drawn from */
+    f32 posX;              /* 0x54: centre the wander targets orbit */
+    f32 posY;              /* 0x58 */
+    f32 posZ;              /* 0x5C */
+    s16 angle;             /* 0x60: heading of the next wander target */
+    s16 angleStep;         /* 0x62 */
+    s16 ampMax;            /* 0x64: upper bound of the target's Y offset */
     u8 kind;               /* 0x66: trail/near particle-fx colour */
-    u8 pad67;
+    u8 unk67;
     u8 pathAge; /* 0x68: spline segments consumed; 4+ stops re-targeting */
-    u8 pad69[0x6C - 0x69];
+    u8 pad69[0x6B - 0x69];
+    u8 firstFrame; /* 0x6B: first target takes the full ampMax rise, then clears */
     u8 activeFlags; /* 0x6C: FireFlyActiveBits */
     u8 pad6D[0x70 - 0x6D];
     f32 despawnTimer; /* 0x70: post-collect frames; sparkles above 170, frees at 0 */
     f32 lifeTimer;    /* 0x74: expiry despawns the timed placement variant */
-    u8 pad78[0x7C - 0x78];
+    f32 unk78;        /* 0x78 */
     u8 flags; /* 0x7C: player-touch latch */
     u8 pad7D[0x80 - 0x7D];
     s16 messageParam; /* 0x80: outparam for the talk message */
@@ -58,6 +65,10 @@ STATIC_ASSERT(offsetof(FireFlyState, splineY) == 0x14);
 STATIC_ASSERT(offsetof(FireFlyState, splineZ) == 0x24);
 STATIC_ASSERT(offsetof(FireFlyState, targetX) == 0x34);
 STATIC_ASSERT(offsetof(FireFlyState, splineT) == 0x40);
+STATIC_ASSERT(offsetof(FireFlyState, radius) == 0x50);
+STATIC_ASSERT(offsetof(FireFlyState, angle) == 0x60);
+STATIC_ASSERT(offsetof(FireFlyState, firstFrame) == 0x6B);
+STATIC_ASSERT(offsetof(FireFlyState, unk78) == 0x78);
 STATIC_ASSERT(offsetof(FireFlyState, kind) == 0x66);
 STATIC_ASSERT(offsetof(FireFlyState, activeFlags) == 0x6C);
 STATIC_ASSERT(offsetof(FireFlyState, despawnTimer) == 0x70);
@@ -78,5 +89,9 @@ void firefly_render(void);
 void firefly_hitDetect(void);
 void firefly_release(void);
 void firefly_initialise(void);
+int firefly_animEventCallback(GameObject* obj);
+void firefly_initFlightRec(GameObject* obj, FireFlyState* record);
+void firefly_pickWanderTarget(GameObject* obj, FireFlyState* record);
+void firefly_shiftPathHistory(GameObject* obj, FireFlyState* record);
 
 #endif /* MAIN_DLL_DLL_020B_FIREFLY_H_ */

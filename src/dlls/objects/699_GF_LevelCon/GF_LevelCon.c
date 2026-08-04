@@ -14,7 +14,6 @@
 #include "main/screen_transition.h"
 #include "main/sky_api.h"
 #include "main/render_envfx_api.h"
-#include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_02BB_gflevelcon.h"
 #include "main/gametext_show_api.h"
 #include "main/dll/LGT/dll_02A9_lgtpointlight.h"

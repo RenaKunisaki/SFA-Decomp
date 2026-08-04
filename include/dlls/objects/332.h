@@ -116,6 +116,17 @@ STATIC_ASSERT(sizeof(BabyCloudRunnerState) == 0x248);
 
 int babyCloudRunner_updateBurrowAnimation(GameObject* obj);
 void babyCloudRunner_turnTowardTarget(GameObject* obj, GameObject* target, BabyCloudRunnerState* state, int playMove);
+/* gBabyCloudRunnerObjDescriptor from slot02 onwards: the export table other
+   objects reach through obj->anim.dll. */
+typedef struct BabyCloudRunnerInterface {
+    void* pad00[9];
+    void (*tryCapture)(void* object);
+} BabyCloudRunnerInterface;
+
+#define BABY_CLOUD_RUNNER_INTERFACE(baby) ((BabyCloudRunnerInterface*)*((GameObject*)(baby))->anim.dll)
+
+STATIC_ASSERT(offsetof(BabyCloudRunnerInterface, tryCapture) == 0x24);
+
 int babyCloudRunner_tryCapture(void* object);
 int babyCloudRunner_func0A(GameObject* obj);
 int babyCloudRunner_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);

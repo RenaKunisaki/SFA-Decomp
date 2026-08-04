@@ -1,7 +1,7 @@
 #ifndef MAIN_TEX_DOLPHIN_H_
 #define MAIN_TEX_DOLPHIN_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/frustum.h"
 #include "main/model_render_instrs_api.h"
 

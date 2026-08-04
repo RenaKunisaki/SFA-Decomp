@@ -47,7 +47,7 @@ char sMusicTrackNameKpwin[] = "kpwin";
 char sMusicTrackNameSlope[] = "slope";
 char sMusicTrackNameTrex2a[] = "trex_2a";
 
-static u32 sAudioUnused1;
+u32 sAudioUnused1;
 void* gMidiWadFileData;
 int gMidiWadArenaSize;
 int gMidiWadPayloadSize;
@@ -59,7 +59,7 @@ int gMidiWadLoadedSize;
 u8 gMidiWadLoadStarted;
 int gMusicTriggersCount;
 MusicTrigger* gMusicTriggersData;
-static u32 sAudioUnused0;
+u32 sAudioUnused0;
 u32 gAudioPendingLoadFlags;
 volatile u32 gAudioCompletedLoadFlags;
 void* gAudioStarfoxMPoolDataHandle;
@@ -99,8 +99,6 @@ int gAudioArqRequestIndex;
 
 AudioArqRequestEntry gAudioArqRequests[0x300 / sizeof(AudioArqRequestEntry)];
 ReverbState gAudioReverbSettings;
-u32 gAudioAramBlock[0x2C / sizeof(u32)];
-MusicChannel gMusicChannels[0x240 / sizeof(MusicChannel)];
 
 const SalHooks gAudioMemHooks = {_audioAlloc, audioFree};
 
@@ -1616,3 +1614,6 @@ MusicTrackSlot sMusicTrackTable[] = {
 
 char sMidiWadLoadedCallbackLoadError[] = "MIDIWADLoadedCallback load error\n";
 char sMidiWadPath[] = "audio/midi.wad";
+
+MusicChannel gMusicChannels[0x240 / sizeof(MusicChannel)];
+u32 gAudioAramBlock[0x2C / sizeof(u32)];

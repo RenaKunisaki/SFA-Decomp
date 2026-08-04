@@ -92,6 +92,14 @@ STATIC_ASSERT(offsetof(ObjectTriggerInterface, setObjects) == 0x7C);
 STATIC_ASSERT(offsetof(ObjectTriggerInterface, setOverridePos) == 0x80);
 STATIC_ASSERT(offsetof(ObjectTriggerInterface, setRunSequenceWorldSpace) == 0x84);
 
+/* One record of ObjSeqState.cmds: a sequence action opcode, the frame advance
+ * it contributes, and its packed 16-bit parameter. */
+typedef struct ObjSeqCommand {
+    s8 opcode;
+    u8 frameDelta;
+    s16 param;
+} ObjSeqCommand;
+
 struct ObjSeqState {
     void *targetObj;
     f32 posStepX;
@@ -134,11 +142,11 @@ struct ObjSeqState {
     u8 unk72[2];
     s32 savedFrame; /* saved frame value restored into curFrame */
     s8 useRootMotionSpeed; /* 0x78: script-toggled; when set (and isCameraSeq==0) movement speed comes from ObjAnim_SampleRootCurvePhase (root-motion) instead of the track-9 speed curve */
-    u8 unk79;
+    s8 targetAttached;
     u8 groundSnapEnabled; /* 0x7A: script-toggled; when set, the seq object is snapped to the detected floor (trackGetNearestGroundOffset / RomCurveInterp_EvaluateOffsetPosition ground adjust) */
     s8 isCameraSeq; /* 0x7B: set when placement targetType==3 (camera): FOV track clamped 35..125, gObjSeqCameraSourceObj assigned, object movement/root-motion suppressed */
     s8 pendingConditionId; /* 1-based; ObjSeq_EvaluateCondition(pendingConditionId-1), cleared when satisfied */
-    u8 unk7D;
+    s8 unk7D;
     u8 runState; /* 0=inactive, 1=running, 2=start/setup, 3=defer-attach-to-parent */
     u8 stateFlags; /* bit 1 set on jump, bit 2/4 = pending transitions */
     u8 curEventId;
@@ -166,6 +174,7 @@ struct ObjSeqState {
     u8 flags136[2]; /* 0x136 flags byte; bit 0x04 = record a save-point on free */
 };
 
+STATIC_ASSERT(sizeof(ObjSeqCommand) == 0x04);
 STATIC_ASSERT(sizeof(ObjSeqState) == 0x138);
 STATIC_ASSERT(offsetof(ObjSeqState, curFrame) == 0x58);
 STATIC_ASSERT(offsetof(ObjSeqState, eventIds) == 0x81);

@@ -120,7 +120,7 @@ void CameraModeTitle_update(CameraObject* camera) {
                 int wrappedDelta = (s16)gCameraModeTitlePoseTable[gCameraModeTitleCurrentPose].yaw - (s16)startAngle;
                 camera->anim.rotX = (s16)(s32)(ease * wrappedDelta + (f32)(s16)startAngle);
             } else {
-                *(u16*)&camera->anim.rotX = ease * angleDelta + startAngle;
+                camera->anim.rotX = ease * angleDelta + startAngle;
             }
         }
         {
@@ -130,7 +130,7 @@ void CameraModeTitle_update(CameraObject* camera) {
                 int wrappedDelta = (s16)gCameraModeTitlePoseTable[gCameraModeTitleCurrentPose].pitch - (s16)startAngle;
                 camera->anim.rotY = (s16)(s32)(ease * wrappedDelta + (f32)(s16)startAngle);
             } else {
-                *(u16*)&camera->anim.rotY = ease * angleDelta + startAngle;
+                camera->anim.rotY = ease * angleDelta + startAngle;
             }
         }
         {
@@ -140,7 +140,7 @@ void CameraModeTitle_update(CameraObject* camera) {
                 int wrappedDelta = (s16)gCameraModeTitlePoseTable[gCameraModeTitleCurrentPose].roll - (s16)startAngle;
                 camera->anim.rotZ = (s16)(s32)(ease * wrappedDelta + (f32)(s16)startAngle);
             } else {
-                *(u16*)&camera->anim.rotZ = ease * angleDelta + startAngle;
+                camera->anim.rotZ = ease * angleDelta + startAngle;
             }
         }
     }

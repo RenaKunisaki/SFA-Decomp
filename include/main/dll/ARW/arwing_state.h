@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_ARW_ARWING_STATE_H_
 #define MAIN_DLL_ARW_ARWING_STATE_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "global.h"
 
 /* Per-object extra state for the playable Arwing
@@ -131,7 +131,7 @@ typedef struct ArwingState {
     u8 pad43E[2];
     f32 bombCooldown;
     s16 bombFireDelay;
-    s16 bombProjectileParam;
+    u16 bombProjectileParam;
     f32 bombProjectileLifetime;
     u8 bombCount;        /* 0x44c */
     u8 maxBombCount;     /* 0x44d */

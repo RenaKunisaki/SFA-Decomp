@@ -5,23 +5,8 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 
-typedef struct Dll78EffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} Dll78EffectVertex;
-
-STATIC_ASSERT(offsetof(Dll78EffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(Dll78EffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(Dll78EffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(Dll78EffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(Dll78EffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(Dll78EffectVertex) == 0x0A);
-
 typedef struct Dll78EffectResourceView {
-    Dll78EffectVertex vertices[14];
+    ModgfxEffectVertex vertices[14];
     s16 triangles[12][3];
     s16 allVertexIndices[14];
     s16 firstSevenVertexIndices[8];
@@ -51,7 +36,7 @@ u32 gDll78EffectResourceData[sizeof(Dll78EffectResourceView) / sizeof(u32)] = {
 };
 
 void dll_78_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)gDll78EffectResourceData;
     GfxCmd* commands = packet.entries;
     f32 originOffset = 0.0f;

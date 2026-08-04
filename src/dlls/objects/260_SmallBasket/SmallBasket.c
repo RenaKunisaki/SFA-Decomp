@@ -103,6 +103,11 @@ f32 gSmallBasketChainHitHeight = 30.0f;
 f32 gSmallBasketHitVelocity[4];
 SmallBasketResource** gSmallBasketResource;
 
+static int SmallBasket_isPlayerClear(GameObject* obj) {
+    return Vec_distance(&obj->anim.worldPosX, &((GameObject*)Obj_GetPlayerObject())->anim.worldPosX) >
+           SMALLBASKET_RESPAWN_MIN_DISTANCE;
+}
+
 /* Handles SmallBasket hit effects, nearby-object damage, and content drops. */
 void SmallBasket_handleHit(GameObject* obj, GameObject* player, SmallBasketState* state) {
     struct {
@@ -548,7 +553,7 @@ void SmallBasket_throw(GameObject* obj) {
     SmallBasketState* state;
     GameObject* player;
 
-    state = *(SmallBasketState**)&obj->extra;
+    state = (SmallBasketState*)obj->extra;
     player = Obj_GetPlayerObject();
     state->carryAttached = 0;
     state->carryState = SMALLBASKET_CARRY_IDLE;
@@ -581,8 +586,8 @@ void SmallBasket_render(GameObject* obj, int renderArg2, int renderArg3, int ren
     int mapTimeActive;
     s16 disableTimer;
 
-    state = *(SmallBasketState**)&obj->extra;
-    placement = *(SmallBasketPlacement**)&obj->anim.placementData;
+    state = (SmallBasketState*)obj->extra;
+    placement = (SmallBasketPlacement*)obj->anim.placementData;
     mapTimeActive = (*gMapEventInterface)->shouldNotSaveTime(placement->base.ident);
     if (mapTimeActive == 0) {
         obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
@@ -612,7 +617,7 @@ void SmallBasket_update(GameObject* obj) {
     PartFxSpawnParams effectParams;
 
     player = Obj_GetPlayerObject();
-    placement = *(SmallBasketPlacement**)&obj->anim.placementData;
+    placement = (SmallBasketPlacement*)obj->anim.placementData;
     clockScale = 1.0f;
     (*gSkyInterface)->getClockTime(&clockScale);
     state = obj->extra;
@@ -635,9 +640,7 @@ void SmallBasket_update(GameObject* obj) {
         obj->anim.alpha = nextState[0];
         state->hiddenTimer -= (s16)(int)(timeDelta * clockScale);
         if (state->hiddenTimer <= 0) {
-            if ((Vec_distance(&obj->anim.worldPosX, &((GameObject*)Obj_GetPlayerObject())->anim.worldPosX) >
-                 SMALLBASKET_RESPAWN_MIN_DISTANCE) &&
-                (state->enableGameBit == -1)) {
+            if (SmallBasket_isPlayerClear(obj) && (state->enableGameBit == -1)) {
                 nextState[0] = 1;
             }
             if (nextState[0] == 0) {
@@ -688,7 +691,7 @@ void SmallBasket_update(GameObject* obj) {
             if (state->carryState == SMALLBASKET_CARRY_IDLE) {
                 nextState[0] = 0;
                 if (((buttonGetDisabled(0) & PAD_BUTTON_A) == 0) && (obj->userData2 == 0) &&
-                    (ObjTrigger_IsSet((int)obj) != 0)) {
+                    (ObjTrigger_IsSet(obj) != 0)) {
                     state->carryAngle = -0x8000;
                     state->carryParam = 0;
                     ObjHits_DisableObject(obj);
@@ -826,7 +829,7 @@ void SmallBasket_update(GameObject* obj) {
         }
         state->ambientSfxTimer -= framesThisStep;
         if (state->carryState != SMALLBASKET_CARRY_IDLE) {
-            if (getXZDistance(&obj->anim.worldPosX, &placement->base.posX) >=
+            if (getXZDistanceSquared(&obj->anim.worldPosX, &placement->base.posX) >=
                 (f32)(state->leashRange * state->leashRange)) {
                 zero = 0.0f;
                 obj->anim.velocityX = zero;

@@ -123,8 +123,8 @@ void DoorLock_update(GameObject* obj) {
                 obj->anim.resetHitboxFlags |= INTERACT_FLAG_PROMPT_SUPPRESSED;
             }
             if ((placement->triggerGameBit != DOOR_LOCK_GAME_BIT_NONE &&
-                 ObjTrigger_IsSetById((int)obj, placement->triggerGameBit) != 0) ||
-                (placement->triggerGameBit == DOOR_LOCK_GAME_BIT_NONE && ObjTrigger_IsSet((int)obj) != 0)) {
+                 ObjTrigger_IsSetById(obj, placement->triggerGameBit) != 0) ||
+                (placement->triggerGameBit == DOOR_LOCK_GAME_BIT_NONE && ObjTrigger_IsSet(obj) != 0)) {
                 if (placement->unlockSequenceId != DOOR_LOCK_SEQUENCE_ID_NONE) {
                     (*gObjectTriggerInterface)
                         ->runSequence((int)placement->unlockSequenceId, obj, DOOR_LOCK_SEQUENCE_ARG_NONE);

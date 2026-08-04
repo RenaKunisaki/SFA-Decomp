@@ -53,7 +53,7 @@ void dimbossgut2_updateBobAndSway(GameObject* obj, DimBossGut2State* state) {
     heightDelta = control->surfaceY - obj->anim.localPosY;
 
     control->bobPhase += 0x400;
-    heightDelta = heightDelta + (f32)cos16(control->bobPhase) / 65535.0f;
+    heightDelta = heightDelta + (f32)sin16(control->bobPhase) / 65535.0f;
 
     control->verticalVelocity = timeDelta * (heightDelta / 50.0f - control->turnHeightBias) + control->verticalVelocity;
 
@@ -248,7 +248,7 @@ void DIM_BossGut2_update(GameObject* obj) {
     }
 }
 
-void DIM_BossGut2_init(GameObject* obj, int placementAddress, int isAltVariant) {
+void DIM_BossGut2_init(GameObject* obj, u8* placementAddress, int isAltVariant) {
     DimBossGut2State* state;
     DimBossGut2Control* control;
     int count;
@@ -262,7 +262,7 @@ void DIM_BossGut2_init(GameObject* obj, int placementAddress, int isAltVariant) 
     if (isAltVariant != 0) {
         flags |= 1;
     }
-    (*gBaddieControlInterface)->initGroundBaddie(obj, (u8*)placementAddress, (u8*)state, 0, 0, 0x102, flags, 20.0f);
+    (*gBaddieControlInterface)->initGroundBaddie(obj, placementAddress, (u8*)state, 0, 0, 0x102, flags, 20.0f);
     obj->animEventCallback = NULL;
     control = state->groundBaddie.control;
     z = 0.0f;

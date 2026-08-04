@@ -7,6 +7,7 @@
  * requiredScore); a wrong zone trips game bit 0x5e5 to reset.
  */
 #include "main/dll_000A_expgfx.h"
+#include "main/dll/DF/dll_0229_dfplevelcontrol.h"
 #include "main/dll/baddie/dll_022F_dfpfloorbar.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/mapEvent.h"
@@ -16,7 +17,7 @@
 #include "main/object_render.h"
 #include "main/gamebits.h"
 
-typedef struct DfpfloorbarPlacement
+struct DfpfloorbarPlacement
 {
     u8 pad0[0xC - 0x0];
     f32 posY;
@@ -27,7 +28,7 @@ typedef struct DfpfloorbarPlacement
     s16 travelRange;       /* 0x1C: nonzero scales rootMotionScale */
     s16 triggerGameBit;    /* 0x1E */
     s16 completionGameBit; /* 0x20 */
-} DfpfloorbarPlacement;
+};
 
 /* anim.romDefNo of the puzzle controller object this bar links to (docblock:
  * "the puzzle controller object (romDefNo 0x431)"). */
@@ -52,18 +53,18 @@ void DFP_Floorbar_free(GameObject* obj)
 {
     DfpFloorbarState* state;
 
-    state = (DfpFloorbarState*)*(int*)&obj->extra;
+    state = (DfpFloorbarState*)(int)obj->extra;
     (*gExpgfxInterface)->freeSource2((u32)obj);
     state->linkedObject = NULL;
     return;
 }
 
-void DFP_Floorbar_render(int obj, int p2, int p3, int p4, int p5, s8 visible)
+void DFP_Floorbar_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
 {
     s32 t = visible;
     if (t != 0)
     {
-        objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
+        objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
     }
 }
 
@@ -72,7 +73,7 @@ void DFP_Floorbar_hitDetect(GameObject* obj)
     int* linkedObject;
     int** state;
     s32 hitFlag;
-    state = (int**)*(int*)&obj->extra;
+    state = (int**)(int)obj->extra;
     linkedObject = state[2];
     if (linkedObject == NULL)
         return;
@@ -150,8 +151,8 @@ void DFP_Floorbar_update(GameObject* obj)
     }
 
     {
-        int objPtr = (int)state->linkedObject;
-        (*(VtableFn*)(**(int**)(objPtr + 0x68) + 0x20))(objPtr, gDfpfloorbarModeTable);
+        GameObject* objPtr = (GameObject*)state->linkedObject;
+        DFP_LEVEL_CONTROL_INTERFACE(objPtr)->copyPuzzleValues(objPtr, gDfpfloorbarModeTable);
     }
 
     state->requiredScore = gDfpfloorbarModeTable[state->modeIndex];
@@ -220,10 +221,10 @@ void DFP_Floorbar_update(GameObject* obj)
     }
 }
 
-void DFP_Floorbar_init(GameObject* obj, int params)
+void DFP_Floorbar_init(GameObject* obj, DfpfloorbarPlacement* params)
 {
     DfpFloorbarState* state = obj->extra;
-    DfpfloorbarPlacement* placement = (DfpfloorbarPlacement*)params;
+    DfpfloorbarPlacement* placement = params;
 
     obj->anim.rotX = (s16)((s8)placement->rotXByte << 8);
     obj->animEventCallback = dfpfloorbar_SeqFn;

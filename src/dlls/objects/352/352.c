@@ -1,5 +1,3 @@
-/* Empty DLL 0x160 resource slot. */
+#include "global.h"
 
-#include "dlls/objects/352.h"
-
-u32 gDll160NullResourceDescriptor[DLL160_NULL_DESCRIPTOR_WORD_COUNT] = {0};
+u32 gDll160NullResourceDescriptor[2] = {0};

@@ -5,6 +5,8 @@
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
 
+typedef struct MapBlockData MapBlockData;
+
 typedef enum XyzAnimatorCoordinate {
     XYZ_ANIMATOR_COORD_WORLD_X = 1,
     XYZ_ANIMATOR_COORD_OFFSET_X = 2,
@@ -112,11 +114,11 @@ STATIC_ASSERT(offsetof(XyzAnimatorState, loopSfxId) == 0x4E);
 STATIC_ASSERT(sizeof(XyzAnimatorState) == 0x50);
 
 f32 XyzAnimator_getCoordinate(GameObject* obj, u8 coordinate);
-void XyzAnimator_captureGeometry(XyzAnimatorPlacement* placement, XyzAnimatorState* state, int blockAddress);
+void XyzAnimator_captureGeometry(XyzAnimatorPlacement* placement, XyzAnimatorState* state, MapBlockData* blockAddress);
 int XyzAnimator_getExtraSize(void);
 void XyzAnimator_free(GameObject* obj, int flags);
 void XyzAnimator_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
-void XyzAnimator_applyToMapBlock(XyzAnimatorPlacement* placement, XyzAnimatorState* state, int blockAddress);
+void XyzAnimator_applyToMapBlock(XyzAnimatorPlacement* placement, XyzAnimatorState* state, MapBlockData* blockAddress);
 void XyzAnimator_update(GameObject* obj);
 void XyzAnimator_init(GameObject* obj);
 

@@ -59,31 +59,30 @@ static const f32 gWcEarthWalkerApproachPlayerDistance = 200.0f;
 static const f32 gWcEarthWalkerChaseMoveSpeed = 0.012f;
 static const f32 gWcEarthWalkerWalkMoveSpeed = 0.005f;
 
-int earthwalker_SeqFn(int obj, int unused, ObjSeqState* animUpdate, int shouldAdvanceMove)
+int earthwalker_SeqFn(GameObject* ewObj, int unused, ObjSeqState* animUpdate, int shouldAdvanceMove)
 {
-    GameObject* ewObj = (GameObject*)obj;
     EarthWalkerState* ewState = ewObj->extra;
     int i;
 
     ewState->flags &= ~1;
-    characterDoEyeAnims((GameObject*)obj, &ewState->eyeAnimState);
-    if (dll_2E_updateSequenceTurn((GameObject*)obj, (ObjSeqState*)animUpdate, (MoveLibState*)ewState, 0, 0) != 0)
+    characterDoEyeAnims(ewObj, &ewState->eyeAnimState);
+    if (dll_2E_updateSequenceTurn(ewObj, (ObjSeqState*)animUpdate, (MoveLibState*)ewState, 0, 0) != 0)
     {
         return 0;
     }
     if ((s8)shouldAdvanceMove != 0)
     {
-        ObjAnim_AdvanceCurrentMove((int)obj, gEarthWalkerAnimAdvanceRate, timeDelta, 0);
+        ObjAnim_AdvanceCurrentMove((int)ewObj, gEarthWalkerAnimAdvanceRate, timeDelta, 0);
     }
     for (i = 0; i < animUpdate->eventCount; i++)
     {
         switch (animUpdate->eventIds[i])
         {
         case 1:
-            getEnvfxActImmediately((void*)obj, (void*)obj, 509, 0);
+            getEnvfxActImmediately((void*)ewObj, (void*)ewObj, 509, 0);
             break;
         case 2:
-            getEnvfxActImmediately((void*)obj, (void*)obj, 512, 0);
+            getEnvfxActImmediately((void*)ewObj, (void*)ewObj, 512, 0);
             break;
         }
     }
@@ -124,7 +123,7 @@ void earthwalker_hitDetect(GameObject* obj)
         characterClampJointVecs(obj, objGetLookAtJointKeys(), ewState->hitTriggerId, 0, 0x186a0);
     }
 }
-ObjHitReactEntry gEarthWalkerHitReactEntries[1] = {{575, 706, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.01f, {0, 0, 0, 0}}};
+ObjHitReactEntry gEarthWalkerHitReactEntries[1] = {{575, 706, -1, -1, 0, {0, 0, 0}, 0.01f, {0, 0, 0, 0}}};
 ObjectDescriptor gEarthWalkerObjDescriptor = {
     0,
     0,
@@ -144,9 +143,9 @@ ObjectDescriptor gEarthWalkerObjDescriptor = {
 
 
 
-void earthwalker_update(int obj)
+void earthwalker_update(GameObject* obj)
 {
-    GameObject* ewObj = (GameObject*)obj;
+    GameObject* ewObj = obj;
     EarthWalkerState* ewState = ewObj->extra;
     int prevAnim;
 
@@ -160,25 +159,25 @@ void earthwalker_update(int obj)
     {
         if (ewObj->anim.currentMove != 0x203)
         {
-            ObjAnim_SetCurrentMove(obj, 0x203, gEarthWalkerMoveStartProgress, 0);
+            ObjAnim_SetCurrentMove((int)obj, 0x203, gEarthWalkerMoveStartProgress, 0);
         }
     }
     else
     {
         if (ewObj->anim.currentMove != 2)
         {
-            ObjAnim_SetCurrentMove(obj, 2, gEarthWalkerMoveStartProgress, 0);
+            ObjAnim_SetCurrentMove((int)obj, 2, gEarthWalkerMoveStartProgress, 0);
         }
     }
 
     prevAnim = ewState->animPhase;
-    dll_2E_updateLookAt((GameObject*)obj, (MoveLibState*)ewState);
+    dll_2E_updateLookAt(obj, (MoveLibState*)ewState);
     if (ewState->encounterType >= 4 && ewState->encounterType <= 7 && prevAnim != 1 && ewState->animPhase == 1)
     {
-        Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_mammoth);
+        Sfx_PlayFromObject(obj, SFXTRIG_mammoth);
     }
 
-    characterDoEyeAnims((GameObject*)obj, &ewState->eyeAnimState);
+    characterDoEyeAnims(obj, &ewState->eyeAnimState);
     if (ewState->flags & 1)
     {
         return;
@@ -446,7 +445,7 @@ void earthwalker_update(int obj)
 
     ObjAnim_AdvanceCurrentMove((int)obj, gEarthWalkerAnimAdvanceRate, timeDelta, 0);
 }
-void earthwalker_init(GameObject* obj, int setup)
+void earthwalker_init(GameObject* obj, EarthWalkerPlacement* setup)
 {
     EarthWalkerState* ewState = obj->extra;
     int local;
@@ -460,8 +459,8 @@ void earthwalker_init(GameObject* obj, int setup)
      * player distance and the head snaps back to neutral). */
     dll_2E_setLookAtMaxDistance((MoveLibState*)ewState, gEarthWalkerLookAtMaxDistance);
     ewState->moveLibFlags611 |= 2;
-    obj->anim.rotX = (s16)(((EarthWalkerPlacement*)setup)->spawnRot << 8);
-    ewState->encounterType = ((EarthWalkerPlacement*)setup)->encounterType;
+    obj->anim.rotX = (s16)(setup->spawnRot << 8);
+    ewState->encounterType = setup->encounterType;
     if (ewState->encounterType == 1)
     {
         if ((int)mainGetBit(GAMEBIT_WC_FoundKing) != 0 || (*gMapEventInterface)->getMapAct(obj->anim.mapEventSlot) == 2)
@@ -492,7 +491,7 @@ int dll_28B_substateHandler3(GameObject* obj, BaddieState* ai)
 {
     Dll28BAiState* state = *(Dll28BAiState**)&obj->extra;
 
-    if (*(s8*)&ai->moveJustStartedB != 0)
+    if (ai->moveJustStartedB != 0)
     {
         state->flagsAC0 &= ~1;
         (*gPlayerInterface)->setState((void*)obj, (void*)ai, 3);
@@ -509,7 +508,7 @@ int dll_28B_substateHandler2(GameObject* obj, BaddieState* ai)
     Dll28BAiState* state = *(Dll28BAiState**)&obj->extra;
     f32 dist;
 
-    if (*(s8*)&ai->moveJustStartedB != 0)
+    if (ai->moveJustStartedB != 0)
     {
         state->flagsAC0 |= 1;
         (*gPlayerInterface)->setState((void*)obj, (void*)ai, 1);
@@ -536,7 +535,7 @@ int dll_28B_substateHandler1(GameObject* obj, BaddieState* ai)
     Dll28BAiState* state = *(Dll28BAiState**)&obj->extra;
     RomCurveWalker* route = &state->route;
 
-    if (*(s8*)&ai->moveJustStartedB != 0)
+    if (ai->moveJustStartedB != 0)
     {
         state->flagsAC0 &= ~1;
         (*gPlayerInterface)->setState((void*)obj, (void*)ai, 2);

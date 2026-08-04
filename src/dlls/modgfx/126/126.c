@@ -5,23 +5,8 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 
-typedef struct Dll7EEffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} Dll7EEffectVertex;
-
-STATIC_ASSERT(offsetof(Dll7EEffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(Dll7EEffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(Dll7EEffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(Dll7EEffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(Dll7EEffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(Dll7EEffectVertex) == 0x0A);
-
 typedef struct Dll7EEffectResourceView {
-    Dll7EEffectVertex vertices[9];
+    ModgfxEffectVertex vertices[9];
     u8 pad5A[2];
     s16 triangles[5][3];
     u8 pad7A[2];
@@ -54,7 +39,7 @@ u8 gDll7EEffectResourceData[sizeof(Dll7EEffectResourceView)] = {
 
 void dll_7E_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags, u32 unused,
                         f32* scaleOverride) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)(int)gDll7EEffectResourceData;
     f32 scale = 1.0f;
     f32 originOffset = 0.0f;

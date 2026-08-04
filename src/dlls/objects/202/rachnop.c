@@ -22,7 +22,6 @@
 #include "main/player_control_interface.h"
 #include "main/vecmath.h"
 #include "main/voxmaps.h"
-#include "string.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 #include "main/dll/baddie_state.h"
@@ -40,7 +39,6 @@
 #include "main/dll/rom_curve_interface.h"
 #include "main/gamebits.h"
 #include "main/dll/objfsa.h"
-#include "main/gamebit_ids.h"
 #include "main/dll/newseqobj_baddie.h"
 #include "main/dll/baddie_frozen.h"
 #include "main/game_ui_interface.h"
@@ -50,7 +48,7 @@
 #include "main/dll/player_target.h"
 #include "main/dll/player_api.h"
 #include "dlls/objects/225_WispBaddie.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.h"
+#include "main/trig_float_helpers.h"
 #include "main/obj_link.h"
 #include "main/objfx.h"
 #include "main/objtexture.h"
@@ -82,7 +80,6 @@
 #include "main/dll/hagabon_mk2.h"
 #include "main/dll/snowworm.h"
 #include "main/dll/baddiewhirlpool.h"
-#include "track/intersect_whirlpool_api.h"
 
 /* Baddie-family animation data shared with the sequence-driver TUs. */
 
@@ -410,9 +407,9 @@ void rachnopFindWallPlane(GameObject* obj, int state)
     {
         obj->anim.localPosX = (hit[17] - (15.0f)) * ((minv[0] - maxv[0]) / (50.0f)) + maxv[0];
         obj->anim.localPosZ = (hit[17] - (15.0f)) * ((minv[2] - maxv[2]) / (50.0f)) + maxv[2];
-        *(float*)(state + DUSTER_WALL_NORMAL_X_OFFSET) = hit[7];
-        *(float*)(state + DUSTER_WALL_NORMAL_Y_OFFSET) = hit[8];
-        *(float*)(state + DUSTER_WALL_NORMAL_Z_OFFSET) = hit[9];
+        ((EnemyState*)state)->wallPlane.normal[0] = hit[7];
+        ((EnemyState*)state)->wallPlane.normal[1] = hit[8];
+        ((EnemyState*)state)->wallPlane.normal[2] = hit[9];
         ((EnemyState*)state)->wallPlane.normalW = hit[10];
         ((EnemyState*)state)->wallPlane.anchorY = (hit[3] > hit[4]) ? hit[3] : hit[4];
         ((EnemyState*)state)->wallPlane.boundMin = (hit[15] < hit[16]) ? hit[15] : hit[16];
@@ -430,9 +427,9 @@ void rachnopFindWallPlane(GameObject* obj, int state)
         bv[2] = ((EnemyState*)state)->wallPlane.anchorZ;
         PSVECSubtract((Vec*)bv, (Vec*)cv, (Vec*)toAnchor);
         dot = PSVECDotProduct((Vec*)toAnchor, (Vec*)(state + DUSTER_WALL_PLANE_OFFSET));
-        bv[0] = *(float*)(state + DUSTER_WALL_NORMAL_X_OFFSET) * dot + cv[0];
-        bv[1] = *(float*)(state + DUSTER_WALL_NORMAL_Y_OFFSET) * dot + cv[1];
-        bv[2] = *(float*)(state + DUSTER_WALL_NORMAL_Z_OFFSET) * dot + cv[2];
+        bv[0] = ((EnemyState*)state)->wallPlane.normal[0] * dot + cv[0];
+        bv[1] = ((EnemyState*)state)->wallPlane.normal[1] * dot + cv[1];
+        bv[2] = ((EnemyState*)state)->wallPlane.normal[2] * dot + cv[2];
         dv[0] = 0.0f;
         dv[1] = 1.0f;
         dv[2] = 0.0f;

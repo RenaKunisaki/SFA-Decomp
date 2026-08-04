@@ -22,15 +22,15 @@ typedef struct DrCloudPerSetup
     s16 gameBit;
 } DrCloudPerSetup;
 
-int DR_CloudPer_activate(int obj);
-int DR_CloudPer_selectActiveCloud(int obj);
+int DR_CloudPer_activate(GameObject* obj);
+int DR_CloudPer_selectActiveCloud(GameObject* obj);
 int DR_CloudPer_getExtraSize(void);
 int DR_CloudPer_getObjectTypeId(void);
 void DR_CloudPer_free(int obj);
 void DR_CloudPer_render(void);
 void DR_CloudPer_hitDetect(void);
 void DR_CloudPer_update(void);
-void DR_CloudPer_init(int obj, int setup);
+void DR_CloudPer_init(GameObject* cloud, DrCloudPerSetup* setup);
 void DR_CloudPer_release(void);
 void DR_CloudPer_initialise(void);
 

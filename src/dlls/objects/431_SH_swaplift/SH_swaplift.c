@@ -74,17 +74,17 @@ void warpstonelift_update(GameObject* obj) {
             } else {
                 Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 2);
             }
-            if (ObjTrigger_IsSetById((int)obj, GAMEBIT_ITEM_RockCandy_Got) != 0) {
+            if (ObjTrigger_IsSetById(obj, GAMEBIT_ITEM_RockCandy_Got) != 0) {
                 mainSetBits(GAMEBIT_ITEM_RockCandyRelated0886, 1);
                 mainSetBits(GAMEBIT_ITEM_RockCandy_Used, 1);
                 state->stateId = WARP_STONE_LIFT_STATE_ROCK_CANDY_USED;
                 Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 3);
-            } else if (ObjTrigger_IsSet((int)obj) != 0) {
+            } else if (ObjTrigger_IsSet(obj) != 0) {
                 mainSetBits(GAMEBIT_SH_WarpStoneComplainingAboutGifts, 1);
             }
             break;
         case WARP_STONE_LIFT_STATE_ROCK_CANDY_USED:
-            if (ObjTrigger_IsSet((int)obj) != 0) {
+            if (ObjTrigger_IsSet(obj) != 0) {
                 mainSetBits(GAMEBIT_ITEM_RockCandyRelated0886, 1);
             }
             break;

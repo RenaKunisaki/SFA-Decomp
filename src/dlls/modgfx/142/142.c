@@ -6,23 +6,8 @@
 #include "main/dll/modgfx_types.h"
 #include "main/vecmath.h"
 
-typedef struct Dll8EEffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} Dll8EEffectVertex;
-
-STATIC_ASSERT(offsetof(Dll8EEffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(Dll8EEffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(Dll8EEffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(Dll8EEffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(Dll8EEffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(Dll8EEffectVertex) == 0x0A);
-
 typedef struct Dll8EVertexResourceView {
-    Dll8EEffectVertex vertices[3];
+    ModgfxEffectVertex vertices[3];
     s16 opaqueTail;
 } Dll8EVertexResourceView;
 
@@ -46,7 +31,7 @@ u8 gDll8EEffectSpawnResource[8] = {0, 0, 0, 1, 0, 2, 0, 0};
 u8 gDll8EEffectTexture[8] = {0, 0, 0, 1, 0, 2, 0, 0};
 
 void dll_8E_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     GfxCmd* command;
     GfxCmd* commands = packet.entries;
     s16* sequenceParams;
@@ -170,7 +155,7 @@ void dll_8E_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* s
     packet.sequenceParams[4] = sequenceParams[4];
     packet.sequenceParams[5] = sequenceParams[5];
     packet.sequenceParams[6] = sequenceParams[6];
-    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxPointerSpawnPacket, entries));
+    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxSpawnPacket, entries));
     packet.flags = 0x4000410;
     packet.flags |= spawnFlags;
     if ((packet.flags & 1) != 0) {

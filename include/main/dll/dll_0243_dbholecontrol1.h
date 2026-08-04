@@ -14,7 +14,7 @@ extern ObjectDescriptor gDBHoleControl1ObjDescriptor;
 typedef struct Dbholecontrol1Placement
 {
     ObjPlacement base;
-    u8 unk18;
+    s8 rotXByte;
     s8 triggerSeqId; /* 0x19: run as an object sequence when triggerGameBit is set */
     s16 gameBitA; /* copied into DbHoleControl1State.gameBitA */
     s16 gameBitB; /* copied into DbHoleControl1State.gameBitB */

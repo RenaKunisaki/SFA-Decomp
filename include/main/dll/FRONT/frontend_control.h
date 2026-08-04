@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_FRONT_FRONTEND_CONTROL_H_
 #define MAIN_DLL_FRONT_FRONTEND_CONTROL_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 typedef struct FrontendSaveSlot {
     char name[4];

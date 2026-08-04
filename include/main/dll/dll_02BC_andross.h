@@ -83,10 +83,10 @@ STATIC_ASSERT(offsetof(AndrossState, partTextureState) == 0xB9);
 
 extern ObjectDescriptor gAndrossObjDescriptor;
 
-extern int gGfLevelConProjectilePitch;
-extern int gGfLevelConRingProjectilePitch;
-extern s16 gGfLevelConProjectileYaw;
-extern s16 gGfLevelConRingProjectilePitchSource;
+extern int gAndrossProjectilePitch;
+extern int gAndrossRingProjectilePitch;
+extern s16 gAndrossProjectileYaw;
+extern s16 gAndrossRingProjectilePitchSource;
 extern f32 gAndrossMoveAnimSpeeds[23];
 extern f32 gAndrossMissileClampRange;
 extern f32 gAndrossMissileVelocityScale;

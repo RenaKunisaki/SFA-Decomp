@@ -34,7 +34,7 @@ int dll500_getExtraSize(void);
 void dll500_free(GameObject* obj);
 void dll500_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 int dll500_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animUpdate);
-void dll500_update(int obj);
+void dll500_update(GameObject* obj);
 void dll500_init(GameObject* obj, const Dll1F4PlacementView* placement);
 
 extern ObjectDescriptor gDll1F4ObjDescriptor;

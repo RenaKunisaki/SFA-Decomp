@@ -1,3 +1,4 @@
+#include "dlls/object_descriptor.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/rom_curve_interface.h"
 #include "sys/objects.h"
@@ -7,7 +8,6 @@
 #include "main/dll/baddie_state.h"
 #include "main/resource.h"
 #include "main/dll/path_control_interface.h"
-#include "string.h"
 #include "main/vecmath.h"
 #include "main/lightmap_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
@@ -806,7 +806,7 @@ void player_setState(void* ctx, void* p, int new_state)
                 *(void**)&((BaddieState*)p)->stateExitFn = 0;
             }
         }
-        *(void**)&((BaddieState*)p)->stateExitFn = *(void**)&((BaddieState*)p)->nextStateExitFn;
+        *(void**)&((BaddieState*)p)->stateExitFn = (void*)((BaddieState*)p)->nextStateExitFn;
     }
     ((BaddieState*)p)->controlTimer = 0;
     ((BaddieState*)p)->moveJustStartedA = 1;
@@ -845,14 +845,14 @@ void player_updateVel(char* p, char* obj, void* stateFns)
                 ((GameObject*)p)->anim.velocityX * fsin - ((GameObject*)p)->anim.velocityZ * fcos;
             ((BaddieState*)obj)->animSpeedA =
                 -((GameObject*)p)->anim.velocityZ * fsin - ((GameObject*)p)->anim.velocityX * fcos;
-            if (((s32)(s8) * (obj + 0x34c) & 4) != 0)
+            if ((((BaddieState*)obj)->movementFlags & 4) != 0)
             {
                 vx = ((GameObject*)p)->anim.velocityX * ((GameObject*)p)->anim.velocityX;
                 vz = ((GameObject*)p)->anim.velocityZ * ((GameObject*)p)->anim.velocityZ;
                 ((BaddieState*)obj)->animSpeedC = sqrtf(vx + vz);
             }
         }
-        *(s8*)(obj + 0x34c) = 0;
+        ((BaddieState*)obj)->movementFlags = 0;
         *(u32*)obj |= 0x80000;
         gPlayerMoveVelHandled = 1;
         lbl_803DD44F = 0;
@@ -881,7 +881,7 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
     keepPathControls = 1;
     lbl_803DD44E = 0;
 
-    attachment = *(int*)&((BaddieState*)state)->targetObj;
+    attachment = (int)((BaddieState*)state)->targetObj;
     if ((void*)attachment != NULL)
     {
         dx = ((GameObject*)attachment)->anim.localPosX - ((GameObject*)pos)->anim.localPosX;
@@ -937,15 +937,16 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
     ((BaddieState*)state)->stateTag = 0;
     gPlayerMoveVelHandled = 0;
     *(u32*)state &= 0xfff7ffff;
-    *(u8*)(state + 0x34c) = 0;
+    ((BaddieState*)state)->movementFlags = 0;
     lbl_803DD44F = 0;
 
     playerRunStateMachine((GameObject*)pos, (BaddieState*)state, dt, (PlayerStateFn*)stateFns);
 
-    *(s16*)(state + 0x338) = (s16)((f32) * (s16*)(state + 0x338) + dt);
-    if ((f32) * (s16*)(state + 0x338) > PLAYER_MOVE_COUNTER_MAX)
+    ((BaddieState*)state)->controlTimer =
+        (s16)((f32)((BaddieState*)state)->controlTimer + dt);
+    if ((f32)((BaddieState*)state)->controlTimer > PLAYER_MOVE_COUNTER_MAX)
     {
-        *(s16*)(state + 0x338) = 10000;
+        ((BaddieState*)state)->controlTimer = 10000;
     }
 
     gPlayerMoveOverridePosX = ((GameObject*)pos)->anim.localPosX;
@@ -1020,10 +1021,12 @@ void player_update(char* pos, char* state, float dt, float pathDt, void* stateFn
             if (((s32)((BaddieState*)state)->surfaceFlags & 2) != 0 || ((BaddieState*)state)->groundContact != 0)
             {
                 ((GameObject*)pos)->anim.velocityX =
-                    (((GameObject*)pos)->anim.localPosX - *(f32*)((int)((GameObject*)pos)->anim.hitReactState + 0x10)) /
+                    (((GameObject*)pos)->anim.localPosX -
+                     ((ObjHitsPriorityState*)((GameObject*)pos)->anim.hitReactState)->localPosX) /
                     dt;
                 ((GameObject*)pos)->anim.velocityZ =
-                    (((GameObject*)pos)->anim.localPosZ - *(f32*)((int)((GameObject*)pos)->anim.hitReactState + 0x18)) /
+                    (((GameObject*)pos)->anim.localPosZ -
+                     ((ObjHitsPriorityState*)((GameObject*)pos)->anim.hitReactState)->localPosZ) /
                     dt;
             }
             *(u32*)state &= 0xff7fffff;
@@ -1053,14 +1056,68 @@ void player_release(void)
 void player_initialise(void)
 {
 }
+typedef struct PlayerDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback init;
+    ObjectDescriptorCallback update;
+    ObjectDescriptorCallback updateVel;
+    ObjectDescriptorCallback setOverride;
+    ObjectDescriptorCallback setState;
+    ObjectDescriptorCallback followCurve;
+    ObjectDescriptorCallback moveTowardPoint;
+    ObjectDescriptorCallback advanceMove;
+    ObjectDescriptorCallback slot0B;
+    ObjectDescriptorCallback modelMtxFn;
+    ObjectDescriptorCallback render2;
+    ObjectDescriptorCallback rotateTowardEnemy;
+    ObjectDescriptorCallback playSoundFn0F;
+    ObjectDescriptorCallback playSoundFn10;
+    ObjectDescriptorCallback findCurve;
+    ObjectDescriptorCallback updateCurve;
+    ObjectDescriptorCallback slot13;
+    ObjectDescriptorCallback clearXZvel;
+    ObjectDescriptorCallback setAnimIds;
+    ObjectDescriptorCallback updateSecondaryBlend;
+    ObjectDescriptorCallback doProjGfx;
+    ObjectDescriptorCallback updateParticles;
+    ObjectDescriptorCallback slot19;
+} PlayerDllInterface;
 
-u32 player_funcs[30] = {
-    0, 0, 0, 0x00190000,
-    (u32)player_initialise, (u32)player_release, 0, (u32)player_init,
-    (u32)player_update, (u32)player_updateVel, (u32)player_setOverride, (u32)player_setState,
-    (u32)player_followCurve, (u32)player_moveTowardPoint, (u32)player_advanceMove, (u32)dll_0F_func0B,
-    (u32)player_modelMtxFn, (u32)player_render2, (u32)player_rotateTowardEnemy, (u32)player_playSoundFn0F,
-    (u32)player_playSoundFn10, (u32)player_findCurve, (u32)player_updateCurve, (u32)dll_0F_func13,
-    (u32)player_clearXZvel, (u32)player_setAnimIds, (u32)player_updateSecondaryBlend, (u32)player_doProjGfx,
-    (u32)player_updateParticles, (u32)dll_0F_func19_nop,
+PlayerDllInterface player_funcs = {
+    0,
+    0,
+    0,
+    0x00190000,
+    (ObjectDescriptorCallback)player_initialise,
+    (ObjectDescriptorCallback)player_release,
+    0,
+    (ObjectDescriptorCallback)player_init,
+    (ObjectDescriptorCallback)player_update,
+    (ObjectDescriptorCallback)player_updateVel,
+    (ObjectDescriptorCallback)player_setOverride,
+    (ObjectDescriptorCallback)player_setState,
+    (ObjectDescriptorCallback)player_followCurve,
+    (ObjectDescriptorCallback)player_moveTowardPoint,
+    (ObjectDescriptorCallback)player_advanceMove,
+    (ObjectDescriptorCallback)dll_0F_func0B,
+    (ObjectDescriptorCallback)player_modelMtxFn,
+    (ObjectDescriptorCallback)player_render2,
+    (ObjectDescriptorCallback)player_rotateTowardEnemy,
+    (ObjectDescriptorCallback)player_playSoundFn0F,
+    (ObjectDescriptorCallback)player_playSoundFn10,
+    (ObjectDescriptorCallback)player_findCurve,
+    (ObjectDescriptorCallback)player_updateCurve,
+    (ObjectDescriptorCallback)dll_0F_func13,
+    (ObjectDescriptorCallback)player_clearXZvel,
+    (ObjectDescriptorCallback)player_setAnimIds,
+    (ObjectDescriptorCallback)player_updateSecondaryBlend,
+    (ObjectDescriptorCallback)player_doProjGfx,
+    (ObjectDescriptorCallback)player_updateParticles,
+    (ObjectDescriptorCallback)dll_0F_func19_nop,
 };

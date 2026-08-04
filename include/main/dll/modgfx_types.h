@@ -117,104 +117,41 @@ STATIC_ASSERT(offsetof(ModgfxSpawnPacket, commandCount) == 0x5D);
 STATIC_ASSERT(offsetof(ModgfxSpawnPacket, entries) == 0x60);
 STATIC_ASSERT(sizeof(ModgfxSpawnPacket) == 0x360);
 
-typedef struct ModgfxPointerSpawnPacket
-{
-    union
-    {
-        GfxCmd* cmds;
-        GfxCmd* commands;
-    };
-    union
-    {
-        void* ctx;
-        GameObject* sourceObj;
-    };
-    u8 pad08[0x18];
-    union
-    {
-        f32 col[3];
-        f32 velocity[3];
-    };
-    union
-    {
-        f32 pos[3];
-        f32 position[3];
-    };
-    f32 scale;
-    union
-    {
-        u32 v3c;
-        u32 drawGroupStride;
-    };
-    union
-    {
-        u32 v40;
-        u32 drawGroupCount;
-    };
-    union
-    {
-        s16 v44;
-        s16 sourceMode;
-    };
-    union
-    {
-        s16 hw[7];
-        s16 sequenceParams[7];
-    };
-    u32 flags;
-    union
-    {
-        u8 v58;
-        u8 modeByte;
-    };
-    union
-    {
-        u8 v59;
-        u8 initialStateByte;
-    };
-    union
-    {
-        u8 v5a;
-        u8 byte5A;
-    };
-    union
-    {
-        u8 v5b;
-        u8 textureFrameTimer;
-    };
-    union
-    {
-        u8 v5c;
-        u8 sourceYawIndex;
-    };
-    union
-    {
-        s8 count;
-        s8 commandCount;
-    };
-    u8 pad5E[2];
-    GfxCmd entries[32];
-} ModgfxPointerSpawnPacket;
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, commands) == 0x00);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, ctx) == 0x04);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, sourceObj) == 0x04);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, velocity) == 0x20);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, position) == 0x2C);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, scale) == 0x38);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, drawGroupStride) == 0x3C);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, drawGroupCount) == 0x40);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, sourceMode) == 0x44);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, sequenceParams) == 0x46);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, flags) == 0x54);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, modeByte) == 0x58);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, initialStateByte) == 0x59);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, byte5A) == 0x5A);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, textureFrameTimer) == 0x5B);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, sourceYawIndex) == 0x5C);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, commandCount) == 0x5D);
+STATIC_ASSERT(offsetof(ModgfxSpawnPacket, entries) == 0x60);
+STATIC_ASSERT(sizeof(ModgfxSpawnPacket) == 0x360);
 
-STATIC_ASSERT(offsetof(ModgfxPointerSpawnPacket, commands) == 0x00);
-STATIC_ASSERT(offsetof(ModgfxPointerSpawnPacket, ctx) == 0x04);
-STATIC_ASSERT(offsetof(ModgfxPointerSpawnPacket, sourceObj) == 0x04);
-STATIC_ASSERT(offsetof(ModgfxPointerSpawnPacket, velocity) == 0x20);
-STATIC_ASSERT(offsetof(ModgfxPointerSpawnPacket, position) == 0x2C);
-STATIC_ASSERT(offsetof(ModgfxPointerSpawnPacket, scale) == 0x38);
-STATIC_ASSERT(offsetof(ModgfxPointerSpawnPacket, drawGroupStride) == 0x3C);
-STATIC_ASSERT(offsetof(ModgfxPointerSpawnPacket, drawGroupCount) == 0x40);
-STATIC_ASSERT(offsetof(ModgfxPointerSpawnPacket, sourceMode) == 0x44);
-STATIC_ASSERT(offsetof(ModgfxPointerSpawnPacket, sequenceParams) == 0x46);
-STATIC_ASSERT(offsetof(ModgfxPointerSpawnPacket, flags) == 0x54);
-STATIC_ASSERT(offsetof(ModgfxPointerSpawnPacket, modeByte) == 0x58);
-STATIC_ASSERT(offsetof(ModgfxPointerSpawnPacket, initialStateByte) == 0x59);
-STATIC_ASSERT(offsetof(ModgfxPointerSpawnPacket, byte5A) == 0x5A);
-STATIC_ASSERT(offsetof(ModgfxPointerSpawnPacket, textureFrameTimer) == 0x5B);
-STATIC_ASSERT(offsetof(ModgfxPointerSpawnPacket, sourceYawIndex) == 0x5C);
-STATIC_ASSERT(offsetof(ModgfxPointerSpawnPacket, commandCount) == 0x5D);
-STATIC_ASSERT(offsetof(ModgfxPointerSpawnPacket, entries) == 0x60);
-STATIC_ASSERT(sizeof(ModgfxPointerSpawnPacket) == 0x360);
+typedef struct ModgfxEffectVertex
+{
+    s16 positionX;
+    s16 positionY;
+    s16 positionZ;
+    s16 texCoordS;
+    s16 texCoordT;
+} ModgfxEffectVertex;
+
+STATIC_ASSERT(offsetof(ModgfxEffectVertex, positionX) == 0x00);
+STATIC_ASSERT(offsetof(ModgfxEffectVertex, positionY) == 0x02);
+STATIC_ASSERT(offsetof(ModgfxEffectVertex, positionZ) == 0x04);
+STATIC_ASSERT(offsetof(ModgfxEffectVertex, texCoordS) == 0x06);
+STATIC_ASSERT(offsetof(ModgfxEffectVertex, texCoordT) == 0x08);
+STATIC_ASSERT(sizeof(ModgfxEffectVertex) == 0x0A);
 
 typedef struct ModgfxVertexData
 {
@@ -230,56 +167,6 @@ typedef struct ModgfxVertexData
     u8 alpha;
 } ModgfxVertexData;
 
-typedef struct ModgfxState
-{
-    u8 pad00[4];
-    s16* unk04; /* current vertex-index list */
-    u8 pad08[0x24 - 0x08];
-    f32 posStepX; /* 0x24: per-step vertex-position delta */
-    f32 posStepY;
-    f32 posStepZ;
-    /*
-     * Each vertex-scale channel occupies two consecutive vectors: its
-     * current XYZ scale followed by the per-frame XYZ step.
-     */
-    Vec3f scaleVectors[4];
-    f32 posCurX; /* 0x60: accumulated vertex-position offset */
-    f32 posCurY;
-    f32 posCurZ;
-    u8 pad6C[0x78 - 0x6C];
-    ModgfxVertexData* vertexBuffers[2];
-    ModgfxVertexData* baseVertexData;
-    u8 pad84[0xA4 - 0x84];
-    u32 flags;
-    u8 padA8[4];
-    /*
-     * As with scaleVectors, each alpha channel is a consecutive step/current
-     * pair selected by channel * 2.
-     */
-    f32 alphaValues[4];
-    f32 blendColorR; /* 0xBC: current blended vertex color */
-    f32 blendColorG;
-    f32 blendColorB;
-    f32 blendColorStepR; /* 0xC8 */
-    f32 blendColorStepG;
-    f32 blendColorStepB;
-    u8 padD4[0xEA - 0xD4];
-    s16 vertexCount;
-    u8 padEC[2];
-    s16 channelFrames[7]; /* 0xEE: per-channel remaining blend frames */
-    s16 activeChannel; /* 0xFC */
-    s16 blendFrameCount;
-    s16 rotStepZ;
-    s16 rotStepY;
-    s16 rotStepX;
-    s16 rotOffsetZ;
-    s16 rotOffsetY;
-    s16 rotOffsetX;
-    s16 effectId;
-    u8 pad10E[0x130 - 0x10E];
-    u8 activeVertexBufferIndex;
-} ModgfxState;
-
 typedef struct ModgfxVertexGroupCmd
 {
     u8 unk00[4];
@@ -289,6 +176,7 @@ typedef struct ModgfxVertexGroupCmd
     s16* indices; /* vertex indices, stride 2 */
     s16 indexCount;
 } ModgfxVertexGroupCmd;
+STATIC_ASSERT(offsetof(ModgfxVertexGroupCmd, valueX) == 0x04);
 
 typedef struct ModgfxActiveEffect
 {
@@ -400,7 +288,9 @@ typedef struct PartfxEffectState
     s16 stageDurations[PARTFX_STAGE_COUNT];
     s16 currentStage;
     s16 stageFrameCountdown;
-    u8 pad100[0x106 - 0x100];
+    s16 rotStepZ; /* 0x100: per-frame rotation delta added into rotOffset* */
+    s16 rotStepY;
+    s16 rotStepX;
     s16 rotOffsetZ;
     s16 rotOffsetY;
     s16 rotOffsetX;

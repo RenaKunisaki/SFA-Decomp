@@ -75,7 +75,7 @@ typedef struct ObjectTypeIndexTable {
 STATIC_ASSERT(sizeof(ObjectTypeIndexTable) == 0x58);
 
 u32 gObjectTypeList[OBJTYPE_LIST_MAX];
-ObjectTypeIndexTable gObjectTypeIndices;
+extern ObjectTypeIndexTable gObjectTypeIndices;
 
 typedef struct ObjContactCallbackEntry {
     GameObject* objA;
@@ -96,7 +96,7 @@ typedef struct ObjHitRegionPlacement {
 STATIC_ASSERT(offsetof(ObjHitRegionPlacement, id) == 0x18);
 STATIC_ASSERT(offsetof(ObjHitRegionPlacement, yaw) == 0x20);
 
-ObjContactCallbackEntry gObjContactCallbacks[0xC0 / sizeof(ObjContactCallbackEntry)];
+extern ObjContactCallbackEntry gObjContactCallbacks[0xC0 / sizeof(ObjContactCallbackEntry)];
 extern u8 gObjectTypeListCount;
 extern int gObjContactCallbackCount;
 #define OBJMSG_QUEUE_OFFSET        0xdc
@@ -623,19 +623,19 @@ int Obj_IsObjectAlive(GameObject* objArg) {
     return alive;
 }
 
-bool ObjTrigger_UpdateIdBlockFlag(int obj) {
+bool ObjTrigger_UpdateIdBlockFlag(GameObject* obj) {
     int disguised;
     u8 flags;
 
     disguised = (int)Obj_GetPlayerObject();
     disguised = playerIsDisguised((GameObject*)disguised);
     if (disguised != 0) {
-        flags = *(u8*)(obj + OBJTRIGGER_FLAGS_OFFSET) | OBJTRIGGER_ID_BLOCK_FLAG;
-        *(u8*)(obj + OBJTRIGGER_FLAGS_OFFSET) = flags;
+        flags = obj->anim.resetHitboxFlags | OBJTRIGGER_ID_BLOCK_FLAG;
+        obj->anim.resetHitboxFlags = flags;
         return false;
     }
-    flags = *(u8*)(obj + OBJTRIGGER_FLAGS_OFFSET) & ~OBJTRIGGER_ID_BLOCK_FLAG;
-    *(u8*)(obj + OBJTRIGGER_FLAGS_OFFSET) = flags;
+    flags = obj->anim.resetHitboxFlags & ~OBJTRIGGER_ID_BLOCK_FLAG;
+    obj->anim.resetHitboxFlags = flags;
     return true;
 }
 
@@ -812,13 +812,13 @@ int ObjContact_AddCallback(GameObject* obj, GameObject* otherObj, ObjContactCall
     return 1;
 }
 
-int ObjTrigger_IsSetById(int obj, int eventId) {
+int ObjTrigger_IsSetById(GameObject* obj, int eventId) {
     int playerState;
     int triggerFlags;
     int flagEnabled;
     int flagBlocked;
 
-    triggerFlags = *(u8*)(obj + OBJTRIGGER_FLAGS_OFFSET);
+    triggerFlags = obj->anim.resetHitboxFlags;
     flagEnabled = triggerFlags & OBJTRIGGER_ID_ENABLE_FLAG;
     if (flagEnabled != 0) {
         flagBlocked = triggerFlags & OBJTRIGGER_ID_BLOCK_FLAG;
@@ -834,8 +834,7 @@ int ObjTrigger_IsSetById(int obj, int eventId) {
     return 0;
 }
 
-int ObjTrigger_IsSet(int objPtr) {
-    GameObject* obj = (GameObject*)objPtr;
+int ObjTrigger_IsSet(GameObject* obj) {
     u32 flags;
     int playerState;
     int triggerFlags;
@@ -944,12 +943,12 @@ void ObjPath_GetPointWorldPositionArray(GameObject* obj, int pointIndex, int cou
 }
 
 void ObjPath_GetPointLocalPosition(GameObject* obj, int pointIndex, float* xOut, float* yOut, float* zOut) {
-    *xOut = ((ObjPathPoint*)(*(int*)(*(int*)&obj->anim.modelInstance + OBJPATH_POINTS_OFFSET) +
+    *xOut = ((ObjPathPoint*)(*(int*)((int)obj->anim.modelInstance + OBJPATH_POINTS_OFFSET) +
                              pointIndex * sizeof(ObjPathPoint)))
                 ->x;
-    *yOut = *(f32*)(*(int*)(*(int*)&obj->anim.modelInstance + OBJPATH_POINTS_OFFSET) + 4 +
+    *yOut = *(f32*)(*(int*)((int)obj->anim.modelInstance + OBJPATH_POINTS_OFFSET) + 4 +
                     pointIndex * sizeof(ObjPathPoint));
-    *zOut = *(f32*)(*(int*)(*(int*)&obj->anim.modelInstance + OBJPATH_POINTS_OFFSET) + 8 +
+    *zOut = *(f32*)(*(int*)((int)obj->anim.modelInstance + OBJPATH_POINTS_OFFSET) + 8 +
                     pointIndex * sizeof(ObjPathPoint));
     return;
 }
@@ -958,7 +957,7 @@ void ObjPath_GetPointLocalMtx(GameObject* obj, int pointIndex, float* mtxOut) {
     ObjPathPoint* pathPoint;
     ObjPathTransform transform;
 
-    pathPoint = (ObjPathPoint*)(*(int*)(*(int*)&obj->anim.modelInstance + OBJPATH_POINTS_OFFSET));
+    pathPoint = (ObjPathPoint*)(*(int*)((int)obj->anim.modelInstance + OBJPATH_POINTS_OFFSET));
     transform.x = pathPoint[pointIndex].x;
     pathPoint += pointIndex;
     transform.y = pathPoint->y;
@@ -977,7 +976,7 @@ u32 ObjPath_GetPointModelMtx(GameObject* obj, int pointIndex) {
     int jointIndex;
 
     model = (int*)Obj_GetActiveModel(obj);
-    pathPoint = (ObjPathPoint*)(*(int*)(*(int*)&obj->anim.modelInstance + OBJPATH_POINTS_OFFSET));
+    pathPoint = (ObjPathPoint*)(*(int*)((int)obj->anim.modelInstance + OBJPATH_POINTS_OFFSET));
     pathPoint += pointIndex;
     jointIndex = pathPoint->modelIndex[(int)*(char*)((int)obj + OBJ_ACTIVE_MODEL_INDEX_OFFSET)];
     if ((jointIndex >= 0) && (jointIndex < (int)(u32) * (u8*)(*model + OBJ_MODEL_JOINT_COUNT_OFFSET))) {
@@ -1001,13 +1000,13 @@ void ObjPath_GetPointWorldPosition(GameObject* obj, int pointIndex, float* outX,
     float rotMtx[16];
 
     if ((pointIndex < 0) ||
-        (pointIndex >= (int)(u32) * (u8*)(*(int*)&obj->anim.modelInstance + OBJPATH_POINT_COUNT_OFFSET))) {
+        (pointIndex >= (int)(u32) * (u8*)((int)obj->anim.modelInstance + OBJPATH_POINT_COUNT_OFFSET))) {
         *outX = obj->anim.localPosX;
         *outY = obj->anim.localPosY;
         *outZ = obj->anim.localPosZ;
     } else {
         model = (int*)Obj_GetActiveModel(obj);
-        pathPoint = (ObjPathPoint*)(*(int*)(*(int*)&obj->anim.modelInstance + OBJPATH_POINTS_OFFSET));
+        pathPoint = (ObjPathPoint*)(*(int*)((int)obj->anim.modelInstance + OBJPATH_POINTS_OFFSET));
         pointOffset = pointIndex * sizeof(ObjPathPoint);
         pathPoint = (ObjPathPoint*)((int)pathPoint + pointOffset);
         jointIndex = pathPoint->modelIndex[(int)*(char*)((int)obj + OBJ_ACTIVE_MODEL_INDEX_OFFSET)];
@@ -1031,9 +1030,9 @@ void ObjPath_GetPointWorldPosition(GameObject* obj, int pointIndex, float* outX,
                 transform.rotY = 0;
                 transform.rotZ = 0;
             } else {
-                transform.x = *(f32*)(*(int*)(*(int*)&obj->anim.modelInstance + OBJPATH_POINTS_OFFSET) + pointOffset);
+                transform.x = *(f32*)(*(int*)((int)obj->anim.modelInstance + OBJPATH_POINTS_OFFSET) + pointOffset);
                 pathPoint =
-                    (ObjPathPoint*)(*(int*)(*(int*)&obj->anim.modelInstance + OBJPATH_POINTS_OFFSET) + pointOffset);
+                    (ObjPathPoint*)(*(int*)((int)obj->anim.modelInstance + OBJPATH_POINTS_OFFSET) + pointOffset);
                 transform.y = pathPoint->y;
                 transform.z = pathPoint->z;
                 transform.rotX = pathPoint->rotX;
@@ -1128,3 +1127,6 @@ u32 ObjHitRegion_FindContainingId(f32 x, f32 y, f32 z) {
     }
     return hitId & 0xffff;
 }
+
+ObjContactCallbackEntry gObjContactCallbacks[0xC0 / sizeof(ObjContactCallbackEntry)];
+ObjectTypeIndexTable gObjectTypeIndices;

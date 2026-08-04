@@ -2,8 +2,10 @@
 #define MAIN_DLL_BADDIE_DLL_022F_DFPFLOORBAR_H_
 
 #include "game/objects/object.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "dlls/object_descriptor.h"
+
+typedef struct DfpfloorbarPlacement DfpfloorbarPlacement;
 
 #define DFPFLOORBAR_MODE_ROW_COUNT     3
 #define DFPFLOORBAR_MODE_ROW_SIZE      3
@@ -25,10 +27,10 @@ int dfpfloorbar_SeqFn(void);
 int DFP_Floorbar_getExtraSize(void);
 int DFP_Floorbar_getObjectTypeId(void);
 void DFP_Floorbar_free(GameObject* obj);
-void DFP_Floorbar_render(int p1, int p2, int p3, int p4, int p5, s8 visible);
+void DFP_Floorbar_render(GameObject* p1, int p2, int p3, int p4, int p5, s8 visible);
 void DFP_Floorbar_hitDetect(GameObject* obj);
 void DFP_Floorbar_update(GameObject* obj);
-void DFP_Floorbar_init(GameObject* obj, int params);
+void DFP_Floorbar_init(GameObject* obj, DfpfloorbarPlacement* params);
 void DFP_Floorbar_release(void);
 void DFP_Floorbar_initialise(void);
 extern u8 gDfpfloorbarModeTable[DFPFLOORBAR_MODE_TABLE_STORAGE];

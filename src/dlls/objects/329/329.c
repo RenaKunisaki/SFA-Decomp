@@ -2,7 +2,6 @@
 
 #include "dlls/objects/329.h"
 
-#include "dlls/objects/328_CFGuardian.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/dll/player_motion.h"
 #include "main/frame_timing.h"
@@ -15,7 +14,8 @@
 #include "main/maketex_sequence_api.h"
 #include "main/obj_message.h"
 
-#define CFWINDLIFT_OBJECT_GROUP 0x49
+#define CFWINDLIFT_OBJECT_GROUP     0x49
+#define WINDLIFT_RIDER_OBJECT_GROUP 0x16
 
 #define WINDLIFT_HEIGHT_BYTE_SCALE   4.0f
 #define WINDLIFT_DEFAULT_HEIGHT      90.0f
@@ -318,7 +318,7 @@ void windLift_update(GameObject* obj) {
                 state->slots[0].phaseFlags &= ~WINDLIFT_SLOT_RESET_FLAGS;
             }
         }
-        objects = (u32*)objGetAllOfType(CFGUARDIAN_OBJECT_GROUP, &objectCount);
+        objects = (u32*)objGetAllOfType(WINDLIFT_RIDER_OBJECT_GROUP, &objectCount);
         objectCount = objectCount + 1;
         if (objectCount > WINDLIFT_SLOT_COUNT) {
             objectCount = WINDLIFT_SLOT_COUNT;

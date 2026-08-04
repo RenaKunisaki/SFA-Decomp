@@ -29,7 +29,8 @@ typedef struct SaveGameCharacterPosition
 
 extern u8 gSaveGameData[];
 extern u8* gSaveGameWorkBuffer;
-/* SaveData describes the settings prefix of this persisted byte buffer. */
+/* SaveData describes this persisted byte buffer: the settings block followed by
+ * the five high-score tables. */
 extern u8 saveData[SAVE_DATA_SIZE];
 
 void mapClearBit(int idx, int bit);

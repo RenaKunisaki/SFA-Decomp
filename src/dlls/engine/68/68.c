@@ -25,7 +25,6 @@
 #include "main/pad.h"
 #include "main/rcp_dolphin.h"
 #include "main/vecmath.h"
-#include "string.h"
 #include "sys/objects.h"
 
 int lbl_803DD54C;
@@ -61,7 +60,7 @@ void firstPersonPlaceCamera(GameObject* focus, int resetClamp) {
     }
     galleon = getSbGalleon();
     if (galleon != NULL) {
-        galleonState = DBprotection_getCameraState(galleon);
+        galleonState = SB_Galleon_getCameraState(galleon);
         if (galleonState == 2) {
             localOffset[0] = self->anim.worldPosX - galleon->anim.worldPosX;
             localOffset[1] = (gCameraModeViewfinderTargetHeight[0] + self->anim.worldPosY) - galleon->anim.worldPosY;
@@ -144,7 +143,6 @@ void firstPersonExit(CameraObject* camera) {
     }
     curvesMove(&gCameraModeViewfinderState->transitionCurve);
 }
-const f32 gCameraModeViewfinderStickScale[1] = {120.0f};
 void firstPersonDoControls(CameraObject* camera) {
     s16 pitchDelta;
     s8 stickX;
@@ -168,9 +166,10 @@ void firstPersonDoControls(CameraObject* camera) {
     if ((gCameraModeViewfinderState->yawSpeed > -5.0f) && (gCameraModeViewfinderState->yawSpeed < 5.0f)) {
         gCameraModeViewfinderState->yawSpeed = 0.0f;
     }
-    spinI = (int)(15360.0f * ((f32)stickY / gCameraModeViewfinderStickScale[0]));
+    spinI = (int)(15360.0f * ((f32)stickY / 120.0f));
     camera->anim.rotX = gCameraModeViewfinderState->yawSpeed * timeDelta + (f32)camera->anim.rotX;
-    pitchDelta = spinI - (camera->anim.rotY & 0xffffU);
+    spinI = spinI - (camera->anim.rotY & 0xffffU);
+    pitchDelta = spinI;
     if (0x8000 < pitchDelta) {
         pitchDelta = pitchDelta - 0xffff;
     }
@@ -484,7 +483,7 @@ void CameraModeViewfinder_init(CameraObject* camera, int mode, CameraModeViewfin
     GameObject* focus;
     s16 diff;
     s16 absDiff;
-    s16 a2;
+    s16 yawDelta;
     f32 dx;
     f32 dz;
     f32 dist;
@@ -547,16 +546,16 @@ void CameraModeViewfinder_init(CameraObject* camera, int mode, CameraModeViewfin
     gCameraModeViewfinderState->positionZCurve.startTangent = zero;
     gCameraModeViewfinderState->positionZCurve.endTangent = zero;
     curvesMove(&gCameraModeViewfinderState->transitionCurve);
-    a2 = camera->anim.rotX -
+    yawDelta = camera->anim.rotX -
          (u16)(0x8000 - getAngle(camera->anim.worldPosX - gCameraModeViewfinderState->positionXCurve.end,
                                  camera->anim.worldPosZ - gCameraModeViewfinderState->positionZCurve.end));
-    if (a2 > 0x8000) {
-        a2 = a2 - 0xffff;
+    if (yawDelta > 0x8000) {
+        yawDelta = yawDelta - 0xffff;
     }
-    if (a2 < -0x8000) {
-        a2 = a2 + 0xffff;
+    if (yawDelta < -0x8000) {
+        yawDelta = yawDelta + 0xffff;
     }
-    gCameraModeViewfinderState->yawCurve.start = a2;
+    gCameraModeViewfinderState->yawCurve.start = yawDelta;
     zero = 0.0f;
     gCameraModeViewfinderState->yawCurve.end = zero;
     gCameraModeViewfinderState->yawCurve.startTangent = zero;

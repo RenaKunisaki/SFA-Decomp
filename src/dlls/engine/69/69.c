@@ -10,7 +10,6 @@
 #include "main/mm.h"
 #include "main/object_transform.h"
 #include "main/vecmath.h"
-#include "string.h"
 
 int lbl_803DD544;
 CameraModeTalkState* gCameraModeTalkState;
@@ -25,6 +24,10 @@ void CameraModeTalk_copyToCurrent(const CameraModeTalkInputs* inputs) {
 void CameraModeTalk_free(void) {
     mm_free(gCameraModeTalkState);
     gCameraModeTalkState = NULL;
+}
+
+static void CameraModeTalk_resetSmoothing(CameraModeTalkState* state) {
+    state->smoothedYawOffset = 0.0f;
 }
 
 void CameraModeTalk_update(CameraObject* camera) {
@@ -88,9 +91,9 @@ void CameraModeTalk_update(CameraObject* camera) {
         state = gCameraModeTalkState;
         heightT = -state->heightInput / 6.0f;
         followTermA = 0.2f;
-        followTermB = 25.0f;
+        followTermB = 50.0f;
         heightT = (heightT < 0.0f) ? 0.0f : ((heightT > 1.0f) ? 1.0f : heightT);
-        state->followDistance += followTermA * ((followTermB * heightT + 50.0f) - state->followDistance);
+        state->followDistance += followTermA * ((25.0f * heightT + followTermB) - state->followDistance);
         followDist = gCameraModeTalkState->followDistance;
         followTermA = followDist * sinPitch;
         followTermB = followDist * cosPitch;

@@ -197,7 +197,7 @@ void dim2prisonmammoth_update(GameObject* obj) {
     obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
     if ((gPrisonMammothStateFlagsTable[state->baddie.controlMode] & DIM2_PRISON_MAMMOTH_STATE_FLAG_SKIP_HIT_REACT) ==
         0) {
-        state->hitReactState = ObjHitReact_Update((int)obj, gPrisonMammothHitReactEntry, 1, state->hitReactState,
+        state->hitReactState = ObjHitReact_Update(obj, gPrisonMammothHitReactEntry, 1, state->hitReactState,
                                                   &state->hitReactStepScale);
         if (state->hitReactState != 0) {
             characterHeadLookRelax(obj, &state->eyeAnim);
@@ -224,8 +224,8 @@ void dim2prisonmammoth_update(GameObject* obj) {
         state->baddie.moveInputX = fz;
         state->baddie.moveInputZ = fz;
     }
-    *(s32*)&state->baddie.pressedButtons = 0;
-    *(s32*)&state->baddie.heldButtons = 0;
+    state->baddie.pressedButtons = 0;
+    state->baddie.heldButtons = 0;
     state->baddie.cameraYaw = 0;
     state->baddie.flags0 |= 0x400000;
     (*gPlayerInterface)
@@ -267,7 +267,7 @@ void dim2prisonmammoth_updateModelChain(GameObject* obj, int* model) {
 }
 
 ObjHitReactEntry gPrisonMammothHitReactEntry[] = {
-    {730, 885, 48, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.012f, {0, 0, 0, 0}},
+    {730, 885, 48, -1, 0, {0, 0, 0}, 0.012f, {0, 0, 0, 0}},
 };
 
 ObjectDescriptor10WithPadding gDIM2PrisonMammothObjDescriptor = {

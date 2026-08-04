@@ -41,7 +41,6 @@
 #include "main/obj_path.h"
 #include "main/obj_query.h"
 #include "main/objhits.h"
-#include "string.h"
 
 const f32 gDrakorHoverpadSpeedStep = 2.0f;
 f32 gDrakorHoverpadMtx[16];
@@ -132,14 +131,14 @@ int drakorhoverpad_getMountState(void)
     return 0x0;
 }
 
-void drakorhoverpad_getCameraPosition(int obj, f32* ox, f32* oy, f32* oz)
+void drakorhoverpad_getCameraPosition(GameObject* obj, f32* ox, f32* oy, f32* oz)
 {
     MatrixTransform pos;
     f32 mtx[16];
     GameObject* src = Obj_GetPlayerObject();
     if (src == NULL)
     {
-        src = (GameObject*)obj;
+        src = obj;
     }
     pos.x = src->anim.localPosX;
     pos.y = src->anim.localPosY;
@@ -841,7 +840,7 @@ void drakorhoverpad_updateMain(GameObject* obj)
             absV = (((DrakorHoverpadState*)p)->speed >= 0.0f)
                        ? ((DrakorHoverpadState*)p)->speed
                        : -((DrakorHoverpadState*)p)->speed;
-            if (absV > (*(f32*)&gDrakorHoverpadSpeedStep) + absH)
+            if (absV > absH + (*(f32*)&gDrakorHoverpadSpeedStep))
             {
                 limit = limit + (*(f32*)&gDrakorHoverpadSpeedStep);
             }

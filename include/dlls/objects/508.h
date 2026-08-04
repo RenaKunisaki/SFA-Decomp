@@ -4,9 +4,9 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
+#include "main/dll/dll_0081_modgfx.h"
+#include "main/texture.h"
 
-struct Dll81Interface;
-struct Texture;
 
 /*
  * Only the placement prefix consumed by this DLL is modeled. The active-target
@@ -24,7 +24,7 @@ typedef struct LaserBeamPlacementView {
 
 /* LaserBeam_getExtraSize() establishes the complete allocation size. */
 typedef struct LaserBeamState {
-    struct Texture* beamTexture;
+    Texture* beamTexture;
     f32 beamY;
     f32 beamY2;
     f32 beamX;
@@ -99,7 +99,7 @@ void LaserBeam_init(GameObject* obj, const LaserBeamPlacementView* placement);
 void LaserBeam_release(void);
 void LaserBeam_initialise(void);
 
-extern struct Dll81Interface** gLaserBeamObjModgfxResource;
+extern Dll81Interface** gLaserBeamObjModgfxResource;
 extern ObjectDescriptor gLaserBeamObjDescriptor;
 
 #endif /* DLLS_OBJECTS_508_H_ */

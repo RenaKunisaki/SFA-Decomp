@@ -1,6 +1,6 @@
+#include "dlls/object_descriptor.h"
 #include "main/dll/ppcwgpipe_struct.h"
 #include "dolphin/mtx.h"
-#include "dolphin/TRK_MINNOW_DOLPHIN/MWTrace.h"
 #include "track/intersect_depth_state_api.h"
 #include "track/intersect_depth_read_api.h"
 #include "main/frame_timing.h"
@@ -64,7 +64,7 @@
 #include "main/dll/hud_textures.h"
 #include "main/gametext_box_api.h"
 #include "main/gametext_command_api.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/audio/sfx_ids.h"
 #include "main/dll/savegame.h"
 #include "main/dll/pausemenu.h"
@@ -536,7 +536,6 @@ extern f32 gPauseMenuMapSwivelAngle;
 extern u8 gPauseMenuMapBackSide;
 extern Texture* gPauseMenuGridBackdropTexture;
 extern u8 gCurTaskHintMapId;
-extern f32 gPauseMenuSavedFovY;
 extern GridEntry* gPauseMenuActiveGrid;
 extern u8 gPauseMenuScarabCapacity;
 extern GameTextDef* gPauseMenuCurHintText;
@@ -603,11 +602,6 @@ extern u8 shouldOpenCMenu;
 extern int lbl_803A9320[0x11];
 extern int lbl_803DD898;
 extern int gGameUiScreenWidthOffset;
-void gameUiUpdateNpcDialogue(void);
-int pauseMenuUpdateMapScroll(void);
-void drawWorldMapHud(void);
-void timeListDraw(int a, int b, int c);
-void cMenuRun(void);
 extern u32 gCMenuButtons;
 extern s8 gCMenuCloseSfx;
 
@@ -739,11 +733,11 @@ static const GXColor sPauseMenuHoloChanColor = { 0xC0, 0xC0, 0xFF, 0xA0 };
 static const GXColor sQuadTevBaseColor = { 0xC0, 0xC0, 0xFF, 0x80 };
 static const GXColor sQuadTevKColor = { 0xFF, 0xFF, 0xFF, 0xFF };
 
-void cMenuPlayTrickyCommandSfx(int obj);
+void cMenuPlayTrickyCommandSfx(GameObject* obj);
 void hudUpdateMinimapReveal(void);
 void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2);
 
-void cMenuPlayTrickyCommandSfx(int obj)
+void cMenuPlayTrickyCommandSfx(GameObject* obj)
 {
     int sfx = 0;
     switch (gCMenuActivatedId)
@@ -769,7 +763,7 @@ void cMenuPlayTrickyCommandSfx(int obj)
     }
     if (sfx != 0)
     {
-        Sfx_PlayFromObjectLimited((GameObject*)obj, sfx, 1);
+        Sfx_PlayFromObjectLimited(obj, sfx, 1);
     }
 }
 
@@ -947,7 +941,7 @@ void gameUiSetupTexturedQuadTev(void* this, u8 a, s16 b, int c)
     GXSetTevSwapMode(GX_TEVSTAGE0, GX_TEV_SWAP0, GX_TEV_SWAP0);
     GXSetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    if (*(void**)((char*)this + 0x50) != NULL)
+    if ((void*)((Texture*)this)->imageOffset != NULL)
     {
         GXSetTevDirect(GX_TEVSTAGE1);
         GXSetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD0, GX_TEXMAP1, GX_COLOR_NULL);
@@ -1622,18 +1616,16 @@ void hudDrawAirMeter(void)
     GXSetScissor(sc0, sc1, sc2, sc3);
 }
 
-int gNpcDialoguePhraseState[6];
-int gHudTimedElementTexSlot[6];
-GameObject* gGameUiHudAnimObjects[6];
-GameObject* gHeadDisplayModelObjs[6];
-GameObject* gCMenuRingObjs[3];
-GameObject* gCMenuRingFrontObjs[3];
-void* gCMenuRingIconTextures[7];
-int gCMenuRingIconActiveFlags[7];
-HudItemInfoPopup gHudItemInfoPopup;
-int lbl_803A9364[13];
+extern int gNpcDialoguePhraseState[6];
+extern int gHudTimedElementTexSlot[6];
+extern GameObject* gHeadDisplayModelObjs[6];
+extern GameObject* gCMenuRingObjs[3];
+extern GameObject* gCMenuRingFrontObjs[3];
+extern void* gCMenuRingIconTextures[7];
+extern int gCMenuRingIconActiveFlags[7];
+extern HudItemInfoPopup gHudItemInfoPopup;
+extern int lbl_803A9364[13];
 
-char lbl_803A8830[0x120];
 void GameUI_airMeterRun(int v)
 {
     int clamped;
@@ -1762,7 +1754,7 @@ void drawViewFinderHud(void)
             gridSpacing = lbl_803E1EC4;
             angleDivisor = gGameUiAngleDivisor;
             waveBaseOffset = 479.5;
-            for (; gridX < (f64)640.0f; gridX += gridSpacing)
+            for (; gridX < 640.0f; gridX += gridSpacing)
             {
                 {
                     f32 cosine;
@@ -1983,25 +1975,23 @@ void GameUI_showItemInfoPopupByTexture(s16 textureId, int displayDuration, int i
     gHudItemInfoPopup.alpha = 0.0f;
 }
 
-f32 lbl_803A8950[0x18];
-
 void GameUI_showItemInfoPopup(s16 itemGamebit, int displayDuration, int itemCount)
 {
-    int* entry = (int*)gCMenuSections;
+    CMenuSection* entry = gCMenuSections;
     gHudItemInfoPopup.texture = NULL;
-    while ((void*)*entry != NULL)
+    while (entry->items != NULL)
     {
-        s16* row = (s16*)*entry;
-        while (row[0] != -1)
+        CMenuItemDef* row = entry->items;
+        while (row->ownedGameBit != -1)
         {
-            if (row[0] == itemGamebit)
+            if (row->ownedGameBit == itemGamebit)
             {
-                gHudItemInfoPopup.texture = textureLoadAsset(row[3]);
+                gHudItemInfoPopup.texture = textureLoadAsset(row->iconTextureId);
                 break;
             }
-            row += 8;
+            row++;
         }
-        entry = (int*)((char*)entry + 0x10);
+        entry++;
     }
     if (gHudItemInfoPopup.texture != NULL)
     {
@@ -2156,7 +2146,7 @@ void hudDrawStatusBarsAndCounters(int unused1, int unused2, int unused3)
         if (near != NULL && pauseMenuState == 0)
         {
             (*(void (*)(int*, int*, int*, int*)) *
-             (int*)((char*)*(int*)(*(int*)&((GameObject*)near)->anim.dll) + 0x54))(near, &c2, &c1, &c0);
+             (int*)((char*)*(int*)((int)((GameObject*)near)->anim.dll) + 0x54))(near, &c2, &c1, &c0);
             hcArg = 0x118;
             hudDrawCounter(0x1e, (s16)(c1 - c2), (s16)c0, 0xff, 0, &hcArg, 1);
         }
@@ -2495,11 +2485,11 @@ u8 lbl_8031B050[36] = {
 };
 
 TaskHintEntry gTaskHintTable[] = {
-    {0x02AA, 0x0487, 0x047A, {0x00, 0x00}, 0x28EA, 0x51CD, 0x51CA, {0x00, 0x9C}, 0x0A66, 0x03, 0x00, 0x063C},
-    {0x02A9, 0x0487, 0x0479, {0x00, 0x00}, 0x51C5, 0x51CD, 0x51C9, {0x00, 0x9B}, 0x0A65, 0x02, 0x00, 0x05F3},
-    {0x03DF, 0x0477, 0x0000, {0x00, 0x00}, 0x28E9, 0x51C7, 0x0, {0x00, 0x00}, 0x0A63, 0x01, 0x00, 0x0000},
-    {0x02AB, 0x0487, 0x047B, {0x00, 0x00}, 0x51C6, 0x51CC, 0x51CB, {0x00, 0x9D}, 0x0A67, 0x04, 0x00, 0x05F4},
-    {0x02A8, 0x0487, 0x0478, {0x00, 0x00}, 0x28EB, 0x51CC, 0x51C8, {0x00, 0x9A}, 0x0A64, 0x01, 0x00, 0x04E9},
+    {0x02AA, 0x0487, 0x047A, {0x00, 0x00}, 0x28EA, 0x51CD, 0x51CA, 0x009C, 0x0A66, 0x03, 0x00, 0x063C},
+    {0x02A9, 0x0487, 0x0479, {0x00, 0x00}, 0x51C5, 0x51CD, 0x51C9, 0x009B, 0x0A65, 0x02, 0x00, 0x05F3},
+    {0x03DF, 0x0477, 0x0000, {0x00, 0x00}, 0x28E9, 0x51C7, 0x0, 0x0000, 0x0A63, 0x01, 0x00, 0x0000},
+    {0x02AB, 0x0487, 0x047B, {0x00, 0x00}, 0x51C6, 0x51CC, 0x51CB, 0x009D, 0x0A67, 0x04, 0x00, 0x05F4},
+    {0x02A8, 0x0487, 0x0478, {0x00, 0x00}, 0x28EB, 0x51CC, 0x51C8, 0x009A, 0x0A64, 0x01, 0x00, 0x04E9},
 };
 
 CMenuItemDef gCMenuCollectableItems[] = {
@@ -2682,39 +2672,77 @@ struct PauseMenuPanelAnimTable gPauseMenuPanelAnims = {
     {0, 0, 0, 0x2715, 0, 0x2730, 0, 0, 0, 0, 0, 0},
     {0, 0, 0, 5, 0, 5, 0, 0, 0, 0, 0, 0},
 };
-u32 GameUI_funcs[33] = {0x00000000,
-                        0x00000000,
-                        0x00000000,
-                        0x001c0000,
-                        (u32)GameUI_initialise,
-                        (u32)GameUI_release,
-                        0x00000000,
-                        (u32)GameUI_frameStart,
-                        (u32)GameUI_frameEnd,
-                        (u32)GameUI_hudDraw,
-                        (u32)GameUI_unselectAllItems,
-                        (u32)GameUI_requestPlayerStatsSnapshot,
-                        0x00000000,
-                        (u32)GameUI_isAnyItemBeingUsed,
-                        (u32)GameUI_isItemBeingUsed,
-                        (u32)GameUI_isOneOfItemsBeingUsed,
-                        (u32)CMenu_GetState,
-                        (u32)GameUI_getSubpageGamebit,
-                        (u32)GameUI_func0E,
-                        (u32)GameUI_showMinimapInfoText,
-                        (u32)GameUI_gameTextShowNpcDialogue,
-                        (u32)GameUI_finishNpcDialogue,
-                        (u32)CMenu_SetShouldClose,
-                        (u32)GameUI_setInputOverride,
-                        (u32)GameUI_showItemInfoPopup,
-                        (u32)GameUI_showItemInfoPopupByTexture,
-                        (u32)GameUI_setUnusedHudSetting,
-                        (u32)GameUI_airMeterInitType0,
-                        (u32)GameUI_initAirMeter,
-                        (u32)GameUI_airMeterRun,
-                        (u32)GameUI_airMeterShutdown,
-                        (u32)GameUI_airMeterSetShutdown,
-                        (u32)GameUI_airMeterSetField24};
+typedef struct GameUIDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback frameStart;
+    ObjectDescriptorCallback frameEnd;
+    ObjectDescriptorCallback hudDraw;
+    ObjectDescriptorCallback unselectAllItems;
+    ObjectDescriptorCallback requestPlayerStatsSnapshot;
+    ObjectDescriptorCallback slot08;
+    ObjectDescriptorCallback isAnyItemBeingUsed;
+    ObjectDescriptorCallback isItemBeingUsed;
+    ObjectDescriptorCallback isOneOfItemsBeingUsed;
+    ObjectDescriptorCallback getState;
+    ObjectDescriptorCallback getSubpageGamebit;
+    ObjectDescriptorCallback slot0E;
+    ObjectDescriptorCallback showMinimapInfoText;
+    ObjectDescriptorCallback gameTextShowNpcDialogue;
+    ObjectDescriptorCallback finishNpcDialogue;
+    ObjectDescriptorCallback setShouldClose;
+    ObjectDescriptorCallback setInputOverride;
+    ObjectDescriptorCallback showItemInfoPopup;
+    ObjectDescriptorCallback showItemInfoPopupByTexture;
+    ObjectDescriptorCallback setUnusedHudSetting;
+    ObjectDescriptorCallback airMeterInitType0;
+    ObjectDescriptorCallback initAirMeter;
+    ObjectDescriptorCallback airMeterRun;
+    ObjectDescriptorCallback airMeterShutdown;
+    ObjectDescriptorCallback airMeterSetShutdown;
+    ObjectDescriptorCallback airMeterSetField24;
+} GameUIDllInterface;
+
+GameUIDllInterface GameUI_funcs = {
+    0,
+    0,
+    0,
+    0x001c0000,
+    (ObjectDescriptorCallback)GameUI_initialise,
+    (ObjectDescriptorCallback)GameUI_release,
+    0,
+    (ObjectDescriptorCallback)GameUI_frameStart,
+    (ObjectDescriptorCallback)GameUI_frameEnd,
+    (ObjectDescriptorCallback)GameUI_hudDraw,
+    (ObjectDescriptorCallback)GameUI_unselectAllItems,
+    (ObjectDescriptorCallback)GameUI_requestPlayerStatsSnapshot,
+    0,
+    (ObjectDescriptorCallback)GameUI_isAnyItemBeingUsed,
+    (ObjectDescriptorCallback)GameUI_isItemBeingUsed,
+    (ObjectDescriptorCallback)GameUI_isOneOfItemsBeingUsed,
+    (ObjectDescriptorCallback)CMenu_GetState,
+    (ObjectDescriptorCallback)GameUI_getSubpageGamebit,
+    (ObjectDescriptorCallback)GameUI_func0E,
+    (ObjectDescriptorCallback)GameUI_showMinimapInfoText,
+    (ObjectDescriptorCallback)GameUI_gameTextShowNpcDialogue,
+    (ObjectDescriptorCallback)GameUI_finishNpcDialogue,
+    (ObjectDescriptorCallback)CMenu_SetShouldClose,
+    (ObjectDescriptorCallback)GameUI_setInputOverride,
+    (ObjectDescriptorCallback)GameUI_showItemInfoPopup,
+    (ObjectDescriptorCallback)GameUI_showItemInfoPopupByTexture,
+    (ObjectDescriptorCallback)GameUI_setUnusedHudSetting,
+    (ObjectDescriptorCallback)GameUI_airMeterInitType0,
+    (ObjectDescriptorCallback)GameUI_initAirMeter,
+    (ObjectDescriptorCallback)GameUI_airMeterRun,
+    (ObjectDescriptorCallback)GameUI_airMeterShutdown,
+    (ObjectDescriptorCallback)GameUI_airMeterSetShutdown,
+    (ObjectDescriptorCallback)GameUI_airMeterSetField24,
+};
 char sTrickyDebugXCoordFormat[] = " x %.2f\n";
 char sTemplateProgressCounterFormat[] = "%02d/%02d";
 
@@ -3047,8 +3075,6 @@ void hudUpdateMinimapReveal(void)
 void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
 {
     u8* base;
-    int iconIndex;
-    int rowOffset;
     int i;
     GameObject* player;
     int k;
@@ -3076,7 +3102,7 @@ void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
     char* aTextPtr;
     s16 alpha;
     s16 rowFade;
-    s16 a16;
+    s16 fadedAlpha;
     int prevCharset;
     u8* aPhraseIndex;
     int bPrevCharset2;
@@ -3160,12 +3186,14 @@ void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
         }
         GXSetScissor(0, 0, 0x280, 0x1E0);
         hudDrawCMenu(cMenuArg0, cMenuArg1, cMenuArg2);
-        for (rowOffset = iconIndex = 0; iconIndex < GCMENU_ITEM_ICON_COUNT; iconIndex++, rowOffset += 0x32)
+        i = 0;
+        k = 0;
+        for (; i < GCMENU_ITEM_ICON_COUNT; i++, k += 0x32)
         {
-            if (gCMenuItemIcons[iconIndex] > 1)
+            if (gCMenuItemIcons[i] > 1)
             {
                 alpha = fade;
-                rowFade = gCMenuScrollTimer + rowOffset;
+                rowFade = gCMenuScrollTimer + k;
                 if (rowFade < gCMenuRowFadeInThreshold)
                 {
                     alpha = fade + (rowFade - gCMenuRowFadeInThreshold) * 8;
@@ -3182,13 +3210,13 @@ void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
                 {
                     alpha = 0xFF;
                 }
-                a16 = alpha * gCMenuHighlightFade / 0xFF;
+                fadedAlpha = alpha * gCMenuHighlightFade / 0xFF;
                 GXSetScissor(0, 0, 0x280, 0x1E0);
-                sprintf(label.text, lbl_803DBB58, gCMenuItemIcons[iconIndex]);
-                gameTextSetColor(0, 0, 0, a16 & 0xFF);
-                gameTextShowStr(label.text, 0x93, 0x247, 0x2B + (rowOffset + gCMenuScrollTimer));
-                gameTextSetColor(0xFF, 0xFF, 0xFF, (u8)a16);
-                gameTextShowStr(label.text, 0x93, 0x246, 0x2A + (rowOffset + gCMenuScrollTimer));
+                sprintf(label.text, lbl_803DBB58, gCMenuItemIcons[i]);
+                gameTextSetColor(0, 0, 0, fadedAlpha & 0xFF);
+                gameTextShowStr(label.text, 0x93, 0x247, 0x2B + (gCMenuScrollTimer + k));
+                gameTextSetColor(0xFF, 0xFF, 0xFF, (u8)fadedAlpha);
+                gameTextShowStr(label.text, 0x93, 0x246, 0x2A + (gCMenuScrollTimer + k));
             }
         }
         drawTexture(((CMenuHud*)base)->textures1C0[0x21], 537.0f, 175.0f,
@@ -4405,9 +4433,9 @@ void pauseMenuCreateHeads(void)
                 ((GameObject*)gHeadDisplayModelObjs[i])->anim.localPosZ = (-5.0f);
                 ((GameObject*)gHeadDisplayModelObjs[i])->anim.rotX = 0x7447;
                 ((GameObject*)gHeadDisplayModelObjs[i])->anim.rootMotionScale = 0.07f;
-                if (*(u32*)&((GameObject*)gHeadDisplayModelObjs[i])->anim.placementData > 0x90000000u)
+                if ((u32)((GameObject*)gHeadDisplayModelObjs[i])->anim.placementData > 0x90000000u)
                 {
-                    *(u32*)&((GameObject*)gHeadDisplayModelObjs[i])->anim.placementData = 0;
+                    ((GameObject*)gHeadDisplayModelObjs[i])->anim.placementData = NULL;
                 }
                 ObjAnim_SetCurrentMove((int)gHeadDisplayModelObjs[i], 1, 0.0f, 0);
             }
@@ -5047,7 +5075,7 @@ void pauseMenuDrawStatusPage(GameObject* player)
             for (ii = 0; ii < 7; ii++)
             {
                 f32 fy = 31.0f * (f32)(u32)(u16)ii + lbl_803E1F30;
-                pauseMenuDrawElement(*(int**)&((HudTextures*)hudTextures)->tex5C, fy, 436.0f, px, ty,
+                pauseMenuDrawElement((int*)((HudTextures*)hudTextures)->tex5C, fy, 436.0f, px, ty,
                                      (s32)lbl_803E20B8, 0);
             }
         }
@@ -5080,11 +5108,11 @@ void pauseMenuDrawStatusPage(GameObject* player)
                 }
             }
         }
-        pauseMenuDrawElement(*(int**)&((HudTextures*)hudTextures)->texBC, lbl_803DBAD0, lbl_803DBAD4,
+        pauseMenuDrawElement((int*)((HudTextures*)hudTextures)->texBC, lbl_803DBAD0, lbl_803DBAD4,
                              0x100 - gPauseMenuSlideOut, ty, 0x100, 0);
         gameUiDrawTextureRegion(((HudTextures*)hudTextures)->texB8, (f32)(lbl_803DBAD0 + 0x18), lbl_803DBAD4,
                                 0x100 - gPauseMenuSlideOut, ty, 0x100, 0x66, 0x12, 0);
-        pauseMenuDrawElement(*(int**)&((HudTextures*)hudTextures)->texC0, (f32)(lbl_803DBAD0 + 0x7e), lbl_803DBAD4,
+        pauseMenuDrawElement((int*)((HudTextures*)hudTextures)->texC0, (f32)(lbl_803DBAD0 + 0x7e), lbl_803DBAD4,
                              0x100 - gPauseMenuSlideOut, ty, 0x100, 0);
         hudDrawMagicBar((u8)ty, 0x100 - gPauseMenuSlideOut, 1);
         gPauseMenuActiveGrid = gPauseMenuStatusGrid;
@@ -5137,12 +5165,9 @@ void pauseMenuDrawSideRails(s32 alpha)
 
 
 /* Forward declarations. */
-void pauseMenuDrawTaskHintPanel(void* unused, u8 alpha);
-void pauseMenuDrawGrid(int alpha);
 void pauseMenuDrawGridCell(u8 i, int alpha, int flag);
 void timeListDraw(int unused1, int unused2, int unused3);
 void highScoreScreenDraw(int p1, int p2, int p3);
-void hudDrawCommunicatorAlert(int unused1, int unused2, int unused3);
 int pauseMenuUpdateMapScroll(void);
 int pauseMenuIsFox(void);
 void timeListPromptUpdate(void);
@@ -5212,8 +5237,6 @@ void pauseMenuDrawTaskHintPanel(void* unused, u8 alpha)
         gPauseMenuStatusGrid[lbl_803DBA9C[i]].id = (s16)t;
     }
 }
-
-void pauseMenuDrawGridCell(u8 i, int alpha, int flag);
 
 /* Pause-menu grid renderer: draws all cells
  * (selection last), the breathing selected cell, header/footer text, and the
@@ -5446,7 +5469,7 @@ void pauseMenuDrawGridCell(u8 i, int alpha, int flag)
 
 /* Draws the race-times list panel and the six
  * best-time entries with a pulsing header. */
-char sBabySnowwormTimerFormat[] = "  %02d:%02d.%02d";
+char sGameUiTimeFormat[] = "  %02d:%02d.%02d";
 
 void timeListDraw(int unused1, int unused2, int unused3)
 {
@@ -5502,21 +5525,21 @@ void timeListDraw(int unused1, int unused2, int unused3)
             int mins;
             if (k == 0)
             {
-                MWTRACE(6);
+                gameTextSetWindowById(6);
                 gameTextShow(0x2fa);
             }
             else if (k == 3)
             {
-                MWTRACE(7);
+                gameTextSetWindowById(7);
                 gameTextShow(0x2fa);
             }
             mins = v / 6000;
-            sprintf(buf, sBabySnowwormTimerFormat, mins, v / 100 - mins * 60, v - (int)((long)v / 100) * 100);
+            sprintf(buf, sGameUiTimeFormat, mins, v / 100 - mins * 60, v - (int)((long)v / 100) * 100);
             gameTextShowTimeStr(buf);
             p++;
         }
     }
-    MWTRACE(0xff);
+    gameTextSetWindowById(0xff);
 }
 
 /* High-score screen: draws the 9-patch box
@@ -8086,7 +8109,7 @@ void cMenuRun(void)
                                     {
                                         cMenuOpen = 0;
                                         gCMenuActivatedId = cMenuSelectedItem;
-                                        cMenuPlayTrickyCommandSfx((int)player);
+                                        cMenuPlayTrickyCommandSfx(player);
                                         gCMenuCloseSfx = 0;
                                     }
                                 }
@@ -8118,7 +8141,7 @@ void cMenuRun(void)
                     if (gTrickyHudItemMask & (1 << yButtonItem))
                     {
                         gCMenuActivatedId = yButtonItem;
-                        cMenuPlayTrickyCommandSfx((int)player);
+                        cMenuPlayTrickyCommandSfx(player);
                         buttonDisable(0, 0x900);
                     }
                 }
@@ -8305,7 +8328,7 @@ s16 GameUI_getSubpageGamebit(void)
 /* Signed-byte getter for cMenuState. */
 s32 CMenu_GetState(void)
 {
-    return *(s8*)&cMenuState;
+    return cMenuState;
 }
 s32 GameUI_isOneOfItemsBeingUsed(s32* arr, int count)
 {
@@ -8811,16 +8834,16 @@ void cMenuSelectItemByTarget(int idx, s16 target, s8 flag)
 
 void cMenuSelectFirstEnabledItem(int idx, s8 flag)
 {
-    void* entry;
+    CMenuSection* entry;
     s16* posPtr;
     u8 prev = 1;
     int count;
     s16 pos;
     u8 i;
 
-    entry = (u8*)gCMenuSections + idx * 16;
-    count = cMenuSetItems((CMenuItemDef*)*(int*)entry, flag);
-    posPtr = (s16*)((char*)entry + 4);
+    entry = (CMenuSection*)((u8*)gCMenuSections + idx * 16);
+    count = cMenuSetItems(entry->items, flag);
+    posPtr = &entry->cursor;
     pos = *posPtr;
 
     for (i = 0; i < count * 2; i++)
@@ -8994,9 +9017,9 @@ void GameUI_initialise(void)
     gCMenuCloseSfx = 0;
     gTrickyHudCachedIconIndex = -1;
     res = getScreenResolution();
-    *(int*)&gGameUiScreenWidthOffset = res;
+    gGameUiScreenWidthOffset = res;
     height = res >> 16;
-    *(int*)&gGameUiScreenHeightOffset = height;
+    gGameUiScreenHeightOffset = height;
     width = res & 0xffff;
     *(int*)&gGameUiScreenWidthOffset = width;
     gGameUiScreenWidthOffset = width - 320;
@@ -9017,12 +9040,6 @@ void GameUI_initialise(void)
     yButtonState = 0;
     airMeter = 0;
 }
-
-Texture* hudTextures[102];
-s16 lbl_803A8B48[0x98];
-u8 gCMenuItemEnabledTable[0x3C0];
-int gCMenuItemTargetTable[0xBA];
-int lbl_803A9320[0x11];
 
 int gPauseMenuSavedTextDir;
 int gGameUiCurHintTextMap;
@@ -9189,3 +9206,21 @@ u8 gPauseMenuScarabCapacity;
 int gLastTaskHintId;
 u8* gDummy39Texture;
 u8 gDummy39Countdown;
+
+int gNpcDialoguePhraseState[6];
+int gHudTimedElementTexSlot[6];
+GameObject* gGameUiHudAnimObjects[6];
+GameObject* gHeadDisplayModelObjs[6];
+GameObject* gCMenuRingObjs[3];
+GameObject* gCMenuRingFrontObjs[3];
+void* gCMenuRingIconTextures[7];
+int gCMenuRingIconActiveFlags[7];
+HudItemInfoPopup gHudItemInfoPopup;
+int lbl_803A9364[13];
+int lbl_803A9320[0x11];
+int gCMenuItemTargetTable[0xBA];
+u8 gCMenuItemEnabledTable[0x3C0];
+s16 lbl_803A8B48[0x98];
+Texture* hudTextures[102];
+f32 lbl_803A8950[0x18];
+char lbl_803A8830[0x120];

@@ -406,11 +406,11 @@ void mmshShrine_update(GameObject* obj) {
     }
     unlockLevel(mapGetDirIdx(MMSH_SHRINE_MAP_DIRECTORY), 1, 0);
     mmshShrine_updateHoverMotion(obj);
-    SCGameBitLatch_Update(&state->latch, MMSH_SHRINE_STATE_FLAG_MUSIC_LATCH_08, MMSH_SHRINE_NO_GAMEBIT,
+    GameBitLatch_Update(&state->latch, MMSH_SHRINE_STATE_FLAG_MUSIC_LATCH_08, MMSH_SHRINE_NO_GAMEBIT,
                           MMSH_SHRINE_NO_GAMEBIT, MMSH_SHRINE_GAMEBIT_0AE6, MMSH_SHRINE_MUSIC_TRIGGER_0A);
-    SCGameBitLatch_UpdateInverted(&state->latch, MMSH_SHRINE_STATE_FLAG_MUSIC_LATCH_04, MMSH_SHRINE_NO_GAMEBIT,
+    GameBitLatch_UpdateInverted(&state->latch, MMSH_SHRINE_STATE_FLAG_MUSIC_LATCH_04, MMSH_SHRINE_NO_GAMEBIT,
                                   MMSH_SHRINE_NO_GAMEBIT, GAMEBIT_SHRINE_MUSIC_LOCK, MUSICTRIG_vfp_walkabout);
-    SCGameBitLatch_Update(&state->latch, MMSH_SHRINE_STATE_FLAG_MUSIC_LATCH_10, MMSH_SHRINE_NO_GAMEBIT,
+    GameBitLatch_Update(&state->latch, MMSH_SHRINE_STATE_FLAG_MUSIC_LATCH_10, MMSH_SHRINE_NO_GAMEBIT,
                           MMSH_SHRINE_NO_GAMEBIT, GAMEBIT_SHRINE_MUSIC_LOCK, MUSICTRIG_PU3_Adventure_c4);
 
     switch (state->phase) {

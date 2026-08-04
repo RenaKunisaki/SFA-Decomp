@@ -3,8 +3,8 @@
 
 #include "global.h"
 
-bool ObjTrigger_UpdateIdBlockFlag(int obj);
-int ObjTrigger_IsSetById(int obj, int triggerId);
-int ObjTrigger_IsSet(int obj);
+bool ObjTrigger_UpdateIdBlockFlag(GameObject* obj);
+int ObjTrigger_IsSetById(GameObject* obj, int triggerId);
+int ObjTrigger_IsSet(GameObject* obj);
 
 #endif /* MAIN_OBJ_TRIGGER_H_ */

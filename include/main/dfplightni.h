@@ -2,7 +2,7 @@
 #define MAIN_DFPLIGHTNI_H_
 
 #include "global.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "dlls/object_descriptor.h"

@@ -63,7 +63,7 @@ int gTotemStrengthDeactivateTimer;
  * events, advances the rope from A-button presses, drives both pull animations
  * and their sounds, and starts the ending transition when either side wins.
  */
-int platform1_control(GameObject* obj, int unused, ObjSeqState* animUpdate) {
+int sc_totemstrength_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     GameObject* self;
     ScTotemStrengthState* state;
     GameObject* playerObject;
@@ -377,7 +377,7 @@ void sc_totemstrength_update(GameObject* obj) {
 void sc_totemstrength_init(GameObject* obj) {
     ScTotemStrengthState* state = obj->extra;
 
-    obj->animEventCallback = platform1_control;
+    obj->animEventCallback = sc_totemstrength_animEventCallback;
     obj->objectFlags |= (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
     obj->anim.rotX = (s16)SC_TOTEM_STRENGTH_INITIAL_TRACK_OFFSET;
     state->currentTrackOffset = SC_TOTEM_STRENGTH_INITIAL_TRACK_OFFSET;

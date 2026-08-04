@@ -22,7 +22,6 @@
 #include "main/player_control_interface.h"
 #include "main/vecmath.h"
 #include "main/voxmaps.h"
-#include "string.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 #include "main/dll/baddie_state.h"
@@ -40,7 +39,6 @@
 #include "main/dll/rom_curve_interface.h"
 #include "main/gamebits.h"
 #include "main/dll/objfsa.h"
-#include "main/gamebit_ids.h"
 #include "main/dll/newseqobj_baddie.h"
 #include "main/dll/baddie_frozen.h"
 #include "main/game_ui_interface.h"
@@ -50,7 +48,7 @@
 #include "main/dll/player_target.h"
 #include "main/dll/player_api.h"
 #include "dlls/objects/225_WispBaddie.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.h"
+#include "main/trig_float_helpers.h"
 #include "main/obj_link.h"
 #include "main/objfx.h"
 #include "main/objtexture.h"
@@ -82,7 +80,6 @@
 #include "main/dll/hagabon_mk2.h"
 #include "main/dll/snowworm.h"
 #include "main/dll/baddiewhirlpool.h"
-#include "track/intersect_whirlpool_api.h"
 
 /* Baddie-family animation data shared with the sequence-driver TUs. */
 
@@ -98,7 +95,7 @@
 typedef struct
 {
     f32 animSpeed; /* 0x0 */
-    u32 unk4;      /* 0x4 */
+    u32 sequenceDriven; /* 0x4 */
     u8 anim;       /* 0x8 */
     u8 next;       /* 0x9 */
     u8 alt;        /* 0xa */
@@ -121,7 +118,7 @@ void groundBaddiePushPlayerOut(GameObject* obj, u8* state)
     f32 sinA;
     f32 cosA;
     f32 base;
-    f32 f5;
+    f32 depth;
     f32 f2v;
     f32 dx;
     f32 dz;
@@ -147,16 +144,16 @@ void groundBaddiePushPlayerOut(GameObject* obj, u8* state)
         sinA = mathSinf(GROUND_BADDIE_PI * (f32)obj->anim.rotX / GROUND_BADDIE_ANGLE_UNIT_SCALE);
         cosA = mathCosf(GROUND_BADDIE_PI * (f32)obj->anim.rotX / GROUND_BADDIE_ANGLE_UNIT_SCALE);
         base = -(sinA * (px0 - sinA) + cosA * (pz0 - cosA));
-        f5 = base + (sinA * player->anim.previousWorldPosX + cosA * player->anim.previousWorldPosZ);
+        depth = base + (sinA * player->anim.previousWorldPosX + cosA * player->anim.previousWorldPosZ);
         f2v = base + (sinA * player->anim.worldPosX + cosA * player->anim.worldPosZ);
         if (f2v > 0.0f)
         {
-            if (!(f5 >= GROUND_BADDIE_PUSH_MAX_DEPTH))
+            if (!(depth >= GROUND_BADDIE_PUSH_MAX_DEPTH))
             {
                 return;
             }
-            player->anim.worldPosX = player->anim.worldPosX - sinA * f5;
-            player->anim.worldPosZ = player->anim.worldPosZ - cosA * f5;
+            player->anim.worldPosX = player->anim.worldPosX - sinA * depth;
+            player->anim.worldPosZ = player->anim.worldPosZ - cosA * depth;
             Obj_TransformWorldPointToLocal(player->anim.worldPosX, player->anim.worldPosY, player->anim.worldPosZ,
                                            &player->anim.localPosX, &player->anim.localPosY, &player->anim.localPosZ,
                                            player->anim.parent);
@@ -193,7 +190,7 @@ void guardClaw_update(GameObject* obj, u8* state)
     flags = ((EnemyState*)state)->controlFlags;
     if (flags & BADDIE_CONTROL_JUST_TRIGGERED)
     {
-        if (gSeq11EStateTable[((EnemyState*)state)->userData1].unk4 != 0)
+        if (gSeq11EStateTable[((EnemyState*)state)->userData1].sequenceDriven != 0)
         {
             ((EnemyState*)state)->controlFlags = flags | (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
         }
@@ -279,7 +276,7 @@ void guardClaw_init(GameObject* obj, u8* state)
     ((EnemyState*)state)->moveSpeedScale2 = fz;
     if (sub->sequenceId != -1)
     {
-        *(int*)&((EnemyState*)state)->controlFlags |= 1;
+        ((EnemyState*)state)->controlFlags |= 1;
     }
     (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
 }

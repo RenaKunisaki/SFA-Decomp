@@ -82,13 +82,6 @@ typedef struct CARDControl {
     /* 0x10C */ const DVDDiskID* diskID;
 } CARDControl;
 
-typedef struct CARDDecParam {
-    /* 0x00 */ u8* inputAddr;
-    /* 0x04 */ u32 inputLength;
-    /* 0x08 */ u32 aramAddr;
-    /* 0x0C */ u8* outputAddr;
-} CARDDecParam;
-
 typedef struct CARDID {
     /* 0x000 */ u8 serial[32];
     /* 0x020 */ u16 deviceID;

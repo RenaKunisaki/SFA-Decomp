@@ -5,6 +5,7 @@
  * the object; the first impact also notifies the active SharpClaw.
  */
 #include "dlls/objects/471_DIM2SnowBal.h"
+#include "dlls/objects/472_DIM2PathGen.h"
 
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/curve.h"
@@ -88,11 +89,11 @@ void dim2snowball_update(GameObject* obj) {
     }
 
     if ((state->flags & DIM2_SNOWBALL_FLAG_PATH_INITIALIZED) == 0) {
-        int* pathGenerator = (int*)state->pathGenerator;
+        GameObject* pathGenerator = (GameObject*)state->pathGenerator;
 
-        state->path.count =
-            (*(int (**)(int*, void*, void*, void*, void*))(**(int**)((char*)pathGenerator + 0x68) + 0x20))(
-                pathGenerator, &state->path.px, &state->path.py, &state->path.pz, &state->pathNodeData);
+        state->path.count = DIM2_PATH_GENERATOR_INTERFACE(pathGenerator)
+                                ->getCurveVals(pathGenerator, &state->path.px, &state->path.py, &state->path.pz,
+                                               &state->pathNodeData);
         state->path.dir = 0;
         state->path.eval = Curve_EvalHermite;
         state->path.coeffFn = Curve_BuildHermiteCoeffs;
@@ -116,7 +117,7 @@ void dim2snowball_update(GameObject* obj) {
                 objects = ObjList_GetObjects(&objectIndex, &objectCount);
                 sharpClaw = dim2snowball_findSharpClaw(objects, &objectIndex, &objectCount);
                 if (sharpClaw != NULL) {
-                    (*(void (**)(GameObject*))(**(int**)&sharpClaw->anim.dll + 0x20))(sharpClaw);
+                    (*(void (**)(GameObject*))(*(int*)sharpClaw->anim.dll + 0x20))(sharpClaw);
                 }
                 Sfx_PlayFromObject((int)obj, SFXTRIG_en_nlite1_c);
             }
@@ -164,7 +165,7 @@ void dim2snowball_update(GameObject* obj) {
             return;
         }
 
-        if (*(u8*)((char*)*(int**)&state->pathNodeData + (state->path.idx >> 2)) == 32) {
+        if (*(u8*)((char*)(int*)state->pathNodeData + (state->path.idx >> 2)) == 32) {
             if (mainGetBit(DIM2_SNOWBALL_LAUNCH_GAME_BIT) != 0) {
                 int hitCount;
 
@@ -193,14 +194,14 @@ void dim2snowball_update(GameObject* obj) {
     }
 
     if (obj->anim.alpha == 255) {
-        int* hitState = *(int**)&obj->anim.hitReactState;
+        int* hitState = (int*)obj->anim.hitReactState;
 
         if (hitState != NULL) {
             ((ObjHitsPriorityState*)hitState)->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
-            *(u8*)&((ObjHitsPriorityState*)hitState)->hitVolumePriority = 4;
-            *(u8*)&((ObjHitsPriorityState*)hitState)->hitVolumeId = 2;
-            *(int*)&((ObjHitsPriorityState*)hitState)->objectHitMask = 16;
-            *(int*)&((ObjHitsPriorityState*)hitState)->skeletonHitMask = 16;
+            ((ObjHitsPriorityState*)hitState)->hitVolumePriority = 4;
+            ((ObjHitsPriorityState*)hitState)->hitVolumeId = 2;
+            ((ObjHitsPriorityState*)hitState)->objectHitMask = 16;
+            ((ObjHitsPriorityState*)hitState)->skeletonHitMask = 16;
         }
     }
     Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_firlp6);
@@ -213,7 +214,7 @@ void dim2snowball_init(GameObject* obj, Dim2SnowBallPlacement* placement) {
     state->flags = (u8)(state->flags | DIM2_SNOWBALL_FLAG_FADING_IN);
     placement->targetObjectId = -1;
     *(s16*)obj = (s16)((s32)placement->rotationXByte << 8);
-    *(s8*)&obj->anim.alpha = 0;
+    obj->anim.alpha = 0;
     {
         ObjModelState* modelState = obj->anim.modelState;
 

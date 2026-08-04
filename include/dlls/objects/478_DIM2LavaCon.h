@@ -30,7 +30,7 @@ typedef struct Dim2LavaControlState {
     u8 heatEffectAlpha;
     u8 phase;
     u8 unknown05[3];
-    SCGameBitLatchState musicLatch;
+    GameBitLatchState musicLatch;
     int musicTriggerId;
 } Dim2LavaControlState;
 

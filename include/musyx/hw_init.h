@@ -1,7 +1,7 @@
 #ifndef MUSYX_HW_INIT_H_
 #define MUSYX_HW_INIT_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "musyx/dsp_voice.h"
 
 typedef u32 (*SndMessageCallback)(u32 message, u32 userValue);

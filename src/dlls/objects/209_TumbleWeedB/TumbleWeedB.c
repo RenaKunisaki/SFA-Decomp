@@ -18,7 +18,6 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
-#include "string.h"
 #include "main/audio/sfx_looped_object_api.h"
 #include "main/dll/dll_00C4_tricky.h"
 #include "main/dll/partfx_interface.h"
@@ -698,7 +697,7 @@ void tumbleweed_updateStateMachine(GameObject* obj) {
         } else if (phase == TUMBLEWEED_PHASE_PICKUP_APPROACH) {
             f32 playerDistance;
             player = Obj_GetPlayerObject();
-            playerDistance = getXZDistance(&player->anim.worldPosX, &obj->anim.worldPosX);
+            playerDistance = getXZDistanceSquared(&player->anim.worldPosX, &obj->anim.worldPosX);
             if (playerDistance < 625.0f) {
                 state->triggerGameBit = 0x195;
                 state->pickupMsgValue = 0;
@@ -755,10 +754,10 @@ void tumbleweed_updateStateMachine(GameObject* obj) {
                 scaledOffset = velocityScale * targetOffsetZ;
                 obj->anim.velocityZ = scaledOffset * state->speed;
             }
-            targetDistance = getXZDistance((f32*)&obj->anim.localPosX, state->targetPos);
+            targetDistance = getXZDistanceSquared((f32*)&obj->anim.localPosX, state->targetPos);
             objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
                     obj->anim.velocityZ * timeDelta);
-            if (getXZDistance((f32*)&obj->anim.localPosX, state->targetPos) > targetDistance) {
+            if (getXZDistanceSquared((f32*)&obj->anim.localPosX, state->targetPos) > targetDistance) {
                 f32 snapOffsetX, snapOffsetY, snapOffsetZ;
                 f32 interpolationFactor;
                 snapOffsetX = state->targetPos[0] - obj->anim.localPosX;

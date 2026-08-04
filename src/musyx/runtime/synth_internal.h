@@ -2,7 +2,7 @@
 #define SFA_AUDIO_SYNTH_INTERNAL_H
 
 #ifndef SYNTH_INTERNAL_USE_PROJECT_TYPES
-#include "ghidra_import.h"
+#include "types.h"
 #endif
 
 #include "musyx/mcmd.h"

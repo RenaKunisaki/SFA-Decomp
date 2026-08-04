@@ -38,7 +38,7 @@ void VFP_Platform_free(int obj);
 void VFP_Platform_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 void VFP_Platform_hitDetect(void);
 void VFP_Platform_update(GameObject* obj);
-void VFP_Platform_init(GameObject* obj, int data);
+void VFP_Platform_init(GameObject* obj, VfpPlatformPlacement* data);
 void VFP_Platform_release(void);
 void VFP_Platform_initialise(void);
 
@@ -361,9 +361,9 @@ void VFP_Platform_update(GameObject* obj)
     }
 }
 
-void VFP_Platform_init(GameObject* obj, int data)
+void VFP_Platform_init(GameObject* obj, VfpPlatformPlacement* data)
 {
-    VfpPlatformPlacement* def = (VfpPlatformPlacement*)data;
+    VfpPlatformPlacement* def = data;
     VfpPlatformState* state = obj->extra;
     obj->anim.rotX = (((s32)def->rotXByte) << 8);
     state->gameBitId = def->gameBitId;

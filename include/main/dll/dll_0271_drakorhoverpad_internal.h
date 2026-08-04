@@ -65,7 +65,7 @@ void drakorhoverpad_getRiderPosition(GameObject* obj, f32* ox, f32* oy, f32* oz)
 f32 drakorhoverpad_func13(int obj, f32* out);
 void drakorhoverpad_free(int obj);
 void drakorhoverpad_func17(GameObject* obj, int sel, int* out);
-void drakorhoverpad_getCameraPosition(int obj, f32* ox, f32* oy, f32* oz);
+void drakorhoverpad_getCameraPosition(GameObject* obj, f32* ox, f32* oy, f32* oz);
 void drakorhoverpad_renderGroundMarker(GameObject* obj, f32 scale);
 int drakorhoverpad_getExtraSize(void);
 int drakorhoverpad_getObjectTypeId(void);

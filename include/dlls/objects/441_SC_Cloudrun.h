@@ -35,7 +35,7 @@ void sc_cloudrunnera_free(GameObject* obj);
 void sc_cloudrunnera_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
                             s8 visible);
 void sc_cloudrunnera_hitDetect(void);
-void sc_cloudrunnera_update(int obj);
+void sc_cloudrunnera_update(GameObject* obj);
 void sc_cloudrunnera_init(GameObject* obj, const ScCloudrunnerAPlacement* placement);
 void sc_cloudrunnera_release(void);
 void sc_cloudrunnera_initialise(void);

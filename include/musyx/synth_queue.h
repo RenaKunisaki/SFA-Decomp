@@ -1,7 +1,7 @@
 #ifndef MUSYX_SYNTH_QUEUE_H_
 #define MUSYX_SYNTH_QUEUE_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 #define SYNTH_MAX_VOICES       8
 #define SYNTH_VOICE_NOTE_COUNT 0x10

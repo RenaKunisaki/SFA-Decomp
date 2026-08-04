@@ -22,7 +22,6 @@
 #include "main/player_control_interface.h"
 #include "main/vecmath.h"
 #include "main/voxmaps.h"
-#include "string.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 #include "main/dll/baddie_state.h"
@@ -40,7 +39,6 @@
 #include "main/dll/rom_curve_interface.h"
 #include "main/gamebits.h"
 #include "main/dll/objfsa.h"
-#include "main/gamebit_ids.h"
 #include "main/dll/newseqobj_baddie.h"
 #include "main/dll/baddie_frozen.h"
 #include "main/game_ui_interface.h"
@@ -50,7 +48,7 @@
 #include "main/dll/player_target.h"
 #include "main/dll/player_api.h"
 #include "dlls/objects/225_WispBaddie.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.h"
+#include "main/trig_float_helpers.h"
 #include "main/obj_link.h"
 #include "main/objfx.h"
 #include "main/objtexture.h"
@@ -82,7 +80,6 @@
 #include "main/dll/hagabon_mk2.h"
 #include "main/dll/snowworm.h"
 #include "main/dll/baddiewhirlpool.h"
-#include "track/intersect_whirlpool_api.h"
 
 /* Baddie-family animation data shared with the sequence-driver TUs. */
 
@@ -231,7 +228,7 @@ void vambat_updateEngaged(GameObject* obj, int state)
     vec[2] = trackedObj->anim.localPosZ - (obj)->anim.localPosZ;
     PSVECMag((Vec*)vec);
     ((EnemyState*)state)->vambat.engagedTimer = ((EnemyState*)state)->vambat.engagedTimer + timeDelta;
-    if (*(u32*)(state + 0x340) != 0 || ((EnemyState*)state)->vambat.engagedTimer > 3.6e+02f)
+    if ((void*)((EnemyState*)state)->lastHitObject != NULL || ((EnemyState*)state)->vambat.engagedTimer > 3.6e+02f)
     {
         bs->flags2E4 = bs->flags2E4 | 0x10000LL;
         ((EnemyState*)state)->vambat.idleTimer = gVambatZero[0];

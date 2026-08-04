@@ -38,6 +38,7 @@
 #include "main/objprint_anim_api.h"
 #include "main/objprint_character_api.h"
 #include "main/objprint_sound_api.h"
+#include "main/dll/DR/dll_026E_drshackle.h"
 #include "main/dll/dll_0282_barrelgener.h"
 #include "game/objects/object.h"
 #include "main/objhits.h"
@@ -92,7 +93,7 @@ static const HighTopPathParams sHighTopPathParams = {{1, 1, 1, 1}};
 
 #define HIGHTOP_OBJECT_TYPE_ID 0x43
 #define HIGHTOP_OBJGROUP       0xa
-#define ARWARWING_OBJGROUP     0x26
+#define PLAYER_VEHICLE_OBJGROUP     0x26
 
 
 int hightop_stateHandler10(GameObject* obj, HighTopRuntime* stateArg)
@@ -221,7 +222,7 @@ int hightop_stateHandler09(GameObject* obj, HighTopRuntime* stateArg)
             Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 2);
         }
     }
-    if (ObjTrigger_IsSetById((int)obj, 0xaf7) != 0)
+    if (ObjTrigger_IsSetById(obj, 0xaf7) != 0)
     {
         int total = mainGetBit(GAMEBIT_ITEM_CCGoldBar_Used);
         total = total + mainGetBit(GAMEBIT_ITEM_CCGoldBar_Count);
@@ -578,33 +579,33 @@ ObjectDescriptor24 gHighTopObjDescriptor = {
     (ObjectDescriptorCallback)HighTop_getLookTargetYaw,
 };
 
-int hightop_handleMotionEvent(int obj, u8 event)
+int hightop_handleMotionEvent(GameObject* obj, u8 event)
 {
-    HighTopRuntime* runtime = ((GameObject*)obj)->extra;
+    HighTopRuntime* runtime = obj->extra;
     switch (event)
     {
     case 0:
         break;
     case 5:
-        (*gPlayerInterface)->setState((void*)obj, runtime, 8);
+        (*gPlayerInterface)->setState(obj, runtime, 8);
         break;
     case 6:
         mainSetBits(0x634, 1);
-        (*gObjectTriggerInterface)->runSequence(4, (void*)obj, -1);
+        (*gObjectTriggerInterface)->runSequence(4, obj, -1);
         break;
     case 7:
         mainSetBits(0x634, 0);
         mainSetBits(0x631, 1);
-        ((GameObject*)obj)->anim.modelInstance->runtimeSourceHitMask |= 1;
+        obj->anim.modelInstance->runtimeSourceHitMask |= 1;
         runtime->flagsC40 &= ~0x140;
         runtime->lookController.modeBits &= ~2;
-        (*gPlayerInterface)->setState((void*)obj, runtime, 7);
+        (*gPlayerInterface)->setState(obj, runtime, 7);
         break;
     case 8:
-        (*gObjectTriggerInterface)->runSequence(7, (void*)obj, -1);
+        (*gObjectTriggerInterface)->runSequence(7, obj, -1);
         break;
     case 9:
-        (*gPlayerInterface)->setState((void*)obj, runtime, 7);
+        (*gPlayerInterface)->setState(obj, runtime, 7);
         break;
     }
     return 0;
@@ -967,9 +968,9 @@ int HighTop_canDismount(void)
     return 0x0;
 }
 
-void HighTop_getRiderPosition(int obj, f32* a, f32* b, f32* c)
+void HighTop_getRiderPosition(GameObject* obj, f32* a, f32* b, f32* c)
 {
-    HighTopRuntime* runtime = ((GameObject*)obj)->extra;
+    HighTopRuntime* runtime = obj->extra;
     *a = runtime->pathPoint2X;
     *b = runtime->pathPoint2Y;
     *c = runtime->pathPoint2Z;
@@ -996,7 +997,7 @@ int HighTop_getObjectTypeId(void)
 
 void HighTop_free(int obj)
 {
-    objFreeObjectType(obj, ARWARWING_OBJGROUP);
+    objFreeObjectType(obj, PLAYER_VEHICLE_OBJGROUP);
     objFreeObjectType(obj, HIGHTOP_OBJGROUP);
     (*gGameUIInterface)->airMeterShutdown();
 }
@@ -1023,10 +1024,10 @@ void HighTop_render(void* obj, int p2, int p3, int p4, int p5, char visible)
             int** t = (int**)objGetAllOfType(55, &count);
             for (i = 0, list = t; i < count; i++)
             {
-                int idx = (*(int (**)(int*))((char*)**(int***)((char*)*list + 0x68) + 0x24))(*list);
-                void (*dispatch)(int*, void*, int, int, int, int, int) =
-                    *(void (**)(int*, void*, int, int, int, int, int))((char*)**(int***)((char*)*list + 0x68) + 0x20);
-                dispatch(*list, obj, gHighTopTuning.shacklePathPoints[idx], p2, p3, p4, p5);
+                int idx = DRSHACKLE_INTERFACE(*list)->getAttachSlot((GameObject*)*list);
+                void (*dispatch)(GameObject*, void*, int, int, int, int, int) =
+                    DRSHACKLE_INTERFACE(*list)->renderAtPathPoint;
+                dispatch((GameObject*)*list, obj, gHighTopTuning.shacklePathPoints[idx], p2, p3, p4, p5);
                 list++;
             }
         }
@@ -1133,7 +1134,7 @@ void HighTop_update(GameObject* obj)
             }
             else
             {
-                hightop_handleMotionEvent(self, ev);
+                hightop_handleMotionEvent((GameObject*)self, ev);
             }
         }
     }
@@ -1143,8 +1144,8 @@ void HighTop_update(GameObject* obj)
         runtime->baddie.moveInputX = zero;
         runtime->baddie.moveInputZ = zero;
     }
-    *(int*)&runtime->baddie.pressedButtons = 0;
-    *(int*)&runtime->baddie.heldButtons = 0;
+    runtime->baddie.pressedButtons = 0;
+    runtime->baddie.heldButtons = 0;
     runtime->baddie.cameraYaw = 0;
     *(int*)state &= ~0x400000;
     (*gPlayerInterface)->update((void*)self, state, (f32)(u32)framesThisStep, timeDelta, gHighTopStateHandlers,
@@ -1153,7 +1154,7 @@ void HighTop_update(GameObject* obj)
     characterDoEyeAnims((GameObject*)self, &runtime->eyeAnimState);
     objSoundUpdateMouth((GameObject*)(self), &runtime->modelSoundState);
     dll_2E_updateLookAt((GameObject*)self, &((HighTopRuntime*)state)->lookController);
-    if (ObjTrigger_IsSet(self) != 0)
+    if (ObjTrigger_IsSet((GameObject*)self) != 0)
     {
         s8 substate;
         buttonDisable(0, PAD_BUTTON_A);
@@ -1204,12 +1205,12 @@ void HighTop_init(GameObject* obj, HighTopPlacement* placement)
     runtime->unkC45 = placement->spawnVariant;
     runtime->turnRateThreshold = 5;
     *(s8*)&runtime->substate = -1;
-    node = (ObjModelState*)(*(int**)&(obj)->anim.modelState);
+    node = (ObjModelState*)((int*)(obj)->anim.modelState);
     if (node != 0)
     {
-        *(int*)&node->flags |= 0xa10;
+        node->flags |= 0xa10;
     }
-    objAddObjectType((int)obj, ARWARWING_OBJGROUP);
+    objAddObjectType((int)obj, PLAYER_VEHICLE_OBJGROUP);
     objAddObjectType((int)obj, HIGHTOP_OBJGROUP);
     (*gPlayerInterface)->init(obj, runtime, 11, 1);
     runtime->baddie.gravity = 0.17f;

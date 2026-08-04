@@ -146,13 +146,13 @@ void InvHit_update(GameObject* obj) {
     case INVHIT_MODE_SELF_FREE: {
         ObjHitsPriorityState* hitState = *(ObjHitsPriorityState**)&obj->anim.hitReactState;
         char* ownerHitSlot;
-        char* ownerHitState = (char*)((GameObject*)obj->userData1)->anim.hitReactState;
+        ObjHitsPriorityState* ownerHitState = (ObjHitsPriorityState*)((GameObject*)obj->userData1)->anim.hitReactState;
         int ownerHitIndex;
 
         ownerHitIndex = 0;
-        ownerHitSlot = ownerHitState;
-        for (; ownerHitIndex < *(s8*)(ownerHitState + 0x71); ownerHitIndex++) {
-            if (*(GameObject**)(ownerHitSlot + 0x7c) == obj) {
+        ownerHitSlot = (char*)ownerHitState;
+        for (; ownerHitIndex < ownerHitState->priorityHitCount; ownerHitIndex++) {
+            if (*(GameObject**)(ownerHitSlot + offsetof(ObjHitsPriorityState, hitObjects)) == obj) {
                 hitState->flags = hitState->flags & ~OBJHITS_PRIORITY_STATE_ENABLED;
                 Obj_FreeObject(obj);
             }
@@ -171,7 +171,7 @@ void InvHit_update(GameObject* obj) {
         int groundHitIndex;
 
         obj->userData2 -= framesThisStep;
-        if (*(void**)&hitState->lastHitObject != NULL) {
+        if ((void*)hitState->lastHitObject != NULL) {
             hitState->flags = 0;
         }
         target = *(GameObject**)&obj->userData1;
@@ -247,8 +247,8 @@ void InvHit_init(GameObject* obj, InvHitObjectDef* setup) {
         hitState->hitVolumeId = INVHIT_DEFAULT_HIT_VOLUME_ID;
         hitState->activeHitboxMode = 0;
         hitState->resetHitboxMode = 0;
-        *(int*)&hitState->objectHitMask = INVHIT_HIT_MASK;
-        *(int*)&hitState->skeletonHitMask = INVHIT_HIT_MASK;
+        hitState->objectHitMask = INVHIT_HIT_MASK;
+        hitState->skeletonHitMask = INVHIT_HIT_MASK;
         hitState->lateralResponseWeight = 0;
         hitState->axialResponseWeight = 0;
         break;
@@ -268,8 +268,8 @@ void InvHit_init(GameObject* obj, InvHitObjectDef* setup) {
         hitState->hitVolumePriority = INVHIT_SELF_FREE_HIT_PRIORITY;
         hitState->hitVolumeId = 0;
         hitState->resetHitboxMode = 0;
-        *(int*)&hitState->objectHitMask = INVHIT_HIT_MASK;
-        *(int*)&hitState->skeletonHitMask = INVHIT_HIT_MASK;
+        hitState->objectHitMask = INVHIT_HIT_MASK;
+        hitState->skeletonHitMask = INVHIT_HIT_MASK;
         hitState->lateralResponseWeight = 0;
         hitState->axialResponseWeight = 0;
         break;
@@ -283,8 +283,8 @@ void InvHit_init(GameObject* obj, InvHitObjectDef* setup) {
         hitState->resetHitboxMode = 0;
         hitState->hitVolumePriority = INVHIT_ATTACH_HIT_PRIORITY;
         hitState->hitVolumeId = INVHIT_DEFAULT_HIT_VOLUME_ID;
-        *(int*)&hitState->objectHitMask = INVHIT_HIT_MASK;
-        *(int*)&hitState->skeletonHitMask = INVHIT_HIT_MASK;
+        hitState->objectHitMask = INVHIT_HIT_MASK;
+        hitState->skeletonHitMask = INVHIT_HIT_MASK;
         hitState->lateralResponseWeight = 0;
         hitState->axialResponseWeight = 0;
         break;
@@ -301,7 +301,7 @@ void InvHit_init(GameObject* obj, InvHitObjectDef* setup) {
         hitState->shapeFlags = OBJHITS_SHAPE_SPHERE;
         hitState->primaryRadius = INVHIT_HOMING_RADIUS;
         hitState->flags = OBJHITS_PRIORITY_STATE_ENABLED | OBJHITS_PRIORITY_STATE_NO_SEPARATION_RESPONSE;
-        *(int*)&hitState->objectHitMask = INVHIT_HIT_MASK;
+        hitState->objectHitMask = INVHIT_HIT_MASK;
         obj->userData2 = INVHIT_HOMING_LIFETIME;
         {
             GameObject* anchorObj = *(GameObject**)&setup->anchorObj;

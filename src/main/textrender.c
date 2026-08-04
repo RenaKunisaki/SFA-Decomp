@@ -1,5 +1,4 @@
 #include "track/intersect_hud_api.h"
-#define GAMETEXT_COLOR_U8
 #include "main/gametext_shared_internal.h"
 #include "main/mm.h"
 #include "main/texture.h"
@@ -58,8 +57,6 @@ int gGameTextBoxColorG = 0xFF;
 int gGameTextBoxColorB = 0xFF;
 int gGameTextBoxColorA = 0xFF;
 char lbl_803DB404[4] = {0};
-
-typedef f32 Mtx[3][4];
 
 extern const f32 lbl_803DE70C;
 extern const f32 lbl_803DE710;
@@ -396,7 +393,6 @@ struct EnglishDiscStatusResource
 /* Dino-language glyph substitution order (see translateToDinoLanguage). */
 u8 sGameTextGlyphOrder[0x1b] = "urstovwxazbcmdefghtkilnpoq";
 
-int getControlCharLen(u32 c);
 
 static inline int ctrlCharLen(u32 c)
 {
@@ -411,6 +407,27 @@ static inline int ctrlCharLen(u32 c)
         p++;
     }
     return 0;
+}
+
+void gameTextSetWindowById(int boxId)
+{
+    int i = gGameTextCommandCount;
+    GameTextSlot* cmd;
+    void* box;
+
+    gGameTextCommandCount = i + 1;
+    cmd = &gGameTextCommandSlots[i];
+    if (boxId == 0xff)
+    {
+        box = NULL;
+    }
+    else
+    {
+        box = &gTextBoxes[boxId];
+    }
+    gCurTextBox = box;
+    cmd->opcode = 8;
+    cmd->arg0 = boxId;
 }
 
 void gameTextSetWindow(u8* textBox)
@@ -446,7 +463,6 @@ void gameTextSetWindow(u8* textBox)
         cmd->arg0 = idx;
     }
 }
-
 
 static inline TextGlyph* findGlyph(u32 ch, int glyphLang)
 {
@@ -825,8 +841,6 @@ struct
     "<uninitialised>", "<loading>", "<file empty!>", "<no file!>", "<%d's not in %s>", "<%d, doesn't have phrase %d>",
 };
 
-char sGameTextMapPathFormat[] = "gametext/%s/%s.bin";
-
 static void translateToDinoLanguage(u8* str)
 {
     int byteOff = 0;
@@ -1061,23 +1075,7 @@ SubtitleCmd* subtitleParseControlCmds(char* str, int* count)
 
 GameTextLoadSlot curGameTexts[GAMETEXT_LOAD_SLOT_COUNT];
 
-
-
-
 TextFont gGameTextCharsets[0xA0 / sizeof(TextFont)];
-
-
-void* jumptable_802C9E84[16] = {
-    (void*)((u8*)gameTextRun + 0x54C), (void*)((u8*)gameTextRun + 0x3B8), (void*)((u8*)gameTextRun + 0x3C8),
-    (void*)((u8*)gameTextRun + 0x354), (void*)((u8*)gameTextRun + 0x388), (void*)((u8*)gameTextRun + 0x3DC),
-    (void*)((u8*)gameTextRun + 0x408), (void*)((u8*)gameTextRun + 0x418), (void*)((u8*)gameTextRun + 0x450),
-    (void*)((u8*)gameTextRun + 0x480), (void*)((u8*)gameTextRun + 0x490), (void*)((u8*)gameTextRun + 0x4AC),
-    (void*)((u8*)gameTextRun + 0x4BC), (void*)((u8*)gameTextRun + 0x4F0), (void*)((u8*)gameTextRun + 0x4C8),
-    (void*)((u8*)gameTextRun + 0x504),
-};
-
-char sGameTextSequencePathFormat[] = "gametext/Sequences/%d_%s.bin";
-
 
 int GameText_FindControlCodeArgs(u8* str, u32 target, int* out)
 {
@@ -1114,7 +1112,6 @@ int GameText_FindControlCodeArgs(u8* str, u32 target, int* out)
     return 0;
 }
 
-
 int getControlCharLen(u32 c)
 {
     CtrlCharEntry* p = gGameTextCtrlCodeArgCounts;
@@ -1129,7 +1126,6 @@ int getControlCharLen(u32 c)
     }
     return 0;
 }
-
 
 GameTextSlot gGameTextCommandSlots[0xA00 / sizeof(GameTextSlot)];
 u32 sSubtitleCtrlCmdScratch[0x240];

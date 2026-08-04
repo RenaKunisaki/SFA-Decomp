@@ -1,7 +1,7 @@
 #ifndef MUSYX_SYNTH_CALLBACK_H_
 #define MUSYX_SYNTH_CALLBACK_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 typedef struct SynthCallbackLink SynthCallbackLink;
 typedef struct SynthVoice SynthVoice;

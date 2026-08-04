@@ -70,6 +70,9 @@ import struct
 import subprocess
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from scope_guard import require_nonempty
+
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 OBJDUMP = os.path.join(ROOT, 'build/binutils/powerpc-eabi-objdump')
 DOL = os.path.join(ROOT, 'orig/GSAE01/sys/main.dol')
@@ -425,6 +428,10 @@ def main():
     dol = Dol(DOL)
     splits = parse_splits(SPLITS)
     units = json.load(open(os.path.join(ROOT, 'objdiff.json')))['units']
+    require_nonempty(filters,
+                     [u.get('name', '') + ' '
+                      + ((u.get('metadata') or {}).get('source_path') or '')
+                       for u in units])
 
     scanned = bad_units = 0
     bad_names = []

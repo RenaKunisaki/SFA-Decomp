@@ -13,7 +13,7 @@
 #include "main/model_engine.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/sky.h"
-#include "main/dll/FRONT/dll_0032_n_rareware.h"
+#include "main/dll/FRONT/dll_0032_titlescreeninit.h"
 
 f32 lbl_803DD5F4;
 s8 gTitleScreenInitFrameStartPending;

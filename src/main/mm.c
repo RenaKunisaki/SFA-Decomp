@@ -1,6 +1,6 @@
 #include "dolphin/os/OSReport.h"
 #include "dolphin/os.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/dll/dll_80136a40.h"
 #include "main/dll/savegame.h"
 #include "main/dll/dll_0017_savegame_api.h"
@@ -37,8 +37,6 @@ int gMmUseHeap3;
 int gMmRegion0SpawnEnabled = 1;
 int gMmUseHeaps1and2 = -1;
 char sMmStoreAllocationTag[] = "mmStore";
-
-typedef f32 Mtx[3][4];
 
 #define MM_STORE_COUNT 0x20
 #define MM_DEFERRED_FREE_CAPACITY 2000
@@ -299,7 +297,7 @@ int testAndSet_onlyUseHeaps1and2(int v)
     }
 }
 
-extern MmRegion gMmRegionTable[0xA0 / sizeof(MmRegion)];
+extern MmRegion gMmRegionTable[MM_REGION_CAPACITY];
 
 int testAndSet_onlyUseHeap3(int v)
 {
@@ -357,8 +355,6 @@ int roundUpTo8(int x)
     return x;
 }
 
-MmRegion gMmRegionTable[MM_REGION_CAPACITY];
-
 int roundUpTo16(int x)
 {
     int r = x & 0xf;
@@ -369,7 +365,7 @@ int roundUpTo16(int x)
     return x;
 }
 
-DeferredFree gMmDeferredFreeStack[MM_DEFERRED_FREE_CAPACITY];
+extern DeferredFree gMmDeferredFreeStack[MM_DEFERRED_FREE_CAPACITY];
 
 MmStore* gMmStoreArray[MM_STORE_COUNT];
 
@@ -959,11 +955,11 @@ void* mmInitRegion(u8* buf, int size, int numSlots)
     freePtr = (int)buf + slotsBytes;
     if (freePtr & 0x1f)
     {
-        *(int*)&slot->loc = (freePtr & ~0x1f) + 0x20;
+        slot->loc = (void*)((freePtr & ~0x1f) + 0x20);
     }
     else
     {
-        *(int*)&slot->loc = freePtr;
+        slot->loc = (void*)freePtr;
     }
     slot->size = after;
     slot->type = 0;
@@ -1077,9 +1073,6 @@ void* stackCreate(int count, int size)
     return stack;
 }
 
-/* Additional dtk-split chunks of mm's pooled OSReport format strings
-   (embedded NULs / boundary truncation), emitted as raw bytes. */
-
 char sMmShowInfoFBMemoryStoreMessageBlock[] = {
     0x3C, 0x6D, 0x6D, 0x53, 0x68, 0x6F, 0x77, 0x49, 0x6E, 0x66, 0x6F, 0x46, 0x42, 0x4D, 0x65, 0x6D, 0x6F, 0x72,
     0x79, 0x53, 0x74, 0x6F, 0x72, 0x65, 0x3E, 0x20, 0x66, 0x61, 0x69, 0x6C, 0x65, 0x64, 0x20, 0x74, 0x6F, 0x20,
@@ -1171,3 +1164,6 @@ char sMmAllocFreeMessageBlock[] = {
     0x6F, 0x75, 0x6E, 0x64, 0x20, 0x66, 0x6F, 0x72, 0x20, 0x61, 0x6C, 0x6C, 0x6F, 0x63, 0x61, 0x74, 0x69, 0x6F, 0x6E,
     0x2E, 0x0A, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
+
+MmRegion gMmRegionTable[MM_REGION_CAPACITY];
+DeferredFree gMmDeferredFreeStack[MM_DEFERRED_FREE_CAPACITY];

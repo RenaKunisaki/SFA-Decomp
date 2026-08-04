@@ -23,8 +23,8 @@ void normalize(f32* x, f32* y, f32* z);
 void gxSetAlphaBlendNoZTest(void);
 void textRenderChar(int x0, int y0, int x1, int y1, f32 u0, f32 v0, f32 u1, f32 v1);
 void gxTevTextureTimesColor1Stage(void);
-void setupWaterReflectionTev(int handle1, int handle2);
-void setupReflectionDistortTev(int textureHandle);
+void setupWaterReflectionTev(Texture* handle1, Texture* handle2);
+void setupReflectionDistortTev(Texture* textureHandle);
 void setupReflectionBumpDistortTev(void* texture);
 void loadReflectionTexMtxs(void);
 void gxSetAdditiveBlendZTest(void);
@@ -40,6 +40,14 @@ void screenImageDraw(u8 alpha);
 void doColorFilter(u8* modulation);
 void doDistortionFilter(f32* position, f32 radius, u8* modulation, f32 angle);
 void doSpiritVisionFilter(void);
+/*
+ * Fullscreen 640x480 texture-tinted quad with shape-controlled alpha:
+ * `flag != 0` lights the screen with three pre-set GXColors stamped into
+ * K0/T1/T2; `flag == 0` instead does a single K0 modulate where K0's
+ * alpha is the caller's byte divided by 4. Builds a per-call 3x4 tex
+ * coord matrix that scales the source texture by 1/scaleX and 1/scaleY
+ * with a sub-pixel offset baked from -320.0f/50.
+ */
 void drawViewFinderAperture(f32 scaleX, f32 scaleY, u8 alpha, u8 flag);
 void doHeatEffect(u8 alpha);
 void drawOrthoTexturedQuad(int x1, int y1, int x2, int y2, f32 u1, f32 v1, f32 u2, f32 v2, int z);

@@ -2,6 +2,7 @@
 #include "dolphin/card.h"
 #include "dolphin/mtx.h"
 #include "track/intersect_card_api.h"
+#include "track/intersect_hud_color_api.h"
 #include "main/texture.h"
 #include "main/dll/player_state.h"
 #include "main/sky_interface.h"
@@ -23,10 +24,8 @@
 #include "main/maketex_api.h"
 #include "main/pad.h"
 #include "main/pi_dolphin.h"
-#include "main/audio/sfx_trigger_ids.h"
 #include "main/shader_api.h"
 #include "dolphin/gx/GXTransform.h"
-#include "string.h"
 #include "main/gametext_internal.h"
 #include "main/model_engine.h"
 #include "main/pi_flush_api.h"
@@ -55,71 +54,6 @@ u32 gSaveCardSerialLo;
 u32 gSaveCardSerialHi;
 char* gSaveCardIoBuffer;
 void* gSaveCardWorkArea;
-void waterFxSpawnContactEffect(u8* obj, f32* pos, u8 flip, u8 type);
-void mtx44Identity(f32* mat);
-void gxSetPeControl_ZCompLoc_(u8 zCompLoc);
-void gxSetZMode_(u8 compareEnable, int compareFunc, u8 updateEnable);
-void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag);
-
-
-void waterFxSpawnContactEffect(u8* obj, f32* pos, u8 flip, u8 type);
-
-
-/* 4x4 identity fill. */
-void mtx44Identity(f32* mat);
-
-
-void gxSetPeControl_ZCompLoc_(u8 zCompLoc);
-
-
-void gxSetZMode_(u8 compareEnable, int compareFunc, u8 updateEnable);
-
-
-void drawPartialTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale, int width, int height, int u_offset,
-                        int v_offset);
-
-/*
- * Generic ortho-projected single-color quad blit. Sets the GX state up
- * fresh (no tex coords, color from constant K0, additive blend, fixed
- * 0x3C texmtx) then emits four GX_VTXFMT1 vertices at z=-0x18C with
- * width 4*size_x and height 4*size_y in screen pixels. Used as the
- * "draw fullscreen tint" primitive by the dialog code in cardShowLoadingMsg.
- */
-void drawRect(f32 sx, f32 sy, int x, int y);
-
-
-/*
- * Caller-coloured asset blit. Same mechanic as drawTexture but the K0
- * color comes from a writable GXColor the caller passes in (we apply the
- * gHudTintAlpha alpha tint to it in place). The flag arg picks between
- * "raster passthrough" (TevColorIn 0xF/0xF/0xF/0xE) and "K-tint replace"
- * (TevColorIn 0xF/0xE/0x8/0xF).
- */
-void hudDrawColored(int obj, int x, int y, u32* color, int scale, int flag);
-
-/*
- * Quad-from-asset blit: takes an "asset record" (with width at +0xA,
- * height at +0xC, and an optional second-stage flag at +0x50), a per-
- * call alpha multiplier, screen-pos (sx, sy), and a u16 size scale.
- * Composes K0 from RGB(255,255,255) plus the global alpha tint
- * (alpha * gHudTintAlpha >> 8); if the asset opts in, layers a second
- * tex stage that further K-multiplies by the texture. Final width and
- * height are 4 * asset_dim * scale >> 8 in screen pixels at z=-8.
- */
-void drawTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale);
-
-
-/*
- * Fullscreen 640x480 texture-tinted quad with shape-controlled alpha:
- * `flag != 0` lights the screen with three pre-set GXColors stamped into
- * K0/T1/T2; `flag == 0` instead does a single K0 modulate where K0's
- * alpha is the caller's byte divided by 4. Builds a per-call 3x4 tex
- * coord matrix that scales the source texture by 1/sx and 1/sy with a
- * sub-pixel offset baked from -320.0f/50.
- */
-void drawViewFinderAperture(f32 sx, f32 sy, u8 a, u8 flag);
-
-
 void loadReflectionTexMtxs(void)
 {
     f32* base = (f32*)&gCameraModelViewMatrix;

@@ -12,8 +12,8 @@
  * cleared by hitDetect and set by the first update.
  */
 #include "main/frame_timing.h"
-#include "main/dll/ARW/dll_02A2_arwspeedstr.h"
 #include "main/dll/ARW/dll_02A3.h"
+#include "dlls/object_descriptor.h"
 #include "main/object_render.h"
 #include "sys/objects.h"
 #include "main/vecmath.h"
@@ -22,10 +22,10 @@
 int gDll2A3UpdatedThisFrame;
 int gDll2A3InstanceCount;
 
-void dll_2A3_setSpeed(GameObject* obj, int speed)
+void dll_2A3_setLifetime(GameObject* obj, int lifetime)
 {
-    ARWSpeedStrState* state = obj->extra;
-    state->speed = speed;
+    Dll2A3State* state = obj->extra;
+    state->lifetime = lifetime;
 }
 
 void dll_2A3_setVelocity(GameObject* obj, Vec3f* velocity)

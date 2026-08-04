@@ -20,9 +20,14 @@ typedef struct SkyBlendStateFlags
 } SkyBlendStateFlags;
 
 typedef struct SkyLight {
-    f32 redCurve[7];
-    f32 greenCurve[7];
-    f32 blueCurve[7];
+    union {
+        struct {
+            f32 redCurve[7];
+            f32 greenCurve[7];
+            f32 blueCurve[7];
+        };
+        f32 curves[3][7];
+    };
     u8 blendTargetR;
     u8 blendTargetG;
     u8 blendTargetB;

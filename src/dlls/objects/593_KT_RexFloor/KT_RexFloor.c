@@ -69,7 +69,7 @@ void KT_RexFloorSwitch_hitDetect(void)
 
 void KT_RexFloorSwitch_update(GameObject* obj)
 {
-    KtrexfloorswitchPlacement* placement = *(KtrexfloorswitchPlacement**)&(obj)->anim.placementData;
+    KtrexfloorswitchPlacement* placement = (KtrexfloorswitchPlacement*)(obj)->anim.placementData;
     KtrexfloorswitchState* state = (obj)->extra;
     ObjTextureRuntimeSlot* tex;
     GameObject* player;

@@ -1,7 +1,7 @@
 #ifndef MUSYX_HW_DSPCTRL_H_
 #define MUSYX_HW_DSPCTRL_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "musyx/dsp_voice.h"
 
 void salBuildCommandList(s16 *dest, u32 nsDelay);

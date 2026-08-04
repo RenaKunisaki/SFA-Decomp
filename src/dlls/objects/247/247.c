@@ -153,7 +153,6 @@ void dll_F7_update(GameObject* obj) {
             hitEffect.spawn.rotZ = 0;
             hitEffect.spawn.rotY = 0;
             hitEffect.spawn.rotX = 0;
-            /* Preserve the target's post-store formation of the embedded packet address. */
             (*gDllF7Resource5A)
                 ->spawn(NULL, 1, (PartFxSpawnParams*)((int)&hitEffect + 16), DLLF7_HIT_PARTICLE_FLAGS, -1,
                         &hitEffect.color);
@@ -222,7 +221,7 @@ void dll_F7_init(GameObject* obj, DllF7Placement* placement) {
             modelState->flags |= DLLF7_MODEL_FLAGS;
         }
     }
-    *(u8*)&state->hitsRemaining = DLLF7_HIT_COUNT;
+    state->hitsRemaining = DLLF7_HIT_COUNT;
     *(u8*)&state->alternateMode = placement->alternateMode;
     if (state->alternateMode == 0) {
         int mapEventState = (*gMapEventInterface)->shouldNotSaveTime(placement->base.ident);

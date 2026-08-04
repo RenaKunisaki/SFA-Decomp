@@ -10,7 +10,6 @@
 #include "main/frame_timing.h"
 #include "main/mm.h"
 #include "main/object_transform.h"
-#include "string.h"
 
 CameraModeCrawlState* gCameraModeCrawlState;
 

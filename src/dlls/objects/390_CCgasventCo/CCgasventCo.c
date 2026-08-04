@@ -87,7 +87,7 @@ u8 ccGasVentControl_countUnblockedVents(GameObject* obj, CCGasVentControlState* 
         for (; i < CC_GAS_VENT_CONTROL_VENT_COUNT; i++) {
             GameObject* nearestBlocker =
                 objGetNearestTypeTo(CC_GAS_VENT_BLOCKER_OBJECT_GROUP, vents[i], 0);
-            if (getXZDistance(&vents[i]->anim.worldPosX, &nearestBlocker->anim.worldPosX) > blockerClearDistance) {
+            if (getXZDistanceSquared(&vents[i]->anim.worldPosX, &nearestBlocker->anim.worldPosX) > blockerClearDistance) {
                 unblockedVentCount = unblockedVentCount + 1u;
             }
         }

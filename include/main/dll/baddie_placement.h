@@ -27,7 +27,7 @@ typedef struct EnemyPlacement {
     u8 aggroRangeByte; /* 0x29: aggro radius, shifted left 3 into EnemyState.aggroRange */
     s8 initialYaw;     /* 0x2A: restored into anim.rotX as initialYaw << 8 */
     u8 flags;          /* 0x2B: bit 3 (0x8) reloads spawn position before the trigger sequence */
-    s16 respawnEnabled; /* 0x2C: when 0, the off-screen respawn path is skipped */
+    s16 respawnDelay; /* 0x2C: minutes fed to MapEvent addTime; 0 skips the off-screen respawn path */
     s8 triggerSequenceId;
     u8 pathStepByte; /* 0x2F: rom-curve advance step, divided by 255 into EnemyState.pathStep */
     s16 unk30;
@@ -43,7 +43,7 @@ STATIC_ASSERT(offsetof(EnemyPlacement, unk1C) == 0x1C);
 STATIC_ASSERT(offsetof(EnemyPlacement, droppedItemId) == 0x22);
 STATIC_ASSERT(offsetof(EnemyPlacement, initialWeaponId) == 0x27);
 STATIC_ASSERT(offsetof(EnemyPlacement, objectFlagBits) == 0x28);
-STATIC_ASSERT(offsetof(EnemyPlacement, respawnEnabled) == 0x2C);
+STATIC_ASSERT(offsetof(EnemyPlacement, respawnDelay) == 0x2C);
 STATIC_ASSERT(offsetof(EnemyPlacement, unk30) == 0x30);
 STATIC_ASSERT(offsetof(EnemyPlacement, hitPoints) == 0x32);
 STATIC_ASSERT(offsetof(EnemyPlacement, unk34) == 0x34);

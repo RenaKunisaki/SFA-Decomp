@@ -3,24 +3,24 @@
 
 #include "game/objects/object.h"
 #include "global.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/dll/baddie_state.h"
 #include "main/dll/dll_002E_moveLib.h"
 #include "main/objseq.h"
 
 typedef struct SnowHornEntry
 {
-    f32 f0;
-    f32 f4;
-    f32 f8;
-    s16 hc;
+    f32 posX;
+    f32 posY;
+    f32 posZ;
+    s16 rotX;
     u8 padE[2];
-    f32 f10;
-    f32 f14;
-    f32 f18;
-    s16 h1c;
-    u16 h1e;
-    u16 h20;
+    f32 altPosX;
+    f32 altPosY;
+    f32 altPosZ;
+    s16 altRotX;
+    u16 altPoseGameBit;
+    u16 flipRotGameBit;
     u8 pad22[2];
 } SnowHornEntry;
 
@@ -56,8 +56,8 @@ typedef struct DIMSnowHorn1State
     u8 mode;
     u8 triggerMode;
     u8 flags; /* 0xA8E: bit0x2 riding (GAMEBIT_SNOWHORN_RIDING), bit0x8 hitvol-priority, bit0x20 sequence-triggered */
-    u8 queryFlagA8F;   /* 0xA8F: nonzero queried by DIMSnowHorn1_getDismountSide (set cross-DLL) */
-    u8 queryFlagA90;   /* 0xA90: nonzero queried by DIMSnowHorn1_getMountSide (set cross-DLL) */
+    u8 dismountSide;   /* 0xA8F: nonzero = side 2; set cross-DLL */
+    u8 mountSide;      /* 0xA90: nonzero = side 1; set cross-DLL */
     u8 proximityPhase; /* 0xA91: 0/1/2 phase toggling linked objects by player distance (stateHandler05) */
     u8 padA92[2];
     f32 hitReactStepScale;
@@ -120,6 +120,6 @@ void DIMSnowHorn1_hitDetect(void);
 void DIMSnowHorn1_update(GameObject* obj);
 void DIMSnowHorn1_release(void);
 void DIMSnowHorn1_initialise(void);
-void DIMSnowHorn1_init(GameObject* obj, int p2, int p3);
+void DIMSnowHorn1_init(GameObject* obj, DIMSnowHorn1Placement* p2, int p3);
 
 #endif /* MAIN_DLL_DIM_DLL_0256_DIMSNOWHORN1_H_ */

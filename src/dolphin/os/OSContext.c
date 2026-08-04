@@ -2,7 +2,6 @@
 
 #include "dolphin/os/__os.h"
 
-#define HID2 920
 
 volatile OSContext* __OSCurrentContext AT_ADDRESS(OS_BASE_CACHED | 0x00D4);
 volatile OSContext* __OSFPUContext AT_ADDRESS(OS_BASE_CACHED | 0x00D8);
@@ -455,7 +454,6 @@ void OSDumpContext(OSContext* context) {
     }
 }
 
-void OSSwitchFPUContext(__OSException exception, OSContext* context);
 asm void OSSwitchFPUContext(register __OSException exception, register OSContext* context) {
     nofralloc
     mfmsr   r5

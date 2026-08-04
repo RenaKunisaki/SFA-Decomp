@@ -8,26 +8,33 @@
 
 typedef struct MMPTrenchFxPlacement {
     ObjPlacement base;
-    u8 unknown18;
+    s8 triggerRadius;
     s8 emitAngleZ;
     s8 emitAngleY;
     s8 emitAngleX;
     u8 extentX;
     u8 extentZ;
     u8 extentY;
-    u8 unknown1F[5];
+    u8 emitType;
+    u16 effectId;
+    s16 emitCount;
     s16 enableGameBit;
-    u8 unknown26[2];
+    s16 stopGameBit;
 } MMPTrenchFxPlacement;
 
 STATIC_ASSERT(sizeof(MMPTrenchFxPlacement) == 0x28);
+STATIC_ASSERT(offsetof(MMPTrenchFxPlacement, triggerRadius) == 0x18);
 STATIC_ASSERT(offsetof(MMPTrenchFxPlacement, emitAngleZ) == 0x19);
 STATIC_ASSERT(offsetof(MMPTrenchFxPlacement, emitAngleY) == 0x1A);
 STATIC_ASSERT(offsetof(MMPTrenchFxPlacement, emitAngleX) == 0x1B);
 STATIC_ASSERT(offsetof(MMPTrenchFxPlacement, extentX) == 0x1C);
 STATIC_ASSERT(offsetof(MMPTrenchFxPlacement, extentZ) == 0x1D);
 STATIC_ASSERT(offsetof(MMPTrenchFxPlacement, extentY) == 0x1E);
+STATIC_ASSERT(offsetof(MMPTrenchFxPlacement, emitType) == 0x1F);
+STATIC_ASSERT(offsetof(MMPTrenchFxPlacement, effectId) == 0x20);
+STATIC_ASSERT(offsetof(MMPTrenchFxPlacement, emitCount) == 0x22);
 STATIC_ASSERT(offsetof(MMPTrenchFxPlacement, enableGameBit) == 0x24);
+STATIC_ASSERT(offsetof(MMPTrenchFxPlacement, stopGameBit) == 0x26);
 
 typedef struct MMPTrenchFxState {
     s16 enableGameBit;

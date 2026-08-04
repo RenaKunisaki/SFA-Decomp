@@ -17,11 +17,6 @@
 #include "main/object_render.h"
 #include "sys/objects.h"
 
-/*
- * The broader model-light header adds another enum source-position anchor.
- * Keep this exact TU's narrow API view and semantic kind enum so MWCC retains
- * the original anonymous .sdata2 symbol numbering.
- */
 enum {
     SB_CLOUD_BALL_LIGHT_KIND = 2
 };

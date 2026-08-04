@@ -22,7 +22,6 @@
 #include "main/player_control_interface.h"
 #include "main/vecmath.h"
 #include "main/voxmaps.h"
-#include "string.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 #include "main/dll/baddie_state.h"
@@ -50,7 +49,7 @@
 #include "main/dll/player_target.h"
 #include "main/dll/player_api.h"
 #include "dlls/objects/225_WispBaddie.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.h"
+#include "main/trig_float_helpers.h"
 #include "main/obj_link.h"
 #include "main/objfx.h"
 #include "main/objtexture.h"
@@ -82,7 +81,6 @@
 #include "main/dll/hagabon_mk2.h"
 #include "main/dll/snowworm.h"
 #include "main/dll/baddiewhirlpool.h"
-#include "track/intersect_whirlpool_api.h"
 
 /* Baddie-family animation data shared with the sequence-driver TUs. */
 
@@ -1353,63 +1351,63 @@ void sharpClawInit(int obj, u8* state)
     switch (((GameObject*)obj)->anim.romDefNo)
     {
     case 314:
-        if ((s8)setup->unk27 != 0)
+        if ((s8)setup->initialWeaponId != 0)
         {
-            *(s16*)(state + 0x2b6) = 51;
+            ((EnemyState*)state)->weaponRomDefNo = 51;
         }
         ((EnemyState*)state)->sightRange = 110.0f;
         ((EnemyState*)state)->current = 40;
         ((EnemyState*)state)->userData2 = 0;
         break;
     case 17:
-        if ((s8)setup->unk27 != 0)
+        if ((s8)setup->initialWeaponId != 0)
         {
-            *(s16*)(state + 0x2b6) = 51;
+            ((EnemyState*)state)->weaponRomDefNo = 51;
         }
         ((EnemyState*)state)->sightRange = 110.0f;
         ((EnemyState*)state)->current = 40;
         ((EnemyState*)state)->userData2 = 1;
         break;
     case 1505:
-        if ((s8)setup->unk27 != 0)
+        if ((s8)setup->initialWeaponId != 0)
         {
-            *(s16*)(state + 0x2b6) = 1529;
+            ((EnemyState*)state)->weaponRomDefNo = 1529;
         }
         ((EnemyState*)state)->sightRange = 110.0f;
         ((EnemyState*)state)->current = 50;
         ((EnemyState*)state)->userData2 = 2;
         break;
     case 1463:
-        if ((s8)setup->unk27 != 0)
+        if ((s8)setup->initialWeaponId != 0)
         {
-            *(s16*)(state + 0x2b6) = 1530;
+            ((EnemyState*)state)->weaponRomDefNo = 1530;
         }
         ((EnemyState*)state)->sightRange = 120.0f;
         ((EnemyState*)state)->current = 50;
         ((EnemyState*)state)->userData2 = 3;
         break;
     case 1464:
-        if ((s8)setup->unk27 != 0)
+        if ((s8)setup->initialWeaponId != 0)
         {
-            *(s16*)(state + 0x2b6) = 1534;
+            ((EnemyState*)state)->weaponRomDefNo = 1534;
         }
         ((EnemyState*)state)->sightRange = 110.0f;
         ((EnemyState*)state)->current = 60;
         ((EnemyState*)state)->userData2 = 4;
         break;
     case 1465:
-        if ((s8)setup->unk27 != 0)
+        if ((s8)setup->initialWeaponId != 0)
         {
-            *(s16*)(state + 0x2b6) = 51;
+            ((EnemyState*)state)->weaponRomDefNo = 51;
         }
         ((EnemyState*)state)->sightRange = 110.0f;
         ((EnemyState*)state)->current = 1;
         ((EnemyState*)state)->userData2 = 1;
         break;
     case 1958:
-        if ((s8)setup->unk27 != 0)
+        if ((s8)setup->initialWeaponId != 0)
         {
-            *(s16*)(state + 0x2b6) = 1957;
+            ((EnemyState*)state)->weaponRomDefNo = 1957;
         }
         ((EnemyState*)state)->sightRange = 110.0f;
         ((EnemyState*)state)->current = 160;

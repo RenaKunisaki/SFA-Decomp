@@ -4,7 +4,7 @@
 #include "game/objects/object_interface.h"
 #include "global.h"
 #include "main/vec_types.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/objanim.h"
 #include "main/objhits_types.h"
 
@@ -35,9 +35,7 @@ typedef s16 ObjAnimPackedEvent;
 /* Bits copied from set-move flags into ObjAnimState during move advancement. */
 #define OBJANIM_MOVE_CONTROL_HOLD_EVENT_COUNTDOWN 0x02
 #define OBJANIM_MOVE_CONTROL_REFRESH_SAVED_STEP 0x08
-#ifndef OBJANIM_MOVE_CONTROL_SKIP_EVENT_COUNTDOWN
 #define OBJANIM_MOVE_CONTROL_SKIP_EVENT_COUNTDOWN 0x10
-#endif
 #define OBJANIM_MOVE_CACHE_SLOT_COUNT 2
 #define OBJANIM_MISSING_MOVE_ID -1
 #define OBJANIM_BLEND_MOVE_INDEX_INVALID -1
@@ -334,7 +332,8 @@ typedef struct ObjDef {
   s16 mapLoadObjectId;
   u8 pad7A[0x7C - 0x7A];
   s16 helpTextIds[4];
-  u8 pad84[0x88 - 0x84];
+  u16 avoidRadiusX; /* 0x84: lateral extent of the side-step avoidance ellipse (scaled by 0.1); 0 disables avoidance for the object */
+  u16 avoidRadiusZ; /* 0x86: axial extent of the same ellipse */
   f32 shadowModelScaleBase;
   u8 pad8C;
   u8 modelLightMaskIndex;
@@ -593,6 +592,8 @@ STATIC_ASSERT(sizeof(ObjTextureSlotDef) == 0x02);
 STATIC_ASSERT(sizeof(ObjTextureRuntimeSlot) == 0x10);
 
 STATIC_ASSERT(sizeof(ObjDef) == 0x9C);
+STATIC_ASSERT(offsetof(ObjDef, avoidRadiusX) == 0x84);
+STATIC_ASSERT(offsetof(ObjDef, avoidRadiusZ) == 0x86);
 STATIC_ASSERT(offsetof(ObjDef, name) == 0x91);
 STATIC_ASSERT(offsetof(ObjDef, shadowScaleBase) == 0x00);
 STATIC_ASSERT(offsetof(ObjDef, rootMotionScaleBase) == 0x04);

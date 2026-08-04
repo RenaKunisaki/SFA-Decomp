@@ -243,7 +243,6 @@ void THPPlayerStop(void) {
     }
 }
 
-BOOL THPPlayerPlay(void);
 BOOL THPPlayerPlay(void) {
     if ((gAttractMoviePlayer.isOpen != 0) && ((gAttractMoviePlayer.state == 1) || (gAttractMoviePlayer.state == 4))) {
         gAttractMoviePlayer.state = 2;
@@ -335,7 +334,6 @@ BOOL prepareAttractMode(u32 movieIndex, s32 playFlags) {
     return FALSE;
 }
 
-void PrepareReady(void* msg);
 void PrepareReady(void* msg) {
     OSSendMessage(&gAttractMoviePrepareReadyQueue, msg, OS_MESSAGE_BLOCK);
 }

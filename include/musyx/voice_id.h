@@ -1,7 +1,7 @@
 #ifndef MUSYX_VOICE_ID_H_
 #define MUSYX_VOICE_ID_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "musyx/mcmd.h"
 
 void vidRemoveVoiceReferences(McmdVoiceState* state);

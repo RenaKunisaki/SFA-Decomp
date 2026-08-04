@@ -502,7 +502,7 @@ The remaining four in this section are **Lane B's measurements**.
 
 **The statement split does not generalise to pool-constant placement.** Splitting a statement to
 move where a constant is materialised is a real lever in its own right, but it is not a
-general-purpose placement knob. At `DBprotection_updateFlight` site 2 the statement was
+general-purpose placement knob. At `SB_Galleon_updateFlight` site 2 the statement was
 *already* split; merging it back **regressed 99.061 -> 99.009**. Before applying it, check
 whether the site is already at the setting you are about to "fix" — the same
 already-at-its-optimum trap as the abs spellings above.
@@ -669,6 +669,21 @@ transposed, the knob is the cast lever above, not the source text.
 
 ## See also
 
+- `docs/priced_classes.md` — **start at its Index of the measured laws.** Everything this file
+  cannot reach is priced there: the toolchain caps and never-touch islands (§5), the mint-order
+  model (§10, §11), the crutch oracle (§9, §9b, §10b), the mover (§12) and the cross-TU
+  declaration laws (§13).
+- `docs/data_axis.md` — the screens that tell a data artifact from a real difference, and the
+  two standing stop-rules. This file's data section points there and it points back.
+- `docs/purge_campaign_audit.md` — what a cleanup sweep costs when nobody measures it, the three
+  sensor blind spots, and the "restore is not declare" recovery law.
+- `tools/score_delta_gate.py` — the gate those blind spots forced: per-function fuzzy, per-unit
+  `matched_data`, the complete flags, the pool word-diff, and a positive control that must catch
+  an injected regression before any verdict is allowed to print. Run md5-of-every-`.o` alongside
+  it; that is the only check that also sees the score-neutral rewrites (class #70).
+- `docs/HACK_AUDIT.md` and `tools/banned_shapes_check.py` — what may not be written, and why the
+  regex is not the rule (see §12b: four spellings of the banned shape emit the same object).
+
 ## Two rename-gate steps added after they each caught a live error
 
 Both fired within one naming batch and neither reached a commit. They belong in the
@@ -770,7 +785,7 @@ context, or fragment mirage. Worth knowing before anyone re-derives it:
   `ObjSeq_onMapSetup` 99.79->80.26, `trickyFindReachableRouteIndex` 99.786->97.821. The
   high-water is a pre-merge/pre-split fragment score in all three; current is at or above
   the post-merge value. Read the claiming commit before building anything.
-- **A high-water can be below current.** `DBprotection_updateFlight` was already 99.707
+- **A high-water can be below current.** `SB_Galleon_updateFlight` was already 99.707
   against a 99.680 claim — a peer had fixed it. Re-read current before opening an entry.
 - **Restructured-context is stale-claim's common form.** `SaveGame_gplaySetObjGroupStatus`'s
   claim was a comma-order swap in a walking-pointer loop; the DLL rehome rewrote that loop

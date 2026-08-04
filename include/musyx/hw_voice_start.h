@@ -1,7 +1,7 @@
 #ifndef MUSYX_HW_VOICE_START_H_
 #define MUSYX_HW_VOICE_START_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 void hwStart(u32 voice, u8 studio);
 

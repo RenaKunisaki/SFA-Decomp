@@ -46,8 +46,6 @@ int spellstone_getExtraSize(void)
     return sizeof(SpellStoneState);
 }
 
-int spellstone_getObjectTypeId(void);
-
 int spellstone_getObjectTypeId(void)
 {
     return 0;

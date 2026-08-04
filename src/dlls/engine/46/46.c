@@ -7,7 +7,6 @@
 #include "main/dll/dll_0015_curves.h"
 #include "main/dll/dll_002E_moveLib.h"
 #include "main/dll/FRONT/POST.h"
-#include "string.h"
 #include "main/obj_path.h"
 #include "main/obj_query.h"
 #include "main/objtype.h"
@@ -604,7 +603,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
                         s->targetZ = s->targetZ * blendA + ((GameObject*)obj)->anim.localPosZ * blendB;
                     }
                 }
-                if ((s->reattackDelayBase != -1) && (target == *(u32*)&s->lastTarget))
+                if ((s->reattackDelayBase != -1) && (target == (u32)s->lastTarget))
                 {
                     ival = -framesThisStep + s->reattackTimer;
                     s->reattackTimer = ival;
@@ -631,7 +630,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
                 {
                     s->reattackTimer = s->reattackDelayBase;
                 }
-                if ((target != *(u32*)&s->lastTarget) && (target != 0))
+                if ((target != (u32)s->lastTarget) && (target != 0))
                 {
                     if (((GameObject*)target)->anim.hitReactState != NULL)
                     {
@@ -669,7 +668,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
                 if (((0x5555 < ival) || (target == 0)) ||
                     (Vec_distance(&obj->anim.worldPosX, &((GameObject*)target)->anim.worldPosX) > s->lookAtMaxDistance))
                 {
-                    if ((s->phase != MOVELIB_PHASE_IDLE) || ((target == 0 && (*(u32*)&s->lastTarget != 0))))
+                    if ((s->phase != MOVELIB_PHASE_IDLE) || ((target == 0 && ((u32)s->lastTarget != 0))))
                     {
                         objJointTracksCaptureCurrentAngles(obj, (int*)seqHandle, (u32)s->pointCount, s->animChannels);
                         s->setupFlag = 10;
@@ -679,7 +678,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
                 }
                 else
                 {
-                    if ((target != *(u32*)&s->lastTarget) || (s->phase == MOVELIB_PHASE_IDLE))
+                    if ((target != (u32)s->lastTarget) || (s->phase == MOVELIB_PHASE_IDLE))
                     {
                         objJointTracksCaptureCurrentAngles(obj, (int*)seqHandle, (u32)s->pointCount, s->animChannels);
                         s->setupFlag = 1;
@@ -837,28 +836,50 @@ void dll_2E_initialise_nop(void)
 u8 gMoveLibDefaultMoveData[20] = {0x00, 0x23, 0x00, 0x23, 0x00, 0x23, 0x00, 0x23, 0x00, 0x23,
                                   0x00, 0x23, 0x00, 0x23, 0x00, 0x23, 0x00, 0x23, 0x00, 0x23};
 
-ObjectDescriptor16WithPadding dll_2E = {
-    {
-        0,
-        0,
-        0,
-        OBJECT_DESCRIPTOR_FLAGS_16_SLOTS,
-        (ObjectDescriptorCallback)dll_2E_initialise_nop,
-        (ObjectDescriptorCallback)dll_2E_release_nop,
-        0,
-        (ObjectDescriptorCallback)dll_2E_updateLookAt,
-        (ObjectDescriptorCallback)dll_2E_setLockTarget,
-        (ObjectDescriptorCallback)dll_2E_initState,
-        (ObjectDescriptorCallback)dll_2E_setTargetFromPathPoint,
-        (ObjectDescriptorCallback)dll_2E_updateSequenceTurn,
-        (ObjectDescriptorCallback)dll_2E_setReattackDelay,
-        (ObjectDescriptorExtraSizeCallback)dll_2E_setMoveTables,
-        (ObjectDescriptorCallback)dll_2E_getCurveActionTarget,
-        (ObjectDescriptorCallback)dll_2E_getDistanceToCurveAction,
-        (ObjectDescriptorCallback)dll_2E_getCurveActionTargetAimed,
-        (ObjectDescriptorCallback)dll_2E_moveToTarget,
-        (ObjectDescriptorCallback)dll_2E_advanceAlongRoute,
-        (ObjectDescriptorCallback)dll_2E_func0F_ret_0,
-    },
+typedef struct Dll2EDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback updateLookAt;
+    ObjectDescriptorCallback setLockTarget;
+    ObjectDescriptorCallback initState;
+    ObjectDescriptorCallback setTargetFromPathPoint;
+    ObjectDescriptorCallback updateSequenceTurn;
+    ObjectDescriptorCallback setReattackDelay;
+    ObjectDescriptorCallback setMoveTables;
+    ObjectDescriptorCallback getCurveActionTarget;
+    ObjectDescriptorCallback getDistanceToCurveAction;
+    ObjectDescriptorCallback getCurveActionTargetAimed;
+    ObjectDescriptorCallback moveToTarget;
+    ObjectDescriptorCallback advanceAlongRoute;
+    ObjectDescriptorCallback slot0F;
+    u32 padding;
+} Dll2EDllInterface;
+
+Dll2EDllInterface dll_2E = {
+    0,
+    0,
+    0,
+    OBJECT_DESCRIPTOR_FLAGS_16_SLOTS,
+    (ObjectDescriptorCallback)dll_2E_initialise_nop,
+    (ObjectDescriptorCallback)dll_2E_release_nop,
+    0,
+    (ObjectDescriptorCallback)dll_2E_updateLookAt,
+    (ObjectDescriptorCallback)dll_2E_setLockTarget,
+    (ObjectDescriptorCallback)dll_2E_initState,
+    (ObjectDescriptorCallback)dll_2E_setTargetFromPathPoint,
+    (ObjectDescriptorCallback)dll_2E_updateSequenceTurn,
+    (ObjectDescriptorCallback)dll_2E_setReattackDelay,
+    (ObjectDescriptorCallback)dll_2E_setMoveTables,
+    (ObjectDescriptorCallback)dll_2E_getCurveActionTarget,
+    (ObjectDescriptorCallback)dll_2E_getDistanceToCurveAction,
+    (ObjectDescriptorCallback)dll_2E_getCurveActionTargetAimed,
+    (ObjectDescriptorCallback)dll_2E_moveToTarget,
+    (ObjectDescriptorCallback)dll_2E_advanceAlongRoute,
+    (ObjectDescriptorCallback)dll_2E_func0F_ret_0,
     0,
 };

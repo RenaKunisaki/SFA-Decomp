@@ -19,7 +19,6 @@
 #include "main/frame_timing.h"
 #include "main/audio/audio_control_api.h"
 #include "main/pad.h"
-#include "string.h"
 
 GameObject* sCurvesCachedHitObj;
 s32 sCurvesCachedHitCount;
@@ -716,7 +715,7 @@ void curves_preparePointCollisionFrame(int obj, CurvesCollisionState* collision)
 
     if ((s32)(collision->flags & CURVES_COLLISION_STATE_ACTIVE) != 0)
     {
-        if (*(void**)&((GameObject*)obj)->anim.parent != NULL)
+        if ((void*)((GameObject*)obj)->anim.parent != NULL)
         {
             if ((((GameObject*)obj)->anim.parentAnim->hitboxTransformState != NULL) &&
                 (ObjHits_IsObjectEnabled((ObjAnimComponent*)((GameObject*)obj)->anim.parent) != 0))
@@ -1127,7 +1126,7 @@ void curves_advanceCollision(GameObject* curveObj, CurvesCollisionState* state, 
                                          (f32*)collision->points,
                                          (int)(u32)collision->pointCounts >> CURVES_POINT_COUNT_SEGMENT_SHIFT,
                                          collision->segmentHitPlanes, 0);
-                *(s8*)&collision->surfaceCounter = collision->traceHitCount;
+                collision->surfaceCounter = collision->traceHitCount;
                 collision->surfaceHitMask = 0;
             }
             switch (collision->updateMode)
@@ -1438,7 +1437,7 @@ void curves_updateQueryBounds(GameObject* obj, CurvesCollisionState* state, f32 
         return;
     }
     {
-        if (*(void**)&obj->anim.parent != NULL)
+        if ((void*)obj->anim.parent != NULL)
         {
             if ((obj->anim.parentAnim->hitboxTransformState != NULL) &&
                 (ObjHits_IsObjectEnabled((ObjAnimComponent*)obj->anim.parent) != 0))
@@ -1768,7 +1767,26 @@ int pushable_savePos(GameObject* obj)
 
 const f32 lbl_803E06C4 = 0.0f;
 
-ObjectDescriptor12 dll_15_funcs = {
+typedef struct CurvesDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback clear;
+    ObjectDescriptorCallback setLocalPointCollision;
+    ObjectDescriptorCallback setSegmentCollision;
+    ObjectDescriptorCallback updateQueryBounds;
+    ObjectDescriptorCallback gatherTrackTriangles;
+    ObjectDescriptorCallback advanceCollision;
+    ObjectDescriptorCallback getCurves;
+    ObjectDescriptorCallback reset;
+    ObjectDescriptorCallback sampleHeight;
+} CurvesDllInterface;
+
+CurvesDllInterface dll_15_funcs = {
     0,
     0,
     0,
@@ -1782,7 +1800,7 @@ ObjectDescriptor12 dll_15_funcs = {
     (ObjectDescriptorCallback)curves_updateQueryBounds,
     (ObjectDescriptorCallback)curves_gatherTrackTriangles,
     (ObjectDescriptorCallback)curves_advanceCollision,
-    (ObjectDescriptorExtraSizeCallback)curves_getCurves,
+    (ObjectDescriptorCallback)curves_getCurves,
     (ObjectDescriptorCallback)curves_reset,
     (ObjectDescriptorCallback)curves_sampleHeight,
 };

@@ -282,12 +282,12 @@ void IMIceMountain_update(GameObject* obj) {
             }
         }
     }
-    SCGameBitLatch_Update(&state->gameBitLatch, 2, GAMEBIT_IM_TrickyRelated02C1, 568, GAMEBIT_IM_TrickyRelated01ED,
+    GameBitLatch_Update(&state->gameBitLatch, 2, GAMEBIT_IM_TrickyRelated02C1, 568, GAMEBIT_IM_TrickyRelated01ED,
                           178);
-    SCGameBitLatch_Update(&state->gameBitLatch, 16, 442, GAMEBIT_IM_TrickyRelated01B9, GAMEBIT_IM_TrickyRelated01D6,
+    GameBitLatch_Update(&state->gameBitLatch, 16, 442, GAMEBIT_IM_TrickyRelated01B9, GAMEBIT_IM_TrickyRelated01D6,
                           180);
-    SCGameBitLatch_Update(&state->gameBitLatch, 4, -1, -1, GAMEBIT_IM_WaterRelated03A0, 233);
-    SCGameBitLatch_Update(&state->gameBitLatch, IM_ICE_MOUNTAIN_MUSIC_LATCH_MASK, -1, -1, GAMEBIT_IM_Done,
+    GameBitLatch_Update(&state->gameBitLatch, 4, -1, -1, GAMEBIT_IM_WaterRelated03A0, 233);
+    GameBitLatch_Update(&state->gameBitLatch, IM_ICE_MOUNTAIN_MUSIC_LATCH_MASK, -1, -1, GAMEBIT_IM_Done,
                           state->musicTrack);
 }
 

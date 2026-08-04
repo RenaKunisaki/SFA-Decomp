@@ -112,13 +112,13 @@ STATIC_ASSERT(offsetof(StaffActivatedState, hitCooldown) == 0x20);
 STATIC_ASSERT(sizeof(StaffActivatedState) == STAFF_ACTIVATED_STATE_SIZE);
 
 void staffactivated_updateLiftHeight(GameObject* obj, StaffActivatedState* state);
-void cfPrisonGuard_setGameBitMirror(GameObject* obj, u8 enabled);
-int cfPrisonGuard_isGameBitMirrorSet(GameObject* obj);
+void staffactivated_setGameBitMirror(GameObject* obj, u8 enabled);
+int staffactivated_isGameBitMirrorSet(GameObject* obj);
 void staffactivated_spawnMapEventDebris(GameObject* obj);
-u32 cfPrisonGuard_getPullRateMode(GameObject* obj);
+u32 staffactivated_getPullRateMode(GameObject* obj);
 void staffactivated_calcInteractionTargetXZ(GameObject* obj, f32* outX, f32* outZ);
-u32 cfPrisonGuard_getLiftHeight(GameObject* obj);
-void cfPrisonGuard_setLiftHeight(GameObject* obj, int height);
+u32 staffactivated_getLiftHeight(GameObject* obj);
+void staffactivated_setLiftHeight(GameObject* obj, int height);
 u8 staffactivated_getMode(GameObject* obj);
 int staffactivated_getExtraSize(void);
 int staffactivated_getObjectTypeId(void);

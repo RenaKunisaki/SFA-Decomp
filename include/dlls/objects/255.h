@@ -44,7 +44,7 @@ typedef struct MagicGemState {
     u8 bounceCount;          /* 0x27B */
     u8 mode;                 /* 0x27C: particle-colour row */
     u8 pad27D[3];            /* 0x27D */
-    u16 pickupMsgArg;        /* 0x280 */
+    s16 pickupMsgArg;        /* 0x280 */
     u8 pad282[6];            /* 0x282 */
 } MagicGemState;
 

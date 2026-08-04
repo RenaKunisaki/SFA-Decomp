@@ -1,6 +1,0 @@
-#ifndef MAIN_DLL_DR_DLL_0257_DREARTHWARRIOR_H_
-#define MAIN_DLL_DR_DLL_0257_DREARTHWARRIOR_H_
-
-#include "dlls/objects/599_DR_EarthWar.h"
-
-#endif /* MAIN_DLL_DR_DLL_0257_DREARTHWARRIOR_H_ */

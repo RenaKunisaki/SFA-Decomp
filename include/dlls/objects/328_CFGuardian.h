@@ -15,10 +15,6 @@ typedef struct RomCurveDef RomCurveDef;
 
 #define CFGUARDIAN_LINKED_OBJECT_COUNT 6
 
-typedef enum CfGuardianObjectGroup {
-    CFGUARDIAN_OBJECT_GROUP = 0x16,
-} CfGuardianObjectGroup;
-
 typedef struct CfGuardianPlacement {
     ObjPlacement base;
     s8 initialYaw;
@@ -87,7 +83,7 @@ STATIC_ASSERT(offsetof(CfGuardianState, chatterState) == 0xA98);
 STATIC_ASSERT(offsetof(CfGuardianState, stateFlags) == 0xA9B);
 STATIC_ASSERT(sizeof(CfGuardianState) == 0xA9C);
 
-int cfguardian_playEventSfx(u32 obj, ObjAnimEventList* eventList, s16* sfxIds);
+int cfguardian_playEventSfx(GameObject* obj, ObjAnimEventList* eventList, s16* sfxIds);
 int cfguardian_isNotPathFlying(GameObject* obj);
 int cfguardian_flyAlongPath(GameObject* obj, RomCurveWalker* walker, f32 speed, int pointId, f32* outPhase);
 int cfguardian_steerToward(GameObject* obj, MoveLibTarget* target, f32 speed, f32* outPhase);
@@ -104,6 +100,6 @@ void cfguardian_init(GameObject* obj, CfGuardianPlacement* placement);
 void cfguardian_release(void);
 void cfguardian_initialise(void);
 
-extern ObjectDescriptor11 gCFGuardianObjDescriptor;
+extern ObjectDescriptor11ExtraSize gCFGuardianObjDescriptor;
 
 #endif /* DLLS_OBJECTS_328_CFGUARDIAN_H_ */

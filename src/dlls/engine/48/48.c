@@ -1,4 +1,3 @@
-#include "dolphin/types.h"
+#include "global.h"
 
-u32 Dummy30_funcs[12] = {0xffffffff, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
-                        0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000};
+u32 Dummy30_funcs[12] = {0xFFFFFFFF};

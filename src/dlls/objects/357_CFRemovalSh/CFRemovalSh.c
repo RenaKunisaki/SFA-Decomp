@@ -1,5 +1,3 @@
-/* Empty CFRemovalSh resource slot. */
+#include "global.h"
 
-#include "dlls/objects/357_CFRemovalSh.h"
-
-u32 gCFRemovalShNullResourceDescriptor[CFREMOVALSH_NULL_DESCRIPTOR_WORD_COUNT] = {0};
+u32 gCFRemovalShNullResourceDescriptor[2] = {0};

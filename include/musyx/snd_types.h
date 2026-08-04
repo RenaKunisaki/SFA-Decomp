@@ -1,7 +1,7 @@
 #ifndef MUSYX_SND_TYPES_H_
 #define MUSYX_SND_TYPES_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 typedef enum SND_STUDIO_TYPE {
     SND_STUDIO_TYPE_STD = 0,

@@ -14,8 +14,6 @@
 #include "main/sky_interface.h"
 #include "main/textrender_api.h"
 #include "main/gametext_color_api.h"
-#include "main/gametext_command_api.h"
-#include "main/gametext_show_str_api.h"
 #include "main/gameloop_api.h"
 #include "main/frame_timing.h"
 #include "main/trig.h"
@@ -32,7 +30,6 @@
 #include "main/maketex_api.h"
 #include "main/pad.h"
 #include "main/pi_dolphin.h"
-#include "main/audio/sfx_trigger_ids.h"
 #include "main/shader_api.h"
 #include "dolphin/gx/GXBump.h"
 #include "dolphin/gx/GXCull.h"
@@ -94,10 +91,6 @@ extern inline float sqrtf(float x)
     return x;
 }
 
-int cardDeleteSaveFile(void);
-void cardGetMessage(u32* buttons, u32* texts, u32* count);
-void showMemCardError(u8 err);
-
 typedef struct StageCountTable
 {
     u8 count[7];
@@ -118,11 +111,6 @@ static const GXColor sColorFilterKColor2 = {0x14, 0x14, 0x14, 0};
 static const GXColor sColorFilterTevColor = {0x0A, 0x0A, 0x0A, 255};
 
 extern u32 gProjectedShadowFogColorBits;
-int cardProbe(u8 retry);
-void showMemCardError(u8 err);
-void cardShowLoadingMsg(u8 kind);
-int saveGameWriteSlotCb(u8 slot, int unused, void* src1, void* src2);
-int saveGameReadGlobalsCb(int saveId, int size, void* dst);
 
 
 
@@ -1403,7 +1391,6 @@ void setupQuakeSpellRingGxState(u8 alpha)
     GXSetCullMode(GX_CULL_BACK);
 }
 
-void setupAdditiveTintedTexture(void* texture, u32* colorA, u32* colorB);
 void setupAdditiveTintedTexture(void* texture, u32* colorA, u32* colorB)
 {
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
@@ -1810,7 +1797,7 @@ u32 objCausticReflectionRenderCb(int handle, void* model)
     f32 indMtx_44[6];
     f32 indMtx_2c[6];
     int handle1, handle2;
-    f32 f1, f2;
+    f32 scrollX, scrollY;
     f32 f31_val;
     GXColor temp;
     f32* viewMtx;
@@ -1837,14 +1824,14 @@ u32 objCausticReflectionRenderCb(int handle, void* model)
     selectReflectionTexture(0);
     GXLoadTexMtxImm(gCameraLightPerspectiveFlipYMatrix, GX_PTTEXMTX6, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_POS, 0, GX_FALSE, GX_PTTEXMTX6);
-    newshadows_getReflectionScrollOffsets(&f1, &f2);
-    f1 *= 4.0f;
-    f2 *= 4.0f;
+    newshadows_getReflectionScrollOffsets(&scrollX, &scrollY);
+    scrollX *= 4.0f;
+    scrollY *= 4.0f;
     getNewShadowCausticTexture((u32*)&handle1);
     selectTexture((Texture*)handle1, 1);
 
     PSMTXScale(mtx_ec, 4.0f, 4.0f, 4.0f);
-    mtx_ec[0][3] = f1;
+    mtx_ec[0][3] = scrollX;
     GXLoadTexMtxImm(mtx_ec, GX_TEXMTX1, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX1, GX_FALSE, GX_PTIDENTITY);
 
@@ -1865,8 +1852,8 @@ u32 objCausticReflectionRenderCb(int handle, void* model)
     PSMTXScale(mtx_bc, 0.83f, 0.83f, 0.83f);
     PSMTXRotRad(mtx_5c, 'z', 0.7853982f);
     PSMTXConcat(mtx_5c, mtx_bc, mtx_bc);
-    mtx_bc[0][3] = f2;
-    mtx_bc[1][3] = f2;
+    mtx_bc[0][3] = scrollY;
+    mtx_bc[1][3] = scrollY;
     GXLoadTexMtxImm(mtx_bc, GX_TEXMTX2, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX2, GX_FALSE, GX_PTIDENTITY);
 
@@ -3128,7 +3115,6 @@ void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void gxSetOpaqueZWriteMode(void);
 void gxSetOpaqueZWriteMode(void)
 {
     if ((u32)gGxZModeCompareEnable != 1 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 1 || gGxZModeValid == 0)
@@ -3249,7 +3235,6 @@ void gxSetAlphaBlendZTest(void)
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void gxSetDebugTextMode(void);
 void gxSetDebugTextMode(void)
 {
     GXSetCullMode(GX_CULL_NONE);
@@ -3284,7 +3269,6 @@ void gxSetDebugTextMode(void)
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void gxTevModulateRasStage(void);
 void gxTevModulateRasStage(void)
 {
     GXSetTevOrder(gTevStageCursor, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
@@ -3299,7 +3283,6 @@ void gxTevModulateRasStage(void)
     gTevChanCount += 1;
 }
 
-void gxTevRasTimesColor1Stage(void);
 void gxTevRasTimesColor1Stage(void)
 {
     GXSetTevOrder(gTevStageCursor, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
@@ -3345,7 +3328,6 @@ void gxTevAddColor1Stage(void)
     gTevChanCount += 1;
 }
 
-void gxTevPassRasStage(void);
 void gxTevPassRasStage(void)
 {
     GXSetTevOrder(gTevStageCursor, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
@@ -3374,7 +3356,6 @@ void gxTevModulateColor1Stage(void)
     gTevChanCount += 1;
 }
 
-void gxTevAddTextureFrameBlendStages(void);
 void gxTevAddTextureFrameBlendStages(void)
 {
     GXSetTevOrder(gTevStageCursor, gTevTexCoordCursor, gTevTexMapCursor, GX_COLOR_NULL);
@@ -3462,7 +3443,6 @@ void gxTevTextureTimesRasStage(void)
  * stage that K-multiplies the tint over the existing color, advancing
  * gTevStageCursor (TEV stage cursor) and gTevStageCount (stage count).
  */
-void gxTevCommitStages(void);
 void gxTevCommitStages(void)
 {
     GXColor c;
@@ -3502,7 +3482,6 @@ void gxTevCommitStages(void)
     }
 }
 
-void gxTevResetStages(void);
 void gxTevResetStages(void)
 {
     gTevIndStageCount = 0;
@@ -3514,7 +3493,6 @@ void gxTevResetStages(void)
     gTevTexMapCursor = 0;
 }
 
-void _gxSetTevColor2(u8 r, u8 g, u8 b, u8 a);
 void _gxSetTevColor2(u8 r, u8 g, u8 b, u8 a)
 {
     GXColor c;
@@ -3525,7 +3503,6 @@ void _gxSetTevColor2(u8 r, u8 g, u8 b, u8 a)
     GXSetTevColor(GX_TEVREG1, c);
 }
 
-void _gxSetTevColor1(u8 r, u8 g, u8 b, u8 a);
 void _gxSetTevColor1(u8 r, u8 g, u8 b, u8 a)
 {
     GXColor c;
@@ -4342,7 +4319,7 @@ void doBlurFilter(f32 wx, f32 wy, f32 wz, u8 param4, u8 param5)
     Camera_RebuildProjectionMatrix();
 }
 
-void setupWaterReflectionTev(int handle1, int handle2)
+void setupWaterReflectionTev(Texture* handle1, Texture* handle2)
 {
     Mtx mtx_30;
     GXColor temp;
@@ -4356,8 +4333,8 @@ void setupWaterReflectionTev(int handle1, int handle2)
 
     indBase[0] = gWaterReflectionIndTexMtx;
     selectReflectionTexture(0);
-    selectTexture((Texture*)handle1, 1);
-    selectTexture((Texture*)handle2, 2);
+    selectTexture(handle1, 1);
+    selectTexture(handle2, 2);
 
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     GXLoadTexMtxImm(gCameraLightPerspectiveFlipYMatrix, GX_PTTEXMTX7, GX_MTX3x4);
@@ -4463,7 +4440,6 @@ void setupWaterReflectionTev(int handle1, int handle2)
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void setupReflectionIndirectTev(u8 flag);
 void setupReflectionIndirectTev(u8 flag)
 {
     f32 mtx[6];
@@ -4509,7 +4485,7 @@ void setupReflectionIndirectTev(u8 flag)
     GXSetTevAlphaOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
 }
 
-void setupReflectionDistortTev(int texHandle)
+void setupReflectionDistortTev(Texture* texHandle)
 {
 
     u8 ignoredLightColor;
@@ -4519,7 +4495,7 @@ void setupReflectionDistortTev(int texHandle)
     Mtx scaleMtx;
 
     selectReflectionTexture(0);
-    selectTexture((Texture*)texHandle, 1);
+    selectTexture(texHandle, 1);
     newshadows_getReflectionScrollOffsets(&sOff, &tOff);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_POS, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX3x4, GX_TG_POS, GX_TEXMTX2, GX_FALSE, GX_PTIDENTITY);
@@ -4689,54 +4665,6 @@ void setupReflectionBumpDistortTev(void* texture)
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-
-
-/*
- * Retail ships a locally-defined empty OSReport that disables debug
- * output.
- */
-void OSReport(const char* msg, ...);
-
-
-int cardDeleteSaveFile(void);
-
-int _saveGame(int slot, void* save, void* data);
-
-int maybeTryLoadSave(void* data);
-
-
-int cardProbe(u8 retry);
-
-
-void cardGetMessage(u32* buttons, u32* texts, u32* count);
-
-void showMemCardError(u8 err);
-
-/*
- * Per-frame "blocking" dialog renderer driven by the card-write retry
- * loops in _saveGame, maybeTryLoadSave, loadSaveGame and cardCreateSaveFile.
- * Pumps 60 frames of the GX/dialog
- * pipeline; on each frame either lets the active controller draw its own
- * popup (gScreenTransitionInterface[0]->vtbl[1]) or falls back to hudDrawColored
- * tinting the reflection texture with gSaveCardBackdropColor, then routes the OK/Cancel/back text
- * to gameTextShowAt based on the dialog kind passed in.
- */
-void cardShowLoadingMsg(u8 kind);
-
-/*
- * Card-write callback dispatched through saveGame_prepareAndWrite from _saveGame.
- * Stages a per-slot 0x6EC-byte block plus the shared 0xE4-byte trailer
- * into the card-IO buffer (gSaveCardIoBuffer), then asks saveGame_doWrite(2) to
- * commit; if that fails it falls back to saveGame_doWrite(1).
- */
-int saveGameWriteSlotCb(u8 slot, int unused, void* src1, void* src2);
-
-/*
- * Card-write callback dispatched through saveGame_prepareAndWrite from maybeTryLoadSave.
- * Copies the 0xE4-byte block at offset 0x1F14 in the card buffer (held in
- * gSaveCardIoBuffer) into the caller-supplied destination.
- */
-int saveGameReadGlobalsCb(int saveId, int size, void* dst);
 
 
 /* .bss block 0x80391DC0-0x803967C0 */

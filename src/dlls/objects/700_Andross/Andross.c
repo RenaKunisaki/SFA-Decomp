@@ -37,10 +37,10 @@
 
 s16 gAndrossSwayPhaseX;
 s16 gAndrossSwayPhaseY;
-s16 gGfLevelConRingProjectilePitchSource;
-s16 gGfLevelConProjectileYaw;
-int gGfLevelConRingProjectilePitch;
-int gGfLevelConProjectilePitch;
+s16 gAndrossRingProjectilePitchSource;
+s16 gAndrossProjectileYaw;
+int gAndrossRingProjectilePitch;
+int gAndrossProjectilePitch;
 f32 gAndrossDistortPhase;
 
 #define ARW_ARWING_BOMB_OBJ 0x605 /* retail OBJECTS.bin "ARWArwingBo", DLL 0x29C */
@@ -128,8 +128,8 @@ void andross_spawnSuckAsteroid(GameObject* obj, AndrossState* state) {
     if (!Obj_IsLoadingLocked()) {
         return;
     }
-    yaw = gGfLevelConProjectileYaw;
-    gGfLevelConRingProjectilePitch = gGfLevelConRingProjectilePitchSource;
+    yaw = gAndrossProjectileYaw;
+    gAndrossRingProjectilePitch = gAndrossRingProjectilePitchSource;
     radialAngle = randomGetRange(-0x8000, 0x7fff);
     spawnRadius = randomGetRange(0x64, 0x12c);
     setup = (GfProjectileSetup*)Obj_AllocObjectSetup(0x20, ANDROSS_CHILD_OBJ_SUCK_ASTEROID);
@@ -138,7 +138,7 @@ void andross_spawnSuckAsteroid(GameObject* obj, AndrossState* state) {
     setup->head.posY = (f32)spawnRadius * mathCosf(angle) + state->arwingObj->anim.localPosY;
     setup->head.posZ = state->cachedPosZ - 500.0f;
     setup->yawHi = (obj->anim.rotX + yaw) >> 8;
-    setup->pitch = gGfLevelConRingProjectilePitch;
+    setup->pitch = gAndrossRingProjectilePitch;
     setup->roll = 0;
     setup->head.color[0] = 1;
     setup->head.color[1] = 1;
@@ -190,14 +190,14 @@ void andross_spawnAimedRing(GameObject* obj, AndrossState* state, int unused) {
     dz = state->cachedPosZ - state->arwingObj->anim.localPosZ;
     horizontalDistance = sqrtf(dx * dx + dz * dz);
     yaw = (u16)getAngle(dx, dz);
-    gGfLevelConProjectilePitch =
+    gAndrossProjectilePitch =
         (u16)getAngle(state->cachedPosY - state->arwingObj->anim.localPosY, horizontalDistance) >> 8;
     setup = (GfProjectileSetup*)Obj_AllocObjectSetup(0x20, ANDROSS_CHILD_OBJ_RING);
     setup->head.posX = state->cachedPosX;
     setup->head.posY = state->cachedPosY;
     setup->head.posZ = state->cachedPosZ;
     setup->yawHi = (obj->anim.rotX + yaw) >> 8;
-    setup->pitch = gGfLevelConProjectilePitch;
+    setup->pitch = gAndrossProjectilePitch;
     setup->roll = 0;
     setup->head.color[0] = 1;
     setup->head.color[1] = 1;
@@ -344,8 +344,6 @@ static inline f32 andross_getSwayPosition(f32 sway, f32 phase, f32 base) {
     return sway * phase + base;
 }
 
-// MWCC eliminates this unused function body, but its literals still establish
-// the original ordering of this translation unit's constant pool.
 static void andross_updateDistortion(GameObject* obj, AndrossState* state, f32 progress) {
     f32 radius;
     obj->anim.alpha = state->fadeAlpha * 255.0f;

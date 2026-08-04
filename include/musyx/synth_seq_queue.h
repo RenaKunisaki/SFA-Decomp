@@ -1,7 +1,7 @@
 #ifndef MUSYX_SYNTH_SEQ_QUEUE_H_
 #define MUSYX_SYNTH_SEQ_QUEUE_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 void synthInitChannelEventQueues(void);
 void synthRefreshChannelEventQueue(u8 groupIndex);

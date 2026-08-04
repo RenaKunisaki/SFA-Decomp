@@ -51,6 +51,7 @@
 #include "main/render_lactions_api.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
+#include "main/dll/dll_00C4_tricky.h"
 #include "main/dll/dll_0126_trigger.h"
 #include "main/dll/dll_02B5_timer.h"
 #include "main/dll/headdisplay.h"
@@ -124,7 +125,7 @@ static void triggerEvalCurveLoop(GameObject* obj, GameObject* seqObj) {
     state = (MmpTriggerPlaneState*)obj->extra;
     curveHit = (*gRomCurveInterface)
                    ->find(state->ptB[0], state->ptB[1], state->ptB[2], &queryType, 1,
-                          *(s16*)(*(u8**)&obj->anim.placementData + 0x38));
+                          *(s16*)((u8*)obj->anim.placementData + 0x38));
     frontBlocked =
         (*gRomCurveInterface)->isPointInsideLoop(curveHit, state->ptB[0], state->ptB[1], state->ptB[2], &hitDistance);
     rearBlocked =
@@ -165,7 +166,7 @@ static int triggerPointInBox(GameObject* obj, f32* point) {
     f32 forward;
     GameObject* o = obj;
 
-    data = *(u8**)&o->anim.placementData;
+    data = (u8*)o->anim.placementData;
     pointX = point[0];
     pointY = point[1];
     pointZ = point[2];
@@ -225,7 +226,7 @@ static void triggerEvalPlaneCrossing(GameObject* obj, GameObject* seqObj) {
     f32 t;
     Vec localPos;
 
-    data = *(u8**)&obj->anim.placementData;
+    data = (u8*)obj->anim.placementData;
     state = (MmpTriggerPlaneState*)obj->extra;
 
     planeBase = state->planeD;
@@ -320,7 +321,7 @@ void MmpGyservent_setup(GameObject* obj, MMPTriggerGeyserPlacement* placement) {
     xf.y = -obj->anim.worldPosY;
     xf.z = -obj->anim.worldPosZ;
     mtxRotateByVec3s(rotMtx, &xf);
-    mtx44Transpose(rotMtx, (f32*)((char*)state + 0x38));
+    mtx44Transpose(rotMtx, &state->mtx[0][0]);
 
     state->reach = 100.0f * obj->anim.rootMotionScale;
     state->nearRadiusSq = (145.0f * obj->anim.rootMotionScale) * (145.0f * obj->anim.rootMotionScale);
@@ -802,7 +803,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
             if ((void*)t != NULL) {
                 switch (p[2]) {
                 case 0:
-                    (*(VtableFn*)(**(int**)(t + 0x68) + 0x3c))(t);
+                    TRICKY_INTERFACE(t)->requestRecall((GameObject*)t);
                     break;
                 case 1:
                     Obj_FreeObject(getTrickyObject());
@@ -813,7 +814,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
                         t2 = (int)objGetNearestTypeTo(TRICKY_TARGET_OBJGROUP_FALLBACK, (GameObject*)t, 0);
                     }
                     if ((void*)t2 != NULL) {
-                        (*(VtableFn*)(**(int**)(t + 0x68) + 0x38))(t, t2);
+                        TRICKY_INTERFACE(t)->requestMoveToObject((GameObject*)t, (GameObject*)t2);
                     }
                     break;
                 case 3:
@@ -902,7 +903,7 @@ int Trigger_getObjectTypeId(void) {
 
 void Trigger_free(GameObject* obj) {
     u8 i;
-    u8* entry = *(u8**)&(obj)->anim.placementData + 0x18;
+    u8* entry = (u8*)(obj)->anim.placementData + 0x18;
     i = 0;
 
     while (i < 8) {
@@ -933,7 +934,7 @@ void Trigger_render(void) {
 
 void Trigger_hitDetect(GameObject* obj) {
     u8* state = (obj)->extra;
-    u8* def = *(u8**)&(obj)->anim.placementData;
+    u8* def = (u8*)(obj)->anim.placementData;
     GameObject* triggerObj;
     GameObject* trickyObj;
     GameObject* target;
@@ -1091,12 +1092,12 @@ void Trigger_hitDetect(GameObject* obj) {
                         }
                         i++;
                     }
-                    if (ok && ((TriggerFlags8A*)(state + 0x8a))->bit7 == 0) {
-                        ((TriggerFlags8A*)(state + 0x8a))->bit7 = 1;
+                    if (ok && ((TriggerState*)state)->flags8A.bit7 == 0) {
+                        ((TriggerState*)state)->flags8A.bit7 = 1;
                         objInterpretSeq(obj, triggerObj, 1, 0);
                     }
                     if (!ok) {
-                        ((TriggerFlags8A*)(state + 0x8a))->bit7 = 0;
+                        ((TriggerState*)state)->flags8A.bit7 = 0;
                     }
                     break;
                 case 0xf4:
@@ -1146,7 +1147,7 @@ void Trigger_init(GameObject* obj, u8* params) {
         ((TriggerState*)state)->gateBits[1] = ((TriggerPlacement*)params)->gateBitSrc[1];
         ((TriggerState*)state)->gateBits[2] = ((TriggerPlacement*)params)->gateBitSrc[2];
         ((TriggerState*)state)->gateBits[3] = ((TriggerPlacement*)params)->gateBitSrc[3];
-        ((TriggerFlags8A*)(state + 0x8a))->bit7 = 0;
+        ((TriggerState*)state)->flags8A.bit7 = 0;
         break;
     case 0x4e:
     case 0x4f:

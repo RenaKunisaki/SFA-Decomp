@@ -240,7 +240,7 @@ ObjectDescriptor14 gWaveAnimatorObjDescriptor = {
     (ObjectDescriptorCallback)WaveAnimator_render,
     (ObjectDescriptorCallback)WaveAnimator_free,
     (ObjectDescriptorCallback)WaveAnimator_getObjectTypeId,
-    (ObjectDescriptorCallback)WaveAnimator_getExtraSize,
+    WaveAnimator_getExtraSize,
     (ObjectDescriptorCallback)WaveAnimator_setScale,
     (ObjectDescriptorCallback)WaveAnimator_func0B,
     (ObjectDescriptorCallback)WaveAnimator_modelMtxFn,

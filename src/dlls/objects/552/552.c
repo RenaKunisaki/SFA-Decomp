@@ -8,8 +8,8 @@ int VFP_SpellPlace_getObjectTypeId(void);
 void VFP_SpellPlace_free(void);
 void VFP_SpellPlace_render(void);
 void VFP_SpellPlace_hitDetect(void);
-void VFP_SpellPlace_update(int obj);
-void VFP_SpellPlace_init(int obj, s8* def);
+void VFP_SpellPlace_update(GameObject* spellPlace);
+void VFP_SpellPlace_init(GameObject* spellPlace, s8* def);
 void VFP_SpellPlace_release(void);
 void VFP_SpellPlace_initialise(void);
 
@@ -35,13 +35,11 @@ void VFP_SpellPlace_hitDetect(void)
 {
 }
 
-void VFP_SpellPlace_update(int obj)
+void VFP_SpellPlace_update(GameObject* spellPlace)
 {
-    GameObject* spellPlace;
     LaserState* state;
     u8 mode;
 
-    spellPlace = (GameObject*)obj;
     if (((LaserState*)spellPlace->extra)->completionLatched == 0 &&
         mainGetBit((int)((LaserState*)spellPlace->extra)->activationGameBit) != 0)
     {
@@ -51,7 +49,7 @@ void VFP_SpellPlace_update(int obj)
     {
         spellPlace->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
     }
-    objUpdateHitVolumeTransforms((GameObject*)obj);
+    objUpdateHitVolumeTransforms(spellPlace);
     if (spellPlace->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED)
     {
         mode = (*gMapEventInterface)->getMapAct((int)spellPlace->anim.mapEventSlot);
@@ -81,13 +79,11 @@ void VFP_SpellPlace_update(int obj)
     }
 }
 
-void VFP_SpellPlace_init(int obj, s8* def)
+void VFP_SpellPlace_init(GameObject* spellPlace, s8* def)
 {
-    GameObject* spellPlace;
     LaserObjectMapData* mapData;
     LaserState* state;
 
-    spellPlace = (GameObject*)obj;
     mapData = (LaserObjectMapData*)def;
     state = spellPlace->extra;
     state->completionGameBit = mapData->completionGameBit;

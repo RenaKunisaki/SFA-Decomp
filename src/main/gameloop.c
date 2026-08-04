@@ -52,7 +52,7 @@ int gAskProgressiveScanNoX = 0x16A;
 #include "main/dll/dll_0031_minimap.h"
 #include "main/dll/dll_000D_playershadow.h"
 #include "main/dll/dll_0004_dummy04.h"
-#include "main/dll/dll_003C_tumbleweedbush.h"
+#include "main/dll/dll_003C_link.h"
 #include "main/dll/dll_003D_titlemenuitem.h"
 #include "main/dll/path_control_interface.h"
 #include "main/voxmaps.h"
@@ -175,7 +175,7 @@ static void loadAsset(AssetReq* req)
         *(void**)req->dest = loadModelInstance(req->resourceId, req->argC, tmp);
         break;
     case 7:
-        *(void**)req->dest = loadAnimation(req->arg24, req->resourceId, (s16)req->argC, (u8*)req->arg20);
+        *(void**)req->dest = loadAnimation((ModelFileHeader*)req->arg24, req->resourceId, (s16)req->argC, (u8*)req->arg20);
         break;
     }
 }
@@ -238,7 +238,6 @@ char sGameLoopResetMessages[0x50] =
     "28/03/02 12:19\000\000Version 2.8 14/12/98 15.30 L.Schuneman\000\000\377\377\377\377\000\000\000.\000\000\0000";
 
 
-void cardShowMessage(void);
 
 void cardShowMessage(void)
 {
@@ -326,13 +325,13 @@ void cardShowMessage(void)
 
 
 
-int cacheAllocAndCopy(u32 srcAddress, u32 size, u32* cacheCursor, u32* outEnd, u32 limit)
+int cacheAllocAndCopy(u8* srcAddress, u32 size, u32* cacheCursor, u32* outEnd, u32 limit)
 {
     u8* dst;
     u32 alignOffset;
 
     dst = getCache();
-    alignOffset = srcAddress & 0x1f;
+    alignOffset = (u32)srcAddress & 0x1f;
     size += alignOffset;
     size += 0x1f;
     size &= ~0x1f;
@@ -345,19 +344,19 @@ int cacheAllocAndCopy(u32 srcAddress, u32 size, u32* cacheCursor, u32* outEnd, u
         size >>= 5;
         while (size > 0x7f)
         {
-            copyToCache(dst, (void*)srcAddress, 0);
+            copyToCache(dst, srcAddress, 0);
             dst += 0x1000;
             srcAddress += 0x1000;
             size -= 0x80;
         }
         if (size != 0)
         {
-            copyToCache(dst, (void*)srcAddress, size);
+            copyToCache(dst, srcAddress, size);
         }
         return 1;
     }
     *outEnd = *cacheCursor;
-    *cacheCursor = srcAddress;
+    *cacheCursor = (u32)srcAddress;
     return 0;
 }
 void askProgressiveScanMode(void)

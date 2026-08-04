@@ -79,7 +79,7 @@ void VFP_DoorSwitch_free(int obj);
 void VFP_DoorSwitch_render(int p1, int p2, int p3, int p4, int p5, s8 visible);
 void VFP_DoorSwitch_hitDetect(void);
 void VFP_DoorSwitch_update(GameObject* obj);
-void VFP_DoorSwitch_init(GameObject* obj, int data);
+void VFP_DoorSwitch_init(GameObject* obj, VfpDoorSwitchPlacement* data);
 void VFP_DoorSwitch_release(void);
 void VFP_DoorSwitch_initialise(void);
 
@@ -127,9 +127,9 @@ void VFP_DoorSwitch_update(GameObject* obj)
     state->activated = 1;
 }
 
-void VFP_DoorSwitch_init(GameObject* obj, int data)
+void VFP_DoorSwitch_init(GameObject* obj, VfpDoorSwitchPlacement* data)
 {
-    VfpDoorSwitchPlacement* def = (VfpDoorSwitchPlacement*)data;
+    VfpDoorSwitchPlacement* def = data;
     VfpDoorSwitchState* state = obj->extra;
     obj->anim.rotX = (((s32)def->rotXByte) << 8);
     obj->anim.rotZ = (((s32)def->rotZByte) << 8);

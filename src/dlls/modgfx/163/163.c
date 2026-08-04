@@ -9,23 +9,8 @@
 #include "main/dll/modgfx_types.h"
 #include "main/dll/partfx_interface.h"
 
-typedef struct DllA3EffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} DllA3EffectVertex;
-
-STATIC_ASSERT(offsetof(DllA3EffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(DllA3EffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(DllA3EffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(DllA3EffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(DllA3EffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(DllA3EffectVertex) == 0x0A);
-
 typedef struct DllA3EffectResourceView {
-    DllA3EffectVertex vertices[21];
+    ModgfxEffectVertex vertices[21];
     u8 padD2[2];
     s16 colors[24][3];
     s16 firstGroupIndices[8];

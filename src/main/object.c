@@ -80,8 +80,6 @@ typedef struct ObjListObjectDef
     u32 objectId;
 } ObjListObjectDef;
 
-typedef f32 Mtx[3][4];
-
 typedef struct LoadedObj
 {
     u8 pad00[0x06];
@@ -221,7 +219,6 @@ void doNothing_beforeRenderObject(int a)
 {
 }
 
-
 void Obj_UpdateRollingRotation(GameObject* obj)
 {
     f32 m2[12];
@@ -301,7 +298,6 @@ void Obj_ClearModelSlotIndex(GameObject* obj)
     obj->anim.mapEventSlot = -1;
 }
 
-void Obj_ClearModelColorFadeRecursive(GameObject* obj);
 void Obj_ClearModelColorFadeRecursive(GameObject* obj)
 {
     int i;
@@ -316,7 +312,6 @@ void Obj_ClearModelColorFadeRecursive(GameObject* obj)
     }
 }
 
-void Obj_TickModelColorFadeRecursive(GameObject* obj);
 void Obj_TickModelColorFadeRecursive(GameObject* obj)
 {
     f32 alpha;
@@ -361,7 +356,6 @@ void Obj_TickModelColorFadeRecursive(GameObject* obj)
         i++;
     }
 }
-
 
 int objGetFlagsE5_2(u8* obj)
 {
@@ -494,7 +488,6 @@ void Obj_StartModelFadeIn(GameObject* obj, int frames)
         }
     }
 }
-
 
 void Obj_TransformLocalVectorByWorldMatrix(void* obj, f32* src, f32* dst)
 {
@@ -917,7 +910,6 @@ void mapSetupPlayer(void)
     }
 }
 
-
 ObjPlacement* Obj_AllocObjectSetup(int size, int type)
 {
     ObjPlacement* p = mmAlloc(size, 0xe, 0);
@@ -1135,9 +1127,7 @@ static void objFreeObjdef(u8* obj, int flag)
     mm_free(obj);
 }
 
-
 void Obj_RegisterObject(GameObject* obj, int b);
-
 
 int loadModLines(int idx, s16* outCount)
 {
@@ -1178,7 +1168,6 @@ static inline void Obj_FreeDeferredObjects(void)
         }
     }
 }
-
 
 u8* loadObjectFile(int id)
 {
@@ -1629,7 +1618,6 @@ void Obj_RemoveFromUpdateList(GameObject* obj)
     }
 }
 
-
 void modelInitBones(f32 scale, void* model)
 {
     f32* srcP;
@@ -1876,7 +1864,6 @@ void Obj_RegisterObject(GameObject* obj, int flags)
     }
 }
 
-
 void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int unused)
 {
     extern void ObjAnim_LoadMoveEvents(u8* obj, int dummy, ObjAnimEventTable* eventTable, u32 moveId, u8 load);
@@ -2059,7 +2046,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
         if (idx < count)
         {
             obj->models[idx] = (u8*)obj + base + offsets[idx];
-            ObjModel_LoadAnimData(models[idx], loadFlags, (int)obj->models[idx]);
+            ObjModel_LoadAnimData(models[idx], loadFlags, obj->models[idx]);
             if (!(((ObjModel*)obj->models[idx])->file->flags & 0x8000))
             {
                 ((ObjModelInstance*)obj->def)->flags &= ~0x800000LL;
@@ -2089,7 +2076,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
         for (; i < count; i++)
         {
             obj->models[i] = (u8*)obj + base + offsets[i];
-            ObjModel_LoadAnimData(models[i], loadFlags, (int)obj->models[i]);
+            ObjModel_LoadAnimData(models[i], loadFlags, obj->models[i]);
             modelFlags = ((ObjModel*)obj->models[i])->file->flags;
             if (!(modelFlags & 0x8000) && !(modelFlags & 0x4000))
             {
@@ -2152,14 +2139,19 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
         ObjAnim_LoadMoveEvents((u8*)obj, seq2, obj->objAnimEventTable, 0, 1);
         cursor += 0x50;
     }
-    if ((loadFlags & OBJLOAD_FLAG_WEAPON_DA) && *(void**)obj->models != NULL)
+    if (!(loadFlags & OBJLOAD_FLAG_WEAPON_DA) || *(void**)obj->models == NULL)
+    {
+        alignedCursor = cursor;
+    }
+    else
     {
         alignedCursor = roundUpTo4(cursor);
         obj->weaponDaTable = (ObjWeaponDaTable*)alignedCursor;
-        cursor = roundUpTo8(alignedCursor + 8);
-        obj->weaponDaTable->entries = (s16*)cursor;
-        cursor += 0x800;
+        alignedCursor = roundUpTo8(alignedCursor + 8);
+        obj->weaponDaTable->entries = (s16*)alignedCursor;
+        alignedCursor += 0x800;
     }
+    cursor = alignedCursor;
     if ((loadFlags & OBJLOAD_FLAG_HAS_SHADOW) && modelDef->shadowType != OBJ_SHADOW_TYPE_NONE)
     {
         cursor = shadowInit((GameObject*)obj, cursor, 0);
@@ -2293,7 +2285,6 @@ GameObject* ObjList_FindObjectById(u32 objectId)
     return NULL;
 }
 
-
 void* ObjList_GetObjects(int* outA, int* outB)
 {
     if (outA != NULL)
@@ -2306,7 +2297,6 @@ void* ObjList_GetObjects(int* outA, int* outB)
     }
     return gObjList;
 }
-
 
 void Obj_ApplyPendingParentLinks(void)
 {

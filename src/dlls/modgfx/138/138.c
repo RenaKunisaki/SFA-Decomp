@@ -5,23 +5,8 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 
-typedef struct Dll8AEffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} Dll8AEffectVertex;
-
-STATIC_ASSERT(offsetof(Dll8AEffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(Dll8AEffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(Dll8AEffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(Dll8AEffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(Dll8AEffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(Dll8AEffectVertex) == 0x0A);
-
 typedef struct Dll8AEffectResourceView {
-    Dll8AEffectVertex vertices[8];
+    ModgfxEffectVertex vertices[8];
     s16 triangles[12][3];
     s16 allVertexIndices[8];
     s16 sequenceParams[7];
@@ -46,7 +31,7 @@ u8 gDll8AEffectResourceData[sizeof(Dll8AEffectResourceView)] = {
     4,   0,   5,   0,  6,   0,   7,   0,   0,   0,   10, 0,   0,   0,  0,   0,   0,  0,   0,  0,   0,   0,   0};
 
 void dll_8A_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)(int)gDll8AEffectResourceData;
     GfxCmd* commands = packet.entries;
 

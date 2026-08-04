@@ -6,23 +6,8 @@
 #include "main/dll/modgfx_types.h"
 #include "main/dll/partfx_interface.h"
 
-typedef struct Dll69EffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} Dll69EffectVertex;
-
-STATIC_ASSERT(offsetof(Dll69EffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(Dll69EffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(Dll69EffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(Dll69EffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(Dll69EffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(Dll69EffectVertex) == 0x0A);
-
 typedef struct Dll69EffectResourceView {
-    Dll69EffectVertex vertices[8];
+    ModgfxEffectVertex vertices[8];
     s16 colors[4][3];
     s16 allVertexIndices[8];
     s16 sequenceParams[7];
@@ -44,7 +29,7 @@ u32 gDll69EffectResourceData[sizeof(Dll69EffectResourceView) / sizeof(u32)] = {
 
 s16 dll_69_spawnEffect(GameObject* sourceObj, int variant, void* spawnParams, u32 spawnFlags, int unusedArg4,
                        Dll69EffectParams* overrideParams) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     GfxCmd* command;
     GfxCmd* entries;
     u8* resourceData = (u8*)(int)gDll69EffectResourceData;

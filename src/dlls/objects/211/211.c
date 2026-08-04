@@ -36,11 +36,9 @@
 #include "main/track_dolphin_api.h"
 #include "main/object_render.h"
 #include "main/trig.h"
-#include "main/dll/treasurechest_state.h"
 #include "main/objseq.h"
 #include "main/objfx.h"
 #include "dlls/object_descriptor.h"
-#include "string.h"
 #include "dlls/objects/210.h"
 #include "main/obj_message.h"
 #include "main/gamebits.h"
@@ -87,7 +85,7 @@ int LandedArwing_UpdateBounceFade(GameObject* obj, BaddieState* baddie)
     LandedArwingState* state;
     ObjHitsPriorityState* hitState;
 
-    state = (LandedArwingState*)((GroundBaddieState*)*(int*)&obj->extra)->control;
+    state = (LandedArwingState*)((GroundBaddieState*)(int)obj->extra)->control;
     baddie->stateTag = 3;
     if (baddie->moveJustStartedA != 0)
     {
@@ -161,7 +159,7 @@ int LandedArwing_UpdateRetreatChase(GameObject* obj, BaddieState* baddie)
     f32 y;
     f32 z;
 
-    state = (LandedArwingState*)((GroundBaddieState*)*(int*)&(obj)->extra)->control;
+    state = (LandedArwingState*)((GroundBaddieState*)(int)obj->extra)->control;
     player = (GameObject*)((int)Obj_GetPlayerObject());
     playerObj = player;
     baddie->stateTag = 1;
@@ -269,7 +267,7 @@ u32 LandedArwing_UpdateFlightChase(GameObject* obj, BaddieState* state)
     f32 chaseScale;
     u32 scriptFlags;
 
-    sub = (LandedArwingState*)((GroundBaddieState*)*(int*)&obj->extra)->control;
+    sub = (LandedArwingState*)((GroundBaddieState*)(int)obj->extra)->control;
     playerObj = Obj_GetPlayerObject();
     state->stateTag = 1;
 
@@ -433,7 +431,7 @@ u32 landedarwing_updateMovementState(GameObject* obj, BaddieState* baddie)
 {
     LandedArwingState* state;
 
-    state = (LandedArwingState*)((GroundBaddieState*)*(int*)&obj->extra)->control;
+    state = (LandedArwingState*)((GroundBaddieState*)(int)obj->extra)->control;
     baddie->stateTag = 1;
     if (baddie->moveJustStartedA != 0)
     {
@@ -1021,7 +1019,7 @@ void landedarwing_updateConstrainedChaseVelocity(GameObject* obj, f32 targetX, f
     f32 scale;
     f32 dot;
 
-    state = (LandedArwingState*)((GroundBaddieState*)*(int*)&(obj)->extra)->control;
+    state = (LandedArwingState*)((GroundBaddieState*)(int)obj->extra)->control;
     if ((u32)(state->flags92 >> 2 & 1) == 0)
     {
         vx = targetX - (obj)->anim.localPosX;
@@ -1124,7 +1122,7 @@ void dll_D3_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible)
     f32 mtx[15];
     f32 scale;
 
-    state = (LandedArwingState*)((GroundBaddieState*)*(int*)&(obj)->extra)->control;
+    state = (LandedArwingState*)((GroundBaddieState*)(int)obj->extra)->control;
     slideMtx = &state->unk_04;
     if (visible != 0)
     {
@@ -1189,13 +1187,15 @@ void dll_D3_hitDetect_nop(void)
 {
 }
 
-typedef struct DllD3Placement
+struct DllD3Placement
 {
     ObjPlacement base;
-    u8 pad18[0x2E - 0x18];
+    u8 pad18[0x2B - 0x18];
+    u8 startControlMode; /* 0x2B: nonzero spawns the chest in control mode 1 */
+    u8 pad2C[0x2E - 0x2C];
     s8 seqIndex;
     u8 pad2F[0x30 - 0x2F];
-} DllD3Placement;
+};
 
 void* gLandedArwingStateHandlers[6];
 PartFxSpawnParams gStaffActionHitLightParams;
@@ -1265,55 +1265,55 @@ void dll_D3_update(GameObject* obj)
 
     ObjAnim_AdvanceCurrentMove((int)obj, extra->animSpeed, timeDelta, NULL);
 
-    if (((TreasureChestState*)state)->targetState != 1)
+    if (((GroundBaddieState*)state)->targetState != 1)
     {
         rc = (int)(*gBaddieControlInterface)
                  ->findAggroTarget(obj, state,
-                                   (f32)(u32)((TreasureChestState*)state)->aggroRange, 0x8000);
+                                   (f32)(u32)((GroundBaddieState*)state)->aggroRange, 0x8000);
         if (rc != 0u)
         {
             (*gBaddieControlInterface)
-                ->startHitReaction(obj, state, &((TreasureChestState*)state)->groundBaddie.routeNav,
-                                   ((TreasureChestState*)state)->gameBitB, NULL, 0, 1, 0, -1);
-            ((TreasureChestState*)state)->targetObj = rc;
-            ((TreasureChestState*)state)->hasTarget = 0;
-            ((TreasureChestState*)state)->targetState = 1;
-            ((TreasureChestState*)state)->subMode = 2;
+                ->startHitReaction(obj, state, &((GroundBaddieState*)state)->routeNav,
+                                   ((GroundBaddieState*)state)->gameBitB, NULL, 0, 1, 0, -1);
+            ((GroundBaddieState*)state)->baddie.targetObj = (void*)rc;
+            ((GroundBaddieState*)state)->baddie.hasTarget = 0;
+            ((GroundBaddieState*)state)->targetState = 1;
+            ((GroundBaddieState*)state)->subMode = 2;
         }
 
-        if ((u32)((TreasureChestState*)state)->targetObj != 0 && ((TreasureChestState*)state)->targetState == 2)
+        if ((u32)((GroundBaddieState*)state)->baddie.targetObj != 0 && ((GroundBaddieState*)state)->targetState == 2)
         {
-            if (((TreasureChestState*)state)->targetDistance <= (f32)(u32)((TreasureChestState*)state)->aggroRange)
+            if (((GroundBaddieState*)state)->baddie.targetDistance <= (f32)(u32)((GroundBaddieState*)state)->aggroRange)
             {
-                ((TreasureChestState*)state)->targetState = 1;
+                ((GroundBaddieState*)state)->targetState = 1;
             }
         }
     }
 
-    if (((TreasureChestState*)state)->targetObj != 0u)
+    if (((GroundBaddieState*)state)->baddie.targetObj != 0u)
     {
-        dx = ((GameObject*)(((TreasureChestState*)state)->targetObj))->anim.worldPosX -
+        dx = ((GameObject*)(((GroundBaddieState*)state)->baddie.targetObj))->anim.worldPosX -
              obj->anim.worldPosX;
-        dy = ((GameObject*)(((TreasureChestState*)state)->targetObj))->anim.worldPosY -
+        dy = ((GameObject*)(((GroundBaddieState*)state)->baddie.targetObj))->anim.worldPosY -
              obj->anim.worldPosY;
-        dz = ((GameObject*)(((TreasureChestState*)state)->targetObj))->anim.worldPosZ -
+        dz = ((GameObject*)(((GroundBaddieState*)state)->baddie.targetObj))->anim.worldPosZ -
              obj->anim.worldPosZ;
-        ((TreasureChestState*)state)->targetDistance = sqrtf(dz * dz + (dx * dx + dy * dy));
+        ((GroundBaddieState*)state)->baddie.targetDistance = sqrtf(dz * dz + (dx * dx + dy * dy));
     }
 
     (*gBaddieControlInterface)
-        ->processMessages(obj, state, &((TreasureChestState*)state)->groundBaddie.routeNav,
-                          ((TreasureChestState*)state)->gameBitB, NULL, 0, 0, 0);
+        ->processMessages(obj, state, &((GroundBaddieState*)state)->routeNav,
+                          ((GroundBaddieState*)state)->gameBitB, NULL, 0, 0, 0);
 
-    hits = (int)((TreasureChestState*)state)->hitPoints;
+    hits = (int)((GroundBaddieState*)state)->baddie.hitPoints;
     if (hits > 0)
     {
         (*gBaddieControlInterface)
             ->updateHitReaction(obj, state, (void*)((int)state + 0x35c),
-                                ((TreasureChestState*)state)->gameBitB, gStaffActionHitReactionMoves,
+                                ((GroundBaddieState*)state)->gameBitB, gStaffActionHitReactionMoves,
                                 gStaffActionHitReactionDamage, 0,
                                 &gStaffActionHitLightParams);
-        if ((int)((TreasureChestState*)state)->hitPoints < hits)
+        if ((int)((GroundBaddieState*)state)->baddie.hitPoints < hits)
         {
             (*(LandedArwingStaffInterface**)((GameObject*)player->childObjs[0])->anim.dll)
                 ->getSwipeTextureIndex((GameObject*)player->childObjs[0]);
@@ -1327,13 +1327,13 @@ void dll_D3_update(GameObject* obj)
     (*gBaddieControlInterface)
         ->updateGravity(obj, state, 0.0f, -1);
 
-    ((TreasureChestState*)state)->savedPendingParentObj = obj->pendingParentObj;
+    ((GroundBaddieState*)state)->savedPendingParentObj = obj->pendingParentObj;
     obj->pendingParentObj = 0;
 
     (*gPlayerInterface)->update(obj, state, timeDelta, timeDelta, gLandedArwingStateHandlers,
                                 &gLandedArwingDefaultStateHandler);
 
-    obj->pendingParentObj = ((TreasureChestState*)state)->savedPendingParentObj;
+    obj->pendingParentObj = ((GroundBaddieState*)state)->savedPendingParentObj;
 
     if (((LandedArwingMovementFlags*)&extra->flags92)->hitSurfaceType13 == 0u && extra->surfaceMode == 6)
     {
@@ -1352,7 +1352,7 @@ void dll_D3_update(GameObject* obj)
 #undef dy
 #undef dz
 
-void dll_D3_init(GameObject* obj, int def, int flag)
+void dll_D3_init(GameObject* obj, DllD3Placement* def, int flag)
 {
     int state;
     LandedArwingState* extra;
@@ -1360,7 +1360,7 @@ void dll_D3_init(GameObject* obj, int def, int flag)
     f32 fz;
     int ftag;
 
-    state = *(int*)&(obj)->extra;
+    state = (int)obj->extra;
     setupFlags = 6;
     if (flag != 0)
     {
@@ -1384,7 +1384,7 @@ void dll_D3_init(GameObject* obj, int def, int flag)
     extra->scriptTargetZ = (obj)->anim.localPosZ;
 
     ObjAnim_SetCurrentMove((int)obj, 0, fz, 0);
-    if (*(u8*)(def + 0x2b) == 0)
+    if (def->startControlMode == 0)
     {
         ftag = 0;
     }
@@ -1392,11 +1392,11 @@ void dll_D3_init(GameObject* obj, int def, int flag)
     {
         ftag = 1;
     }
-    ((TreasureChestState*)state)->controlMode = ftag;
-    ((TreasureChestState*)state)->substate = 0;
-    ((TreasureChestState*)state)->targetState = 0;
-    ((TreasureChestState*)state)->subMode = 0;
-    ((TreasureChestState*)state)->physicsActive = 0;
+    ((GroundBaddieState*)state)->baddie.controlMode = ftag;
+    ((GroundBaddieState*)state)->baddie.substate = 0;
+    ((GroundBaddieState*)state)->targetState = 0;
+    ((GroundBaddieState*)state)->subMode = 0;
+    ((GroundBaddieState*)state)->baddie.physicsActive = 0;
     ObjHits_DisableObject(obj);
 
     fz = 1.0f;

@@ -5,7 +5,7 @@
 #include "main/dll/FRONT/dll_39.h"
 #include "dlls/object_descriptor.h"
 #include "main/model_engine.h"
-#include "main/dll/FRONT/dll_0032_n_rareware.h"
+#include "main/dll/FRONT/dll_0033_n_rareware.h"
 u8 gNrarewareTimeoutFlag;
 s8 gNrarewareExitDelay;
 u8 gNrarewareTransitionStarted;

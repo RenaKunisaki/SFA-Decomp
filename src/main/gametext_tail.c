@@ -447,6 +447,7 @@ static inline char* gameTextBreakLine(char* dst, char** buffer, int lineIdx)
 
 char** gameTextWrapLines(char* str, f32 width, f32 height, int* outCount, f32* outLineH)
 {
+    int charPos;
     int cursor;
     int* boundary;
     int langIdx;
@@ -458,7 +459,6 @@ char** gameTextWrapLines(char* str, f32 width, f32 height, int* outCount, f32* o
     int haveSpace;
     int lineIdx;
     char* src;
-    int charPos;
     char** buffer;
     char* dst;
     int lineStarts[32];

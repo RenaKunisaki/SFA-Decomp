@@ -1,7 +1,4 @@
-/*
- * PressureSwitch behavior (DLL 510 / 0x01FE). The generated numeric path
- * remains the authoritative source identity.
- */
+/* PressureSwitch behavior (DLL 510 / 0x01FE). */
 #include "dlls/objects/510.h"
 
 #include "game/objects/object.h"

@@ -5,17 +5,17 @@ variant against true objdiff fuzzy%.
 
 WHY THIS EXISTS -- the lever tools/brute_match.py cannot reach
 -------------------------------------------------------------
-The saved-GPR band is filled in TWO PHASES:
+Declaration order keys REGISTER ASSIGNMENT; the order of the assignment
+statements keys EMISSION ORDER.  They are different axes and a function can be
+inert on one and not the other, so a declaration sweep coming back flat says
+nothing about how the same statements would score written in another sequence.
+That second axis is what this tool permutes.
 
-  phase 1  webs whose live range never reaches a loop header -- allocated
-           FIRST, ordered by REVERSE FIRST-DEFINITION order;
-  phase 2  everything else, in DECLARATION order.
-
-For a phase-1 web declaration order is inert BY CONSTRUCTION, which is exactly
-why declaration sweeps (brute_match.py) come back inert on the whole
-"pure register permutation" cap class.  The key for phase 1 is FIRST-DEFINITION
-order, and the only source spelling that moves it is the order of the
-ASSIGNMENT STATEMENTS themselves.  That is what this tool permutes.
+(An earlier rationale here claimed the saved-GPR band was filled in two phases,
+with a "phase 1" ordered by reverse first-definition order for webs that never
+reach a loop header.  That model has been REFUTED by measurement and must not
+be reinstated: the saved band is contiguous and monotone downward, and the FPR
+band has no separate law.  The tool's own axis stands on its own.)
 
 WHAT IT PERMUTES
 ----------------
@@ -521,10 +521,163 @@ def dirty_in_git(src_file: Path) -> bool:
 
 
 # --------------------------------------------------------------------- main
+# ---------------------------------------------------------- control suite
+#
+# `collect_runs` decides which statements may join a run AND derives the
+# dependence relation that keeps their reorderings legal -- one function, one
+# model, checking itself.  If `classify` under-reports a statement's uses, the
+# missing RAW edge is missing from `deps` too, `valid()` agrees, and an illegal
+# ordering is emitted with nothing to catch it: no build gate in this project
+# compares retail's MEANING, so it would land as a win.
+#
+# So the control below re-derives the relation a SECOND time, from the
+# statement TEXT, with no use of `classify`, `top_level_assign` or `IDENT`'s
+# call sites -- and every ordering the tool would emit must be legal under
+# BOTH.  `--self-test --mutate` corrupts `classify` on purpose and requires the
+# independent relation to catch the illegal ordering that results; a control
+# that has never been shown to fail is not a control.
+
+_ASSIGN_OPS = ("<<=", ">>=", "+=", "-=", "*=", "/=", "%=", "&=", "|=", "^=",
+               "=")
+
+
+def _independent_deps(items):
+    """RAW/WAR/WAW pairs derived from the raw statement text.
+
+    Deliberately naive and deliberately SEPARATE: split at the first assignment
+    operator that is not a comparison, take the whole left side as the written
+    name and every identifier on the right as read.  A compound operator also
+    reads its target.  Over-approximating is fine -- this relation only has to
+    be a SUPERSET of the truth to catch a missing edge.
+    """
+    import re as _re
+    ident = _re.compile(r"[A-Za-z_]\w*")
+    parsed = []
+    for text in items:
+        core = text.split(";")[0]
+        cut = None
+        for k, ch in enumerate(core):
+            if ch != "=":
+                continue
+            if core[k + 1:k + 2] == "=" or core[k - 1:k] in ("=", "!", "<",
+                                                             ">"):
+                continue
+            cut = k
+            break
+        if cut is None:
+            parsed.append((None, set()))
+            continue
+        lhs, rhs = core[:cut], core[cut + 1:]
+        compound = lhs.rstrip()[-1:] in "+-*/%&|^<>"
+        names = ident.findall(lhs)
+        w = names[0] if names else None
+        r = set(ident.findall(rhs)) | set(names[1:])
+        if compound and w:
+            r.add(w)
+        parsed.append((w, r))
+    deps = set()
+    for i in range(len(parsed)):
+        for j in range(i + 1, len(parsed)):
+            wi, ri = parsed[i]
+            wj, rj = parsed[j]
+            if wi is None or wj is None:
+                deps.add((i, j))
+                continue
+            if wi in rj or wj in ri or wi == wj:
+                deps.add((i, j))
+    return deps
+
+
+_SELFTEST_SRC = """
+void probe(void) {
+    int a;
+    int b;
+    int c;
+    int d;
+    int e;
+    a = 1;
+    b = 2;
+    c = 3;
+    d = a + b;
+    e = d * c;
+}
+"""
+
+
+def self_test(mutate: bool = False, verbose: bool = True) -> int:
+    """Every ordering this tool would emit must be legal under an
+    INDEPENDENTLY derived dependence relation."""
+    bad = 0
+
+    def chk(label, cond, detail=""):
+        nonlocal bad
+        if not cond:
+            bad += 1
+        print("  %-58s %s %s" % (label, "PASS" if cond else "*** FAIL ***",
+                                 detail))
+
+    src = _SELFTEST_SRC
+    o = src.index("{", src.index("probe"))
+    c = match_brace(src, o, len(src))
+    undo = None
+    if mutate:
+        g = globals()
+        real = g["classify"]
+
+        def blind(core_raw, locals_, addr_taken):
+            r = real(core_raw, locals_, addr_taken)
+            return None if r is None else (r[0], set(), r[2])
+        g["classify"] = blind
+        undo = lambda: g.__setitem__("classify", real)      # noqa: E731
+    try:
+        runs = collect_runs(src, o, c, "probe", min_items=2)
+        chk("the probe body yields one permutable run", len(runs) == 1,
+            "(%d)" % len(runs))
+        if not runs:
+            return 1
+        r = runs[0]
+        chk("the run holds all five assignments", len(r["items"]) == 5,
+            "(%d)" % len(r["items"]))
+        indep = _independent_deps(r["items"])
+        chk("the tool's relation contains the independent one",
+            indep <= r["deps"] or mutate,
+            "missing %s" % sorted(indep - r["deps"]))
+        orders = gen_variants(len(r["items"]), r["deps"], "all", 100000)
+        illegal = [tuple(x) for x in orders if not valid(x, indep)]
+        if mutate:
+            chk("MUTATION CONTROL: a blinded `classify` produces orderings "
+                "the independent relation rejects", bool(illegal),
+                "(%d of %d)" % (len(illegal), len(orders)))
+        else:
+            chk("every emitted ordering is legal under BOTH relations",
+                not illegal, "(%d of %d illegal)" % (len(illegal),
+                                                     len(orders)))
+            chk("there is something to permute at all", len(orders) > 1,
+                "(%d orderings)" % len(orders))
+            # d = a + b reads a and b; e = d * c reads d and c.
+            names = r["names"]
+            need = {(names.index("a"), names.index("d")),
+                    (names.index("b"), names.index("d")),
+                    (names.index("c"), names.index("e")),
+                    (names.index("d"), names.index("e"))}
+            chk("the known RAW chain is present", need <= r["deps"],
+                "missing %s" % sorted(need - r["deps"]))
+    finally:
+        if undo:
+            undo()
+    print("\nstmt_sweep self-test: %s" % ("PASSED" if not bad
+                                           else "%d FAILURE(S)" % bad))
+    return 1 if bad else 0
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("unit")
-    ap.add_argument("symbol")
+    ap.add_argument("unit", nargs="?")
+    ap.add_argument("symbol", nargs="?")
+    ap.add_argument("--self-test", action="store_true")
+    ap.add_argument("--mutate", action="store_true",
+                    help="with --self-test: blind `classify` and "
+                         "require the independent relation to catch it")
     ap.add_argument("-v", "--version", default="GSAE01")
     ap.add_argument("--max-variants", type=int, default=60)
     ap.add_argument("--time-budget", type=float, default=1200.0)
@@ -538,6 +691,10 @@ def main():
                     help="sweep even if the file already has uncommitted "
                          "changes (default: refuse -- a peer lane may own it)")
     args = ap.parse_args()
+    if args.self_test:
+        return self_test(args.mutate)
+    if not (args.unit and args.symbol):
+        ap.error("give a unit and a symbol, or --self-test")
 
     config = REPO / "build" / args.version / "config.json"
     unit = resolve_unit(load_units(config), args.unit)

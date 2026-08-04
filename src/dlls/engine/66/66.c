@@ -22,7 +22,6 @@
 #include "main/track_bbox_api.h"
 #include "main/track_dolphin_api.h"
 #include "main/vecmath.h"
-#include "string.h"
 #include "main/objseq_api.h"
 #include "main/pad.h"
 
@@ -57,10 +56,10 @@ int camcontrol_traceMove(f32* fromPos, f32* toPos, f32* outPos, u8* traceWork, c
     *outPos = *toPos;
     outPos[1] = toPos[1];
     outPos[2] = toPos[2];
-    *(f32*)(traceWork + offsetof(CamcontrolTraceWork, radius)) = radius;
-    *(s8*)(traceWork + offsetof(CamcontrolTraceWork, bboxHit)) = -1;
-    *(s8*)(traceWork + offsetof(CamcontrolTraceWork, mode)) = traceMode;
-    *(s16*)(traceWork + offsetof(CamcontrolTraceWork, hitCount)) = 0;
+    ((CamcontrolTraceWork*)traceWork)->radius = radius;
+    ((CamcontrolTraceWork*)traceWork)->bboxHit = -1;
+    ((CamcontrolTraceWork*)traceWork)->mode = traceMode;
+    ((CamcontrolTraceWork*)traceWork)->hitCount = 0;
     blocked = 0;
     if (runBbox != 0) {
         blocked = trackGetLineIntersect(fromPos, outPos, radius, 1, NULL, NULL, 0x10, 0xffffffff, 0xff, 0);
@@ -75,7 +74,7 @@ int camcontrol_traceMove(f32* fromPos, f32* toPos, f32* outPos, u8* traceWork, c
     }
     trackGetIntersect(NULL, fromPos, outPos, 1, traceWork, 0);
     clear = 0;
-    if ((gCamcontrolTraceBboxBlocked == 0) && (*(s16*)(traceWork + offsetof(CamcontrolTraceWork, hitCount)) == 0)) {
+    if ((gCamcontrolTraceBboxBlocked == 0) && (((CamcontrolTraceWork*)traceWork)->hitCount == 0)) {
         clear = 1;
     }
     return clear;
@@ -224,7 +223,7 @@ int CameraModeNormal_chooseWallAvoidanceDirection(CameraObject* cam, f32* outA, 
     result = 0;
     (*gCameraInterface)
         ->getRelativePosition(cam, &spinB, &spinC, &spinD, &spinA, gCameraModeNormalState->targetHeight, 0);
-    tgt0 = *(int*)&cam->anim.targetObj;
+    tgt0 = (int)cam->anim.targetObj;
     *(int*)&probe[35] = tgt0;
     probe[1] = cam->anim.worldPosY;
     pathA[0] = cam->anim.worldPosX;
@@ -254,7 +253,7 @@ int CameraModeNormal_chooseWallAvoidanceDirection(CameraObject* cam, f32* outA, 
         if (found1 == -1) {
             dx = spinD;
             dz = spinB;
-            tgt = (GameObject*)(*(int*)&cam->anim.targetObj);
+            tgt = (GameObject*)((int)cam->anim.targetObj);
             rad = (3.1415927f * (f32)(s16)ang) / 32768.0f;
             cosv = mathSinf(rad);
             sinv = mathCosf(rad);
@@ -274,7 +273,7 @@ int CameraModeNormal_chooseWallAvoidanceDirection(CameraObject* cam, f32* outA, 
         if (found2 == -1) {
             dx = spinD;
             dz = spinB;
-            tgt = (GameObject*)(*(int*)&cam->anim.targetObj);
+            tgt = (GameObject*)((int)cam->anim.targetObj);
             rad = (3.1415927f * (f32)(s16)(-s * 0xb6)) / 32768.0f;
             cosv = mathSinf(rad);
             sinv = mathCosf(rad);

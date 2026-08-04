@@ -68,10 +68,10 @@ STATIC_ASSERT(offsetof(DoorF4State, environmentFxActive) == 0x22);
 STATIC_ASSERT(offsetof(DoorF4State, pad23) == 0x23);
 STATIC_ASSERT(sizeof(DoorF4State) == 0x24);
 
-int DoorF4_SeqFn(int obj, int unused, ObjSeqState* animUpdate);
+int DoorF4_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int DoorF4_getExtraSize(void);
 int DoorF4_getObjectTypeId(void);
-void DoorF4_free(int obj);
+void DoorF4_free(GameObject* obj);
 void DoorF4_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible);
 void DoorF4_hitDetect(void);
 void DoorF4_update(GameObject* obj);

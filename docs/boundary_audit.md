@@ -510,7 +510,7 @@ No-descriptor / vestigial-unit dispositions:
 | 0x23F | gDB_eggObjDescriptor | 801FE118-801FF880 | 801FE118-801FF884 | 801FEB30 (main/main.c \| main/dll/anim.c) | Y | DB_egg |
 | 0x230 | gChukaObjDescriptor | 80205F48-80206470 | 80205F40-80206474 | 8020637C (main/dll/anim.c \| main/dll/baddie/chuka.c) | Y | DFP_wallbar |
 | 0x22F | gDfpfloorbarObjDescriptor | 8020647C-8020692C | 80206474-80206968 | 8020652C (main/dll/baddie/chuka.c \| main/dll/baddie/chukachuck.c) | Y | DFP_floorba |
-| 0x232 | gSfxplayerObjDescriptor | 80207C24-80208094 | 8020768C-80208098 | 80207CE4 (main/dll/TrickyCurve.c \| main/dll/sfxplayer.c) | Y | DFP_RotateP |
+| 0x232 | gDFP_RotatePObjDescriptor | 80207C24-80208094 | 8020768C-80208098 | 80207CE4 (main/dll/TrickyCurve.c \| main/dll/sfxplayer.c) | Y | DFP_RotateP |
 | 0x235 | gDfptargetblockObjDescriptor | 80208660-80208FD8 | 80208508-80208FDC | 802086C4 (main/dll/door.c \| main/dll/fruit.c); 80208B70 (main/dll/fruit.c \| main/dll/zBomb.c) | Y | DFP_TargetB,DFP_TargetB |
 | 0x260 | gProximityMineObjDescriptor | 8021122C-80211C20 | 802110F8-80211C24 | 802113F8 (main/proximitymine.c \| main/proximitymine_update.c); 80211A10 (main/proximitymine_update.c \| main/proximitymine_init.c) | Y | CRDropBomb,ProximityMi |
 

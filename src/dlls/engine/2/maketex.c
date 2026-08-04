@@ -24,8 +24,6 @@ typedef struct
     int val;
 } SeqSortPair;
 
-#define CARD_RESULT_READY    0
-#define CARD_RESULT_IOERROR  -5
 
 static inline int maketex_indexOf(int* p, int n, int target)
 {
@@ -157,7 +155,7 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
     {
         c = saveGame_checksum((u64*)gSaveCardIoBuffer, 0x3ff);
         chk = c;
-        if (c != *(u64*)(gSaveCardIoBuffer + 0x1ff8))
+        if (c != ((u64*)gSaveCardIoBuffer)[0x3ff])
         {
             DCInvalidateRange((void*)gSaveCardIoBuffer, 0x2000);
             result = CARDRead(&gSaveCardFileInfo.fileInfo, (void*)gSaveCardIoBuffer, 0x2000, 0x4000);
@@ -165,7 +163,7 @@ int saveGame_prepareAndWrite(int writeImages, int cbA, int cbB, void* cbC, void*
             {
                 c = saveGame_checksum((u64*)gSaveCardIoBuffer, 0x3ff);
                 chk = c;
-                if (c == *(u64*)(gSaveCardIoBuffer + 0x1ff8))
+                if (c == ((u64*)gSaveCardIoBuffer)[0x3ff])
                 {
                     result = saveGame_doWrite(1);
                 }
@@ -401,13 +399,6 @@ void loadMemCardImages(void)
     DCFlushRange(gSaveCardImageBuffer, 0x4000);
 }
 
-#define CARD_RESULT_UNLOCKED 1
-#define CARD_RESULT_NOCARD   -3
-#define CARD_RESULT_NOFILE   -4
-#define CARD_RESULT_BROKEN   -6
-#define CARD_RESULT_NOENT    -8
-#define CARD_RESULT_INSSPACE -9
-#define CARD_RESULT_ENCODING -13
 
 /* Mounts the memory card, validates its serial number, opens or creates the
  * save file (writing the card image buffer for a fresh file), and maps any
@@ -678,7 +669,6 @@ static inline int seqPairVal(SeqSortPair* pair)
     return pair->val;
 }
 
-void seqPairTableSort(SeqSortPair* arr, int n);
 void seqPairTableSort(SeqSortPair* arr, int n)
 {
     int key;

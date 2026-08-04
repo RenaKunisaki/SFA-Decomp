@@ -2,7 +2,7 @@
 #define MAIN_OBJHITS_TYPES_H_
 
 #include "global.h"
-#include "ghidra_import.h"
+#include "types.h"
 
 #define OBJHITS_PRIORITY_HIT_COUNT 3
 

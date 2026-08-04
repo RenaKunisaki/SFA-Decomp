@@ -12,6 +12,7 @@
 #include "dlls/object_descriptor.h"
 #include "main/audio/music_api.h"
 #include "main/dll/player_api.h"
+#include "main/dll/player_state.h"
 #include "main/dll/player_staff_api.h"
 #include "main/gamebits_api.h"
 #include "main/gameloop_gamebit_api.h"
@@ -209,7 +210,7 @@ void shop_buyItem(GameObject* obj, int price)
         playerAddHealth(player, 2);
         break;
     case SHOP_ITEM_BAFOMDAD_HOLDER:
-        *(u8*)(mapEventState + 0xa) = 10;
+        ((PlayerStatus*)mapEventState)->healCountMax = 10;
         break;
     case SHOP_ITEM_DUMBLEDANG_POD_4X:
         playerAddHealth(player, 8);

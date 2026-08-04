@@ -77,9 +77,9 @@ void earthwalker_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visi
 void earthwalker_hitDetect(GameObject* obj);
 void earthwalker_release(void);
 void earthwalker_initialise(void);
-void earthwalker_update(int obj);
-int earthwalker_SeqFn(int obj, int unused, ObjSeqState* animUpdate, int shouldAdvanceMove);
-void earthwalker_init(GameObject* obj, int setup);
+void earthwalker_update(GameObject* obj);
+int earthwalker_SeqFn(GameObject* ewObj, int unused, ObjSeqState* animUpdate, int shouldAdvanceMove);
+void earthwalker_init(GameObject* obj, EarthWalkerPlacement* setup);
 
 struct BaddieState;
 

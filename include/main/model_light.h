@@ -1,7 +1,7 @@
 #ifndef MAIN_MODEL_LIGHT_H_
 #define MAIN_MODEL_LIGHT_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/vec_types.h"
 #include "dolphin/gx/GXStruct.h"
 #include "main/modellight_api.h"

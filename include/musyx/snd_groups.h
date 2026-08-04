@@ -1,7 +1,7 @@
 #ifndef MUSYX_SND_GROUPS_H_
 #define MUSYX_SND_GROUPS_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "musyx/snd_groups_api.h"
 #include "musyx/synth_queue.h"
 

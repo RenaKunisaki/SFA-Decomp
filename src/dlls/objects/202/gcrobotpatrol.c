@@ -22,7 +22,6 @@
 #include "main/player_control_interface.h"
 #include "main/vecmath.h"
 #include "main/voxmaps.h"
-#include "string.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 #include "main/dll/baddie_state.h"
@@ -40,7 +39,6 @@
 #include "main/dll/rom_curve_interface.h"
 #include "main/gamebits.h"
 #include "main/dll/objfsa.h"
-#include "main/gamebit_ids.h"
 #include "main/dll/newseqobj_baddie.h"
 #include "main/dll/baddie_frozen.h"
 #include "main/game_ui_interface.h"
@@ -50,7 +48,7 @@
 #include "main/dll/player_target.h"
 #include "main/dll/player_api.h"
 #include "dlls/objects/225_WispBaddie.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.h"
+#include "main/trig_float_helpers.h"
 #include "main/obj_link.h"
 #include "main/objfx.h"
 #include "main/objtexture.h"
@@ -82,7 +80,6 @@
 #include "main/dll/hagabon_mk2.h"
 #include "main/dll/snowworm.h"
 #include "main/dll/baddiewhirlpool.h"
-#include "track/intersect_whirlpool_api.h"
 
 /* Baddie-family animation data shared with the sequence-driver TUs. */
 
@@ -159,7 +156,7 @@ void gcRobotPatrol_updateWhileFrozen(int obj, u8* state, GameObject* attacker, i
     Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_wp_pole1_c_23);
     Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_en_lrope_powerdown);
     ((EnemyState*)state)->flags2E8 |= 0x8;
-    ((EnemyState*)state)->gcRobot.cooldownTimer = (f32)(u32)(u16)sub[0]->unk2C;
+    ((EnemyState*)state)->gcRobot.cooldownTimer = (f32)(u32)(u16)sub[0]->respawnDelay;
     baddieSetMove((GameObject*)obj, (int)state, 1, 2.5f, 0, 0);
     ((EnemyState*)state)->flags2E4 &= ~0x20LL;
     fz = 0.0f;
@@ -176,7 +173,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
     s16 spd;
     SeqFxParams fx;
 
-    def = *(GroundBaddiePlacement**)&obj->anim.placementData;
+    def = (GroundBaddiePlacement*)obj->anim.placementData;
     path = *(RomCurveWalker**)state;
     if (((EnemyState*)state)->gcRobot.cooldownTimer > 0.0f)
     {

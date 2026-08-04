@@ -1,4 +1,13 @@
-# The data axis — REOPENED on the pool side (see correction)
+# The data axis — the pool side was reopened, then worked to a close
+
+> **STATUS 2026-08-03.** The correction below reopened this axis by proving `.sdata2` is scored by
+> BYTES; that reopening has since been worked out. The pool model, the frontier classification and
+> the price of every remaining row now live in `docs/priced_classes.md` **sections 8-13** — start at
+> its **Index of the measured laws**. All 31 sub-100 data sections are classified there (18
+> intra-function, 13 cross-function) and every one is adjudicated: pure statement or use motion
+> reaches none of them, and the one construct that does reach them is the banned shape (§12/§12b).
+> What is still authoritative *here* is the method — how to tell an artifact from a real difference,
+> and the stop-rules. Read this file for the screens; read §8-13 for the verdicts.
 
 > ## ⚠️ CORRECTION 2026-08 — the central premise below is WRONG, and it was measured wrong twice
 >
@@ -302,6 +311,11 @@ confirmed peer result).
 ## See also
 
 - `CLAUDE.md` — the banned pool-reconstruction construct, and why it keeps being re-introduced.
+- `docs/priced_classes.md` §8-13 — the verdicts this file's screens feed into: the mint-order
+  model, the mover, the crutch oracle and the cross-TU declaration laws. Its **Index of the
+  measured laws** is the entry point.
+- `docs/purge_campaign_audit.md` — the three sensor blind spots, and why a data loss can read as
+  `+0.000000` on every score axis.
 - `docs/source_shape_levers.md` — the code-shape axis; its data section points here.
 - `docs/rename_safety.md` — the rename gate and the stale-object race.
 - `docs/splits.md` — how the splitter carves retail objects from `symbols.txt`.

@@ -1,7 +1,7 @@
 #ifndef MUSYX_MCMD_SETUP_H_
 #define MUSYX_MCMD_SETUP_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "musyx/mcmd.h"
 
 void mcmdPlayMacro(McmdVoiceState *state, McmdCommandArgs *args);

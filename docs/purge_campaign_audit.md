@@ -247,3 +247,18 @@ Two of the three blind spots above return an honest-looking `+0.000000` from a c
 harness that simply is not looking at `matched_data`, and the third returns it from a harness
 that is not looking at per-function fuzzy. A purge whose price is real still has to be measured
 and banked — the campaign shows the retunes land promptly whenever the price is visible at all.
+
+**And run md5 of every `.o` beside it.** The gate's four layers are all derived from a comparison
+against *retail*; md5-of-every-`.o` is a comparison against **the previous build of ourselves**, so
+it is the only check that answers "did this window change anything it did not claim to change?".
+It strictly dominates the score axes: any regression that moves a byte moves an md5, and it also
+catches the class no score can see — a rewrite that is content-identical and score-flat but
+renumbers the local pool symbols (`@103 -> @105` at the same address, section and size; class #70).
+`8722b792b1` measured exactly that: a candidate include would have rewritten **33 DLL objects** at
+zero score delta, and only the md5 count made the cost visible in time to reject it. The two
+2026-08-03 watch windows show both readings — `f63cb3dc08..cb88387945` came back gate-CLEAN *and*
+1013 of 1013 objects md5-identical, which is a far stronger statement than the scores alone, while
+`590dce7361..f63cb3dc08` came back gate-RED on one row (`setGQR6` 70.000 -> 50.000, banked in
+`docs/priced_classes.md` §5) against a net `matched_data` +52 and three pool word-diff
+improvements. Neither verdict is reachable from the top-level `measures` block, which moved by
+`-6e-05` across the second window and not at all across the first.

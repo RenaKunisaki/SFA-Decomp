@@ -73,7 +73,7 @@ struct GameObject {
     s32 userData1; /* obj+0xF4/0xF8: two generic per-instance scratch words. No
         engine file reads or writes them - every access is in an object-class
         file, and each class picks its own role and width: countdown timer
-        (iceball/kaldachompspit/mmshwaterspike, -= timeDelta), one-shot latch
+        (iceball/kaldachomspit/mmshwaterspike, -= timeDelta), one-shot latch
         (worldplanet/suntemple/collectible), gamebit bool (enemy/lightfoot),
         object handle (worldobj ObjList_FindObjectByIdLegacy), status enum
         (linklevcontrol LEVCON_SAVE_STATUS_*), f32 via launder
@@ -95,6 +95,8 @@ struct GameObject {
         dim2prisonmammoth_updateModelChain). */
 };
 
+STATIC_ASSERT(offsetof(GameObject, anim) == 0x00);
+STATIC_ASSERT(offsetof(GameObject, anim.worldPosX) == 0x18);
 STATIC_ASSERT(offsetof(GameObject, objectFlags) == 0xB0);
 
 /*

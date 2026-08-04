@@ -158,7 +158,7 @@ void sh_queenearthwalker_updatePortal(GameObject* obj, QueenEarthWalkerState* st
     } else if (mainGetBit(GAMEBIT_STAFF_ABILITY_OPEN_PORTAL) != 0) {
         obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         if (playerHasSpell(player, QUEEN_EARTH_WALKER_PORTAL_SPELL_ID) != 0 &&
-            getXZDistance(&player->anim.worldPosX, &obj->anim.worldPosX) < QUEEN_EARTH_WALKER_PORTAL_SPELL_DISTANCE) {
+            getXZDistanceSquared(&player->anim.worldPosX, &obj->anim.worldPosX) < QUEEN_EARTH_WALKER_PORTAL_SPELL_DISTANCE) {
             mainSetBits(0x23b, 1);
         }
     } else if (mainGetBit(GAMEBIT_SH_RescuedEggs) != 0) {
@@ -193,7 +193,7 @@ void sh_queenearthwalker_updateFeeding(GameObject* obj, QueenEarthWalkerState* s
         if (cMenuGetSelectedItem() == -1) {
             if (getYButtonItem(&triggerId) == 0 || triggerId != GAMEBIT_ITEM_WhiteShroom_Count) {
                 tricky = getTrickyObject();
-                if (tricky != NULL && getXZDistance(&tricky->anim.worldPosX, &obj->anim.worldPosX) <
+                if (tricky != NULL && getXZDistanceSquared(&tricky->anim.worldPosX, &obj->anim.worldPosX) <
                                           QUEEN_EARTH_WALKER_TRICKY_FEED_DISTANCE) {
                     Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 2);
                 } else {
@@ -203,7 +203,7 @@ void sh_queenearthwalker_updateFeeding(GameObject* obj, QueenEarthWalkerState* s
             }
         }
         Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 4);
-        if (ObjTrigger_IsSetById((int)obj, GAMEBIT_ITEM_WhiteShroom_Count) != 0) {
+        if (ObjTrigger_IsSetById(obj, GAMEBIT_ITEM_WhiteShroom_Count) != 0) {
             state->flags |= QUEEN_EARTH_WALKER_FLAG_ACTIVE;
             total = mainGetBit(GAMEBIT_ITEM_WhiteShroom_Count);
             total += mainGetBit(GAMEBIT_ITEM_WhiteGrubTub_Used);
@@ -386,7 +386,7 @@ void sh_queenearthwalker_update(GameObject* obj) {
     stateFlags = state->flags;
     if ((stateFlags & QUEEN_EARTH_WALKER_FLAG_ACTIVE) == 0) {
         state->flags &= ~QUEEN_EARTH_WALKER_FLAG_TARGETING;
-        if (ObjTrigger_IsSet((int)obj) != 0 && obj->anim.hitVolumeBounds->flags != 4) {
+        if (ObjTrigger_IsSet(obj) != 0 && obj->anim.hitVolumeBounds->flags != 4) {
             eventIndex = randomGetRange(1, *state->eventTable);
             state->flags |= QUEEN_EARTH_WALKER_FLAG_TARGETING;
             (*gObjectTriggerInterface)->runSequence(state->eventTable[eventIndex], obj, -1);

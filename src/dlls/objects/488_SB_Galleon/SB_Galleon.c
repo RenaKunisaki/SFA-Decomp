@@ -57,7 +57,7 @@
 #define DBPROTECTION_TRICKY_TARGET_SEQID 0x8c
 #define DBPROTECTION_GAMEBIT_DIVE_ACTIVE 0xf1e
 
-extern s8 gDBprotectionTransitionPending;
+extern s8 gSB_GalleonTransitionPending;
 
 ObjectDescriptor15 gSB_GalleonObjDescriptor = {
     0,
@@ -81,7 +81,7 @@ ObjectDescriptor15 gSB_GalleonObjDescriptor = {
     (ObjectDescriptorCallback)SB_Galleon_func0E,
 };
 
-void DBprotection_updateFlight(GameObject* obj) {
+void SB_Galleon_updateFlight(GameObject* obj) {
     ObjPlacement* spawnData;
     SBGalleonState* state;
     f32 tx;
@@ -702,7 +702,7 @@ void DBprotection_updateFlight(GameObject* obj) {
     }
 }
 
-void DBprotection_updateEnvfxGameBits(SBGalleonState* state) {
+void SB_Galleon_updateEnvfxGameBits(SBGalleonState* state) {
     GameObject* player;
     GameObject* effectObj;
 
@@ -748,11 +748,11 @@ void DBprotection_updateEnvfxGameBits(SBGalleonState* state) {
     }
 }
 
-int DBprotection_getCameraState(GameObject* obj) {
+int SB_Galleon_getCameraState(GameObject* obj) {
     return ((SBGalleonState*)obj->extra)->cameraState;
 }
 
-void DBprotection_updateShield(GameObject* obj) {
+void SB_Galleon_updateShield(GameObject* obj) {
     SBGalleonState* state;
     f32 angleSin;
 
@@ -762,18 +762,18 @@ void DBprotection_updateShield(GameObject* obj) {
     if (mainGetBit(DBPROTECTION_GAMEBIT_TRANSITION_ARMED) != 0 &&
         mainGetBit(DBPROTECTION_GAMEBIT_TRANSITION_USED) == 0 &&
         mainGetBit(DBPROTECTION_GAMEBIT_TRANSITION_READY) != 0) {
-        gDBprotectionTransitionPending = 1;
+        gSB_GalleonTransitionPending = 1;
         mainSetBits(DBPROTECTION_GAMEBIT_TRANSITION_USED, 1);
         (*gScreenTransitionInterface)->start(0xa, 1);
     }
 
-    DBprotection_updateEnvfxGameBits(state);
+    SB_Galleon_updateEnvfxGameBits(state);
 
-    if (gDBprotectionTransitionPending != 0 && (*gScreenTransitionInterface)->isFinished() != 0) {
+    if (gSB_GalleonTransitionPending != 0 && (*gScreenTransitionInterface)->isFinished() != 0) {
         (*gScreenTransitionInterface)->step(0x50, 1);
         (*gObjectTriggerInterface)->runSequence(1, obj, -1);
         state->cameraState = 3;
-        gDBprotectionTransitionPending = 0;
+        gSB_GalleonTransitionPending = 0;
     }
 
     (*gCloudActionInterface)->func12Nop(-25.0f, 0.0f);
@@ -796,7 +796,7 @@ void DBprotection_updateShield(GameObject* obj) {
         state->shieldSfxLatch = 0;
     }
 
-    *(u16*)&obj->anim.rotZ = 432.0f * angleSin;
+    obj->anim.rotZ = 432.0f * angleSin;
     state->shieldAngle = (u16)(s32)(128.0f * timeDelta + state->shieldAngle);
 }
 
@@ -816,14 +816,14 @@ u8 gSbGalleonSkyColorCEnd[4] = {0x13, 0x23, 0x36, 0};
 
 #define SBGALLEON_OBJGROUP 3
 
-const SkyVec3 gSbGalleonSkyLightVecs[4] = {
+const Vec gSbGalleonSkyLightVecs[4] = {
     {-1.0f, -2.0f, -1.0f}, {1.0f, -2.0f, 1.0f}, {1.0f, -2.0f, 1.0f}, {1.0f, -0.25f, 1.0f}};
 u32 sSbGalleonUnused0;
 u8 gSbGalleonSkyColorA[4];
 u8 gSbGalleonSkyColorB[4];
 u8 gSbGalleonSkyColorC[4];
 u8 gSbGalleonSkyLightIntensity;
-s8 gDBprotectionTransitionPending;
+s8 gSB_GalleonTransitionPending;
 f32 gSbGalleonSkyBlendFactor;
 f32 gSbGalleonSkyBlendHold;
 GameObject* gSbGalleon;
@@ -873,10 +873,10 @@ void SB_Galleon_updateSkyLighting(GameObject* obj, SBGalleonState* state) {
     ObjModel* activeModel;
     int renderOpIndex;
     Shader* renderOp;
-    SkyVec3 primaryLightDirection;
-    SkyVec3 alternateLightDirection;
-    SkyVec3 overrideDirectionStart;
-    SkyVec3 overrideDirectionEnd;
+    Vec primaryLightDirection;
+    Vec alternateLightDirection;
+    Vec overrideDirectionStart;
+    Vec overrideDirectionEnd;
     primaryLightDirection = gSbGalleonSkyLightVecs[0];
     alternateLightDirection = gSbGalleonSkyLightVecs[1];
     overrideDirectionStart = gSbGalleonSkyLightVecs[2];
@@ -1204,7 +1204,7 @@ void SB_Galleon_hitDetect(GameObject* obj) {
         f32 c;
         f32 d;
     } stk;
-    if (state->sprayActive != 0 && *(void**)&state->linkedActor != NULL) {
+    if (state->sprayActive != 0 && (void*)state->linkedActor != NULL) {
         stk.a = 1.5f;
         stk.mode = 0xc0a;
         stk.b = 0.0f;
@@ -1236,14 +1236,14 @@ void SB_Galleon_update(GameObject* obj) {
         }
         switch (state->cameraState) {
         case SBGALLEON_CAM_APPROACH:
-            DBprotection_updateFlight(obj);
+            SB_Galleon_updateFlight(obj);
             break;
         case SBGALLEON_CAM_START_INTRO:
             (*gObjectTriggerInterface)->runSequence(3, obj, -1);
             state->cameraState = SBGALLEON_CAM_SHIELD;
             break;
         case SBGALLEON_CAM_SHIELD:
-            DBprotection_updateShield(obj);
+            SB_Galleon_updateShield(obj);
             break;
         case SBGALLEON_CAM_END:
             (*gMapEventInterface)->setMapAct(SBGALLEON_MAP_PALACE, 1);
@@ -1252,7 +1252,7 @@ void SB_Galleon_update(GameObject* obj) {
             state->cameraState = SBGALLEON_CAM_DONE;
             break;
         }
-        SCGameBitLatch_Update((SCGameBitLatchState*)state->gameBitLatch, 1, -1, -1, 0xa71, 0xa4);
+        GameBitLatch_Update((GameBitLatchState*)state->gameBitLatch, 1, -1, -1, 0xa71, 0xa4);
     }
 }
 

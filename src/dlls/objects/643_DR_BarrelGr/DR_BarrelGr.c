@@ -17,6 +17,7 @@
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/vecmath.h"
+#include "main/voxmaps.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/dll/dll_0282_barrelgener.h"
 #include "dlls/objects/344.h"

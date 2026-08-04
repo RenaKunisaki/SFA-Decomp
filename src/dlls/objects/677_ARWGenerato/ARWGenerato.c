@@ -85,7 +85,7 @@ void arwgenerato_spawnSquadronShipB(GameObject* obj, ARWGeneratorState* state, A
         dir.y = setup->velocityY / 10.0f;
         dir.z = setup->velocityZ / 10.0f;
         dll_2A3_setVelocity((GameObject*)(newObj), &dir);
-        dll_2A3_setSpeed((GameObject*)(newObj), setup->projectileSpeed);
+        dll_2A3_setLifetime((GameObject*)(newObj), setup->projectileSpeed);
     }
 }
 

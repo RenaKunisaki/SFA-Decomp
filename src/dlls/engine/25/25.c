@@ -1,3 +1,4 @@
+#include "dlls/object_descriptor.h"
 #include "main/dll/player_api.h"
 #include "main/track_bbox_api.h"
 #include "main/frame_timing.h"
@@ -26,7 +27,6 @@
 #include "main/dll/dll19_state.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/baddie_state.h"
-#include "string.h"
 #include "main/object_transform.h"
 #include "main/player_control_interface.h"
 #include "main/dll/dll_0019_dll19func0.h"
@@ -186,7 +186,7 @@ void dll_19_releaseState(GameObject* obj, GroundBaddieState* state, u8 flag)
     if (*(u32*)&state->path != 0)
     {
         mm_free((void*)*(u32*)&state->path);
-        *(int*)&state->path = 0;
+        state->path = 0;
     }
 }
 
@@ -249,7 +249,7 @@ void dll_19_initGroundBaddie(GameObject* obj, GroundBaddiePlacement* config, u8*
     ((GroundBaddieState*)state)->configFlags = config->flags;
     ((GroundBaddieState*)state)->triggerId = config->triggerId;
     ((GroundBaddieState*)state)->aggression = config->aggression;
-    state[1031] = config->unk27;
+    state[1031] = config->initialWeaponId;
     state[1032] = config->unk28;
     obj->objectFlags = obj->objectFlags | ((s8)state[1032] & 7);
     if ((flags & 8) != 0)
@@ -396,7 +396,7 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
     u8* state = obj->extra;
     GameObject* player = Obj_GetPlayerObject();
     int hit;
-    int v28;
+    int sphereIndex;
     int v24;
     GameObject* hitObject;
     f32 posX;
@@ -428,7 +428,7 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
                 obj->anim.alpha = 0;
                 obj->userData1 = 1;
                 obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
-                (*gMapEventInterface)->addTime(other->base.ident, (f32)(s32)(other->unk2C * 60));
+                (*gMapEventInterface)->addTime(other->base.ident, (f32)(s32)(other->respawnDelay * 60));
             }
         }
         else
@@ -449,8 +449,8 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
     {
         return 0;
     }
-    hit = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &v28, (u32*)&v24, &posX, &posY, &posZ);
-    ((GroundBaddieState*)state)->lastHitSphereIndex = v28;
+    hit = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &sphereIndex, (u32*)&v24, &posX, &posY, &posZ);
+    ((GroundBaddieState*)state)->lastHitSphereIndex = sphereIndex;
     if (hit != 0)
     {
         if (hitPosOut != NULL)
@@ -642,7 +642,6 @@ GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, i
     return gDll19NearestObj;
 }
 
-/* dont_inline: keeps func0C out-of-line so func17's call site matches retail */
 void dll_19_startHitReaction(GameObject* obj, void* state, void* hitbox, s16 gameBit, u8* flagOut, s16 substate, s16 moveMode,
                    int animMove, s8 field25f)
 {
@@ -681,8 +680,6 @@ void dll_19_startHitReaction(GameObject* obj, void* state, void* hitbox, s16 gam
     }
 }
 
-/* opt_loop_invariants off: retail recomputes the loop-invariant self-position
- * reads inside the scan loop; hoisting them changes the schedule */
 GameObject* dll_19_findAggroTarget(GameObject* self, void* state, f32 frange, int halfAngle)
 {
     f32 bboxOut[20];
@@ -858,14 +855,14 @@ void dll_19_updateGravity(GameObject* obj, void* state, f32 gravity, s8 field25f
     }
     if (field25f != -1)
     {
-        *(s8*)&((BaddieState*)state)->physicsActive = field25f;
+        ((BaddieState*)state)->physicsActive = field25f;
     }
     ((BaddieState*)state)->gravity = gravity;
     fz = 0.0f;
     ((BaddieState*)state)->moveInputX = fz;
     ((BaddieState*)state)->moveInputZ = fz;
-    *(int*)&((BaddieState*)state)->pressedButtons = 0;
-    *(int*)&((BaddieState*)state)->heldButtons = 0;
+    ((BaddieState*)state)->pressedButtons = 0;
+    ((BaddieState*)state)->heldButtons = 0;
 }
 
 int dll_19_func10(GameObject* obj, u8* state, int moveArg0, int moveArg1, s16 controlMode, f32* destX, f32* destZ,
@@ -876,8 +873,8 @@ int dll_19_func10(GameObject* obj, u8* state, int moveArg0, int moveArg1, s16 co
 
     if (state[897] != 0)
     {
-        *(int*)&((BaddieState*)state)->heldButtons = 0;
-        *(int*)&((BaddieState*)state)->pressedButtons = 0;
+        ((BaddieState*)state)->heldButtons = 0;
+        ((BaddieState*)state)->pressedButtons = 0;
         ((BaddieState*)state)->cameraYaw = 0;
         zero = 0.0f;
         ((BaddieState*)state)->moveInputX = zero;
@@ -921,8 +918,8 @@ int dll_19_updateSequenceMovement(GameObject* obj, ObjSeqState* seq, char* st, v
     f32 nz;
     char* t;
 
-    *(int*)&((BaddieState*)st)->heldButtons = 0;
-    *(int*)&((BaddieState*)st)->pressedButtons = 0;
+    ((BaddieState*)st)->heldButtons = 0;
+    ((BaddieState*)st)->pressedButtons = 0;
     ((BaddieState*)st)->cameraYaw = 0;
     {
         f32 rest = 0.0f;
@@ -944,7 +941,7 @@ int dll_19_updateSequenceMovement(GameObject* obj, ObjSeqState* seq, char* st, v
         f32 ez = seq->posOffsetZ - (obj)->anim.localPosZ;
         dist = sqrtf(ex * ex + ez * ez);
     }
-    t = *(char**)&((BaddieState*)st)->targetObj;
+    t = (char*)((BaddieState*)st)->targetObj;
     if (t == NULL)
     {
         return 0;
@@ -970,7 +967,7 @@ int dll_19_updateSequenceMovement(GameObject* obj, ObjSeqState* seq, char* st, v
         }
         if (dist >= total || gDll19SeqStallCount > 9)
         {
-            char* t2 = *(char**)&((BaddieState*)st)->targetObj;
+            char* t2 = (char*)((BaddieState*)st)->targetObj;
             int delta = (obj)->anim.rotX - (u16)((GameObject*)t2)->anim.rotX;
             if (delta > 0x8000)
             {
@@ -1021,7 +1018,7 @@ int dll_19_updateSequenceMovement(GameObject* obj, ObjSeqState* seq, char* st, v
     {
         ((GroundBaddieState*)st)->subMode = 0;
         ((BaddieState*)st)->controlMode = controlMode;
-        *(int*)&((BaddieState*)st)->targetObj = 0;
+        ((BaddieState*)st)->targetObj = 0;
         seq->flags = -1;
         seq->flags = seq->flags & ~0x40;
         ((BaddieState*)st)->physicsActive = 0;
@@ -1149,7 +1146,7 @@ void dll_19_getTargetGeometry(GameObject* obj, GameObject* target, int div, u16*
         dp[1] = target->anim.worldPosY - (obj)->anim.worldPosY;
         dp[2] = target->anim.worldPosZ - (obj)->anim.worldPosZ;
         ang = getAngle(-dp[0], -dp[2]);
-        ovr = *(s16**)&(obj)->anim.parent;
+        ovr = (s16*)(obj)->anim.parent;
         if (ovr != NULL)
         {
             cur = (s16)((obj)->anim.rotX + *ovr);
@@ -1207,7 +1204,7 @@ u8 dll_19_getClearDirectionMask(GameObject* obj, void* state, f32 dist)
     world[1] = 10.0f + obj->anim.localPosY;
     world[2] = obj->anim.localPosZ;
     voxmaps_worldToGrid(world, (s16*)grid0);
-    ovr = *(s16**)&obj->anim.parent;
+    ovr = (s16*)obj->anim.parent;
     if (ovr != NULL)
     {
         cur = (s16)(obj->anim.rotX + *ovr);
@@ -1238,7 +1235,7 @@ u8 dll_19_getClearDirectionMask(GameObject* obj, void* state, f32 dist)
         if (ok != 0)
         {
             if (trackGetLineIntersect(&obj->anim.localPosX, world, 1.0f, 0, (TrackBBoxHit*)bboxOut,
-                                   (GameObject*)obj, ((Dll19State*)state)->unk261, -1, 0, 0) != 0)
+                                   (GameObject*)obj, ((Dll19State*)state)->bboxTraceFlags, -1, 0, 0) != 0)
             {
                 ok = 0;
             }
@@ -1255,38 +1252,72 @@ void dll_19_func04_nop(void)
 void dll_19_func03_nop(void)
 {
 }
+typedef struct Dll19Interface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback slot03;
+    ObjectDescriptorCallback slot04;
+    ObjectDescriptorCallback slot05;
+    ObjectDescriptorCallback updateMovementBlend;
+    ObjectDescriptorCallback getTargetGeometry;
+    ObjectDescriptorCallback getClearDirectionMask;
+    ObjectDescriptorCallback slot09;
+    ObjectDescriptorCallback slot0A;
+    ObjectDescriptorCallback slot0B;
+    ObjectDescriptorCallback startHitReaction;
+    ObjectDescriptorCallback updateGravity;
+    ObjectDescriptorCallback isObjectValid;
+    ObjectDescriptorCallback updateSequenceMovement;
+    ObjectDescriptorCallback slot10;
+    ObjectDescriptorCallback pollCameraTarget;
+    ObjectDescriptorCallback releaseState;
+    ObjectDescriptorCallback shouldDropTarget;
+    ObjectDescriptorCallback findAggroTarget;
+    ObjectDescriptorCallback dropCollectable;
+    ObjectDescriptorCallback updateHitReaction;
+    ObjectDescriptorCallback processMessages;
+    ObjectDescriptorCallback initGroundBaddie;
+    ObjectDescriptorCallback changeWeapon;
+    ObjectDescriptorCallback getHealthFraction;
+    ObjectDescriptorCallback slot1B;
+} Dll19Interface;
 
-u32 dll_19[32] = {
+Dll19Interface dll_19 = {
     0,
     0,
     0,
     0x001a0000,
-    (u32)dll_19_func03_nop,
-    (u32)dll_19_func04_nop,
+    (ObjectDescriptorCallback)dll_19_func03_nop,
+    (ObjectDescriptorCallback)dll_19_func04_nop,
     0,
-    (u32)dll_19_func03_nop,
-    (u32)dll_19_func04_nop,
-    (u32)dll_19_func05,
-    (u32)dll_19_updateMovementBlend,
-    (u32)dll_19_getTargetGeometry,
-    (u32)dll_19_getClearDirectionMask,
-    (u32)dll_19_func09_ret_0,
-    (u32)dll_19_func0A,
-    (u32)dll_19_func0B,
-    (u32)dll_19_startHitReaction,
-    (u32)dll_19_updateGravity,
-    (u32)dll_19_isObjectValid,
-    (u32)dll_19_updateSequenceMovement,
-    (u32)dll_19_func10,
-    (u32)dll_19_pollCameraTarget,
-    (u32)dll_19_releaseState,
-    (u32)dll_19_shouldDropTarget,
-    (u32)dll_19_findAggroTarget,
-    (u32)dll_19_dropCollectable,
-    (u32)dll_19_updateHitReaction,
-    (u32)dll_19_processMessages,
-    (u32)dll_19_initGroundBaddie,
-    (u32)dll_19_changeWeapon,
-    (u32)dll_19_getHealthFraction,
+    (ObjectDescriptorCallback)dll_19_func03_nop,
+    (ObjectDescriptorCallback)dll_19_func04_nop,
+    (ObjectDescriptorCallback)dll_19_func05,
+    (ObjectDescriptorCallback)dll_19_updateMovementBlend,
+    (ObjectDescriptorCallback)dll_19_getTargetGeometry,
+    (ObjectDescriptorCallback)dll_19_getClearDirectionMask,
+    (ObjectDescriptorCallback)dll_19_func09_ret_0,
+    (ObjectDescriptorCallback)dll_19_func0A,
+    (ObjectDescriptorCallback)dll_19_func0B,
+    (ObjectDescriptorCallback)dll_19_startHitReaction,
+    (ObjectDescriptorCallback)dll_19_updateGravity,
+    (ObjectDescriptorCallback)dll_19_isObjectValid,
+    (ObjectDescriptorCallback)dll_19_updateSequenceMovement,
+    (ObjectDescriptorCallback)dll_19_func10,
+    (ObjectDescriptorCallback)dll_19_pollCameraTarget,
+    (ObjectDescriptorCallback)dll_19_releaseState,
+    (ObjectDescriptorCallback)dll_19_shouldDropTarget,
+    (ObjectDescriptorCallback)dll_19_findAggroTarget,
+    (ObjectDescriptorCallback)dll_19_dropCollectable,
+    (ObjectDescriptorCallback)dll_19_updateHitReaction,
+    (ObjectDescriptorCallback)dll_19_processMessages,
+    (ObjectDescriptorCallback)dll_19_initGroundBaddie,
+    (ObjectDescriptorCallback)dll_19_changeWeapon,
+    (ObjectDescriptorCallback)dll_19_getHealthFraction,
     0,
 };

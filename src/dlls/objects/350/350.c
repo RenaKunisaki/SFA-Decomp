@@ -1,5 +1,3 @@
-/* Empty DLL 0x15E resource slot. */
+#include "global.h"
 
-#include "dlls/objects/350.h"
-
-u32 gDll15ENullResourceDescriptor[DLL15E_NULL_DESCRIPTOR_WORD_COUNT] = {0};
+u32 gDll15ENullResourceDescriptor[2] = {0};

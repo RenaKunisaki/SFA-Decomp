@@ -135,8 +135,8 @@ void CameraModeArwing_update(CameraObject* camera) {
 
 void CameraModeArwing_init(CameraObject* camera, int mode, int unusedArg) {
     GameObject* target = (GameObject*)camera->anim.targetObj;
-    char* stateBytes;
-    f32* initialOffset;
+    CameraModeArwingState* state;
+    Vec* initialOffset;
     f32 zEaseValue;
     f32 zero;
     if (mode != 1) {
@@ -144,11 +144,10 @@ void CameraModeArwing_init(CameraObject* camera, int mode, int unusedArg) {
         gCameraModeArwingState.basePosY = target->anim.worldPosY;
         gCameraModeArwingState.basePosZ = target->anim.worldPosZ;
     }
-    *(initialOffset = (f32*)((stateBytes = (char*)&gCameraModeArwingState) +
-                             offsetof(CameraModeArwingState, initialOffsetX))) = 0.0f;
-    *(f32*)(stateBytes + offsetof(CameraModeArwingState, initialOffsetY)) = 20.0f;
-    *(f32*)(stateBytes + offsetof(CameraModeArwingState, posZOffset)) = -165.0f;
-    PSVECAdd(&target->anim.worldPos, (Vec*)initialOffset, &camera->anim.worldPos);
+    (initialOffset = (Vec*)&(state = &gCameraModeArwingState)->initialOffsetX)->x = 0.0f;
+    state->initialOffsetY = 20.0f;
+    state->posZOffset = -165.0f;
+    PSVECAdd(&target->anim.worldPos, initialOffset, &camera->anim.worldPos);
     gCameraModeArwingState.active = 1;
     gCameraModeArwingState.yawScale = -0.2f;
     gCameraModeArwingState.pitchScale = 0.1f;
@@ -167,7 +166,7 @@ void CameraModeArwing_init(CameraObject* camera, int mode, int unusedArg) {
     gCameraModeArwingState.offsetX = zero;
     camera->anim.worldPosX = target->anim.worldPosX;
     camera->anim.worldPosY = target->anim.worldPosY;
-    camera->anim.worldPosZ = target->anim.worldPosZ + *(f32*)(stateBytes + offsetof(CameraModeArwingState, posZOffset));
+    camera->anim.worldPosZ = target->anim.worldPosZ + state->posZOffset;
 }
 
 void CameraModeArwing_release(void) {

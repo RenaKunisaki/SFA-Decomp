@@ -57,7 +57,7 @@ STATIC_ASSERT(sizeof(GrimbleControl) == 0x5C);
 int grimble_stateHandlerB05(GameObject* obj, GroundBaddieState* state);
 int grimble_stateHandlerB04(GameObject* obj, GroundBaddieState* state);
 int grimble_stateHandlerB03(GameObject* obj, GroundBaddieState* state);
-int scarab_updateProximityGate(GameObject* obj, GroundBaddieState* state);
+int grimble_stateHandlerB02(GameObject* obj, GroundBaddieState* state);
 int grimble_stateHandlerB01(GameObject* obj, GroundBaddieState* state);
 int grimble_stateHandlerB00(GameObject* obj, GroundBaddieState* state);
 int grimble_stateHandlerA09(GameObject* obj, GroundBaddieState* state);

@@ -1,8 +1,10 @@
 #ifndef MAIN_DLL_DLL_D1_H_
 #define MAIN_DLL_DLL_D1_H_
 
-#include "ghidra_import.h"
+#include "game/objects/object_fwd.h"
 
-void trickyGrowl(void *param_1, void *param_2);
+typedef struct TrickyState TrickyState;
+
+void trickyGrowl(GameObject* obj, TrickyState* trickyState);
 
 #endif /* MAIN_DLL_DLL_D1_H_ */

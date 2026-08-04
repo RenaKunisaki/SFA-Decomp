@@ -68,11 +68,11 @@ void SB_CannonBall_free(GameObject* obj) {
     }
 }
 
-void SB_CannonBall_render(int obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+void SB_CannonBall_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     s32 isVisible = visible;
 
     if (isVisible != 0) {
-        objRenderModelAndHitVolumes((GameObject*)obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 
@@ -91,7 +91,7 @@ void SB_CannonBall_hitDetect(GameObject* obj) {
 
     {
         ObjHitsPriorityState* hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
-        GameObject* target = *(GameObject**)&hitState->lastHitObject;
+        GameObject* target = (GameObject*)hitState->lastHitObject;
         s16 objectType;
         if (target == NULL) {
             return;

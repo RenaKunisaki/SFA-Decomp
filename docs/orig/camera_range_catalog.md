@@ -262,8 +262,8 @@ These are all direct calls to the recovered distance, frustum, and current-view-
 | `src/dlls/objects/195_Player/player.c` | 12671 | `slot = (int)Camera_GetCurrentViewSlot();` |
 | `src/dlls/objects/195_Player/player.c` | 12720 | `slot = (int)Camera_GetCurrentViewSlot();` |
 | `src/dlls/objects/195_Player/player.c` | 18381 | `int cam = (int)Camera_GetCurrentViewSlot();` |
-| `src/dlls/objects/429_SH_thorntai/SH_thorntai.c` | 1086 | `(ref = ViewFrustum_IsSphereVisible(&obj->modelPos.x, obj->cullRadius * obj->modelScale), ref == 0))` |
-| `src/dlls/objects/429_SH_thorntai/SH_thorntai.c` | 205 | `value = ViewFrustum_IsSphereVisible((float*)&object->modelPos, object->cullRadius * object->modelScale);` |
+| `src/dlls/objects/429_SH_thorntai/SHthorntail.c` | 1086 | `(ref = ViewFrustum_IsSphereVisible(&obj->modelPos.x, obj->cullRadius * obj->modelScale), ref == 0))` |
+| `src/dlls/objects/429_SH_thorntai/SHthorntail.c` | 205 | `value = ViewFrustum_IsSphereVisible((float*)&object->modelPos, object->cullRadius * object->modelScale);` |
 | `src/main/dll/SP/dll_0288_spdrape.c` | 126 | `Camera_GetCurrentViewSlot();` |
 | `src/main/dll/SP/dll_0288_spdrape.c` | 186 | `Camera_GetCurrentViewSlot();` |
 | `src/main/dll/tricky.c` | 1509 | `slot = (int)Camera_GetCurrentViewSlot();` |

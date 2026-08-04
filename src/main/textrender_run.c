@@ -1,10 +1,9 @@
-#include "ghidra_import.h"
+#include "types.h"
 #include "track/intersect_hud_api.h"
 #include "track/intersect_render_setup_api.h"
 #include "main/hud_visibility_api.h"
 #include "main/audio/sfx.h"
 #include "main/gametext_api.h"
-#define GAMETEXT_COLOR_U8
 #include "main/gametext_color_api.h"
 #include "main/gameloop_api.h"
 #include "main/gametext_charset_api.h"
@@ -30,9 +29,6 @@
 #include "track/intersect_api.h"
 #include "string.h"
 #include "main/lightmap.h"
-
-typedef f32 Mtx[3][4];
-
 
 TextFont* gameTextFonts;
 int gameTextCharset;
@@ -158,8 +154,6 @@ void gameTextLoadDir(int dirId)
     }
 }
 
-
-
 int gameTextGetCharset(void)
 {
     return gameTextCharset;
@@ -206,11 +200,12 @@ f32 gameTextGetTimer(void)
     return gameTextFonts->timer;
 }
 
-
 int gameTextGetState(int i)
 {
     return gGameTextCharsets[i].status;
 }
+
+char sGameTextMapPathFormat[] = "gametext/%s/%s.bin";
 
 void gameTextRun(void)
 {
@@ -513,6 +508,8 @@ void gameTextRun(void)
     gCurTextBox = NULL;
 }
 
+char sGameTextSequencePathFormat[] = "gametext/Sequences/%d_%s.bin";
+
 static inline u32 lookupSjisGlyph(int c)
 {
     int i = 0xfe;
@@ -633,7 +630,6 @@ void gameTextInitRendererState(void)
     curGameTextDir = 3;
     gGameTextStringStore = (void*)mmCreateMemoryStore(0x800);
 }
-
 
 void loadGameTextSequence(int sequenceSlotDir, int sequenceId)
 {
@@ -949,8 +945,8 @@ void gameTextBuildSystemFontAtlas(void)
             int j2;
 
             src = (u32*)buf;
-            tx = glyph->u >> 3;
             ty = glyph->v >> 3;
+            tx = glyph->u >> 3;
             row = ty;
             txEnd = tx + 3;
             tyEnd = ty + 3;
@@ -960,7 +956,7 @@ void gameTextBuildSystemFontAtlas(void)
                 {
                     int k;
                     dst = (u8*)charset->textures[0] + (j2 << 5);
-                    dst += row * gGameTextFontTexRowPitch;
+                    dst += gGameTextFontTexRowPitch * row;
                     for (k = 0; k < 8; k++)
                     {
                         *(u32*)(dst + 0x60 + k * 4) = *src++;

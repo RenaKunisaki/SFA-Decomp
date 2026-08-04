@@ -15,16 +15,13 @@
 #include "main/sky.h"
 #include "main/sky_api.h"
 #include "main/lightmap_api.h"
-#include "main/lightmap_render_control_api.h"
 #include "dlls/object_descriptor.h"
-#include "main/loaded_file_flags.h"
 #include "track/intersect_api.h"
 #include "dolphin/gx/GXLighting.h"
 #include "dolphin/gx/GXPixel.h"
 #include "dolphin/gx/GXTev.h"
 #include "main/lightmap.h"
 #include "main/track_dolphin_shadow_api.h"
-#include "string.h"
 
 u32 lbl_803DD18C;
 u32 lbl_803DD188;
@@ -52,11 +49,11 @@ u8 gSky2RunFirstTime = 1;
 #define SKY_CHILD_OBJ_MOON           0x62c /* spawned into gSkyMoonObject */
 #define SKY_TEXTURE_SKY              0x5fa /* gSkySkyTexture */
 extern u8 gSkyConfigFieldIndices[];
-STATIC_ASSERT(sizeof(SkyVec3) == 0xC);
+STATIC_ASSERT(sizeof(Vec) == 0xC);
 extern u16 lbl_803E8460;
 extern u8 lbl_803E8462;
 extern f32 lbl_8039A7B8[];
-const SkyVec3 sSky2BestWeightsInit = {-1000.0f, -1000.0f, -1000.0f};
+const Vec sSky2BestWeightsInit = {-1000.0f, -1000.0f, -1000.0f};
 
 
 void skyGetCurrentAmbientAndLightColors(u8* ambientRed, u8* ambientGreen, u8* ambientBlue, u8* lightRed, u8* lightGreen,
@@ -410,7 +407,7 @@ void sky2ApplyModelTint(GameObject* obj)
     }
 }
 
-void sky2ApplyTextColor(int obj)
+void sky2ApplyTextColor(void* context)
 {
     SkySlotAnim* s = (SkySlotAnim*)gSky2State;
     f32 v;
@@ -433,11 +430,11 @@ void sky2ApplyTextColor(int obj)
             {
                 alpha = (int)(255.0f - 255.0f * (v / 15.0f));
             }
-            setTextColor((void*)obj, (u8)s->colorR, (u8)s->colorG, (u8)s->colorB, (u8)alpha);
+            setTextColor(context, (u8)s->colorR, (u8)s->colorG, (u8)s->colorB, (u8)alpha);
         }
         else
         {
-            setTextColor((void*)obj, 255, 255, 255, 0);
+            setTextColor(context, 255, 255, 255, 0);
         }
     }
 }
@@ -474,7 +471,7 @@ void sky2_run(void)
 {
     SkyRotQ q;
     f32 vec[3];
-    SkyVec3 best;
+    Vec best;
     f32 height;
     SkyBestIdx idx;
     u8 red;
@@ -491,7 +488,7 @@ void sky2_run(void)
     int d;
     int bestKnotOffset;
     int secondKnotOffset;
-    u16 a1;
+    u16 angle;
     int range;
     int redInt;
     int greenInt;
@@ -685,8 +682,8 @@ void sky2_run(void)
                 k = 0;
                 do
                 {
-                    a1 = getAngle(lbl_8039A7B8[k * 3], lbl_8039A7B8[k * 3 + 2]);
-                    d = a1 - (u16)getAngle(vec[0], vec[2]);
+                    angle = getAngle(lbl_8039A7B8[k * 3], lbl_8039A7B8[k * 3 + 2]);
+                    d = angle - (u16)getAngle(vec[0], vec[2]);
                     if (d < 0)
                     {
                         d *= -1;
@@ -1058,7 +1055,31 @@ void sky2_initialise(void)
 
 u8 gSkyConfigFieldIndices[] = {0, 0, 1, 2, 3, 4, 5, 6, 7, 0, 0, 0};
 
-ObjectDescriptor17 sky2_funcs = {
+typedef struct Sky2DllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback update;
+    ObjectDescriptorCallback onMapSetup;
+    ObjectDescriptorCallback run;
+    ObjectDescriptorCallback applyFog;
+    ObjectDescriptorCallback slot07;
+    ObjectDescriptorCallback applyTextColor;
+    ObjectDescriptorCallback blendTowardTargetColor;
+    ObjectDescriptorCallback getTargetColor;
+    ObjectDescriptorCallback getFogRange;
+    ObjectDescriptorCallback slot0C;
+    ObjectDescriptorCallback setDrawMode2;
+    ObjectDescriptorCallback setDrawMode1;
+    ObjectDescriptorCallback getFogFadeAlpha;
+    u32 padding;
+} Sky2DllInterface;
+
+Sky2DllInterface sky2_funcs = {
     0,
     0,
     0,
@@ -1072,13 +1093,14 @@ ObjectDescriptor17 sky2_funcs = {
     (ObjectDescriptorCallback)sky2ApplyFog,
     (ObjectDescriptorCallback)dll_06_func07_ret_0,
     (ObjectDescriptorCallback)sky2ApplyTextColor,
-    (ObjectDescriptorExtraSizeCallback)sky2BlendTowardTargetColor,
+    (ObjectDescriptorCallback)sky2BlendTowardTargetColor,
     (ObjectDescriptorCallback)sky2GetTargetColor,
     (ObjectDescriptorCallback)sky2GetFogRange,
     (ObjectDescriptorCallback)dll_06_func0C_nop,
     (ObjectDescriptorCallback)sky2SetDrawMode2,
     (ObjectDescriptorCallback)sky2SetDrawMode1,
     (ObjectDescriptorCallback)sky2GetFogFadeAlpha,
+    0,
 };
 
 f32 lbl_8039A7B8[0x18];

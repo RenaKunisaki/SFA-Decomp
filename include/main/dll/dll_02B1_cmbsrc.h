@@ -138,7 +138,7 @@ void cmbsrc_release(void);
 int cmbsrc_updateAndReturnZero(GameObject* obj);
 int cmbsrc_getColorIndex(GameObject* obj);
 void cmbsrc_setExternalActive(GameObject* obj, u8 active);
-void cmbsrc_free(int obj);
+void cmbsrc_free(GameObject* cmbsrc);
 void cmbsrc_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visible);
 u8 cmbsrc_shouldActivate(GameObject* obj, CmbSrcState* state, CmbSrcMapData* setup);
 u8 cmbsrc_shouldDeactivate(GameObject* obj, CmbSrcState* state, CmbSrcMapData* setup);

@@ -3,7 +3,7 @@
 
 #include "global.h"
 #include "game/objects/object.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/objhits_types.h"
 
 #define OBJHITS_ACTIVE_HIT_VOLUME_OBJECT_COUNT       5
@@ -151,8 +151,9 @@ typedef struct ObjHitsSweepEntry
 {
     float maxX;
     float minX;
-    int obj;
+    GameObject* obj;
 } ObjHitsSweepEntry;
+STATIC_ASSERT(offsetof(ObjHitsSweepEntry, obj) == 0x08);
 
 typedef struct ObjHitsPriorityWorkSlot
 {
@@ -291,15 +292,15 @@ int ObjHits_TestTaperedCapsule3D(float* point, float pointRadius, float baseRadi
 void ObjHits_SortSweepEntries(ObjHitsSweepEntry** sweepPtrs, int entryCount);
 void ObjHits_TickPriorityHitCooldowns(void);
 void ObjHitbox_UpdateRotatedBounds(ObjHitbox* hitbox, int advanceMatrix);
-int ObjHits_CheckHitVolumes(int objA, int objB, int srcObj, char checkA, char checkB, u32 mask, u32 volMask);
-void ObjHits_OnPlayerHitVolumeMiss(int objA, int objB, int attachment, void* state, void* attachmentState, f32 dt);
-void ObjHits_CheckObjectHitVolumes(int objA, int objB, int attA, int attB, f32 dt);
+int ObjHits_CheckHitVolumes(GameObject* objA, GameObject* objB, GameObject* srcObj, char checkA, char checkB, u32 mask, u32 volMask);
+void ObjHits_OnPlayerHitVolumeMiss(GameObject* objA, GameObject* objB, GameObject* attachment, void* state, void* attachmentState, f32 dt);
+void ObjHits_CheckObjectHitVolumes(GameObject* objA, GameObject* objB, GameObject* attA, GameObject* attB, f32 dt);
 void ObjHits_RegisterActiveHitVolumeObject(GameObject* obj);
-void ObjHits_ApplyPairResponse(int objA, int objB, f32 x, f32 y, f32 z, int flag);
-void ObjHits_DetectObjectPair(int objA, int objB);
-void ObjHits_CheckSkeletonPair(int objA, int objB, void* hits, void* scratchB, void* scratchC, void* scratchD,
+void ObjHits_ApplyPairResponse(GameObject* objA, GameObject* objB, f32 x, f32 y, f32 z, int flag);
+void ObjHits_DetectObjectPair(GameObject* objA, GameObject* objB);
+void ObjHits_CheckSkeletonPair(GameObject* objA, GameObject* objB, void* hits, void* scratchB, void* scratchC, void* scratchD,
                                void* scratchE, int depth);
-void ObjHits_CheckTrackContact(int objA, int objB);
+void ObjHits_CheckTrackContact(GameObject* objA, GameObject* objB);
 void ObjHits_Update(int objectCount);
 void ObjHits_SetTargetMask(GameObject* obj, u8 targetMask);
 void ObjHits_ClearHitVolumes(ObjAnimComponent* obj);

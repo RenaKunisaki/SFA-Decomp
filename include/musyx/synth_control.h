@@ -1,7 +1,7 @@
 #ifndef MUSYX_SYNTH_CONTROL_H_
 #define MUSYX_SYNTH_CONTROL_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 void synthExit(void);
 void sndSeqStop(u32 handle);

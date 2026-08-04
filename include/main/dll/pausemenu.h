@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_PAUSEMENU_H_
 #define MAIN_DLL_PAUSEMENU_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "game/objects/object.h"
 
 void pauseMenuDraw(int arg1, int arg2, int arg3);

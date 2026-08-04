@@ -2,7 +2,7 @@
 #define MAIN_DLL_DLL_00C9_ENEMY_H_
 
 #include "game/objects/object.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "global.h"
 #include "main/dll/duster_api.h"
 #include "main/objprint_character_api.h"
@@ -28,7 +28,7 @@ typedef struct EnemyState {
     u8 unk1BC[0x25F - 0x1BC];
     s8 physicsActive; /* floor-response pass enables the per-frame ground snap / footstep audio */
     u8 unk260;
-    u8 unk261; /* bbox trace filter handed to trackGetLineIntersect */
+    u8 bboxTraceFlags; /* bbox trace filter handed to trackGetLineIntersect */
     u8 unk262[0x264 - 0x262];
     s8 surfaceFlags; /* ENEMY_SURFACE_FLAG_* */
     u8 unk265[0x26C - 0x265];
@@ -149,6 +149,12 @@ typedef struct EnemyState {
         struct {
             f32 idleTimer; /* pinPon_updateIdle: += timeDelta, wraps at 360 clearing flags2E4 0x10000 (same idiom as vambat.idleTimer) */
         } pinPon;
+        struct {
+            f32 orbitCenterX; /* centre of the hover circle, seeded from the spawn position */
+            f32 homeY; /* spawn height; the descend/ascend phases bracket it */
+            f32 orbitCenterZ;
+            f32 loopSfxTimer; /* countdown reset to 60, plays SFXTRIG_id_24a on expiry */
+        } mikaladon;
     };
     f32 intervalTimer;
     u16 phaseAngle;
@@ -192,6 +198,8 @@ typedef struct EnemyState {
 } EnemyState;
 
 STATIC_ASSERT(sizeof(EnemyState) == 0x370);
+STATIC_ASSERT(offsetof(EnemyState, flags) == 0x004);
+STATIC_ASSERT(offsetof(EnemyState, unk2C4) == 0x2C4);
 STATIC_ASSERT(offsetof(EnemyState, spawnRotY) == 0x19C);
 STATIC_ASSERT(offsetof(EnemyState, nearestSpecialDeltaY) == 0x1B8);
 STATIC_ASSERT(offsetof(EnemyState, pathStep) == 0x2FC);
@@ -224,22 +232,13 @@ typedef struct EnemyTargetSearchResult {
 
 STATIC_ASSERT(sizeof(EnemyTargetSearchResult) == 8);
 
-void enemyObjAnimUpdate(short* obj, int state);
-void FUN_8014ab58(u64 param_1, double param_2, double param_3, double param_4, double param_5, double param_6,
-                  double param_7, u64 param_8, u16* param_9, int* param_10, u32 param_11, u32 param_12, u32 param_13,
-                  u32 param_14, u32 param_15, u32 param_16);
-void FUN_8014c0b4(double param_1, double param_2, u64 param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
-                  u64 param_8, int param_9, int param_10);
-void FUN_8014c690(u64 param_1, double param_2, double param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
-                  u64 param_8, u32 param_9, u32 param_10, int param_11);
-void FUN_8014c694(u64 param_1, u64 param_2, u64 param_3, u64 param_4, u64 param_5, u64 param_6, u64 param_7,
-                  u64 param_8, int param_9);
+void enemyObjAnimUpdate(short* obj, EnemyState* state);
 int enemy_SeqFn(GameObject* node, int unused, ObjSeqState* animUpdate);
 int enemy_findNearbyEnemies(GameObject* obj, f32 radius, u8 flags, int maxCount, EnemyTargetSearchResult* results);
-void tricky_handleDefeat(GameObject* obj, int state);
+void tricky_handleDefeat(GameObject* obj, EnemyState* state);
 void baddie_updateWhileFrozen(GameObject* obj, u8* state, u8 fromHit);
 int baddie_spawnRewardDrops(GameObject* obj, int state, int spawnBits, u32 useAltMode, u32 mode);
-void baddieInstantiateWeapon(GameObject* obj, int state);
+void baddieInstantiateWeapon(GameObject* obj, EnemyState* state);
 u8 baddie_canSeeTarget(GameObject* obj, EnemyState* state, void* from, void* to);
 void baddie_updateSightQuadrants(GameObject* obj, EnemyState* state, f32 radius);
 void enemy_setTrackedObj(GameObject* obj, GameObject* target);
@@ -256,6 +255,7 @@ f32 sidekickToy_accelerateTowardTarget3D(GameObject* obj, f32 tx, f32 ty, f32 tz
                                          f32 maxVel, f32 drag);
 f32 sidekickToy_accelerateTowardTargetXZ(GameObject* obj, f32 tx, f32 ty, f32 tz, f32 accel, f32 speedScale,
                                          f32 maxVel, f32 drag);
+void sidekickToy_updateCurveTargetLatch(GameObject* obj);
 void baddieAfterUpdateBonesCb(GameObject* obj, int* bones);
 int enemy_getExtraSize(void);
 int enemy_getObjectTypeId(void);
@@ -266,11 +266,5 @@ void enemy_hitDetect(GameObject* obj);
 void enemy_free(GameObject* obj, int flag);
 void enemy_update(GameObject* obj);
 void enemy_init(GameObject* obj, u8* setup, int flag);
-void FUN_8014ccb8(double param_1, double param_2, double param_3, int param_4, int param_5, float* param_6,
-                  char param_7);
-double FUN_8014cfac(double param_1, double param_2, double param_3, double param_4, double param_5, double param_6,
-                    double param_7, int param_8);
-double FUN_8014d2a4(double param_1, double param_2, double param_3, double param_4, double param_5, double param_6,
-                    double param_7, int param_8);
 
 #endif /* MAIN_DLL_DLL_00C9_ENEMY_H_ */

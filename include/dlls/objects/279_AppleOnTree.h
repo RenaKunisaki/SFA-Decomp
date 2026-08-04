@@ -19,7 +19,7 @@ typedef struct AppleOnTreePlacement {
     u8 fallEndFraction;     /* 0x22 */
     u8 landedEndFraction;   /* 0x23 */
     u8 fadeEndFraction;     /* 0x24 */
-    s8 unk25;               /* 0x25 */
+    s8 waterAccelerationPercent; /* 0x25 */
     s16 despawnGameBit;     /* 0x26: or -1 */
 } AppleOnTreePlacement;
 
@@ -67,7 +67,7 @@ STATIC_ASSERT(offsetof(AppleOnTreePlacement, ripeEndFraction) == 0x21);
 STATIC_ASSERT(offsetof(AppleOnTreePlacement, fallEndFraction) == 0x22);
 STATIC_ASSERT(offsetof(AppleOnTreePlacement, landedEndFraction) == 0x23);
 STATIC_ASSERT(offsetof(AppleOnTreePlacement, fadeEndFraction) == 0x24);
-STATIC_ASSERT(offsetof(AppleOnTreePlacement, unk25) == 0x25);
+STATIC_ASSERT(offsetof(AppleOnTreePlacement, waterAccelerationPercent) == 0x25);
 STATIC_ASSERT(offsetof(AppleOnTreePlacement, despawnGameBit) == 0x26);
 STATIC_ASSERT(sizeof(AppleOnTreePlacement) == APPLE_ON_TREE_PLACEMENT_SIZE);
 
@@ -104,6 +104,19 @@ STATIC_ASSERT(offsetof(AppleOnTreeState, triggerGameBit) == 0x5C);
 STATIC_ASSERT(offsetof(AppleOnTreeState, pickupMessageValue) == 0x5E);
 STATIC_ASSERT(offsetof(AppleOnTreeState, pickupMessageArgument) == 0x60);
 STATIC_ASSERT(sizeof(AppleOnTreeState) == APPLE_ON_TREE_STATE_SIZE);
+
+/* gAppleOnTreeObjDescriptor from slot02 onwards: the export table other
+   objects reach through obj->anim.dll. */
+typedef struct AppleOnTreeInterface {
+    void* pad00[9];
+    void (*setPosition)(GameObject* obj, f32* position);
+    int (*getAnimState)(GameObject* obj);
+} AppleOnTreeInterface;
+
+#define APPLE_ON_TREE_INTERFACE(apple) ((AppleOnTreeInterface*)*((GameObject*)(apple))->anim.dll)
+
+STATIC_ASSERT(offsetof(AppleOnTreeInterface, setPosition) == 0x24);
+STATIC_ASSERT(offsetof(AppleOnTreeInterface, getAnimState) == 0x28);
 
 void AppleOnTree_setPosition(GameObject* obj, f32* position);
 void appleontree_knockLoose(GameObject* obj, int message);

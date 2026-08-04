@@ -336,13 +336,12 @@ int cmbsrc_getObjectTypeId(void)
     return 0;
 }
 
-void cmbsrc_free(int obj)
+void cmbsrc_free(GameObject* cmbsrc)
 {
     CmbSrcState* state;
-    GameObject* cmbsrc = (GameObject*)obj;
     state = cmbsrc->extra;
 
-    (*gExpgfxInterface)->freeSource(obj);
+    (*gExpgfxInterface)->freeSource((u32)cmbsrc);
     if (state->light != NULL)
     {
         ModelLightStruct_free(state->light);

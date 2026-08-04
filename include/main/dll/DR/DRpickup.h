@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DR_DRPICKUP_H_
 #define MAIN_DLL_DR_DRPICKUP_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "global.h"
 
 /* Bitfield: PowerPC big-endian: bit 0 = 0x80, bit 7 = 0x01 */
@@ -69,6 +69,6 @@ STATIC_ASSERT(offsetof(DRPickupState, flags458) == 0x458);
 STATIC_ASSERT(offsetof(DRPickupState, accumX) == 0x494);
 STATIC_ASSERT(offsetof(DRPickupState, spinVel) == 0x584);
 
-void SnowBike_UpdateLiftSway(int param_1,int param_2);
+void SnowBike_UpdateLiftSway(int obj,int state);
 
 #endif /* MAIN_DLL_DR_DRPICKUP_H_ */

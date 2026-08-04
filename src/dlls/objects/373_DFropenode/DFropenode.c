@@ -19,7 +19,6 @@
 #include "main/sky.h"
 #include "main/texture.h"
 #include "main/vecmath.h"
-#include "string.h"
 #include "main/audio/sfx_play_api.h"
 #include "track/intersect_api.h"
 
@@ -56,8 +55,6 @@ const LightmapTriangle gDFropenodeSegmentTriangles[DFROPENODE_SEGMENT_TRIANGLE_C
  * Build the six-vertex mesh for one rope segment. The template is rotated
  * around the Y axis and its two end caps are translated onto the link nodes.
  */
-void DFropenode_buildRopeSegmentMesh(const LightmapVertex* templateVertices, int angle, const Vec* startNode,
-                                     const Vec* endNode, LightmapVertex* out);
 void DFropenode_buildRopeSegmentMesh(const LightmapVertex* templateVertices, int angle, const Vec* startNode,
                                      const Vec* endNode, LightmapVertex* out) {
     s16 startX = 100.0f * startNode->x;
@@ -103,8 +100,6 @@ void DFropenode_buildRopeSegmentMesh(const LightmapVertex* templateVertices, int
     out[5].z += endZ;
 }
 
-/* Keep addressable so every use shares one .sdata2 entry. */
-
 const f32 gDFropenodeOneHundredth[1] = {0.01f};
 
 static inline void DFropenode_applyRopeSway(DFropenodeRope* rope) {
@@ -131,7 +126,6 @@ static inline void DFropenode_applyRopeSway(DFropenodeRope* rope) {
 /*
  * Integrate the spring forces attached to every unlocked rope node.
  */
-void DFropenode_integrateRopeNodes(DFropenodeRope* rope);
 void DFropenode_integrateRopeNodes(DFropenodeRope* rope) {
     DFropenodeRopeNode* part;
     int j;

@@ -57,7 +57,7 @@ static void arwarwingbo_detonate(GameObject* obj)
     state->explosionTimer = 100.0f;
     state->control.fuseTimer = 0.0f;
     objAnim->alpha = 0;
-    (*(ObjHitsPriorityState**)&objAnim->hitReactState)->flags &= ~OBJHITS_PRIORITY_STATE_TRACK_CONTACT;
+    ((ObjHitsPriorityState*)objAnim->hitReactState)->flags &= ~OBJHITS_PRIORITY_STATE_TRACK_CONTACT;
     spawnExplosion(obj, 127.0f, 1, 0, 1, 1, 0, 1, 0);
     ObjHitbox_SetSphereRadius(&obj->anim, 0x280);
     ObjHits_SetHitVolumeSlot(&obj->anim, ARWARWINGBO_HIT_VOLUME_SLOT, 5, 0);
@@ -152,8 +152,8 @@ void arwarwingbo_update(GameObject* obj)
         return;
     }
     ObjHits_SetHitVolumeSlot(&obj->anim, 0xf, 0, 0);
-    if ((*(ObjHitsPriorityState**)&objAnim->hitReactState)->lastHitObject != 0 ||
-        (*(ObjHitsPriorityState**)&objAnim->hitReactState)->contactFlags != 0 ||
+    if (((ObjHitsPriorityState*)objAnim->hitReactState)->lastHitObject != 0 ||
+        ((ObjHitsPriorityState*)objAnim->hitReactState)->contactFlags != 0 ||
         (getButtonsJustPressed(0) & PAD_BUTTON_B))
     {
         arwarwingbo_detonate(obj);

@@ -206,7 +206,7 @@ void MagicPlant_spawnChild(GameObject* obj, int objectId) {
     u8* placementData;
     MagicPlantState* state;
 
-    placementData = *(u8**)&obj->anim.placementData;
+    placementData = (u8*)obj->anim.placementData;
     state = obj->extra;
     if (Obj_IsLoadingLocked() != 0) {
         placement = (CollectibleSetup*)Obj_AllocObjectSetup(sizeof(CollectibleSetup), objectId);
@@ -234,7 +234,7 @@ void MagicPlant_spawnChild(GameObject* obj, int objectId) {
 }
 
 int MagicPlant_SeqFn(GameObject* obj) {
-    (*gCameraInterface)->setTargetReticleOverride((int)obj);
+    (*gCameraInterface)->setTargetReticleOverride(obj);
     return 0;
 }
 

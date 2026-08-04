@@ -51,6 +51,13 @@ f32 gSnowClawMoveStepScaleBase = 0.006f;
 #define SNOWCLAW_DROP_OBJ_SCWEAPON_T1 0x33 /* "SCweaponT1" */
 #define SNOWCLAW_DROP_OBJ_ICEBALL     0x64 /* "IceBall" (DLL 0xCD) */
 
+typedef struct SnowclawPlacement
+{
+    ObjPlacement base;     /* 0x00 */
+    u8 pad18[0x27 - 0x18]; /* 0x18 */
+    s8 dropIndex;          /* 0x27 */
+} SnowclawPlacement;
+
 typedef struct SnowclawState
 {
     u8 pad0[0x4 - 0x0];
@@ -130,11 +137,7 @@ typedef struct SnowClawBombSetup
 
 int gSnowClawDropBombAngle;
 
-u8 gSnowClawMoveTable[] = {
-    0x00, 0x00, 0x03, 0x89, 0x00, 0x00, 0x03, 0x8D, 0x00, 0x00, 0x03, 0x8A, 0x00, 0x00, 0x03, 0x8E,
-    0x00, 0x00, 0x04, 0xD3, 0x00, 0x00, 0x04, 0xD4, 0x00, 0x00, 0x01, 0x6D, 0x00, 0x00, 0x01, 0x6C,
-    0x00, 0x00, 0x01, 0x70, 0x00, 0x00, 0x01, 0x6F, 0x00, 0x00, 0x03, 0xE8, 0x00, 0x00, 0x03, 0xEA,
-};
+s32 gSnowClawMoveTable[12] = {905, 909, 906, 910, 1235, 1236, 365, 364, 368, 367, 1000, 1002};
 
 s32 gSnowClawAttackTimerByRank[4] = {150, 200, 300, 400};
 
@@ -150,7 +153,7 @@ int snowclaw_getObjectTypeId(void);
 void snowclaw_release(void);
 void snowclaw_initialise(void);
 void snowclaw_free(GameObject* obj);
-void snowclaw_init(GameObject* obj, s8* init);
+void snowclaw_init(GameObject* obj, SnowclawPlacement* placement);
 void snowclaw_spawnDropBomb(GameObject* obj, GameObject* owner, int launchMode, int userData1Value);
 void snowclaw_updateMountAttack(GameObject* obj, GameObject* mount);
 void snowclaw_syncMountTransform(GameObject* obj, GameObject* mount, int p2, int p3, int p4, int p5, int opacity,
@@ -369,10 +372,10 @@ int snowclaw_animEventCallback(GameObject* obj, int a2, ObjSeqState* seq)
     s->mountAlpha = 0xff;
     if (sub != 0)
     {
-        s16 v6 = ((GameObject*)sub)->anim.flags;
-        if (v6 & OBJANIM_FLAG_HIDDEN)
+        s16 animFlags = ((GameObject*)sub)->anim.flags;
+        if (animFlags & OBJANIM_FLAG_HIDDEN)
         {
-            ((GameObject*)sub)->anim.flags = v6 & ~OBJANIM_FLAG_HIDDEN;
+            ((GameObject*)sub)->anim.flags = animFlags & ~OBJANIM_FLAG_HIDDEN;
             SNOWCLAW_MOUNT_INTERFACE(sub)->setRiderMode((GameObject*)sub, 2);
         }
     }
@@ -455,7 +458,7 @@ int snowclaw_animEventCallback(GameObject* obj, int a2, ObjSeqState* seq)
     {
         if (obj->childObjs[0] != 0)
         {
-            Obj_FreeObject(*(GameObject**)&obj->childObjs[0]);
+            Obj_FreeObject((GameObject*)obj->childObjs[0]);
             obj->childObjs[0] = NULL;
             obj->childCount = 0;
         }
@@ -490,7 +493,7 @@ void snowclaw_free(GameObject* obj)
 {
     if (obj->childObjs[0] != NULL)
     {
-        Obj_FreeObject(*(GameObject**)&obj->childObjs[0]);
+        Obj_FreeObject((GameObject*)obj->childObjs[0]);
     }
 }
 
@@ -577,7 +580,7 @@ void snowclaw_hitDetect(GameObject* obj)
     GameObject* player;
     f32 dist;
     int hit;
-    s8 a5;
+    s8 hitCooldown;
 
     inner = obj->extra;
     s = (SnowclawState*)inner;
@@ -654,10 +657,10 @@ void snowclaw_hitDetect(GameObject* obj)
     {
         snowclaw_syncMountTransform(obj, *(GameObject**)inner, 0, 0, 0, 0, 0, 0, 0);
     }
-    a5 = s->hitCooldown;
-    if (a5 >= 0)
+    hitCooldown = s->hitCooldown;
+    if (hitCooldown >= 0)
     {
-        s->hitCooldown = a5 - framesThisStep;
+        s->hitCooldown = hitCooldown - framesThisStep;
     }
 }
 
@@ -722,7 +725,7 @@ void snowclaw_update(GameObject* obj)
     {
         if (obj->childObjs[0] != NULL)
         {
-            Obj_FreeObject(*(GameObject**)&obj->childObjs[0]);
+            Obj_FreeObject((GameObject*)obj->childObjs[0]);
             obj->childObjs[0] = NULL;
             obj->childCount = 0;
         }
@@ -808,7 +811,7 @@ void snowclaw_update(GameObject* obj)
     }
 }
 
-void snowclaw_init(GameObject* obj, s8* init)
+void snowclaw_init(GameObject* obj, SnowclawPlacement* placement)
 {
     u8* table;
     SnowclawState* inner;
@@ -823,7 +826,7 @@ void snowclaw_init(GameObject* obj, s8* init)
     }
     inner = (obj)->extra;
     *(int*)inner = 0;
-    inner->dropIndex = init[0x27];
+    inner->dropIndex = placement->dropIndex;
     inner->health = 4;
     inner->hitCooldown = -1;
     switch ((obj)->anim.romDefNo)

@@ -44,7 +44,7 @@ void SeqPoint_free(void);
 void SeqPoint_render(int p1, int p2, int p3, int p4, int p5, s8 visible);
 void SeqPoint_hitDetect(void);
 void SeqPoint_update(GameObject* obj);
-void SeqPoint_init(GameObject* obj, int data);
+void SeqPoint_init(GameObject* obj, WmSeqPointMapData* data);
 void SeqPoint_release(void);
 void SeqPoint_initialise(void);
 
@@ -207,9 +207,9 @@ void SeqPoint_update(GameObject* obj)
     }
 }
 
-void SeqPoint_init(GameObject* obj, int data)
+void SeqPoint_init(GameObject* obj, WmSeqPointMapData* data)
 {
-    WmSeqPointMapData* def = (WmSeqPointMapData*)data;
+    WmSeqPointMapData* def = data;
     SeqPointState* state = obj->extra;
     obj->animEventCallback = SeqPoint_SeqFn;
     obj->anim.rotX = (((s32)def->rotXByte) << 8);

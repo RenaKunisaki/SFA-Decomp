@@ -149,7 +149,7 @@ void mmpAsteroidRe_update(GameObject* obj) {
                 obj->anim.velocityY = -(0.051f * timeDelta - speed);
             }
             *(s16*)&state->bobPhase = 1024.0f * timeDelta + state->bobPhase;
-            *(s16*)&state->rollPhase = 875.0f * timeDelta + state->rollPhase;
+            state->rollPhase = 875.0f * timeDelta + state->rollPhase;
             *(s16*)&state->pitchPhase = 512.0f * timeDelta + state->pitchPhase;
             objMove(obj, 0.0f, obj->anim.velocityY * timeDelta, 0.0f);
             obj->anim.localPosY = obj->anim.localPosY + mathSinf((MMP_ASTEROID_RE_PI * state->bobPhase) / 32768.0f);
@@ -239,23 +239,23 @@ void mmpAsteroidRe_init(GameObject* obj) {
     switch ((s32)state->phase) {
     case MMP_ASTEROID_RE_PHASE_HIDDEN:
         obj->anim.alpha = 0;
-        *(u8*)&obj->anim.bankIndex = 0;
+        obj->anim.bankIndex = 0;
         break;
     case MMP_ASTEROID_RE_PHASE_RISING:
         obj->anim.alpha = 0xFF;
         state->eventFlags = MMP_ASTEROID_RE_EVENT_FLAG_04;
-        *(u8*)&obj->anim.bankIndex = 1;
+        obj->anim.bankIndex = 1;
         state->eventFlags |= MMP_ASTEROID_RE_FX_PERIODIC;
         break;
     case MMP_ASTEROID_RE_PHASE_RISEN:
         obj->anim.alpha = 0xFF;
         state->eventFlags = MMP_ASTEROID_RE_EVENT_FLAG_04;
-        *(u8*)&obj->anim.bankIndex = 1;
+        obj->anim.bankIndex = 1;
         break;
     case MMP_ASTEROID_RE_PHASE_UNKNOWN_3:
         obj->anim.alpha = 0xFF;
         state->eventFlags = MMP_ASTEROID_RE_EVENT_FLAG_04;
-        *(u8*)&obj->anim.bankIndex = 1;
+        obj->anim.bankIndex = 1;
         break;
     }
     {

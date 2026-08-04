@@ -30,7 +30,6 @@ void TexScroll2_setStepY(GameObject* obj, s8 stepY) {
 }
 
 void TexScroll2_applyMapTextureScroll(GameObject* obj, TexScroll2State* state) {
-    void* material;
     Shader* shader;
     int* textureTable;
     Texture* texture;
@@ -55,42 +54,35 @@ void TexScroll2_applyMapTextureScroll(GameObject* obj, TexScroll2State* state) {
         return;
     }
 
-    /*
-     * The material cursor advances one ShaderLayer at a time while its
-     * field offsets remain relative to Shader.layers.
-     */
     for (shaderIndex = 0; shaderIndex < (s32)block->shaderCount; shaderIndex++) {
         shader = mapBlockGetShader(block, shaderIndex);
-        for (materialIndex = 0, material = shader; materialIndex < (s32)shader->layerCount; materialIndex++) {
-            if (*(Texture**)((char*)material + offsetof(Shader, layers)) == texture) {
+        for (materialIndex = 0; materialIndex < (s32)shader->layerCount; materialIndex++) {
+            if (shader->layers[materialIndex].texture == texture) {
                 texWidthFixed = (s32)(u32)texture->width << TEXSCROLL2_TEXTURE_FIXED_SHIFT;
                 texHeightFixed = (s32)(u32)texture->height << TEXSCROLL2_TEXTURE_FIXED_SHIFT;
-                if (*(u8*)((char*)material + offsetof(Shader, layers) + offsetof(ShaderLayer, scrollMtx)) !=
+                if (shader->layers[materialIndex].scrollMtx !=
                     MAP_TEXTURE_SCROLL_SLOT_UNALLOCATED) {
                     int ident = ((TexScrollPlacement*)obj->anim.placementData)->base.ident;
                     if (ident == TEXSCROLL2_GAME_BIT_GATED_IDENT_A || ident == TEXSCROLL2_GAME_BIT_GATED_IDENT_B) {
                         if (mainGetBit(state->gameBit) != 0) {
-                            mapTextureScrollSetStep((s32) * (u8*)((char*)material + offsetof(Shader, layers) +
-                                                                  offsetof(ShaderLayer, scrollMtx)),
+                            mapTextureScrollSetStep((s32)shader->layers[materialIndex].scrollMtx,
                                                     state->stepX, state->stepY, texWidthFixed, texHeightFixed,
                                                     state->secondaryStepX, state->secondaryStepY, texWidthFixed,
                                                     texHeightFixed);
                         }
                     } else {
-                        mapTextureScrollSetStep((s32) * (u8*)((char*)material + offsetof(Shader, layers) +
-                                                              offsetof(ShaderLayer, scrollMtx)),
+                        mapTextureScrollSetStep((s32)shader->layers[materialIndex].scrollMtx,
                                                 state->stepX, state->stepY, texWidthFixed, texHeightFixed,
                                                 state->secondaryStepX, state->secondaryStepY, texWidthFixed,
                                                 texHeightFixed);
                     }
                 } else {
-                    *(u8*)((char*)material + offsetof(Shader, layers) + offsetof(ShaderLayer, scrollMtx)) =
+                    shader->layers[materialIndex].scrollMtx =
                         mapTextureScrollAcquire(state->stepX, state->stepY, texWidthFixed, texHeightFixed,
                                                 state->secondaryStepX, state->secondaryStepY, texWidthFixed,
                                                 texHeightFixed);
                 }
             }
-            material = (void*)((char*)material + sizeof(ShaderLayer));
         }
     }
 }
@@ -128,7 +120,7 @@ void TexScroll2_update(GameObject* obj) {
     ident = placement->base.ident;
     if (ident == TEXSCROLL2_GAME_BIT_GATED_IDENT_A || ident == TEXSCROLL2_GAME_BIT_GATED_IDENT_B) {
         if (block != NULL) {
-            if (mainGetBit(state->gameBit) != *(u32*)&state->previousGameBitValue && state->needsApply == 0) {
+            if (mainGetBit(state->gameBit) != state->previousGameBitValue && state->needsApply == 0) {
                 TexScroll2_applyMapTextureScroll(obj, state);
                 state->needsApply = 0;
             }

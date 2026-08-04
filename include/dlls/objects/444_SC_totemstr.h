@@ -43,7 +43,7 @@ STATIC_ASSERT(offsetof(ScTotemStrengthState, flags) == 0x30);
 STATIC_ASSERT(offsetof(ScTotemStrengthState, unknown31) == 0x31);
 STATIC_ASSERT(sizeof(ScTotemStrengthState) == 0x34);
 
-int platform1_control(GameObject* obj, int unused, ObjSeqState* animUpdate);
+int sc_totemstrength_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int sc_totemstrength_getExtraSize(void);
 int sc_totemstrength_getObjectTypeId(void);
 void sc_totemstrength_free(void);

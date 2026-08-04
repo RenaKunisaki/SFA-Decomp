@@ -56,6 +56,7 @@
 #include "main/zlb.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "track/intersect_api.h"
+#include "track/intersect_hud_api.h"
 #include "track/intersect_depth_read_api.h"
 #include "main/objprint_load_api.h"
 #include "dolphin/os/OSAlloc.h"
@@ -72,7 +73,6 @@ void videoSwapFrameBuffers(u32 retraceCount);
 void gpuErrorHandler(u32 retraceCount);
 void videoBreakPointCallback(void);
 
-extern Mtx44 hudMatrix;
 
 void initViewport(void)
 {

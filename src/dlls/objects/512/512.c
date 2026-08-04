@@ -1,8 +1,6 @@
 /*
  * DLL 0x0200 implements map-act-specific interaction, sequence, and wandering
- * behaviors. Active retail evidence does not establish an original basename,
- * so the generated numeric source path and numbered namespace remain
- * authoritative.
+ * behaviors.
  */
 #include "dlls/objects/512.h"
 
@@ -56,17 +54,17 @@ STATIC_ASSERT(sizeof(Dll200WanderTarget) == 0x14);
 const Dll200ItemSet gDll200WanderItemSet = {{0x166, 0x167, 0x256}};
 const Dll200ItemSet gDll200IdleItemSet = {{0x166, 0x167, 0x256}};
 ObjHitReactEntry gDll200HitReactTable[] = {
-    {SFXpk_fuelcell_fizz, -1, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
-    {SFXpk_fuelcell_fizz, -1, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
-    {SFXpk_fuelcell_fizz, -1, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
-    {SFXpk_fuelcell_fizz, -1, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
-    {SFXpk_fuelcell_fizz, -1, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
-    {SFXpk_fuelcell_fizz, -1, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
-    {SFXpk_fuelcell_fizz, -1, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
-    {SFXpk_fuelcell_fizz, -1, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
-    {SFXpk_fuelcell_fizz, -1, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
-    {SFXpk_fuelcell_fizz, -1, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
-    {SFXpk_fuelcell_fizz, -1, -1, {0xFF, 0xFF}, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
+    {SFXpk_fuelcell_fizz, -1, -1, -1, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
+    {SFXpk_fuelcell_fizz, -1, -1, -1, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
+    {SFXpk_fuelcell_fizz, -1, -1, -1, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
+    {SFXpk_fuelcell_fizz, -1, -1, -1, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
+    {SFXpk_fuelcell_fizz, -1, -1, -1, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
+    {SFXpk_fuelcell_fizz, -1, -1, -1, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
+    {SFXpk_fuelcell_fizz, -1, -1, -1, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
+    {SFXpk_fuelcell_fizz, -1, -1, -1, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
+    {SFXpk_fuelcell_fizz, -1, -1, -1, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
+    {SFXpk_fuelcell_fizz, -1, -1, -1, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
+    {SFXpk_fuelcell_fizz, -1, -1, -1, 0, {0, 0, 0}, 0.0f, {0, 0, 0, 0}},
 };
 Dll200WanderTarget gDll200WanderTargets[] = {
     {0.0f, 0.0f, 0.0f, 0.0f, 0.02f},       {79.0f, 152.0f, 20.0f, 20.0f, 0.01f}, {138.0f, -6.0f, 20.0f, 20.0f, 0.02f},
@@ -389,14 +387,14 @@ void dll_200_render(GameObject* obj, int renderArg2, int renderArg3, int renderA
 void dll_200_hitDetect(void) {
 }
 
-void dll_200_update(int objectHandle) {
+void dll_200_update(GameObject* objectHandle) {
     u8 mapAct;
     u8 hitReactionActive;
     Dll200State* state;
-    GameObject* obj = (GameObject*)objectHandle;
+    GameObject* obj = objectHandle;
 
     state = obj->extra;
-    hitReactionActive = ObjHitReact_Update(objectHandle, gDll200HitReactTable, DLL200_HIT_REACT_ENTRY_COUNT,
+    hitReactionActive = ObjHitReact_Update(obj, gDll200HitReactTable, DLL200_HIT_REACT_ENTRY_COUNT,
                                            (u8)((state->behaviorMode & DLL200_BEHAVIOR_MODE_HIT_REACTING) ? 1 : 0),
                                            &state->hitReactStepScale);
     if (hitReactionActive != 0) {
@@ -414,9 +412,9 @@ void dll_200_update(int objectHandle) {
         case DLL200_MAP_ACT_RENDER_GATED:
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             if (obj->anim.currentMove != 2) {
-                ObjAnim_SetCurrentMove(objectHandle, 2, 0.0f, 0);
+                ObjAnim_SetCurrentMove((int)objectHandle, 2, 0.0f, 0);
             }
-            ObjAnim_AdvanceCurrentMove(objectHandle, 0.005f, (f32)(u32)framesThisStep, NULL);
+            ObjAnim_AdvanceCurrentMove((int)objectHandle, 0.005f, (f32)(u32)framesThisStep, NULL);
             break;
         case DLL200_MAP_ACT_IDLE:
             dll_200_updateMapAct6(obj);

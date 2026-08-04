@@ -2,7 +2,7 @@
 #define MAIN_DLL_SP_DLL_0289_SPITEMBEAM_H_
 
 #include "game/objects/object.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "global.h"
 #include "game/objects/object_setup.h"
 

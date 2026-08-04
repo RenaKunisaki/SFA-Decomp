@@ -26,6 +26,17 @@ DECL = re.compile(
 SKIP_TYPES = {'return', 'if', 'else', 'while', 'for', 'switch', 'case', 'do',
               'typedef', 'goto', 'break', 'continue', 'sizeof'}
 
+# DECL wants one declarator per statement, at column 0, on one line. A
+# comma-separated `extern T a, b, c;` -- which is how modelEngine.c declares the
+# whole DLL descriptor block -- matches none of its declarators, so a whole class
+# of disagreement was invisible. Parse those separately and report them apart:
+# the DLL table is a deliberate "definer proposes / reader disposes" idiom, and
+# folding hundreds of its rows into the main census would bury the real finds.
+EXTERN_LIST = re.compile(
+    r'^extern\s+((?:const\s+|volatile\s+|unsigned\s+|signed\s+|struct\s+|union\s+|enum\s+)*'
+    r'[A-Za-z_]\w*(?:\s*\*)*)\s+([^;{}()=]*?),([^;{}()=]*?);', re.M | re.S)
+DECLARATOR = re.compile(r'^(\**)\s*([A-Za-z_]\w*)\s*((?:\[[^\]]*\])*)$')
+
 
 def norm(base, stars, arr):
     """Normalise a declared type: drop qualifiers and array EXTENTS.
@@ -43,6 +54,8 @@ def norm(base, stars, arr):
 def scan():
     decls = collections.defaultdict(set)
     where = collections.defaultdict(set)
+    listed = collections.defaultdict(set)
+    listed_where = collections.defaultdict(set)
     files = []
     for pat in ('src/**/*.c', 'src/**/*.h', 'include/**/*.h'):
         files += glob.glob(os.path.join(ROOT, pat), recursive=True)
@@ -64,13 +77,29 @@ def scan():
             t = norm(base, stars, arr)
             decls[name].add(t)
             where[(name, t)].add(rel)
-    return decls, where
+        for m in EXTERN_LIST.finditer(text):
+            base = m.group(1)
+            if base.split()[-1] in SKIP_TYPES:
+                continue
+            for part in (m.group(2) + ',' + m.group(3)).split(','):
+                d = DECLARATOR.match(part.strip())
+                if not d:
+                    continue
+                t = norm(base, d.group(1), d.group(3))
+                listed[d.group(2)].add(t)
+                listed_where[(d.group(2), t)].add(rel)
+    return decls, where, listed, listed_where
 
 
 def main():
-    decls, where = scan()
+    decls, where, listed, listed_where = scan()
     bad = {n: t for n, t in decls.items() if len(t) > 1}
+    hidden = {n: (listed[n] | decls.get(n, set()))
+              for n in listed if len(listed[n] | decls.get(n, set())) > 1 and n not in bad}
     print('[symbols %d] [disagreeing %d]' % (len(decls), len(bad)))
+    print('[declarators inside comma-separated extern lists %d] '
+          '[of those, disagreeing and invisible to the census above %d]'
+          % (sum(len(v) for v in listed.values()), len(hidden)))
     only = sys.argv[1] if len(sys.argv) > 1 else None
     for name in sorted(bad):
         if only and only not in name:

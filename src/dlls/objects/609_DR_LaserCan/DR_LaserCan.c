@@ -127,6 +127,10 @@ STATIC_ASSERT(offsetof(DrLaserCannonState, flags) == DR_LASERCANNON_STATE_FLAGS)
 STATIC_ASSERT(offsetof(DrLaserCannonState, bobPhase) == DR_LASERCANNON_STATE_BOB_PHASE);
 STATIC_ASSERT(sizeof(DrLaserCannonState) == DR_LASERCANNON_EXTRA_SIZE);
 
+static f32 drlasercannon_aimStepFraction(s16 step, s16 limit) {
+    return (f32)step / (f32)limit;
+}
+
 static const f32 gLaserCannonAngleRateScale = 32768.0f / 180.0f;
 
 int drlasercannon_aimAtTarget(GameObject* self, GameObject* target, DrLaserCannonAim* out, int maxRate, f32* eyePos)
@@ -374,7 +378,8 @@ void DR_LaserCannon_update(GameObject* obj)
     DrLaserCannonState* state = (obj)->extra;
     DrLaserCannonSetup* setup = (DrLaserCannonSetup*)(obj)->anim.placementData;
     GameObject* player = Obj_GetPlayerObject();
-    int spawned;
+    GameObject* spawned;
+    DrLaserCannonState* cannonState;
     int hit;
     f32 dist;
     f32 nearDist;
@@ -473,10 +478,10 @@ void DR_LaserCannon_update(GameObject* obj)
                     if (Obj_PredictInterceptPoint((GameObject*)target, setup->beamSpeed / 10.0f,
                                                   (const Vec3f*)&state->muzzleX, (Vec3f*)hitPos) != 0)
                     {
-                        spawned = *(int*)&(obj)->extra;
+                        cannonState = (obj)->extra;
                         if (Obj_IsLoadingLocked() == 0)
                         {
-                            spawned = 0;
+                            spawned = NULL;
                         }
                         else
                         {
@@ -489,12 +494,12 @@ void DR_LaserCannon_update(GameObject* obj)
                             o->color[2] = 0xff;
                             o->color[1] = 1;
                             o->color[3] = 0xff;
-                            o->posX = ((DrLaserCannonState*)spawned)->muzzleX;
-                            o->posY = ((DrLaserCannonState*)spawned)->muzzleY;
-                            o->posZ = ((DrLaserCannonState*)spawned)->muzzleZ;
-                            spawned = (int)objSetupObject(o, 5, (obj)->anim.mapEventSlot, -1, NULL);
+                            o->posX = cannonState->muzzleX;
+                            o->posY = cannonState->muzzleY;
+                            o->posZ = cannonState->muzzleZ;
+                            spawned = objSetupObject(o, 5, (obj)->anim.mapEventSlot, -1, NULL);
                         }
-                        if ((void*)spawned != NULL)
+                        if (spawned != NULL)
                         {
                             outv[3] = state->muzzleX;
                             outv[4] = state->muzzleY;
@@ -502,10 +507,10 @@ void DR_LaserCannon_update(GameObject* obj)
                             inv[3] = hitPos[0];
                             inv[4] = hitPos[1];
                             inv[5] = hitPos[2];
-                            (*(void (**)(int, f32*, f32*, f32))(*(int*)(*(int*)&((GameObject*)spawned)->anim.dll) +
-                                                                0x24))(spawned, outv, inv,
+                            (*(void (**)(int, f32*, f32*, f32))(*(int*)((int)spawned->anim.dll) +
+                                                                0x24))((int)spawned, outv, inv,
                                                                        setup->beamSpeed / 10.0f);
-                            state->beamObject = spawned;
+                            state->beamObject = (int)spawned;
                             ObjAnim_SetCurrentMove((int)obj, 1, 0.0f, 0);
                             state->animStepScale = 0.018f;
                             Sfx_PlayFromObject(obj, SFXTRIG_wp_cahit2_c);
@@ -526,10 +531,10 @@ void DR_LaserCannon_update(GameObject* obj)
             firepipe_clearLinkedUpdateFlag(state->firepipeObject);
         }
     }
-    spawned = (int)state->firepipeObject;
-    if ((void*)spawned != NULL)
+    spawned = state->firepipeObject;
+    if (spawned != NULL)
     {
-        if ((((GameObject*)spawned)->objectFlags & DRLASERCANNON_OBJFLAG_FREED) != 0)
+        if ((spawned->objectFlags & DRLASERCANNON_OBJFLAG_FREED) != 0)
         {
             state->firepipeObject = 0;
         }
@@ -537,7 +542,7 @@ void DR_LaserCannon_update(GameObject* obj)
         {
             s16* v = (s16*)objFindJointPoseVector(obj, 0xb);
             *(s16*)spawned = (s16)((f32) * (s16*)obj + lbl_803DDD68);
-            ((GameObject*)spawned)->anim.rotY = v[0];
+            spawned->anim.rotY = v[0];
         }
     }
     if (state->flags.b5 != 0)

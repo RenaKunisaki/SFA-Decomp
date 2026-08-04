@@ -55,11 +55,11 @@
 #include "main/dll/dll_0031_minimap.h"
 #include "main/dll/dll_000D_playershadow.h"
 #include "main/dll/dll_0004_dummy04.h"
-#include "main/dll/dll_003C_tumbleweedbush.h"
+#include "main/dll/dll_003C_link.h"
 #include "main/dll/dll_003D_titlemenuitem.h"
 #include "main/dll/path_control_interface.h"
 #include "main/voxmaps.h"
-#include "main/dll/FRONT/dll_0032_n_rareware.h"
+#include "main/dll/FRONT/dll_0032_titlescreeninit.h"
 #include "main/dll/CAM/dll_0001_camcontrol.h"
 #include "track/intersect_api.h"
 #include "dolphin/ai.h"
@@ -77,10 +77,6 @@
 #include "main/objprint_render_api.h"
 #include "main/pi_data_file_api.h"
 #include "main/pi_flush_api.h"
-
-
-
-
 
 #define GAMEBIT_FLAG_WIDTH_MASK 0x1f /* bit-run length: (mask)+1 bits stored for this entry */
 #define GAMEBIT_FLAG_SYNC       0x20 /* request a save-sync when this bit is written */
@@ -102,7 +98,6 @@ void addButtonObject(GameObject* obj)
 {
     gGameLoopButtonObjects[gGameLoopButtonObjectCount++] = obj;
 }
-
 
 void requestGalleonBattleMusic(void)
 {
@@ -126,7 +121,6 @@ void blankScreen(int frames)
     }
 }
 
-
 int getScreenBlankFrameCount(void)
 {
     return screenBlankFrameCount;
@@ -145,8 +139,6 @@ int gameBitDecrement(int bit)
     }
     return 0;
 }
-
-
 
 int gameBitIncrement(int bit)
 {
@@ -318,19 +310,15 @@ int TriggSetpShouldUnload(void)
     return 0x1;
 }
 
-typedef f32 Mtx[3][4];
-
 void setFrameCountdown(s8 count)
 {
     frameCountdown = count;
 }
 
-#define AI_STREAM_STOP 0
 char sGameBitSetDuringSaveLoadWarning[204] =
     "WARNING in mainSetBits: Bit %d can't be set to %d while a savegame is "
     "loading\n\000\000GAME_STATE_RESETPRESSED\n\000\000\000\000GAME_STATE_RESETNOW\n\000\000\000\000audioQuit "
     "passed\n\000\000\000GX flush passed\n\000\000\000\000VIFlush passed\n\000reset default\n\000\000";
-
 
 void checkReset(void)
 {
@@ -475,16 +463,12 @@ void setGameState(int state)
     gameState = (u8)state;
 }
 
-
 /* GameBit descriptor flags byte (gGameBitTable[id].flags). */
-
-
 
 int getGameState(void)
 {
     return gameState;
 }
-
 
 void setTimeStop(int stop)
 {
@@ -545,17 +529,12 @@ STATIC_ASSERT(sizeof(GameLoopRenderModeStorage) == 0x40);
 GameLoopRenderModeStorage gGameLoopRenderModeCopy;
 extern char sMainFinishedInitMessage[];
 
-
-
-
 void cutsceneExit(void)
 {
     hudHiddenFrameCount = 0;
     timeStop = 0;
     Sfx_SetObjectSoundsPaused(0);
 }
-
-
 
 int getHudHiddenFrameCount(void)
 {
@@ -751,8 +730,6 @@ static void gameUpdate(void)
         }
     }
 }
-
-
 
 /* death-sequence player stand-ins; the fuzz pass only runs for these two
    (retail OBJECTS.bin names, both DLL 0x10E) */
@@ -980,7 +957,6 @@ void init(void)
     tvInit();
     OSReport(sMainFinishedInitMessage);
 }
-
 
 int main(int argc, char** argv)
 {

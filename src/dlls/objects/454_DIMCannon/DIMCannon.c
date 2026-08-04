@@ -55,7 +55,7 @@ static void DIMCannon_explodeBall(GameObject* obj, DimCannonBallState* state) {
     ObjHitbox_SetSphereRadius(&obj->anim, state->hitboxRadius);
     spawnExplosion(obj, 50.0f, 2, 1, 0, 1, 1, 1, 0);
     obj->userData1 = 1180;
-    *(s8*)&state->mode = DIM_CANNON_BALL_MODE_EXPLODED;
+    state->mode = DIM_CANNON_BALL_MODE_EXPLODED;
     obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
 }
 
@@ -98,7 +98,7 @@ void DIMCannon_updateBall(GameObject* obj) {
     if (obj->userData1 > 1200) {
         Obj_FreeObject(obj);
     } else if (state->clearLatch != 0) {
-        *(s8*)&state->clearLatch = 0;
+        state->clearLatch = 0;
     }
 }
 
@@ -477,7 +477,7 @@ void DIMCannon_update(GameObject* obj) {
     state = obj->extra;
     player = Obj_GetPlayerObject();
     if (playerGetFocusObject(player) != NULL) {
-        *(int*)&state->targetPlayer = 0;
+        state->targetPlayer = 0;
     } else {
         state->targetPlayer = player;
     }
@@ -519,7 +519,7 @@ void DIMCannon_update(GameObject* obj) {
             state->mode = DIM_CANNON_MODE_WAIT_FOR_RESET;
         } else if (state->targetPlayer != 0 && !mainGetBit(placement->holdGameBit)) {
             f32 playerDistance =
-                getXZDistance(&obj->anim.worldPosX, &((GameObject*)state->targetPlayer)->anim.worldPosX);
+                getXZDistanceSquared(&obj->anim.worldPosX, &((GameObject*)state->targetPlayer)->anim.worldPosX);
             int triggerDistance = placement->triggerRange * lbl_803DBF10;
             if (playerDistance < triggerDistance / 100.0f) {
                 state->mode = DIM_CANNON_MODE_AUTO_FIRE;
@@ -564,7 +564,7 @@ void DIMCannon_update(GameObject* obj) {
                 state->shotCooldown -= framesThisStep;
             }
             state->targetDistance =
-                getXZDistance(&obj->anim.worldPosX, &((GameObject*)state->targetPlayer)->anim.worldPosX);
+                getXZDistanceSquared(&obj->anim.worldPosX, &((GameObject*)state->targetPlayer)->anim.worldPosX);
             DIMCannon_updateAim(obj, state->aimTargetX, state->aimTargetY, state->aimTargetZ,
                                 state->targetDistance);
             DIMCannon_spawnBall(obj, 0);
@@ -592,10 +592,10 @@ void DIMCannon_init(GameObject* obj, DimCannonPlacement* placement) {
         DimCannonBallState* state;
         int* hitState;
         obj->userData1 = 0;
-        hitState = *(int**)&obj->anim.modelState;
+        hitState = (int*)obj->anim.modelState;
         if (hitState != 0) {
             *(int*)&((ObjHitsPriorityState*)hitState)->secondaryRadiusY |= 0xc10;
-            hitState = *(int**)&obj->anim.modelState;
+            hitState = (int*)obj->anim.modelState;
             *(u32*)&((ObjHitsPriorityState*)hitState)->secondaryRadiusY |= 0x8000LL;
         }
         state = obj->extra;
@@ -603,9 +603,9 @@ void DIMCannon_init(GameObject* obj, DimCannonPlacement* placement) {
         state->rotationYRate = randomGetRange(-0x64, 0x64);
         state->rotationXRate = randomGetRange(-0x64, 0x64);
         state->clearLatch = 1;
-        hitState = *(int**)&obj->anim.hitReactState;
+        hitState = (int*)obj->anim.hitReactState;
         if (hitState != 0) {
-            *(s16*)&((ObjHitsPriorityState*)hitState)->trackContactMask = 1;
+            ((ObjHitsPriorityState*)hitState)->trackContactMask = 1;
         }
         obj->objectFlags |= OBJECT_OBJFLAG_HIDDEN;
     } else {

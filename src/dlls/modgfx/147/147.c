@@ -6,23 +6,8 @@
 #include "main/dll/modgfx_types.h"
 #include "main/vecmath.h"
 
-typedef struct Dll93EffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} Dll93EffectVertex;
-
-STATIC_ASSERT(offsetof(Dll93EffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(Dll93EffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(Dll93EffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(Dll93EffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(Dll93EffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(Dll93EffectVertex) == 0x0A);
-
 typedef struct Dll93EffectResourceView {
-    Dll93EffectVertex vertices[21];
+    ModgfxEffectVertex vertices[21];
     u8 padD2[2];
     s16 triangles[24][3];
     u8 opaque164[0x4C];

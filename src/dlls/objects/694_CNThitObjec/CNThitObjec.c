@@ -33,12 +33,12 @@ static int* sCntHitSourcesByProfile[3] = {
     sCntHitSourcesProfile0,
 };
 
-int cnthitobjec_SeqFn(int obj, int unused, CntHitObjectAnimEvent* event)
+int cnthitobjec_SeqFn(GameObject* obj, int unused, CntHitObjectAnimEvent* event)
 {
     int i;
     for (i = 0; i < event->explosionCount; i++)
     {
-        spawnExplosion((GameObject*)obj, (f32)(u32)event->explosionIds[i], 1, 1, 1, 1, 0, 1, 0);
+        spawnExplosion(obj, (f32)(u32)event->explosionIds[i], 1, 1, 1, 1, 0, 1, 0);
     }
     return 0;
 }

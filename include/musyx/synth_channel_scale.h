@@ -1,7 +1,7 @@
 #ifndef MUSYX_SYNTH_CHANNEL_SCALE_H_
 #define MUSYX_SYNTH_CHANNEL_SCALE_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "musyx/mcmd.h"
 
 void seqHandle(u32 deltaTime);

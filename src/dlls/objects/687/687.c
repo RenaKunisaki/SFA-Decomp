@@ -10,8 +10,8 @@
  * the proximity radius. romDefNo selects an effect-colour profile index into
  * gTreeEffectColors.
  *
- * The ambient effect objects are driven through an interface at +0x68
- * (vtable slots 0x24 = setPosition, 0x28 = getState).
+ * The ambient effect objects are AppleOnTree instances, driven through that
+ * DLL's interface (setPosition / getAnimState).
  */
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dlls/objects/279_AppleOnTree.h"
@@ -103,16 +103,16 @@ void tree_updateAmbientEffects(GameObject* obj, TreeState* state)
             }
             else
             {
-                if ((*(int (**)(int))(*(int*)(*(int*)(state->ambientEffectHandles[i] + 0x68)) + 0x28))(
-                        state->ambientEffectHandles[i]) > 3)
+                if (APPLE_ON_TREE_INTERFACE(state->ambientEffectHandles[i])
+                        ->getAnimState((GameObject*)state->ambientEffectHandles[i]) > 3)
                 {
                     state->ambientEffectHandles[i] = 0;
                 }
                 else
                 {
-                    (*(void (**)(int, int))(*(int*)(*(int*)(state->ambientEffectHandles[i] + 0x68)) +
-                                            0x24))(state->ambientEffectHandles[i],
-                                                   (int)&ts->ambientEffectPos[i][0]);
+                    APPLE_ON_TREE_INTERFACE(state->ambientEffectHandles[i])
+                        ->setPosition((GameObject*)state->ambientEffectHandles[i],
+                                      &ts->ambientEffectPos[i][0]);
                 }
             }
         }
@@ -223,8 +223,8 @@ void tree_update(GameObject* obj)
                         {
                             if ((void*)state->ambientEffectHandles[i] != NULL)
                             {
-                                if ((*(int (**)(int))(*(int*)(*(int*)(state->ambientEffectHandles[i] + 0x68)) + 0x28))(
-                                        state->ambientEffectHandles[i]) > 1)
+                                if (APPLE_ON_TREE_INTERFACE(state->ambientEffectHandles[i])
+                                        ->getAnimState((GameObject*)state->ambientEffectHandles[i]) > 1)
                                 {
                                     ObjHits_RecordObjectHit((GameObject*)state->ambientEffectHandles[i], obj, 0xe, 1, 0);
                                     break;

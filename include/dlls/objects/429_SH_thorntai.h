@@ -101,7 +101,7 @@ STATIC_ASSERT(sizeof(SHthorntailState) == 0x914);
 int SHthorntail_getExtraSize(void);
 void SHthorntail_free(GameObject* obj);
 void SHthorntail_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
-void SHthorntail_update(int obj);
+void SHthorntail_update(GameObject* obj);
 void SHthorntail_init(GameObject* obj, const SHthorntailPlacement* placement);
 
 extern ObjectDescriptor gSH_thorntailObjDescriptor;

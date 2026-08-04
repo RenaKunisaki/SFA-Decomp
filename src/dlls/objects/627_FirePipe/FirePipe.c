@@ -39,7 +39,6 @@
 #include "main/object_render.h"
 #include "main/dll/dll_0273_firepipe.h"
 #include "game/objects/object_setup.h"
-#include "string.h"
 #include "main/gamebits.h"
 #include "main/mm.h"
 #include "main/model_light.h"
@@ -121,7 +120,7 @@ int firepipe_spawnEffectObject(FirePipeExtra* extra, GameObject* obj, ObjPlaceme
             effectObj->anim.localPosX = spawnDef->posX;
             effectObj->anim.localPosY = spawnDef->posY;
             effectObj->anim.localPosZ = spawnDef->posZ;
-            (*(FirePipeEffectInitFn*)(**(int**)&effectObj->anim.dll + 4))((int)effectObj, spawnDef, 0);
+            (*(FirePipeEffectInitFn*)(*(int*)effectObj->anim.dll + 4))((int)effectObj, spawnDef, 0);
             freeDelay = mmSetFreeDelay(0);
             mm_free(spawnDef);
             mmSetFreeDelay(freeDelay);

@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_SP_DLL_0288_SPDRAPE_H_
 #define MAIN_DLL_SP_DLL_0288_SPDRAPE_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "game/objects/object.h"
 #include "game/objects/object_setup.h"
 #include "global.h"

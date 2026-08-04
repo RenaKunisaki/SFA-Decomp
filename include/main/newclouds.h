@@ -1,7 +1,7 @@
 #ifndef MAIN_NEWCLOUDS_H_
 #define MAIN_NEWCLOUDS_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/lightningeffect.h"
 #include "main/vec_types.h"
 

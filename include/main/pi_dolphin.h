@@ -1,16 +1,15 @@
 #ifndef MAIN_PI_DOLPHIN_H_
 #define MAIN_PI_DOLPHIN_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "dolphin/gx/GXStruct.h"
 #include "dolphin/gx/GXFifo.h"
 #include "dolphin/os/OSThread.h"
 #include "dolphin/os/OSStopwatch.h"
+#include "main/model_engine.h"
 #include "main/pi_dolphin_api.h"
 
-struct RingBufferQueue;
-
-void piRomLoadSection(int param_1,int param_2,int param_3);
+void piRomLoadSection(int romOffset, int mapIndex, void* destBuf);
 
 /* extern-cleanup: defining-file public prototypes */
 void setDisplayCopyFilter(void);
@@ -73,7 +72,7 @@ extern int sMapFileNameIndexRemapTable[];
 extern GXFifoObj* gGxFifoObj;
 extern OSThread* gVideoWaitThread;
 extern OSStopwatch gFrameStopwatch;
-extern struct RingBufferQueue gVideoFlipQueue;
+extern RingBufferQueue gVideoFlipQueue;
 extern u8 gLoadingScreenTextures[];
 
 #endif /* MAIN_PI_DOLPHIN_H_ */

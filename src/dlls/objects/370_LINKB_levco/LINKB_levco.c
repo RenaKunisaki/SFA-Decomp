@@ -82,9 +82,9 @@ void linkbLevelControl_update(GameObject* obj) {
         }
     }
 
-    SCGameBitLatch_Update(&state->gameBitLatch, 1, -1, -1, GAMEBIT_IM_WaterRelated03A0, LINKB_MUSIC_TRIGGER_WATER_EXIT);
-    SCGameBitLatch_Update(&state->gameBitLatch, 2, -1, -1, LINKB_GAMEBIT_CITYTOMBS_MUSIC, MUSICTRIG_citytombs);
-    SCGameBitLatch_Update(&state->gameBitLatch, LINKB_LEVEL_CONTROL_FLAG_MUSIC, -1, -1, GAMEBIT_IM_Done,
+    GameBitLatch_Update(&state->gameBitLatch, 1, -1, -1, GAMEBIT_IM_WaterRelated03A0, LINKB_MUSIC_TRIGGER_WATER_EXIT);
+    GameBitLatch_Update(&state->gameBitLatch, 2, -1, -1, LINKB_GAMEBIT_CITYTOMBS_MUSIC, MUSICTRIG_citytombs);
+    GameBitLatch_Update(&state->gameBitLatch, LINKB_LEVEL_CONTROL_FLAG_MUSIC, -1, -1, GAMEBIT_IM_Done,
                           state->musicTriggerId);
 
     if ((state->gameBitLatch.activeMask & LINKB_LEVEL_CONTROL_FLAG_TRICKY_STATE) != 0) {

@@ -151,11 +151,11 @@ int sc_totempuzzle_getObjectTypeId(void) {
 void sc_totempuzzle_free(void) {
 }
 
-void sc_totempuzzle_render(int obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+void sc_totempuzzle_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     s32 visibleValue = visible;
 
     if (visibleValue != 0) {
-        objRenderModelAndHitVolumes((GameObject*)obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 

@@ -5,13 +5,13 @@
  */
 #include "dlls/objects/469_DIM2Conveyo.h"
 
-#include "dlls/objects/328_CFGuardian.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
 
+#define DIM2CONVEYOR_OBJECT_GROUP                   0x16
 #define DIM2CONVEYOR_GAMEBIT_NEGATIVE_DIRECTION     3163
 #define DIM2CONVEYOR_GAMEBIT_POSITIVE_DIRECTION     3164
 #define DIM2CONVEYOR_GAMEBIT_DIRECTION_SWAP_ENABLED 3169
@@ -67,7 +67,7 @@ int dim2conveyor_getObjectTypeId(void) {
 }
 
 void dim2conveyor_free(GameObject* obj) {
-    objFreeObjectType((int)obj, CFGUARDIAN_OBJECT_GROUP);
+    objFreeObjectType((int)obj, DIM2CONVEYOR_OBJECT_GROUP);
 }
 
 void dim2conveyor_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
@@ -128,7 +128,7 @@ void dim2conveyor_init(GameObject* obj, const Dim2ConveyorPlacement* placement) 
     state->scrollZ = scale * mathCosf(3.1415927f * (f32)obj->anim.rotX / 32768.0f);
     state->directionSwapTimer = 0.0f;
     state->musicHoldTimer = 0;
-    objAddObjectType((u32)obj, CFGUARDIAN_OBJECT_GROUP);
+    objAddObjectType((u32)obj, DIM2CONVEYOR_OBJECT_GROUP);
     obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
     if (placement->base.ident == DIM2CONVEYOR_DUAL_DIRECTION_MAP_ID) {
         mainSetBits(DIM2CONVEYOR_GAMEBIT_POSITIVE_DIRECTION, 1);

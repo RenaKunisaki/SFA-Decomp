@@ -28,7 +28,7 @@ typedef struct CfLevelControlPlacement {
 typedef struct CfLevelControlState {
     f32 timer;
     u8 pad04[0x04];
-    SCGameBitLatchState gameBitLatch;
+    GameBitLatchState gameBitLatch;
     CfLevelControlFlags flags;
     s8 previousCameraMode;
     u8 pad0E[0x02];

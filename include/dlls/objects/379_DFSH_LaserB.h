@@ -4,9 +4,9 @@
 #include "dlls/object_descriptor.h"
 #include "game/objects/object_fwd.h"
 #include "game/objects/object_setup.h"
+#include "main/dll/dll_0081_modgfx.h"
+#include "main/texture.h"
 
-struct Dll81Interface;
-struct Texture;
 
 typedef struct DFSHLaserBeamPlacement {
     ObjPlacement base;
@@ -18,7 +18,7 @@ typedef struct DFSHLaserBeamPlacement {
 } DFSHLaserBeamPlacement;
 
 typedef struct DFSHLaserBeamState {
-    struct Texture* beamTexture;
+    Texture* beamTexture;
     f32 beamY;
     f32 beamY2;
     f32 beamX;
@@ -79,7 +79,7 @@ STATIC_ASSERT(offsetof(DFSHLaserBeamState, blastPhase) == 0x49);
 STATIC_ASSERT(offsetof(DFSHLaserBeamState, proximityMode) == 0x4A);
 STATIC_ASSERT(offsetof(DFSHLaserBeamState, unknown4B) == 0x4B);
 
-extern struct Dll81Interface** gDFSHLaserBeamEffectResource;
+extern Dll81Interface** gDFSHLaserBeamEffectResource;
 extern ObjectDescriptor gDFSHLaserBeamObjDescriptor;
 
 int dfshLaserBeam_getExtraSize(void);

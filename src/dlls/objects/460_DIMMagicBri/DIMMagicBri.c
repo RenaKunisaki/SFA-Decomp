@@ -56,12 +56,12 @@ void dimmagicbridge_updateVertexWave(GameObject* obj, u8* stateBytes) {
     (obj)->anim.alpha = state->segmentGlow[1];
 }
 
-void dimmagicbridge_scrollTextureChannels(int obj, u8* stateBytes) {
+void dimmagicbridge_scrollTextureChannels(GameObject* obj, u8* stateBytes) {
     DimMagicBridgeState* state = (DimMagicBridgeState*)stateBytes;
     ObjTextureRuntimeSlot* texture;
     s32 phase;
 
-    texture = objFindTexture((GameObject*)obj, 0, 0);
+    texture = objFindTexture(obj, 0, 0);
     texture->offsetT += 0x14;
     if (texture->offsetT > 10000) {
         texture->offsetT -= 10000;
@@ -70,7 +70,7 @@ void dimmagicbridge_scrollTextureChannels(int obj, u8* stateBytes) {
     if (texture->offsetS > 10000) {
         texture->offsetS -= 10000;
     }
-    texture = objFindTexture((GameObject*)obj, 1, 0);
+    texture = objFindTexture(obj, 1, 0);
     texture->offsetT += 0x1e;
     if (texture->offsetT > 10000) {
         texture->offsetT -= 10000;
@@ -94,7 +94,7 @@ int dimmagicbridge_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     DimMagicBridgeState* state = (DimMagicBridgeState*)stateBytes;
     animUpdate->movementState = 0;
     animUpdate->flags &= ~0x40;
-    dimmagicbridge_scrollTextureChannels((int)obj, stateBytes);
+    dimmagicbridge_scrollTextureChannels(obj, stateBytes);
     if (animUpdate->curEventId == 1) {
         animUpdate->curEventId = 0;
         state->ignited = 1;
@@ -136,10 +136,10 @@ int dimmagicbridge_getObjectTypeId(void) {
 void dimmagicbridge_free(void) {
 }
 
-void dimmagicbridge_render(int obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
+void dimmagicbridge_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible) {
     s32 isVisible = visible;
     if (isVisible != 0) {
-        objRenderModelAndHitVolumes((GameObject*)obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
+        objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
 }
 
@@ -151,7 +151,7 @@ void dimmagicbridge_update(GameObject* obj) {
     void* player;
     player = Obj_GetPlayerObject();
     state = (obj)->extra;
-    dimmagicbridge_scrollTextureChannels((int)obj, (u8*)state);
+    dimmagicbridge_scrollTextureChannels(obj, (u8*)state);
     dimmagicbridge_updateVertexWave(obj, (u8*)state);
     if (state->ignited == 0) {
         if (mainGetBit(DIM_MAGIC_BRIDGE_GAMEBIT_TRIGGER) != 0) {

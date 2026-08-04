@@ -42,7 +42,6 @@
 #include "main/camera_shake_api.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/model.h"
-#include "string.h"
 
 GroundBaddieState* gKTRexRuntime;
 KTRexArenaState* gKTRexState;
@@ -166,8 +165,6 @@ int ktrex_shouldAdvanceArenaPhase(void)
     return 0;
 }
 
-void ktrex_spawnRandomEnergyArc(GameObject* obj, int angle, f32 arcLen, int slot);
-
 void ktrex_spawnRandomEnergyArc(GameObject* obj, int angle, f32 arcLen, int slot)
 {
     int* model;
@@ -234,17 +231,17 @@ int ktrex_stateHandlerA11(GameObject* obj, GroundBaddieState* runtime)
         gKTRexState->rowBZ = gKTRexState->laneBZ;
     }
     phase = (gKTRexState->timerFA >> 1) & 3;
-    f5 = ((f32*)gKTRexState->rowBX)[phase] -
-         ((f32*)gKTRexState->rowAX)[phase];
-    f4 = ((f32*)gKTRexState->rowBZ)[phase] -
-         ((f32*)gKTRexState->rowAZ)[phase];
+    f5 = gKTRexState->rowBX[phase] -
+         gKTRexState->rowAX[phase];
+    f4 = gKTRexState->rowBZ[phase] -
+         gKTRexState->rowAZ[phase];
     if (__fabs(f5) > __fabs(f4))
     {
-        f4 = (obj->anim.localPosX - ((f32*)gKTRexState->rowAX)[phase]) / f5;
+        f4 = (obj->anim.localPosX - gKTRexState->rowAX[phase]) / f5;
     }
     else
     {
-        f4 = (obj->anim.localPosZ - ((f32*)gKTRexState->rowAZ)[phase]) / f4;
+        f4 = (obj->anim.localPosZ - gKTRexState->rowAZ[phase]) / f4;
     }
     gKTRexState->laneLerpT = f4;
     gKTRexState->timerFA |= 0x40;
@@ -456,7 +453,7 @@ int ktrex_stateHandlerA07(GameObject* obj, GroundBaddieState* runtime)
 int ktrex_stateHandlerA06(GameObject* obj, GroundBaddieState* runtime)
 {
     int slot;
-    if (*(s8*)&runtime->baddie.moveJustStartedB != 0)
+    if (runtime->baddie.moveJustStartedB != 0)
     {
         (*gPlayerInterface)->setState(obj, runtime, 5);
     }
@@ -483,7 +480,7 @@ int ktrex_stateHandlerA05(GameObject* obj, GroundBaddieState* runtime)
         (*gPlayerInterface)->setState(obj, runtime, 1);
         gKTRexState->laneIndex = 1;
         p = (char*)p + gKTRexState->laneIndex * 4;
-        runtime->baddie.animSpeedC = ((KtrexPlacement*)p)->laneSpeed / 1000.0f;
+        runtime->baddie.animSpeedC = ((KtrexPlacement*)p)->laneSpeeds[0] / 1000.0f;
     }
     if (RandomTimer_UpdateRangeTrigger(&gKTRexState->breathSfxTimer, 2.0f, 4.0f) != 0)
     {
@@ -566,18 +563,18 @@ int ktrex_stateHandlerA03(GameObject* obj, GroundBaddieState* runtime)
     else if (runtime->baddie.moveDone != 0)
     {
         phase = (gKTRexState->timerFA >> 1) & 3;
-        f5 = ((f32*)gKTRexState->rowBX)[phase] -
-             ((f32*)gKTRexState->rowAX)[phase];
-        f4 = ((f32*)gKTRexState->rowBZ)[phase] -
-             ((f32*)gKTRexState->rowAZ)[phase];
+        f5 = gKTRexState->rowBX[phase] -
+             gKTRexState->rowAX[phase];
+        f4 = gKTRexState->rowBZ[phase] -
+             gKTRexState->rowAZ[phase];
         if (__fabs(f5) > __fabs(f4))
         {
-            f4 = (obj->anim.localPosX - ((f32*)gKTRexState->rowAX)[phase]) /
+            f4 = (obj->anim.localPosX - gKTRexState->rowAX[phase]) /
                  f5;
         }
         else
         {
-            f4 = (obj->anim.localPosZ - ((f32*)gKTRexState->rowAZ)[phase]) /
+            f4 = (obj->anim.localPosZ - gKTRexState->rowAZ[phase]) /
                  f4;
         }
         gKTRexState->laneLerpT = f4;
@@ -756,7 +753,7 @@ int ktrex_stateHandlerB08(GameObject* obj, GroundBaddieState* runtime)
     if ((gKTRexRuntime->baddie.eventFlags & 1) != 0)
     {
         gKTRexRuntime->baddie.eventFlags &= ~1;
-        *(int*)&gKTRexState->phaseFlags |= 0x2000;
+        gKTRexState->phaseFlags |= 0x2000;
     }
     return 0;
 }
@@ -771,12 +768,12 @@ int ktrex_stateHandlerB07(GameObject* obj, GroundBaddieState* runtime)
     if ((gKTRexRuntime->baddie.eventFlags & 1) != 0)
     {
         gKTRexRuntime->baddie.eventFlags &= ~1;
-        *(int*)&gKTRexState->phaseFlags |= 0x2000;
+        gKTRexState->phaseFlags |= 0x2000;
     }
     if ((gKTRexRuntime->baddie.eventFlags & 0x80) != 0)
     {
         gKTRexRuntime->baddie.eventFlags &= ~0x80;
-        *(u32*)&gKTRexState->phaseFlags |= 0x40000LL;
+        gKTRexState->phaseFlags |= 0x40000LL;
     }
     return 0;
 }
@@ -796,12 +793,12 @@ int ktrex_stateHandlerB06(GameObject* obj, GroundBaddieState* runtime)
     if ((gKTRexRuntime->baddie.eventFlags & 1) != 0)
     {
         gKTRexRuntime->baddie.eventFlags &= ~1;
-        *(u32*)&gKTRexState->phaseFlags |= 0x80000LL;
+        gKTRexState->phaseFlags |= 0x80000LL;
     }
     if ((gKTRexRuntime->baddie.eventFlags & 0x80) != 0)
     {
         gKTRexRuntime->baddie.eventFlags &= ~0x80;
-        *(u32*)&gKTRexState->phaseFlags |= 0x20000LL;
+        gKTRexState->phaseFlags |= 0x20000LL;
     }
     return 0;
 }
@@ -820,7 +817,7 @@ int ktrex_stateHandlerB05(GameObject* obj, GroundBaddieState* runtime)
     if ((gKTRexRuntime->baddie.eventFlags & 1) != 0)
     {
         gKTRexRuntime->baddie.eventFlags &= ~1;
-        *(int*)&gKTRexState->phaseFlags |= 0x200;
+        gKTRexState->phaseFlags |= 0x200;
     }
     return 0;
 }
@@ -841,17 +838,17 @@ int ktrex_stateHandlerB04(GameObject* obj, GroundBaddieState* runtime)
     if ((gKTRexRuntime->baddie.eventFlags & 1) != 0)
     {
         gKTRexRuntime->baddie.eventFlags &= ~1;
-        *(int*)&gKTRexState->phaseFlags |= mask;
+        gKTRexState->phaseFlags |= mask;
     }
     if ((gKTRexRuntime->baddie.eventFlags & 0x200) != 0)
     {
         gKTRexRuntime->baddie.eventFlags &= ~0x200;
-        *(int*)&gKTRexState->phaseFlags |= 0x800;
+        gKTRexState->phaseFlags |= 0x800;
     }
     if ((gKTRexRuntime->baddie.eventFlags & 0x400) != 0)
     {
         gKTRexRuntime->baddie.eventFlags &= ~0x400;
-        *(int*)&gKTRexState->phaseFlags |= 0x1000;
+        gKTRexState->phaseFlags |= 0x1000;
     }
     return 0;
 }
@@ -902,22 +899,22 @@ int ktrex_stateHandlerB02(GameObject* obj, GroundBaddieState* runtime)
     if ((gKTRexRuntime->baddie.eventFlags & 4) != 0)
     {
         gKTRexRuntime->baddie.eventFlags &= ~4;
-        *(int*)&gKTRexState->phaseFlags |= 1;
+        gKTRexState->phaseFlags |= 1;
     }
     if ((gKTRexRuntime->baddie.eventFlags & 2) != 0)
     {
         gKTRexRuntime->baddie.eventFlags &= ~2;
-        *(int*)&gKTRexState->phaseFlags |= 2;
+        gKTRexState->phaseFlags |= 2;
     }
     if ((gKTRexRuntime->baddie.eventFlags & 1) != 0)
     {
         gKTRexRuntime->baddie.eventFlags &= ~1;
-        *(int*)&gKTRexState->phaseFlags |= 0x40;
+        gKTRexState->phaseFlags |= 0x40;
     }
     if ((gKTRexRuntime->baddie.eventFlags & 0x80) != 0)
     {
         gKTRexRuntime->baddie.eventFlags &= ~0x80;
-        *(u32*)&gKTRexState->phaseFlags |= 0x10000LL;
+        gKTRexState->phaseFlags |= 0x10000LL;
     }
     runtime->baddie.movementFlags |= 1;
     (*gPlayerInterface)->updateAnimRootMotion(obj, runtime, timeDelta, 3);
@@ -963,13 +960,13 @@ int ktrex_stateHandlerB01(GameObject* obj, GroundBaddieState* runtime)
     if ((gKTRexRuntime->baddie.eventFlags & 4) != 0)
     {
         gKTRexRuntime->baddie.eventFlags &= ~4;
-        *(int*)&gKTRexState->phaseFlags |= mask;
+        gKTRexState->phaseFlags |= mask;
     }
     mask = gKTRexWalkPhaseFlagsByLaneEvent2[gKTRexState->laneIndex];
     if ((gKTRexRuntime->baddie.eventFlags & 2) != 0)
     {
         gKTRexRuntime->baddie.eventFlags &= ~2;
-        *(int*)&gKTRexState->phaseFlags |= mask;
+        gKTRexState->phaseFlags |= mask;
     }
     if (gKTRexState->laneAltSelect != 0)
     {
@@ -983,7 +980,7 @@ int ktrex_stateHandlerB01(GameObject* obj, GroundBaddieState* runtime)
     if ((gKTRexRuntime->baddie.eventFlags & 1) != 0)
     {
         gKTRexRuntime->baddie.eventFlags &= ~1;
-        *(int*)&gKTRexState->phaseFlags |= maskI;
+        gKTRexState->phaseFlags |= maskI;
     }
     dx = oneOverTimeDelta * (gKTRexState->posX - (obj)->anim.localPosX);
     dz = oneOverTimeDelta * (gKTRexState->posZ - (obj)->anim.localPosZ);
@@ -1295,19 +1292,19 @@ int ktrex_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate
         switch (animUpdate->eventIds[i])
         {
         case 1:
-            *(int*)&gKTRexState->phaseFlags |= 4;
+            gKTRexState->phaseFlags |= 4;
             break;
         case 2:
-            *(int*)&gKTRexState->phaseFlags |= 8;
+            gKTRexState->phaseFlags |= 8;
             break;
         case 3:
-            *(int*)&gKTRexState->phaseFlags |= 0x800;
+            gKTRexState->phaseFlags |= 0x800;
             break;
         case 4:
-            *(int*)&gKTRexState->phaseFlags |= 0x1000;
+            gKTRexState->phaseFlags |= 0x1000;
             break;
         case 5:
-            *(u32*)&gKTRexState->phaseFlags |= 0x20000LL;
+            gKTRexState->phaseFlags |= 0x20000LL;
             break;
         case 6:
             if (gKTRexState->light != NULL)
@@ -1386,17 +1383,17 @@ int ktrex_updateArenaPathProgress(GroundBaddieState* runtime)
         changed = 1;
     }
     gKTRexState->posX =
-        gKTRexState->laneLerpT * (((f32*)gKTRexState->rowBX)[phase] -
-                                                      ((f32*)gKTRexState->rowAX)[phase]) +
-        ((f32*)gKTRexState->rowAX)[phase];
+        gKTRexState->laneLerpT * (gKTRexState->rowBX[phase] -
+                                                      gKTRexState->rowAX[phase]) +
+        gKTRexState->rowAX[phase];
     gKTRexState->posY =
-        gKTRexState->laneLerpT * (((f32*)gKTRexState->rowBY)[phase] -
-                                                      ((f32*)gKTRexState->rowAY)[phase]) +
-        ((f32*)gKTRexState->rowAY)[phase];
+        gKTRexState->laneLerpT * (gKTRexState->rowBY[phase] -
+                                                      gKTRexState->rowAY[phase]) +
+        gKTRexState->rowAY[phase];
     gKTRexState->posZ =
-        gKTRexState->laneLerpT * (((f32*)gKTRexState->rowBZ)[phase] -
-                                                      ((f32*)gKTRexState->rowAZ)[phase]) +
-        ((f32*)gKTRexState->rowAZ)[phase];
+        gKTRexState->laneLerpT * (gKTRexState->rowBZ[phase] -
+                                                      gKTRexState->rowAZ[phase]) +
+        gKTRexState->rowAZ[phase];
     return changed;
 }
 
@@ -1543,7 +1540,7 @@ void ktrex_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, char visible)
     gKTRexState->vecY = 0.1f * (f32)randomGetRange(60, 120);
     gKTRexState->vecZ = -0.25f * (f32)randomGetRange(100, 150);
     PSMTXMultVecSR((MtxPtr)m, (Vec*)&gKTRexState->vecX, (Vec*)&gKTRexState->vecX);
-    *(u32*)&gKTRexState->phaseFlags |= 0x100000LL;
+    gKTRexState->phaseFlags |= 0x100000LL;
 }
 
 void ktrex_hitDetect(GameObject* obj)
@@ -1614,15 +1611,15 @@ void ktrex_update(GameObject* obj)
     {
         KTRexArenaState* st = (KTRexArenaState*)gKTRexState;
         phase = (st->timerFA >> 1) & 3;
-        dz = ((f32*)st->rowBX)[phase] - ((f32*)st->rowAX)[phase];
-        dx = ((f32*)st->rowBZ)[phase] - ((f32*)st->rowAZ)[phase];
+        dz = st->rowBX[phase] - st->rowAX[phase];
+        dx = st->rowBZ[phase] - st->rowAZ[phase];
         if (__fabs(dz) > __fabs(dx))
         {
-            frac = (player->anim.localPosX - ((f32*)st->rowAX)[phase]) / dz;
+            frac = (player->anim.localPosX - st->rowAX[phase]) / dz;
         }
         else
         {
-            frac = (player->anim.localPosZ - ((f32*)st->rowAZ)[phase]) / dx;
+            frac = (player->anim.localPosZ - st->rowAZ[phase]) / dx;
         }
     }
     gKTRexState->laneFrac = frac;
@@ -1681,7 +1678,7 @@ void ktrex_init(GameObject* obj, char* arg, int flag)
     rt = (GroundBaddieState*)gKTRexRuntime;
     (*gPlayerInterface)->setState(obj, rt, 0);
     rt->baddie.substate = 2;
-    *(int*)&rt->baddie.targetObj = 0;
+    rt->baddie.targetObj = 0;
     rt->baddie.physicsActive = 0;
     rt->baddie.hasTarget = 0;
     (obj)->anim.resetHitboxFlags |= 0x88;

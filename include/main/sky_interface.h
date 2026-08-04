@@ -21,8 +21,8 @@ typedef void (*SkyGetCurrentTextureColorFn)(u8 *red, u8 *green, u8 *blue);
 typedef void (*SkyGetCurrentAmbientAndLightColorsFn)(u8 *ambientRed, u8 *ambientGreen,
                                                      u8 *ambientBlue, u8 *lightRed,
                                                      u8 *lightGreen, u8 *lightBlue);
-typedef void (*SkySetEnvFxGameBitFn)(int value);
-typedef int (*SkyGetEnvFxGameBitFn)(void);
+typedef void (*SkySetDayNoFn)(int value);
+typedef int (*SkyGetDayNoFn)(void);
 
 typedef struct SkyInterface {
     void *unused00;
@@ -44,8 +44,8 @@ typedef struct SkyInterface {
     SkyGetCurrentAmbientAndLightColorsFn getCurrentAmbientAndLightColors;
     void (*reservedNopB)(void);
     void (*reservedNopC)(void);
-    SkySetEnvFxGameBitFn setEnvFxGameBit;
-    SkyGetEnvFxGameBitFn getEnvFxGameBit;
+    SkySetDayNoFn setDayNo;
+    SkyGetDayNoFn getDayNo;
     int (*reservedReturnZeroB)(void);
 } SkyInterface;
 
@@ -67,8 +67,8 @@ STATIC_ASSERT(offsetof(SkyInterface, getCurrentTextureColor) == 0x3C);
 STATIC_ASSERT(offsetof(SkyInterface, getCurrentAmbientAndLightColors) == 0x40);
 STATIC_ASSERT(offsetof(SkyInterface, reservedNopB) == 0x44);
 STATIC_ASSERT(offsetof(SkyInterface, reservedNopC) == 0x48);
-STATIC_ASSERT(offsetof(SkyInterface, setEnvFxGameBit) == 0x4C);
-STATIC_ASSERT(offsetof(SkyInterface, getEnvFxGameBit) == 0x50);
+STATIC_ASSERT(offsetof(SkyInterface, setDayNo) == 0x4C);
+STATIC_ASSERT(offsetof(SkyInterface, getDayNo) == 0x50);
 STATIC_ASSERT(offsetof(SkyInterface, reservedReturnZeroB) == 0x54);
 
 extern SkyInterface **gSkyInterface;

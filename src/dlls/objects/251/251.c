@@ -76,7 +76,7 @@ int PressureSwitchFB_animEventCallback(GameObject* obj, int unused, ObjSeqState*
     int positionAddress;
     u8 trackedIndex;
 
-    stateAddress = *(int*)&obj->extra;
+    stateAddress = (int)obj->extra;
     placement = (PressureSwitchFBPlacement*)obj->anim.placementData;
     if (animUpdate->curEventId == PRESSURESWITCHFB_ANIM_COMMAND_CAPTURE_POSITIONS) {
         for (trackedIndex = 0; trackedIndex < PRESSURESWITCHFB_TRACKED_OBJECT_COUNT; trackedIndex++) {
@@ -125,28 +125,43 @@ void PressureSwitchFB_free(GameObject* obj) {
     objFreeObjectType((int)obj, PRESSURESWITCHFB_OBJECT_GROUP);
 }
 
-static inline int PressureSwitchFB_scanTrackedSlots(int stateAddress) {
-    int positionAddress;
-    u32 trackedObject;
+static inline int PressureSwitchFB_scanTrackedSlots(PressureSwitchFBState* state) {
+    GameObject* trackedObject;
     u8 slotIndex;
     int foundTrackedObject;
 
     foundTrackedObject = 0;
     for (slotIndex = 0; slotIndex < PRESSURESWITCHFB_TRACKED_OBJECT_COUNT; slotIndex++) {
-        trackedObject = *(u32*)(stateAddress + slotIndex * 4 + PRESSURESWITCHFB_RUNTIME_TRACKED_OBJECTS_OFFSET);
-        if (trackedObject != 0) {
-            positionAddress = stateAddress + slotIndex * 8;
-            if ((*(f32*)(positionAddress + PRESSURESWITCHFB_RUNTIME_TRACKED_POSITIONS_OFFSET) ==
-                 ((GameObject*)trackedObject)->anim.localPosX) &&
-                (*(f32*)(positionAddress + PRESSURESWITCHFB_RUNTIME_TRACKED_POSITIONS_OFFSET + 4) ==
-                 ((GameObject*)trackedObject)->anim.localPosZ)) {
+        trackedObject = state->trackedObjects[slotIndex];
+        if (trackedObject != NULL) {
+            if ((state->trackedPositions[slotIndex].x == trackedObject->anim.localPosX) &&
+                (state->trackedPositions[slotIndex].z == trackedObject->anim.localPosZ)) {
                 foundTrackedObject = 1;
             } else {
-                *(int*)(stateAddress + slotIndex * 4 + PRESSURESWITCHFB_RUNTIME_TRACKED_OBJECTS_OFFSET) = 0;
+                state->trackedObjects[slotIndex] = NULL;
             }
         }
     }
     return foundTrackedObject;
+}
+
+static inline void PressureSwitchFB_addTrackedObject(GameObject* obj, GameObject* trackedObject) {
+    PressureSwitchFBState* state = obj->extra;
+    u8 trackedIndex;
+
+    trackedIndex = 0;
+    if (state->flags.update.playerOnly != 0) {
+        if (trackedObject != Obj_GetPlayerObject()) {
+            return;
+        }
+    }
+    while ((state->trackedObjects[trackedIndex] != NULL) &&
+           (trackedIndex != PRESSURESWITCHFB_TRACKED_OBJECT_COUNT - 1)) {
+        trackedIndex++;
+    }
+    state->trackedObjects[trackedIndex] = trackedObject;
+    state->trackedPositions[trackedIndex].x = trackedObject->anim.localPosX;
+    state->trackedPositions[trackedIndex].z = trackedObject->anim.localPosZ;
 }
 
 void PressureSwitchFB_update(GameObject* obj) {
@@ -157,10 +172,8 @@ void PressureSwitchFB_update(GameObject* obj) {
     PressureSwitchFBState* state;
     int i;
     int scratch;
-    u8 trackedIndex;
     int effectIndex;
     int isTrackedType;
-    int positionAddress;
     ObjTextureRuntimeSlot* texture;
     f32 currentY;
     f32 targetY;
@@ -203,33 +216,12 @@ void PressureSwitchFB_update(GameObject* obj) {
                 if (isTrackedType && (nearbyObject != nearestTarget)) {
                     if (((GameObject*)nearbyObject)->anim.localPosY - obj->anim.localPosY >
                         (f32)(u32)placement->triggerHeight) {
-                        scratch = *(int*)&obj->extra;
-                        trackedIndex = 0;
-                        do {
-                            if (((PressureSwitchFBState*)scratch)->flags.update.playerOnly != 0) {
-                                if (nearbyObject == (u32)Obj_GetPlayerObject()) {
-                                } else {
-                                    break;
-                                }
-                            }
-                            while ((*(u32*)(scratch + trackedIndex * 4 +
-                                            PRESSURESWITCHFB_RUNTIME_TRACKED_OBJECTS_OFFSET) != 0) &&
-                                   (trackedIndex != PRESSURESWITCHFB_TRACKED_OBJECT_COUNT - 1)) {
-                                trackedIndex++;
-                            }
-                            *(u32*)(scratch + trackedIndex * 4 + PRESSURESWITCHFB_RUNTIME_TRACKED_OBJECTS_OFFSET) =
-                                nearbyObject;
-                            *(f32*)((positionAddress = scratch + trackedIndex * 8) +
-                                    PRESSURESWITCHFB_RUNTIME_TRACKED_POSITIONS_OFFSET) =
-                                ((GameObject*)nearbyObject)->anim.localPosX;
-                            *(f32*)(positionAddress + PRESSURESWITCHFB_RUNTIME_TRACKED_POSITIONS_OFFSET + 4) =
-                                ((GameObject*)nearbyObject)->anim.localPosZ;
-                        } while (0);
+                        PressureSwitchFB_addTrackedObject(obj, (GameObject*)nearbyObject);
                     }
                 }
             }
         }
-        foundTrackedObject = PressureSwitchFB_scanTrackedSlots(*(int*)&obj->extra);
+        foundTrackedObject = PressureSwitchFB_scanTrackedSlots(obj->extra);
         if (foundTrackedObject & PRESSURESWITCHFB_TRACKED_POSITION_MASK) {
             state->contactTimer = PRESSURESWITCHFB_CONTACT_FRAMES;
         }

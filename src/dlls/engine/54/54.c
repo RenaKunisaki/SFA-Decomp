@@ -5,7 +5,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/frame_timing.h"
 #include "main/gameloop_api.h"
-#include "main/dll/dll_003C_tumbleweedbush.h"
+#include "main/dll/dll_003C_link.h"
 #include "main/dll/dll_0035_saveselectscreen.h"
 #include "main/gametext_color_api.h"
 #include "dolphin/pad.h"
@@ -84,8 +84,6 @@ void EnterSaveNameScreen_frameEnd(void)
 #define ENTER_SAVE_NAME_SFX_CONFIRM  0x418
 #define ENTER_SAVE_NAME_SFX_DELETE   0x419
 #define ENTER_SAVE_NAME_SFX_TYPE     0x41A
-
-u32 EnterSaveNameScreen_run(void);
 
 u32 EnterSaveNameScreen_run(void)
 {
@@ -276,13 +274,11 @@ u32 EnterSaveNameScreen_run(void)
     return 0;
 }
 
-void EnterSaveNameScreen_release(void);
 void EnterSaveNameScreen_release(void)
 {
     gTitleMenuLinkInterface->vtable->free();
 }
 
-void EnterSaveNameScreen_initialise(void);
 void EnterSaveNameScreen_initialise(void)
 {
     int i;

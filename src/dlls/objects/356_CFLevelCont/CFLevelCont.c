@@ -176,28 +176,28 @@ void cflevelcontrol_update(GameObject* obj) {
     }
     state->previousCameraMode = (s8)(*gCameraInterface)->getMode();
 
-    SCGameBitLatch_Update(&state->gameBitLatch, 4, -1, -1, GAMEBIT_CFRelated0983, 0xB0);
-    SCGameBitLatch_Update(&state->gameBitLatch, 8, -1, -1, GAMEBIT_CFRelated0983, 0x38);
-    SCGameBitLatch_UpdateInverted(&state->gameBitLatch, 0x100, -1, -1, GAMEBIT_CFRelated0983, 0x16);
-    SCGameBitLatch_UpdateInverted(&state->gameBitLatch, 0x80, -1, -1, GAMEBIT_CFRelated0983, 0x39);
+    GameBitLatch_Update(&state->gameBitLatch, 4, -1, -1, GAMEBIT_CFRelated0983, 0xB0);
+    GameBitLatch_Update(&state->gameBitLatch, 8, -1, -1, GAMEBIT_CFRelated0983, 0x38);
+    GameBitLatch_UpdateInverted(&state->gameBitLatch, 0x100, -1, -1, GAMEBIT_CFRelated0983, 0x16);
+    GameBitLatch_UpdateInverted(&state->gameBitLatch, 0x80, -1, -1, GAMEBIT_CFRelated0983, 0x39);
 
     if (mainGetBit(GAMEBIT_CFRelated0983) == 0) {
         if (mainGetBit(GAMEBIT_CFRelated0E23) == 0) {
-            SCGameBitLatch_UpdateInverted(&state->gameBitLatch, 0x200, -1, -1, GAMEBIT_CFRelated0984, 0xAD);
-            SCGameBitLatch_Update(&state->gameBitLatch, 0x40, -1, -1, GAMEBIT_CFRelated0984, 0x16);
+            GameBitLatch_UpdateInverted(&state->gameBitLatch, 0x200, -1, -1, GAMEBIT_CFRelated0984, 0xAD);
+            GameBitLatch_Update(&state->gameBitLatch, 0x40, -1, -1, GAMEBIT_CFRelated0984, 0x16);
         }
         if (mainGetBit(GAMEBIT_CFRelated0984) != 0) {
-            SCGameBitLatch_Update(&state->gameBitLatch, 0x20, -1, -1, GAMEBIT_CFRelated0E23, 0x17);
-            SCGameBitLatch_UpdateInverted(&state->gameBitLatch, 0x400, -1, -1, GAMEBIT_CFRelated0E23, 0x16);
+            GameBitLatch_Update(&state->gameBitLatch, 0x20, -1, -1, GAMEBIT_CFRelated0E23, 0x17);
+            GameBitLatch_UpdateInverted(&state->gameBitLatch, 0x400, -1, -1, GAMEBIT_CFRelated0E23, 0x16);
         }
     }
 
-    SCGameBitLatch_Update(&state->gameBitLatch, 1, GAMEBIT_SH_WarpStoneRelated01A8, GAMEBIT_SH_Entered00C0,
+    GameBitLatch_Update(&state->gameBitLatch, 1, GAMEBIT_SH_WarpStoneRelated01A8, GAMEBIT_SH_Entered00C0,
                           GAMEBIT_CFRelated0DB8, 0xAE);
-    SCGameBitLatch_Update(&state->gameBitLatch, 0x10, -1, -1, GAMEBIT_CFRelated0E1D, 0x36);
-    SCGameBitLatch_Update(&state->gameBitLatch, 0x1000, -1, -1, GAMEBIT_CFRelated0E1D, 0xF1);
-    SCGameBitLatch_Update(&state->gameBitLatch, 2, -1, -1, GAMEBIT_CFRelated0B46, 0xAF);
-    SCGameBitLatch_Update(&state->gameBitLatch, 0x800, -1, -1, GAMEBIT_SHRINE_MUSIC_LOCK, 0xC4);
+    GameBitLatch_Update(&state->gameBitLatch, 0x10, -1, -1, GAMEBIT_CFRelated0E1D, 0x36);
+    GameBitLatch_Update(&state->gameBitLatch, 0x1000, -1, -1, GAMEBIT_CFRelated0E1D, 0xF1);
+    GameBitLatch_Update(&state->gameBitLatch, 2, -1, -1, GAMEBIT_CFRelated0B46, 0xAF);
+    GameBitLatch_Update(&state->gameBitLatch, 0x800, -1, -1, GAMEBIT_SHRINE_MUSIC_LOCK, 0xC4);
 }
 
 void cflevelcontrol_init(GameObject* obj, CfLevelControlPlacement* unusedPlacement) {

@@ -5,6 +5,16 @@
 
 #include "dolphin/types.h"
 
+#ifndef __cplusplus
+typedef int bool;
+#ifndef false
+#define false 0
+#endif
+#ifndef true
+#define true 1
+#endif
+#endif
+
 typedef u32 (*VtableFn)();
 
 #endif

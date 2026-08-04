@@ -178,6 +178,7 @@ typedef struct ModelFileHeader {
 #define OBJMODEL_BUFFER_FLAG_TEXTURES_LOADED 0x40
 
 STATIC_ASSERT(offsetof(ModelFileHeader, modelId) == 0x04);
+STATIC_ASSERT(offsetof(ModelFileHeader, jointData) == 0x3C);
 STATIC_ASSERT(offsetof(ModelFileHeader, textureIds) == 0x20);
 STATIC_ASSERT(offsetof(ModelFileHeader, blendAnimEntries) == 0xC8);
 STATIC_ASSERT(offsetof(ModelFileHeader, textureCount) == 0xF2);
@@ -410,13 +411,13 @@ void ObjModelChain_Free(ObjModelChain *chain);
 
 void setGQR6_2(int a, int b, int c, int d);
 void modelApplyBoneTransforms(u8* srcVtx, u8* dstVtx, u16 vtxCount, u8* targetA, u8* targetB, int blendScale);
-void* modelLoad_layoutBuffers(u8* p, int b, int isType1, int c);
+void* modelLoad_layoutBuffers(u8* p, int b, int isType1, u8* c);
 void modelAnimResetState(void* m, void* data);
 int modelLoadAnimations(void* model, int id, void* animBase);
 void ObjModel_AdvanceBlendChannels(u8* model, f32 dt);
 void ObjModel_LoadRenderOpTextures(u8* model, GameObject* object);
 void ObjModel_Release(u8* model);
-void* ObjModel_LoadAnimData(u8* modelData, int loadFlags, int destination);
+void* ObjModel_LoadAnimData(u8* modelData, int loadFlags, u8* destination);
 void* ObjModel_Load(int modelId, int loadFlags, int* outSize);
 void Model_GetVertexPosition(ModelFileHeader* model, int vertexIndex, f32* out);
 void ObjModel_InitRenderBuffers(void);
@@ -424,11 +425,11 @@ void ObjModel_InitResourceCaches(void);
 void ObjModel_InitScratchBuffers(void);
 void ObjModel_TouchModelCache(void);
 void* loadModelInstance(int resourceId, int arg, void* buffer);
-void* loadAnimation(int hdr, s16 id, int b, u8* bufout);
+void* loadAnimation(ModelFileHeader* hdr, s16 id, int b, u8* bufout);
 
 int loadModelAndAnimTabs(void);
 void postRenderSetAlphaBlendState(void);
 void ObjModelChain_Update(int* model, int animState, ObjModelChain* chain, ObjModelChainUpdateCallback callback);
-void __set_debug_bba(u8* p);
+void ObjModelChain_ResetFirstUpdate(ObjModelChain* chain);
 
 #endif

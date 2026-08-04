@@ -2,7 +2,6 @@
 
 #include "dlls/objects/344.h"
 
-#include "dlls/objects/328_CFGuardian.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "dolphin/mtx/vec.h"
 #include "main/audio/sfx_trigger_ids.h"
@@ -29,7 +28,6 @@
 #include "main/track_bbox_api.h"
 #include "main/track_dolphin_api.h"
 #include "main/vecmath.h"
-#include "string.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 #include "main/audio/sfx_play_api.h"
@@ -353,7 +351,6 @@ void gunpowderBarrel_triggerExplosion(GameObject* obj) {
         }
         state->fuseFrames = 1;
         state->heldFlags.held = 0;
-        /* Preserve the distinct pointer-to-integer conversion at this call. */
         objFreeObjectType((u32)(void*)obj, GUNPOWDER_BARREL_OBJECT_GROUP);
         if (obj->anim.parent != 0) {
             state->radiusGrowthPerFrame = 2.2f;
@@ -502,7 +499,7 @@ void gunpowderBarrel_free(GameObject* obj, int keepLinkedTimer) {
         }
     }
     objFreeObjectType((int)obj, GUNPOWDER_BARREL_OBJECT_GROUP);
-    objFreeObjectType((int)obj, CFGUARDIAN_OBJECT_GROUP);
+    objFreeObjectType((int)obj, GUNPOWDER_BARREL_LOOSE_OBJECT_GROUP);
     if (state->fuseFrames != 0) {
         (*gExpgfxInterface)->freeSource2((u32)obj);
     }
@@ -533,19 +530,17 @@ void gunpowderBarrel_render(GameObject* obj, int renderArg2, int renderArg3, int
     }
 }
 
-void gunpowderBarrel_hitDetect(int obj) {
-    GameObject* barrel;
+void gunpowderBarrel_hitDetect(GameObject* barrel) {
     GunpowderBarrelState* state;
     f32 capturedVelocity[3];
     f32 collisionNormal[3];
     GunpowderBarrelCollisionScratch collision;
 
-    barrel = (GameObject*)obj;
     state = barrel->extra;
 
     if (Obj_IsObjectAlive(state->linkedTimerObject) == 0) {
         if (state->linkedTimerObject != NULL) {
-            ObjLink_DetachChild((GameObject*)obj, state->linkedTimerObject);
+            ObjLink_DetachChild(barrel, state->linkedTimerObject);
             state->linkedTimerObject = NULL;
         }
     }
@@ -565,7 +560,7 @@ void gunpowderBarrel_hitDetect(int obj) {
     }
 
     if (state->queuedHitObject != NULL) {
-        Obj_SetParent((GameObject*)obj, state->queuedHitObject, 1);
+        Obj_SetParent(barrel, state->queuedHitObject, 1);
         state->queuedHitObject = NULL;
     }
 
@@ -595,14 +590,14 @@ void gunpowderBarrel_hitDetect(int obj) {
 
     if (state->heldByCarryInterface == 0 &&
         trackGetLineIntersect(&barrel->anim.previousLocalPosX, &barrel->anim.localPosX, 8.0f, 1, &collision.hit,
-                           (GameObject*)obj, 8, -1, 0xff, 0) != 0) {
+                           barrel, 8, -1, 0xff, 0) != 0) {
         if (collision.hit.kind == 0x14) {
             state->detonationTrigger = GUNPOWDER_BARREL_DETONATION_TRIGGER_IMPACT;
         }
 
         if (state->heldFlags.playerHeld != 0 && collision.hit.kind == 3) {
-            gunpowderBarrel_setPlayerHeldState((GameObject*)obj, 0);
-            objFreeObjectType(obj, CFGUARDIAN_OBJECT_GROUP);
+            gunpowderBarrel_setPlayerHeldState(barrel, 0);
+            objFreeObjectType((int)barrel, GUNPOWDER_BARREL_LOOSE_OBJECT_GROUP);
         } else {
             collisionNormal[0] = collision.hit.normalX;
             collisionNormal[1] = collision.hit.normalY;
@@ -622,7 +617,7 @@ void gunpowderBarrel_hitDetect(int obj) {
 
             if (state->impactSoundCooldown > 60.0f) {
                 if (PSVECMag(&state->throwVelocity) > gGunpowderBarrelImpactSoundSpeedThreshold) {
-                    Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_statue_waterfall);
+                    Sfx_PlayFromObject(barrel, SFXTRIG_statue_waterfall);
                 }
                 state->impactSoundCooldown = 0.0f;
             }
@@ -702,7 +697,7 @@ void gunpowderBarrel_update(GameObject* obj) {
             case GUNPOWDER_BARREL_MESSAGE_PLAYER_RELEASED:
                 gunpowderBarrel_setPlayerHeldState(obj, 0);
                 if (messageArgument != 0) {
-                    objAddObjectType((u32)obj, CFGUARDIAN_OBJECT_GROUP);
+                    objAddObjectType((u32)obj, GUNPOWDER_BARREL_LOOSE_OBJECT_GROUP);
                 }
                 break;
             }
@@ -816,10 +811,10 @@ void gunpowderBarrel_update(GameObject* obj) {
                 obj->anim.localPosZ =
                     gGunpowderBarrelReleaseOffset * -mathCosf(3.1415927f * (f32)player->anim.rotX / 32768.0f) +
                     obj->anim.localPosZ;
-                objAddObjectType((int)obj, CFGUARDIAN_OBJECT_GROUP);
+                objAddObjectType((int)obj, GUNPOWDER_BARREL_LOOSE_OBJECT_GROUP);
             }
             /* Re-register after every release transition. */
-            objAddObjectType((int)obj, CFGUARDIAN_OBJECT_GROUP);
+            objAddObjectType((int)obj, GUNPOWDER_BARREL_LOOSE_OBJECT_GROUP);
         }
         gunpowderBarrel_updatePhysics(obj);
     } else {
@@ -828,7 +823,7 @@ void gunpowderBarrel_update(GameObject* obj) {
             if (state->linkedTimerObject != NULL) {
                 timer_forceStart(state->linkedTimerObject);
             }
-            objFreeObjectType((int)obj, CFGUARDIAN_OBJECT_GROUP);
+            objFreeObjectType((int)obj, GUNPOWDER_BARREL_LOOSE_OBJECT_GROUP);
         }
         state->heldByCarryInterface = 1;
         state->heldFlags.pendingThrowVelocityCapture = 1;
@@ -858,7 +853,7 @@ void gunpowderBarrel_init(GameObject* obj, GunpowderBarrelPlacement* placement) 
     ((GunpowderBarrelState*)obj->extra)->unknown07 |= 2;
     (*gCarryableInterface)->init(obj, state, GUNPOWDER_BARREL_CARRYABLE_MODE);
     objAddObjectType((int)obj, GUNPOWDER_BARREL_OBJECT_GROUP);
-    objAddObjectType((int)obj, CFGUARDIAN_OBJECT_GROUP);
+    objAddObjectType((int)obj, GUNPOWDER_BARREL_LOOSE_OBJECT_GROUP);
     ObjMsg_AllocQueue(obj, GUNPOWDER_BARREL_MESSAGE_QUEUE_CAPACITY);
     obj->userData2 = 0;
     state->homingHeadingA = 0;

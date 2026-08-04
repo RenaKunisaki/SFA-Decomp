@@ -131,10 +131,6 @@ void WM_ObjCreator_hitDetect(void) {
 }
 
 void WM_ObjCreator_update(GameObject* obj) {
-    /*
-     * These locals intentionally span switch arms. Splitting their lifetimes
-     * changes MWCC's nonvolatile-register allocation.
-     */
     ObjPlacement* setup;
     GameObject* spawned;
     int remainingCount;
@@ -151,10 +147,6 @@ void WM_ObjCreator_update(GameObject* obj) {
         case WMOBJCREATOR_MODE_GALLEON: {
             u32* groupObjects;
             int objectIndex;
-            /*
-             * state is dead on this path and intentionally reused as the
-             * spawn-allowed flag. A separate local changes register allocation.
-             */
             state = NULL;
             if (obj->userData2 == 0) {
                 state = (WMObjCreatorState*)1;

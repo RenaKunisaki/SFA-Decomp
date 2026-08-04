@@ -172,11 +172,11 @@ static inline void errDisplayFillBackdrop(void)
     } while (x < 0x280);
 }
 
-int debugPrintDrawGlyph(int unused, int c);
-int debugPrintDrawRecord(int color, u8* p);
+int debugPrintDrawGlyph(void* unused, int c);
+int debugPrintDrawRecord(void* context, u8* p);
 void debugTextDrawToFrameBuffer(int x, int y, u8* grid, int unused);
 
-int debugPrintDrawGlyph(int unused, int c)
+int debugPrintDrawGlyph(void* unused, int c)
 {
     u8* tbl;
     u8 first;
@@ -256,7 +256,7 @@ static inline void debugPrintFillRect(int x1, int y1, int x2, int y2)
     hudDrawRect(x1, y1, x2, y2, color);
 }
 
-int debugPrintDrawRecord(int color, u8* p)
+int debugPrintDrawRecord(void* context, u8* p)
 {
     u8* start = p;
     u8 c;
@@ -323,7 +323,7 @@ int debugPrintDrawRecord(int color, u8* p)
                 gDebugTextColorG = green;
                 gDebugTextColorB = blue;
                 gDebugTextColorA = alpha;
-                setTextColor((void*)color, red, green, blue, alpha);
+                setTextColor(context, red, green, blue, alpha);
             }
             break;
         }
@@ -338,8 +338,8 @@ int debugPrintDrawRecord(int color, u8* p)
             {
                 y1 = debugPrintYpos + 0xa;
                 x = debugPrintXpos;
-                y0 = gDebugRectStartY;
                 x0 = gDebugRectStartX;
+                y0 = gDebugRectStartY;
                 if ((((x - x0) == 0) | ((y1 - y0) == 0)) == 0)
                 {
                     if (x0 >= 2)
@@ -380,8 +380,8 @@ int debugPrintDrawRecord(int color, u8* p)
             {
                 y1 = debugPrintYpos + 0xa;
                 x = debugPrintXpos;
-                y0 = gDebugRectStartY;
                 x0 = gDebugRectStartX;
+                y0 = gDebugRectStartY;
                 if ((((x - x0) == 0) | ((y1 - y0) == 0)) == 0)
                 {
                     if (x0 >= 2)
@@ -414,7 +414,7 @@ int debugPrintDrawRecord(int color, u8* p)
             }
             break;
         default:
-            w = debugPrintDrawGlyph(color, c);
+            w = debugPrintDrawGlyph(context, c);
             break;
         }
         if (gDebugFixedWidthMode != 0 && c >= 0x20 && c <= 0x7f)
@@ -442,8 +442,8 @@ int debugPrintDrawRecord(int color, u8* p)
                         x0 -= 2;
                     }
                     x1 = x + 2;
-                    x0 = x0 * sc;
                     x1 = x1 * sc;
+                    x0 = x0 * sc;
                     y0 = y0 * (sc = gDebugScaleY + gDebugScaleBiasY);
                     y1 = y1 * sc;
                     debugPrintFillRect(x0, y0, x1, y1);
@@ -517,7 +517,7 @@ static inline void debugDrawLogRect(void)
         hudDrawRect(x0, y0, x1, y1, col);
     }
 }
-void debugPrintDraw(int ctx)
+void debugPrintDraw(void* context)
 {
     u8* p;
     u16 ty, tx;
@@ -566,7 +566,7 @@ void debugPrintDraw(int ctx)
     for (; p != debugLogEnd;)
     {
         gDebugDrawPass = pass;
-        p += debugPrintDrawRecord(ctx, p);
+        p += debugPrintDrawRecord(context, p);
     }
     debugDrawLogRect();
     p = debugLogBuffer;
@@ -578,7 +578,7 @@ void debugPrintDraw(int ctx)
     for (; p != debugLogEnd;)
     {
         gDebugDrawPass = pass;
-        p += debugPrintDrawRecord(ctx, p);
+        p += debugPrintDrawRecord(context, p);
     }
     debugLogEnd = debugLogBuffer;
     gDebugRecordCount = 0;

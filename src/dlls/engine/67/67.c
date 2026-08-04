@@ -5,7 +5,7 @@
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/pad.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/audio/sfx_play_legacy_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_interface.h"
@@ -18,7 +18,6 @@
 #include "main/mm.h"
 #include "main/object_transform.h"
 #include "main/vecmath.h"
-#include "string.h"
 #include "main/pad.h"
 
 CameraModeStaffAnimState* gCameraModeStaffAnimState;

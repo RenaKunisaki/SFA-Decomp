@@ -9,7 +9,7 @@
  * map-setup path replays them via getEnvfxActImmediately.
  */
 typedef struct SaveGameEnvState {
-    u8 unk00[4];
+    f32 unk00;
     s16 skyEnvfxActIds[2];     /* 0x04: kind-5 sky slots A/B */
     u8 unk08[2];
     s16 cloudActionEnvfxActId; /* 0x0A: kind 6 */

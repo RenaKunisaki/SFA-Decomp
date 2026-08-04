@@ -5,23 +5,8 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 
-typedef struct Dll84EffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} Dll84EffectVertex;
-
-STATIC_ASSERT(offsetof(Dll84EffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(Dll84EffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(Dll84EffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(Dll84EffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(Dll84EffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(Dll84EffectVertex) == 0x0A);
-
 typedef struct Dll84EffectResourceView {
-    Dll84EffectVertex vertices[36];
+    ModgfxEffectVertex vertices[36];
     s16 triangles[16][3];
     s16 firstNineVertexIndices[9];
     s16 opaque1DA;
@@ -59,7 +44,7 @@ extern u8 gDll84EffectResourceData[sizeof(Dll84EffectResourceView)];
 
 s16 dll_84_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags, int owner,
                        void* unused) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)(int)gDll84EffectResourceData;
     GfxCmd* commands = packet.entries;
 

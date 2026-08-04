@@ -20,7 +20,6 @@
 #include "main/objhits.h"
 #include "main/shader_api.h"
 #include "main/vecmath.h"
-#include "string.h"
 #include "sys/objects.h"
 #include "main/curve.h"
 #include "main/audio/sfx_play_api.h"
@@ -179,10 +178,10 @@ int Hagabon_getObjectTypeId(void) {
     return 0xb;
 }
 
-void Hagabon_free(int objAddress) {
-    void** curveSlot = ((GameObject*)objAddress)->extra;
-    objFreeObjectType(objAddress, HAGABON_OBJECT_GROUP);
-    Sfx_StopFromObject((GameObject*)objAddress, SFXTRIG_en_twiggysnap11);
+void Hagabon_free(GameObject* objAddress) {
+    void** curveSlot = objAddress->extra;
+    objFreeObjectType((int)objAddress, HAGABON_OBJECT_GROUP);
+    Sfx_StopFromObject(objAddress, SFXTRIG_en_twiggysnap11);
     if (*curveSlot != NULL) {
         mm_free(*curveSlot);
         *curveSlot = NULL;

@@ -1,3 +1,4 @@
+#include "dlls/object_descriptor.h"
 #include "main/game_ui_interface.h"
 #include "main/model_engine.h"
 #include "main/dll/dll_0010_uicontroller.h"
@@ -29,9 +30,28 @@ void UIController_release(void)
 void UIController_initialise(void)
 {
 }
+typedef struct UIControllerDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback frameStart;
+    ObjectDescriptorCallback frameEnd;
+    ObjectDescriptorCallback render;
+} UIControllerDllInterface;
 
-u32 UIController_funcs[10] = {
-    0, 0, 0, 0x00050000,
-    (u32)UIController_initialise, (u32)UIController_release, 0, (u32)UIController_frameStart,
-    (u32)UIController_frameEnd, (u32)UIController_render,
+UIControllerDllInterface UIController_funcs = {
+    0,
+    0,
+    0,
+    0x00050000,
+    (ObjectDescriptorCallback)UIController_initialise,
+    (ObjectDescriptorCallback)UIController_release,
+    0,
+    (ObjectDescriptorCallback)UIController_frameStart,
+    (ObjectDescriptorCallback)UIController_frameEnd,
+    (ObjectDescriptorCallback)UIController_render,
 };

@@ -14,7 +14,7 @@ typedef struct WMLevelControlState {
     u8 unknown0A;  /* Set to 0x1E for map-event mode 7. */
     u8 unknown0B;  /* Cleared during init. */
     u8 unknown0C[4];
-    SCGameBitLatchState musicLatch;
+    GameBitLatchState musicLatch;
     u8 musicLatchesDisabled; /* Set for map-event mode 7. */
     u8 unknown15[3];
     u32 frameCounter; /* Frames since init. */

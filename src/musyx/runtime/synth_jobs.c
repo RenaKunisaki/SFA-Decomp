@@ -64,7 +64,7 @@ void streamHandle(void)
             f = (f32)si->frq / (f32)SYNTH_CONFIGURATION->sampleRate;
             hwSetPitch(si->voice, f * 4096.0f);
             hwSetVolume(si->voice, 0, si->volume * (1 / 127.0f), si->pan << 16, si->surroundPan << 16,
-                        si->leftVolume * (1 / 127.0f), si->rightVolume * (1 / 127.0f));
+                        si->auxAVolume * (1 / 127.0f), si->auxBVolume * (1 / 127.0f));
             hwStart(si->voice, si->studio);
             si->state = SYNTH_JOB_STATE_PLAYING;
             if (!(si->flags & 0x20000))
@@ -304,7 +304,7 @@ void streamOutputModeChanged(void)
             {
                 hwSetVolume(streamInfo[i].voice, 0, volumeScale * streamInfo[i].volume,
                             streamInfo[i].pan << 0x10, streamInfo[i].surroundPan << 0x10,
-                            volumeScale * streamInfo[i].leftVolume, volumeScale * streamInfo[i].rightVolume);
+                            volumeScale * streamInfo[i].auxAVolume, volumeScale * streamInfo[i].auxBVolume);
             }
         }
     }

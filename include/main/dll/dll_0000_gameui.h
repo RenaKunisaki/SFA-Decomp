@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_DLL_0000_GAMEUI_H_
 #define MAIN_DLL_DLL_0000_GAMEUI_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/texture.h"
 
@@ -17,7 +17,7 @@ typedef struct TaskHintEntry
     s32 hint8; /* 0x08 */
     s32 hintC; /* 0x0c */
     s32 hint10; /* 0x10 */
-    u8 pad14[0x2]; /* 0x14 */
+    u16 unk14; /* 0x14 */
     u16 bit_id; /* 0x16 */
     u8 thresh; /* 0x18 */
     u8 unk19; /* 0x19 */

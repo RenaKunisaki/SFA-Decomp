@@ -83,7 +83,7 @@ ObjectDescriptor gDoorF4ObjDescriptor = {
     DoorF4_getExtraSize,                              /* getExtraSize */
 };
 
-int DoorF4_SeqFn(int obj, int unused, ObjSeqState* animUpdate) {
+int DoorF4_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     int message;
     int objectCount;
     int objectIndex;
@@ -107,8 +107,8 @@ int DoorF4_SeqFn(int obj, int unused, ObjSeqState* animUpdate) {
     f32 threshold;
     int index;
 
-    placement = *(DoorF4Placement**)&((GameObject*)obj)->anim.placementData;
-    state = ((GameObject*)obj)->extra;
+    placement = (DoorF4Placement*)obj->anim.placementData;
+    state = obj->extra;
     signedDistance = 0.0f;
     objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
     animUpdate->movementState = 0;
@@ -121,7 +121,7 @@ int DoorF4_SeqFn(int obj, int unused, ObjSeqState* animUpdate) {
     } else {
         openGameBitValue = mainGetBit(state->openGameBit);
     }
-    if (ObjMsg_Peek((void*)obj, (u32*)&message, 0, 0) != 0) {
+    if (ObjMsg_Peek(obj, (u32*)&message, 0, 0) != 0) {
         switch (message) {
         case DOORF4_MESSAGE_OPEN:
             state->isOpen = 1;
@@ -150,7 +150,7 @@ int DoorF4_SeqFn(int obj, int unused, ObjSeqState* animUpdate) {
             shouldOpen = 1;
         }
         if (shouldOpen != 0 && state->environmentFxActive == 0) {
-            if (((GameObject*)obj)->anim.romDefNo == DOORF4_POWER_DOOR_SEQUENCE_ID) {
+            if (obj->anim.romDefNo == DOORF4_POWER_DOOR_SEQUENCE_ID) {
                 if (mainGetBit(GAMEBIT_CF_PowerOn) != 0) {
                     getEnvfxAct(0, 0, DOORF4_ENVFX_POWERED_OPEN, 0);
                 } else {
@@ -159,7 +159,7 @@ int DoorF4_SeqFn(int obj, int unused, ObjSeqState* animUpdate) {
             }
             state->environmentFxActive = 1;
         } else if (shouldOpen == 0 && state->environmentFxActive == 1) {
-            if (((GameObject*)obj)->anim.romDefNo == DOORF4_POWER_DOOR_SEQUENCE_ID && signedDistance <= 0.0f) {
+            if (obj->anim.romDefNo == DOORF4_POWER_DOOR_SEQUENCE_ID && signedDistance <= 0.0f) {
                 getEnvfxAct(0, 0, DOORF4_ENVFX_CLOSE, 0);
             }
             state->environmentFxActive = 0;
@@ -172,7 +172,7 @@ int DoorF4_SeqFn(int obj, int unused, ObjSeqState* animUpdate) {
             planeNormalZ = mathCosf(angle[0]);
             signedDistance = -(placement->base.posX * signedDistance + placement->base.posZ * planeNormalZ) +
                              (signedDistance * playerObj->anim.localPosX + planeNormalZ * playerObj->anim.localPosZ);
-            if (((GameObject*)obj)->userData2 == 0) {
+            if (obj->userData2 == 0) {
                 if (signedDistance < 0.0f && signedDistance > -DOORF4_DIRECTIONAL_HALF_DEPTH) {
                     shouldOpen = 1;
                 }
@@ -185,12 +185,12 @@ int DoorF4_SeqFn(int obj, int unused, ObjSeqState* animUpdate) {
         break;
     case DOORF4_GATE_MODE_INTERACTION:
         if (openGameBitValue == 0) {
-            if ((((GameObject*)obj)->anim.resetHitboxFlags & INTERACT_FLAG_DISABLED) != 0 &&
+            if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_DISABLED) != 0 &&
                 mainGetBit(DOORF4_INTERACTION_ENABLE_GAMEBIT) != 0) {
-                ((GameObject*)obj)->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
+                obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
             }
-            if ((((GameObject*)obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) {
-                ((GameObject*)obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
+            if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) {
+                obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                 mainSetBits(state->openGameBit, 1);
             }
         } else if (openGameBitValue != 0) {
@@ -198,7 +198,7 @@ int DoorF4_SeqFn(int obj, int unused, ObjSeqState* animUpdate) {
         }
         break;
     case DOORF4_GATE_MODE_EXPLODABLE:
-        ((GameObject*)obj)->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
+        obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
         if (openGameBitValue != 0) {
             for (index = objectIndex, objectCursor = (GameObject**)((char*)objects + index * 4);
                  index < objectCount && shouldOpen == 0; objectCursor++, index++) {
@@ -221,19 +221,19 @@ int DoorF4_SeqFn(int obj, int unused, ObjSeqState* animUpdate) {
                 }
             }
             if (shouldOpen != 0) {
-                if (ObjMsg_Pop((void*)obj, (u32*)&message, 0, 0) != 0) {
+                if (ObjMsg_Pop(obj, (u32*)&message, 0, 0) != 0) {
                     switch (message) {
                     case 8:
                     case 9:
-                        ObjMsg_SendToObject(otherObj, message, (void*)obj, 0);
+                        ObjMsg_SendToObject(otherObj, message, obj, 0);
                         break;
                     }
                 }
-                if (signedDistance < 0.0f && ((GameObject*)obj)->userData2 == 0) {
+                if (signedDistance < 0.0f && obj->userData2 == 0) {
                     animUpdate->sequenceControlFlags |= OBJSEQ_CONTROL_SET_LATCH_A | OBJSEQ_CONTROL_SET_STATE_LATCH;
                 }
             } else {
-                if (((GameObject*)obj)->userData2 == 1) {
+                if (obj->userData2 == 1) {
                     animUpdate->sequenceControlFlags |= OBJSEQ_CONTROL_CLEAR_LATCH_A;
                 }
             }
@@ -253,34 +253,34 @@ int DoorF4_SeqFn(int obj, int unused, ObjSeqState* animUpdate) {
         break;
     case DOORF4_GATE_MODE_POWERED_INTERACTION:
         if (mainGetBit(state->requiredGameBit) != 0 && openGameBitValue == 0) {
-            ((GameObject*)obj)->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
-            if ((((GameObject*)obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) {
-                ((GameObject*)obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
+            obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
+            if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) {
+                obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                 mainSetBits(state->openGameBit, 1);
-                (*gObjectTriggerInterface)->runSequence(1, (void*)obj, -1);
+                (*gObjectTriggerInterface)->runSequence(1, obj, -1);
                 openGameBitValue = 1;
             }
         }
         if (openGameBitValue != 0) {
             shouldOpen = 1;
-            ((GameObject*)obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
+            obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         }
         break;
     }
-    if (((GameObject*)obj)->userData2 == 0) {
+    if (obj->userData2 == 0) {
         if (shouldOpen != 0) {
             animUpdate->sequenceControlFlags |= OBJSEQ_CONTROL_SET_LATCH_B;
         }
     } else if (shouldOpen == 0) {
         animUpdate->sequenceControlFlags |= OBJSEQ_CONTROL_CLEAR_LATCH_B;
     }
-    ((GameObject*)obj)->userData2 = shouldOpen;
-    if ((((GameObject*)obj)->anim.romDefNo == DOORF4_LATCH_SEQUENCE_ID ||
-         ((GameObject*)obj)->anim.romDefNo == DOORF4_WARP_DOOR_SEQUENCE_ID) &&
+    obj->userData2 = shouldOpen;
+    if ((obj->anim.romDefNo == DOORF4_LATCH_SEQUENCE_ID ||
+         obj->anim.romDefNo == DOORF4_WARP_DOOR_SEQUENCE_ID) &&
         state->sequenceLatch != 0) {
         animUpdate->sequenceControlFlags |= OBJSEQ_CONTROL_SET_LATCH_B;
     }
-    while (ObjMsg_Pop((void*)obj, (u32*)&message, 0, 0) != 0) {
+    while (ObjMsg_Pop(obj, (u32*)&message, 0, 0) != 0) {
     }
     for (index = 0; index < animUpdate->eventCount; index++) {
         eventId = animUpdate->eventIds[index];
@@ -300,37 +300,37 @@ int DoorF4_SeqFn(int obj, int unused, ObjSeqState* animUpdate) {
                     mainSetBits(placement->farSideGameBit, sideGameBitValue);
                 }
                 if (signedDistance <= 0.0f) {
-                    switch (((GameObject*)obj)->anim.romDefNo) {
+                    switch (obj->anim.romDefNo) {
                     case 0x1a2:
-                        ObjMsg_SendToNearbyObjects(0x19c, DOORF4_PARTNER_SEARCH_RANGE, 0, (void*)obj,
+                        ObjMsg_SendToNearbyObjects(0x19c, DOORF4_PARTNER_SEARCH_RANGE, 0, obj,
                                                    DOORF4_MESSAGE_PARTNER_OPEN, 0);
                         break;
                     case 0x1ad:
-                        ObjMsg_SendToNearbyObjects(0x1ac, DOORF4_PARTNER_SEARCH_RANGE, 0, (void*)obj,
+                        ObjMsg_SendToNearbyObjects(0x1ac, DOORF4_PARTNER_SEARCH_RANGE, 0, obj,
                                                    DOORF4_MESSAGE_PARTNER_OPEN, 0);
                         break;
                     case 0x1bb:
-                        ObjMsg_SendToNearbyObjects(0x1b9, DOORF4_PARTNER_SEARCH_RANGE, 0, (void*)obj,
+                        ObjMsg_SendToNearbyObjects(0x1b9, DOORF4_PARTNER_SEARCH_RANGE, 0, obj,
                                                    DOORF4_MESSAGE_PARTNER_OPEN, 0);
                         break;
                     case 0x1ea:
-                        ObjMsg_SendToNearbyObjects(0x1e7, DOORF4_PARTNER_SEARCH_RANGE, 0, (void*)obj,
+                        ObjMsg_SendToNearbyObjects(0x1e7, DOORF4_PARTNER_SEARCH_RANGE, 0, obj,
                                                    DOORF4_MESSAGE_PARTNER_OPEN, 0);
                         break;
                     case 0x205:
-                        ObjMsg_SendToNearbyObjects(0x202, DOORF4_PARTNER_SEARCH_RANGE, 0, (void*)obj,
+                        ObjMsg_SendToNearbyObjects(0x202, DOORF4_PARTNER_SEARCH_RANGE, 0, obj,
                                                    DOORF4_MESSAGE_PARTNER_OPEN, 0);
                         break;
                     case 0x21a:
-                        ObjMsg_SendToNearbyObjects(0x217, DOORF4_PARTNER_SEARCH_RANGE, 0, (void*)obj,
+                        ObjMsg_SendToNearbyObjects(0x217, DOORF4_PARTNER_SEARCH_RANGE, 0, obj,
                                                    DOORF4_MESSAGE_PARTNER_OPEN, 0);
                         break;
                     case 0x238:
-                        ObjMsg_SendToNearbyObjects(0x233, DOORF4_PARTNER_SEARCH_RANGE, 0, (void*)obj,
+                        ObjMsg_SendToNearbyObjects(0x233, DOORF4_PARTNER_SEARCH_RANGE, 0, obj,
                                                    DOORF4_MESSAGE_PARTNER_OPEN, 0);
                         break;
                     case 0x23f:
-                        ObjMsg_SendToNearbyObjects(0x23c, DOORF4_PARTNER_SEARCH_RANGE, 0, (void*)obj,
+                        ObjMsg_SendToNearbyObjects(0x23c, DOORF4_PARTNER_SEARCH_RANGE, 0, obj,
                                                    DOORF4_MESSAGE_PARTNER_OPEN, 0);
                         break;
                     }
@@ -338,17 +338,17 @@ int DoorF4_SeqFn(int obj, int unused, ObjSeqState* animUpdate) {
                 /* Fall through to play the opening sound. */
             case DOORF4_SEQUENCE_EVENT_PLAY_OPEN_SFX:
                 if (state->openSfxId != 0) {
-                    Sfx_PlayFromObject((GameObject*)obj, state->openSfxId);
+                    Sfx_PlayFromObject(obj, state->openSfxId);
                 }
                 break;
             case DOORF4_SEQUENCE_EVENT_STOP_OPEN_SFX:
-                if (state->openSfxId != 0 && Sfx_IsPlayingFromObject((GameObject*)obj, state->openSfxId) != 0) {
-                    Sfx_StopFromObject((GameObject*)obj, state->openSfxId);
+                if (state->openSfxId != 0 && Sfx_IsPlayingFromObject(obj, state->openSfxId) != 0) {
+                    Sfx_StopFromObject(obj, state->openSfxId);
                 }
                 break;
             case DOORF4_SEQUENCE_EVENT_PLAY_CLOSE_SFX:
                 if (state->closeSfxId != 0 && mainGetBit(GAMEBIT_SHRINE_MUSIC_LOCK) == 0) {
-                    Sfx_PlayFromObject((GameObject*)obj, state->closeSfxId);
+                    Sfx_PlayFromObject(obj, state->closeSfxId);
                 }
                 break;
             case DOORF4_SEQUENCE_EVENT_CLOSE:
@@ -364,37 +364,37 @@ int DoorF4_SeqFn(int obj, int unused, ObjSeqState* animUpdate) {
                     sideGameBitValue ^= (u8)(placement->toggleMask >> 8);
                     mainSetBits(placement->farSideGameBit, sideGameBitValue);
                 }
-                switch (((GameObject*)obj)->anim.romDefNo) {
+                switch (obj->anim.romDefNo) {
                 case 0x1a2:
-                    ObjMsg_SendToNearbyObjects(0x19c, DOORF4_PARTNER_SEARCH_RANGE, 0, (void*)obj,
+                    ObjMsg_SendToNearbyObjects(0x19c, DOORF4_PARTNER_SEARCH_RANGE, 0, obj,
                                                DOORF4_MESSAGE_PARTNER_CLOSE, 0);
                     break;
                 case 0x1ad:
-                    ObjMsg_SendToNearbyObjects(0x1ac, DOORF4_PARTNER_SEARCH_RANGE, 0, (void*)obj,
+                    ObjMsg_SendToNearbyObjects(0x1ac, DOORF4_PARTNER_SEARCH_RANGE, 0, obj,
                                                DOORF4_MESSAGE_PARTNER_CLOSE, 0);
                     break;
                 case 0x1bb:
-                    ObjMsg_SendToNearbyObjects(0x1b9, DOORF4_PARTNER_SEARCH_RANGE, 0, (void*)obj,
+                    ObjMsg_SendToNearbyObjects(0x1b9, DOORF4_PARTNER_SEARCH_RANGE, 0, obj,
                                                DOORF4_MESSAGE_PARTNER_CLOSE, 0);
                     break;
                 case 0x1ea:
-                    ObjMsg_SendToNearbyObjects(0x1e7, DOORF4_PARTNER_SEARCH_RANGE, 0, (void*)obj,
+                    ObjMsg_SendToNearbyObjects(0x1e7, DOORF4_PARTNER_SEARCH_RANGE, 0, obj,
                                                DOORF4_MESSAGE_PARTNER_CLOSE, 0);
                     break;
                 case 0x205:
-                    ObjMsg_SendToNearbyObjects(0x202, DOORF4_PARTNER_SEARCH_RANGE, 0, (void*)obj,
+                    ObjMsg_SendToNearbyObjects(0x202, DOORF4_PARTNER_SEARCH_RANGE, 0, obj,
                                                DOORF4_MESSAGE_PARTNER_CLOSE, 0);
                     break;
                 case 0x21a:
-                    ObjMsg_SendToNearbyObjects(0x217, DOORF4_PARTNER_SEARCH_RANGE, 0, (void*)obj,
+                    ObjMsg_SendToNearbyObjects(0x217, DOORF4_PARTNER_SEARCH_RANGE, 0, obj,
                                                DOORF4_MESSAGE_PARTNER_CLOSE, 0);
                     break;
                 case 0x238:
-                    ObjMsg_SendToNearbyObjects(0x233, DOORF4_PARTNER_SEARCH_RANGE, 0, (void*)obj,
+                    ObjMsg_SendToNearbyObjects(0x233, DOORF4_PARTNER_SEARCH_RANGE, 0, obj,
                                                DOORF4_MESSAGE_PARTNER_CLOSE, 0);
                     break;
                 case 0x23f:
-                    ObjMsg_SendToNearbyObjects(0x23c, DOORF4_PARTNER_SEARCH_RANGE, 0, (void*)obj,
+                    ObjMsg_SendToNearbyObjects(0x23c, DOORF4_PARTNER_SEARCH_RANGE, 0, obj,
                                                DOORF4_MESSAGE_PARTNER_CLOSE, 0);
                     break;
                 }
@@ -403,8 +403,8 @@ int DoorF4_SeqFn(int obj, int unused, ObjSeqState* animUpdate) {
             animUpdate->eventIds[index] = 0;
         }
     }
-    if (((GameObject*)obj)->userData1 != 0) {
-        ((GameObject*)obj)->userData1 = 0;
+    if (obj->userData1 != 0) {
+        obj->userData1 = 0;
         return 3;
     }
     return 0;
@@ -418,14 +418,14 @@ int DoorF4_getObjectTypeId(void) {
     return DOORF4_OBJECT_TYPE_ID;
 }
 
-void DoorF4_free(int obj) {
-    DoorF4State* state = ((GameObject*)obj)->extra;
+void DoorF4_free(GameObject* obj) {
+    DoorF4State* state = obj->extra;
     if (state->openSfxId != 0) {
-        if (Sfx_IsPlayingFromObject((GameObject*)obj, state->openSfxId) != 0) {
-            Sfx_StopFromObject((GameObject*)obj, state->openSfxId);
+        if (Sfx_IsPlayingFromObject(obj, state->openSfxId) != 0) {
+            Sfx_StopFromObject(obj, state->openSfxId);
         }
     }
-    objFreeObjectType(obj, DOORF4_OBJECT_GROUP);
+    objFreeObjectType((int)obj, DOORF4_OBJECT_GROUP);
 }
 
 void DoorF4_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
@@ -441,7 +441,7 @@ void DoorF4_update(GameObject* obj) {
     DoorF4State* state = obj->extra;
     state->sequenceLatch = 0;
     if (obj->userData1 == 0) {
-        DoorF4Placement* placement = *(DoorF4Placement**)&obj->anim.placementData;
+        DoorF4Placement* placement = (DoorF4Placement*)obj->anim.placementData;
         s16 sequenceId;
         obj->anim.localPosX = placement->base.posX;
         obj->anim.localPosY = placement->base.posY;

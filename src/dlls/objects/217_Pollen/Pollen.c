@@ -178,9 +178,9 @@ void Pollen_init(GameObject* obj) {
     obj->anim.alpha = 0xff;
     ObjHits_DisableObject(obj);
     {
-        int* modelStateAddress = *(int**)&obj->anim.modelState;
+        int* modelStateAddress = (int*)obj->anim.modelState;
         if (modelStateAddress != NULL) {
-            *(int*)&((ObjModelState*)modelStateAddress)->flags |= POLLEN_MODEL_FLAGS;
+            ((ObjModelState*)modelStateAddress)->flags |= POLLEN_MODEL_FLAGS;
         }
     }
 }

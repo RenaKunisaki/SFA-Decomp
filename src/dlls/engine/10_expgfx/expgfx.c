@@ -30,7 +30,7 @@
 #include "main/frame_timing.h"
 #include "main/render_mode_api.h"
 #include "main/dll/objfx.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.h"
+#include "main/trig_float_helpers.h"
 #include "main/dll/viewfinder.h"
 #include "track/intersect_api.h"
 #include "main/lightmap.h"
@@ -53,7 +53,6 @@
 #include "dolphin/mtx/vec.h"
 #include "dolphin/os/OSCache.h"
 #include "main/audio/sfx_play_legacy_api.h"
-#include "string.h"
 
 typedef union ExpgfxWGPipe
 {
@@ -84,30 +83,6 @@ typedef struct ExpgfxBillboardAngles
     s16 yaw;
 } ExpgfxBillboardAngles;
 
-#define GX_BM_NONE        0
-#define GX_BM_BLEND       1
-#define GX_BL_ZERO        0
-#define GX_BL_ONE         1
-#define GX_BL_SRCALPHA    4
-#define GX_BL_INVSRCALPHA 5
-#define GX_LO_NOOP        5
-#define GX_GREATER        4
-#define GX_ALWAYS         7
-#define GX_AOP_AND        0
-#define GX_CULL_NONE      0
-#define GX_VA_POS         9
-#define GX_VA_CLR0        11
-#define GX_VA_TEX0        13
-#define GX_DIRECT         1
-#define GX_QUADS          0x80
-#define GX_VTXFMT4        4
-#define GX_PNMTX0         0
-#define GX_COLOR0         0
-#define GX_ALPHA0         2
-#define GX_SRC_REG        0
-#define GX_SRC_VTX        1
-#define GX_DF_NONE        0
-#define GX_AF_NONE        2
 
 #define GXWGFifo (*(volatile ExpgfxWGPipe*)0xCC008000)
 
@@ -120,9 +95,6 @@ typedef struct ExpgfxBillboardAngles
 #define EXPGFX_BOUNDS_INIT_MIN 3.4028235e38f
 #define EXPGFX_BOUNDS_INIT_MAX -3.4028235e38f
 #define EXPGFX_U16_TO_UNIT_SCALE (1.0f / 65535.0f)
-
-extern int gExpgfxSlotType1Count;
-extern int gExpgfxSlotType1Average;
 
 static inline ExpgfxTableEntry* Expgfx_GetTableEntry(int tableIndex)
 {
@@ -144,9 +116,9 @@ static inline ExpgfxSlot* Expgfx_GetSlot(int poolIndex, int slotIndex)
     return (ExpgfxSlot*)(gExpgfxSlotPoolBases[poolIndex] + slotIndex * EXPGFX_SLOT_SIZE);
 }
 
-static inline ExpgfxBounds* Expgfx_GetBoundsTemplate(int templateIndex)
+static inline ExpgfxPlaneOffsets* Expgfx_GetPlaneOffsets(int setIndex)
 {
-    return &((ExpgfxBounds*)gExpgfxStaticData)[templateIndex];
+    return &((ExpgfxPlaneOffsets*)gExpgfxStaticData)[setIndex];
 }
 
 #define EXPGFX_POOL_ACTIVE_MASK_PTR(runtime, poolIndex) \
@@ -198,10 +170,7 @@ void viewFinderSetZoomTo50(void)
 #include "main/dll/partfx_interface.h"
 #include "dolphin/gx/GXGeometry.h"
 
-u8 gExpgfxStaticData[48] = {
-    192, 160, 0, 0, 66, 72, 0, 0, 66, 72, 0, 0, 66, 72, 0, 0, 66, 72, 0, 0, 66, 72, 0, 0,
-    66,  72,  0, 0, 66, 72, 0, 0, 66, 72, 0, 0, 66, 72, 0, 0, 66, 72, 0, 0, 66, 72, 0, 0,
-};
+f32 gExpgfxStaticData[12] = {-5.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f};
 
 s16 gExpgfxStaticPoolSlotTypeIds[80] = {
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0,
@@ -241,7 +210,7 @@ u8 gObjFxLightColorTbl[36] = {
     0xFF, 0xFF, 0x40, 0x00, 0x7F, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 };
 
-ObjectDescriptor14 expgfx_funcs = {
+ExpgfxDllInterface expgfx_funcs = {
     0,
     0,
     0,
@@ -294,13 +263,6 @@ const ObjFxRandomBurstTable gObjFxRandomBurstTbl = {
 
 #define OBJFX_OBJFLAG_PARENT_SLACK 0x1000
 
-/*
- * Keep the scale and configuration writes raw: routing them through typed
- * fields reorders this TU's shared float-conversion pool. Canonical offsetof
- * expressions retain the recovered placement contract without hard-coded
- * offsets.
- */
-
 void objfx_spawnCrystalOrbitEffects(GameObject* obj, s16* work, f32 period, f32 xMul, f32 yMul, f32 xOff,
                                     f32 yOff, u8 flags)
 {
@@ -315,7 +277,7 @@ void objfx_spawnCrystalOrbitEffects(GameObject* obj, s16* work, f32 period, f32 
         work[0x12 + crystalIdx] = (65535.0f / period + (f32)(crystalIdx * randomGetRange(120, 127)));
         wave = work[0x12 + crystalIdx];
         work[0xe + crystalIdx] = (wave * timeDelta + work[0xe + crystalIdx]);
-        wave = fcos16((u16)work[0xe + crystalIdx]);
+        wave = fsin16((u16)work[0xe + crystalIdx]);
         wave = (1.0f + wave) / 2.0f;
         {
             f32 amp = gObjFxCrystalAmpTbl.amps[crystalIdx];
@@ -1747,24 +1709,24 @@ void spawnDimExplosion(u8* src, f32 x, f32 y, f32 z, f32 scale, u8 kind, u8 flag
         setup->base.posY = y;
         setup->base.posZ = z;
         setup->sfxKind = kind;
-        *(s16*)((char*)setup + offsetof(DimExplosionPlacement, scaleParam)) = (s16)(256.0f * scale);
-        *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) = f1cinit;
+        setup->scaleParam = (s16)(256.0f * scale);
+        setup->configFlags = f1cinit;
         if (flag4 != 0)
         {
-            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |= DIM_EXPLOSION_CONFIG_HAS_GRAVITY;
+            setup->configFlags |= DIM_EXPLOSION_CONFIG_HAS_GRAVITY;
         }
         if (flag8 != 0)
         {
-            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |= DIM_EXPLOSION_CONFIG_HAS_RAYS;
+            setup->configFlags |= DIM_EXPLOSION_CONFIG_HAS_RAYS;
         }
         if (flag10 != 0)
         {
-            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |=
+            setup->configFlags |=
                 DIM_EXPLOSION_CONFIG_SPAWNS_DEBRIS;
         }
         if (flag20 != 0)
         {
-            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |= DIM_EXPLOSION_CONFIG_HAS_LIGHT;
+            setup->configFlags |= DIM_EXPLOSION_CONFIG_HAS_LIGHT;
         }
         if (doShake != 0)
         {
@@ -1799,24 +1761,24 @@ void spawnExplosion(GameObject* src, f32 scale, u8 kind, u8 flag4, u8 flag8, u8 
         setup->base.posY = src->anim.worldPosY;
         setup->base.posZ = src->anim.worldPosZ;
         setup->sfxKind = kind;
-        *(s16*)((char*)setup + offsetof(DimExplosionPlacement, scaleParam)) = (s16)(256.0f * scale);
-        *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) = f1cinit;
+        setup->scaleParam = (s16)(256.0f * scale);
+        setup->configFlags = f1cinit;
         if (flag4 != 0)
         {
-            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |= DIM_EXPLOSION_CONFIG_HAS_GRAVITY;
+            setup->configFlags |= DIM_EXPLOSION_CONFIG_HAS_GRAVITY;
         }
         if (flag8 != 0)
         {
-            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |= DIM_EXPLOSION_CONFIG_HAS_RAYS;
+            setup->configFlags |= DIM_EXPLOSION_CONFIG_HAS_RAYS;
         }
         if (flag10 != 0)
         {
-            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |=
+            setup->configFlags |=
                 DIM_EXPLOSION_CONFIG_SPAWNS_DEBRIS;
         }
         if (flag20 != 0)
         {
-            *(s16*)((char*)setup + offsetof(DimExplosionPlacement, configFlags)) |= DIM_EXPLOSION_CONFIG_HAS_LIGHT;
+            setup->configFlags |= DIM_EXPLOSION_CONFIG_HAS_LIGHT;
         }
         if (doShake != 0)
         {
@@ -2453,9 +2415,9 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     f32 workB; /* player dist-sq; reused as cross-product lane in the trail block */
     f32 workA; /* tricky dist-sq; reused as cross-product lane in the trail block */
     f32 ambientScale;
-    f32 playerRange;
-    f32 trickyRange;
     f32 attractRatio; /* attract speed ratio; reused as cross-product Z lane and trail inv-scale */
+    f32 trickyRange;
+    f32 playerRange;
     f32 dirX;
     f32 dirY;
     f32 dirZ;
@@ -3062,9 +3024,9 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                         prevDX = trailPrevX - slot->posX.value;
                         prevDY = trailPrevY - slot->posY.value;
                         prevDZ = trailPrevZ - slot->posZ.value;
-                        workA = prevDY * dirZ - prevDZ * dirY;
+                        workA = dirZ * prevDY - prevDZ * dirY;
                         workB = -(prevDX * dirZ - prevDZ * dirX);
-                        attractRatio = prevDX * dirY - prevDY * dirX;
+                        attractRatio = dirY * prevDX - prevDY * dirX;
                         normSq = attractRatio * attractRatio + (workA * workA + workB * workB);
                         if (0.0f != normSq)
                         {
@@ -3421,11 +3383,6 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
 }
 
 u8 gExpgfxRuntimeData[0x980];
-ExpgfxTableEntry gExpgfxTableEntries[0x550 / sizeof(ExpgfxTableEntry)];
-ObjAnimComponent* gExpgfxTrackedPoolSourceIds[0x50];
-u64 gExpgfxTrackedSourceFrameMasks[0xB0 / sizeof(u64)];
-u32 gExpgfxSlotActiveMasks[0x50];
-u32 gExpgfxSlotPoolBases[0x50];
 
 char sExpgfxMismatchInAddRemove[] = "expgfx.c: mismatch in add/remove in exptab\n";
 
@@ -3543,11 +3500,11 @@ int expgfx_func09(void)
 void expgfx_renderSourcePools(int sourceId, int sourceMode)
 {
     ExpgfxRuntimeDataLayout* runtime;
-    ExpgfxBounds* boundsTemplate;
+    ExpgfxPlaneOffsets* planeOffsets;
     s8* poolActiveCounts;
     u32* poolSourceIds;
     u8* poolSourceModes;
-    u8* poolBoundsTemplateIds;
+    u8* poolPlaneOffsetSetIds;
     ExpgfxBounds* poolBounds;
     u32* slotPoolBases;
     int poolIndex;
@@ -3557,7 +3514,7 @@ void expgfx_renderSourcePools(int sourceId, int sourceMode)
     poolActiveCounts = runtime->poolActiveCounts;
     poolSourceIds = runtime->poolSourceIds;
     poolSourceModes = runtime->poolSourceModes;
-    poolBoundsTemplateIds = runtime->poolBoundsTemplateIds;
+    poolPlaneOffsetSetIds = runtime->poolPlaneOffsetSetIds;
     poolBounds = runtime->poolBounds;
     slotPoolBases = runtime->slotPoolBases;
 
@@ -3566,11 +3523,11 @@ void expgfx_renderSourcePools(int sourceId, int sourceMode)
         if ((*poolActiveCounts != 0) && (*poolSourceIds == sourceId) &&
             (*poolSourceModes == sourceMode + EXPGFX_POOL_SOURCE_MODE_SOURCE_OFFSET))
         {
-            boundsTemplate = Expgfx_GetBoundsTemplate(*poolBoundsTemplateIds);
+            planeOffsets = Expgfx_GetPlaneOffsets(*poolPlaneOffsetSetIds);
             if ((u8)frustumTestAabbWithPlaneOffsets(poolBounds->minX - playerMapOffsetX,
                                                     poolBounds->maxX - playerMapOffsetX, poolBounds->minY,
                                                     poolBounds->maxY, poolBounds->minZ - playerMapOffsetZ,
-                                                    poolBounds->maxZ - playerMapOffsetZ, &boundsTemplate->minX) != 0)
+                                                    poolBounds->maxZ - playerMapOffsetZ, planeOffsets->offsets) != 0)
             {
                 drawGlow(*slotPoolBases, poolIndex);
             }
@@ -3578,7 +3535,7 @@ void expgfx_renderSourcePools(int sourceId, int sourceMode)
         poolActiveCounts++;
         poolSourceIds++;
         poolSourceModes++;
-        poolBoundsTemplateIds++;
+        poolPlaneOffsetSetIds++;
         poolBounds++;
         slotPoolBases++;
         poolIndex++;
@@ -3996,18 +3953,18 @@ static inline void renderParticlesBody(void)
     register s16* poolSlotTypeIds;
     u32* poolSourceIds;
     ExpgfxBounds* poolBounds;
-    u8* poolBoundsTemplateIds;
+    u8* poolPlaneOffsetSetIds;
     u8* poolSourceModes;
     s8* poolActiveCounts;
     ExpgfxPoolSourcePosition* sourcePosition;
-    ExpgfxBounds* boundsTemplate;
+    ExpgfxPlaneOffsets* planeOffsets;
 
     runtime = EXPGFX_RUNTIME_DATA;
     currentMatrix = Camera_GetViewMatrix();
     poolIndex = 0;
     poolActiveCounts = runtime->poolActiveCounts;
     poolSourceModes = runtime->poolSourceModes;
-    poolBoundsTemplateIds = runtime->poolBoundsTemplateIds;
+    poolPlaneOffsetSetIds = runtime->poolPlaneOffsetSetIds;
     poolBounds = runtime->poolBounds;
     poolSourceIds = runtime->poolSourceIds;
     poolSlotTypeIds = gExpgfxStaticPoolSlotTypeIds;
@@ -4016,11 +3973,11 @@ static inline void renderParticlesBody(void)
     {
         if ((*poolActiveCounts != 0) && (*poolSourceModes == EXPGFX_POOL_SOURCE_MODE_STANDALONE))
         {
-            boundsTemplate = Expgfx_GetBoundsTemplate(*poolBoundsTemplateIds);
+            planeOffsets = Expgfx_GetPlaneOffsets(*poolPlaneOffsetSetIds);
             if ((u8)frustumTestAabbWithPlaneOffsets(
                     (double)(poolBounds->minX - playerMapOffsetX), (double)(poolBounds->maxX - playerMapOffsetX),
                     (double)poolBounds->minY, (double)poolBounds->maxY, (double)(poolBounds->minZ - playerMapOffsetZ),
-                    (double)(poolBounds->maxZ - playerMapOffsetZ), &boundsTemplate->minX) != 0)
+                    (double)(poolBounds->maxZ - playerMapOffsetZ), planeOffsets->offsets) != 0)
             {
                 sourcePosition = (ExpgfxPoolSourcePosition*)*poolSourceIds;
                 if (sourcePosition != (ExpgfxPoolSourcePosition*)0x0)
@@ -4045,7 +4002,7 @@ static inline void renderParticlesBody(void)
         }
         poolActiveCounts = poolActiveCounts + 1;
         poolSourceModes = poolSourceModes + 1;
-        poolBoundsTemplateIds = poolBoundsTemplateIds + 1;
+        poolPlaneOffsetSetIds = poolPlaneOffsetSetIds + 1;
         poolBounds = poolBounds + 1;
         poolSourceIds = poolSourceIds + 1;
         poolSlotTypeIds = poolSlotTypeIds + 1;
@@ -4276,7 +4233,7 @@ void expgfx_updateFrameState(int sourceMode, int sourceId)
     return;
 }
 
-int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slotType, int boundsTemplateId)
+int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slotType, int planeOffsetSetId)
 {
     u32 behaviorFlags;
     ExpgfxSlot* slot;
@@ -4474,7 +4431,7 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
             slot->sourceVecY = config->sourceVecY;
             slot->sourceVecX = config->sourceVecX;
         }
-        slot->stateBits.bits.frameParity = *(u8*)&gExpgfxFrameParityBit;
+        slot->stateBits.bits.frameParity = gExpgfxFrameParityBit;
 
         if ((slot->renderFlags & EXPGFX_RENDER_BACKDATE_MOTION) != 0)
         {
@@ -4582,7 +4539,7 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
             {
                 runtime->poolSourceModes[modePoolIndex]++;
             }
-            runtime->poolBoundsTemplateIds[modePoolIndex] = (u8)boundsTemplateId;
+            runtime->poolPlaneOffsetSetIds[modePoolIndex] = (u8)planeOffsetSetId;
         }
 
         DCFlushRange(slot, EXPGFX_SLOT_SIZE);
@@ -4727,3 +4684,9 @@ void expgfx_initialise(void)
     memset(runtime->expTab, 0, EXPGFX_EXPTAB_BYTES);
     return;
 }
+
+u32 gExpgfxSlotPoolBases[0x50];
+u32 gExpgfxSlotActiveMasks[0x50];
+u64 gExpgfxTrackedSourceFrameMasks[0xB0 / sizeof(u64)];
+ObjAnimComponent* gExpgfxTrackedPoolSourceIds[0x50];
+ExpgfxTableEntry gExpgfxTableEntries[0x550 / sizeof(ExpgfxTableEntry)];

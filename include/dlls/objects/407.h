@@ -59,7 +59,7 @@ int dll407_getObjectTypeId(void);
 void dll407_free(GameObject* obj);
 void dll407_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void dll407_hitDetect(void);
-void dll407_update(int objectAddress);
+void dll407_update(GameObject* objectAddress);
 void dll407_init(GameObject* obj, const Dll197Placement* placement);
 void dll407_release(void);
 void dll407_initialise(void);

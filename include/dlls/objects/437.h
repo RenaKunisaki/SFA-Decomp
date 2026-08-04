@@ -12,10 +12,10 @@
 #define DLL1B5_SEQUENCE_ID_SC_BABY_LIGHTFOOT         0x27C
 #define DLL1B5_COMPLETION_GAMEBIT_SC_TOTEM_BOND      0x64C
 
-typedef int (*Dll1B5StateHandler)(GameObject* obj, int state, f32 timeDelta);
-typedef int (*Dll1B5SubstateHandler)(int obj, int state);
+typedef int (*LightfootStateHandler)(GameObject* obj, BaddieState* state, f32 timeDelta);
+typedef int (*LightfootSubstateHandler)(GameObject* obj, BaddieState* state);
 
-typedef struct Dll1B5Placement {
+typedef struct LightfootPlacement {
     ObjPlacement base;
     u8 unknown18[2];
     union {
@@ -27,9 +27,9 @@ typedef struct Dll1B5Placement {
     s8 objectFlags;
     u8 unknown29[0x30 - 0x29];
     s16 activeGameBit;
-} Dll1B5Placement;
+} LightfootPlacement;
 
-typedef struct Dll1B5ControlState {
+typedef struct LightfootControlState {
     const s16* moveIds;
     const f32* moveSpeeds;
     f32 completionTimer;
@@ -48,9 +48,9 @@ typedef struct Dll1B5ControlState {
     u8 unknown2D;
     u8 challengeCompletePending;
     u8 unknown2F;
-} Dll1B5ControlState;
+} LightfootControlState;
 
-typedef struct Dll1B5ButtonTimingControlState {
+typedef struct LightfootButtonTimingControlState {
     u8 unknown00[0x18];
     u16 phase;
     u16 previousPhase2;
@@ -59,72 +59,72 @@ typedef struct Dll1B5ButtonTimingControlState {
     u16 animationIndex;
     u8 unknown26[0x2D - 0x26];
     u8 difficulty;
-} Dll1B5ButtonTimingControlState;
+} LightfootButtonTimingControlState;
 
-typedef struct Dll1B5State {
+typedef struct LightfootState {
     GroundBaddieState groundBaddie;
     u8 unknown410[0x440 - 0x410];
-} Dll1B5State;
+} LightfootState;
 
-STATIC_ASSERT(offsetof(Dll1B5Placement, base) == 0x00);
-STATIC_ASSERT(offsetof(Dll1B5Placement, behaviorId) == 0x1A);
-STATIC_ASSERT(offsetof(Dll1B5Placement, completionGameBit) == 0x1A);
-STATIC_ASSERT(offsetof(Dll1B5Placement, eventGameBit) == 0x1C);
-STATIC_ASSERT(offsetof(Dll1B5Placement, objectFlags) == 0x28);
-STATIC_ASSERT(offsetof(Dll1B5Placement, activeGameBit) == 0x30);
+STATIC_ASSERT(offsetof(LightfootPlacement, base) == 0x00);
+STATIC_ASSERT(offsetof(LightfootPlacement, behaviorId) == 0x1A);
+STATIC_ASSERT(offsetof(LightfootPlacement, completionGameBit) == 0x1A);
+STATIC_ASSERT(offsetof(LightfootPlacement, eventGameBit) == 0x1C);
+STATIC_ASSERT(offsetof(LightfootPlacement, objectFlags) == 0x28);
+STATIC_ASSERT(offsetof(LightfootPlacement, activeGameBit) == 0x30);
 
-STATIC_ASSERT(offsetof(Dll1B5ControlState, moveIds) == 0x00);
-STATIC_ASSERT(offsetof(Dll1B5ControlState, moveSpeeds) == 0x04);
-STATIC_ASSERT(offsetof(Dll1B5ControlState, completionTimer) == 0x08);
-STATIC_ASSERT(offsetof(Dll1B5ControlState, pulseTimer) == 0x0C);
-STATIC_ASSERT(offsetof(Dll1B5ControlState, lifeTimer) == 0x10);
-STATIC_ASSERT(offsetof(Dll1B5ControlState, wanderTimer) == 0x14);
-STATIC_ASSERT(offsetof(Dll1B5ControlState, targetSector) == 0x1E);
-STATIC_ASSERT(offsetof(Dll1B5ControlState, targetYawDelta) == 0x20);
-STATIC_ASSERT(offsetof(Dll1B5ControlState, targetDistance) == 0x22);
-STATIC_ASSERT(offsetof(Dll1B5ControlState, moveIndex) == 0x24);
-STATIC_ASSERT(offsetof(Dll1B5ControlState, weaponDefNoSentinel) == 0x26);
-STATIC_ASSERT(offsetof(Dll1B5ControlState, weaponDefNo) == 0x28);
-STATIC_ASSERT(offsetof(Dll1B5ControlState, movementSfxId) == 0x2A);
-STATIC_ASSERT(offsetof(Dll1B5ControlState, challengeCompletePending) == 0x2E);
-STATIC_ASSERT(sizeof(Dll1B5ControlState) == 0x30);
-STATIC_ASSERT(offsetof(Dll1B5ControlState, completionCountdown) == 0x2C);
+STATIC_ASSERT(offsetof(LightfootControlState, moveIds) == 0x00);
+STATIC_ASSERT(offsetof(LightfootControlState, moveSpeeds) == 0x04);
+STATIC_ASSERT(offsetof(LightfootControlState, completionTimer) == 0x08);
+STATIC_ASSERT(offsetof(LightfootControlState, pulseTimer) == 0x0C);
+STATIC_ASSERT(offsetof(LightfootControlState, lifeTimer) == 0x10);
+STATIC_ASSERT(offsetof(LightfootControlState, wanderTimer) == 0x14);
+STATIC_ASSERT(offsetof(LightfootControlState, targetSector) == 0x1E);
+STATIC_ASSERT(offsetof(LightfootControlState, targetYawDelta) == 0x20);
+STATIC_ASSERT(offsetof(LightfootControlState, targetDistance) == 0x22);
+STATIC_ASSERT(offsetof(LightfootControlState, moveIndex) == 0x24);
+STATIC_ASSERT(offsetof(LightfootControlState, weaponDefNoSentinel) == 0x26);
+STATIC_ASSERT(offsetof(LightfootControlState, weaponDefNo) == 0x28);
+STATIC_ASSERT(offsetof(LightfootControlState, movementSfxId) == 0x2A);
+STATIC_ASSERT(offsetof(LightfootControlState, challengeCompletePending) == 0x2E);
+STATIC_ASSERT(sizeof(LightfootControlState) == 0x30);
+STATIC_ASSERT(offsetof(LightfootControlState, completionCountdown) == 0x2C);
 
-STATIC_ASSERT(offsetof(Dll1B5ButtonTimingControlState, phase) == 0x18);
-STATIC_ASSERT(offsetof(Dll1B5ButtonTimingControlState, previousPhase2) == 0x1A);
-STATIC_ASSERT(offsetof(Dll1B5ButtonTimingControlState, previousPhase) == 0x1C);
-STATIC_ASSERT(offsetof(Dll1B5ButtonTimingControlState, animationIndex) == 0x24);
-STATIC_ASSERT(offsetof(Dll1B5ButtonTimingControlState, difficulty) == 0x2D);
+STATIC_ASSERT(offsetof(LightfootButtonTimingControlState, phase) == 0x18);
+STATIC_ASSERT(offsetof(LightfootButtonTimingControlState, previousPhase2) == 0x1A);
+STATIC_ASSERT(offsetof(LightfootButtonTimingControlState, previousPhase) == 0x1C);
+STATIC_ASSERT(offsetof(LightfootButtonTimingControlState, animationIndex) == 0x24);
+STATIC_ASSERT(offsetof(LightfootButtonTimingControlState, difficulty) == 0x2D);
 
-STATIC_ASSERT(sizeof(Dll1B5State) == 0x440);
-STATIC_ASSERT(offsetof(Dll1B5State, groundBaddie) == 0x000);
-STATIC_ASSERT(offsetof(Dll1B5State, unknown410) == 0x410);
+STATIC_ASSERT(sizeof(LightfootState) == 0x440);
+STATIC_ASSERT(offsetof(LightfootState, groundBaddie) == 0x000);
+STATIC_ASSERT(offsetof(LightfootState, unknown410) == 0x410);
 
-extern Dll1B5StateHandler gDll1B5StateHandlers[DLL1B5_STATE_HANDLER_COUNT];
-extern Dll1B5SubstateHandler gDll1B5SubstateHandlers[DLL1B5_SUBSTATE_HANDLER_COUNT];
+extern LightfootStateHandler gLightfootStateHandlers[DLL1B5_STATE_HANDLER_COUNT];
+extern LightfootSubstateHandler gLightfootSubstateHandlers[DLL1B5_SUBSTATE_HANDLER_COUNT];
 
-extern s16 gDll1B5MoveIds0[2];
-extern f32 gDll1B5MoveSpeeds0[2];
-extern s16 gDll1B5MoveIds1[2];
-extern f32 gDll1B5MoveSpeeds1[2];
-extern s16 gDll1B5MoveIds2[2];
-extern f32 gDll1B5MoveSpeeds2[2];
-extern s16 gDll1B5MoveIds3[2];
-extern f32 gDll1B5MoveSpeeds3[2];
-extern s16 gDll1B5MoveIds4[2];
-extern f32 gDll1B5MoveSpeeds4[2];
+extern s16 gLightfootMoveIds0[2];
+extern f32 gLightfootMoveSpeeds0[2];
+extern s16 gLightfootMoveIds1[2];
+extern f32 gLightfootMoveSpeeds1[2];
+extern s16 gLightfootMoveIds2[2];
+extern f32 gLightfootMoveSpeeds2[2];
+extern s16 gLightfootMoveIds3[2];
+extern f32 gLightfootMoveSpeeds3[2];
+extern s16 gLightfootMoveIds4[2];
+extern f32 gLightfootMoveSpeeds4[2];
 
 
-int dll437_getExtraSize(void);
-int dll437_getObjectTypeId(void);
-void dll437_free(GameObject* obj, int preserveChildren);
-void dll437_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
-void dll437_hitDetect(void);
-void dll437_update(GameObject* obj);
-void dll437_init(GameObject* obj, const Dll1B5Placement* placement, int isReload);
-void dll437_release(void);
-void dll437_initialise(void);
+int Lightfoot_getExtraSize(void);
+int Lightfoot_getObjectTypeId(void);
+void Lightfoot_free(GameObject* obj, int preserveChildren);
+void Lightfoot_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
+void Lightfoot_hitDetect(void);
+void Lightfoot_update(GameObject* obj);
+void Lightfoot_init(GameObject* obj, const LightfootPlacement* placement, int isReload);
+void Lightfoot_release(void);
+void Lightfoot_initialise(void);
 
-extern ObjectDescriptor gDll1B5ObjDescriptor;
+extern ObjectDescriptor gLightfootObjDescriptor;
 
 #endif /* DLLS_OBJECTS_437_H_ */

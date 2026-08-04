@@ -156,7 +156,7 @@ void explosion_free(GameObject* obj);
 void explosion_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void explosion_hitDetect(void);
 void explosion_update(GameObject* obj);
-void explosion_init(GameObject* obj, int placementAddress);
+void explosion_init(GameObject* obj, DimExplosionPlacement* placementAddress);
 void explosion_release(u32 unused);
 void explosion_initialise(void);
 

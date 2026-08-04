@@ -42,28 +42,27 @@
 #define KALDACHOMPSPIT_GRAVITY                    0.07f
 #define KALDACHOMPSPIT_ALPHA_FADE_RATE            4.0f
 
-ObjectDescriptor gKaldaChompSpitObjDescriptor = {
+ObjectDescriptor gKaldachomSpObjDescriptor = {
     0,
     0,
     0,
     OBJECT_DESCRIPTOR_FLAGS_10_SLOTS,
-    (ObjectDescriptorCallback)KaldaChompSpit_initialise,
-    (ObjectDescriptorCallback)KaldaChompSpit_release,
+    (ObjectDescriptorCallback)KaldachomSpit_initialise,
+    (ObjectDescriptorCallback)KaldachomSpit_release,
     0,
-    (ObjectDescriptorCallback)KaldaChompSpit_init,
-    (ObjectDescriptorCallback)KaldaChompSpit_update,
-    (ObjectDescriptorCallback)KaldaChompSpit_hitDetect,
-    (ObjectDescriptorCallback)KaldaChompSpit_render,
-    (ObjectDescriptorCallback)KaldaChompSpit_free,
-    (ObjectDescriptorCallback)KaldaChompSpit_getObjectTypeId,
-    KaldaChompSpit_getExtraSize,
+    (ObjectDescriptorCallback)KaldachomSpit_init,
+    (ObjectDescriptorCallback)KaldachomSpit_update,
+    (ObjectDescriptorCallback)KaldachomSpit_hitDetect,
+    (ObjectDescriptorCallback)KaldachomSpit_render,
+    (ObjectDescriptorCallback)KaldachomSpit_free,
+    (ObjectDescriptorCallback)KaldachomSpit_getObjectTypeId,
+    KaldachomSpit_getExtraSize,
 };
 
-void kaldachompspit_burst(GameObject* obj);
 
-void kaldachompspit_burst(GameObject* obj) {
+void kaldachomspit_burst(GameObject* obj) {
     int i;
-    KaldaChompSpitState* state;
+    KaldachomSpitState* state;
     ObjHitsPriorityState* hitState;
     u8 randomVariant;
 
@@ -88,24 +87,24 @@ void kaldachompspit_burst(GameObject* obj) {
     }
 }
 
-int KaldaChompSpit_getExtraSize(void) {
-    return sizeof(KaldaChompSpitState);
+int KaldachomSpit_getExtraSize(void) {
+    return sizeof(KaldachomSpitState);
 }
 
-int KaldaChompSpit_getObjectTypeId(void) {
+int KaldachomSpit_getObjectTypeId(void) {
     return 0;
 }
 
-void KaldaChompSpit_free(GameObject* obj) {
-    KaldaChompSpitState* state = obj->extra;
+void KaldachomSpit_free(GameObject* obj) {
+    KaldachomSpitState* state = obj->extra;
     ModelLightStruct* light = state->light;
     if (light != NULL) {
         ModelLightStruct_free(light);
     }
 }
 
-void KaldaChompSpit_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
-    KaldaChompSpitState* state = obj->extra;
+void KaldachomSpit_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5, s8 visible) {
+    KaldachomSpitState* state = obj->extra;
     ModelLightStruct* light = state->light;
     if (light != NULL && light->glowType != 0 && light->enabled != 0) {
         queueGlowRender(light);
@@ -115,13 +114,13 @@ void KaldaChompSpit_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg
     }
 }
 
-void KaldaChompSpit_hitDetect(GameObject* obj) {
+void KaldachomSpit_hitDetect(GameObject* obj) {
     (void)obj;
 }
 
-void KaldaChompSpit_update(GameObject* obj) {
+void KaldachomSpit_update(GameObject* obj) {
     ObjAnimComponent* objAnim;
-    KaldaChompSpitState* state;
+    KaldachomSpitState* state;
     f32 moveX;
     ModelLightStruct* light;
     int alphaJitter;
@@ -163,17 +162,17 @@ void KaldaChompSpit_update(GameObject* obj) {
         ObjHits_EnableObject(obj);
         if (((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject != 0) {
             if (obj->userData1 < KALDACHOMPSPIT_GENERAL_HIT_BURST_LIFETIME) {
-                kaldachompspit_burst(obj);
+                kaldachomspit_burst(obj);
                 return;
             }
             if ((((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject == (u32)Obj_GetPlayerObject()) ||
                 (((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject == (u32)getTrickyObject())) {
-                kaldachompspit_burst(obj);
+                kaldachomspit_burst(obj);
                 return;
             }
         }
         if (((ObjHitsPriorityState*)obj->anim.hitReactState)->contactFlags != 0) {
-            kaldachompspit_burst(obj);
+            kaldachomspit_burst(obj);
         } else {
             if (obj->anim.romDefNo == KALDACHOMPSPIT_SEQUENCE_ID_EXPLOSIVE) {
                 objfx_spawnPulseBurst((void*)obj, 1.0f, 1, 0, 0, NULL);
@@ -201,8 +200,8 @@ void KaldaChompSpit_update(GameObject* obj) {
     }
 }
 
-void KaldaChompSpit_init(GameObject* obj) {
-    KaldaChompSpitState* state;
+void KaldachomSpit_init(GameObject* obj) {
+    KaldachomSpitState* state;
 
     state = obj->extra;
     obj->userData1 = KALDACHOMPSPIT_INITIAL_LIFETIME;
@@ -243,8 +242,8 @@ void KaldaChompSpit_init(GameObject* obj) {
     }
 }
 
-void KaldaChompSpit_release(void) {
+void KaldachomSpit_release(void) {
 }
 
-void KaldaChompSpit_initialise(void) {
+void KaldachomSpit_initialise(void) {
 }

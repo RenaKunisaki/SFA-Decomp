@@ -68,26 +68,26 @@ typedef struct DIMbossTopState {
 
 typedef struct DIMbossAnimHandlerTable {
     int (*selectTargetControlMode)(GameObject* obj);
-    int (*returnToIdleWhenDone)(int obj, int state);
+    int (*returnToIdleWhenDone)(GameObject* obj, BaddieState* state);
     int (*hasMoveDone)(int unused, int* state);
-    int (*finishDefeat)(GameObject* obj, int state);
-    int (*updatePlayerHitReaction)(GameObject* obj, int state);
-    int (*updateBossHitReaction)(int obj, int state);
+    int (*finishDefeat)(GameObject* obj, BaddieState* state);
+    int (*updatePlayerHitReaction)(GameObject* obj, BaddieState* state);
+    int (*updateBossHitReaction)(GameObject* obj, BaddieState* state);
 } DIMbossAnimHandlerTable;
 
 typedef struct DIMbossHitDetectAnimHandlerTable {
     int (*resetIdleMove)(GameObject* obj, u8* state);
     int (*applyForwardMove)(int* obj, u8* state, f32 weight);
-    int (*trackTargetMove)(GameObject* obj, int state, f32 weight);
-    int (*randomSwipe)(GameObject* obj, int state, f32 weight);
-    int (*blueWhiteEventCapture)(GameObject* obj, int state, f32 weight);
-    int (*blueWhiteCapture)(GameObject* obj, int state, f32 weight);
-    int (*breathBurst)(GameObject* obj, int state, f32 weight);
-    int (*lungeAttack)(GameObject* obj, int state, f32 weight);
-    int (*chooseIdleTaunt)(GameObject* obj, int state);
-    int (*liftImpact)(int obj, int state);
-    int (*liftSlam)(GameObject* obj, int state);
-    int (*tonsilSlam)(GameObject* obj, int state);
+    int (*trackTargetMove)(GameObject* obj, BaddieState* state, f32 weight);
+    int (*randomSwipe)(GameObject* obj, BaddieState* state, f32 weight);
+    int (*blueWhiteEventCapture)(GameObject* obj, BaddieState* state, f32 weight);
+    int (*blueWhiteCapture)(GameObject* obj, BaddieState* state, f32 weight);
+    int (*breathBurst)(GameObject* obj, BaddieState* state, f32 weight);
+    int (*lungeAttack)(GameObject* obj, BaddieState* state, f32 weight);
+    int (*chooseIdleTaunt)(GameObject* obj, BaddieState* state);
+    int (*liftImpact)(GameObject* obj, BaddieState* state);
+    int (*liftSlam)(GameObject* obj, BaddieState* state);
+    int (*tonsilSlam)(GameObject* obj, BaddieState* state);
 } DIMbossHitDetectAnimHandlerTable;
 
 /*
@@ -199,32 +199,32 @@ STATIC_ASSERT(offsetof(DIMbossPlacementView, base) == 0x00);
 STATIC_ASSERT(offsetof(DIMbossPlacementView, eventId) == 0x2C);
 STATIC_ASSERT(offsetof(DIMbossPlacementView, animObjectId) == 0x2E);
 
-int DIMbossAnim_updateBossHitReaction(int obj, int state);
-int DIMbossAnim_updatePlayerHitReaction(GameObject* obj, int state);
-int DIMbossAnim_finishDefeat(GameObject* obj, int state);
+int DIMbossAnim_updateBossHitReaction(GameObject* obj, BaddieState* state);
+int DIMbossAnim_updatePlayerHitReaction(GameObject* obj, BaddieState* state);
+int DIMbossAnim_finishDefeat(GameObject* obj, BaddieState* state);
 int DIMbossAnim_hasMoveDone(int unused, int* state);
-int DIMbossAnim_returnToIdleWhenDone(int obj, int state);
+int DIMbossAnim_returnToIdleWhenDone(GameObject* obj, BaddieState* state);
 int DIMbossAnim_selectTargetControlMode(GameObject* obj);
 
-int DIMbossHitDetect_tonsilSlam(GameObject* obj, int state);
-int DIMbossHitDetect_liftSlam(GameObject* obj, int state);
-int DIMbossHitDetect_liftImpact(int obj, int state);
-int DIMbossHitDetect_chooseIdleTaunt(GameObject* obj, int state);
-int DIMbossHitDetect_lungeAttack(GameObject* obj, int state, f32 weight);
-int DIMbossHitDetect_breathBurst(GameObject* obj, int state, f32 weight);
-int DIMbossHitDetect_blueWhiteCapture(GameObject* obj, int state, f32 weight);
-int DIMbossHitDetect_blueWhiteEventCapture(GameObject* obj, int state, f32 weight);
-int DIMbossHitDetect_randomSwipe(GameObject* obj, int state, f32 weight);
-int DIMbossHitDetect_trackTargetMove(GameObject* obj, int state, f32 weight);
+int DIMbossHitDetect_tonsilSlam(GameObject* obj, BaddieState* state);
+int DIMbossHitDetect_liftSlam(GameObject* obj, BaddieState* state);
+int DIMbossHitDetect_liftImpact(GameObject* obj, BaddieState* state);
+int DIMbossHitDetect_chooseIdleTaunt(GameObject* obj, BaddieState* state);
+int DIMbossHitDetect_lungeAttack(GameObject* obj, BaddieState* state, f32 weight);
+int DIMbossHitDetect_breathBurst(GameObject* obj, BaddieState* state, f32 weight);
+int DIMbossHitDetect_blueWhiteCapture(GameObject* obj, BaddieState* state, f32 weight);
+int DIMbossHitDetect_blueWhiteEventCapture(GameObject* obj, BaddieState* state, f32 weight);
+int DIMbossHitDetect_randomSwipe(GameObject* obj, BaddieState* state, f32 weight);
+int DIMbossHitDetect_trackTargetMove(GameObject* obj, BaddieState* state, f32 weight);
 int DIMbossHitDetect_applyForwardMove(int* obj, u8* state, f32 weight);
 int DIMbossHitDetect_resetIdleMove(GameObject* obj, u8* state);
 
-void DIM2icicle_spawnBlueWhiteEffect(DIMbossEffectMarker* source, f32* velocity);
-void DIM2icicle_createStateLight(GameObject* obj, u8 isGreen);
-void DIM2icicle_updateBossSequenceEffects(GameObject* obj, DIMbossRuntime* runtime);
-void DIM2icicle_updateDarkIceMinesWarpAndEffects(GameObject* obj, DIMbossRuntime* runtime);
-void DIM2icicle_updateHitResponse(GameObject* obj, BaddieState* playerState);
-void DIM2icicle_updateCombatState(GameObject* obj, ObjSeqState* animUpdate, DIMbossRuntime* runtime,
+void DIMboss_spawnBlueWhiteEffect(DIMbossEffectMarker* source, f32* velocity);
+void DIMboss_createStateLight(GameObject* obj, u8 isGreen);
+void DIMboss_updateSequenceEffects(GameObject* obj, DIMbossRuntime* runtime);
+void DIMboss_updateWarpAndEffects(GameObject* obj, DIMbossRuntime* runtime);
+void DIMboss_updateHitResponse(GameObject* obj, BaddieState* playerState);
+void DIMboss_updateCombatState(GameObject* obj, ObjSeqState* animUpdate, DIMbossRuntime* runtime,
                                   DIMbossRuntime* updateRuntime);
 
 int DIMboss_updateState(GameObject* obj, u32 state, ObjSeqState* animUpdate);
@@ -246,7 +246,7 @@ extern DIMbossAnimHandlerTable gDIMbossAnimTable;
 extern DIMbossHitDetectAnimHandlerTable gDIMbossHitDetectAnimTable;
 extern MoveLibState gDIMbossAnimController;
 extern f32 gDIMbossAnimScratchBase[3];
-extern DIMbossEffectMarker gDim2IcicleHitFxBuffer;
-extern PartFxSpawnParams gDim2IcicleDustFxSource;
+extern DIMbossEffectMarker gDIMbossHitFxBuffer;
+extern PartFxSpawnParams gDIMbossDustFxSource;
 
 #endif /* DLLS_OBJECTS_480_DIM_BOSS_H_ */

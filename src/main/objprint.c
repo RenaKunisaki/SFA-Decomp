@@ -369,7 +369,6 @@ void objSoundStartTimed(GameObject* obj, ObjSoundState* state, u16 sfx, int pitc
 
 int gObjLookAtJointKeys[10] = {0, 0xb, 0xc, 0xd, 0xe, 0xf, 0x10, 0x11, 0x12, 0x13};
 
-int* objGetLookAtJointKeys(void);
 int* objGetLookAtJointKeys(void) {
     return gObjLookAtJointKeys;
 }
@@ -396,7 +395,6 @@ ObjTextureRuntimeSlot* objFindTexture(GameObject* obj, int target, int unusedMat
     return result;
 }
 
-void objGetJointWorldPosition(GameObject* obj, int key, f32* outPosition);
 void objGetJointWorldPosition(GameObject* obj, int key, f32* outPosition) {
     int* table;
     int i;
@@ -424,7 +422,6 @@ void objGetJointWorldPosition(GameObject* obj, int key, f32* outPosition) {
     outPosition[2] += playerMapOffsetZ;
 }
 
-s16* objFindJointPoseVector(GameObject* obj, int key);
 s16* objFindJointPoseVector(GameObject* obj, int key) {
     int vecOffset;
     int jointData;
@@ -441,7 +438,7 @@ s16* objFindJointPoseVector(GameObject* obj, int key) {
         vecOffset = 0;
         count = OBJPRINT_JOINT_COUNT(modelDef);
         for (i = 0; i < count; i++) {
-            jointData = *(int*)&((ObjDef*)modelDef)->jointData;
+            jointData = (int)((ObjDef*)modelDef)->jointData;
             if ((int)*(u8*)(jointData + OBJPRINT_ACTIVE_BANK_INDEX(obj) + entryIdx + 1) != 0xff &&
                 (s32) * (u8*)(jointData + entryIdx) == key) {
                 result = (s16*)((char*)(obj)->anim.jointPoseData + vecOffset);
@@ -452,8 +449,6 @@ s16* objFindJointPoseVector(GameObject* obj, int key) {
     }
     return result;
 }
-
-void characterDoEyeMovements(GameObject* obj, CharacterEyeAnimState* state, f32 unused);
 
 void characterDoEyeMovements(GameObject* obj, CharacterEyeAnimState* state, f32 unused) {
     ObjTextureRuntimeSlot* foundA;
@@ -753,7 +748,6 @@ static void characterHeadLookIdle(GameObject* obj, CharacterEyeAnimState* curve,
     }
 }
 
-void characterHeadLookRelax(GameObject* obj, void* state);
 void characterHeadLookRelax(GameObject* obj, void* state) {
     s16* found;
 
@@ -852,7 +846,7 @@ s16 objJointTracksAimAtTarget(GameObject* obj, GameObject* target, f32* pos, u8*
             iv[1] = (int)found[0];
             n = ((ObjDef*)m[0])->jointCount;
             for (j = 0; j < n; j++) {
-                int entries = *(int*)&((ObjDef*)m[0])->jointData;
+                int entries = (int)((ObjDef*)m[0])->jointData;
                 if ((int)*(u8*)(entries + OBJPRINT_ACTIVE_BANK_INDEX(go) + iv[0] + 1) != 0xff &&
                     key == (int)*(u8*)(entries + iv[0])) {
                     found[0] = (s16*)((int)go->anim.jointPoseData + iv[1]);
@@ -929,7 +923,6 @@ s16 objJointTracksAimAtTarget(GameObject* obj, GameObject* target, f32* pos, u8*
     return src[0];
 }
 
-int characterTrackJointList(GameObject* objArg, int* keyList, int countArg, u8* p4Arg);
 int characterTrackJointList(GameObject* objArg, int* keyList, int countArg, u8* p4Arg) {
     int* keys;
     int i;
@@ -956,7 +949,6 @@ int characterTrackJointList(GameObject* objArg, int* keyList, int countArg, u8* 
     return (count * 2 - total) == 0;
 }
 
-void objJointTracksSetAngles(u8* channelData, int count, s16 yaw, s16 pitch);
 void objJointTracksSetAngles(u8* channelData, int count, s16 yaw, s16 pitch) {
     ObjJointTrackPair* tracks = (ObjJointTrackPair*)channelData;
 
@@ -970,7 +962,6 @@ void objJointTracksSetAngles(u8* channelData, int count, s16 yaw, s16 pitch) {
 
 void characterDoEyeMovements(GameObject* obj, CharacterEyeAnimState* state, f32 unused);
 
-void objModelClearJointVectors(GameObject* obj);
 void objModelClearJointVectors(GameObject* obj) {
     s16* found;
     int slot;
@@ -985,7 +976,6 @@ void objModelClearJointVectors(GameObject* obj) {
     }
 }
 
-void characterClampJointVecs(GameObject* obj, int* keys, int count, int lo, int hi);
 void characterClampJointVecs(GameObject* obj, int* keys, int count, int lo, int hi) {
     s16* found;
     int idx;
@@ -1020,7 +1010,6 @@ void characterClampJointVecs(GameObject* obj, int* keys, int count, int lo, int 
     }
 }
 
-void characterDecayJointVecs(GameObject* obj, int* keys, int count);
 void characterDecayJointVecs(GameObject* obj, int* keys, int count) {
     s16* found;
     int idx;
@@ -1036,7 +1025,6 @@ void characterDecayJointVecs(GameObject* obj, int* keys, int count) {
     }
 }
 
-void objJointTracksCaptureCurrentAngles(GameObject* obj, int* keys, int count, u8* out);
 void objJointTracksCaptureCurrentAngles(GameObject* obj, int* keys, int count, u8* out) {
     s16* found;
     int idx;
@@ -1068,7 +1056,7 @@ void characterAimHeadAtTarget(GameObject* obj, void* tgt, void* p3, int a, u8 in
         iv[1] = (int)found[0];
         n = ((ObjDef*)m[0])->jointCount;
         for (j = 0; j < n; j++) {
-            int entries = *(int*)&((ObjDef*)m[0])->jointData;
+            int entries = (int)((ObjDef*)m[0])->jointData;
             if ((int)*(u8*)(entries + OBJPRINT_ACTIVE_BANK_INDEX(obj) + iv[0] + 1) != 0xff &&
                 (int)*(u8*)(entries + iv[0]) == 0) {
                 found[0] = (s16*)((char*)(obj)->anim.jointPoseData + iv[1]);
@@ -1264,7 +1252,6 @@ void characterHeadLookCalm(GameObject* obj, s16* state, f32 value) {
     }
 }
 
-void objSetGlowColor(int red, int green, int blue, u8 alpha);
 void objSetGlowColor(int red, int green, int blue, u8 alpha) {
     gObjGlowColorRed = red;
     gObjGlowColorGreen = green;
@@ -1273,7 +1260,6 @@ void objSetGlowColor(int red, int green, int blue, u8 alpha) {
     gObjGlowColorAlpha = alpha;
 }
 
-void objSetColorFilter(s16 a, s16 b, s16 c);
 void objSetColorFilter(s16 a, s16 b, s16 c) {
     gObjColorFilterRed = a;
     gObjColorFilterGreen = b;
@@ -1283,7 +1269,6 @@ void objSetColorFilter(s16 a, s16 b, s16 c) {
 
 #define OBJPRINT_ATTACH_POINTS(staff) ((char*)OBJPRINT_MODEL_INSTANCE(staff)->attachPoints)
 
-void staffUpdateSegmentTransforms(int staffArg, GameObject* objArg, int modelArg, int a, int b, int c);
 void staffUpdateSegmentTransforms(int staffArg, GameObject* objArg, int modelArg, int a, int b, int c) {
     f32 va[3];
     Vec vb;
@@ -1370,7 +1355,7 @@ void staffUpdateSegmentTransforms(int staffArg, GameObject* objArg, int modelArg
 }
 
 void objRenderShadowIfVisible(GameObject* obj, int wpad0, int wpad1, int wpad2, int wpad3, int wpad4) {
-    void** arr = *(void***)&(obj)->anim.banks;
+    void** arr = (void*)(obj)->anim.banks;
     s8 idx = (obj)->anim.bankIndex;
     if (arr[idx] != NULL) {
         objRenderShadow(obj);
@@ -1388,7 +1373,6 @@ void objRenderModelAndHitVolumes(GameObject* obj, int p2, int p3, int p4, int p5
     }
 }
 
-void objSetModelMatrixOverride(f32* matrix);
 void objSetModelMatrixOverride(f32* matrix) {
     gObjModelMatrixOverride = matrix;
 }
@@ -1405,14 +1389,14 @@ void objRender(int a, int b, int c, int d, GameObject* obj, int flag) {
     if ((obj->anim.flags & OBJANIM_FLAG_HIDDEN) != 0) {
         return;
     }
-    sub = *(void**)&obj->anim.parent;
+    sub = (void*)obj->anim.parent;
     if (sub != NULL && (((GameObject*)sub)->anim.flags & OBJANIM_FLAG_HIDDEN) != 0) {
         return;
     }
 
     doNothing_beforeRenderObject(4);
     obj->objectFlags |= OBJECT_OBJFLAG_RENDERED;
-    sub = *(void**)&obj->anim.dll;
+    sub = (void*)obj->anim.dll;
     if (sub != NULL) {
         if ((obj->objectFlags & OBJECT_OBJFLAG_HIDDEN) == 0) {
             vfn = *(void (**)(int, int, int, int, int, int))(*(int*)sub + 0x10);
@@ -1443,19 +1427,18 @@ void objRender(int a, int b, int c, int d, GameObject* obj, int flag) {
     }
     doNothing_afterRenderObject();
     for (i = 0, walk = (int)obj; i < (s32)(u32)obj->childCount; i++) {
-        int staff = *(int*)&((GameObject*)walk)->childObjs[0];
+        int staff = (int)((GameObject*)walk)->childObjs[0];
         if (((GameObject*)staff)->anim.classId == 0x2d) {
             staffUpdateSegmentTransforms(staff, obj, (int)OBJPRINT_ACTIVE_BANK(staff), a, b, c);
         }
         walk += 4;
     }
 }
-int objGetAlphaCompareThreshold(void);
+
 int objGetAlphaCompareThreshold(void) {
     return gObjAlphaCompareThreshold;
 }
 
-void objSetAlphaCompareThreshold(u8 x);
 void objSetAlphaCompareThreshold(u8 x) {
     gObjAlphaCompareThreshold = x;
 }

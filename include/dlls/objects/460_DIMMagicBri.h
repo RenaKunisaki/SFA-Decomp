@@ -54,12 +54,12 @@ STATIC_ASSERT(offsetof(DimMagicBridgeState, unknown66) == 0x66);
 STATIC_ASSERT(sizeof(DimMagicBridgeState) == 0x68);
 
 void dimmagicbridge_updateVertexWave(GameObject* obj, u8* stateBytes);
-void dimmagicbridge_scrollTextureChannels(int obj, u8* stateBytes);
+void dimmagicbridge_scrollTextureChannels(GameObject* obj, u8* stateBytes);
 int dimmagicbridge_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate);
 int dimmagicbridge_getExtraSize(void);
 int dimmagicbridge_getObjectTypeId(void);
 void dimmagicbridge_free(void);
-void dimmagicbridge_render(int obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
+void dimmagicbridge_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void dimmagicbridge_hitDetect(void);
 void dimmagicbridge_update(GameObject* obj);
 void dimmagicbridge_init(GameObject* obj, const DimMagicBridgePlacement* placement);

@@ -43,7 +43,5 @@ int Obj_UpdateLightningCluster(GameObject* obj, LightningEffect** entries, int c
 void Obj_SmoothTurnAnglesTowardVelocity(GameObject* obj, const Vec3f* velocity, int turnFrames, f32 rollFactor,
                                         f32 pitchFactor);
 int Obj_PredictInterceptPoint(GameObject* obj, f32 dt, const Vec3f* targetPos, Vec3f* outPos);
-int voxmaps_traceWorldLine(void* startPos, void* endPos);
-void voxmaps_traceScaledVectorEnd(f32* out, void* origin, f32* dir, f32 scale);
 
 #endif

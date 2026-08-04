@@ -1,3 +1,3 @@
-#include "dlls/objects/337_CFScalesGal.h"
+#include "global.h"
 
-u32 gCFScalesGalNullResourceDescriptor[CFSCALESGAL_NULL_DESCRIPTOR_WORD_COUNT] = {0};
+u32 gCFScalesGalNullResourceDescriptor[2] = {0};

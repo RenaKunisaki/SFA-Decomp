@@ -83,8 +83,6 @@ extern int gTexIndMtxTable[];
 extern u8 gLightmapDrawQueue[];
 #define FRUSTUM_PLANE_COUNT 5
 u8 gRcpPendingWarpDest[0x10];
-FrustumPlane gViewFrustumPlanes[FRUSTUM_PLANE_COUNT];
-FrustumPlane gPlayerRelativeFrustumPlanes[FRUSTUM_PLANE_COUNT];
 extern GXColor gTexShaderFogColor;
 extern GXColor gTexLightmapFogColor;
 
@@ -1431,7 +1429,6 @@ void trackUnpackVector(s16* in, f32* out)
 /* trackBuildModelTriangles -- gather model triangles overlapping a swept bbox into the
  * hit-detect triangle buffer at cur (0x4c-byte records); returns advanced
  * cursor. */
-u32 trackGetPackedSurfaceType(int* obj);
 
 u32 trackGetPackedSurfaceType(int* obj)
 {
@@ -1737,7 +1734,7 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
                     outA[0] = ((TrackTriangle*)triBuf + j)->planeN[0];
                     outA[1] = ((TrackTriangle*)triBuf + j)->planeN[1];
                     outA[2] = ((TrackTriangle*)triBuf + j)->planeN[2];
-                    *(u8*)((char*)outA + 0x10) = *(u8*)&((TrackTriangle*)triBuf + j)->flags;
+                    *(u8*)((char*)outA + 0x10) = ((TrackTriangle*)triBuf + j)->flags;
                     vertsOut += 0x24;
                     total += 3;
                     outA = (f32*)((char*)outA + 0x14);
@@ -1786,7 +1783,7 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
                     outA[0] = ((TrackTriangle*)triBuf + j)->planeN[0];
                     outA[1] = ((TrackTriangle*)triBuf + j)->planeN[1];
                     outA[2] = ((TrackTriangle*)triBuf + j)->planeN[2];
-                    *(u8*)((char*)outA + 0x10) = *(u8*)&((TrackTriangle*)triBuf + j)->flags;
+                    *(u8*)((char*)outA + 0x10) = ((TrackTriangle*)triBuf + j)->flags;
                     vertsOut += 0x24;
                     total += 3;
                     outA = (f32*)((char*)outA + 0x14);
@@ -1803,3 +1800,6 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
     }
     return grp;
 }
+
+FrustumPlane gViewFrustumPlanes[FRUSTUM_PLANE_COUNT];
+FrustumPlane gPlayerRelativeFrustumPlanes[FRUSTUM_PLANE_COUNT];

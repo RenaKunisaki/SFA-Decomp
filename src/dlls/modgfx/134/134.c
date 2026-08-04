@@ -18,7 +18,7 @@ STATIC_ASSERT(sizeof(Dll86SequenceResource) == 0x10);
 Dll86SequenceResource gDll86SequenceResource = {{0, 255, 0, 0, 0, 0, 0}, 0};
 
 void dll_86_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     GfxCmd* commands;
     s16* sequenceParams;
     f32 effectWidth = 81.0f;
@@ -107,7 +107,7 @@ void dll_86_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* s
     packet.sequenceParams[4] = sequenceParams[4];
     packet.sequenceParams[5] = sequenceParams[5];
     packet.sequenceParams[6] = sequenceParams[6];
-    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxPointerSpawnPacket, entries));
+    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxSpawnPacket, entries));
     packet.flags = 0x10400;
     packet.flags |= spawnFlags;
     if ((packet.flags & 1) != 0) {

@@ -56,7 +56,7 @@ void lightning_update(GameObject* obj) {
     f32* start;
 
     state = obj->extra;
-    objectData = *(u8**)&obj->anim.placementData;
+    objectData = (u8*)obj->anim.placementData;
     if (((LightningPlacement*)objectData)->enableGameBit != -1) {
         if (state->flags.enabled) {
             if (mainGetBit(((LightningPlacement*)objectData)->enableGameBit) == 0) {
@@ -83,8 +83,8 @@ void lightning_update(GameObject* obj) {
             objects = (u32*)objGetAllOfType(LIGHTNING_OBJECT_GROUP, &objectCount);
             objectIndex = 0;
             while (objectIndex < objectCount) {
-                u32 linkedMapId = ((GameObject*)objects[objectIndex])->anim.placement->ident;
-                if (linkedMapId == state->linkedMapId) {
+                u32 linkedIdent = ((GameObject*)objects[objectIndex])->anim.placement->ident;
+                if (linkedIdent == state->linkedIdent) {
                     break;
                 }
                 objectIndex++;
@@ -99,7 +99,7 @@ void lightning_update(GameObject* obj) {
             start = (f32*)((u8*)obj + offsetof(GameObject, anim.localPosX));
             targetSlot = &objects[objectIndex];
             effect = lightningCreate((const Vec3f*)start,
-                                     (const Vec3f*)(*targetSlot + offsetof(GameObject, anim.localPos)), state->radiusX,
+                                     (const Vec3f*)&((GameObject*)*targetSlot)->anim.localPos, state->radiusX,
                                      state->radiusY, lifetime, state->width, (state->flags.alternateStyle ? 1 : 0));
             state->effect = effect;
             state->ageTimer = 0.0f;
@@ -107,7 +107,7 @@ void lightning_update(GameObject* obj) {
                 objfx_spawnHitEffectBurst(obj, state->hitRadius, LIGHTNING_HIT_EFFECT_ID, LIGHTNING_HIT_EFFECT_VARIANT,
                                           LIGHTNING_HIT_EFFECT_COUNT, NULL);
             }
-            objectData = *(u8**)(*targetSlot + offsetof(GameObject, extra));
+            objectData = ((GameObject*)*targetSlot)->extra;
             if ((((LightningState*)objectData)->modeBits.mode & LIGHTNING_MODE_HIT_EFFECT) != 0) {
                 objfx_spawnHitEffectBurst((GameObject*)*targetSlot, ((LightningState*)objectData)->hitRadius,
                                           LIGHTNING_HIT_EFFECT_ID, LIGHTNING_HIT_EFFECT_VARIANT,
@@ -153,7 +153,7 @@ void lightning_init(GameObject* obj, LightningPlacement* placement) {
     state->radiusY = (f32)(u32)placement->radiusY;
     state->lifetimeBase = placement->lifetimeBase;
     state->width = placement->width;
-    state->linkedMapId = placement->linkedMapId;
+    state->linkedIdent = placement->linkedIdent;
 
     state->flags.enabled = (placement->flags & LIGHTNING_PLACEMENT_ENABLED) ? 1 : 0;
     state->flags.alternateStyle = (placement->flags & LIGHTNING_PLACEMENT_ALTERNATE_STYLE) ? 1 : 0;

@@ -1,7 +1,7 @@
 #ifndef MUSYX_SYNTH_HANDLE_H_
 #define MUSYX_SYNTH_HANDLE_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 struct SynthStartRequest;
 

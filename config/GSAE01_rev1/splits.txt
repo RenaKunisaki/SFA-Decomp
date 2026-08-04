@@ -215,20 +215,21 @@ main/objprint.c:
 	.sdata2     start:0x803DF618 end:0x803DF670
 
 main/objprint_dolphin.c:
-	.text       start:0x8003BC7C end:0x80044548
-	.rodata     start:0x802C2290 end:0x802C23D0
+	.text       start:0x8003BC7C end:0x80041E28
+	.rodata     start:0x802C2290 end:0x802C22F0
 	.data       start:0x802CBAA8 end:0x802CBB20
-	.bss        start:0x80343A70 end:0x8035FBA8
+	.bss        start:0x80343A70 end:0x80346A70
 	.sdata      start:0x803DC0C8 end:0x803DC100
-	.sbss       start:0x803DD8A0 end:0x803DD918
+	.sbss       start:0x803DD8A0 end:0x803DD8F0
 	.sdata2     start:0x803DF670 end:0x803DF6F0
 
 main/pi_dolphin.c:
-	.text       start:0x80044548 end:0x80049CA8
+	.text       start:0x80041E28 end:0x80049CA8
+	.rodata     start:0x802C22F0 end:0x802C23D0
 	.data       start:0x802CBB20 end:0x802CD260
-	.bss        start:0x8035FBA8 end:0x803603A0
+	.bss        start:0x80346A70 end:0x803603A0
 	.sdata      start:0x803DC100 end:0x803DC248
-	.sbss       start:0x803DD918 end:0x803DD998
+	.sbss       start:0x803DD8F0 end:0x803DD998
 
 main/boot_logo.c:
 	.data       start:0x802CD260 end:0x8030D260
@@ -1379,11 +1380,8 @@ dlls/engine/51/51.c:
 	.sbss       start:0x803DE278 end:0x803DE290
 	.sdata2     start:0x803E2988 end:0x803E2990
 
-n_attractmode.c:
-	.text       start:0x801163B8 end:0x80116858
-
-dlls/engine/52/52.c:
-	.text       start:0x80116858 end:0x801175B4
+dlls/engine/52_n_attractmode/n_attractmode.c:
+	.text       start:0x801163B8 end:0x801175B4
 	.data       start:0x8031AE28 end:0x8031B000
 	.sbss       start:0x803DE290 end:0x803DE2D8
 	.sdata2     start:0x803E2990 end:0x803E29B0
@@ -3038,7 +3036,7 @@ dlls/objects/428_SH_queenear/SH_queenear.c:
 	.sdata      start:0x803DCC30 end:0x803DCC60
 	.sdata2     start:0x803E6090 end:0x803E60A8
 
-dlls/objects/429_SH_thorntai/SH_thorntai.c:
+dlls/objects/429_SH_thorntai/SHthorntail.c:
 	.text       start:0x801D52C0 end:0x801D6F04
 	.data       start:0x80327AD8 end:0x803281A0
 	.sdata      start:0x803DCC60 end:0x803DCCA0
@@ -3631,7 +3629,7 @@ dlls/objects/565_DFP_TargetB/DFP_TargetB.c:
 	.sbss       start:0x803DE978 end:0x803DE980
 	.sdata2     start:0x803E7120 end:0x803E7170
 
-dlls/objects/566_DFP_LaserBe/DFP_LaserBe.c:
+dlls/objects/566_DFP_LaserBe/laser.c:
 	.text       start:0x80209614 end:0x802096E0
 	.data       start:0x8032A800 end:0x8032A888
 
@@ -3644,7 +3642,7 @@ dlls/objects/568_LINKA_levco/LINKA_levco.c:
 	.data       start:0x8032A8C0 end:0x8032A8F8
 	.sdata2     start:0x803E7170 end:0x803E7178
 
-dlls/objects/569/569.c:
+dlls/objects/569/textblock.c:
 	.text       start:0x80209E48 end:0x80209EEC
 	.data       start:0x8032A8F8 end:0x8032A958
 
@@ -4514,16 +4512,10 @@ dolphin/gx/GXPixel.c:
 	.data       start:0x8032F708 end:0x8032F728
 	.sdata2     start:0x803E8398 end:0x803E83C8
 
-dolphin/gx/GXDrawTorusRadius.c:
-	.sdata2     start:0x803E83C8 end:0x803E83D0
-
 dolphin/gx/GXDraw.c:
 	.text       start:0x8025D180 end:0x8025D49C
 	.bss        start:0x803AF698 end:0x803AF920
-	.sdata2     start:0x803E83D0 end:0x803E83E0
-
-dolphin/gx/GXDrawTorusAngle.c:
-	.sdata2     start:0x803E83E0 end:0x803E83E8
+	.sdata2     start:0x803E83C8 end:0x803E83E8
 
 dolphin/gx/GXStubs.c:
 	.text       start:0x8025D49C end:0x8025D4A0
@@ -4708,33 +4700,18 @@ musyx/runtime/mcmd_exec.c:
 	.sbss       start:0x803DEF50 end:0x803DEF70
 	.sdata2     start:0x803E84A8 end:0x803E84B0
 
-dolphin/gx/GXTextureTables.c:
+musyx/runtime/pitch_data.c:
 	.data       start:0x8032FE78 end:0x80330278
 
 musyx/runtime/adsr_data.c:
 	.data       start:0x80330278 end:0x80330A00
 
-musyx/runtime/vid_init.c:
-	.text       start:0x80279670 end:0x80279768
-	.sbss       start:0x803DEF70 end:0x803DEF7C
-
-musyx/runtime/vid_get.c:
-	.text       start:0x80279768 end:0x8027979C
-
-musyx/runtime/voice_id.c:
-	extab       start:0x80005958 end:0x80005960
-	extabindex  start:0x80006194 end:0x800061A0
-	.text       start:0x8027979C end:0x80279D30
-
 musyx/runtime/voice.c:
-	extab       start:0x80005960 end:0x80005988
-	extabindex  start:0x800061A0 end:0x800061DC
-	.text       start:0x80279D30 end:0x8027AA94
+	extab       start:0x80005958 end:0x80005988
+	extabindex  start:0x80006194 end:0x800061DC
+	.text       start:0x80279670 end:0x8027AC44
 	.bss        start:0x803CAF30 end:0x803CBEF0
-	.sbss       start:0x803DEF7C end:0x803DEF88
-
-musyx/runtime/voice_conv.c:
-	.text       start:0x8027AA94 end:0x8027AC44
+	.sbss       start:0x803DEF70 end:0x803DEF88
 
 musyx/runtime/synth_ac.c:
 	extab       start:0x80005988 end:0x80005990
@@ -5144,23 +5121,23 @@ main/acosf.c:
 	.text       start:0x802926A4 end:0x80292F04
 	.sdata2     start:0x803E8658 end:0x803E8750
 
-dolphin/MSL_C/PPCEABI/bare/H/e_sqrt.c:
+dolphin/MSL_C/PPCEABI/bare/H/math_802927a4.c:
 	.text       start:0x80292F04 end:0x8029349C
 	.sdata2     start:0x803E8868 end:0x803E8898
 
-dolphin/MSL_C/PPCEABI/bare/H/s_tan.c:
+main/math_80292d3c.c:
 	.text       start:0x8029349C end:0x80293520
 	.sdata2     start:0x803E8898 end:0x803E88B0
 
-dolphin/MSL_C/PPCEABI/bare/H/rand.c:
+main/rand.c:
 	.text       start:0x80293520 end:0x8029354C
 	.sbss       start:0x803DF090 end:0x803DF098
 
-dolphin/MSL_C/PPCEABI/bare/H/trig_float_helpers.c:
+main/trig_float_helpers.c:
 	.text       start:0x8029354C end:0x8029388C
 	.sdata2     start:0x803E88B0 end:0x803E88B4
 
-dolphin/MSL_C/PPCEABI/bare/H/k_tan.c:
+main/math_8029312c.c:
 	.text       start:0x8029388C end:0x80293994
 	.sdata2     start:0x803E8908 end:0x803E8918
 

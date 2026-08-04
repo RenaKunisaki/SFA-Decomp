@@ -6,7 +6,7 @@
 #include "dlls/objects/430_SH_LevelCon.h"
 #include "main/objseq.h"
 
-extern SCGameBitLatchState gMMPLevelControlMusicLatch;
+extern GameBitLatchState gMMPLevelControlMusicLatch;
 extern f32 gMMPLevelControlTextCountdown;
 extern ObjectDescriptor gMMPLevelControlObjDescriptor;
 

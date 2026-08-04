@@ -25,8 +25,8 @@
 #include "main/objseq.h"
 #include "main/objtype.h"
 #include "main/dll/dll_0284_shopitem.h"
-#include "main/dll/LGT/LGTcontrollight.h"
-#include "main/dll/boulder.h"
+#include "main/dll/dll_020B_firefly.h"
+#include "main/dll/SP/dll_0285_spshop.h"
 #include "main/dll/tricky_api.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/gameloop_api.h"
@@ -188,29 +188,29 @@ void shopitem_renderSparkle(GameObject* obj, int p2, int p3, int p4, int p5)
 
 void shopitem_onSeqFree(GameObject* obj)
 {
-    int state = *(int*)&obj->extra;
+    int state = (int)obj->extra;
     int def = obj->anim.placementDataAddress;
     PushcartState97* b = (PushcartState97*)&((ShopItemState*)state)->flags97;
     if (b->flag_40 == 0)
     {
-        int* vptr = (int*)((ShopItemState*)state)->vendorObj;
-        int* cls = **(int***)((char*)vptr + 0x68);
-        if ((*(int (*)(int*, int))cls[0x2C / 4])(vptr, ((ShopItemDef*)def)->itemSlot) != 0)
+        GameObject* vptr = (GameObject*)((ShopItemState*)state)->vendorObj;
+        ShopInterface* cls = SHOP_INTERFACE(vptr);
+        if (cls->isItemBought(vptr, ((ShopItemDef*)def)->itemSlot) != 0)
         {
             b->flag_80 = 1;
         }
     }
     setHudForceShowMask(0);
     {
-        int* vptr2 = (int*)((ShopItemState*)state)->vendorObj;
-        int* cls2 = **(int***)((char*)vptr2 + 0x68);
-        (*(void (*)(int*, int))cls2[0x40 / 4])(vptr2, -1);
+        GameObject* vptr2 = (GameObject*)((ShopItemState*)state)->vendorObj;
+        ShopInterface* cls2 = SHOP_INTERFACE(vptr2);
+        cls2->setItemIndex(vptr2, -1);
     }
 }
 
 int shopitem_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
 {
-    int sub = *(int*)&(obj)->extra;
+    int sub = (int)obj->extra;
     ObjAnimComponent* objAnim = &obj->anim;
     ShopItemState* s = (ShopItemState*)sub;
 
@@ -239,9 +239,9 @@ int shopitem_SeqFn(GameObject* obj, int unused, ObjSeqState* seq)
             }
             else
             {
-                firefly_pickWanderTarget(obj, (LgtFireFlyRec*)sub);
+                firefly_pickWanderTarget(obj, (FireFlyState*)sub);
             }
-            firefly_shiftPathHistory(obj, (BoulderShakeRec*)sub);
+            firefly_shiftPathHistory(obj, (FireFlyState*)sub);
         }
     }
         {
@@ -306,7 +306,7 @@ void shopitem_update(GameObject* obj)
 {
     int def = (obj)->anim.placementDataAddress;
     void* player = Obj_GetPlayerObject();
-    int state = *(int*)&(obj)->extra;
+    int state = (int)obj->extra;
     f32 range = 10000.0f;
     ShopItemState* s = (ShopItemState*)state;
     PushcartState97* b = (PushcartState97*)&s->flags97;
@@ -335,19 +335,18 @@ void shopitem_update(GameObject* obj)
             item = s->vendorObj;
             if ((u32)item != 0)
             {
-                if ((*(int (**)(int, int))((char*)**(int***)(item + 0x68) + 0x28))(
-                        item, ((ShopItemDef*)def)->itemSlot) == 0 ||
-                    (*(int (**)(int, int))((char*)**(int***)(s->vendorObj + 0x68) + 0x2C))(
-                        s->vendorObj, ((ShopItemDef*)def)->itemSlot) != 0)
+                if (SHOP_INTERFACE(item)->isItemAvailable((GameObject*)item,
+                                                          ((ShopItemDef*)def)->itemSlot) == 0 ||
+                    SHOP_INTERFACE(s->vendorObj)
+                            ->isItemBought((GameObject*)s->vendorObj, ((ShopItemDef*)def)->itemSlot) != 0)
                 {
                     b->flag_40 = 1;
                     (obj)->anim.flags = (s16)((obj)->anim.flags | OBJANIM_FLAG_HIDDEN);
                     (obj)->objectFlags = (u16)((obj)->objectFlags | OBJECT_OBJFLAG_UPDATE_DISABLED);
                     (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                 }
-                s->helpTextId =
-                    (s16)(*(int (**)(int, int))((char*)**(int***)(s->vendorObj + 0x68) + 0x3C))(
-                        s->vendorObj, ((ShopItemDef*)def)->itemSlot);
+                s->helpTextId = (s16)SHOP_INTERFACE(s->vendorObj)
+                                    ->getItemTextId((GameObject*)s->vendorObj, ((ShopItemDef*)def)->itemSlot);
             }
         }
         else
@@ -360,10 +359,10 @@ void shopitem_update(GameObject* obj)
             if ((obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED)
             {
                 money = playerGetMoney(player);
-                price = (*(int (**)(int, int))((char*)**(int***)(s->vendorObj + 0x68) + 0x38))(
-                    s->vendorObj, ((ShopItemDef*)def)->itemSlot);
-                (*(int (**)(int, int))((char*)**(int***)(s->vendorObj + 0x68) + 0x40))(
-                    s->vendorObj, ((ShopItemDef*)def)->itemSlot);
+                price = SHOP_INTERFACE(s->vendorObj)
+                            ->getItemPrice((GameObject*)s->vendorObj, ((ShopItemDef*)def)->itemSlot);
+                SHOP_INTERFACE(s->vendorObj)
+                    ->setItemIndex((GameObject*)s->vendorObj, ((ShopItemDef*)def)->itemSlot);
                 switch ((obj)->anim.romDefNo)
                 {
                 case SHOPITEM_SEQ_BSPLINE:
@@ -398,9 +397,9 @@ void shopitem_update(GameObject* obj)
                     }
                     else
                     {
-                        firefly_pickWanderTarget(obj, (LgtFireFlyRec*)state);
+                        firefly_pickWanderTarget(obj, (FireFlyState*)state);
                     }
-                    firefly_shiftPathHistory(obj, (BoulderShakeRec*)state);
+                    firefly_shiftPathHistory(obj, (FireFlyState*)state);
                 }
                 (obj)->anim.localPosX =
                     Curve_EvalBSpline(s->controlX, s->splineT, 0);
@@ -432,7 +431,7 @@ void shopitem_update(GameObject* obj)
 void shopitem_init(GameObject* obj, ShopItemDef* data)
 {
     ObjAnimComponent* objAnim;
-    int state = *(int*)&(obj)->extra;
+    int state = (int)obj->extra;
     ShopItemState* s = (ShopItemState*)state;
 
     objAnim = &obj->anim;
@@ -448,7 +447,7 @@ void shopitem_init(GameObject* obj, ShopItemDef* data)
     switch ((obj)->anim.romDefNo)
     {
     case SHOPITEM_SEQ_BSPLINE:
-        firefly_initFlightRec(obj, (LgtFireFlyRec*)state);
+        firefly_initFlightRec(obj, (FireFlyState*)state);
         break;
     case SHOPITEM_SEQ_AMBIENT:
         (*gPartfxInterface)->spawnObject((void*)obj, SHOPITEM_PARTFX_AMBIENT, NULL, 4, -1, NULL);

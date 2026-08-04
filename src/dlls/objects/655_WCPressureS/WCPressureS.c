@@ -111,22 +111,20 @@ static inline void wcpressures_addTrackedObject(GameObject* obj, GameObject* tra
     state->savedPos[trackedIndex].z = trackedObject->anim.localPosZ;
 }
 
-static inline u8 wcpressures_scanTrackedObjects(int stateAddress) {
-    int positionAddress;
+static inline u8 wcpressures_scanTrackedObjects(WCPressuresState* state) {
     GameObject* trackedObject;
     u8 slotIndex;
     int foundStationaryObject;
 
     foundStationaryObject = 0;
     for (slotIndex = 0; slotIndex < WCPRESSURES_TRACKED_COUNT; slotIndex++) {
-        trackedObject = *(GameObject**)(stateAddress + slotIndex * 4 + offsetof(WCPressuresState, objects));
+        trackedObject = state->objects[slotIndex];
         if (trackedObject != NULL) {
-            positionAddress = stateAddress + slotIndex * 8;
-            if (*(f32*)(positionAddress + offsetof(WCPressuresState, savedPos[0].x)) == trackedObject->anim.localPosX &&
-                *(f32*)(positionAddress + offsetof(WCPressuresState, savedPos[0].z)) == trackedObject->anim.localPosZ) {
+            if (state->savedPos[slotIndex].x == trackedObject->anim.localPosX &&
+                state->savedPos[slotIndex].z == trackedObject->anim.localPosZ) {
                 foundStationaryObject = 1;
             } else {
-                *(u32*)(stateAddress + slotIndex * 4 + offsetof(WCPressuresState, objects)) = 0;
+                state->objects[slotIndex] = NULL;
             }
         }
     }
@@ -136,7 +134,6 @@ static inline u8 wcpressures_scanTrackedObjects(int stateAddress) {
 void wcpressures_update(GameObject* obj) {
     WCPressuresSetup* setup = (WCPressuresSetup*)obj->anim.placementData;
     WCPressuresState* state = (WCPressuresState*)obj->extra;
-    int contactOffset;
     GameObject* contact;
     int contactIndex;
     f32 pressedY;
@@ -149,17 +146,15 @@ void wcpressures_update(GameObject* obj) {
         state->pressTimer = 0;
     }
     if (obj->anim.hitboxTransformState->contactObjectCount > 0) {
-        for (contactIndex = 0, contactOffset = 0; contactIndex < obj->anim.hitboxTransformState->contactObjectCount;
-             contactOffset += 4, contactIndex++) {
-            contact = *(GameObject**)((u8*)obj->anim.hitboxTransformState + contactOffset +
-                                      offsetof(ObjHitboxTransformState, contactObjects));
+        for (contactIndex = 0; contactIndex < obj->anim.hitboxTransformState->contactObjectCount; contactIndex++) {
+            contact = (GameObject*)obj->anim.hitboxTransformState->contactObjects[contactIndex];
             if (contact->anim.localPosY - obj->anim.localPosY > (f32)(u32)setup->triggerHeight) {
                 wcpressures_addTrackedObject(obj, contact);
             }
         }
     }
     {
-        u8 foundStationaryObject = wcpressures_scanTrackedObjects(*(int*)&obj->extra);
+        u8 foundStationaryObject = wcpressures_scanTrackedObjects((WCPressuresState*)obj->extra);
 
         if ((int)foundStationaryObject != 0) {
             state->pressTimer = WCPRESSURES_FOUND_TIMER;

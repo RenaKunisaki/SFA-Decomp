@@ -1,8 +1,6 @@
 /*
  * DLL 0x1D6 cycles a model blend channel, scrolls two textures, conditionally
  * enables player hit reporting, and loads a pair of per-instance action rows.
- * The generated numeric source path remains authoritative because active
- * retail evidence does not establish an original basename.
  */
 
 #include "dlls/objects/470.h"

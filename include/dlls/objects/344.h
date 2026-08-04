@@ -8,6 +8,7 @@
 
 typedef enum GunpowderBarrelObjectGroup {
     GUNPOWDER_BARREL_OBJECT_GROUP = 0x19,
+    GUNPOWDER_BARREL_LOOSE_OBJECT_GROUP = 0x16,
 } GunpowderBarrelObjectGroup;
 
 typedef struct GunpowderBarrelPlacement {
@@ -137,7 +138,7 @@ int gunpowderBarrel_getExtraSize(void);
 void gunpowderBarrel_free(GameObject* obj, int keepLinkedTimer);
 void gunpowderBarrel_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5,
                             s8 visible);
-void gunpowderBarrel_hitDetect(int obj);
+void gunpowderBarrel_hitDetect(GameObject* barrel);
 void gunpowderBarrel_update(GameObject* obj);
 void gunpowderBarrel_init(GameObject* obj, GunpowderBarrelPlacement* placement);
 

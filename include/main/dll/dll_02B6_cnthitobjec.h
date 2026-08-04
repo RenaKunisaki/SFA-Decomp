@@ -65,7 +65,7 @@ void cnthitobjec_free(void);
 void cnthitobjec_release(void);
 void cnthitobjec_initialise(void);
 void cnthitobjec_render(GameObject* obj, int p2, int p3, int p4, int p5, f32 scale);
-int cnthitobjec_SeqFn(int obj, int unused, CntHitObjectAnimEvent* event);
+int cnthitobjec_SeqFn(GameObject* obj, int unused, CntHitObjectAnimEvent* event);
 void cnthitobjec_hitDetect(GameObject* obj);
 void cnthitobjec_init(GameObject* obj, CntHitObjectSetup* setup);
 void cnthitobjec_update(GameObject* obj);

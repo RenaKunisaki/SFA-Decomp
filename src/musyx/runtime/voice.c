@@ -1,19 +1,20 @@
 #include "global.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "musyx/mcmd.h"
+#include "musyx/vid_init.h"
+#include "musyx/vid_get.h"
 #include "musyx/hw_init.h"
 #include "musyx/synth_jobs.h"
 #include "musyx/synth_config.h"
 #include "musyx/mcmd_exec.h"
 #include "musyx/snd_core.h"
 #include "musyx/vidlisttables.h"
-#include "musyx/vid_get.h"
 #include "musyx/voice_id.h"
+#include "musyx/voice_conv.h"
 #include "musyx/voice_prio.h"
 #include "musyx/voice_alloc.h"
 #include "musyx/voice_manage.h"
 #include "musyx/voice_unregister.h"
-#include "musyx/hw_break.h"
 #include "musyx/hw_break.h"
 
 u8 voiceFreeListRoot;
@@ -21,6 +22,9 @@ u8 voiceFreeListTail;
 u8 voiceFxRunning;
 u8 voiceMusicRunning;
 u16 voicePrioSortedRoot;
+VID_LIST* vidFree;
+VID_LIST* vidRoot;
+u32 vidCurrentId;
 
 static VID_LIST vidList[128];
 static u8 synth_last_started[SYNTH_VOICE_MIDI_CHANNEL_COUNT][SYNTH_VOICE_MIDI_KEY_COUNT];
@@ -29,6 +33,261 @@ static SynthVoiceListNode voicePriorityLinks[0x40];
 static u8 voicePriorityGroupHeads[0x100];
 static SynthRootListNode voicePrioritySortLinks[0x100];
 static SynthVoiceListNode voiceFreeListSlots[64];
+
+void vidInit(void)
+{
+    int i;
+    VID_LIST* prev;
+
+    vidCurrentId = 0;
+    vidRoot = 0;
+    vidFree = vidList;
+    for (prev = NULL, i = 0; i < 128; prev = &vidList[i], ++i)
+    {
+        vidList[i].prev = prev;
+        if (prev != NULL)
+        {
+            prev->next = &vidList[i];
+        }
+    }
+    prev->next = NULL;
+}
+
+VID_LIST* get_vidlist(u32 id)
+{
+    VID_LIST* node;
+    u32 value;
+
+    node = vidRoot;
+    while (node != NULL)
+    {
+        value = node->vid;
+        if (value == id)
+        {
+            return node;
+        }
+        if (value > id)
+        {
+            break;
+        }
+        node = node->next;
+    }
+    return NULL;
+}
+
+#define VID_UNLINK(field)                                                                                              \
+    if (s->field->prev != 0)                                                                                           \
+    {                                                                                                                  \
+        s->field->prev->next = s->field->next;                                                                         \
+    }                                                                                                                  \
+    else                                                                                                               \
+    {                                                                                                                  \
+        vidRoot = s->field->next;                                                                                      \
+    }                                                                                                                  \
+    if (s->field->next != 0)                                                                                           \
+    {                                                                                                                  \
+        s->field->next->prev = s->field->prev;                                                                         \
+    }                                                                                                                  \
+    s->field->next = vidFree;                                                                                          \
+    if (vidFree != 0)                                                                                                  \
+    {                                                                                                                  \
+        vidFree->prev = s->field;                                                                                      \
+    }                                                                                                                  \
+    s->field->prev = 0;                                                                                                \
+    vidFree = s->field
+
+void vidRemoveVoiceReferences(McmdVoiceState* state)
+{
+    McmdVoiceState* s = state;
+    if (s->id != 0xffffffff)
+    {
+        voiceResetLastStarted(state);
+        if (s->parent != 0xffffffff)
+        {
+            synthVoice[s->parent & 0xff].child = s->child;
+            if (s->child != 0xffffffff)
+            {
+                synthVoice[s->child & 0xff].parent = s->parent;
+            }
+            VID_UNLINK(vidList);
+            s->vidList = 0;
+        }
+        else if (s->child != 0xffffffff)
+        {
+            s->vidList->root = s->child;
+            synthVoice[s->child & 0xff].parent = 0xffffffff;
+            synthVoice[s->child & 0xff].vidMasterList = s->vidMasterList;
+            if (s->vidList != s->vidMasterList)
+            {
+                VID_UNLINK(vidList);
+                s->vidList = 0;
+            }
+            s->vidList = 0;
+            s->vidMasterList = 0;
+        }
+        else if (s->vidList != s->vidMasterList)
+        {
+            VID_UNLINK(vidList);
+            s->vidList = 0;
+            VID_UNLINK(vidMasterList);
+            s->vidMasterList = 0;
+        }
+        else
+        {
+            VID_UNLINK(vidList);
+            s->vidList = 0;
+            s->vidMasterList = 0;
+        }
+    }
+}
+
+/*
+ * Snapshot the current entry's `next` pointer (state->[0xf8]) into the
+ * cached field (state->[0xfc]) and return that next entry's id field.
+ */
+u32 vidMakeRoot(McmdVoiceState* state)
+{
+    McmdVoiceState* s = state;
+    s->vidMasterList = s->vidList;
+    return s->vidList->vid;
+}
+
+/*
+ * Allocate the next unique id from the global counter, walking the
+ * sorted-by-id list to skip any already-in-use ids. Used to assign
+ * fresh handles to dynamically-allocated voices.
+ */
+u32 vidMakeNew(McmdVoiceState* state, int returnNewId)
+{
+    McmdVoiceState* s = state;
+    u32 nextId;
+    VID_LIST* cursor;
+    VID_LIST* node;
+    VID_LIST* prev;
+    VID_LIST* freeNode;
+
+    do
+    {
+        nextId = vidCurrentId;
+        vidCurrentId = nextId + 1;
+    } while (nextId == 0xffffffffU);
+
+    cursor = vidRoot;
+    prev = 0;
+    while ((node = cursor) != 0)
+    {
+        if (node->vid > nextId)
+        {
+            break;
+        }
+        if (node->vid == nextId)
+        {
+            do
+            {
+                nextId = vidCurrentId;
+                vidCurrentId = nextId + 1;
+            } while (nextId == 0xffffffffU);
+        }
+        prev = node;
+        cursor = node->next;
+    }
+
+    if ((freeNode = vidFree) == 0)
+    {
+        return 0xffffffffU;
+    }
+    if ((vidFree = vidFree->next) != 0)
+    {
+        vidFree->prev = NULL;
+    }
+    if (prev == 0)
+    {
+        vidRoot = freeNode;
+    }
+    else
+    {
+        prev->next = freeNode;
+    }
+    freeNode->prev = prev;
+    freeNode->next = node;
+    if (node != 0)
+    {
+        node->prev = freeNode;
+    }
+    freeNode->vid = nextId;
+    freeNode->root = s->id;
+    s->vidMasterList = ((u32)returnNewId != 0) ? freeNode : NULL;
+    s->vidList = freeNode;
+    if ((u32)returnNewId != 0)
+    {
+        return nextId;
+    }
+    return s->id;
+}
+
+int vidGetInternalId(u32 id)
+{
+    VID_LIST* node;
+
+    if (id != 0xffffffffU)
+    {
+        if ((node = get_vidlist(id)) != NULL)
+        {
+            return node->root;
+        }
+    }
+    return -1;
+}
+
+/*
+ * voiceRemovePriority - voice priority-queue removal. Removes the active
+ * voice from its group's linked list and from the sorted priority list.
+ */
+void voiceRemovePriority(McmdVoiceState* state)
+{
+    McmdVoiceState* s = state;
+    VidListTables* vb;
+    SynthVoiceListNode* vps;
+    SynthRootListNode* pr;
+
+    vb = (VidListTables*)vidList;
+    vps = &((SynthVoiceListNode*)((u8*)vb + offsetof(VidListTables, priorityLinks)))[s->id & 0xff];
+    if (vps->user != 1)
+    {
+        return;
+    }
+    if (vps->prev != 0xff)
+    {
+        vb->priorityLinks[vps->prev].next = vps->next;
+    }
+    else
+    {
+        vb->priorityGroupHeads[s->prio] = vps->next;
+    }
+    if (vps->next != 0xff)
+    {
+        vb->priorityLinks[vps->next].prev = vps->prev;
+    }
+    else if (vps->prev == 0xff)
+    {
+        u32 prevv;
+        pr = &((SynthRootListNode*)((u8*)vb + offsetof(VidListTables, prioritySortLinks)))[s->prio];
+        prevv = pr->prev;
+        if (prevv != 0xffff)
+        {
+            vb->prioritySortLinks[prevv].next = pr->next;
+        }
+        else
+        {
+            voicePrioSortedRoot = pr->next;
+        }
+        if (pr->next != 0xffff)
+        {
+            vb->prioritySortLinks[pr->next].prev = pr->prev;
+        }
+    }
+    vps->user = 0;
+}
 
 #define VB_PRIO_HEAD(vb, p)      (*(u8*)((u8*)&(vb)->priorityGroupHeads[0] + (p)))
 #define VB_PRIO_LINK(vb, i)      ((SynthVoiceListNode*)((u8*)&(vb)->priorityLinks[0] + (i) * sizeof(SynthVoiceListNode)))
@@ -457,15 +716,7 @@ int voiceKillSound(u32 id)
 
     if (sndActive != 0)
     {
-        VID_LIST* listEntry;
-        if ((id != SYNTH_INVALID_VOICE) && ((listEntry = get_vidlist(id)) != 0))
-        {
-            id = listEntry->root;
-        }
-        else
-        {
-            id = SYNTH_INVALID_VOICE;
-        }
+        id = vidGetInternalId(id);
 
         for (; id != SYNTH_INVALID_VOICE; id = next_voiceid)
         {
@@ -570,5 +821,23 @@ void voiceResetLastStarted(McmdVoiceState* voice)
         if (vid8 != *slot)
             return;
         *slot = SYNTH_INVALID_VOICE_U8;
+    }
+}
+
+void voiceInitLastStarted(void)
+{
+    int channel;
+    int key;
+
+    for (channel = 0; channel < SYNTH_VOICE_MIDI_CHANNEL_COUNT; channel++)
+    {
+        for (key = 0; key < SYNTH_VOICE_MIDI_KEY_COUNT; key++)
+        {
+            synth_last_started[channel][key] = SYNTH_VOICE_REGISTRATION_FREE;
+        }
+    }
+    for (key = 0; key < SYNTH_VOICE_DIRECT_SLOT_COUNT; key++)
+    {
+        synth_last_fxstarted[key] = SYNTH_VOICE_REGISTRATION_FREE;
     }
 }

@@ -68,7 +68,7 @@ int dll_200_getObjectTypeId(void);
 void dll_200_free(void);
 void dll_200_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void dll_200_hitDetect(void);
-void dll_200_update(int objectHandle);
+void dll_200_update(GameObject* objectHandle);
 void dll_200_init(GameObject* obj, const Dll200PlacementView* placement);
 void dll_200_release(void);
 void dll_200_initialise(void);

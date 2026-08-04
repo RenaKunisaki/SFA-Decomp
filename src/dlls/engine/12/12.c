@@ -50,7 +50,7 @@ void projgfx_initialise(void)
 {
 }
 
-ObjectDescriptor11 projgfx_funcs = {
+ProjgfxDllInterface projgfx_funcs = {
     0,
     0,
     0,

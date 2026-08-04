@@ -406,22 +406,30 @@ const f32 gModelRenderSubframeScale[1] = {16384.0f};
 
 void modelRenderInterpolateRootTransform(ObjAnimState* anim, s16* outPosition, s16* outRotation)
 {
-    f32 framePhase = anim->framePhase;
-    u64 outPos = RENDER_PACKED_ADDRESS(outRotation);
+    f32 framePhase;
+    u64 tp;
+    u64 bitpos;
+    int curB;
+    u64 posA;
+    u64 outPos;
     u64 end;
-    int curB = (u16)anim->frameStreamStride;
-    u64 posA = RENDER_PACKED_ADDRESS(anim->frameStreamCursor);
-    u64 tp = RENDER_PACKED_ADDRESS(anim->moveFrameData) + 4;
     u64 bufA;
     u64 bufB;
     s64 tmp;
-    s64* q = &tmp;
+    s64* q;
     s64 frac;
-    u64 bitpos;
     u64 vA;
     u32 addrB;
-    u64 maskConst = 0xFFF0;
+    u64 maskConst;
     int i;
+
+    framePhase = anim->framePhase;
+    outPos = RENDER_PACKED_ADDRESS(outRotation);
+    curB = (u16)anim->frameStreamStride;
+    posA = RENDER_PACKED_ADDRESS(anim->frameStreamCursor);
+    tp = RENDER_PACKED_ADDRESS(anim->moveFrameData) + 4;
+    q = &tmp;
+    maskConst = 0xFFF0;
 
     addrB = posA + curB;
     curB = addrB;

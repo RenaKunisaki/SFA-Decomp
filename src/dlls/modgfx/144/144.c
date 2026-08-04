@@ -5,23 +5,8 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 
-typedef struct Dll90EffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} Dll90EffectVertex;
-
-STATIC_ASSERT(offsetof(Dll90EffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(Dll90EffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(Dll90EffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(Dll90EffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(Dll90EffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(Dll90EffectVertex) == 0x0A);
-
 typedef struct Dll90EffectResourceView {
-    Dll90EffectVertex vertices[18];
+    ModgfxEffectVertex vertices[18];
     s16 triangles[16][3];
     s16 firstNineVertexIndices[9];
     s16 opaque126;
@@ -60,7 +45,7 @@ s16 gDll90VertexIndices[4] = {10, 12, 14, 16};
 extern u8 gDll90EffectResourceData[sizeof(Dll90EffectResourceView)];
 
 void dll_90_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)(int)gDll90EffectResourceData;
     GfxCmd* commands = packet.entries;
 

@@ -1,5 +1,5 @@
 /*
- * DLL 0x023F (DB_egg) - the "dbegg" floating egg object [0x801FE118-0x801FF884).
+ * DLL 0x023F (DB_egg) - the "dbegg" floating egg object.
  *
  * A buoyant egg driven by a mode state machine (DbEggState.mode, byte at
  * +0x118; flags119 at +0x119). dbegg_update dispatches per mode:
@@ -133,7 +133,7 @@ void dbegg_processMessages(GameObject* obj)
     int msgFlag = 0;
     int msgArg;
 
-    eggState = (DbEggState*)(*(int*)&(obj)->extra);
+    eggState = (DbEggState*)((int)obj->extra);
     config = (DbeggPlacement*)(obj)->anim.placementData;
 
     while (ObjMsg_Pop((void*)obj, &msgType, (u32*)&msgArg, (u32*)&msgFlag) != 0)
@@ -687,7 +687,7 @@ void dbegg_update(GameObject* obj)
                 (egg->flags119 & 2) == 0)
             {
                 playerObj = Obj_GetPlayerObject();
-                pickupState = *(int*)&(obj)->extra;
+                pickupState = (int)obj->extra;
                 placement = (obj)->anim.placementDataAddress;
                 objFreeObjectType((int)obj, DBEGG_OBJGROUP);
                 ((DbEggState*)pickupState)->mode = DBEGG_MODE_RELEASED;
@@ -858,7 +858,7 @@ void dbegg_update(GameObject* obj)
                         int placement;
                         int pickupState;
                         GameObject* playerObj = Obj_GetPlayerObject();
-                        pickupState = *(int*)&(obj)->extra;
+                        pickupState = (int)obj->extra;
                         placement = (obj)->anim.placementDataAddress;
                         objFreeObjectType((int)obj, DBEGG_OBJGROUP);
                         ((DbEggState*)pickupState)->mode = DBEGG_MODE_RELEASED;

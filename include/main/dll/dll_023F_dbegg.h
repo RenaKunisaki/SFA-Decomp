@@ -2,6 +2,7 @@
 #define MAIN_DLL_DLL_023F_DBEGG_H_
 
 #include "game/objects/object.h"
+#include "game/objects/object_setup.h"
 #include "dlls/object_descriptor.h"
 
 extern ObjectDescriptor12 gDB_eggObjDescriptor;

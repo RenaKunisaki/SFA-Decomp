@@ -7,23 +7,8 @@
 #include "main/gamebits.h"
 #include "main/vecmath.h"
 
-typedef struct Dll96EffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} Dll96EffectVertex;
-
-STATIC_ASSERT(offsetof(Dll96EffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(Dll96EffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(Dll96EffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(Dll96EffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(Dll96EffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(Dll96EffectVertex) == 0x0A);
-
 typedef struct Dll96EffectResourceView {
-    Dll96EffectVertex vertices[21];
+    ModgfxEffectVertex vertices[21];
     u8 padD2[2];
     s16 triangles[24][3];
     s16 firstSevenVertexIndices[7];

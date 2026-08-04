@@ -1,12 +1,33 @@
 #ifndef MAIN_EXPGFX_H_
 #define MAIN_EXPGFX_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/dll/expgfx_interface.h"
 #include "dlls/object_descriptor.h"
 #include "main/dll/expgfx_resource_api.h"
 
-extern ObjectDescriptor14 expgfx_funcs;
+typedef struct ExpgfxDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback onMapSetup;
+    ObjectDescriptorCallback addremove;
+    ObjectDescriptorCallback updateFrameState;
+    ObjectDescriptorCallback resetAllPools;
+    ObjectDescriptorCallback free;
+    ObjectDescriptorCallback free2;
+    ObjectDescriptorCallback slot09;
+    ObjectDescriptorCallback slot0A;
+    ObjectDescriptorCallback slot0B;
+    ObjectDescriptorCallback ownerFree3;
+    ObjectDescriptorCallback updateSourceFrameFlags;
+} ExpgfxDllInterface;
+
+extern ExpgfxDllInterface expgfx_funcs;
 
 void expgfxRemove(u32 slotPoolBase,int poolIndex,int slotIndex,int skipTextureFree,int flushSlot);
 void expgfxRemoveAll(void);
@@ -29,7 +50,7 @@ void expgfx_resetAllPools(void);
 void expgfx_updateFrameState(int sourceMode,int sourceId);
 struct ExpgfxSpawnConfig;
 int expgfx_addremove(struct ExpgfxSpawnConfig *config, int preferredPoolIndex, int slotType,
-                     int boundsTemplateId);
+                     int planeOffsetSetId);
 void expgfx_onMapSetup(void);
 void expgfx_release(void);
 void expgfx_initialise(void);

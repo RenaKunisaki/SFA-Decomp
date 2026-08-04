@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_FRONT_DLL_44_H_
 #define MAIN_DLL_FRONT_DLL_44_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/dll/FRONT/attract_movie.h"
 
 int AttractMovie_AssignBuffers(void *movieOrReadBuffer, void *yTextureBuffer,

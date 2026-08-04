@@ -1,7 +1,7 @@
 #ifndef MUSYX_SYNTH_JOBS_H_
 #define MUSYX_SYNTH_JOBS_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 void streamHandle(void);
 void streamCorrectLoops(void);

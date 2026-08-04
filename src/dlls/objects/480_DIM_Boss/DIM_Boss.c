@@ -46,7 +46,6 @@
 #include "main/sky_api.h"
 #include "main/textrender_api.h"
 #include "main/vecmath.h"
-#include "string.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 #include "main/audio/music_api.h"
@@ -157,10 +156,10 @@
 #define DIMBOSS_ANIM_TABLE_OFFSET           0x690
 #define DIMBOSS_HITDETECT_ANIM_TABLE_OFFSET 0x6A8
 
-typedef void (*Dim2QueryTargetMoveFn)(int obj, void* targetObj, int queryFlags, u16* animId, s16* outParam,
+typedef void (*Dim2QueryTargetMoveFn)(GameObject* obj, void* targetObj, int queryFlags, u16* animId, s16* outParam,
                                       u16* targetDistance);
-typedef u8 (*Dim2CheckTargetRangeFn)(int obj, BaddieState* state, f32 rangeScale);
-typedef void (*Dim2RequestControlModeFn)(int obj, BaddieState* state, int controlMode);
+typedef u8 (*Dim2CheckTargetRangeFn)(GameObject* obj, BaddieState* state, f32 rangeScale);
+typedef void (*Dim2RequestControlModeFn)(GameObject* obj, BaddieState* state, int controlMode);
 
 typedef struct Dim2BaddieControlInterface {
     u8 unknown00[0x14];
@@ -173,10 +172,6 @@ typedef struct Dim2PlayerInterface {
     Dim2RequestControlModeFn requestControlMode;
 } Dim2PlayerInterface;
 
-/*
- * Compiler-proven view from lbl_80325960 to gDim2LiftFarMoveChoices. The
- * named arrays between those globals remain independently owned.
- */
 typedef struct DimAnimTable {
     u8 unknown000[0x168];
     s16 surprised[6];
@@ -192,10 +187,6 @@ typedef struct Dim2BossMoveChoices {
     s16 group1[8];
 } Dim2BossMoveChoices;
 
-/*
- * Compiler-proven view across the TU's ordered BSS globals. Declaration
- * order below is load-bearing and remains the ownership source of truth.
- */
 typedef struct DIMbossAnimScratch {
     union {
         f32 effectVelocity[3];
@@ -222,7 +213,7 @@ extern Dim2BossMoveChoices gDim2LiftFarMoveChoices;
 extern u8 gDimBossHitReactionIndex;
 extern u32 gDIMbossSequenceFlags;
 extern int* gDIMbossHitEffectResource;
-extern int gDim2IcicleHitCooldown;
+extern int gDIMbossHitCooldown;
 extern f32 gDIMbossRenderMtx[12];
 
 int lbl_80325960[16] = {
@@ -237,14 +228,12 @@ static inline Dim2PlayerInterface* DIM2_GetPlayerInterface(void) {
     return (Dim2PlayerInterface*)*gPlayerInterface;
 }
 
-int DIMbossAnim_updateBossHitReaction(int obj, int statePtr) {
+int DIMbossAnim_updateBossHitReaction(GameObject* obj, BaddieState* state) {
     DimAnimTable* moveTable;
-    BaddieState* state;
     s16 targetParam;
     u16 targetDistance;
     u16 targetAnim[2];
 
-    state = (BaddieState*)statePtr;
     moveTable = (DimAnimTable*)lbl_80325960;
     if (state->moveDone != 0 || state->moveJustStartedB != 0) {
         DIM2_GetBaddieControlInterface()->queryTargetMove(obj, state->targetObj, 0x10, targetAnim, &targetParam,
@@ -296,14 +285,13 @@ int DIMbossAnim_updateBossHitReaction(int obj, int statePtr) {
     } else {
         gDIMbossAnimController.modeBits &= ~1;
     }
-    DIM2icicle_updateHitResponse((GameObject*)obj, state);
+    DIMboss_updateHitResponse((GameObject*)obj, state);
     return 0;
 }
 
 int lbl_803DBF30[2] = {0x17F, 0x180};
 s16 gDim2LiftFarFlankMoveChoices[4] = {3, 8, 0, 0};
 
-#define MODEL_LIGHT_KIND_POINT      2
 #define DIM2LIFT_HIT_VOLUME_SLOT_10 10
 #define DIM2LIFT_HIT_VOLUME_SLOT_9  9
 
@@ -312,72 +300,72 @@ s16 gDim2LiftFarFlankMoveChoices[4] = {3, 8, 0, 0};
 extern int lbl_80325AA0[6];
 extern f32 gDim2LiftMoveSpeedByDir[16];
 
-typedef struct Dim2IcicleBlueWhiteEffectPlacement {
+typedef struct DimBossBlueWhiteEffectPlacement {
     ObjPlacement base;
     u8 unknown18[0x1E - 0x18];
     s16 gameBit;
     s16 gameBit2;
     u8 unknown22[0x24 - 0x22];
-} Dim2IcicleBlueWhiteEffectPlacement;
+} DimBossBlueWhiteEffectPlacement;
 
-STATIC_ASSERT(sizeof(Dim2IcicleBlueWhiteEffectPlacement) == 0x24);
+STATIC_ASSERT(sizeof(DimBossBlueWhiteEffectPlacement) == 0x24);
 
-int DIMbossAnim_updatePlayerHitReaction(GameObject* obj, int runtime) {
+int DIMbossAnim_updatePlayerHitReaction(GameObject* obj, BaddieState* runtime) {
     u16 dirSector;
     u16 unused;
     u16 distance;
     int state;
     s16 mode;
-    state = *(int*)&obj->extra;
-    if (((BaddieState*)runtime)->moveDone != 0 || ((BaddieState*)runtime)->moveJustStartedB != 0) {
+    state = (int)obj->extra;
+    if (runtime->moveDone != 0 || runtime->moveJustStartedB != 0) {
         (*gBaddieControlInterface)
-            ->getTargetGeometry(obj, (GameObject*)((BaddieState*)runtime)->targetObj, 0x10, &dirSector, &unused,
+            ->getTargetGeometry(obj, (GameObject*)runtime->targetObj, 0x10, &dirSector, &unused,
                                 &distance);
-        ((BaddieState*)runtime)->moveDone = 0;
+        runtime->moveDone = 0;
         if (distance < 90) {
             if (distance > 30 && ((u16)(dirSector - 3) <= 1 || dirSector == 11 || dirSector == 12)) {
-                (*gPlayerInterface)->setState(obj, (void*)runtime, 2);
+                (*gPlayerInterface)->setState(obj, runtime, 2);
             } else {
-                (*gPlayerInterface)->setState(obj, (void*)runtime, 9);
+                (*gPlayerInterface)->setState(obj, runtime, 9);
             }
         } else {
             if (dirSector == 0 || dirSector == 15) {
-                ((BaddieState*)runtime)->moveDone = 0;
+                runtime->moveDone = 0;
                 if (distance > 240 &&
-                    ((*gBaddieControlInterface)->getClearDirectionMask(obj, (void*)runtime, 100.0f) & 1)) {
+                    ((*gBaddieControlInterface)->getClearDirectionMask(obj, runtime, 100.0f) & 1)) {
                     (*gPlayerInterface)
-                        ->setState(obj, (void*)runtime, gDim2LiftFarMoveChoices.surprised[randomGetRange(0, 5)]);
+                        ->setState(obj, runtime, gDim2LiftFarMoveChoices.surprised[randomGetRange(0, 5)]);
                 } else if (((GroundBaddieState*)state)->flags400 & 4) {
                     (*gPlayerInterface)
-                        ->setState(obj, (void*)runtime, gDim2LiftFarFlankMoveChoices[randomGetRange(0, 1)]);
+                        ->setState(obj, runtime, gDim2LiftFarFlankMoveChoices[randomGetRange(0, 1)]);
                 } else {
-                    (*gPlayerInterface)->setState(obj, (void*)runtime, 3);
+                    (*gPlayerInterface)->setState(obj, runtime, 3);
                 }
             } else {
-                (*gPlayerInterface)->setState(obj, (void*)runtime, 2);
+                (*gPlayerInterface)->setState(obj, runtime, 2);
             }
         }
     }
-    mode = ((BaddieState*)runtime)->controlMode;
+    mode = runtime->controlMode;
     if (mode != 1 && mode != 4 && mode != 5) {
         gDIMbossAnimController.modeBits |= 1;
     } else {
         gDIMbossAnimController.modeBits &= ~1;
     }
-    DIM2icicle_updateHitResponse(obj, (BaddieState*)runtime);
+    DIMboss_updateHitResponse(obj, runtime);
     return 0;
 }
 
-int DIMbossAnim_finishDefeat(GameObject* obj, int p2) {
+int DIMbossAnim_finishDefeat(GameObject* obj, BaddieState* p2) {
     int state;
 
     Obj_GetPlayerObject();
-    state = *(int*)&obj->extra;
+    state = (int)obj->extra;
 
-    if ((s32)((BaddieState*)p2)->moveJustStartedB != 0) {
-        *(int*)&((BaddieState*)p2)->targetObj = 0;
-        ((BaddieState*)p2)->physicsActive = 0;
-        ((BaddieState*)p2)->hasTarget = 0;
+    if ((s32)p2->moveJustStartedB != 0) {
+        p2->targetObj = 0;
+        p2->physicsActive = 0;
+        p2->hasTarget = 0;
         ObjHits_DisableObject(obj);
         obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
         obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~0x80;
@@ -396,9 +384,9 @@ int DIMbossAnim_hasMoveDone(int unused, int* state) {
     return ((BaddieState*)state)->moveDone != 0;
 }
 
-int DIMbossAnim_returnToIdleWhenDone(int obj, int runtime) {
-    if (((BaddieState*)runtime)->moveDone != 0) {
-        (*gPlayerInterface)->setState((void*)obj, (void*)runtime, 0);
+int DIMbossAnim_returnToIdleWhenDone(GameObject* obj, BaddieState* runtime) {
+    if (runtime->moveDone != 0) {
+        (*gPlayerInterface)->setState(obj, runtime, 0);
     }
     return 0;
 }
@@ -421,72 +409,72 @@ int DIMbossAnim_selectTargetControlMode(GameObject* obj) {
     }
 }
 
-int DIMbossHitDetect_tonsilSlam(GameObject* obj, int runtime) {
+int DIMbossHitDetect_tonsilSlam(GameObject* obj, BaddieState* runtime) {
     f32 animSpeed;
     if (obj->anim.currentMoveProgress > 0.9f) {
         gDIMbossSequenceFlags &= ~DIMBOSS_SEQUENCE_FLAG_0020;
     }
-    if (((BaddieState*)runtime)->moveJustStartedA != 0) {
+    if (runtime->moveJustStartedA != 0) {
         gDIMbossSequenceFlags |= (u64)DIMBOSS_SEQUENCE_FLAGS_TONSIL_IMPACT;
         CameraShake_Enable();
         CameraShake_StartDampened(2.5f, 5.0f, 2.0f);
         doRumble(12.0f);
         obj->anim.activeMove = -1;
-        ((BaddieState*)runtime)->moveSpeed = 0.002f * (f32)(((BaddieState*)runtime)->hitPoints + 1);
+        runtime->moveSpeed = 0.002f * (f32)(runtime->hitPoints + 1);
         animSpeed = 0.0f;
-        ((BaddieState*)runtime)->animSpeedA = animSpeed;
-        ((BaddieState*)runtime)->animSpeedB = animSpeed;
-        if (((BaddieState*)runtime)->moveJustStartedA != 0) {
+        runtime->animSpeedA = animSpeed;
+        runtime->animSpeedB = animSpeed;
+        if (runtime->moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 0x15, animSpeed, 0);
-            ((BaddieState*)runtime)->moveDone = 0;
+            runtime->moveDone = 0;
         }
     }
-    (*gPlayerInterface)->playSoundOnEvent0F(obj, (void*)runtime, 0, 0, lbl_803DBF30);
+    (*gPlayerInterface)->playSoundOnEvent0F(obj, runtime, 0, 0, lbl_803DBF30);
     return 0;
 }
 
-int DIMbossHitDetect_liftSlam(GameObject* obj, int runtime) {
-    int state = *(int*)&obj->extra;
-    if (((BaddieState*)runtime)->moveJustStartedA != 0) {
+int DIMbossHitDetect_liftSlam(GameObject* obj, BaddieState* runtime) {
+    int state = (int)obj->extra;
+    if (runtime->moveJustStartedA != 0) {
         f32 animSpeed;
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_2000;
         CameraShake_Enable();
         CameraShake_StartDampened(2.5f, 5.0f, 2.0f);
         doRumble(12.0f);
         obj->anim.activeMove = -1;
-        ((BaddieState*)runtime)->moveSpeed = 0.01f;
+        runtime->moveSpeed = 0.01f;
         animSpeed = 0.0f;
-        ((BaddieState*)runtime)->animSpeedA = animSpeed;
-        ((BaddieState*)runtime)->animSpeedB = animSpeed;
-        if (((BaddieState*)runtime)->moveJustStartedA != 0) {
+        runtime->animSpeedA = animSpeed;
+        runtime->animSpeedB = animSpeed;
+        if (runtime->moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 0xe, animSpeed, 0);
-            ((BaddieState*)runtime)->moveDone = 0;
+            runtime->moveDone = 0;
         }
         if (((GroundBaddieState*)state)->targetState == 1) {
-            *(f32*)(*(int*)&((GroundBaddieState*)state)->control + 0xa8) = 780.0f;
+            *(f32*)((int)((GroundBaddieState*)state)->control + 0xa8) = 780.0f;
         }
     }
-    (*gPlayerInterface)->playSoundOnEvent0F(obj, (void*)runtime, 0, 1, lbl_803DBF30);
+    (*gPlayerInterface)->playSoundOnEvent0F(obj, runtime, 0, 1, lbl_803DBF30);
     return 0;
 }
 
-int DIMbossHitDetect_liftImpact(int obj, int p2) {
+int DIMbossHitDetect_liftImpact(GameObject* obj, BaddieState* p2) {
     f32 zeroProgress;
 
-    ((BaddieState*)p2)->moveSpeed = 0.008f;
+    p2->moveSpeed = 0.008f;
     zeroProgress = 0.0f;
-    ((BaddieState*)p2)->animSpeedA = zeroProgress;
-    ((BaddieState*)p2)->animSpeedB = zeroProgress;
-    ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DIM2LIFT_HIT_VOLUME_SLOT_10, 1, -1);
+    p2->animSpeedA = zeroProgress;
+    p2->animSpeedB = zeroProgress;
+    ObjHits_SetHitVolumeSlot(&obj->anim, DIM2LIFT_HIT_VOLUME_SLOT_10, 1, -1);
 
-    if ((s32)((BaddieState*)p2)->moveJustStartedA != 0) {
-        ObjAnim_SetCurrentMove(obj, 15, 0.0f, 0);
-        ((BaddieState*)p2)->moveDone = 0;
+    if ((s32)p2->moveJustStartedA != 0) {
+        ObjAnim_SetCurrentMove((int)obj, 15, 0.0f, 0);
+        p2->moveDone = 0;
     }
 
-    if ((((BaddieState*)p2)->eventFlags & BADDIE_EVENT_FOOTSTEP) != 0) {
+    if ((p2->eventFlags & BADDIE_EVENT_FOOTSTEP) != 0) {
         gDIMbossSequenceFlags |= 0x4004;
-        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_mn_dimbos46);
+        Sfx_PlayFromObject(obj, SFXTRIG_mn_dimbos46);
         CameraShake_Enable();
         CameraShake_StartDampened(5.0f, 10.0f, 4.0f);
         doRumble(20.0f);
@@ -495,89 +483,89 @@ int DIMbossHitDetect_liftImpact(int obj, int p2) {
     return 0;
 }
 
-int DIMbossHitDetect_chooseIdleTaunt(GameObject* obj, int runtime) {
-    if (((BaddieState*)runtime)->moveJustStartedA != 0) {
+int DIMbossHitDetect_chooseIdleTaunt(GameObject* obj, BaddieState* runtime) {
+    if (runtime->moveJustStartedA != 0) {
         f32 animSpeed;
         obj->anim.activeMove = -1;
         animSpeed = 0.0f;
-        ((BaddieState*)runtime)->animSpeedA = animSpeed;
-        ((BaddieState*)runtime)->animSpeedB = animSpeed;
-        ((BaddieState*)runtime)->moveSpeed = 0.005f;
+        runtime->animSpeedA = animSpeed;
+        runtime->animSpeedB = animSpeed;
+        runtime->moveSpeed = 0.005f;
         if (randomGetRange(0, 1) != 0) {
-            if (((BaddieState*)runtime)->moveJustStartedA != 0) {
+            if (runtime->moveJustStartedA != 0) {
                 ObjAnim_SetCurrentMove((int)obj, 0xd, 0.0f, 0);
-                ((BaddieState*)runtime)->moveDone = 0;
+                runtime->moveDone = 0;
             }
         } else {
-            if (((BaddieState*)runtime)->moveJustStartedA != 0) {
+            if (runtime->moveJustStartedA != 0) {
                 ObjAnim_SetCurrentMove((int)obj, 0xc, 0.0f, 0);
-                ((BaddieState*)runtime)->moveDone = 0;
+                runtime->moveDone = 0;
             }
         }
     }
-    (*gPlayerInterface)->playSoundOnEvent0F(obj, (void*)runtime, 0, 0, lbl_80325AA0);
-    (*gPlayerInterface)->playSoundOnEvent0F(obj, (void*)runtime, 7, 1, lbl_80325AA0);
+    (*gPlayerInterface)->playSoundOnEvent0F(obj, runtime, 0, 0, lbl_80325AA0);
+    (*gPlayerInterface)->playSoundOnEvent0F(obj, runtime, 7, 1, lbl_80325AA0);
     return 0;
 }
 
-int DIMbossHitDetect_lungeAttack(GameObject* obj, int runtime, f32 hitAmount) {
+int DIMbossHitDetect_lungeAttack(GameObject* obj, BaddieState* runtime, f32 hitAmount) {
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DIM2LIFT_HIT_VOLUME_SLOT_9, 1, -1);
-    if (((BaddieState*)runtime)->moveJustStartedA != 0) {
+    if (runtime->moveJustStartedA != 0) {
         f32 animSpeed;
-        ((BaddieState*)runtime)->moveSpeed = 0.006f;
-        if (((BaddieState*)runtime)->moveJustStartedA != 0) {
+        runtime->moveSpeed = 0.006f;
+        if (runtime->moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 0x13, 0.0f, 0);
-            ((BaddieState*)runtime)->moveDone = 0;
+            runtime->moveDone = 0;
         }
         obj->anim.activeMove = -1;
         animSpeed = 0.0f;
-        ((BaddieState*)runtime)->animSpeedA = animSpeed;
-        ((BaddieState*)runtime)->animSpeedB = animSpeed;
+        runtime->animSpeedA = animSpeed;
+        runtime->animSpeedB = animSpeed;
     }
-    (*gPlayerInterface)->playSoundOnEvent0F(obj, (void*)runtime, 0, 1, lbl_80325AA0);
-    (*gPlayerInterface)->rotateTowardTarget(obj, (void*)runtime, hitAmount, 0xf0);
+    (*gPlayerInterface)->playSoundOnEvent0F(obj, runtime, 0, 1, lbl_80325AA0);
+    (*gPlayerInterface)->rotateTowardTarget(obj, runtime, hitAmount, 0xf0);
     return 0;
 }
 
-int DIMbossHitDetect_breathBurst(GameObject* obj, int runtime, f32 arg) {
+int DIMbossHitDetect_breathBurst(GameObject* obj, BaddieState* runtime, f32 arg) {
     f32 progress;
     f32 animSpeed;
-    if (((BaddieState*)runtime)->moveJustStartedA != 0) {
-        ((BaddieState*)runtime)->moveSpeed = 0.0025f;
-        if (((BaddieState*)runtime)->moveJustStartedA != 0) {
+    if (runtime->moveJustStartedA != 0) {
+        runtime->moveSpeed = 0.0025f;
+        if (runtime->moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 0x12, 0.0f, 0);
-            ((BaddieState*)runtime)->moveDone = 0;
+            runtime->moveDone = 0;
         }
         obj->anim.activeMove = -1;
         animSpeed = 0.0f;
-        ((BaddieState*)runtime)->animSpeedA = animSpeed;
-        ((BaddieState*)runtime)->animSpeedB = animSpeed;
+        runtime->animSpeedA = animSpeed;
+        runtime->animSpeedB = animSpeed;
     }
     progress = obj->anim.currentMoveProgress;
-    if (progress > 0.95f || ((BaddieState*)runtime)->moveDone != 0) {
+    if (progress > 0.95f || runtime->moveDone != 0) {
         return 8;
     }
     if (progress > 0.3f) {
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_BREATH_BURST;
     }
-    (*gPlayerInterface)->playSoundOnEvent0F(obj, (void*)runtime, 0, 5, lbl_80325AA0);
-    (*gPlayerInterface)->rotateTowardTarget(obj, (void*)runtime, arg, 0xf0);
+    (*gPlayerInterface)->playSoundOnEvent0F(obj, runtime, 0, 5, lbl_80325AA0);
+    (*gPlayerInterface)->rotateTowardTarget(obj, runtime, arg, 0xf0);
     return 0;
 }
 
-int DIMbossHitDetect_blueWhiteCapture(GameObject* obj, int runtime, f32 arg) {
+int DIMbossHitDetect_blueWhiteCapture(GameObject* obj, BaddieState* runtime, f32 arg) {
     f32 progress;
     f32 animSpeed;
-    if (((BaddieState*)runtime)->moveJustStartedA != 0) {
-        ((BaddieState*)runtime)->moveSpeed = 0.025f;
-        if (((BaddieState*)runtime)->moveJustStartedA != 0) {
+    if (runtime->moveJustStartedA != 0) {
+        runtime->moveSpeed = 0.025f;
+        if (runtime->moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 0x11, 0.0f, 0);
-            ((BaddieState*)runtime)->moveDone = 0;
+            runtime->moveDone = 0;
         }
         obj->anim.activeMove = -1;
         animSpeed = 0.0f;
-        ((BaddieState*)runtime)->animSpeedA = animSpeed;
-        ((BaddieState*)runtime)->animSpeedB = animSpeed;
+        runtime->animSpeedA = animSpeed;
+        runtime->animSpeedB = animSpeed;
     }
     progress = obj->anim.currentMoveProgress;
     if (progress > 0.55f) {
@@ -585,27 +573,27 @@ int DIMbossHitDetect_blueWhiteCapture(GameObject* obj, int runtime, f32 arg) {
     } else if (progress > 0.25f) {
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_0040;
     }
-    if (((BaddieState*)runtime)->eventFlags & 1) {
+    if (runtime->eventFlags & 1) {
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_CAPTURE_BLUE_WHITE_VELOCITY;
     }
-    (*gPlayerInterface)->playSoundOnEvent0F(obj, (void*)runtime, 0, 3, lbl_80325AA0);
-    (*gPlayerInterface)->rotateTowardTarget(obj, (void*)runtime, arg, 0xf0);
+    (*gPlayerInterface)->playSoundOnEvent0F(obj, runtime, 0, 3, lbl_80325AA0);
+    (*gPlayerInterface)->rotateTowardTarget(obj, runtime, arg, 0xf0);
     return 0;
 }
 
-int DIMbossHitDetect_blueWhiteEventCapture(GameObject* obj, int runtime, f32 arg) {
+int DIMbossHitDetect_blueWhiteEventCapture(GameObject* obj, BaddieState* runtime, f32 arg) {
     f32 progress;
     f32 animSpeed;
-    if (((BaddieState*)runtime)->moveJustStartedA != 0) {
-        ((BaddieState*)runtime)->moveSpeed = 0.005f;
-        if (((BaddieState*)runtime)->moveJustStartedA != 0) {
+    if (runtime->moveJustStartedA != 0) {
+        runtime->moveSpeed = 0.005f;
+        if (runtime->moveJustStartedA != 0) {
             ObjAnim_SetCurrentMove((int)obj, 0x11, 0.0f, 0);
-            ((BaddieState*)runtime)->moveDone = 0;
+            runtime->moveDone = 0;
         }
         obj->anim.activeMove = -1;
         animSpeed = 0.0f;
-        ((BaddieState*)runtime)->animSpeedA = animSpeed;
-        ((BaddieState*)runtime)->animSpeedB = animSpeed;
+        runtime->animSpeedA = animSpeed;
+        runtime->animSpeedB = animSpeed;
     }
     progress = obj->anim.currentMoveProgress;
     if (progress > 0.55f) {
@@ -613,63 +601,63 @@ int DIMbossHitDetect_blueWhiteEventCapture(GameObject* obj, int runtime, f32 arg
     } else if (progress > 0.35f) {
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_0040;
     }
-    if (((BaddieState*)runtime)->eventFlags & BADDIE_EVENT_LANDING) {
+    if (runtime->eventFlags & BADDIE_EVENT_LANDING) {
         gDIMbossSequenceFlags |= (u64)DIMBOSS_SEQUENCE_FLAG_CAPTURE_BLUE_WHITE_VELOCITY;
-        ((BaddieState*)runtime)->eventFlags &= ~BADDIE_EVENT_LANDING;
+        runtime->eventFlags &= ~BADDIE_EVENT_LANDING;
     }
-    (*gPlayerInterface)->playSoundOnEvent0F(obj, (void*)runtime, 0, 3, lbl_80325AA0);
-    (*gPlayerInterface)->rotateTowardTarget(obj, (void*)runtime, arg, 0xf0);
+    (*gPlayerInterface)->playSoundOnEvent0F(obj, runtime, 0, 3, lbl_80325AA0);
+    (*gPlayerInterface)->rotateTowardTarget(obj, runtime, arg, 0xf0);
     return 0;
 }
 
-int DIMbossHitDetect_randomSwipe(GameObject* obj, int runtime, f32 arg) {
+int DIMbossHitDetect_randomSwipe(GameObject* obj, BaddieState* runtime, f32 arg) {
     int eventFlags;
     f32 animSpeed;
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DIM2LIFT_HIT_VOLUME_SLOT_9, 1, -1);
-    if (((BaddieState*)runtime)->moveJustStartedA != 0) {
+    if (runtime->moveJustStartedA != 0) {
         obj->anim.activeMove = -1;
         animSpeed = 0.0f;
-        ((BaddieState*)runtime)->animSpeedA = animSpeed;
-        ((BaddieState*)runtime)->animSpeedB = animSpeed;
+        runtime->animSpeedA = animSpeed;
+        runtime->animSpeedB = animSpeed;
         if (randomGetRange(0, 1) != 0) {
-            if (((BaddieState*)runtime)->moveJustStartedA != 0) {
+            if (runtime->moveJustStartedA != 0) {
                 ObjAnim_SetCurrentMove((int)obj, 0xb, 0.0f, 0);
-                ((BaddieState*)runtime)->moveDone = 0;
+                runtime->moveDone = 0;
             }
-            ((BaddieState*)runtime)->moveSpeed = 0.005f;
+            runtime->moveSpeed = 0.005f;
         } else {
-            if (((BaddieState*)runtime)->moveJustStartedA != 0) {
+            if (runtime->moveJustStartedA != 0) {
                 ObjAnim_SetCurrentMove((int)obj, 0x10, 0.0f, 0);
-                ((BaddieState*)runtime)->moveDone = 0;
+                runtime->moveDone = 0;
             }
-            ((BaddieState*)runtime)->moveSpeed = 0.006f;
+            runtime->moveSpeed = 0.006f;
         }
     }
-    eventFlags = ((BaddieState*)runtime)->eventFlags;
+    eventFlags = runtime->eventFlags;
     if (eventFlags & BADDIE_EVENT_LANDING) {
-        ((BaddieState*)runtime)->eventFlags = eventFlags & ~BADDIE_EVENT_LANDING;
+        runtime->eventFlags = eventFlags & ~BADDIE_EVENT_LANDING;
         gDIMbossSequenceFlags |= (DIMBOSS_SEQUENCE_FLAG_0001 | DIMBOSS_SEQUENCE_FLAG_0004);
     }
-    (*gPlayerInterface)->playSoundOnEvent0F(obj, (void*)runtime, 0, randomGetRange(0, 1), lbl_80325AA0);
-    (*gPlayerInterface)->rotateTowardTarget(obj, (void*)runtime, arg, 0xf0);
+    (*gPlayerInterface)->playSoundOnEvent0F(obj, runtime, 0, randomGetRange(0, 1), lbl_80325AA0);
+    (*gPlayerInterface)->rotateTowardTarget(obj, runtime, arg, 0xf0);
     return 0;
 }
 
-int DIMbossHitDetect_trackTargetMove(GameObject* obj, int runtime, f32 hitAmount) {
+int DIMbossHitDetect_trackTargetMove(GameObject* obj, BaddieState* runtime, f32 hitAmount) {
     u16 dirSector;
     u16 unused;
     u16 distance;
-    ((BaddieState*)runtime)->animSpeedA = 0.0f;
-    if (((BaddieState*)runtime)->moveDone != 0 || ((BaddieState*)runtime)->moveJustStartedA != 0 ||
+    runtime->animSpeedA = 0.0f;
+    if (runtime->moveDone != 0 || runtime->moveJustStartedA != 0 ||
         obj->anim.currentMove == 1) {
         (*gBaddieControlInterface)
-            ->getTargetGeometry(obj, (GameObject*)((BaddieState*)runtime)->targetObj, 0x10, &dirSector, &unused,
+            ->getTargetGeometry(obj, (GameObject*)runtime->targetObj, 0x10, &dirSector, &unused,
                                 &distance);
         ObjAnim_SetCurrentMove((int)obj, lbl_80325960[dirSector], 0.0f, 0);
-        ((BaddieState*)runtime)->moveSpeed = gDim2LiftMoveSpeedByDir[dirSector];
-        ((BaddieState*)runtime)->moveDone = 0;
+        runtime->moveSpeed = gDim2LiftMoveSpeedByDir[dirSector];
+        runtime->moveDone = 0;
     }
-    (*gPlayerInterface)->updateAnimRootMotion(obj, (void*)runtime, hitAmount, 8);
+    (*gPlayerInterface)->updateAnimRootMotion(obj, runtime, hitAmount, 8);
     return 0;
 }
 
@@ -699,11 +687,11 @@ int DIMbossHitDetect_resetIdleMove(GameObject* obj, u8* state) {
     return 0;
 }
 
-void DIM2icicle_spawnBlueWhiteEffect(DIMbossEffectMarker* source, f32* velocity) {
+void DIMboss_spawnBlueWhiteEffect(DIMbossEffectMarker* source, f32* velocity) {
     GameObject* spawnedObj;
-    Dim2IcicleBlueWhiteEffectPlacement* setup;
+    DimBossBlueWhiteEffectPlacement* setup;
     if ((u8)Obj_IsLoadingLocked() != 0) {
-        setup = (Dim2IcicleBlueWhiteEffectPlacement*)Obj_AllocObjectSetup(36, DIM2LIFT_CHILD_OBJ_BLUE_WHITE_EFFECT);
+        setup = (DimBossBlueWhiteEffectPlacement*)Obj_AllocObjectSetup(36, DIM2LIFT_CHILD_OBJ_BLUE_WHITE_EFFECT);
         setup->base.posX = source->x;
         setup->base.posY = source->y;
         setup->base.posZ = source->z;
@@ -722,8 +710,8 @@ void DIM2icicle_spawnBlueWhiteEffect(DIMbossEffectMarker* source, f32* velocity)
     }
 }
 
-void DIM2icicle_createStateLight(GameObject* obj, u8 isGreen) {
-    ModelLightStruct** lightSlot = (ModelLightStruct**)*(int*)&((GroundBaddieState*)*(int*)&obj->extra)->control;
+void DIMboss_createStateLight(GameObject* obj, u8 isGreen) {
+    ModelLightStruct** lightSlot = (ModelLightStruct**)(int)((GroundBaddieState*)(int)obj->extra)->control;
 
     if (*(void**)lightSlot != NULL) {
         return;
@@ -765,23 +753,23 @@ f32 gDim2LiftMoveSpeedByDir[16] = {
 
 #define DIM2ICICLE_ADVANCE_MSG 0xe0001 /* notify the struck object to advance its hit reaction */
 
-#define DIM2ICICLE_PARTFX_DUST 0x4b7 /* dust particle effect (gDim2IcicleDustFxSource) */
-#define DIM2ICICLE_PARTFX_HIT  0x328 /* icicle hit-response effect (gDim2IcicleHitFxBuffer) */
+#define DIMBOSS_PARTFX_DUST 0x4b7 /* dust particle effect (gDIMbossDustFxSource) */
+#define DIMBOSS_PARTFX_HIT  0x328 /* icicle hit-response effect (gDIMbossHitFxBuffer) */
 
-static inline int* DIM2Icicle_GetActiveModel(void* obj) {
+static inline int* DIMboss_GetActiveModelPtr(void* obj) {
     ObjAnimComponent* objAnim = (ObjAnimComponent*)obj;
     return (int*)objAnim->banks[objAnim->bankIndex];
 }
 
-typedef struct Dim2IcicleMeltEntry {
+typedef struct DimBossMeltEntry {
     f32 resetTime;
     u16 gameBit;
     u16 unknown06;
-} Dim2IcicleMeltEntry;
+} DimBossMeltEntry;
 
-extern Dim2IcicleMeltEntry gDim2IcicleMeltEntries[];
+extern DimBossMeltEntry gDIMbossMeltEntries[];
 
-void DIM2icicle_updateBossSequenceEffects(GameObject* obj, DIMbossRuntime* runtime) {
+void DIMboss_updateSequenceEffects(GameObject* obj, DIMbossRuntime* runtime) {
     DIMbossTopState* topState;
     int objIndex;
     s16 brightness;
@@ -821,42 +809,42 @@ void DIM2icicle_updateBossSequenceEffects(GameObject* obj, DIMbossRuntime* runti
         }
     }
     if (gDIMbossSequenceFlags & DIMBOSS_SEQUENCE_FLAG_ICICLE_DUST_POINT_7) {
-        ObjPath_GetPointWorldPosition((GameObject*)objIndex, 7, &gDim2IcicleDustFxSource.posX,
-                                      &gDim2IcicleDustFxSource.posY, &gDim2IcicleDustFxSource.posZ, 0);
+        ObjPath_GetPointWorldPosition((GameObject*)objIndex, 7, &gDIMbossDustFxSource.posX,
+                                      &gDIMbossDustFxSource.posY, &gDIMbossDustFxSource.posZ, 0);
         i = 0;
         do {
             (*gPartfxInterface)
-                ->spawnObject((void*)objIndex, DIM2ICICLE_PARTFX_DUST, &gDim2IcicleDustFxSource, 0x200001, -1, NULL);
+                ->spawnObject((void*)objIndex, DIMBOSS_PARTFX_DUST, &gDIMbossDustFxSource, 0x200001, -1, NULL);
             i += 1;
         } while (i < 0xf);
     }
     if (gDIMbossSequenceFlags & DIMBOSS_SEQUENCE_FLAG_ICICLE_DUST_POINT_8) {
-        ObjPath_GetPointWorldPosition((GameObject*)objIndex, 8, &gDim2IcicleDustFxSource.posX,
-                                      &gDim2IcicleDustFxSource.posY, &gDim2IcicleDustFxSource.posZ, 0);
+        ObjPath_GetPointWorldPosition((GameObject*)objIndex, 8, &gDIMbossDustFxSource.posX,
+                                      &gDIMbossDustFxSource.posY, &gDIMbossDustFxSource.posZ, 0);
         i = 0;
         do {
             (*gPartfxInterface)
-                ->spawnObject((void*)objIndex, DIM2ICICLE_PARTFX_DUST, &gDim2IcicleDustFxSource, 0x200001, -1, NULL);
+                ->spawnObject((void*)objIndex, DIMBOSS_PARTFX_DUST, &gDIMbossDustFxSource, 0x200001, -1, NULL);
             i += 1;
         } while (i < 0xf);
     }
     if (gDIMbossSequenceFlags & DIMBOSS_SEQUENCE_FLAG_ICICLE_DUST_POINT_9) {
-        ObjPath_GetPointWorldPosition((GameObject*)objIndex, 9, &gDim2IcicleDustFxSource.posX,
-                                      &gDim2IcicleDustFxSource.posY, &gDim2IcicleDustFxSource.posZ, 0);
+        ObjPath_GetPointWorldPosition((GameObject*)objIndex, 9, &gDIMbossDustFxSource.posX,
+                                      &gDIMbossDustFxSource.posY, &gDIMbossDustFxSource.posZ, 0);
         i = 0;
         do {
             (*gPartfxInterface)
-                ->spawnObject((void*)objIndex, DIM2ICICLE_PARTFX_DUST, &gDim2IcicleDustFxSource, 0x200001, -1, NULL);
+                ->spawnObject((void*)objIndex, DIMBOSS_PARTFX_DUST, &gDIMbossDustFxSource, 0x200001, -1, NULL);
             i += 1;
         } while (i < 0xf);
     }
     if (gDIMbossSequenceFlags & DIMBOSS_SEQUENCE_FLAG_ICICLE_DUST_POINT_10) {
-        ObjPath_GetPointWorldPosition((GameObject*)objIndex, 10, &gDim2IcicleDustFxSource.posX,
-                                      &gDim2IcicleDustFxSource.posY, &gDim2IcicleDustFxSource.posZ, 0);
+        ObjPath_GetPointWorldPosition((GameObject*)objIndex, 10, &gDIMbossDustFxSource.posX,
+                                      &gDIMbossDustFxSource.posY, &gDIMbossDustFxSource.posZ, 0);
         i = 0;
         do {
             (*gPartfxInterface)
-                ->spawnObject((void*)objIndex, DIM2ICICLE_PARTFX_DUST, &gDim2IcicleDustFxSource, 0x200001, -1, NULL);
+                ->spawnObject((void*)objIndex, DIMBOSS_PARTFX_DUST, &gDIMbossDustFxSource, 0x200001, -1, NULL);
             i += 1;
         } while (i < 0xf);
     }
@@ -868,17 +856,17 @@ void DIM2icicle_updateBossSequenceEffects(GameObject* obj, DIMbossRuntime* runti
         m[11] = zero;
         i = 0;
         do {
-            gDim2IcicleDustFxSource.posX = randomGetRange(-0x19, 0x19);
-            gDim2IcicleDustFxSource.posY = randomGetRange(-0x19, 0x19);
-            gDim2IcicleDustFxSource.posZ = -75.0f;
-            gDIMbossAnimScratchBase[0] = gDim2IcicleDustFxSource.posX / (gDim2IcicleDustFxSource.posZ / 2.0f);
-            gDIMbossAnimScratchBase[1] = gDim2IcicleDustFxSource.posY / (gDim2IcicleDustFxSource.posZ / 2.0f);
+            gDIMbossDustFxSource.posX = randomGetRange(-0x19, 0x19);
+            gDIMbossDustFxSource.posY = randomGetRange(-0x19, 0x19);
+            gDIMbossDustFxSource.posZ = -75.0f;
+            gDIMbossAnimScratchBase[0] = gDIMbossDustFxSource.posX / (gDIMbossDustFxSource.posZ / 2.0f);
+            gDIMbossAnimScratchBase[1] = gDIMbossDustFxSource.posY / (gDIMbossDustFxSource.posZ / 2.0f);
             gDIMbossAnimScratchBase[2] = 2.0f;
             PSMTXMultVec((MtxPtr)m, (Vec*)gDIMbossAnimScratchBase, (Vec*)gDIMbossAnimScratchBase);
-            ObjPath_GetPointWorldPosition((GameObject*)objIndex, 0xb, &gDim2IcicleDustFxSource.posX,
-                                          &gDim2IcicleDustFxSource.posY, &gDim2IcicleDustFxSource.posZ, 1);
+            ObjPath_GetPointWorldPosition((GameObject*)objIndex, 0xb, &gDIMbossDustFxSource.posX,
+                                          &gDIMbossDustFxSource.posY, &gDIMbossDustFxSource.posZ, 1);
             (*gPartfxInterface)
-                ->spawnObject((void*)objIndex, 0x4b8, &gDim2IcicleDustFxSource, 0x200001, -1, gDIMbossAnimScratchBase);
+                ->spawnObject((void*)objIndex, 0x4b8, &gDIMbossDustFxSource, 0x200001, -1, gDIMbossAnimScratchBase);
             i += 1;
         } while (i < 5);
     }
@@ -920,13 +908,13 @@ void DIM2icicle_updateBossSequenceEffects(GameObject* obj, DIMbossRuntime* runti
 #define DIM2ICICLE_ENVFX_A 0xdb
 #define DIM2ICICLE_ENVFX_B 0xdc
 
-extern int gDim2IcicleSequenceSfx[];
+extern int gDIMbossSequenceSfx[];
 typedef struct Dim2IcicleWarpFlags {
     u8 pending : 1;
     u8 rest : 7;
 } Dim2IcicleWarpFlags;
 
-void DIM2icicle_updateDarkIceMinesWarpAndEffects(GameObject* obj, DIMbossRuntime* runtime) {
+void DIMboss_updateWarpAndEffects(GameObject* obj, DIMbossRuntime* runtime) {
     DIMbossTopState* topState;
     int counter;
     int i;
@@ -953,25 +941,25 @@ void DIM2icicle_updateDarkIceMinesWarpAndEffects(GameObject* obj, DIMbossRuntime
     }
     if (runtime->eventFlags & DIMBOSS_SEQUENCE_FLAG_0004) {
         runtime->eventFlags &= ~DIMBOSS_SEQUENCE_FLAG_0004;
-        Sfx_PlayFromObject(obj, gDim2IcicleSequenceSfx[0]);
+        Sfx_PlayFromObject(obj, gDIMbossSequenceSfx[0]);
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_0004 | DIMBOSS_SEQUENCE_FLAG_ICICLE_DUST_POINT_7;
         doRumble(4.0f);
     }
     if (runtime->eventFlags & DIMBOSS_SEQUENCE_FLAG_0002) {
         runtime->eventFlags &= ~DIMBOSS_SEQUENCE_FLAG_0002;
-        Sfx_PlayFromObject(obj, gDim2IcicleSequenceSfx[1]);
+        Sfx_PlayFromObject(obj, gDIMbossSequenceSfx[1]);
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_0004 | DIMBOSS_SEQUENCE_FLAG_ICICLE_DUST_POINT_8;
         doRumble(4.0f);
     }
     if (runtime->eventFlags & DIMBOSS_SEQUENCE_FLAG_BREATH_BURST) {
         runtime->eventFlags &= ~DIMBOSS_SEQUENCE_FLAG_BREATH_BURST;
-        Sfx_PlayFromObject(obj, gDim2IcicleSequenceSfx[2]);
+        Sfx_PlayFromObject(obj, gDIMbossSequenceSfx[2]);
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_0004 | DIMBOSS_SEQUENCE_FLAG_ICICLE_DUST_POINT_9;
         doRumble(4.0f);
     }
     if (runtime->eventFlags & DIMBOSS_SEQUENCE_FLAG_TONSIL_GUARD_ACTIVE) {
         runtime->eventFlags &= ~DIMBOSS_SEQUENCE_FLAG_TONSIL_GUARD_ACTIVE;
-        Sfx_PlayFromObject(obj, gDim2IcicleSequenceSfx[3]);
+        Sfx_PlayFromObject(obj, gDIMbossSequenceSfx[3]);
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_0004 | DIMBOSS_SEQUENCE_FLAG_ICICLE_DUST_POINT_10;
         doRumble(4.0f);
     }
@@ -1038,7 +1026,7 @@ void DIM2icicle_updateDarkIceMinesWarpAndEffects(GameObject* obj, DIMbossRuntime
     if (gDIMbossSequenceFlags & DIMBOSS_SEQUENCE_FLAG_ARENA_DUST_BURST) {
         i = 0;
         do {
-            (*gPartfxInterface)->spawnObject((void*)obj, DIM2ICICLE_PARTFX_DUST, NULL, 1, -1, NULL);
+            (*gPartfxInterface)->spawnObject((void*)obj, DIMBOSS_PARTFX_DUST, NULL, 1, -1, NULL);
             i = i + 1;
         } while (i < 0x32);
     }
@@ -1067,42 +1055,42 @@ void DIM2icicle_updateDarkIceMinesWarpAndEffects(GameObject* obj, DIMbossRuntime
 
 const s16 lbl_802C2338[7] = {10, 25, 25, 10, 20, 20, 20};
 
-typedef struct Dim2IcicleHitDescriptor {
+typedef struct DimBossHitDescriptor {
     int unknown00;
     int unknown04;
     int unknown08;
     int unknown0C;
-} Dim2IcicleHitDescriptor;
+} DimBossHitDescriptor;
 
-STATIC_ASSERT(sizeof(Dim2IcicleHitDescriptor) == 0x10);
+STATIC_ASSERT(sizeof(DimBossHitDescriptor) == 0x10);
 
-const Dim2IcicleHitDescriptor gDim2IcicleHitDescTemplate = {6, 0x69, 0x69, 0xFF};
+const DimBossHitDescriptor gDIMbossHitDescTemplate = {6, 0x69, 0x69, 0xFF};
 
-typedef struct Dim2IcicleHitEntry {
+typedef struct DimBossHitEntry {
     f32 unknown00;
     f32 positionX;
     f32 positionY;
     f32 positionZ;
-} Dim2IcicleHitEntry;
+} DimBossHitEntry;
 
-void DIM2icicle_updateHitResponse(GameObject* obj, BaddieState* playerState) {
+void DIMboss_updateHitResponse(GameObject* obj, BaddieState* playerState) {
     int* state;
     u8 hit;
     int hitResult;
     GameObject* player;
-    Dim2IcicleHitEntry* hitEntries;
+    DimBossHitEntry* hitEntries;
     ObjHitsPriorityState* hitState;
     int hitType;
     u32 hitVolume;
     int hitId;
-    Dim2IcicleHitDescriptor desc;
+    DimBossHitDescriptor desc;
 
     state = obj->extra;
     Obj_GetPlayerObject();
     hit = 0;
-    desc = gDim2IcicleHitDescTemplate;
-    if (gDim2IcicleHitCooldown != 0) {
-        gDim2IcicleHitCooldown = gDim2IcicleHitCooldown - 1;
+    desc = gDIMbossHitDescTemplate;
+    if (gDIMbossHitCooldown != 0) {
+        gDIMbossHitCooldown = gDIMbossHitCooldown - 1;
     }
     hitResult = ObjHits_GetPriorityHit(obj, &hitId, &hitType, &hitVolume);
     if (hitResult != 0) {
@@ -1117,26 +1105,26 @@ void DIM2icicle_updateHitResponse(GameObject* obj, BaddieState* playerState) {
             }
         }
         if (hit) {
-            if (gDim2IcicleHitCooldown == 0) {
+            if (gDIMbossHitCooldown == 0) {
                 Sfx_PlayFromObject(obj, SFXTRIG_sc_npu_216_4b2);
-                hitEntries = (Dim2IcicleHitEntry*)DIM2Icicle_GetActiveModel(obj)[0x14];
-                gDim2IcicleHitFxBuffer.x = playerMapOffsetX + hitEntries[hitType].positionX;
-                gDim2IcicleHitFxBuffer.y = hitEntries[hitType].positionY;
-                gDim2IcicleHitFxBuffer.z = playerMapOffsetZ + hitEntries[hitType].positionZ;
+                hitEntries = (DimBossHitEntry*)DIMboss_GetActiveModelPtr(obj)[0x14];
+                gDIMbossHitFxBuffer.x = playerMapOffsetX + hitEntries[hitType].positionX;
+                gDIMbossHitFxBuffer.y = hitEntries[hitType].positionY;
+                gDIMbossHitFxBuffer.z = playerMapOffsetZ + hitEntries[hitType].positionZ;
                 (*gPartfxInterface)
-                    ->spawnObject(obj, DIM2ICICLE_PARTFX_HIT, &gDim2IcicleHitFxBuffer, 0x200001, -1, NULL);
-                gDim2IcicleHitFxBuffer.x = gDim2IcicleHitFxBuffer.x - obj->anim.worldPosX;
-                gDim2IcicleHitFxBuffer.y = gDim2IcicleHitFxBuffer.y - obj->anim.worldPosY;
-                gDim2IcicleHitFxBuffer.z = gDim2IcicleHitFxBuffer.z - obj->anim.worldPosZ;
-                gDim2IcicleHitFxBuffer.scale = 1.0f;
-                gDim2IcicleHitFxBuffer.rotX = 0;
-                gDim2IcicleHitFxBuffer.rotY = 0;
-                gDim2IcicleHitFxBuffer.rotZ = 0;
+                    ->spawnObject(obj, DIMBOSS_PARTFX_HIT, &gDIMbossHitFxBuffer, 0x200001, -1, NULL);
+                gDIMbossHitFxBuffer.x = gDIMbossHitFxBuffer.x - obj->anim.worldPosX;
+                gDIMbossHitFxBuffer.y = gDIMbossHitFxBuffer.y - obj->anim.worldPosY;
+                gDIMbossHitFxBuffer.z = gDIMbossHitFxBuffer.z - obj->anim.worldPosZ;
+                gDIMbossHitFxBuffer.scale = 1.0f;
+                gDIMbossHitFxBuffer.rotX = 0;
+                gDIMbossHitFxBuffer.rotY = 0;
+                gDIMbossHitFxBuffer.rotZ = 0;
                 desc.unknown04 += randomGetRange(0, 0x9b);
                 desc.unknown08 += randomGetRange(0, 0x9b);
-                ((void (*)(int, int, DIMbossEffectMarker*, int, int, Dim2IcicleHitDescriptor*)) *
-                 (VtableFn**)(*(int*)gDIMbossHitEffectResource + 4))((int)obj, 0, &gDim2IcicleHitFxBuffer, 1, -1, &desc);
-                gDim2IcicleHitCooldown = 0x1e;
+                ((void (*)(int, int, DIMbossEffectMarker*, int, int, DimBossHitDescriptor*)) *
+                 (VtableFn**)(*(int*)gDIMbossHitEffectResource + 4))((int)obj, 0, &gDIMbossHitFxBuffer, 1, -1, &desc);
+                gDIMbossHitCooldown = 0x1e;
             }
         } else {
             if (playerState->targetObj == NULL) {
@@ -1190,7 +1178,7 @@ void DIM2icicle_updateHitResponse(GameObject* obj, BaddieState* playerState) {
     }
 }
 
-void DIM2icicle_updateCombatState(GameObject* obj, ObjSeqState* animUpdate, DIMbossRuntime* runtime,
+void DIMboss_updateCombatState(GameObject* obj, ObjSeqState* animUpdate, DIMbossRuntime* runtime,
                                   DIMbossRuntime* updateRuntime) {
     DIMbossTopState* topState;
     GameObject* gameObj;
@@ -1214,7 +1202,7 @@ void DIM2icicle_updateCombatState(GameObject* obj, ObjSeqState* animUpdate, DIMb
         topState->icicle.meltTimer = topState->icicle.meltTimer - timeDelta;
     }
     if (topState->icicle.meltTimer <= 0.0f) {
-        Dim2IcicleMeltEntry* entry = gDim2IcicleMeltEntries;
+        DimBossMeltEntry* entry = gDIMbossMeltEntries;
         mainSetBits(entry[topState->meltEntryIndex].gameBit, 1);
         topState->icicle.meltTimer = entry[topState->meltEntryIndex].resetTime;
         topState->meltEntryIndex++;
@@ -1244,15 +1232,15 @@ void DIM2icicle_updateCombatState(GameObject* obj, ObjSeqState* animUpdate, DIMb
         } else if (runtime->targetState == DIMBOSS_PHASE_LAUNCH_LIFT) {
             runtime->flags400 |= DIMBOSS_STATE_FLAG_TARGET_TRICKY;
             topState->icicle.fadeTimer = 1.0f;
-            DIM2icicle_createStateLight((GameObject*)obj, 0);
+            DIMboss_createStateLight((GameObject*)obj, 0);
         }
     }
     if (runtime->targetState == DIMBOSS_PHASE_GAMEBIT_COUNT_MET) {
-        DIM2icicle_createStateLight((GameObject*)obj, 1);
+        DIMboss_createStateLight((GameObject*)obj, 1);
     }
     if (gDIMbossSequenceFlags & DIMBOSS_SEQUENCE_FLAG_SPAWN_BLUE_WHITE_EFFECT) {
         gDIMbossSequenceFlags &= ~(u64)DIMBOSS_SEQUENCE_FLAG_SPAWN_BLUE_WHITE_EFFECT;
-        DIM2icicle_spawnBlueWhiteEffect(&runtime->topState->blueWhiteEffectSource,
+        DIMboss_spawnBlueWhiteEffect(&runtime->topState->blueWhiteEffectSource,
                                         runtime->topState->blueWhiteVelocity);
     }
     if (runtime->flags400 & DIMBOSS_STATE_FLAG_TARGET_TRICKY) {
@@ -1264,14 +1252,14 @@ void DIM2icicle_updateCombatState(GameObject* obj, ObjSeqState* animUpdate, DIMb
     } else {
         gameObj->hitVolumeIndex = 2;
     }
-    runtime->savedPendingParentObj = *(int*)&gameObj->pendingParentObj;
-    *(int*)&gameObj->pendingParentObj = 0;
+    runtime->savedPendingParentObj = (int)gameObj->pendingParentObj;
+    gameObj->pendingParentObj = 0;
     (*gPlayerInterface)
         ->update((void*)obj, updateRuntime, timeDelta, timeDelta, &gDIMbossHitDetectAnimTable, &gDIMbossAnimTable);
-    *(int*)&gameObj->pendingParentObj = runtime->savedPendingParentObj;
+    gameObj->pendingParentObj = (void*)runtime->savedPendingParentObj;
 }
 
-Dim2IcicleMeltEntry gDim2IcicleMeltEntries[] = {
+DimBossMeltEntry gDIMbossMeltEntries[] = {
     {120.0f, 2427}, {120.0f, 2428}, {240.0f, 2429}, {60.0f, 2430},  {30.0f, 2431},  {20.0f, 2432},
     {220.0f, 2427}, {120.0f, 2428}, {220.0f, 2429}, {20.0f, 2430},  {20.0f, 2431},  {20.0f, 2432},
     {120.0f, 2427}, {120.0f, 2428}, {120.0f, 2429}, {220.0f, 2430}, {220.0f, 2431}, {320.0f, 2432},
@@ -1280,7 +1268,7 @@ Dim2IcicleMeltEntry gDim2IcicleMeltEntries[] = {
 
 int lbl_80325AA0[6] = {0x182, 0x183, 0x184, 0x185, 0x186, 0x187};
 
-int gDim2IcicleSequenceSfx[] = {
+int gDIMbossSequenceSfx[] = {
     0x17B,
     0x17B,
     0x17C,
@@ -1575,7 +1563,7 @@ int DIMboss_updateState(GameObject* obj, u32 state, ObjSeqState* animUpdate) {
             break;
         case 2:
             animUpdate->flags = 0;
-            DIM2icicle_updateCombatState(obj, animUpdate, runtime, runtime);
+            DIMboss_updateCombatState(obj, animUpdate, runtime, runtime);
             if (runtime->subMode == 1) {
                 runtime->substate = 0;
                 DIMboss_GetPlayerInterface()->applyHitReact(obj, runtime, 1.0f, 1.0f, &animScratch->hitDetectAnimTable,
@@ -1592,7 +1580,7 @@ int DIMboss_updateState(GameObject* obj, u32 state, ObjSeqState* animUpdate) {
             break;
         }
     }
-    DIM2icicle_updateDarkIceMinesWarpAndEffects(obj, runtime);
+    DIMboss_updateWarpAndEffects(obj, runtime);
     if (obj->seqIndex == -1) {
         runtime->flags400 |= DIMBOSS_STATE_FLAG_START_MOVE;
         updateResult = 0;
@@ -1659,7 +1647,7 @@ void DIMboss_render(GameObject* obj, u32 p2, u32 p3, u32 p4, u32 p5, s8 shouldRe
     }
 
     objRenderModelAndHitVolumes((GameObject*)obj, p2, p3, p4, p5, 1.0f);
-    DIM2icicle_updateBossSequenceEffects(obj, runtime);
+    DIMboss_updateSequenceEffects(obj, runtime);
     dll_2E_setTargetFromPathPoint((GameObject*)obj, &gDIMbossAnimController, 0);
 
     effect = runtime->topState->effect;
@@ -1750,10 +1738,10 @@ void DIMboss_update(GameObject* obj) {
                 if (childObject != NULL) {
                     ((ObjAnimComponent*)childObject)->parent = obj->anim.parent;
                 }
-                DIM2icicle_updateCombatState(obj, NULL, runtime, runtime);
+                DIMboss_updateCombatState(obj, NULL, runtime, runtime);
                 dll_2E_setLockTarget(&gDIMbossAnimController, (GameObject*)runtime->targetObj);
                 dll_2E_updateLookAt((GameObject*)obj, &gDIMbossAnimController);
-                DIM2icicle_updateDarkIceMinesWarpAndEffects(obj, runtime);
+                DIMboss_updateWarpAndEffects(obj, runtime);
             }
         }
     }
@@ -1866,7 +1854,7 @@ void DIMboss_initialiseAnimTables(void) {
     animTable->updateBossHitReaction = DIMbossAnim_updateBossHitReaction;
 }
 
-int gDim2IcicleHitCooldown;
+int gDIMbossHitCooldown;
 int* gDIMbossHitEffectResource;
 u8 gDimBossHitReactionIndex;
 u32 gDIMbossSequenceFlags;
@@ -1875,6 +1863,6 @@ DIMbossHitDetectAnimHandlerTable gDIMbossHitDetectAnimTable;
 DIMbossAnimHandlerTable gDIMbossAnimTable;
 MoveLibState gDIMbossAnimController;
 f32 gDIMbossRenderMtx[12];
-DIMbossEffectMarker gDim2IcicleHitFxBuffer;
-PartFxSpawnParams gDim2IcicleDustFxSource;
+DIMbossEffectMarker gDIMbossHitFxBuffer;
+PartFxSpawnParams gDIMbossDustFxSource;
 f32 gDIMbossAnimScratchBase[3];

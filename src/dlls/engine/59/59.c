@@ -1,3 +1,4 @@
+#include "dlls/object_descriptor.h"
 #include "main/gamebits.h"
 #include "main/frame_timing.h"
 #include "dolphin/pad.h"
@@ -121,8 +122,40 @@ void Menu_initialise(void)
     gMenuSelectedId = 0;
     gMenuArmed = 0;
 }
+typedef struct MenuDllInterface {
+    u32 reserved0;
+    u32 reserved1;
+    u32 reserved2;
+    u32 slotCountAndFlags;
+    ObjectDescriptorCallback initialise;
+    ObjectDescriptorCallback release;
+    ObjectDescriptorCallback slot02;
+    ObjectDescriptorCallback reset;
+    ObjectDescriptorCallback open;
+    ObjectDescriptorCallback addItem;
+    ObjectDescriptorCallback addItemEx;
+    ObjectDescriptorCallback setCancelId;
+    ObjectDescriptorCallback poll;
+    ObjectDescriptorCallback slot09;
+    ObjectDescriptorCallback setArmed;
+    ObjectDescriptorCallback getItemCount;
+} MenuDllInterface;
 
-u32 Menu_funcs[16] = {0x00000000,           0x00000000,           0x00000000,       0x000b0000,
-                        (u32)Menu_initialise, (u32)Menu_release,    0x00000000,       (u32)Menu_reset,
-                        (u32)Menu_open,       (u32)Menu_addItem,    (u32)Menu_addItemEx, (u32)Menu_setCancelId,
-                        (u32)Menu_poll,       (u32)Menu_func09_nop, (u32)Menu_setArmed, (u32)Menu_getItemCount};
+MenuDllInterface Menu_funcs = {
+    0,
+    0,
+    0,
+    0x000b0000,
+    (ObjectDescriptorCallback)Menu_initialise,
+    (ObjectDescriptorCallback)Menu_release,
+    0,
+    (ObjectDescriptorCallback)Menu_reset,
+    (ObjectDescriptorCallback)Menu_open,
+    (ObjectDescriptorCallback)Menu_addItem,
+    (ObjectDescriptorCallback)Menu_addItemEx,
+    (ObjectDescriptorCallback)Menu_setCancelId,
+    (ObjectDescriptorCallback)Menu_poll,
+    (ObjectDescriptorCallback)Menu_func09_nop,
+    (ObjectDescriptorCallback)Menu_setArmed,
+    (ObjectDescriptorCallback)Menu_getItemCount,
+};

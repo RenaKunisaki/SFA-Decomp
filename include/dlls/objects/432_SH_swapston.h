@@ -7,6 +7,8 @@
 #include "game/objects/object_setup.h"
 #include "main/objprint_sound_api.h"
 
+typedef struct ObjSeqState ObjSeqState;
+
 typedef struct WarpStonePlacement {
     ObjPlacement base;
     u8 unknown18[2];
@@ -52,18 +54,18 @@ STATIC_ASSERT(offsetof(WarpStoneState, dustEffectFlags) == 0xD4);
 STATIC_ASSERT(offsetof(WarpStoneState, behaviorFlags) == 0xD5);
 STATIC_ASSERT(sizeof(WarpStoneState) == 0xD8);
 
-void SHthorntail_updateDustEffects(GameObject* obj);
-u32 SClantern_advanceAnimEvents(int obj, f32 moveStepScale);
+void warpstone_updateDustEffects(GameObject* obj);
+u32 warpstone_advanceAnimEvents(GameObject* lantern, f32 moveStepScale);
 u32 warpstoneProbePlayerAnimState(void);
 int warpstone_testEvent(u32 obj, u32 unused, int option);
 void warpstone_loadBaseUi(void);
-int warpstone_SeqFn(GameObject* obj, u32 unused, int animObj);
+int warpstone_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animObj);
 int warpstone_getExtraSize(void);
 int warpstone_getObjectTypeId(void);
 void warpstone_free(GameObject* obj, int mode);
 void warpstone_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void warpstone_hitDetect(GameObject* obj);
-void warpstone_update(int obj);
+void warpstone_update(GameObject* obj);
 void warpstone_init(GameObject* obj, const WarpStonePlacement* placement);
 void warpstone_release(void);
 void warpstone_initialise(void);

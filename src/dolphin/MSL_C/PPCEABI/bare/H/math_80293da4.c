@@ -3,7 +3,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "main/trig.h"
-#include "dolphin/MSL_C/PPCEABI/bare/H/s_tan.h"
+#include "main/math_80292d3c.h"
 
 
 extern const double lbl_803E7DB0;
@@ -89,7 +89,7 @@ float mathSinfHighPrecision(float angle) {
     double reducedAngle;
     double reducedSquared;
 
-    reducedAngle = tan(&quadrant, angle);
+    reducedAngle = trigReduceQuadrantHighPrecision(&quadrant, angle);
     quadrant += (*(u32*)&angle & 0x80000000) >> 29;
     reducedSquared = reducedAngle * reducedAngle;
 
@@ -141,7 +141,7 @@ float mathCosfPrecise(float angle) {
 
 float mathCosfHighPrecision(float angle) {
     int quadrant;
-    double reducedAngle = tan(&quadrant, angle);
+    double reducedAngle = trigReduceQuadrantHighPrecision(&quadrant, angle);
     double reducedSquared = reducedAngle * reducedAngle;
 
     switch (quadrant & 6) {

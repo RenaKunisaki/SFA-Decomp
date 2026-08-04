@@ -1,7 +1,7 @@
 #ifndef MAIN_PAD_H_
 #define MAIN_PAD_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "main/pad_api.h"
 
 extern f32 gRumbleTimer;

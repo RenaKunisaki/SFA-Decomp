@@ -28,7 +28,7 @@ typedef struct MMSHShrineState {
     f32 targetVelocity;
     f32 swayTarget;
     f32 idleSfxTimer;
-    SCGameBitLatchState latch;
+    GameBitLatchState latch;
     s16 unknown1C;
     s16 orbitPhaseA;
     s16 orbitPhaseB;

@@ -6,23 +6,8 @@
 #include "main/dll/modgfx_types.h"
 #include "main/vecmath.h"
 
-typedef struct Dll60EffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} Dll60EffectVertex;
-
-STATIC_ASSERT(offsetof(Dll60EffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(Dll60EffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(Dll60EffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(Dll60EffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(Dll60EffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(Dll60EffectVertex) == 0x0A);
-
 typedef struct Dll60EffectResourceView {
-    Dll60EffectVertex vertices[14];
+    ModgfxEffectVertex vertices[14];
     s16 colors[12][3];
     s16 firstGroupIndices[8];
     s16 secondGroupIndices[8];
@@ -54,7 +39,7 @@ u32 gDll60EffectResourceData[sizeof(Dll60EffectResourceView) / sizeof(u32)] = {
 };
 
 void dll_60_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)(int)gDll60EffectResourceData;
     GfxCmd* commandCursor;
     GfxCmd* commands;
@@ -177,7 +162,7 @@ void dll_60_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* s
     packet.sequenceParams[4] = *(s16*)&resourceData[offsetof(Dll60EffectResourceView, sequenceParams[4])];
     packet.sequenceParams[5] = *(s16*)&resourceData[offsetof(Dll60EffectResourceView, sequenceParams[5])];
     packet.sequenceParams[6] = *(s16*)&resourceData[offsetof(Dll60EffectResourceView, sequenceParams[6])];
-    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxPointerSpawnPacket, entries));
+    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxSpawnPacket, entries));
     packet.flags = 0x1000000;
     packet.flags |= spawnFlags;
     if ((packet.flags & 1) != 0) {

@@ -40,15 +40,4 @@ typedef struct
     u32 deferred[20];
 } LightmapDrawQueue;
 
-typedef union
-{
-    double d;
-
-    struct
-    {
-        u32 hi;
-        u32 lo;
-    } u;
-} F64Cvt;
-
 #endif /* MAIN_LIGHTMAP_INTERNAL_H_ */

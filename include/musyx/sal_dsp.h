@@ -1,7 +1,7 @@
 #ifndef MUSYX_SAL_DSP_H_
 #define MUSYX_SAL_DSP_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 extern u16 dspCmdFirstSize;
 extern u16* dspCmdList;
@@ -10,7 +10,7 @@ extern u32 oldState;
 
 int salInitDsp(u32 flags);
 int salStartDsp(void);
-void salCtrlDsp(u32 dest);
+void salCtrlDsp(s16* dest);
 u32 salGetStartDelay(void);
 void hwInitIrq(void);
 void hwEnableIrq(void);

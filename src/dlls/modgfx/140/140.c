@@ -5,23 +5,8 @@
 #include "main/dll/modgfx_interface.h"
 #include "main/dll/modgfx_types.h"
 
-typedef struct Dll8CEffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} Dll8CEffectVertex;
-
-STATIC_ASSERT(offsetof(Dll8CEffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(Dll8CEffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(Dll8CEffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(Dll8CEffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(Dll8CEffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(Dll8CEffectVertex) == 0x0A);
-
 typedef struct Dll8CEffectResourceView {
-    Dll8CEffectVertex vertices[21];
+    ModgfxEffectVertex vertices[21];
     u8 opaqueD2[2];
     s16 triangles[24][3];
     s16 firstSevenVertexIndices[7];
@@ -78,7 +63,7 @@ u8 gDll8CEffectResourceData[sizeof(Dll8CEffectResourceView)] = {
     60,  0,   1,   0,   60,  0,   0,   0,   0};
 
 void dll_8C_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = gDll8CEffectResourceData;
     GfxCmd* commands = packet.entries;
     GameObject* anchorObj = sourceObj;
@@ -229,7 +214,7 @@ void dll_8C_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* s
     packet.sequenceParams[4] = *(s16*)&resourceData[offsetof(Dll8CEffectResourceView, sequenceParams[4])];
     packet.sequenceParams[5] = *(s16*)&resourceData[offsetof(Dll8CEffectResourceView, sequenceParams[5])];
     packet.sequenceParams[6] = *(s16*)&resourceData[offsetof(Dll8CEffectResourceView, sequenceParams[6])];
-    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxPointerSpawnPacket, entries));
+    packet.commands = (GfxCmd*)((u8*)&packet + offsetof(ModgfxSpawnPacket, entries));
     packet.flags = 0xC0400C0;
     packet.flags |= spawnFlags;
     if ((packet.flags & 1) != 0) {

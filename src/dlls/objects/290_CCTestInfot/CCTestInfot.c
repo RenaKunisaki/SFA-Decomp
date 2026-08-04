@@ -32,7 +32,7 @@ void CCTestInfot_update(GameObject* obj) {
     }
     objSetHintTextIdx(obj, state->isDisguised);
     Obj_SetActiveModelIndex(obj, state->isDisguised);
-    if (ObjTrigger_IsSet((int)obj) != 0 && isAreaNameTextActive() == 0) {
+    if (ObjTrigger_IsSet(obj) != 0 && isAreaNameTextActive() == 0) {
         state->displayTimer = CC_TEST_INFO_TEXT_DISPLAY_DURATION;
     }
     if (state->displayTimer > 0.0f) {

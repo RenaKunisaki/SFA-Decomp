@@ -1,7 +1,7 @@
 #ifndef MUSYX_SYNTH_VOLUME_H_
 #define MUSYX_SYNTH_VOLUME_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 void synthVolume(u8 volume, u16 timeMs, u8 target, u8 action, u32 handle);
 int synthIsFadeOutActive(u8 voiceIdx);

@@ -83,5 +83,8 @@ void ring_release(void);
 void ring_initialise(void);
 void ring_init(GameObject* obj, RingPlacement* setup);
 void ring_update(GameObject* obj);
+void ring_updateMovingAxis(GameObject* obj, RingState* state);
+void ring_onCollect(GameObject* obj, RingState* state, GameObject* arwing);
+int ring_checkArwingCollision(GameObject* obj, RingState* state, GameObject* arwing);
 
 #endif

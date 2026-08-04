@@ -91,7 +91,7 @@ void spdrape_update(GameObject* obj)
             Sfx_PlayFromObject(obj, SFXTRIG_propsp_6);
             state->sfxTimer = randomGetRange(0xb4, 0x12c);
         }
-        if (getXZDistance(&(obj)->anim.worldPosX, &player->anim.worldPosX) < SP_DRAPE_NEAR_RADIUS_SQ)
+        if (getXZDistanceSquared(&(obj)->anim.worldPosX, &player->anim.worldPosX) < SP_DRAPE_NEAR_RADIUS_SQ)
         {
             if (player != 0)
             {
@@ -106,7 +106,7 @@ void spdrape_update(GameObject* obj)
                     state->moveTable = (int)gSpDrapeSwingRightMoveTable;
                 }
             }
-            ObjAnim_SetCurrentMove((int)obj, **(u8**)&state->moveTable, gSpDrapeZero[0], 0);
+            ObjAnim_SetCurrentMove((int)obj, *(u8*)state->moveTable, gSpDrapeZero[0], 0);
             state->animSpeed = 0.0175f;
             Sfx_PlayFromObject(obj, SFXTRIG_cagesqk11);
             Camera_GetCurrent();
@@ -116,16 +116,16 @@ void spdrape_update(GameObject* obj)
     case 4:
         if (state->moveActive != 0)
         {
-            if (getXZDistance(&(obj)->anim.worldPosX, &player->anim.worldPosX) > SP_DRAPE_LEAVE_RADIUS)
+            if (getXZDistanceSquared(&(obj)->anim.worldPosX, &player->anim.worldPosX) > SP_DRAPE_LEAVE_RADIUS)
             {
-                ObjAnim_SetCurrentMove((int)obj, (*(u8**)&state->moveTable)[SPDRAPE_MOVE_CLOSE],
+                ObjAnim_SetCurrentMove((int)obj, ((u8*)state->moveTable)[SPDRAPE_MOVE_CLOSE],
                                        gSpDrapeZero[0], 0);
                 Sfx_PlayFromObject(obj, SFXTRIG_cagesqk11);
                 state->animSpeed = 0.0165f;
             }
             else
             {
-                ObjAnim_SetCurrentMove((int)obj, (*(u8**)&state->moveTable)[SPDRAPE_MOVE_HOLD],
+                ObjAnim_SetCurrentMove((int)obj, ((u8*)state->moveTable)[SPDRAPE_MOVE_HOLD],
                                        gSpDrapeZero[0], 0);
                 state->animSpeed = 0.0144f;
             }
@@ -134,9 +134,9 @@ void spdrape_update(GameObject* obj)
     case 2: /* held open: flutter, close when the player leaves */
     case 5:
         Sfx_PlayFromObject(obj, SFXTRIG_wickhit16);
-        if (getXZDistance(&(obj)->anim.worldPosX, &player->anim.worldPosX) > SP_DRAPE_LEAVE_RADIUS)
+        if (getXZDistanceSquared(&(obj)->anim.worldPosX, &player->anim.worldPosX) > SP_DRAPE_LEAVE_RADIUS)
         {
-            ObjAnim_SetCurrentMove((int)obj, (*(u8**)&state->moveTable)[SPDRAPE_MOVE_CLOSE],
+            ObjAnim_SetCurrentMove((int)obj, ((u8*)state->moveTable)[SPDRAPE_MOVE_CLOSE],
                                    gSpDrapeZero[0], 0);
             Sfx_StopObjectChannel(obj, 0x40);
             Sfx_PlayFromObject(obj, SFXTRIG_cagesqk11);
@@ -146,7 +146,7 @@ void spdrape_update(GameObject* obj)
     case 3: /* closing: re-open if the player returns, else settle to idle */
     case 6:
         if (((obj)->anim.currentMoveProgress > SP_DRAPE_REOPEN_PROGRESS) &&
-            (getXZDistance(&(obj)->anim.worldPosX, &player->anim.worldPosX) < SP_DRAPE_NEAR_RADIUS_SQ))
+            (getXZDistanceSquared(&(obj)->anim.worldPosX, &player->anim.worldPosX) < SP_DRAPE_NEAR_RADIUS_SQ))
         {
             if (player != 0)
             {
@@ -161,7 +161,7 @@ void spdrape_update(GameObject* obj)
                     state->moveTable = (int)gSpDrapeSwingRightMoveTable;
                 }
             }
-            ObjAnim_SetCurrentMove((int)obj, **(u8**)&state->moveTable, gSpDrapeZero[0], 0);
+            ObjAnim_SetCurrentMove((int)obj, *(u8*)state->moveTable, gSpDrapeZero[0], 0);
             Sfx_PlayFromObject(obj, SFXTRIG_cagesqk11);
             state->animSpeed = 0.0175f;
         }

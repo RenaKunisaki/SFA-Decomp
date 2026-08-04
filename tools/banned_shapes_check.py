@@ -1,9 +1,15 @@
 #!/usr/bin/env python3
 """Scan game code for the CLAUDE.md banned constructs, so the ban self-enforces.
 
-Scope is GAME CODE ONLY -- src/main/, src/track/, src/dlls/. src/dolphin/ is the
-SDK and is exempt by policy; it legitimately carries pragmas, gotos, __declspec
-and lbl_ constants, so scanning it would produce nothing but false positives.
+Scope is GAME CODE ONLY -- src/main/, src/track/, src/dlls/. The third-party
+library trees are exempt by policy; they legitimately carry pragmas, gotos,
+__declspec and lbl_ constants, so scanning them would produce nothing but false
+positives: src/dolphin/ (the SDK), src/musyx/ (Factor 5's audio runtime) and
+src/Runtime.PPCEABI.H/ (the Metrowerks MSL runtime).
+
+Every directory under src/ is either scanned or exempt, and the self-test
+asserts it, so a newly added library tree cannot slip through unaudited and
+unlabelled.
 
 Nine pattern classes, each carrying its citation:
 
@@ -33,8 +39,9 @@ Nine pattern classes, each carrying its citation:
                   to force a pool symbol. Write the plain literal instead.
                   NOTE: an lbl_-named ARRAY or struct table is NOT this ban -- it
                   is real data whose name has not been recovered yet. Only scalar
-                  definitions are flagged, and --strict-lbl additionally reports
-                  arrays as naming debt (informational, never gating).
+                  definitions are flagged (an aggregate is told apart by its brace
+                  initialiser), and --strict-lbl additionally reports arrays and
+                  struct tables as naming debt (informational, never gating).
   SINGLE_ELEM_CONST_ARRAY
                   const T name[1] = {...} whose only reads are name[0] -- a
                   one-element array written to pin a pool slot. Two-pass: the
@@ -44,9 +51,19 @@ Nine pattern classes, each carrying its citation:
                   read only as name[0] -> pool anchor; NEVER READ -> anchor AND
                   dead (the purest form, and the one a reads-keyed check silently
                   misses); indexed or otherwise used -> a real array, not this
-                  shape. ALLOWED EXCEPTION: a genuine cross-TU object -- the
-                  symbol appears in config/GSAE01/symbols.txt or is referenced
-                  from a different source file.
+                  shape. ALLOWED EXCEPTION: a genuine cross-TU object, and the
+                  ONLY evidence for one is a reference from a DIFFERENT source
+                  file. Presence in config/GSAE01/symbols.txt is NOT that
+                  evidence -- the splitter emits every retail data symbol there,
+                  statics included, so the file carries no linkage information.
+                  Reading it as linkage once hid 14 real violations, the code
+                  has not done so for some time, and the self-test pins the
+                  regression; this paragraph said otherwise until now.
+                  EXTENT: keyed on `[1]` written literally, so a pin widened to
+                  `[2]` and still read only at [0] is outside the pattern. The
+                  two instances of that shape today (gAndrossBrainRenderScale,
+                  gWmPlanetsZeroVecTemplate) are sized by the carve at 0x8 and
+                  0x10, so they are real objects rather than evasions.
   UNCALLED_STATIC_FN
                   a static function definition that nothing in the tree calls,
                   not even transitively -- the phantom-function shape. MWCC emits
@@ -96,8 +113,18 @@ import subprocess
 import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-SCAN_ROOTS = ["src/main", "src/track", "src/dlls"]
-EXEMPT_ROOTS = ["src/dolphin"]
+SCAN_ROOTS = ["src/main", "src/track", "src/dlls",
+              "include/main", "include/dlls", "include/game", "include/track",
+              "include/sys", "include/util",
+              "include/global.h", "include/types.h"]
+EXEMPT_ROOTS = ["src/dolphin", "src/musyx", "src/Runtime.PPCEABI.H",
+                "include/dolphin", "include/musyx", "include/GBA",
+                "include/OdemuExi2", "include/amcstubs",
+                "include/PowerPC_EABI_Support", "include/Runtime.PPCEABI.H",
+                "include/TRK_MINNOW_DOLPHIN",
+                "include/dolphin.h", "include/math.h", "include/stdarg.h",
+                "include/stddef.h", "include/stdlib.h", "include/string.h",
+                "include/__ppc_eabi_linker.h"]
 BASELINE = "tools/banned_shapes_baseline.txt"
 SYMBOLS = "config/GSAE01/symbols.txt"
 
@@ -114,21 +141,41 @@ CITE = {
     "UNCALLED_STATIC_FN": "CLAUDE.md Banned constructs: phantom literal-minter functions",
 }
 
+# An `extern T name[...];` declaration carries the symbol without using it. Counting
+# it as a read made the census read "used as a real array" (the name is not followed
+# by [0]) and, across files, as cross-TU linkage -- either way laundering a genuine
+# pool anchor straight out of the report.
+RE_EXTERN_DECL = re.compile(r"^\s*extern\b[^=]*;\s*$")
 RE_PRAGMA = re.compile(r"^\s*#\s*pragma\b")
 RE_GOTO = re.compile(r"(?<![\w.>])goto\s+[A-Za-z_]\w*\s*;")
-RE_DECLSPEC = re.compile(r"__declspec\s*\(\s*section\b")
-RE_VOLATILE_CAST = re.compile(r"\*\s*\(\s*volatile\b")
+# Both the raw attribute and the two `include/global.h` shims that expand to it --
+# the ban is on APPLYING section forcing to an object, so a macro that spells the
+# attribute is an evasion path, while global.h's own `#define` of it is not a use.
+RE_DECLSPEC = re.compile(r"__declspec\s*\(\s*section\b|\bSECTION_(?:DATA|INIT)\b")
+RE_DEFINE = re.compile(r"^\s*#\s*define\b")
+# Either the immediate-deref form `*(volatile T*)&x` or the pointer form
+# `volatile T *p = (volatile T *)&x;`, which launders the same hack through a
+# named pointer and which the deref-only pattern could never see.  There are
+# zero instances of the pointer form in game code, so the widening costs no
+# baseline entries -- but a zero that no pattern could ever have disturbed is
+# not evidence, which is the whole point of the per-class controls below.
+RE_VOLATILE_CAST = re.compile(r"\*\s*\(\s*volatile\b|\(\s*volatile\b[^)]*\*\s*\)\s*&")
 RE_REGISTER_ASM = re.compile(r"\bregister\b[^;]*\basm\s*\(")
 # file-scope (column 0) volatile object of floating-point type
 RE_VOLATILE_DECL = re.compile(
     r"^(?:extern\s+)?volatile\s+(?:const\s+)?(?:f32|f64|float|double)\b")
-# scalar lbl_ const definition: no '[' before '=' -> not an array/table
+# scalar lbl_ const definition: no '[' before '=' -> not an array, and no
+# brace initialiser after it -> not a struct table either. Both of those are
+# real data whose name has not been recovered, which this class exempts.
 RE_LBL_SCALAR = re.compile(
     r"^\s*(?:static\s+)?const\s+(?!union\b)[A-Za-z_]\w*\s*\*?\s*"
-    r"(lbl_[0-9A-Fa-f]{8})\s*=")
-RE_LBL_UNION = re.compile(r"^\s*(?:static\s+)?const\s+union\b[^;]*?(lbl_[0-9A-Fa-f]{8})\s*=")
+    r"(lbl_[0-9A-Fa-f]{8})\s*=(?!\s*\{)")
+# the union disguise, including the inline `const union { f32 f; } lbl_ = ...`
+# form whose member list carries a ';' of its own
+RE_LBL_UNION = re.compile(r"^\s*(?:static\s+)?const\s+union\b.*?(lbl_[0-9A-Fa-f]{8})\s*=")
 RE_LBL_ARRAY = re.compile(
-    r"^\s*(?:static\s+)?const\s+[A-Za-z_]\w*\s*\*?\s*(lbl_[0-9A-Fa-f]{8})\s*\[")
+    r"^\s*(?:static\s+)?const\s+[A-Za-z_]\w*\s*\*?\s*(lbl_[0-9A-Fa-f]{8})"
+    r"\s*(?:\[|=\s*\{)")
 RE_ONE_ELEM = re.compile(
     r"^\s*(?:static\s+)?const\s+[A-Za-z_]\w*\s*\*?\s*([A-Za-z_]\w*)\s*\[\s*1\s*\]\s*=")
 # A function DEFINITION at column 0: a return type, then the name and '(', with
@@ -146,7 +193,8 @@ RE_FN_DEF = re.compile(
 # write-gather pipe, rather than the address of a C object.
 RE_HW_ADDR = re.compile(r"0x[Cc][Cc][0-9A-Fa-f]{5}")
 RE_PIPE = re.compile(r"WG(?:Pipe|Fifo)", re.I)
-RE_ADDR_OF_OBJECT = re.compile(r"\*\s*\(\s*volatile\b[^)]*\)\s*&")
+RE_ADDR_OF_OBJECT = re.compile(r"\*\s*\(\s*volatile\b[^)]*\)\s*&"
+                               r"|\(\s*volatile\b[^)]*\*\s*\)\s*&")
 
 
 def is_c_source(path):
@@ -155,7 +203,13 @@ def is_c_source(path):
 
 def walk(roots, base=REPO):
     for root in roots:
-        for dirpath, _dirs, files in os.walk(os.path.join(base, root)):
+        full = os.path.join(base, root)
+        if os.path.isfile(full):
+            # a root may name a single loose header (include/global.h)
+            if is_c_source(full):
+                yield os.path.relpath(full, base)
+            continue
+        for dirpath, _dirs, files in os.walk(full):
             for f in sorted(files):
                 if is_c_source(f):
                     p = os.path.join(dirpath, f)
@@ -178,7 +232,7 @@ def scan_file(rel, text, strict_lbl=False):
             hits.append((rel, n, "PRAGMA", raw.strip()))
         if RE_GOTO.search(line):
             hits.append((rel, n, "GOTO", raw.strip()))
-        if RE_DECLSPEC.search(line):
+        if RE_DECLSPEC.search(line) and not RE_DEFINE.match(line):
             hits.append((rel, n, "DECLSPEC_SECTION", raw.strip()))
         if RE_REGISTER_ASM.search(line):
             hits.append((rel, n, "REGISTER_ASM", raw.strip()))
@@ -237,6 +291,8 @@ def scan_one_elem(files, base=REPO):
                 if orel == rel and idx == n:
                     continue          # the definition itself
                 line = strip_line_comment(raw)
+                if RE_EXTERN_DECL.match(line):
+                    continue      # a declaration is neither a read nor linkage
                 for mm in re.finditer(r"\b" + re.escape(name) + r"\b", line):
                     rest = line[mm.end():]
                     if re.match(r"\s*\[\s*0\s*\]", rest):
@@ -500,6 +556,41 @@ def self_test():
     for cls in ("PRAGMA", "GOTO", "DECLSPEC_SECTION"):
         chk("pattern fires on SDK corpus: %s" % cls, cls in got)
 
+    # POSITIVE, PER CLASS, SYNTHETIC. Five of the nine classes report ZERO on
+    # game code, and a zero is only evidence if the pattern could have fired.
+    # PRAGMA and DECLSPEC_SECTION are covered by the SDK corpus above and
+    # VOLATILE_DECL by its own regex probes, but VOLATILE_PUN and REGISTER_ASM
+    # had no control at all: their regexes could have rotted to never match and
+    # nothing here or in the baseline would have moved. Every class now carries
+    # a synthetic instance, so no class can report a silent zero.
+    def fires(cls, line):
+        return cls in {h[2] for h in scan_file("src/main/_probe.c", line)}
+
+    for cls, line in (
+            ("PRAGMA", "#pragma peephole off"),
+            ("GOTO", "    goto done;"),
+            ("DECLSPEC_SECTION",
+             '__declspec(section ".sdata2") const f32 k = 1.0f;'),
+            ("VOLATILE_PUN", "    *(volatile f32*)&sBlocker = x;"),
+            ("VOLATILE_PUN",
+             "    volatile f32 *q = (volatile f32 *)&sTable[i];"),
+            ("VOLATILE_DECL", "volatile f32 gBlocker = 0.0f;"),
+            ("REGISTER_ASM", 'register int unused asm("r14");'),
+            ("REGISTER_ASM", 'static register void *sPin asm ("r31");'),
+            ("LBL_CONST_DEF", "const f32 lbl_803E1234 = 1.0f;")):
+        chk("pattern fires on a synthetic %s" % cls, fires(cls, line),
+            line.strip()[:44])
+
+    # ...and the matching NEGATIVES for the two newly-controlled classes, so the
+    # widening that closed the pointer-form pun cannot start swallowing the
+    # genuine hardware volatiles it is carved around.
+    chk("genuine hardware volatile write not flagged as a pun",
+        not fires("VOLATILE_PUN", "    *(volatile u32*)0xCC008000 = v;"))
+    chk("write-gather pipe not flagged as a pun",
+        not fires("VOLATILE_PUN", "    WGPipe.u32 = v;"))
+    chk("a plain register local is not a register-asm reservation",
+        not fires("REGISTER_ASM", "    register int i = 0;"))
+
     # POSITIVE: the historical purge corpus at pre-hack-purge.
     try:
         tag = subprocess.run(["git", "-C", REPO, "rev-parse", "-q", "--verify",
@@ -546,6 +637,46 @@ def self_test():
         bool(_listed) or not _syms, "(%d visible)" % len(_listed))
 
     chk("empty scope yields empty result", collect(roots=["src/does_not_exist"]) == [])
+
+    covered = [os.path.normpath(r) for r in SCAN_ROOTS + EXEMPT_ROOTS]
+    src = os.path.join(REPO, "src")
+    unlabelled = [d for d in sorted(os.listdir(src))
+                  if os.path.isdir(os.path.join(src, d))
+                  and os.path.join("src", d) not in covered
+                  and any(True for _ in walk([os.path.join("src", d)]))]
+    chk("every C source directory under src/ is scanned or exempt",
+        not unlabelled, ", ".join(unlabelled))
+
+    inc = os.path.join(REPO, "include")
+    unlabelled_inc = [d for d in sorted(os.listdir(inc))
+                      if os.path.isdir(os.path.join(inc, d))
+                      and os.path.join("include", d) not in covered
+                      and any(True for _ in walk([os.path.join("include", d)]))]
+    chk("every header directory under include/ is scanned or exempt",
+        not unlabelled_inc, ", ".join(unlabelled_inc))
+
+    loose_inc = [f for f in sorted(os.listdir(inc))
+                 if is_c_source(f)
+                 and os.path.isfile(os.path.join(inc, f))
+                 and os.path.join("include", f) not in covered]
+    chk("every loose header at include/ root is scanned or exempt",
+        not loose_inc, ", ".join(loose_inc))
+    chk("global.h's own #define of the section shim is not a use",
+        len(scan_file("h.h", '#define SECTION_DATA __declspec(section ".data")\n')) == 0)
+    chk("the section shim used on an object IS flagged",
+        [h[2] for h in scan_file("a.c", "SECTION_DATA int gThing;\n")] == ["DECLSPEC_SECTION"])
+
+    synth_fwd = {"a.c": ("void f(void) {\n"
+                         "    extern const f32 gSynthFwd[1];\n"
+                         "    use(gSynthFwd[0]);\n"
+                         "}\n"
+                         "const f32 gSynthFwd[1] = {0.25f};\n")}
+    chk("a forward extern declaration does not launder the definition",
+        len(scan_one_elem(synth_fwd)) == 1)
+    synth_hdr = {"a.c": "const f32 gSynthHdr[1] = {1.0f};\nvoid f(void){use(gSynthHdr[0]);}\n",
+                 "h.h": "extern const f32 gSynthHdr[1];\n"}
+    chk("a header declaration does not launder the definition",
+        len(scan_one_elem(synth_hdr)) == 1)
     return ok
 
 

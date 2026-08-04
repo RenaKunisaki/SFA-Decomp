@@ -6,23 +6,8 @@
 #include "main/dll/modgfx_types.h"
 #include "main/vecmath.h"
 
-typedef struct Dll7AEffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} Dll7AEffectVertex;
-
-STATIC_ASSERT(offsetof(Dll7AEffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(Dll7AEffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(Dll7AEffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(Dll7AEffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(Dll7AEffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(Dll7AEffectVertex) == 0x0A);
-
 typedef struct Dll7AEffectResourceView {
-    Dll7AEffectVertex vertices[9];
+    ModgfxEffectVertex vertices[9];
     u8 pad5A[2];
     s16 triangles[8][3];
     s16 allVertexIndices[10];
@@ -49,7 +34,7 @@ u32 gDll7AEffectResourceData[sizeof(Dll7AEffectResourceView) / sizeof(u32)] = {
     0x00000001, 0x00020003, 0x00040005, 0x00060007, 0x00000064, 0x00000000, 0x00000000, 0x00000000};
 
 s16 dll_7A_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)(int)gDll7AEffectResourceData;
     GfxCmd* commands;
     GfxCmd* commandCursor;

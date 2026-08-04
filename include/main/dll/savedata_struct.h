@@ -5,9 +5,20 @@
 
 #define SAVE_DATA_SIZE 0xE4
 
+#define SAVE_SCORE_TABLE_COUNT 5
+#define SAVE_SCORE_ENTRY_COUNT 5
+
+typedef struct SaveScoreEntry
+{
+    u32 score : 31;
+    u32 flag : 1;
+    u8 initials[4];
+} SaveScoreEntry;
+
 typedef struct SaveData
 {
-    u8 pad00[2];
+    u8 optionsValid;
+    u8 pad01;
     u8 subtitlesEnabled;
     u8 gameUiSetting;
     u8 cameraSetting;
@@ -22,6 +33,8 @@ typedef struct SaveData
     u8 pad0D[3];
     u32 registeredDebugOptions;
     u32 enabledDebugOptions;
+    u8 pad18[4];
+    SaveScoreEntry scores[SAVE_SCORE_TABLE_COUNT][SAVE_SCORE_ENTRY_COUNT];
 } SaveData;
 
 /* Bit index into registeredDebugOptions/enabledDebugOptions, aka cheatId. */

@@ -24,7 +24,7 @@ typedef struct DllCEControl {
     u8 padA[2];           /* 0xA */
 } DllCEControl;
 
-typedef int (*ChukChukStateHandler)(GameObject* obj, GroundBaddieState* state);
+typedef int (*DllCEStateHandler)(GameObject* obj, GroundBaddieState* state);
 
 STATIC_ASSERT(offsetof(DllCEPlacement, base) == 0x0);
 STATIC_ASSERT(offsetof(DllCEPlacement, flags) == 0x2B);
@@ -36,22 +36,22 @@ STATIC_ASSERT(offsetof(DllCEControl, effectFlags) == 0x8);
 STATIC_ASSERT(offsetof(DllCEControl, coordinationFlags) == 0x9);
 STATIC_ASSERT(sizeof(DllCEControl) == 0xC);
 
-int chukChuk_checkChooseAttackState(GameObject* obj, GroundBaddieState* state);
-int chukChuk_checkSubmergeState(GameObject* obj, GroundBaddieState* state);
-int chukChuk_checkYieldState(GameObject* obj, GroundBaddieState* state);
-int chukChuk_checkDeathState(GameObject* obj, GroundBaddieState* state);
-int chukChuk_checkHealthState(GameObject* obj, GroundBaddieState* state);
-int chukChuk_checkTargetState(GameObject* obj, GroundBaddieState* state);
-int chukChuk_updateWindupState(GameObject* obj, GroundBaddieState* state);
-int chukChuk_updateAlertState(GameObject* obj, GroundBaddieState* state);
-int chukChuk_updateSpitState(GameObject* obj, GroundBaddieState* state);
-int chukChuk_updateState3(GameObject* obj, GroundBaddieState* state);
-int chukChuk_updateAttackState(GameObject* obj, GroundBaddieState* state);
-int chukChuk_updateSubmergeState(GameObject* obj, GroundBaddieState* state);
-int chukChuk_updateEmergeState(GameObject* obj, GroundBaddieState* state);
-void chukChuk_spawnIceBall(GameObject* obj, GroundBaddieState* state);
-void chukChuk_acquireTarget(GameObject* obj, GroundBaddieState* objectState, GroundBaddieState* state);
-void chukChuk_updateTargeting(GameObject* obj, int objectStateAddress, int stateAddress);
+int dll_CE_checkChooseAttackState(GameObject* obj, GroundBaddieState* state);
+int dll_CE_checkSubmergeState(GameObject* obj, GroundBaddieState* state);
+int dll_CE_checkYieldState(GameObject* obj, GroundBaddieState* state);
+int dll_CE_checkDeathState(GameObject* obj, GroundBaddieState* state);
+int dll_CE_checkHealthState(GameObject* obj, GroundBaddieState* state);
+int dll_CE_checkTargetState(GameObject* obj, GroundBaddieState* state);
+int dll_CE_updateWindupState(GameObject* obj, GroundBaddieState* state);
+int dll_CE_updateAlertState(GameObject* obj, GroundBaddieState* state);
+int dll_CE_updateSpitState(GameObject* obj, GroundBaddieState* state);
+int dll_CE_updateState3(GameObject* obj, GroundBaddieState* state);
+int dll_CE_updateAttackState(GameObject* obj, GroundBaddieState* state);
+int dll_CE_updateSubmergeState(GameObject* obj, GroundBaddieState* state);
+int dll_CE_updateEmergeState(GameObject* obj, GroundBaddieState* state);
+void dll_CE_spawnIceBall(GameObject* obj, GroundBaddieState* state);
+void dll_CE_acquireTarget(GameObject* obj, GroundBaddieState* objectState, GroundBaddieState* state);
+void dll_CE_updateTargeting(GameObject* obj, GroundBaddieState* objectStateAddress, GroundBaddieState* stateAddress);
 
 void dll_CE_handleMessage(GameObject* obj, int message);
 s16 dll_CE_getControlMode(GameObject* obj);
@@ -65,8 +65,8 @@ void dll_CE_init(GameObject* obj, DllCEPlacement* placement, int flags);
 void dll_CE_release(void);
 void dll_CE_initialise(void);
 
-extern ChukChukStateHandler gChukChukMoveHandlers[8];
-extern ChukChukStateHandler gChukChukCheckHandlers[6];
+extern DllCEStateHandler gDllCEMoveHandlers[8];
+extern DllCEStateHandler gDllCECheckHandlers[6];
 extern int gDllCEHitReactionMoves[30];
 extern u8 gDllCEHitReactionDamage[32];
 extern PartFxSpawnParams gDllCEHitReactionScratch;

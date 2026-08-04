@@ -42,7 +42,7 @@ u8 sc_totempuzzle_checkSolvedSequence(GameObject* obj, ScTotemPuzzleState* state
 int sc_totempuzzle_getExtraSize(void);
 int sc_totempuzzle_getObjectTypeId(void);
 void sc_totempuzzle_free(void);
-void sc_totempuzzle_render(int obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
+void sc_totempuzzle_render(GameObject* obj, int renderArg2, int renderArg3, int renderArg4, int renderArg5, s8 visible);
 void sc_totempuzzle_hitDetect(void);
 void sc_totempuzzle_update(GameObject* obj);
 void sc_totempuzzle_init(GameObject* obj, const ScTotemPuzzlePlacement* placement);

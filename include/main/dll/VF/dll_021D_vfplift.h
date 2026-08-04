@@ -1,7 +1,7 @@
 #ifndef MAIN_DLL_VF_DLL_021D_VFPLIFT_H_
 #define MAIN_DLL_VF_DLL_021D_VFPLIFT_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 #include "game/objects/object.h"
 #include "global.h"
 #include "game/objects/object_setup.h"
@@ -53,7 +53,7 @@ void vfplift1_updateState(GameObject* obj);
 int VFPLift_getExtraSize(void);
 int VFPLift_getObjectTypeId(void);
 void VFPLift_free(int obj);
-void VFPLift_render(int p1, int p2, int p3, int p4, int p5, s8 vis);
+void VFPLift_render(GameObject* p1, int p2, int p3, int p4, int p5, s8 vis);
 void VFPLift_hitDetect(GameObject* obj);
 void VFPLift_update(GameObject* obj);
 void VFPLift_init(GameObject* obj, VfpLiftPlacement* init);

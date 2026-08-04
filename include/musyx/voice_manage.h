@@ -1,7 +1,7 @@
 #ifndef MUSYX_VOICE_MANAGE_H_
 #define MUSYX_VOICE_MANAGE_H_
 
-#include "ghidra_import.h"
+#include "types.h"
 
 #define SYNTH_INVALID_VOICE 0xFFFFFFFFU
 #define SYNTH_INVALID_VOICE_U8 0xFF

@@ -122,12 +122,12 @@ static void vecGetRanges(f32* pts, f32* base, f32 scale, int* out);
 static int objShadowGetFadedAlpha(GameObject* obj, u8 param);
 
 
-f32 gShadowVolumeBoxCorners[0x19];
+extern f32 gShadowVolumeBoxCorners[0x19];
 f32 gPrevSunDir[3];
 
-u8 gShadowDrawScratch[0x5DC0];
+extern u8 gShadowDrawScratch[0x5DC0];
 
-f32 lbl_8038D77C[0x18];
+extern f32 lbl_8038D77C[0x18];
 
 static inline void GXPosition3s16(const int x, const int y, const int z)
 {
@@ -698,8 +698,8 @@ int objShadowRender(GameObject* obj, int renderMode, int unused, int frameCount)
     int idxOut = 0;
     int drawScratch;
     u32* vtx;
-    int alphaOut = 0;
-    int alpha;
+    int triangleTable = 0;
+    int triangleBuffer;
     ObjectShadowMesh* shadowMesh;
     f32 vec[3];
     f32 base[3];
@@ -742,12 +742,12 @@ int objShadowRender(GameObject* obj, int renderMode, int unused, int frameCount)
 
         trackIntersectBroadphase(obj, &ranges, 0x81, 0);
         trackGetGridOrigin((int**)&vtx);
-        trackGetTriangleBuffer(&idxOut, &alphaOut);
+        trackGetTriangleBuffer(&idxOut, &triangleTable);
 
-        alpha = alphaOut;
-        idxOut = collectShadowTrackTriangles((int*)obj, alpha, gShadowDrawScratch, gShadowVolumeBuffer, idxOut, (f32)(int)vtx[0],
+        triangleBuffer = triangleTable;
+        idxOut = collectShadowTrackTriangles((int*)obj, triangleBuffer, gShadowDrawScratch, gShadowVolumeBuffer, idxOut, (f32)(int)vtx[0],
                              (f32)(int)vtx[2], renderMode, modelState->flags & 0x40000);
-        gShadowTrackTriangleBuffer = alpha;
+        gShadowTrackTriangleBuffer = triangleBuffer;
         gShadowTrackTriangleCount = idxOut;
         gShadowTrackGridOrigin = (int)vtx;
         trackDolphin_buildShadowVolumePlanes((int*)obj, buf48, bufA8);
@@ -762,7 +762,7 @@ u8 objShadowUpdateAlpha(GameObject* obj, int delta)
 {
     ObjModelState* modelState;
     s16* alphaStep;
-    f32 f31;
+    f32 alphaScale;
     int v;
 
     modelState = obj->anim.modelState;
@@ -788,11 +788,11 @@ u8 objShadowUpdateAlpha(GameObject* obj, int delta)
             *alphaStep = 0x4000;
         }
     }
-    f31 = (1.0f / 16384.0f) * (f32)*alphaStep;
-    f31 = gShadowAlphaScale * f31;
+    alphaScale = (1.0f / 16384.0f) * (f32)*alphaStep;
+    alphaScale = gShadowAlphaScale * alphaScale;
     {
         f32 tint = objShadowGetFadedAlpha(obj, modelState->shadowTintA);
-        v = (s16)(int)(tint * f31);
+        v = (s16)(int)(tint * alphaScale);
     }
     if (v > 0xff)
     {
@@ -1028,3 +1028,7 @@ void initTextures(void)
     a[23] = 55.0f;
     allocLotsOfTextures();
 }
+
+f32 gShadowVolumeBoxCorners[0x19];
+f32 lbl_8038D77C[0x18];
+u8 gShadowDrawScratch[0x5DC0];

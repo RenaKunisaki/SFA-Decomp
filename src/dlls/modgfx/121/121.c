@@ -6,23 +6,8 @@
 #include "main/dll/modgfx_types.h"
 #include "main/vecmath.h"
 
-typedef struct Dll79EffectVertex {
-    s16 positionX;
-    s16 positionY;
-    s16 positionZ;
-    s16 texCoordS;
-    s16 texCoordT;
-} Dll79EffectVertex;
-
-STATIC_ASSERT(offsetof(Dll79EffectVertex, positionX) == 0x00);
-STATIC_ASSERT(offsetof(Dll79EffectVertex, positionY) == 0x02);
-STATIC_ASSERT(offsetof(Dll79EffectVertex, positionZ) == 0x04);
-STATIC_ASSERT(offsetof(Dll79EffectVertex, texCoordS) == 0x06);
-STATIC_ASSERT(offsetof(Dll79EffectVertex, texCoordT) == 0x08);
-STATIC_ASSERT(sizeof(Dll79EffectVertex) == 0x0A);
-
 typedef struct Dll79EffectResourceView {
-    Dll79EffectVertex vertices[9];
+    ModgfxEffectVertex vertices[9];
     u8 pad5A[2];
     s16 triangles[8][3];
     s16 allVertexIndices[10];
@@ -45,7 +30,7 @@ s16 gDll79EvenVertexIndices[4] = {0, 2, 4, 6};
 extern u32 gDll79EffectResourceData[];
 
 s16 dll_79_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
-    ModgfxPointerSpawnPacket packet;
+    ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)(int)gDll79EffectResourceData;
     GfxCmd* commandCursor;
     GfxCmd* commands;

@@ -27,7 +27,7 @@ void objSetCurrentMatrix(u32 mtx);
 void modelInitMtxs(ModelFileHeader* modelFile, ObjModel* model);
 void modelBuildPosNrmMtxs(u8* modelFile, int* model, f32* matrix, f32* matrix2);
 int objMatrixToRotation(f32* matrix, s16* outX, s16* outY, s16* outZ);
-int objFuzzShellRenderCb(int obj, int* model, int renderOpIndex);
+int objFuzzShellRenderCb(GameObject* obj, int* model, int renderOpIndex);
 int objFuzzRenderCb(GameObject* obj, ObjModel* model, int renderOpIndex);
 
 #endif /* MAIN_OBJPRINT_RENDER_API_H_ */

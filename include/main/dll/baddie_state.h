@@ -2,7 +2,7 @@
 #define MAIN_DLL_BADDIE_STATE_H_
 
 #include "game/objects/object_setup.h"
-#include "ghidra_import.h"
+#include "types.h"
 #include "global.h"
 #include "main/objprint_character_api.h"
 #include "main/voxmaps.h"
@@ -80,7 +80,7 @@ typedef struct BaddieState {
     u8 unk25C[0x25F - 0x25C];
     s8 physicsActive; /* enables the free-fall physics path: gravity integration (velY -= g*dt), floor bounce response; set when thrown/spat */
     s8 contactSfxFlags; /* bit 0x10 allows contact sfx while contactSfxMuted is set (intersect.c) */
-    u8 unk261[0x262 - 0x261];
+    u8 bboxTraceFlags; /* bbox trace filter handed to trackGetLineIntersect */
     u8 groundContact; /* nonzero while the actor is resting on a surface this frame; the shared controller and player.c re-derive velocity from the position delta when it or surfaceFlags bit 2 is set */
     u8 unk263;
 /* surfaceFlags bit: a floor was found within the ground-probe distance. Set and
@@ -223,12 +223,12 @@ typedef struct GroundBaddiePlacement {
     s16 triggerId;     /* 0x22 */
     s16 unk24;         /* 0x24 */
     u8 pad26;          /* 0x26 */
-    u8 unk27;          /* 0x27 */
+    u8 initialWeaponId; /* 0x27 */
     u8 unk28;          /* 0x28 */
     u8 aggroRange;     /* 0x29: scaled <<3 into GroundBaddieState.aggroRange */
     u8 rotX;           /* 0x2a: 1/256-turn heading, sign-extended and <<8 into obj->anim.rotX */
     u8 flags;          /* 0x2b: GroundBaddieState.configFlags */
-    s16 unk2C;         /* 0x2c */
+    s16 respawnDelay;  /* 0x2c: minutes fed to MapEvent addTime; 0 never respawns */
     s8 sequenceId;     /* 0x2e: -1 leaves the baddie dormant (obj->userData2 = 1) */
     u8 aggression;     /* 0x2f */
     s16 gameBitB;      /* 0x30: set 0 at init */
