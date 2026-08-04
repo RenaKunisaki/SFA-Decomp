@@ -28,8 +28,6 @@
 #include "main/sky_interface.h"
 #include "sys/objects.h"
 
-#define NW_LEVEL_CONTROL_SEQUENCE_ENTRY_COUNT 7
-#define NW_LEVEL_CONTROL_SKY_RAMP_VALUE_COUNT 28
 
 #define NW_LEVEL_CONTROL_HINT_TEXT_ID       0x435
 #define NW_LEVEL_CONTROL_HINT_DURATION      300.0f
@@ -45,38 +43,44 @@
 #define NW_LEVEL_CONTROL_FLAG_TIMER_COMPLETE      0x04
 #define NW_LEVEL_CONTROL_FLAG_DAY_NIGHT_MUSIC     0x10
 
-typedef struct NwLevelControlDataView {
-    s32 targetObjectIds[NW_LEVEL_CONTROL_SEQUENCE_ENTRY_COUNT];
-    s32 sequenceIds[NW_LEVEL_CONTROL_SEQUENCE_ENTRY_COUNT];
-    s32 nextModes[NW_LEVEL_CONTROL_SEQUENCE_ENTRY_COUNT];
-    s16 skyRampA[NW_LEVEL_CONTROL_SKY_RAMP_VALUE_COUNT];
-    s16 skyRampB[NW_LEVEL_CONTROL_SKY_RAMP_VALUE_COUNT];
-    s16 skyRampC[NW_LEVEL_CONTROL_SKY_RAMP_VALUE_COUNT];
-    s16 skyRampD[NW_LEVEL_CONTROL_SKY_RAMP_VALUE_COUNT];
-} NwLevelControlDataView;
+STATIC_ASSERT(sizeof(NwLevelControlData) == NW_LEVEL_CONTROL_DATA_SIZE);
+STATIC_ASSERT(offsetof(NwLevelControlData, targetObjectIds) == 0x00);
+STATIC_ASSERT(offsetof(NwLevelControlData, sequenceIds) == 0x1C);
+STATIC_ASSERT(offsetof(NwLevelControlData, nextModes) == 0x38);
+STATIC_ASSERT(offsetof(NwLevelControlData, skyRampA) == 0x54);
+STATIC_ASSERT(offsetof(NwLevelControlData, skyRampB) == 0x8C);
+STATIC_ASSERT(offsetof(NwLevelControlData, skyRampC) == 0xC4);
+STATIC_ASSERT(offsetof(NwLevelControlData, skyRampD) == 0xFC);
 
-STATIC_ASSERT(sizeof(NwLevelControlDataView) == NW_LEVEL_CONTROL_DATA_SIZE);
-STATIC_ASSERT(offsetof(NwLevelControlDataView, targetObjectIds) == 0x00);
-STATIC_ASSERT(offsetof(NwLevelControlDataView, sequenceIds) == 0x1C);
-STATIC_ASSERT(offsetof(NwLevelControlDataView, nextModes) == 0x38);
-STATIC_ASSERT(offsetof(NwLevelControlDataView, skyRampA) == 0x54);
-STATIC_ASSERT(offsetof(NwLevelControlDataView, skyRampB) == 0x8C);
-STATIC_ASSERT(offsetof(NwLevelControlDataView, skyRampC) == 0xC4);
-STATIC_ASSERT(offsetof(NwLevelControlDataView, skyRampD) == 0xFC);
-
-u8 gNwLevelControlData[NW_LEVEL_CONTROL_DATA_SIZE] = {
-    0,  4,   71, 213, 0, 4,   71, 214, 0, 4,   71, 213, 0, 4,   71, 214, 0, 4,   71, 213, 0, 4,   71, 214, 0, 4,
-    71, 213, 0,  0,   0, 2,   0,  0,   0, 3,   0,  0,   0, 4,   0,  0,   0, 5,   0,  0,   0, 6,   0,  0,   0, 7,
-    0,  0,   0,  1,   0, 0,   0,  3,   0, 0,   0,  4,   0, 0,   0,  5,   0, 0,   0,  6,   0, 0,   0,  7,   0, 0,
-    0,  8,   0,  0,   0, 11,  0,  180, 0, 180, 0,  180, 0, 180, 0,  180, 0, 180, 0,  180, 0, 180, 0,  180, 0, 180,
-    0,  180, 0,  180, 0, 180, 0,  180, 0, 180, 0,  180, 0, 180, 0,  180, 0, 180, 0,  180, 0, 180, 0,  180, 0, 180,
-    0,  180, 0,  180, 0, 180, 0,  180, 0, 180, 0,  182, 0, 182, 0,  182, 0, 182, 0,  182, 0, 182, 0,  182, 0, 182,
-    0,  182, 0,  182, 0, 182, 0,  182, 0, 182, 0,  182, 0, 182, 0,  182, 0, 182, 0,  182, 0, 182, 0,  182, 0, 182,
-    0,  182, 0,  182, 0, 182, 0,  182, 0, 182, 0,  182, 0, 182, 0,  181, 0, 181, 0,  181, 0, 181, 0,  181, 0, 181,
-    0,  181, 0,  181, 0, 181, 0,  181, 0, 181, 0,  181, 0, 181, 0,  181, 0, 181, 0,  181, 0, 181, 0,  181, 0, 181,
-    0,  181, 0,  181, 0, 181, 0,  181, 0, 181, 0,  181, 0, 181, 0,  181, 0, 181, 0,  183, 0, 183, 0,  183, 0, 183,
-    0,  183, 0,  183, 0, 183, 0,  183, 0, 183, 0,  183, 0, 183, 0,  183, 0, 183, 0,  183, 0, 183, 0,  183, 0, 183,
-    0,  183, 0,  183, 0, 183, 0,  183, 0, 183, 0,  183, 0, 183, 0,  183, 0, 183, 0,  183, 0, 183};
+NwLevelControlData gNwLevelControlData = {
+    {280533, 280534, 280533, 280534, 280533, 280534, 280533},
+    {2, 3, 4, 5, 6, 7, 1},
+    {3, 4, 5, 6, 7, 8, 11},
+    {
+        180, 180, 180, 180, 180, 180, 180,
+        180, 180, 180, 180, 180, 180, 180,
+        180, 180, 180, 180, 180, 180, 180,
+        180, 180, 180, 180, 180, 180, 180,
+    },
+    {
+        182, 182, 182, 182, 182, 182, 182,
+        182, 182, 182, 182, 182, 182, 182,
+        182, 182, 182, 182, 182, 182, 182,
+        182, 182, 182, 182, 182, 182, 182,
+    },
+    {
+        181, 181, 181, 181, 181, 181, 181,
+        181, 181, 181, 181, 181, 181, 181,
+        181, 181, 181, 181, 181, 181, 181,
+        181, 181, 181, 181, 181, 181, 181,
+    },
+    {
+        183, 183, 183, 183, 183, 183, 183,
+        183, 183, 183, 183, 183, 183, 183,
+        183, 183, 183, 183, 183, 183, 183,
+        183, 183, 183, 183, 183, 183, 183,
+    },
+};
 
 ObjectDescriptor gNWLevelControlObjDescriptor = {
     0,
@@ -96,10 +100,10 @@ ObjectDescriptor gNWLevelControlObjDescriptor = {
 };
 
 int nwLevelControl_advanceSequenceTable(NwLevelControlState* state) {
-    NwLevelControlDataView* data;
+    NwLevelControlData* data;
     GameObject* obj;
 
-    data = (NwLevelControlDataView*)gNwLevelControlData;
+    data = &gNwLevelControlData;
     obj = ObjList_FindObjectById(data->targetObjectIds[state->tableIndex]);
     if (ObjTrigger_IsSetById(obj, NW_LEVEL_CONTROL_TRIGGER_ID) != 0) {
         (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
@@ -292,7 +296,7 @@ void nwLevelControl_update(GameObject* obj) {
 }
 
 void nwLevelControl_init(GameObject* obj) {
-    NwLevelControlDataView* data = (NwLevelControlDataView*)gNwLevelControlData;
+    NwLevelControlData* data = &gNwLevelControlData;
     NwLevelControlState* state = obj->extra;
 
     Obj_GetPlayerObject();

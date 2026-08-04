@@ -5,6 +5,8 @@
 #include "game/objects/object_fwd.h"
 
 #define NW_LEVEL_CONTROL_DATA_SIZE 0x134
+#define NW_LEVEL_CONTROL_SEQUENCE_ENTRY_COUNT 7
+#define NW_LEVEL_CONTROL_SKY_RAMP_VALUE_COUNT 28
 
 typedef enum NwLevelControlMode {
     NW_LEVEL_CONTROL_MODE_WAIT_START = 0,
@@ -44,7 +46,17 @@ STATIC_ASSERT(offsetof(NwLevelControlState, unknown0F) == 0x0F);
 STATIC_ASSERT(offsetof(NwLevelControlState, dayNightMusicId) == 0x10);
 STATIC_ASSERT(offsetof(NwLevelControlState, unknown12) == 0x12);
 
-extern u8 gNwLevelControlData[NW_LEVEL_CONTROL_DATA_SIZE];
+typedef struct NwLevelControlData {
+    s32 targetObjectIds[NW_LEVEL_CONTROL_SEQUENCE_ENTRY_COUNT];
+    s32 sequenceIds[NW_LEVEL_CONTROL_SEQUENCE_ENTRY_COUNT];
+    s32 nextModes[NW_LEVEL_CONTROL_SEQUENCE_ENTRY_COUNT];
+    s16 skyRampA[NW_LEVEL_CONTROL_SKY_RAMP_VALUE_COUNT];
+    s16 skyRampB[NW_LEVEL_CONTROL_SKY_RAMP_VALUE_COUNT];
+    s16 skyRampC[NW_LEVEL_CONTROL_SKY_RAMP_VALUE_COUNT];
+    s16 skyRampD[NW_LEVEL_CONTROL_SKY_RAMP_VALUE_COUNT];
+} NwLevelControlData;
+
+extern NwLevelControlData gNwLevelControlData;
 extern ObjectDescriptor gNWLevelControlObjDescriptor;
 
 int nwLevelControl_advanceSequenceTable(NwLevelControlState* state);
