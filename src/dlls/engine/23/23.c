@@ -233,14 +233,14 @@ void saveGame_unsaveObjectPos(GameObject* obj)
     SaveGameObjectPosition* slot;
     u32 objectId;
 
-    if ((((GameObject*)obj)->anim.flags & OBJANIM_FLAG_OWNS_PLACEMENT_DATA) != 0 || (s32)saveGameLoadStatus != 0)
+    if ((obj->anim.flags & OBJANIM_FLAG_OWNS_PLACEMENT_DATA) != 0 || (s32)saveGameLoadStatus != 0)
     {
         return;
     }
 
     for (i = 0; i < SAVEGAME_OBJECT_POSITION_COUNT; i++)
     {
-        objectId = ((SaveGameRomListPosition*)((GameObject*)obj)->anim.placementData)->objectId;
+        objectId = ((SaveGameRomListPosition*)obj->anim.placementData)->objectId;
         if (objectId == ((SaveGameData*)gSaveGameData)->positions[i].objectId)
         {
             break;

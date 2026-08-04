@@ -764,7 +764,7 @@ void Link_setup(LinkMenuItem* items, int count, int selected, const char* defaul
 
             if ((item->flags & LINK_FLAG_DRAW_SLOTS) != 0)
             {
-                linkInitTextures((LinkMenuItem*)item);
+                linkInitTextures(item);
             }
 
             if ((item->leftLink != -1) && ((item->flags & LINK_FLAG_INHERIT_X) != 0))

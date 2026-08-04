@@ -551,7 +551,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
             }
             else
             {
-                characterDecayJointVecs((GameObject*)obj, objGetLookAtJointKeys(), (u32)s->pointCount);
+                characterDecayJointVecs(obj, objGetLookAtJointKeys(), (u32)s->pointCount);
             }
         }
         else if (bit1 == 0 && s->phase == MOVELIB_PHASE_HELD)
@@ -571,7 +571,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
             }
             else
             {
-                characterDecayJointVecs((GameObject*)obj, objGetLookAtJointKeys(), (u32)s->pointCount);
+                characterDecayJointVecs(obj, objGetLookAtJointKeys(), (u32)s->pointCount);
             }
         }
         else
@@ -596,8 +596,8 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
                         blendB = (blendA < 0.0f) ? 0.0f : ((blendA > 1.0f) ? 1.0f : blendA);
                         blendB = 1.0f - blendB;
                         s->targetX = s->targetX * (blendA = 1.0f - blendB) +
-                                     ((GameObject*)obj)->anim.localPosX * blendB;
-                        s->targetZ = s->targetZ * blendA + ((GameObject*)obj)->anim.localPosZ * blendB;
+                                     obj->anim.localPosX * blendB;
+                        s->targetZ = s->targetZ * blendA + obj->anim.localPosZ * blendB;
                     }
                 }
                 if ((s->reattackDelayBase != -1) && (target == (u32)s->lastTarget))
@@ -653,7 +653,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
                 }
                 if (target != 0)
                 {
-                    yawDelta = Obj_GetYawDeltaToObject((GameObject*)obj, (GameObject*)target, NULL);
+                    yawDelta = Obj_GetYawDeltaToObject(obj, (GameObject*)target, NULL);
                 }
                 if ((s->modeBits & 0x10) != 0)
                 {
@@ -815,7 +815,7 @@ int moveLibTurnToFaceTarget(GameObject* obj, GameObject* targetObj, int* turning
         }
 
         obj->anim.rotX += turnDelta;
-        ret = (u32)(s16)turnDelta;
+        ret = (u32)turnDelta;
         ret = ((int)ret >= 0) ? ret : -ret;
         *turnSpeed = (float)(s32)ret / 20922.25f;
     }

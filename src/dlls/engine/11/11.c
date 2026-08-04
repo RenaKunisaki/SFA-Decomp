@@ -1215,7 +1215,7 @@ void dll_0B_updateActiveEffects(void)
                         ((ObjPlacement*)o)->posX = tmpl.posX;
                         ((ObjPlacement*)o)->posY = tmpl.posY;
                         ((ObjPlacement*)o)->posZ = tmpl.posZ;
-                        *(int*)eff = (int)objSetupObject((ObjPlacement*)o, 5, -1, -1, NULL);
+                        *eff = (int)objSetupObject((ObjPlacement*)o, 5, -1, -1, NULL);
                         ((PartfxEffectState*)eff)->instanceObject->userData2 = 1;
                     }
                     else if (*(void**)eff != NULL)
@@ -1245,7 +1245,7 @@ void dll_0B_updateActiveEffects(void)
                             if (*(s16*)((char*)list + 0x44) == (int)((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->posX)
                             {
                                 Obj_FreeObject((GameObject*)o);
-                                *(int*)eff = 0;
+                                *eff = 0;
                                 ((ModgfxPendingSpawn*)(PENDING_SPAWNS + emIdx * 0x18))->modelOrResource ^= 0x10000000;
                                 if (((ModgfxPendingSpawn*)(PENDING_SPAWNS + emIdx * 0x18))->posZ >= MODGFX_ZERO &&
                                     (int*)((PartfxEffectState*)eff)->sourceObject != NULL)

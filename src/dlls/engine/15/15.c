@@ -176,7 +176,7 @@ void player_applyVelocityStep(GameObject* obj, int* ctx, f32 t)
         obj->anim.velocityX = outX;
         obj->anim.velocityZ = outZ;
     }
-    objMove((GameObject*)obj, obj->anim.velocityX * t, obj->anim.velocityY * t,
+    objMove(obj, obj->anim.velocityX * t, obj->anim.velocityY * t,
             obj->anim.velocityZ * t);
 }
 

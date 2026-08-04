@@ -3720,7 +3720,7 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
     (void)out;
 
     cmd = *cmdPtr;
-    f = (s8)flags;
+    f = flags;
     noExec = (s8)(f & 1);
     doUpdate = (s8)(f & 2);
     flag8 = (s8)(f & 8);

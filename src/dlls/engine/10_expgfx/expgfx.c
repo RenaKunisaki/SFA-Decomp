@@ -542,7 +542,7 @@ void objfx_spawnArcedBurst(void* obj, u8 idx, f32 scale, u8 kind, u8 mode, int c
     f32 angularT;
 
     params.scale = scale;
-    params.effectParam = effectParams.values[(u8)kind];
+    params.effectParam = effectParams.values[kind];
     params.pad00[1] = 0x3c;
     for (i = 0; i < 4; i++) {
         u16 val;
@@ -600,9 +600,9 @@ void objfx_spawnArcedBurst(void* obj, u8 idx, f32 scale, u8 kind, u8 mode, int c
             params.position[1] += ((GameObject*)origin)->anim.localPosY;
             params.position[2] += ((GameObject*)origin)->anim.localPosZ;
         }
-        params.pad00[2] = paramC.values[(u8)idx];
-        params.pad00[0] = paramD.values[(u8)idx];
-        (*gPartfxInterface)->spawnObject(obj, spawnIds.values[(u8)idx], &params, flags | 2, -1, NULL);
+        params.pad00[2] = paramC.values[idx];
+        params.pad00[0] = paramD.values[idx];
+        (*gPartfxInterface)->spawnObject(obj, spawnIds.values[idx], &params, flags | 2, -1, NULL);
     }
 }
 
@@ -4266,7 +4266,7 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
     {
         return EXPGFX_INVALID_POOL_INDEX;
     }
-    if (expgfxGetSlot(&poolIndex, &slotIndex, (int)slotType, preferredPoolIndex, (u32)(int)config->attachedSource) ==
+    if (expgfxGetSlot(&poolIndex, &slotIndex, slotType, preferredPoolIndex, (u32)(int)config->attachedSource) ==
         EXPGFX_INVALID_POOL_INDEX)
     {
         return EXPGFX_INVALID_POOL_INDEX;

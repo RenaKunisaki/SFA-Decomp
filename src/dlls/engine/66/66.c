@@ -163,7 +163,7 @@ void CameraModeNormal_updateTargetAction(CameraObject* camera, GameObject* targe
             Camera_setBlendCurveMode(1);
             (*gCameraInterface)->setMode(CAMERA_MODE_COMBAT_RESOURCE_ID, 1, 0, 4, &camera->currentTarget, 0x3c, 0xff);
         } else if ((((buttons & PAD_TRIGGER_Z) != 0) && (target->anim.classId == 1)) &&
-                   (cond = playerIsInNormalControl((GameObject*)target), cond != 0)) {
+                   (cond = playerIsInNormalControl(target), cond != 0)) {
             viewfinderSettings.radius = gCameraModeNormalState->minDistance;
             viewfinderSettings.yOffset = gCameraModeNormalState->lowerHeightOffset;
             viewfinderSettings.height = gCameraModeNormalState->targetHeight;

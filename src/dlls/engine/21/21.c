@@ -246,7 +246,7 @@ void curves_resolveSingleTrace(GameObject* obj, CurvesCollisionState* collision)
             collision->points[0][0] = collision->points[1][0];
             collision->points[0][1] = points[pointIndex].height;
             collision->points[0][2] = collision->points[1][2];
-            trackGetIntersect((GameObject*)obj, collision->traceStart[0], collision->points[0], 1,
+            trackGetIntersect(obj, collision->traceStart[0], collision->points[0], 1,
                                  collision->segmentHitPlanes, 0);
             break;
         }
@@ -264,7 +264,7 @@ void curves_resolveSingleTrace(GameObject* obj, CurvesCollisionState* collision)
         collision->points[2][2] = collision->points[1][2];
         hitScratch.scale = CURVES_HIT_SCRATCH_SCALE;
         hitScratch.type = 3;
-        trackGetIntersect((GameObject*)obj, collision->traceStart[2], collision->points[2], 1, &hitScratch, 0);
+        trackGetIntersect(obj, collision->traceStart[2], collision->points[2], 1, &hitScratch, 0);
     }
 
     PSVECSubtract((Vec*)collision->points[0], (Vec*)collision->points[1], &delta);
@@ -276,7 +276,7 @@ void curves_resolveSingleTrace(GameObject* obj, CurvesCollisionState* collision)
         collision->points[0][0] = collision->points[1][0];
         collision->points[0][1] = collision->points[1][1] - CURVES_VERTICAL_TRACE_DISTANCE;
         collision->points[0][2] = collision->points[1][2];
-        trackGetIntersect((GameObject*)obj, collision->traceStart[0], collision->points[0], 1,
+        trackGetIntersect(obj, collision->traceStart[0], collision->points[0], 1,
                             collision->segmentHitPlanes,
                              0);
     }

@@ -619,7 +619,7 @@ void CameraModePath_update(CameraObject* cam) {
         }
         cam->fov = Curve_EvalBSpline(fov, t, 0);
         if (gCameraModePathState->transitionComplete == 0 &&
-            (s32)CameraModePath_updateTransition((CameraObject*)cam, (u32)flags) != 0) {
+            (s32)CameraModePath_updateTransition(cam, (u32)flags) != 0) {
             gCameraModePathState->transitionComplete = 1;
         }
         dx = cam->anim.worldPosX - obj->anim.worldPosX;

@@ -589,7 +589,7 @@ GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, i
                 }
             }
             nearDist = 750.0f;
-            gDll19NearestObj = objGetNearestTypeTo(DLL19_TARGET_OBJGROUP, (GameObject*)obj, &nearDist);
+            gDll19NearestObj = objGetNearestTypeTo(DLL19_TARGET_OBJGROUP, obj, &nearDist);
             source->anim.worldPosX = savedX;
             source->anim.worldPosY = savedY;
             source->anim.worldPosZ = savedZ;
@@ -1235,7 +1235,7 @@ u8 dll_19_getClearDirectionMask(GameObject* obj, void* state, f32 dist)
         if (ok != 0)
         {
             if (trackGetLineIntersect(&obj->anim.localPosX, world, 1.0f, 0, (TrackBBoxHit*)bboxOut,
-                                   (GameObject*)obj, ((Dll19State*)state)->bboxTraceFlags, -1, 0, 0) != 0)
+                                   obj, ((Dll19State*)state)->bboxTraceFlags, -1, 0, 0) != 0)
             {
                 ok = 0;
             }
