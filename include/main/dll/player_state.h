@@ -192,7 +192,7 @@ typedef struct PlayerState {
     u8 pad510[0x514 - 0x510];
     f32 moveDirY;       /* move direction vector Y */
     f32 moveDirZ;       /* move direction vector Z */
-    u8 pad51C[0x52C - 0x51C];
+    f32 blendPlane[4];
     f32 moveStartPosX;  /* localPosX assigned at the vertical-move start */
     u8 pad530[0x534 - 0x530];
     f32 moveStartPosZ;  /* localPosZ assigned at the vertical-move start */
@@ -451,5 +451,7 @@ STATIC_ASSERT(offsetof(PlayerState, targetYaw) == 0x478);
 STATIC_ASSERT(offsetof(PlayerState, heldObj) == 0x7F8);
 STATIC_ASSERT(offsetof(PlayerState, footPoints) == 0x3C4);
 STATIC_ASSERT(offsetof(PlayerState, pendingFxFlags) == 0x8D8);
+STATIC_ASSERT(offsetof(PlayerState, blendPlane) == 0x51C);
+STATIC_ASSERT(offsetof(PlayerState, groundNormalX) == 0x56C);
 
 #endif /* MAIN_DLL_PLAYER_STATE_H_ */

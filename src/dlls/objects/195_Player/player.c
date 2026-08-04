@@ -7506,7 +7506,7 @@ int playerStateClimbOntoWall(GameObject* obj, int state)
         f32 zero = 0.0f;
         ((PlayerState*)state)->baddie.animSpeedA = zero;
         ((PlayerState*)state)->baddie.animSpeedB = zero;
-        inner->targetYaw = (s16)getAngle(*(f32*)((int)inner + 0x56c), inner->groundNormalZ);
+        inner->targetYaw = (s16)getAngle(inner->groundNormalX, inner->groundNormalZ);
         inner->yaw = inner->targetYaw;
         obj->anim.localPosX = inner->climbStartPosX;
         obj->anim.localPosZ = inner->climbStartPosZ;
@@ -7526,7 +7526,7 @@ int playerStateClimbOntoWall(GameObject* obj, int state)
         {
             inner->animEventState =
                 playerSetMoveBlendFromPlane((int)obj, tbl[0], tbl[1], (int*)((char*)inner + 0x598),
-                            (int*)((char*)inner + 0x56c), 0.0f, 0.0f, 2, (u8)flags);
+                            (int*)&inner->groundNormalX, 0.0f, 0.0f, 2, (u8)flags);
         }
         model = Player_GetActiveModel((int)obj);
         ObjModel_SampleJointTransform(model, 0, 0, 1.0f, obj->anim.rootMotionScale, buf1, buf2);
@@ -8455,11 +8455,11 @@ int playerStateClimbOntoLadder(GameObject* obj, int state, f32 fv)
                 f9 |= 0x40;
             }
             playerSetMoveBlendFromPlane((int)obj, tbl[sel], tbl[sel + 1], (int*)inner->blendAnchor,
-                                        (int*)inner->pad51C,
+                                        (int*)inner->blendPlane,
                         0.0f, ((PlayerState*)state)->baddie.moveSpeed, 0, (u8)f9);
         }
         playerSetMoveBlendFromPlane((int)obj, tbl[sel + 2], tbl[sel + 3], (int*)inner->blendAnchor,
-                                    (int*)inner->pad51C, 0.0f, ((PlayerState*)state)->baddie.moveSpeed, 0, 0x1a);
+                                    (int*)inner->blendPlane, 0.0f, ((PlayerState*)state)->baddie.moveSpeed, 0, 0x1a);
         inner->climbTargetY = inner->climbStepHeight * (f32)(int)inner->climbStep + inner->climbBaseY;
         inner->climbStartY = obj->anim.localPosY;
         {
