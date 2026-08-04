@@ -82,7 +82,7 @@ extern f32 lbl_803DEC28;
 extern int lbl_803DEBB0;
 extern IndTexMtx23 gTexIndMtxTable;
 #define FRUSTUM_PLANE_COUNT 5
-u8 gRcpPendingWarpDest[0x10];
+WarpDestination gRcpPendingWarpDest;
 extern GXColor gTexShaderFogColor;
 extern GXColor gTexLightmapFogColor;
 

@@ -22,7 +22,14 @@
 
 #define LINK_ITEM_SLOTS 25
 
-extern u8 linkTextures[0x30];
+typedef struct LinkTextureSlot
+{
+    void* texture;
+    s16 assetId;
+    u8 width;
+} LinkTextureSlot;
+
+extern LinkTextureSlot linkTextures[6];
 s8 gLinkInputEnabled;
 s8 linkSelected;
 s8 gLinkItemCount;
@@ -116,7 +123,7 @@ void linkInitTextures(LinkMenuItem* item)
         item->slots[i] = -1;
     }
     item->slots[(i = 1) - 1] = 0;
-    budget -= linkTextures[6] + linkTextures[14];
+    budget -= linkTextures[0].width + linkTextures[1].width;
     while (budget != 0)
     {
         if (budget >= 80)
@@ -131,7 +138,7 @@ void linkInitTextures(LinkMenuItem* item)
         {
             item->slots[i] = 5;
         }
-        budget -= linkTextures[item->slots[i] * 8 + 6];
+        budget -= linkTextures[item->slots[i]].width;
         i++;
     }
     item->slots[i++] = 1;
@@ -157,7 +164,7 @@ void Link_refreshOverlappingItemTimers(void)
     sel = &gLinkMenuItems[linkSelected];
     if (((sel->flags & LINK_FLAG_DRAW_SLOTS) != 0) && (sel->slots[0] != -1))
     {
-        iconTex = (Texture*)(*(void**)(linkTextures + sel->slots[0] * 8));
+        iconTex = (Texture*)linkTextures[sel->slots[0]].texture;
     }
     else
     {
@@ -188,7 +195,7 @@ void Link_refreshOverlappingItemTimers(void)
             if (((gLinkMenuItems[i].flags & LINK_FLAG_DRAW_SLOTS) != 0) &&
                 (gLinkMenuItems[i].slots[0] != -1))
             {
-                iconTex = (Texture*)(*(void**)(linkTextures + gLinkMenuItems[i].slots[0] * 8));
+                iconTex = (Texture*)linkTextures[gLinkMenuItems[i].slots[0]].texture;
             }
             else
             {
@@ -252,7 +259,7 @@ void Link_scanItemVerticalBounds(void)
         item = &gLinkMenuItems[i];
         if (((item->flags & LINK_FLAG_DRAW_SLOTS) != 0) && (item->slots[0] != -1))
         {
-            iconTex = (Texture*)(*(void**)(linkTextures + item->slots[0] * 8));
+            iconTex = (Texture*)linkTextures[item->slots[0]].texture;
         }
         else
         {
@@ -358,14 +365,6 @@ void Link_setOpacity(u8 v)
     linkItemOpacity = v;
 }
 
-typedef struct LinkTextureSlot
-{
-    void* texture;
-    s16 assetId;
-    u8 width;
-    u8 pad7;
-} LinkTextureSlot;
-
 #define LINK_FLAG_DRAW_BLACK_SHADOW 0x0100
 #define LINK_FLAG_DIM_OPACITY       0x0800
 #define LINK_FLAG_FADE_TIMER_ONLY   0x1040
@@ -436,8 +435,8 @@ void Link_render(void)
                     while (drawItem->slots[slotIndex] != -1 && slotIndex < LINK_ITEM_SLOTS)
                     {
                         textureIndex = drawItem->slots[slotIndex];
-                        drawTexture(((LinkTextureSlot*)linkTextures)[textureIndex].texture, x, y, 0xff, 0x100);
-                        x += ((LinkTextureSlot*)linkTextures)[drawItem->slots[slotIndex]].width;
+                        drawTexture(linkTextures[textureIndex].texture, x, y, 0xff, 0x100);
+                        x += linkTextures[drawItem->slots[slotIndex]].width;
                         slotIndex++;
                     }
                 }
@@ -804,7 +803,7 @@ void Link_release(void)
 
     for (i = 0; i < 6; i++)
     {
-        textureFree((Texture*)(((LinkTextureSlot*)linkTextures)[i].texture));
+        textureFree((Texture*)(linkTextures[i].texture));
     }
     subtitleFreeBoxTextures(3);
 }
@@ -814,7 +813,7 @@ void Link_initialise(void)
 
     for (i = 0; i < 6; i++)
     {
-        ((LinkTextureSlot*)linkTextures)[i].texture = textureLoadAsset(((LinkTextureSlot*)linkTextures)[i].assetId);
+        linkTextures[i].texture = textureLoadAsset(linkTextures[i].assetId);
     }
 
     padSetStickRepeatDelay(10);
@@ -830,10 +829,9 @@ char sLinkNavLinkRangeErr[] = {
     0x00, 0x00, 0x00, 0xF9, 0x00, 0x00, 0x01, 0x03, 0x00, 0x00, 0x03, 0x71,
 };
 
-u8 linkTextures[0x30] = {
-    0x00, 0x00, 0x00, 0x00, 0x03, 0x14, 0x28, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x15, 0x28, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x03, 0x17, 0x50, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x19, 0x50, 0x00,
-    0x00, 0x00, 0x00, 0x00, 0x03, 0x18, 0x28, 0x00, 0x00, 0x00, 0x00, 0x00, 0x03, 0x1A, 0x14, 0x00,
+LinkTextureSlot linkTextures[6] = {
+    {NULL, 0x314, 0x28}, {NULL, 0x315, 0x28}, {NULL, 0x317, 0x50},
+    {NULL, 0x319, 0x50}, {NULL, 0x318, 0x28}, {NULL, 0x31A, 0x14},
 };
 
 struct LinkObjDescriptor

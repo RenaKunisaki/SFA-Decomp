@@ -58,7 +58,6 @@
 #include "track/intersect_geom_api.h"
 #include "track/intersect_render_setup_api.h"
 
-extern u8 gStaffQuakeSpellState[0x28];
 extern void* gStaffSwipeTextures[2];
 extern StaffCollisionInterface** gStaffSwipeResource;
 
@@ -142,7 +141,9 @@ typedef struct StaffQuakeSpellState {
     f32 fade;        /* 0x18: fade/alpha driver (quakeSpellTextureFn arg, anim.alpha) */
     int* object;     /* 0x1C: spawned quake-spell object */
     u8 active;       /* 0x20: spell active flag */
+    u8 pad21[7];
 } StaffQuakeSpellState;
+extern StaffQuakeSpellState gStaffQuakeSpellState;
 typedef struct SwipeColorTable {
     StaffCollisionColorArgs colors[4];
 } SwipeColorTable;
@@ -366,20 +367,20 @@ void staffSetGlow(GameObject* obj, u8 attackType, u8 enable) {
 }
 
 static void staffUpdateQuakeSpell(void) {
-    StaffQuakeSpellState* q = (StaffQuakeSpellState*)gStaffQuakeSpellState;
+    StaffQuakeSpellState* q = &gStaffQuakeSpellState;
 
     if (q->active != 0) {
         f32 fade;
         q->scale += 5.5f;
         ObjHitbox_SetSphereRadius((ObjAnimComponent*)q->object, q->scale);
         ObjHits_SetHitVolumeSlot((ObjAnimComponent*)q->object, STAFF_QUAKE_HIT_VOLUME_SLOT, 5, 0);
-        ((StaffQuakeSpellState*)gStaffQuakeSpellState)->fade += -4.0f;
-        fade = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->fade;
-        ((StaffQuakeSpellState*)gStaffQuakeSpellState)->radius *= 0.97f;
-        ((StaffQuakeSpellState*)gStaffQuakeSpellState)->heightScale *= 1.01f;
+        gStaffQuakeSpellState.fade += -4.0f;
+        fade = gStaffQuakeSpellState.fade;
+        gStaffQuakeSpellState.radius *= 0.97f;
+        gStaffQuakeSpellState.heightScale *= 1.01f;
         ((GameObject*)q->object)->anim.alpha = fade;
         ((GameObject*)q->object)->anim.rootMotionScale += 0.07f;
-        if (((StaffQuakeSpellState*)gStaffQuakeSpellState)->fade < 1.0f) {
+        if (gStaffQuakeSpellState.fade < 1.0f) {
             q->active = 0;
             Obj_FreeObject((GameObject*)q->object);
             q->object = NULL;
@@ -390,26 +391,26 @@ static void staffUpdateQuakeSpell(void) {
 void staffStartQuakeSpell(f32* pos) {
     GameObject* player;
 
-    if (((StaffQuakeSpellState*)gStaffQuakeSpellState)->active != 0) {
-        Obj_FreeObject((GameObject*)((StaffQuakeSpellState*)gStaffQuakeSpellState)->object);
-        ((StaffQuakeSpellState*)gStaffQuakeSpellState)->object = NULL;
+    if (gStaffQuakeSpellState.active != 0) {
+        Obj_FreeObject((GameObject*)gStaffQuakeSpellState.object);
+        gStaffQuakeSpellState.object = NULL;
     }
-    ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posX = pos[0];
-    ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posY = 10.0f + pos[1];
-    ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posZ = pos[2];
-    ((StaffQuakeSpellState*)gStaffQuakeSpellState)->fade = 255.0f;
-    ((StaffQuakeSpellState*)gStaffQuakeSpellState)->scale = 1.0f;
-    ((StaffQuakeSpellState*)gStaffQuakeSpellState)->radius = 0.4f;
-    ((StaffQuakeSpellState*)gStaffQuakeSpellState)->heightScale = 1.0f;
+    gStaffQuakeSpellState.posX = pos[0];
+    gStaffQuakeSpellState.posY = 10.0f + pos[1];
+    gStaffQuakeSpellState.posZ = pos[2];
+    gStaffQuakeSpellState.fade = 255.0f;
+    gStaffQuakeSpellState.scale = 1.0f;
+    gStaffQuakeSpellState.radius = 0.4f;
+    gStaffQuakeSpellState.heightScale = 1.0f;
     CameraShake_StartDampened(5.0f, 10.0f, 4.0f);
     player = Obj_GetPlayerObject();
     if (player != NULL && Obj_IsLoadingLocked() != 0) {
         PartFxSpawnParams v;
         ObjPlacement* setup;
-        ((StaffQuakeSpellState*)gStaffQuakeSpellState)->active = 1;
-        v.posX = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posX;
-        v.posY = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posY;
-        v.posZ = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posZ;
+        gStaffQuakeSpellState.active = 1;
+        v.posX = gStaffQuakeSpellState.posX;
+        v.posY = gStaffQuakeSpellState.posY;
+        v.posZ = gStaffQuakeSpellState.posZ;
         v.scale = 1.0f;
         v.rotX = 0;
         v.rotZ = 0;
@@ -420,19 +421,19 @@ void staffStartQuakeSpell(f32* pos) {
         setup->color[2] = 0xff;
         setup->color[1] = 2;
         setup->color[3] = 0xff;
-        setup->posX = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posX;
-        setup->posY = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posY;
-        setup->posZ = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posZ;
-        ((StaffQuakeSpellState*)gStaffQuakeSpellState)->object =
+        setup->posX = gStaffQuakeSpellState.posX;
+        setup->posY = gStaffQuakeSpellState.posY;
+        setup->posZ = gStaffQuakeSpellState.posZ;
+        gStaffQuakeSpellState.object =
             (int*)objSetupObject((ObjPlacement*)setup, 5, player->anim.mapEventSlot, -1, player->anim.parent);
         if (mainGetBit(GAMEBIT_STAFF_ABILITY_SUPER_QUAKE) != 0) {
-            ((ObjAnimComponent*)((StaffQuakeSpellState*)gStaffQuakeSpellState)->object)->bankIndex = 1;
+            ((ObjAnimComponent*)gStaffQuakeSpellState.object)->bankIndex = 1;
         }
-        ObjHitbox_SetSphereRadius((ObjAnimComponent*)((StaffQuakeSpellState*)gStaffQuakeSpellState)->object, 1);
-        ObjHits_SetHitVolumeSlot((ObjAnimComponent*)((StaffQuakeSpellState*)gStaffQuakeSpellState)->object,
+        ObjHitbox_SetSphereRadius((ObjAnimComponent*)gStaffQuakeSpellState.object, 1);
+        ObjHits_SetHitVolumeSlot((ObjAnimComponent*)gStaffQuakeSpellState.object,
                                  STAFF_QUAKE_HIT_VOLUME_SLOT, 5, 0);
-        ((GameObject*)((StaffQuakeSpellState*)gStaffQuakeSpellState)->object)->anim.rootMotionScale = 0.05f;
-        ((GameObject*)((StaffQuakeSpellState*)gStaffQuakeSpellState)->object)->anim.alpha = 0xff;
+        ((GameObject*)gStaffQuakeSpellState.object)->anim.rootMotionScale = 0.05f;
+        ((GameObject*)gStaffQuakeSpellState.object)->anim.alpha = 0xff;
     }
 }
 
@@ -447,18 +448,18 @@ void staffDrawQuakeSpellRing(void) {
     Mtx mTrans;
     Mtx mView;
 
-    if (((StaffQuakeSpellState*)gStaffQuakeSpellState)->active != 0) {
+    if (gStaffQuakeSpellState.active != 0) {
         f32 scale;
         f32 z;
-        setupQuakeSpellRingGxState(((StaffQuakeSpellState*)gStaffQuakeSpellState)->fade);
+        setupQuakeSpellRingGxState(gStaffQuakeSpellState.fade);
         memcpy(mView, Camera_GetViewMatrix(), 0x30);
         PSMTXRotRad(mRot, 'x', gStaffHalfPi[0]);
-        scale = ((StaffQuakeSpellState*)gStaffQuakeSpellState)->scale;
-        PSMTXScale(mScale, scale, scale * ((StaffQuakeSpellState*)gStaffQuakeSpellState)->heightScale, scale);
+        scale = gStaffQuakeSpellState.scale;
+        PSMTXScale(mScale, scale, scale * gStaffQuakeSpellState.heightScale, scale);
         PSMTXConcat(mScale, mRot, mScale);
-        PSMTXTrans(mTrans, ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posX - playerMapOffsetX,
-                   ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posY,
-                   ((StaffQuakeSpellState*)gStaffQuakeSpellState)->posZ - playerMapOffsetZ);
+        PSMTXTrans(mTrans, gStaffQuakeSpellState.posX - playerMapOffsetX,
+                   gStaffQuakeSpellState.posY,
+                   gStaffQuakeSpellState.posZ - playerMapOffsetZ);
         PSMTXConcat(mView, mTrans, mView);
         PSMTXConcat(mView, mScale, mResult);
         GXLoadPosMtxImm(mResult, GX_PNMTX0);
@@ -468,7 +469,7 @@ void staffDrawQuakeSpellRing(void) {
         mResult[1][3] = z;
         mResult[2][3] = z;
         GXLoadTexMtxImm(mResult, GX_TEXMTX0, GX_MTX3x4);
-        GXDrawTorus(((StaffQuakeSpellState*)gStaffQuakeSpellState)->radius, 10, 20);
+        GXDrawTorus(gStaffQuakeSpellState.radius, 10, 20);
     }
 }
 
@@ -900,7 +901,7 @@ StaffCollisionInterface** gStaffSwipeResource;
 void staff_func0A(void) {
 }
 
-u8 gStaffQuakeSpellState[0x28];
+StaffQuakeSpellState gStaffQuakeSpellState;
 
 void playerRenderQuakeSpell(GameObject* obj) {
     staffUpdateAttackEffects(obj, (GameObject*)obj->ownerObj);
@@ -1032,8 +1033,8 @@ void staff_init(GameObject* obj) {
         p->idx = -1;
         p++;
     }
-    ((StaffQuakeSpellState*)gStaffQuakeSpellState)->active = 0;
-    ((StaffQuakeSpellState*)gStaffQuakeSpellState)->object = 0;
+    gStaffQuakeSpellState.active = 0;
+    gStaffQuakeSpellState.object = 0;
 }
 
 void staff_release(void) {

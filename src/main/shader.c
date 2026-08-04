@@ -351,20 +351,6 @@ void gxSetScissorRect(int p1, int p2, int x, int y, int x2, int y2)
     GXSetScissor(x, y, x2 - x, y2 - y);
 }
 
-/* Pending warp destination saved by warpToMap from the map-warp tab entry and
- * applied to the player position on map reload (vec3 + a map-layer s16 and a
- * facing-angle s16, each truncated to s8 into the pos map/angle bytes).
- * 16-byte record of WARPTAB.bin (fileId 0x1c). */
-typedef struct WarpDestination
-{
-    f32 x;
-    f32 y;
-    f32 z;
-    s16 layer;
-    s16 angle;
-} WarpDestination;
-
-
 void loadNextMap(void)
 {
     SaveGameCharacterPosition* pos;
@@ -393,11 +379,11 @@ void loadNextMap(void)
             (*gNewCloudsInterface)->onMapSetup();
             gameUiResetMenuState();
             gWarpRequested = 0;
-            pos->x = ((WarpDestination*)gRcpPendingWarpDest)->x;
-            pos->y = ((WarpDestination*)gRcpPendingWarpDest)->y;
-            pos->z = ((WarpDestination*)gRcpPendingWarpDest)->z;
-            pos->mapLayer = (s8)((WarpDestination*)gRcpPendingWarpDest)->layer;
-            pos->angle = (s8)((WarpDestination*)gRcpPendingWarpDest)->angle;
+            pos->x = gRcpPendingWarpDest.x;
+            pos->y = gRcpPendingWarpDest.y;
+            pos->z = gRcpPendingWarpDest.z;
+            pos->mapLayer = (s8)gRcpPendingWarpDest.layer;
+            pos->angle = (s8)gRcpPendingWarpDest.angle;
             mapReload();
             gArrivedWarpIndex = gPendingWarpIndex;
             gPendingWarpIndex = -1;
@@ -412,11 +398,11 @@ void warpToMap(int idx, s8 transType)
 {
     WarpDestination* p = (WarpDestination*)gMapInfoBuffer;
     getTabEntry(p, MLDF_FILEID_WARPTAB_BIN, idx << 4, 16);
-    ((WarpDestination*)gRcpPendingWarpDest)->x = p->x;
-    ((WarpDestination*)gRcpPendingWarpDest)->y = p->y;
-    ((WarpDestination*)gRcpPendingWarpDest)->z = p->z;
-    ((WarpDestination*)gRcpPendingWarpDest)->layer = p->layer;
-    ((WarpDestination*)gRcpPendingWarpDest)->angle = p->angle;
+    gRcpPendingWarpDest.x = p->x;
+    gRcpPendingWarpDest.y = p->y;
+    gRcpPendingWarpDest.z = p->z;
+    gRcpPendingWarpDest.layer = p->layer;
+    gRcpPendingWarpDest.angle = p->angle;
     gPendingWarpIndex = (s16)idx;
     gWarpRequested = 1;
     *(s8*)&gRcpWarpTransitionType = transType;

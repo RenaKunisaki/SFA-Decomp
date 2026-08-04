@@ -42,6 +42,19 @@ void addKColorModulateStage(GXColor* color);
 void addColorFadeStage(GXColor* color);
 Texture* textureGetAnimationFrame(Texture* texture, int frame);
 
-extern u8 gRcpPendingWarpDest[];
+/* Pending warp destination saved by warpToMap from the map-warp tab entry and
+ * applied to the player position on map reload (vec3 + a map-layer s16 and a
+ * facing-angle s16, each truncated to s8 into the pos map/angle bytes).
+ * 16-byte record of WARPTAB.bin (fileId 0x1c). */
+typedef struct WarpDestination
+{
+    f32 x;
+    f32 y;
+    f32 z;
+    s16 layer;
+    s16 angle;
+} WarpDestination;
+
+extern WarpDestination gRcpPendingWarpDest;
 
 #endif /* MAIN_RCP_DOLPHIN_API_H_ */

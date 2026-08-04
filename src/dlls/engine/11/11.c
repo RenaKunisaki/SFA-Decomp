@@ -88,7 +88,7 @@ STATIC_ASSERT(offsetof(PartfxEffectState, activeVertexBufferIndex) == 0x130);
 STATIC_ASSERT(offsetof(PartfxEffectState, emitterCount) == 0x139);
 STATIC_ASSERT(offsetof(PartfxEffectState, textureIsBorrowed) == 0x13F);
 
-u8 gModgfxSpawnContextStorage[0x60];
+ModgfxSpawnContext gModgfxSpawnContext;
 ModgfxPendingSpawn gModgfxPendingSpawnQueue[0x300 / sizeof(ModgfxPendingSpawn)];
 void partfx_freeEffectsBySequence(s16 a, int b);
 #define MODGFX_ZERO 0.0f
@@ -97,7 +97,6 @@ void partfx_freeEffectsBySequence(s16 a, int b);
 s16 dll_0B_spawnEffect(ModgfxSpawnContext* context, int unused, int vertexCount, s16* vertexData, int colorCount,
                        s16* colorData, int textureAssetId, void* textureResource);
 
-#define gModgfxSpawnContext (*(ModgfxSpawnContext*)gModgfxSpawnContextStorage)
 s16 dll_0B_getLastSpawnHandle(void)
 {
     return gModgfxLastSpawnHandle;
@@ -145,9 +144,7 @@ void dll_0B_setSequenceParams(void* params)
 
 void dll_0B_setSequenceParamValue(s16 value)
 {
-    u8* state = gModgfxSpawnContextStorage;
-    state = state + gModgfxSequenceParamIndex * 2;
-    ((ModgfxSpawnContext*)state)->sequenceParams[0] = value;
+    gModgfxSpawnContext.sequenceParams[gModgfxSequenceParamIndex] = value;
 }
 
 void dll_0B_setSequenceParamIndex(s16 x)
