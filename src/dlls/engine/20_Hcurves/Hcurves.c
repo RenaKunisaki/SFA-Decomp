@@ -881,7 +881,7 @@ int getPatchGroup(float* point, int patchGroupIndex)
         {
             continue;
         }
-        pidx = *(u8*)(wg + k + 0x24);
+        pidx = ((ObjfsaWalkGroup*)wg)->patchIndices[k];
         if (pidx == 0)
         {
             continue;

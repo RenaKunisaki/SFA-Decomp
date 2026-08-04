@@ -151,7 +151,7 @@ typedef struct
 
 typedef struct
 {
-    u8* tbl0;          // 0x0  anim move ids
+    CrawlerSeq12* tbl0; // 0x0  anim move ids
     CrawlerSeq12* tbl4;  // 0x4  chained move table
     CrawlerSeq12* tbl8;  // 0x8  random move table
     CrawlerSeq12* tblC;  // 0xc  octant move table
@@ -776,7 +776,7 @@ void crawler_updateC(GameObject* obj, u8* state)
 {
     CrawlerDescriptor* d = (CrawlerDescriptor*)gCrawlerDescriptorTable;
     CrawlerSeq12* t8 = d[((EnemyState*)state)->userData2].tbl8;
-    u8* t0 = d[((EnemyState*)state)->userData2].tbl0;
+    CrawlerSeq12* t0 = d[((EnemyState*)state)->userData2].tbl0;
     CrawlerSeq16* seq = d[((EnemyState*)state)->userData2].seq;
     CrawlerSeq12* tC = d[((EnemyState*)state)->userData2].tblC;
     RomCurveWalker* base = *(RomCurveWalker**)state;
@@ -955,23 +955,23 @@ void crawler_updateC(GameObject* obj, u8* state)
                             if (v > gCrawlerSpeedThresholds.speeds[j][0])
                             {
                                 ((EnemyState*)state)->rootMotionFlags = 1;
-                                ObjAnim_SetCurrentMove((u32)obj, *(u8*)(t0 + 0x2c), 0.0f, 0);
+                                ObjAnim_SetCurrentMove((u32)obj, t0[3].moveId, 0.0f, 0);
                             }
                             else if (v > gCrawlerSpeedThresholds.speeds[j][1])
                             {
                                 ((EnemyState*)state)->rootMotionFlags = 1;
-                                ObjAnim_SetCurrentMove((u32)obj, *(u8*)(t0 + 0x20), 0.0f, 0);
+                                ObjAnim_SetCurrentMove((u32)obj, t0[2].moveId, 0.0f, 0);
                             }
                             else if (v > gCrawlerSpeedThresholds.speeds[j][2])
                             {
                                 ((EnemyState*)state)->rootMotionFlags = 1;
-                                ObjAnim_SetCurrentMove((u32)obj, *(u8*)(t0 + 0x14), 0.0f, 0);
+                                ObjAnim_SetCurrentMove((u32)obj, t0[1].moveId, 0.0f, 0);
                             }
                             else
                             {
                                 ((EnemyState*)state)->rootMotionFlags = 1;
                                 *(f32*)(state + 0x308) = 0.01f;
-                                ObjAnim_SetCurrentMove((u32)obj, *(u8*)(t0 + 8), 0.0f, 0);
+                                ObjAnim_SetCurrentMove((u32)obj, t0[0].moveId, 0.0f, 0);
                                 ((EnemyState*)state)->pathSpeed = 0.0f;
                             }
                         }
