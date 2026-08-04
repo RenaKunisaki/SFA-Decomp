@@ -1951,9 +1951,9 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
     tmpl.f36 = 0xff;
     tmpl.fdc = 0;
     tmpl.ff1 = 0xff;
-    tmpl.f3c = (f32)(int)(((u8*)data)[6] << 3);
-    tmpl.f40 = (f32)(int)(((u8*)data)[7] << 3);
-    n = (((u8*)data)[5] & 0x18) >> 3;
+    tmpl.f3c = (f32)(int)(((ObjPlacement*)data)->loadRange << 3);
+    tmpl.f40 = (f32)(int)(((ObjPlacement*)data)->unk07 << 3);
+    n = (((ObjPlacement*)data)->mapActFlagsHi & 0x18) >> 3;
     tmpl.ff2 = n;
     if (n == 0)
     {
