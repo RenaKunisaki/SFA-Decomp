@@ -32,8 +32,9 @@ here that the target section already says.
 | **A new `#include` costs nothing unless the header emits an object into an allocated section.** The only construct that does so unreferenced is a `static const` aggregate — the same shape §12 calls the only mover. `@NNN` renumbering and `.comment` growth are the two visible effects and neither is allocated. | §22 | 51 include-additions across 8 targets x 8 headers: 47 EQUAL, 4 RENUMBERED, **0 hard differences**. Eight synthetic probe headers isolate the boundary: only the `static const` array moves an allocated byte (`.sdata2` 80 -> 88, 64 of 426 `.text` relocations retarget). Nine header rows landed at 0 differ. |
 | **The gate blind spots, and why md5-of-every-`.o` dominates.** Demotion blinds the DOL gate; `matched_code`/`matched_functions` are threshold counters; a pool rotation inside an already-NonMatching unit is free on every score axis. | `docs/purge_campaign_audit.md`, "Three sensor blind spots"; the docstring of `tools/score_delta_gate.py` | `4461d0aa45` moved neither counter and still took a function 99.981 -> 94.212; `5d467157cb`/`f5fe00213f`/`620b69dc2d` lost 144/60/16 B at `dfuzzy +0.000000`, zero regressions, zero demotions. The pool word-diff catches the third class; md5 of every `.o` catches all four *and* the score-neutral ones (class #70 renumbering), which no score can see. |
 | **A window where `matched_code` rises and `matched_data` falls is not automatically a partial pool fix.** Bisect it: the two halves can be one commit, and the data half can be the priced cost of retiring a banned shape. | §25 | `3d9406bfe8` alone: `+1900` code / `−408` data / `+0.00043` fuzzy, reproduced to the digit by reverting its seven files and its `nodead` cflag. The `−408` is `tricky` `.sdata2` going 100.0 -> 88.67 (all-or-nothing) because five `UNCALLED_STATIC_FN` baseline rows were deleted; the two pools hold the same 408 bytes and the same 96-slot value sequence, permuted from offset `0x50`. |
-| **The colouring cap is thin, not solid — and it has TWO keys, not one.** Declaration order sets the second-phase saved-GPR homes; assignment-statement order sets the first-phase (reverse first-definition) ones. Sweep both, and never prune a colouring row on equal length. | §26 | **34 100 orderings** built and scored over all 128 attackable colouring rows (25 335 decl + 8 236 stmt + 529 by hand): **8 hits**, disjoint between the two axes, tree 99.81612 -> 99.816765 with `matched_code`/`matched_data`/`complete_units` unchanged. `tools/direct_build.py` took a probe from 83 s to 1.9 s by dropping ninja's global mutex. A K&R-style definition is invisible to both sweepers and was the eighth hit — **count a sweep's errors before believing its zero**. |
-| **The toolchain caps and the never-touch islands.** Bank on sight; do not re-probe. | §5 | Per-class detail in the memory topic files. |
+| **The colouring cap is thin, not solid — and it has ONE key.** Declaration order is the only source key for the register assignment; statement order is the source key for emission ORDER, which is why the two sweepers' hit sets are disjoint. (This row used to state §26's two-key model; **§27 refuted it and the row was not updated for a day** — the correction is §27's, the sweep numbers below are still §26's.) Never prune a colouring row on equal length. | §26, corrected by §27 | **34 100 orderings** built and scored over all 128 attackable colouring rows (25 335 decl + 8 236 stmt + 529 by hand): **8 hits**, disjoint between the two axes, tree 99.81612 -> 99.816765 with `matched_code`/`matched_data`/`complete_units` unchanged. `tools/direct_build.py` took a probe from 83 s to 1.9 s by dropping ninja's global mutex. A K&R-style definition is invisible to both sweepers and was the eighth hit — **count a sweep's errors before believing its zero**. |
+| **The toolchain caps and the never-touch islands.** Bank on sight; do not re-probe — but §5's wording was audited in §28 and three of its entries were wrong. | §5, audited by §28 | Per-class detail in the memory topic files. |
+| **objdiff charges per OPERAND, and a displacement is not free.** 0.05 instruction-equivalents per differing register, **0.01 per differing immediate/displacement**, 1.00 per differing mnemonic or inserted instruction, **0.000 for a relocation name at an equal address**. And `matched_code` is a threshold counter, so the cheapest class in fuzzy forfeits exactly as many bytes as the dearest: `matched_code = total_code − Σ(sub-100 function sizes) − Σ(unscored sizes)`, to the byte. | §28 | The 205 sub-100 rows at `34c954cf62`: 92 pure-register rows give `loss/register` = 0.0500 with min equal to max; 8 pure-immediate rows give 0.0100; 110 rows fit the model exactly and **84 of them carry relocation-name differences weighted at 0.000** — the first positive control for class #70 being free. | 
 | **A 100.0-everywhere unit that still will not flip fails at the LINK, not at the sha1, and the undefined-symbol list names the sibling TU it belongs to.** Read it before assuming a layout bug. | §23a | The census re-run from scratch at 920 `complete_units`: six members, four link and fail sha1 (one dead-strip, three `.sdata2`), two fail to link — `gametext` on a compiler-minted int->double pair the carve exports as `lbl_803DE6F0/F8`, `voice` on three `static`s that `vid_init.h`/`voice_conv.h` declare `extern`. `shader_dolphin` cured with two `force_active` arms: 920 -> 921. |
 | **A multiset delta made entirely of `li` against `mr` is rematerialisation — an allocator decision wearing an operation's clothes.** Subtract it before working §14's operation bucket. | §23b | 17 of the 67 operation rows. `curves_advanceCollision` writes one preamble five times and our own build emits `mr` at four sites and `li` at the fifth, at retail's own register assignment. 45 lab compiles (9 spellings x 5 `-opt` settings) and 5 in-tree spellings of `Scarab_update` are all `li`. The only construct that defeats the fold is the banned 4-byte-aggregate respelling. Operation bucket worth opening: **50, not 67**. |
 | **Every sub-100 code row is one of three kinds, and the kinds are decidable without reading any source.** Same opcode sequence, different registers = colouring. Same opcode multiset, different sequence = order. Different multiset = a different operation, which only the source text chooses. | §14 | `tools/a71_mnhist_scan.py` + the partition in §14 over all 213 sub-100 rows at `97746b6bd3`: **136 colouring / 10 order / 67 operation**, no fourth kind and no reloc-only row. |
@@ -183,25 +184,49 @@ before a narrow store, with the rhs int-typed and extend-at-use everywhere else 
 
 Closed classes with no reachable spelling — bank on sight, details in the memory topic files:
 
-- **#108 GPR reg-perm** (dominant residual): T==C length register permutations are WELDED,
-  incl. r0-vs-r3 and the fcmpu operand pair; mixed-kind perms inert.
+**Every entry below was re-measured in §28 (2026-08-03, A96). Three of them were wrong; the
+corrected wording is here and the measurement is there. "Unreachable" and "score-free" are
+different claims and this list used to conflate them.**
+
+- **#108 GPR reg-perm** — still the dominant residual (**80 functions / 139 544 B of
+  `matched_code`, 40.1% of the whole code gap**), but NOT "welded": §26 built 34 100 orderings
+  over it and landed 8. Read §26/§27, not this line. r0-vs-r3 and the fcmpu operand pair are in
+  the class; mixed-kind perms inert.
 - **#82 FP-perm** at the same load count — uncontrollable except the sdata2-literal->plain
-  crack (saved FPRs) and the cross-branch launder.
-- **#67 frame/displacement**: objdiff normalises r1 displacements, frame immediates, and one
-  surplus base-`addi` — score-free.
-- **#70 reloc-name-vs-@NNN at an EQUAL address**: score-neutral, but blocks a Matching flip;
-  prove with `tools/obj_equal.py`, never with `objdump -s` — and read section 21 first, the class
-  splits three ways and only the equal-address one is free.
+  crack (saved FPRs) and the cross-branch launder. **11 functions / 13 952 B exclusively**, and
+  §27 measures why declaration sweeps come back empty on it: it is overwhelmingly a
+  scratch-register class.
+- **#67 frame/displacement — SCORED, and the old wording here was FALSE.** objdiff does not
+  normalise an r1 displacement: it charges **0.01 instruction-equivalents per differing
+  displacement operand**, five times cheaper than a register and a hundred times cheaper than a
+  whole instruction, but not zero. That 0.01 is the entire reason all eight `trig` functions read
+  99.97 instead of 100.0, and because `matched_code` is a threshold counter it costs the unit's
+  **whole 2 608 bytes**. The class is UNREACHABLE (§28 measures eight parameter spellings, all
+  worse); it is not free. Cheapest in fuzzy, dearest per byte of divergence.
+- **#70 reloc-name-vs-@NNN at an EQUAL address**: score-neutral — and as of §28 that is
+  MEASURED, not assumed: 84 of the 110 rows whose alignment is exact carry relocation-name
+  differences (one row carries 174 of them) and every one of those rows fits the scoring model
+  with the relocation weight at **exactly 0.000**. No sub-100 function anywhere in the tree has a
+  residual made only of relocation names. It still blocks a Matching flip; prove with
+  `tools/obj_equal.py`, never with `objdump -s` — and read section 21 first, the class splits
+  three ways and only the equal-address one is free.
 - Zero-weld `li`-vs-`mr`; dead-tail `b`-stubs; allocator remat (incl. unroll-tail-bound remat —
   respelling the bound flips the whole unroll shape, -4); invariant-address CSE weld;
   same-field-reload (our CSE forwards where retail reloads a field it also names — but see the
   asymmetry law: a raw SECOND read of a reloaded DISTINCT field is load-bearing);
   peephole branch-FOLD; array-subscript value-numbering; flow-sensitive const-prop;
   large-const misc (#110, #113, #126).
-- **Foreign islands (never touch):** model.c modelApplyBoneTransform +
-  modelBoneTransforms_next (private ABI), ObjModel_Transform* PS-asm bodies (the 3 permanently
-  unscored functions), zlbDecompress, pi_videoinit, render.o gap_03; fn_80007F78 (register
-  pressure).
+- **Foreign islands (never touch)**, with their scores and their CURRENT names re-read in §28 —
+  two of the names here had gone stale and named nothing: `model.c`
+  `modelApplyBoneTransform` (10.784, 464 B) + `modelBoneTransforms_next` (10.833, 72 B) (private
+  ABI); the three `ObjModel_Transform*` PS-asm bodies (permanently unscored, 1 452 B);
+  `zlbDecompress` (53.531, 2 352 B); `pi_videoinit` `videoInit` (99.512, 2 132 B); the carve gap
+  in `render.o`, whose symbol is **`gap_03_80006C6C_text`** (0x130C B, no source counterpart, so
+  it never appears in the report at all — grepping `gap_03` finds nothing in `src/`).
+  **`fn_80007F78` no longer exists under that name: it is `modelRenderInterpolateRootTransform`
+  in `main/render`, 96.682, 2 212 B, and it is one of the live 205 sub-100 rows.** A lane that
+  greps the old name finds nothing and either drops the island or works it unaware.
+  Island total: **6 488 B of `matched_code`, 1.9% of the code gap.**
 - **`setGQR6` / `setGQR7` — no `mtgqr` intrinsic (priced at 50.000, measured 2026-08-03).**
   Retail is two instructions, `mtgqr N,r3` and `blr`; MWCC GC/2.0 exposes no intrinsic for the
   GQR write and inline `asm{}` is banned in `src/main`, so the body can only be empty or a lie.
@@ -2564,3 +2589,114 @@ arithmetic that scored **better** and was applied by the tool's own gate. `(u32)
 parenthesised operand and spliced the cast off its argument. A fuzzy score cannot tell a better
 ordering from a wrong computation, so a rewriting sweep needs a semantic guard of its own and
 every hit needs reading before it is landed.
+
+## 28. The cap classes, audited against a fresh measurement (2026-08-03, A96)
+
+Every class in §5 was carried forward from the lane that first hit it. Some of those lanes
+measured; some described. This section re-measures all of them at `34c954cf62` and prices each
+one, because a wrong cap description is worse than an unpriced one: it tells the next lane not to
+look.
+
+### 28a. What objdiff actually charges, per operand
+
+The population is the **205 sub-100 functions** in `report.json` (plus the 3 that carry no
+`fuzzy_match_percent` at all — the `model.c` paired-single trio). Convert each row's score to
+instruction-equivalents, `loss = (100 - fuzzy)/100 * size/4`, then diff target against ours and
+count what differs operand by operand:
+
+| what differs between two aligned instructions | charged |
+|---|---|
+| one **register** operand | **0.05** instructions |
+| one **immediate / displacement** operand | **0.01** instructions |
+| the **mnemonic**, or an insert/delete | **1.00** instruction |
+| the **relocation NAME** at an equal address (class #70) | **0.000** |
+
+The evidence, not the assertion:
+
+* **92 rows** have a residual made only of register-operand differences. `loss / (register
+  operands differing)` is `0.0500` for every one of them — minimum equals maximum across counts
+  from 2 to 280.
+* **8 rows** have a residual made only of immediate differences. All eight are `0.0100` exactly.
+* **110 of the 205** fit `0.05*REG + 0.01*IMM + 1.00*WHOLE` to the sixth decimal with the
+  relocation weight at zero. **84 of those 110 carry relocation-name differences** — one carries
+  174 — and the fit needs them weighted at exactly 0.000. That is the first positive control this
+  project has ever had for "#70 is free"; it was previously an inference from the tool's
+  documentation. **No sub-100 row anywhere has a residual made only of relocation names**, which
+  is the same statement from the other side.
+* The remaining 95 rows over-predict, always. `difflib` fragments an alignment where objdiff
+  matches the pair and charges a fraction, so the model is a floor on those rows and never a
+  ceiling — it cannot make an unreachable row look reachable.
+
+### 28b. Why the cheapest class in fuzzy is the dearest in `matched_code`
+
+`matched_code` is a pure threshold counter over function sizes, exactly:
+
+    matched_code = total_code - sum(size of every sub-100 function) - sum(size of the 3 unscored)
+    2 519 576    = 2 867 956  - 346 928                             - 1 452
+
+A row losing 0.01 instruction-equivalents and a row losing 5.0 forfeit **the same bytes** — all of
+them. So the ranking by fuzzy and the ranking by `matched_code` are different rankings, and #67 is
+where they disagree hardest: it is the cheapest thing objdiff charges for and it is currently
+holding a whole unit's 2 608 bytes out of `matched_code`. Describing it as "score-free" is what
+kept it off every worklist.
+
+### 28c. The price of each class today
+
+Exclusive ownership: the bytes of every function whose entire scored residual is that class and
+nothing else. `WHOLE`-bearing buckets are upper bounds (see the alignment caveat above); the
+GPR/FPR/FRAME-only buckets have a clean alignment and are exact.
+
+| class | functions | `matched_code` forgone | share of the 348 380 B gap |
+|---|---|---|---|
+| #108 GPR register permutation, exclusively | 80 | 139 544 | 40.1% |
+| #82 FPR permutation, exclusively | 11 | 13 952 | 4.0% |
+| operation/order only (`WHOLE`, no operand class) | 21 | 19 032 | 5.5% |
+| GPR + non-frame immediate | 3 | 5 392 | 1.5% |
+| **#67 frame displacement, exclusively** | **8** | **2 608** | **0.75%** |
+| the never-touch islands (incl. the 3 unscored) | 8 | 6 488 | 1.9% |
+
+### 28d. The three descriptions that did not survive, and the two names that had gone stale
+
+1. **"#67 frame/displacement — objdiff normalises ... score-free" is false.** It is charged 0.01
+   per operand. Corrected in §5.
+2. **"#108 ... are WELDED" contradicts this document's own §26**, which built 34 100 orderings
+   over the class and landed 8 of them, and §27, which says the cap is thin. §5's sight-list was
+   never updated when §26/§27 landed.
+3. **The index row for the colouring cap still stated §26's TWO-key model** that §27 refuted in
+   this same file. Corrected.
+4. **`fn_80007F78` is `modelRenderInterpolateRootTransform`** (96.682, 2 212 B) and **`render.o
+   gap_03` is `gap_03_80006C6C_text`**, which exists only in the carve. Both were banked under
+   names that resolve to nothing in the tree.
+
+`setGQR6` re-reads **50.000** and `setGQR7` **70.000**, exactly as §5 states; those rows are
+accurate. `#110`/`#113`/`#126`, array-subscript value-numbering, peephole branch-FOLD and
+flow-sensitive const-prop appear in §5's sight-list and **nowhere else in `docs/`** — their
+measurements live only in per-row notes in the memory topic files. §23b already re-priced the
+`li`-vs-`mr` quarter of #110 at 17 rows; the rest of that group has no aggregate price and this
+section does not invent one.
+
+### 28e. The parameter-save-area law, applied forward: population 8, yield 0
+
+A95's mechanism — MWCC places the first local at `8 + sizeof(the function's own incoming
+parameters)`, packed by natural size — predicts a class of rows whose entire residual is a frame
+displacement. Swept over all 205: **the population is exactly 8, and all 8 are `trig`.** Nothing
+else in the tree has a residual made only of frame displacements. Five further rows carry a
+FRAMEDISP component, and in every one of the five it is a cascade off a different frame size
+inside a residual dominated by register and shape differences (`zlbDecompress`,
+`trackBuildBlockTriangles`, `allocLotsOfTextures`, `expgfx_updateActivePools`,
+`Checkpoint_buildControlPoints`) — none is a parameter-list shape.
+
+The law itself reproduces: changing `float fsin16Approx(int angle)` to `short` moves `sth
+r0,12(r1)` / `addi r3,r1,12` to `10(r1)` — retail's exact displacement — and adds an `extsh r0,r31`
+retail does not have. Eight spellings measured at this parent, on `fsin16Approx`:
+
+| parameter type | `fsin16Approx` |
+|---|---|
+| `int` (current) | **99.96970** |
+| `short` / `signed short` / `s16` / `char` / `s8` | 96.81818 |
+| `unsigned short` / `u16` | 95.15151 |
+
+Every 1- or 2-byte spelling trades two 0.01 charges for one 1.00 charge and is 3.2-4.8 points
+worse. **PRICED at 2 608 `matched_code`, confirmed independently of A95.** Do not re-probe the
+parameter list; if this row is ever opened it will be by something that removes the `extsh`, not
+by something that resizes the parameter.
