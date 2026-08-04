@@ -1893,7 +1893,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
     u16 modelFlags;
     u8 renderFlags;
     f32 max;
-    s16 seq2;
+    s16 seq2[1];
     u32 cullScale;
     int size;
     int dllStateSize;
@@ -2132,12 +2132,12 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
     }
     if ((loadFlags & OBJLOAD_FLAG_ANIM_EVENTS) || (((ObjModelInstance*)obj->def)->flags & 0x400000))
     {
-        seq2 = obj->romDefNo;
+        seq2[0] = obj->romDefNo;
         alignedCursor = roundUpTo4(cursor);
         obj->objAnimEventTable = (ObjAnimEventTable*)alignedCursor;
         cursor = roundUpTo8(alignedCursor + 8);
         obj->objAnimEventTable->entries = (s16*)cursor;
-        ObjAnim_LoadMoveEvents((u8*)obj, seq2, obj->objAnimEventTable, 0, 1);
+        ObjAnim_LoadMoveEvents((u8*)obj, seq2[0], obj->objAnimEventTable, 0, 1);
         cursor += 0x50;
     }
     if (!(loadFlags & OBJLOAD_FLAG_WEAPON_DA) || *(void**)obj->models == NULL)

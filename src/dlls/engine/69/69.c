@@ -91,9 +91,9 @@ void CameraModeTalk_update(CameraObject* camera) {
         state = gCameraModeTalkState;
         heightT = -state->heightInput / 6.0f;
         followTermA = 0.2f;
-        followTermB = 50.0f;
-        heightT = (heightT < 0.0f) ? 0.0f : ((heightT > 1.0f) ? 1.0f : heightT);
-        state->followDistance += followTermA * ((25.0f * heightT + followTermB) - state->followDistance);
+        state->followDistance +=
+            followTermA * ((50.0f + 25.0f * ((heightT < 0.0f) ? 0.0f : ((heightT > 1.0f) ? 1.0f : heightT))) -
+                           state->followDistance);
         followDist = gCameraModeTalkState->followDistance;
         followTermA = followDist * sinPitch;
         followTermB = followDist * cosPitch;
