@@ -349,6 +349,7 @@ Shader* ObjModel_GetRenderOp(ModelFileHeader* modelFile, int renderOpIndex);
 ModelRenderOpTextureRefs* ObjModel_GetRenderOpTextureRefs(ObjModel* model, int renderOpIndex);
 
 STATIC_ASSERT(offsetof(ObjModel, bufferFlags) == 0x18);
+STATIC_ASSERT(offsetof(ObjModel, textureRefs) == 0x34);
 STATIC_ASSERT(offsetof(ObjModel, renderCallback) == 0x38);
 STATIC_ASSERT(offsetof(ObjModel, vtxBufDirty) == 0x60);
 

@@ -14,6 +14,7 @@
 #include "main/dll/SP/dll_0285_spshop.h"
 #include "main/dll/SP/dll_0287_spscarab.h"
 #include "main/frame_timing.h"
+#include "main/model.h"
 #include "sys/objects.h"
 #include "main/track_bbox_api.h"
 #include "main/objfx.h"
@@ -156,7 +157,7 @@ void SPScarab_init(GameObject* obj, SpscarabPlacement* def)
 {
     ObjAnimComponent* objAnim;
     SpscarabState* state;
-    int model;
+    ObjModel* model;
     SpscarabPalette paletteBytes;
 
     objAnim = &obj->anim;
@@ -182,12 +183,12 @@ void SPScarab_init(GameObject* obj, SpscarabPlacement* def)
     def->vendorObj = -1;
 
     Sfx_AddLoopedObjectSound((int)obj, SFXTRIG_scarab_runloop);
-    model = (int)Obj_GetActiveModel(obj);
+    model = Obj_GetActiveModel(obj);
 
     switch (def->kind)
     {
     case 0:
-        *(u8*)(*(int*)(model + 0x34) + 8) = *((u8*)&paletteBytes + randomGetRange(0, 2));
+        model->textureRefs->swapSelector = *((u8*)&paletteBytes + randomGetRange(0, 2));
         state->sfxId = 0x41;
         state->mode = 4;
         state->burstCount = 2;
