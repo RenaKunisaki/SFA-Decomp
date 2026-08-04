@@ -4961,7 +4961,7 @@ int playerStateAttack(GameObject* obj, int state, f32 fv)
     }
     if (changed != 0)
     {
-        obj->anim.weaponDaTable = (void*)((inner->moveSlots + (u32)inner->moveSlotIndex * 0xb0) + 0x60);
+        obj->anim.weaponDaTable = &((PlayerMoveSlot*)(inner->moveSlots + (u32)inner->moveSlotIndex * 0xb0))->weaponDa;
         if (obj->anim.currentMove !=
             gPlayerMoveSlotTable[*(s16*)(inner->moveSlots + offsetof(PlayerMoveSlot, moveTableIndex) +
                                          (u32)inner->moveSlotIndex * sizeof(PlayerMoveSlot))]) {
@@ -17473,9 +17473,9 @@ void playerFree(GameObject* obj, int flag)
     }
     for (i = 0, off = 0; i < inner->moveSlotCount; i++)
     {
-        int e = *(int*)(inner->moveSlots + off + 0x64);
-        if ((u32)e != 0)
-            mm_free((void*)e);
+        s16* e = ((PlayerMoveSlot*)(inner->moveSlots + off))->weaponDa.entries;
+        if (e != NULL)
+            mm_free(e);
         off += 0xb0;
     }
     objFreeObjectType((int)obj, 0);
@@ -18390,11 +18390,12 @@ void objLoadPlayerFromSave(int obj)
     ((PlayerState*)inner)->curveSpeedScale = 10.0f;
     for (i = 0; i < ((PlayerState*)inner)->moveSlotCount; i++)
     {
-        int da;
-        *(int*)(((PlayerState*)inner)->moveSlots + off + 0x64) = (int)mmAlloc(0x800, 0x1a, 0);
-        da = ((PlayerState*)inner)->moveSlots + off;
-        objGetWeaponDa((u8*)obj, ((GameObject*)obj)->anim.romDefNo, (ObjWeaponDaTable*)(da + 0x60),
-                       ((s16*)(base + 0x7fc))[*(s16*)((char*)da + 0x2)], 0);
+        PlayerMoveSlot* slot;
+        ((PlayerMoveSlot*)(((PlayerState*)inner)->moveSlots + off))->weaponDa.entries =
+            (s16*)mmAlloc(0x800, 0x1a, 0);
+        slot = (PlayerMoveSlot*)(((PlayerState*)inner)->moveSlots + off);
+        objGetWeaponDa((u8*)obj, ((GameObject*)obj)->anim.romDefNo, &slot->weaponDa,
+                       ((s16*)(base + 0x7fc))[slot->moveTableIndex], 0);
         off += 0xb0;
     }
     playerCacheMoveRootHeights(obj);
