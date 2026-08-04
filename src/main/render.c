@@ -425,7 +425,7 @@ void modelRenderInterpolateRootTransform(ObjAnimState* anim, s16* outPosition, s
 
     framePhase = anim->framePhase;
     outPos = RENDER_PACKED_ADDRESS(outRotation);
-    curB = (u16)anim->frameStreamStride;
+    curB = anim->frameStreamStride;
     posA = RENDER_PACKED_ADDRESS(anim->frameStreamCursor);
     tp = RENDER_PACKED_ADDRESS(anim->moveFrameData) + 4;
     q = &tmp;
