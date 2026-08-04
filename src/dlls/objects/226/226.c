@@ -107,18 +107,13 @@ typedef struct StaffState {
     void* activeSlot; /* 0x48: active swipe slot pointer */
     u8 pad4C[4];
     f32 moveSpeed; /* 0x50: current-move advance speed */
-    f32 geometryPointAX;
-    u8 pad58[4];
-    f32 geometryPointAY;
-    u8 pad60[4];
-    f32 geometryPointAZ;
-    u8 pad68[4];
-    f32 geometryPointBX;
-    u8 pad70[4];
-    f32 geometryPointBY;
-    u8 pad78[4];
-    f32 geometryPointBZ;
-    u8 pad80[8];
+    f32 geometryPointAX[2];
+    f32 geometryPointAY[2];
+    f32 geometryPointAZ[2];
+    f32 geometryPointBX[2];
+    f32 geometryPointBY[2];
+    f32 geometryPointBZ[2];
+    u8 pad84[4];
     s16 hitReactValue;
     u8 pad8A[2];
     f32 anchorX;
@@ -734,12 +729,12 @@ void staffDoGrowShrinkAnim(GameObject* obj, u8 grow, u8 flag2, int unused) {
 
 void staff_getHitGeometryPoints(GameObject* obj, f32* outA, f32* outB) {
     StaffState* state = *(StaffState**)&obj->extra;
-    outA[0] = state->geometryPointAX;
-    outA[1] = state->geometryPointAY;
-    outA[2] = state->geometryPointAZ;
-    outB[0] = state->geometryPointBX;
-    outB[1] = state->geometryPointBY;
-    outB[2] = state->geometryPointBZ;
+    outA[0] = state->geometryPointAX[0];
+    outA[1] = state->geometryPointAY[0];
+    outA[2] = state->geometryPointAZ[0];
+    outB[0] = state->geometryPointBX[0];
+    outB[1] = state->geometryPointBY[0];
+    outB[2] = state->geometryPointBZ[0];
 }
 ObjectDescriptor23 gStaffObjDescriptor = {
     0,
