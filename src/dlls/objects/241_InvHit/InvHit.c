@@ -141,7 +141,7 @@ void InvHit_update(GameObject* obj) {
         break;
     }
     case INVHIT_MODE_ATTACH:
-        ObjList_ContainsObject(obj->userData1);
+        ObjList_ContainsObject((GameObject*)obj->userData1);
         break;
     case INVHIT_MODE_SELF_FREE: {
         ObjHitsPriorityState* hitState = *(ObjHitsPriorityState**)&obj->anim.hitReactState;
@@ -182,7 +182,7 @@ void InvHit_update(GameObject* obj) {
             f32 step;
             f32 anchorDistance;
 
-            if (ObjList_ContainsObject((int)target) == 0) {
+            if (ObjList_ContainsObject(target) == 0) {
                 break;
             }
             targetDeltaX = target->anim.localPosX - obj->anim.localPosX;

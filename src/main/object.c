@@ -2286,7 +2286,7 @@ GameObject* ObjList_FindObjectById(u32 objectId)
     return NULL;
 }
 
-void* ObjList_GetObjects(int* outA, int* outB)
+GameObject** ObjList_GetObjects(int* outA, int* outB)
 {
     if (outA != NULL)
     {

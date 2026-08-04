@@ -983,9 +983,9 @@ int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
         case SBGALLEON_SEQEV_SPRAY_ON: {
             int start;
             int end;
-            int* arr = ObjList_GetObjects(&start, &end);
+            GameObject** arr = ObjList_GetObjects(&start, &end);
             for (i = start; i < end; i++) {
-                if (((GameObject*)arr[i])->anim.romDefNo == SBGALLEON_ROMLIST_LINKED) {
+                if ((arr[i])->anim.romDefNo == SBGALLEON_ROMLIST_LINKED) {
                     state->linkedActor = arr[i];
                     i = end;
                 }
@@ -1197,14 +1197,14 @@ void SB_Galleon_hitDetect(GameObject* obj) {
         f32 c;
         f32 d;
     } stk;
-    if (state->sprayActive != 0 && (void*)state->linkedActor != NULL) {
+    if (state->sprayActive != 0 && state->linkedActor != NULL) {
         stk.a = 1.5f;
         stk.mode = 0xc0a;
         stk.b = 0.0f;
         stk.c = 60.0f;
         stk.d = 120.0f;
         for (i = 0; i < framesThisStep; i++) {
-            (*gPartfxInterface)->spawnObject((void*)state->linkedActor, SBGALLEON_FX_SPRAY, stk.pad, 2, -1, 0);
+            (*gPartfxInterface)->spawnObject(state->linkedActor, SBGALLEON_FX_SPRAY, stk.pad, 2, -1, 0);
         }
     }
 }

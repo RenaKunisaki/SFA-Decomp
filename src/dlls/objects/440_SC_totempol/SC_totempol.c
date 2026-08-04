@@ -134,7 +134,7 @@ void sc_totempole_update(GameObject* obj) {
                 mainGetBit(SC_TOTEM_POLE_GAMEBIT_RIGHT) != 0 && mainGetBit(SC_TOTEM_POLE_GAMEBIT_REAR) != 0) {
                 Sfx_PlayFromObject(0, SFXTRIG_mpick1_b);
                 allPolesLit = 1;
-                objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
+                objects = ObjList_GetObjects(&objectIndex, &objectCount);
                 for (; objectIndex < objectCount; objectIndex++) {
                     if (objects[objectIndex] != obj && objects[objectIndex]->anim.romDefNo == SC_TOTEM_POLE_SEQUENCE_ID) {
                         (*(ScTotemPoleInterfaceVTable**)objects[objectIndex]->anim.dll)

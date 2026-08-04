@@ -466,7 +466,7 @@ GameObject* camcontrol_findBestTarget(CamcontrolCameraState* cameraState, ObjAni
         playerCanUseCombatTargeting(player) == 0) {
         return NULL;
     }
-    ptr = (GameObject**)ObjList_GetObjects(&objIndex, &objCount);
+    ptr = ObjList_GetObjects(&objIndex, &objCount);
     idx = objIndex;
     ptr += idx;
     for (; idx < objCount; ptr++, idx++) {

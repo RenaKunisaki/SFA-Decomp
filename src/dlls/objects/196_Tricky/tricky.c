@@ -1547,7 +1547,7 @@ void trickyApplyObjectAvoidanceToStep(f32* start, f32* end, f32* guardPoint) {
         op++;
     }
 
-    objects = ObjList_GetObjects(&startIndex, &objectCount);
+    objects = (void**)ObjList_GetObjects(&startIndex, &objectCount);
     for (i = startIndex, op = objects + i; i < objectCount; i++) {
         obj = *op;
         def = (u8*)obj->anim.modelInstance;

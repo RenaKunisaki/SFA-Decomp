@@ -76,7 +76,7 @@ void mmshScales_update(GameObject* obj) {
         if (objectIndex != 0 && obj->seqIndex == MMSH_SCALES_SEQUENCE_PENDING) {
             slot = ((MMSHScalesState*)obj->extra)->sequence.slot;
             sequenceOwner = NULL;
-            objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
+            objects = ObjList_GetObjects(&objectIndex, &objectCount);
             siblingCount = 0;
             for (objectIndex = 0, groupSlot = (int)(s8)slot; objectIndex < objectCount; objectIndex++) {
                 otherObj = *objects;

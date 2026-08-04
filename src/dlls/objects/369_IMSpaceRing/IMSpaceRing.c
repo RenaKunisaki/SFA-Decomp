@@ -48,7 +48,7 @@ void imSpaceRingGenerator_update(GameObject* obj) {
     placement = obj->anim.placement;
     state = obj->extra;
     if (state->ringA == NULL || state->ringB == NULL) {
-        GameObject** objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
+        GameObject** objects = ObjList_GetObjects(&objectIndex, &objectCount);
 
         for (objectIndex = 0; objectIndex < objectCount; objectIndex++) {
             GameObject* candidate = objects[objectIndex];

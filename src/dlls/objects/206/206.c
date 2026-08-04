@@ -128,7 +128,7 @@ int dll_CE_checkChooseAttackState(GameObject* obj, GroundBaddieState* state) {
     DllCEControl* control;
     int maxSiblingState;
     int attackingSiblingCount;
-    int* objects;
+    GameObject** objects;
     int shouldDropTarget;
     int attackRoll;
 
@@ -145,7 +145,7 @@ int dll_CE_checkChooseAttackState(GameObject* obj, GroundBaddieState* state) {
         maxSiblingState = 0;
         objects = ObjList_GetObjects(&objectIndex, &objectCount);
         for (; objectIndex < objectCount; objectIndex++) {
-            GameObject* sibling = (GameObject*)objects[objectIndex];
+            GameObject* sibling = objects[objectIndex];
             if (sibling != obj && sibling->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
                 int siblingState =
                     (*(DllCESiblingInterface**)sibling->anim.dll)->getControlMode(sibling, 0);
@@ -300,7 +300,7 @@ int dll_CE_updateWindupState(GameObject* obj, GroundBaddieState* state) {
 }
 
 int dll_CE_updateAlertState(GameObject* obj, GroundBaddieState* state) {
-    int* objects;
+    GameObject** objects;
     int objectCount;
     int objectIndex;
     GameObject* playerChild;
@@ -314,7 +314,7 @@ int dll_CE_updateAlertState(GameObject* obj, GroundBaddieState* state) {
     if (state->baddie.moveJustStartedA != '\0') {
         objects = ObjList_GetObjects(&objectIndex, &objectCount);
         for (; objectIndex < objectCount; objectIndex++) {
-            GameObject* sibling = (GameObject*)objects[objectIndex];
+            GameObject* sibling = objects[objectIndex];
 
             if (sibling != obj && sibling->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
                 (*(DllCESiblingInterface**)sibling->anim.dll)
@@ -358,10 +358,10 @@ int dll_CE_updateSpitState(GameObject* obj, GroundBaddieState* state) {
     ObjHits_RegisterActiveHitVolumeObject(obj);
 
     if ((s32)state->baddie.moveJustStartedA != 0) {
-        int* objects = ObjList_GetObjects(&objectIndex, &objectCount);
+        GameObject** objects = ObjList_GetObjects(&objectIndex, &objectCount);
 
         while (objectIndex < objectCount) {
-            GameObject* siblingAddress = (GameObject*)objects[objectIndex];
+            GameObject* siblingAddress = objects[objectIndex];
 
             if ((void*)siblingAddress != (void*)obj &&
                 siblingAddress->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
@@ -411,7 +411,7 @@ int dll_CE_updateAttackState(GameObject* obj, GroundBaddieState* state) {
     int objectCount;
     int objectIndex;
     GroundBaddieState* objectState;
-    int* objects;
+    GameObject** objects;
 
     objectState = obj->extra;
     if (state->baddie.moveJustStartedA != '\0') {
@@ -424,7 +424,7 @@ int dll_CE_updateAttackState(GameObject* obj, GroundBaddieState* state) {
     if (state->baddie.moveJustStartedA != '\0') {
         objects = ObjList_GetObjects(&objectIndex, &objectCount);
         for (; objectIndex < objectCount; objectIndex++) {
-            GameObject* sibling = (GameObject*)objects[objectIndex];
+            GameObject* sibling = objects[objectIndex];
 
             if (sibling != obj && sibling->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
                 (*(DllCESiblingInterface**)sibling->anim.dll)

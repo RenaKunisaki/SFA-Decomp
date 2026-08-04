@@ -348,8 +348,8 @@ void sortVisibleObjectKeysDescending(u32* arr, int n)
 void getVisibleObjects(s8* opacity)
 {
     int part;
-    int* objects;
-    int* p;
+    GameObject** objects;
+    GameObject** p;
     GameObject* o;
     int i;
     u32 key;
@@ -509,7 +509,7 @@ static void renderObjects(s8* opacity) {
     GameObject* obj;
     int* p;
     int slot;
-    int* objects;
+    GameObject** objects;
     LightmapDrawQueue* qbase;
     LightmapQEnt* q;
     LightmapDrawQueue* dq;
@@ -519,7 +519,7 @@ static void renderObjects(s8* opacity) {
     objects = ObjList_GetObjects((int*)0, 0);
     for (i = 1, kp = (u32*)((u8*)qbase + 0x8818) + 1; i < gVisibleObjectSortKeyCount; kp++, i++) {
         idx = *kp & 0x3ff;
-        obj = (GameObject*)objects[idx];
+        obj = objects[idx];
         flags = obj->anim.modelInstance->flags;
         if ((flags & OBJDEF_FLAG_DEFERRED_RENDER) != 0 ||
             ((obj->anim.modelInstance->renderFlags & OBJDEF_RENDERFLAG_DEFERRED_RENDER) != 0)) {

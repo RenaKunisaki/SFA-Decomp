@@ -63,7 +63,7 @@ u8 gDBSHSymbolScuffSfxEnabled = 1;
 
 int dbshSymbol_processAnimEvents(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     int volume;
-    int* objectList;
+    GameObject** objectList;
     int objectIndex;
     int objectCount;
     int i;

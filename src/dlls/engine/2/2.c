@@ -483,7 +483,7 @@ void endObjSequence(int seq)
     int nFree;
     GameObject** ret;
 
-    ret = (GameObject**)ObjList_GetObjects(&objIdx, &objCount);
+    ret = ObjList_GetObjects(&objIdx, &objCount);
     nFree = 0;
     i = 0;
     objs = ret;
@@ -1609,7 +1609,7 @@ void* ObjSeq_FindTargetObject(GameObject* obj)
     return bestObj;
 }
 
-#define ObjSeq_GetObjects(unused, count) ((GameObject**)ObjList_GetObjects((unused), (count)))
+#define ObjSeq_GetObjects(unused, count) (ObjList_GetObjects((unused), (count)))
 
 void ObjSeq_runBgCmds(void)
 {

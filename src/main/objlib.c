@@ -477,7 +477,7 @@ int ObjMsg_Pop(GameObject* obj, u32* outMessage, u32* outSender, u32* outParam) 
 char sObjMsgOverflowInObjectWarning[64] = "objmsg (%x): overflow in object %d defno=%d FROM: defno %d\n";
 
 void ObjMsg_SendToNearbyObjects(int targetId, float radius, u32 flags, void* sender, u32 message, u32 param) {
-    int* objects;
+    GameObject** objects;
     u32 count;
     int maskedFlags;
     ObjMsgQueue* queue;
@@ -495,7 +495,7 @@ void ObjMsg_SendToNearbyObjects(int targetId, float radius, u32 flags, void* sen
     matchAny = maskedFlags & OBJMSG_SEND_MATCH_ANY;
     s = (GameObject*)sender;
     for (; objectIndex < objectCount; objectIndex = objectIndex + 1) {
-        obj = (GameObject*)objects[objectIndex];
+        obj = objects[objectIndex];
         if (((obj != sender) || (includeSender == 0)) && ((obj->anim.romDefNo == (s16)targetId || (matchAny != 0))) &&
             ((Vec_distance(&s->anim.worldPosX, &obj->anim.worldPosX) < radius && (obj != 0x0)) &&
              (queue = obj->msgQueue, queue != (ObjMsgQueue*)0x0))) {
@@ -516,7 +516,7 @@ void ObjMsg_SendToNearbyObjects(int targetId, float radius, u32 flags, void* sen
 }
 
 void ObjMsg_SendToObjects(int targetId, u32 flags, void* sender, u32 message, u32 param) {
-    int* objects;
+    GameObject** objects;
     u32 count;
     int maskedFlags;
     ObjMsgQueue* queue;
@@ -529,7 +529,7 @@ void ObjMsg_SendToObjects(int targetId, u32 flags, void* sender, u32 message, u3
     maskedFlags = flags & 0xffff;
     if ((maskedFlags & OBJMSG_SEND_MATCH_OBJTYPE) != 0) {
         for (; objectIndex < objectCount; objectIndex = objectIndex + 1) {
-            obj = (GameObject*)objects[objectIndex];
+            obj = objects[objectIndex];
             if (((obj != sender) || ((maskedFlags & OBJMSG_SEND_INCLUDE_SENDER) == 0)) &&
                 (((maskedFlags & OBJMSG_SEND_MATCH_ANY) != 0 || (targetId == obj->anim.romDefNo))) &&
                 ((obj != 0x0 &&
@@ -549,7 +549,7 @@ void ObjMsg_SendToObjects(int targetId, u32 flags, void* sender, u32 message, u3
         }
     } else {
         for (; objectIndex < objectCount; objectIndex = objectIndex + 1) {
-            obj = (GameObject*)objects[objectIndex];
+            obj = objects[objectIndex];
             if (((obj != sender) || ((maskedFlags & OBJMSG_SEND_INCLUDE_SENDER) == 0)) &&
                 (((maskedFlags & OBJMSG_SEND_MATCH_ANY) != 0 || (targetId == obj->anim.classId))) &&
                 ((obj != 0x0 &&
@@ -869,8 +869,8 @@ GameObject* ObjList_FindNearestObjectByDefNo(GameObject* obj, int defNo, float* 
     float distanceSq;
     GameObject* otherObj;
     int objectIndex;
-    int* objects;
-    int* walker;
+    GameObject** objects;
+    GameObject** walker;
     GameObject* foundObj;
 
     objects = ObjList_GetObjects(&startIndex, &objectCount);
@@ -912,8 +912,8 @@ GameObject* ObjList_FindNearestObjectByDefNo(GameObject* obj, int defNo, float* 
     return foundObj;
 }
 
-int ObjList_ContainsObject(int obj) {
-    u32* entry;
+int ObjList_ContainsObject(GameObject* obj) {
+    GameObject** entry;
     int i;
     int count;
 

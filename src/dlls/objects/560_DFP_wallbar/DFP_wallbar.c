@@ -55,7 +55,7 @@ void chuka_update(GameObject* obj)
     ChukaPlacement* data = (ChukaPlacement*)obj->anim.placementData;
     ChukaState* state = obj->extra;
     GameObject* linkedObj;
-    int* objList;
+    GameObject** objList;
     GameObject* candidate;
     int i;
     int height;

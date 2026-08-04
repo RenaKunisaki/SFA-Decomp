@@ -110,7 +110,7 @@ int DoorF4_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     placement = (DoorF4Placement*)obj->anim.placementData;
     state = obj->extra;
     signedDistance = 0.0f;
-    objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
+    objects = ObjList_GetObjects(&objectIndex, &objectCount);
     animUpdate->movementState = 0;
     playerObj = Obj_GetPlayerObject();
     deltaX = playerObj->anim.localPosX - placement->base.posX;

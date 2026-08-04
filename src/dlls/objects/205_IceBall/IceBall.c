@@ -37,10 +37,10 @@ typedef void (*IceBallOwnerCallbackWithArg)(GameObject* owner, int message, int 
 static inline u8 iceBall_isOwnerActive(GameObject* owner) {
     int objectIndex;
     int objectCount;
-    int* objects = ObjList_GetObjects(&objectIndex, &objectCount);
+    GameObject** objects = ObjList_GetObjects(&objectIndex, &objectCount);
 
     while (objectIndex < objectCount) {
-        if (owner == (GameObject*)objects[objectIndex++]) {
+        if (owner == objects[objectIndex++]) {
             return 1;
         }
     }

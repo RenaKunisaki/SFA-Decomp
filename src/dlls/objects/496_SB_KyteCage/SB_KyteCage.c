@@ -114,7 +114,7 @@ void SB_KyteCage_update(GameObject* obj) {
         GameObject** objects;
         int count;
         int i;
-        objects = (GameObject**)ObjList_GetObjects(&i, &count);
+        objects = ObjList_GetObjects(&i, &count);
         for (i = 0; i < count; i++) {
             GameObject* child = objects[i];
             if (child->anim.romDefNo == SB_KYTECAGE_KYTE_OBJECT_TYPE) {

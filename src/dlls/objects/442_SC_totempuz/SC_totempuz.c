@@ -64,7 +64,7 @@ u8 sc_totempuzzle_checkSolvedSequence(GameObject* obj, ScTotemPuzzleState* state
     PartFxSpawnParams particleOrigin;
     int objectIndex;
     int objectCount;
-    int* objects;
+    GameObject** objects;
     int solvedCount;
     u8 solvedThisObject;
 
@@ -77,7 +77,7 @@ u8 sc_totempuzzle_checkSolvedSequence(GameObject* obj, ScTotemPuzzleState* state
         ScTotemPuzzleState* peerState;
         s16 flags;
 
-        peer = (GameObject*)objects[objectIndex];
+        peer = objects[objectIndex];
         if (peer->anim.romDefNo == SC_TOTEM_PUZZLE_SEQUENCE_ID) {
             peerState = peer->extra;
             flags = peerState->flags;
@@ -170,7 +170,7 @@ s16 gTotemPuzzleStepAngles[6] = {-8192, 0, 8192, 16384, 24576, -32768};
 void sc_totempuzzle_update(GameObject* obj) {
     ScTotemPuzzleState* state;
     int hitKind;
-    int* objects;
+    GameObject** objects;
     GameObject* other;
     ObjTextureRuntimeSlot* texture;
     PartFxSpawnParams lightArgs;
@@ -208,7 +208,7 @@ void sc_totempuzzle_update(GameObject* obj) {
             }
             objects = ObjList_GetObjects(&startA, &countA);
             while (startA < countA) {
-                other = (GameObject*)objects[startA];
+                other = objects[startA];
                 if ((other->anim.romDefNo == SC_TOTEM_PUZZLE_SEQUENCE_ID) && ((GameObject*)other != obj)) {
                     ((ScTotemPuzzleState*)other->extra)->peerPhaseOffset += 0.65f;
                 }
@@ -217,7 +217,7 @@ void sc_totempuzzle_update(GameObject* obj) {
         } else {
             objects = ObjList_GetObjects(&startB, &countB);
             while (startB < countB) {
-                other = (GameObject*)objects[startB];
+                other = objects[startB];
                 if ((other->anim.romDefNo == SC_TOTEM_PUZZLE_SEQUENCE_ID) && ((GameObject*)other != obj)) {
                     ((ScTotemPuzzleState*)other->extra)->peerPhaseOffset += -0.65f;
                 }

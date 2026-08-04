@@ -111,7 +111,7 @@ s8 tumbleweedbush_spawnSibling(GameObject* obj) {
         return -1;
     }
 
-    objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
+    objects = ObjList_GetObjects(&objectIndex, &objectCount);
     siblingCount = 0;
     while (objectIndex < objectCount) {
         int currentIndex = *(int*)&objectIndex;
@@ -143,7 +143,7 @@ s8 tumbleweedbush_spawnSibling(GameObject* obj) {
         case 0x292c:
             if (state->spawnedCount == 6) {
                 newPlacement->radiusByte = 1;
-                objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
+                objects = ObjList_GetObjects(&objectIndex, &objectCount);
                 while (objectIndex < objectCount) {
                     GameObject* markerObj = objects[objectIndex];
 
@@ -584,7 +584,7 @@ void tumbleweed_free(GameObject* obj) {
         break;
     }
 
-    objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
+    objects = ObjList_GetObjects(&objectIndex, &objectCount);
     while (objectIndex < objectCount) {
         GameObject* bush = objects[objectIndex];
 

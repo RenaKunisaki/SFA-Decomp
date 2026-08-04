@@ -29,7 +29,7 @@ typedef struct SBGalleonState {
     f32 swayZ;
     f32 moveScale;
     GameObject* targetObj;
-    int linkedActor;
+    GameObject* linkedActor;
     f32 homeX;
     f32 homeY;
     f32 homeZ;

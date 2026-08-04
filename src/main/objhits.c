@@ -2018,7 +2018,7 @@ void ObjHits_Update(int objectCount) {
     f32 diff;
     int hitVolumeIndex;
 
-    objectList = (GameObject**)ObjList_GetObjects(&startIndex, &listCount);
+    objectList = ObjList_GetObjects(&startIndex, &listCount);
     sweepEntries = gObjHitsSweepEntries;
     sweepEntries->minX = -36288576.0f;
     sweepEntries->maxX = -36288576.0f;

@@ -72,7 +72,7 @@ void dll501_hitDetect(void) {
 
 void dll501_update(GameObject* obj) {
     int groupId;
-    int* objects;
+    GameObject** objects;
     int i;
     int objectCount;
     GameObject* current;
@@ -103,7 +103,7 @@ void dll501_update(GameObject* obj) {
     groupId2 = groupId;
     groupId2 |= groupId;
     while (i < objectCount) {
-        current = (GameObject*)objects[i];
+        current = objects[i];
         if (current->seqIndex == groupId) {
             linkedObject = current;
         }

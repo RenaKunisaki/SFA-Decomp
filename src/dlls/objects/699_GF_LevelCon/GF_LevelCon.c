@@ -82,7 +82,7 @@ ObjectDescriptor gGF_LevelConObjDescriptor = {
 void gf_levelcon_findLinkedObjects(GameObject* obj)
 {
     GfLevelconFindLinkedObjectsState* state = obj->extra;
-    int* objects;
+    GameObject** objects;
     int objectIndex;
     int objectCount;
     GameObject* linkedObj;

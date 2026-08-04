@@ -111,7 +111,7 @@ void cfPrisonUncle_update(GameObject* obj) {
         state->companion = NULL;
     }
     if (state->companion == NULL) {
-        objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
+        objects = ObjList_GetObjects(&objectIndex, &objectCount);
         for (index = objectIndex; index < objectCount; index++) {
             if (objects[index]->anim.classId == CFPRISONUNCLE_COMPANION_CLASS_ID) {
                 state->companion = objects[index];

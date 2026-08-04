@@ -133,7 +133,7 @@ void DFP_Floorbar_update(GameObject* obj)
 
     if (state->linkedObject == NULL)
     {
-        int* items;
+        GameObject** items;
         int idx_init;
         int count;
         int idx;
