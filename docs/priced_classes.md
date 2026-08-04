@@ -34,6 +34,7 @@ here that the target section already says.
 | **A window where `matched_code` rises and `matched_data` falls is not automatically a partial pool fix.** Bisect it: the two halves can be one commit, and the data half can be the priced cost of retiring a banned shape. | §25 | `3d9406bfe8` alone: `+1900` code / `−408` data / `+0.00043` fuzzy, reproduced to the digit by reverting its seven files and its `nodead` cflag. The `−408` is `tricky` `.sdata2` going 100.0 -> 88.67 (all-or-nothing) because five `UNCALLED_STATIC_FN` baseline rows were deleted; the two pools hold the same 408 bytes and the same 96-slot value sequence, permuted from offset `0x50`. |
 | **The colouring cap is thin, not solid — and it has ONE key.** Declaration order is the only source key for the register assignment; statement order is the source key for emission ORDER, which is why the two sweepers' hit sets are disjoint. (This row used to state §26's two-key model; **§27 refuted it and the row was not updated for a day** — the correction is §27's, the sweep numbers below are still §26's.) Never prune a colouring row on equal length. | §26, corrected by §27 | **34 100 orderings** built and scored over all 128 attackable colouring rows (25 335 decl + 8 236 stmt + 529 by hand): **8 hits**, disjoint between the two axes, tree 99.81612 -> 99.816765 with `matched_code`/`matched_data`/`complete_units` unchanged. `tools/direct_build.py` took a probe from 83 s to 1.9 s by dropping ninja's global mutex. A K&R-style definition is invisible to both sweepers and was the eighth hit — **count a sweep's errors before believing its zero**. |
 | **The toolchain caps and the never-touch islands.** Bank on sight; do not re-probe — but §5's wording was audited in §28 and three of its entries were wrong. | §5, audited by §28 | Per-class detail in the memory topic files. |
+| **149 of the 204 sub-100 rows are within THREE instruction-equivalents of exact, and they hold 59% of the code gap.** Rank the frontier by bytes, not by fuzzy: the largest rows are among the closest, and the whole-instruction bucket that §5 named without pricing is 21 rows / 19 032 B, attributed to the byte. | §29 | `Effect3_spawnObject` forfeits **7 796 B for 15 register operands**; `Scarab_update` **3 476 B for one instruction**. Eight rows worked off the byte ranking, **33 spellings, yield 0** — including the six-permutation proof that a parameter home is not reachable from the declaration list, and the `errorThreadFunc` row that **refutes §15's sufficiency test**: the slid instruction is one the source names and nine spellings are still inert. |
 | **objdiff charges per OPERAND, and a displacement is not free.** 0.05 instruction-equivalents per differing register, **0.01 per differing immediate/displacement**, 1.00 per differing mnemonic or inserted instruction, **0.000 for a relocation name at an equal address**. And `matched_code` is a threshold counter, so the cheapest class in fuzzy forfeits exactly as many bytes as the dearest: `matched_code = total_code − Σ(sub-100 function sizes) − Σ(unscored sizes)`, to the byte. | §28 | The 205 sub-100 rows at `34c954cf62`: 92 pure-register rows give `loss/register` = 0.0500 with min equal to max; 8 pure-immediate rows give 0.0100; 110 rows fit the model exactly and **84 of them carry relocation-name differences weighted at 0.000** — the first positive control for class #70 being free. | 
 | **A 100.0-everywhere unit that still will not flip fails at the LINK, not at the sha1, and the undefined-symbol list names the sibling TU it belongs to.** Read it before assuming a layout bug. | §23a | The census re-run from scratch at 920 `complete_units`: six members, four link and fail sha1 (one dead-strip, three `.sdata2`), two fail to link — `gametext` on a compiler-minted int->double pair the carve exports as `lbl_803DE6F0/F8`, `voice` on three `static`s that `vid_init.h`/`voice_conv.h` declare `extern`. `shader_dolphin` cured with two `force_active` arms: 920 -> 921. |
 | **A multiset delta made entirely of `li` against `mr` is rematerialisation — an allocator decision wearing an operation's clothes.** Subtract it before working §14's operation bucket. | §23b | 17 of the 67 operation rows. `curves_advanceCollision` writes one preamble five times and our own build emits `mr` at four sites and `li` at the fifth, at retail's own register assignment. 45 lab compiles (9 spellings x 5 `-opt` settings) and 5 in-tree spellings of `Scarab_update` are all `li`. The only construct that defeats the fold is the banned 4-byte-aggregate respelling. Operation bucket worth opening: **50, not 67**. |
@@ -62,6 +63,7 @@ and ours shows a single dotted `rlwinm./rlwimi./srwi.` feeding the same branch.
 | atan2f_fast | main/acosf | 98.250 | 1.750 |
 | removeButtonObject (unroll-guard `srwi.`+`cmplwi`) | main/gameloop_buttonobj | 98.091 | 1.909 |
 | mathSinCosf (family cousin: surplus target `fmr f1,f28` O0 arg copy-back) | main/sincosf | 98.750 | 1.250 |
+| mathTanf (same copy-back, added 2026-08-03 by A97) | main/dolphin/MSL_C/.../math_8029454c | 97.297 | 2.703 |
 
 Probed dead ends: switch-on-expression loses the r31 web; splitting via `|=` flips the base
 instruction; five spellings of the sincosf copy-back are inert. Un-banning `#pragma peephole off`
@@ -216,6 +218,11 @@ different claims and this list used to conflate them.**
   asymmetry law: a raw SECOND read of a reloaded DISTINCT field is load-bearing);
   peephole branch-FOLD; array-subscript value-numbering; flow-sensitive const-prop;
   large-const misc (#110, #113, #126).
+  **PRICED in §29c: this bullet owns the whole-instruction-only bucket, 21 rows / 19 032 B, and
+  every one of the 21 is attributed there.** Within it, allocator remat is 7 300 B, the
+  dot-compare family 1 680 B, the §24b inliner/const-prop rows 788 B, same-field-reload 1 040 B;
+  and **branch-FOLD, array-subscript value-numbering, `#113` and `#126` own 0 B** — no row on the
+  frontier has a residual exclusively theirs.
 - **Foreign islands (never touch)**, with their scores and their CURRENT names re-read in §28 —
   two of the names here had gone stale and named nothing: `model.c`
   `modelApplyBoneTransform` (10.784, 464 B) + `modelBoneTransforms_next` (10.833, 72 B) (private
@@ -2675,6 +2682,12 @@ measurements live only in per-row notes in the memory topic files. §23b already
 `li`-vs-`mr` quarter of #110 at 17 rows; the rest of that group has no aggregate price and this
 section does not invent one.
 
+**Corrected in §29c (A97).** Two of those four DO appear elsewhere in `docs/`: §24b carries a full
+measured entry for flow-sensitive const-prop (`playerCacheMoveRootHeights`, nine spellings) and for
+the dead-tail `b`-stub class (`textureLoad` + `loadTextureFiles`, eight callee spellings). The
+group as a whole is now priced — §29c attributes all 21 whole-instruction-only rows / 19 032 B —
+and branch-FOLD, array-subscript value-numbering, `#113` and `#126` come out at **0 B exclusive**.
+
 ### 28e. The parameter-save-area law, applied forward: population 8, yield 0
 
 A95's mechanism — MWCC places the first local at `8 + sizeof(the function's own incoming
@@ -2700,3 +2713,175 @@ Every 1- or 2-byte spelling trades two 0.01 charges for one 1.00 charge and is 3
 worse. **PRICED at 2 608 `matched_code`, confirmed independently of A95.** Do not re-probe the
 parameter list; if this row is ever opened it will be by something that removes the `extsh`, not
 by something that resizes the parameter.
+
+## 29. The frontier ranked by BYTES FORFEITED, and the whole-instruction bucket priced (measured 2026-08-03, A97)
+
+§28 established that `matched_code` is a threshold counter, so a row at 99.99 forfeits exactly as
+many bytes as a row at 5.0. This section applies that as a worklist and then closes the one bucket
+§5 named without ever pricing.
+
+Everything below is measured at `a4e893e13e` (tree 99.818634 / `matched_code` 2 520 188 /
+`matched_data` 1 195 969 / 915 of 1043), where the frontier is **204 sub-100 rows / 346 316 B**
+plus the 3 permanently unscored paired-single bodies (1 452 B).
+
+### 29a. The exclusive-class price, re-derived independently
+
+§28c's table reproduces at this tip from a fresh script, with the register bucket split into GPR
+and FPR (§28's own classifier did not split them, which is why its `REG`-only bucket read 92 rows
+where §28c prints 80 + 11 + 1):
+
+| exclusive class | functions | `matched_code` forgone | share of the 347 768 B gap |
+|---|---|---|---|
+| GPR permutation only | 79 | 138 932 | 39.95% |
+| GPR + `WHOLE` | 34 | 58 856 | 16.92% |
+| GPR + immediate + `WHOLE` | 18 | 36 192 | 10.41% |
+| GPR + FPR + immediate + `WHOLE` | 7 | 23 936 | 6.88% |
+| `WHOLE` only | 21 | 19 032 | 5.47% |
+| FPR permutation only | 11 | 13 952 | 4.01% |
+| GPR + immediate | 3 | 5 392 | 1.55% |
+| frame displacement only (`trig`) | 8 | 2 608 | 0.75% |
+| all remaining mixed buckets | 23 | 47 416 | 13.64% |
+
+One row moved off the frontier between §28's parent and this one, which is the whole difference
+between its 80 / 139 544 and this 79 / 138 932.
+
+### 29b. The reframing that the byte ranking actually produces
+
+Rank the 204 rows by objdiff's own loss, `(100 - fuzzy)/100 * size/4` instruction-equivalents:
+
+* **149 of the 204 rows sit within 3.00 instruction-equivalents of 100.0, and they hold
+  204 564 B — 59% of the entire code gap.**
+* The correlation runs the *wrong* way from intuition: the biggest rows are among the closest.
+  `Effect3_spawnObject` forfeits **7 796 B for 15 differing register operands** (loss 0.75);
+  `trickyUpdateMovementState` forfeits **8 764 B for 34** (loss 1.70); `pauseMenuDraw` **4 564 B
+  for 10** (loss 0.50); `Scarab_update` **3 476 B for one instruction** (loss 0.60).
+
+So the honest statement of the frontier is not "204 functions are wrong" but "**149 functions are
+within three instructions of exact, and they are worth 59% of the gap**". Any lever that moves a
+handful of registers on a large row is worth more than a whole small row taken to 100.
+
+### 29c. The `WHOLE`-only bucket, 21 rows / 19 032 B, attributed to the last byte
+
+§5's sight-list bullet ("zero-weld `li`-vs-`mr`; dead-tail `b`-stubs; allocator remat; invariant-
+address CSE weld; same-field-reload; peephole branch-FOLD; array-subscript value-numbering;
+flow-sensitive const-prop; large-const misc") has never carried a price. It can be priced exactly,
+because a row whose entire scored residual is whole instructions is a row those mechanisms own
+outright. All 21 are attributed; the bucket sums to 19 032 B with nothing left over:
+
+| row | bytes | mechanism | priced at |
+|---|---|---|---|
+| `Scarab_update` (262) | 3 476 | allocator remat, `mr` where we emit `li` | §23b |
+| `errorThreadFunc` (dll_80136a40) | 2 776 | scheduler transposes two adjacent `addi` | §29d, NEW |
+| `curves_advanceCollision` (engine/21) | 2 472 | allocator remat `li`/`mr` | §23b |
+| `videoInit` (pi_videoinit) | 2 132 | `mfmsr`/`mtmsr`/`mfhid0`/`mthid0`, no intrinsic | §5 island |
+| `playerStateMountBike` (195_Player) | 1 452 | mask materialised `li r0,-3; and` for our `rlwinm` | UNPRICED, owner-hot |
+| `intersectModLineBuild` (track_dolphin) | 1 352 | allocator remat, `mr r4,r5` for `li r4,0` | §23b |
+| `dll_98_spawnEffect` (modgfx/152) | 1 040 | same-field-reload: we forward the store, retail reloads | §29d, NEW |
+| `wispBaddieProcessAnimEvent` (202/sharpclaw) | 1 000 | scheduler load-delay filler | §15 |
+| `atan2fHighPrecision` (acosf) | 480 | target-unmerged dot-compare | §1 |
+| `loadTextureFiles` (texture) | 436 | inliner's orphan duplicate preheader | §24b |
+| `debugPrintfxy` (dll_80136a40) | 424 | address CSE: retail materialises `&text[-1]` twice | §29d, NEW |
+| `babyCloudRunner_turnTowardTarget` (332) | 352 | surplus `extsh` before a narrow store | §29d, NEW |
+| `playerCacheMoveRootHeights` (195_Player) | 352 | flow-sensitive const-prop into the `li` | §24b |
+| `mathSinCosf` (sincosf) | 320 | parameter-home copy-back `fmr f1,f28` | §1 |
+| `atan2f` (acosf) | 272 | dot-compare | §1 |
+| `atan2f_fast` (acosf) | 240 | dot-compare | §1 |
+| `removeButtonObject` (gameloop_buttonobj) | 220 | dot-compare, unroll-guard `srwi.` | §1 |
+| `mathTanf` (MSL math_8029454c) | 148 | parameter-home copy-back `fmr f1,f28` | §1, row ADDED |
+| `modelBoneTransforms_next` (model) | 72 | private-ABI island | §5 |
+| `setGQR7` (model) | 8 | no `mtgqr` intrinsic | §5 |
+| `setGQR6` (model) | 8 | no `mtgqr` intrinsic | §5 |
+
+Grouped: allocator remat **7 300 B**, the never-touch islands **2 220 B**, the dot-compare and its
+parameter-home cousins **1 680 B**, the inliner and const-prop rows of §24b **788 B**, the
+scheduler filler **1 000 B**, the four rows first mechanised here **4 592 B**, and one owner-hot
+row still unpriced **1 452 B**.
+
+**The classes that own ZERO of it.** Array-subscript value-numbering, peephole branch-FOLD,
+invariant-address CSE weld, unroll-tail-bound remat and the `#113`/`#126` large-const rows have
+**no row anywhere on the frontier whose residual is exclusively theirs**. They are real compiler
+behaviours and they appear as components inside mixed residuals, but their exclusive price at this
+tip is **0 B**, and that — not silence — is their entry. `#110` is the allocator-remat group and is
+priced above and in §23b.
+
+**Correction to §28d.** It states that flow-sensitive const-prop, peephole branch-FOLD,
+array-subscript value-numbering and `#110`/`#113`/`#126` "appear in §5's sight-list and nowhere
+else in `docs/`". Two of those are wrong: **§24b already carries a full measured entry for
+flow-sensitive const-prop** (`playerCacheMoveRootHeights`, nine spellings) **and for the dead-tail
+`b`-stub class** (`textureLoad` + `loadTextureFiles`, eight callee spellings). Only branch-FOLD,
+array-subscript VN, `#113` and `#126` were genuinely unpriced, and the paragraph above prices them
+at zero.
+
+### 29d. Eight rows worked off the byte ranking; yield 0, 33 spellings measured
+
+Every row below was opened because of what it is worth in bytes, not what it reads in fuzzy.
+
+* **`errorThreadFunc`** (dll_80136a40, 2 776 B, 99.95389). One instruction transposed: retail emits
+  `addi r5,r3,-16256` (`rowColor`) before `addi r4,r29,76` (`rows`), we emit them the other way
+  round, inside a block whose declaration order *already* matches retail's emission order. **Nine
+  spellings**: three declaration permutations, declaration/initialisation split, `for`-loop form,
+  `int` for the `u16`, `rows--` in the guard, statement order inside the loop body, and the stored
+  value inlined as a literal. Eight are byte-identical to baseline; the ninth (`rows--` in the
+  guard) is worse. **This row refutes §15's sufficiency test**: the slid instruction *is* one the
+  source text names — `rows = y + 0x4c` — and it is still a scheduler slot. "The slid instruction
+  is one the source names" is NECESSARY, not sufficient.
+* **`dll_98_spawnEffect`** (modgfx/152, 1 040 B, 99.76923). Retail writes
+  `resource->sequenceParams[1]`, **reloads it with `lha`**, and stores it to `[2]`; we re-extend the
+  register with `extsh`. **Eight spellings**: no cast, `(s16)` cast, an `int` temp feeding both
+  stores, a `u8*` pun on the read, a `u8*` pun on the write, and both chained-assignment
+  directions. MWCC forwards the store in every one; five of the eight also delete an instruction.
+  The `sth`/`lha` shape does occur in our own tree — `objfx_spawnCrystalOrbitEffects` in
+  `engine/10_expgfx` has three of them — but in every case the stored value arrived **through
+  memory from a float conversion**, so no register held it. With an integer register live, MWCC
+  GC/2.0 always forwards. Only `volatile` defeats it, and that is banned.
+* **`debugPrintfxy`** (dll_80136a40, 424 B, 99.38680). Retail materialises `text - 1` twice
+  (`addi r26,r1,115` and `addi r27,r1,115`); we compute it once and copy (`mr r26,r27`). **Four
+  spellings**: swapping the two statements, spelling both sides identically, spelling both as
+  `&text[-1]`, and separating them with the `savedFrameBuffer` assignment. All worse. The two
+  initialisers are *already* written with different syntax and MWCC still value-numbers them.
+* **`babyCloudRunner_turnTowardTarget`** (332, 352 B, 98.86364). One surplus `extsh` in front of
+  `sth r0,0(r28)` for `obj->anim.rotX += (yawStep >>= 3)`. **Seven spellings**: `(s16)`, `(short)`
+  and `(u16)` casts on the compound right-hand side, the shift split into its own statement (with
+  and without the cast), `rotX = rotX + ...`, and `s16 yawStep`. Every one is worse — the split
+  costs ten instructions, the casts cost five. The A59 narrow-store rule predicts our output
+  exactly (`+=` with an `int` right-hand side does not elide); retail elides anyway, and no
+  spelling of the right-hand side reaches it.
+* **`Effect3_spawnObject`** (engine/28, **7 796 B**, 99.96152 — the best bytes-per-probe row on the
+  frontier). Fifteen differing register operands and **174 relocation-name differences weighted at
+  0.000**, which is a second positive control for §28's `#70` result on a single row. The permuted
+  registers are **parameter homes**: retail lands `r4→r27, r5→r28, r6→r29, r8→r30` in ABI order
+  with the first local at `r31`; we land `r4→r31, r6→r30, r8→r27` with the local at `r29`.
+  `slot_oracle` reports pi non-empty but **no declaration slot owning any register**, and all
+  **six permutations of the three-declaration block are byte-identical**. Deleting the
+  `spawnParams = spawnParamsIn` alias (which reads like scaffolding) costs 0.75 → 20.55; hoisting
+  the `hasAttachedSource` computation into its initialiser costs 0.75 → 6.50. **The alias local is
+  load-bearing.** Parameter homes are not reachable from the declaration list — the same wall
+  §15 hit on `debugTextDrawToFrameBuffer`.
+* **`newclouds_run`** (engine/7, 2 376 B, 99.94613). Retail computes the slot address into its
+  final register and increments in place (`add r27,r30,r23; addi r27,r27,16`); we route through
+  `r3`. **Four spellings** of the two-step address — folded into one expression, parenthesised,
+  constant written first, and `cloudSlot += 4` — cost 0.32 → 41.02, 41.02, 41.02 and 4.38. The
+  two-statement form already in the tree is the best reachable one.
+* **`mathSinCosf` / `mathTanf`** (sincosf, MSL, 320 + 148 B). Both miss retail's `fmr f1,f28`
+  parameter-home copy-back. §1 already banks `mathSinCosf` with five spellings; two more (a local
+  copy of `x`, and splitting the declaration from the call) are worse or do not compile. **`mathTanf`
+  is the same mechanism and is added to §1's table.**
+
+### 29e. Two instrument notes
+
+**A classifier that mis-buckets memory operands.** The per-row classifier A96 used for its
+*narrative* (`/private/tmp/A96_classify.py`, never landed in `tools/`) decides a pair's kind with
+`REG_RE.match(operand)`, which does not match `0x8(r3)`. A pair differing only in the **base
+register of a memory operand** therefore reads as `IMM`. Its `REG`-only bucket comes out 40 rows
+where the sound model gives 92. §28c's published table came from the *other* script
+(`A96_model.py`), which splits `N(rX)` before deciding, so **the document is right and only that
+one scratch script was wrong** — but any lane that reaches for it should split the displacement
+first.
+
+**A probe loop that leaves stale objects behind a clean `git status`.** A restore-by-content probe
+loop that writes the source back but does not rebuild leaves the *object* holding the probe's code
+while `git status` reads clean. Two of this lane's loops did exactly that (an assertion fired
+mid-loop; another skipped its final rebuild), and the rows read 10.18 and 3.00 against a 1.00
+baseline until `ninja all_source` was re-run. **A probe loop must rebuild after its last restore,
+and a lane must re-measure the whole report before trusting any baseline it took mid-sweep.**
+`git status` is not a build-state oracle.
