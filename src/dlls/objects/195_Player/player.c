@@ -6519,7 +6519,7 @@ int playerState19(GameObject* obj, int state)
             n = 9;
             break;
         }
-        inner->targetYaw = *(s16*)((char*)sub + 0x0);
+        inner->targetYaw = ((GameObject*)sub)->anim.rotX;
         inner->yaw = inner->targetYaw;
         obj->anim.rotY = 0;
         obj->anim.rotZ = 0;
@@ -6810,7 +6810,7 @@ int playerStateMountBike(GameObject* obj, int state, f32 fv)
                 break;
             }
         }
-        inner->targetYaw = *(s16*)((char*)sub + 0x0);
+        inner->targetYaw = ((GameObject*)sub)->anim.rotX;
         inner->yaw = inner->targetYaw;
         ObjAnim_SetCurrentMove((int)obj, ((s16*)inner->moveSequence)[sel], 0.0f, 4);
         joint = Player_GetActiveModel((int)obj);
@@ -8520,11 +8520,11 @@ int playerState0D(GameObject* obj, int targetState)
     f32 fz;
     ((PlayerState*)inner)->flags360 &= ~PLAYER_FLAG_HITDETECT;
     ((PlayerState*)inner)->flags360 |= PLAYER_FLAG_NO_POS_VELOCITY;
-    *(int*)((char*)targetState + 4) |= 0x100000;
+    ((PlayerState*)targetState)->baddie.flags4 |= 0x100000;
     fz = 0.0f;
     ((PlayerState*)targetState)->baddie.animSpeedA = fz;
     ((PlayerState*)targetState)->baddie.animSpeedB = fz;
-    *(int*)((char*)targetState + 0) |= 0x200000;
+    ((PlayerState*)targetState)->baddie.flags0 |= 0x200000;
     obj->anim.velocityX = fz;
     obj->anim.velocityZ = fz;
     return 0;
@@ -9367,7 +9367,7 @@ int playerState08(GameObject* obj, int state, f32 fv) {
                 {
                     if (gPlayerPathObject != NULL && b != 0)
                     {
-                        *(u8*)((char*)in2 + 0x8b4) = 4;
+                        ((PlayerState*)in2)->staffActionRequest = 4;
                         ((PlayerState*)in2)->flags3F4.b08 = 1;
                     }
                     ((PlayerState*)state)->baddie.stateHandler = 0;
@@ -12066,7 +12066,7 @@ int playerCanUseStaffBooster(GameObject* obj, int p2)
 
     if (!((sel != 1 && sel != 2 && sel != 0x26) || !mainGetBit(GAMEBIT_STAFF_ABILITY_STAFF_BOOSTER) ||
           (slot = inner->cameraTargetObject) == NULL || ((GameObject*)slot)->anim.romDefNo != 0x64f ||
-          ((af = *(u8*)((char*)slot + 0xaf)) & 4) == 0 || (af & 0x18) != 0 ||
+          ((af = ((GameObject*)slot)->anim.resetHitboxFlags) & 4) == 0 || (af & 0x18) != 0 ||
           ((PlayerState*)p2)->baddie.targetObj != NULL || (c = inner->curAnimId) == 0x48 || c == 0x47 || c == 0x44 ||
           ((PlayerState*)inner)->heldObj != NULL || ((PlayerState*)inner)->flags3F0.b20 ||
           ((PlayerState*)inner)->flags3F0.b04 || ((PlayerState*)inner)->flags3F0.b08 ||
@@ -12088,8 +12088,8 @@ int playerCanCastPortalOpenSpell(GameObject* obj, int p2)
         void* slot = inner->cameraTargetObject;
         u8 af;
         u8 c;
-        if (slot == NULL || ((GameObject*)slot)->anim.romDefNo != 0x414 || ((af = *(u8*)((char*)slot + 0xaf)) & 4) == 0 ||
-            (af & 0x18) != 0)
+        if (slot == NULL || ((GameObject*)slot)->anim.romDefNo != 0x414 ||
+            ((af = ((GameObject*)slot)->anim.resetHitboxFlags) & 4) == 0 || (af & 0x18) != 0)
         {
             return 0;
         }
@@ -12275,9 +12275,9 @@ void playerSyncTransformToFocusObject(int p1, int p2, int p3, int p4, int p5, in
     ((GameObject*)p1)->anim.worldPosX = ((GameObject*)p1)->anim.localPosX;
     ((GameObject*)p1)->anim.worldPosY = ((GameObject*)p1)->anim.localPosY;
     ((GameObject*)p1)->anim.worldPosZ = ((GameObject*)p1)->anim.localPosZ;
-    ((GameObject*)p1)->anim.velocityX = *(f32*)((char*)p3 + 0x24);
-    ((GameObject*)p1)->anim.velocityY = *(f32*)((char*)p3 + 0x28);
-    ((GameObject*)p1)->anim.velocityZ = *(f32*)((char*)p3 + 0x2c);
+    ((GameObject*)p1)->anim.velocityX = ((GameObject*)p3)->anim.velocityX;
+    ((GameObject*)p1)->anim.velocityY = ((GameObject*)p3)->anim.velocityY;
+    ((GameObject*)p1)->anim.velocityZ = ((GameObject*)p3)->anim.velocityZ;
     playerRefreshCollisionState((GameObject*)p1, p2, 7);
 }
 
@@ -12408,10 +12408,10 @@ void staffShootFireball(GameObject* obj, int state, f32 unused)
     {
         Sfx_PlayFromObject(obj, SFXTRIG_wp_hitpos_6_20a);
         setup = Obj_AllocObjectSetup(0x24, 0x14b);
-        *(u8*)((char*)setup + 0x4) = 2;
-        *(u8*)((char*)setup + 0x5) = 1;
-        *(u8*)((char*)setup + 0x6) = 0xff;
-        *(u8*)((char*)setup + 0x7) = 0xff;
+        setup->color[0] = 2;
+        setup->color[1] = 1;
+        setup->color[2] = 0xff;
+        setup->color[3] = 0xff;
         if (((PlayerState*)state)->baddie.targetObj != NULL)
         {
             ObjPath_GetPointWorldPosition(gPlayerPathObject, 0, (f32*)((char*)setup + 0x8), (f32*)((char*)setup + 0xc),
@@ -16459,7 +16459,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
         ((GameObject*)gPlayerEggObject)->anim.parent = (void*)((GameObject*)obj)->anim.parent;
         if (((PlayerState*)inner)->characterId == 0)
         {
-            *(s16*)(gPlayerEggObject + 6) |= 0x4000;
+            ((GameObject*)gPlayerEggObject)->anim.flags |= 0x4000;
         }
     }
     if (gPlayerStaffObject == NULL && Obj_IsLoadingLocked() != 0)
@@ -17181,15 +17181,15 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
             case 0x1a:
                 if (((PlayerState*)inner)->interactObject != 0)
                 {
-                    int p1a = *(int*)(((PlayerState*)inner)->interactObject + 0x50);
-                    int snd = *(s16*)(p1a + 0x7a);
+                    ObjDef* def = ((GameObject*)((PlayerState*)inner)->interactObject)->anim.modelInstance;
+                    int snd = def->npcDialogueTextId;
                     if (snd > -1)
                     {
                         (*gGameUIInterface)->showNpcDialogue(snd, 0x154, 300, 0);
                     }
                     else
                     {
-                        (*gGameUIInterface)->showNpcDialogue(*(s16*)(p1a + 0x7c), 0x154, 300, 0);
+                        (*gGameUIInterface)->showNpcDialogue(def->helpTextIds[0], 0x154, 300, 0);
                     }
                 }
                 break;

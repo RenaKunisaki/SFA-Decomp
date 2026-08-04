@@ -330,7 +330,7 @@ typedef struct ObjDef {
   u8 effectFlags;
   u8 secondaryHitboxRadius;
   s16 mapLoadObjectId;
-  u8 pad7A[0x7C - 0x7A];
+  s16 npcDialogueTextId;
   s16 helpTextIds[4];
   u16 avoidRadiusX; /* 0x84: lateral extent of the side-step avoidance ellipse (scaled by 0.1); 0 disables avoidance for the object */
   u16 avoidRadiusZ; /* 0x86: axial extent of the same ellipse */
@@ -691,6 +691,7 @@ STATIC_ASSERT(offsetof(ObjDef, fixedSortDepth) == 0x74);
 STATIC_ASSERT(offsetof(ObjDef, effectFlags) == 0x76);
 STATIC_ASSERT(offsetof(ObjDef, secondaryHitboxRadius) == 0x77);
 STATIC_ASSERT(offsetof(ObjDef, mapLoadObjectId) == 0x78);
+STATIC_ASSERT(offsetof(ObjDef, npcDialogueTextId) == 0x7A);
 STATIC_ASSERT(offsetof(ObjDef, helpTextIds) == 0x7C);
 STATIC_ASSERT(offsetof(ObjDef, shadowModelScaleBase) == 0x88);
 STATIC_ASSERT(offsetof(ObjDef, modelLightMaskIndex) == 0x8D);
