@@ -191,7 +191,7 @@ void mutatedEbaUpdateEngaged(u32 obj, int state)
     if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
         ((EnemyState*)state)->userData1 += 1;
-        if (10 < ((EnemyState*)state)->userData1)
+        if (((EnemyState*)state)->userData1 > 10)
         {
             ((EnemyState*)state)->userData1 = 3;
         }

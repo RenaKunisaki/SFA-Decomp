@@ -593,7 +593,7 @@ void AppleOnTree_update(GameObject* obj) {
                     if (!((iteration == 100) || (iteration != 0x66)))
                         break;
                 }
-                if (0.0f != ((AppleOnTreeState*)state)->dropHeight) {
+                if (((AppleOnTreeState*)state)->dropHeight != 0.0f) {
                     fb = ((AppleOnTreeState*)state)->flightTime / ((AppleOnTreeState*)state)->totalFlightTime;
                     obj->anim.rotX = (f32)((AppleOnTreeState*)state)->rotX * fb;
                     obj->anim.rotY = (f32)((AppleOnTreeState*)state)->rotY * fb;

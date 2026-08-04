@@ -1687,7 +1687,7 @@ void newclouds_run(void)
             }
             ((NewCloud*)D7_CLOUD)->driftOffset = framesThisStep * ((NewCloud*)D7_CLOUD)->driftRate +
                 ((NewCloud*)D7_CLOUD)->driftOffset;
-            if (0.0f != ((NewCloud*)D7_CLOUD)->driftScale)
+            if (((NewCloud*)D7_CLOUD)->driftScale != 0.0f)
             {
                 if (((NewCloud*)D7_CLOUD)->driftOffset > ((NewCloud*)D7_CLOUD)->driftLimit)
                 {

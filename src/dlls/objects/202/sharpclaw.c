@@ -542,7 +542,7 @@ u32 wispBaddieProcessAnimEvent(GameObject* obj, u8* state, u32 allowNewEvent)
     }
     if ((((u8)allowNewEvent != 0 && ((EnemyState*)state)->flags2F1 != 0 && eventRows[eventIndex].moveId != 0) ||
          (((EnemyState*)state)->flags2F1 & 0x20) != 0) &&
-        !(((EnemyState*)state)->familyData.sharpClaw.activeEventIndex == eventIndex && 0.0f != ((EnemyState*)state)->sharpClaw.moveHoldTimer))
+        !(((EnemyState*)state)->familyData.sharpClaw.activeEventIndex == eventIndex && ((EnemyState*)state)->sharpClaw.moveHoldTimer != 0.0f))
     {
         sf2 = ((EnemyState*)state)->controlFlags;
         if ((sf2 & 0x800080) != 0 || (((EnemyState*)state)->flags2F1 & 0x20) != 0)

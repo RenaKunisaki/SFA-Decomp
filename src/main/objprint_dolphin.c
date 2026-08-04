@@ -3214,7 +3214,7 @@ void objRenderFuzz(int* obj)
 
 void objRenderShadow(void* obj)
 {
-    if (0.0f == ((GameObject*)obj)->anim.rootMotionScale)
+    if (((GameObject*)obj)->anim.rootMotionScale == 0.0f)
     {
         curObjMtx = 0;
         return;
@@ -3256,7 +3256,7 @@ static void objRenderChild(int* child, int* parent, u8 isShadow)
     f32 dx, dz;
     int off;
     f32* mtx;
-    if (0.0f == ((GameObject*)child)->anim.rootMotionScale)
+    if (((GameObject*)child)->anim.rootMotionScale == 0.0f)
     {
         curObjMtx = 0;
         return;

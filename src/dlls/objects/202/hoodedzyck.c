@@ -150,7 +150,7 @@ void hoodedZyck_updateIdle(GameObject* obj, int state)
     float hitOut[22];
 
     hoodedZyck_tickPhaseTimer((EnemyState*)state);
-    if (0.0f != ((EnemyState*)state)->duster.decoyTimer)
+    if (((EnemyState*)state)->duster.decoyTimer != 0.0f)
     {
         ObjHits_DisableObject(obj);
         if ((obj)->anim.currentMove != 5)
@@ -240,7 +240,7 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
 
     hoodedZyck_tickPhaseTimer((EnemyState*)state);
 
-    if (0.0f != ((EnemyState*)state)->crawler.emergeTimer)
+    if (((EnemyState*)state)->crawler.emergeTimer != 0.0f)
     {
         ObjHits_DisableObject(obj);
         if (obj->anim.currentMove != 5)
@@ -389,7 +389,7 @@ void hoodedZyck_update(GameObject* obj, u8* state)
 
     hoodedZyck_tickPhaseTimer((EnemyState*)state);
 
-    if (0.0f != ((EnemyState*)state)->crawler.emergeTimer)
+    if (((EnemyState*)state)->crawler.emergeTimer != 0.0f)
     {
         ObjHits_DisableObject(obj);
         if (obj->anim.currentMove != 5)

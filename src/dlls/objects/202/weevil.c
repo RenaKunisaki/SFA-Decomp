@@ -179,7 +179,7 @@ void weevil_updateIdle(GameObject* obj, int state)
                 }
             }
         }
-        if (0.0f == ((EnemyState*)state)->weevil.recoverTimer)
+        if (((EnemyState*)state)->weevil.recoverTimer == 0.0f)
         {
             if ((obj)->anim.currentMove == 0)
             {

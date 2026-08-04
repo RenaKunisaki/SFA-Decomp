@@ -604,7 +604,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
                 {
                     ival = -framesThisStep + s->reattackTimer;
                     s->reattackTimer = ival;
-                    if ((ival <= 0) && (0 < (int)(s->reattackTimer + framesThisStep)))
+                    if ((ival <= 0) && ((int)(s->reattackTimer + framesThisStep) > 0))
                     {
                         objJointTracksCaptureCurrentAngles(obj, (int*)seqHandle, (u32)s->pointCount, s->animChannels);
                         s->setupFlag = 0x50;
@@ -776,7 +776,7 @@ int moveLibTurnToFaceTarget(GameObject* obj, GameObject* targetObj, int* turning
     }
     else if (*turning != 0)
     {
-        if ((0 < (s16)yawDelta) && (obj->anim.currentMove != moves[1]))
+        if (((s16)yawDelta > 0) && (obj->anim.currentMove != moves[1]))
         {
             ObjAnim_SetCurrentMove((int)obj, moves[1], 0.0f, 0);
             ObjAnim_SetCurrentEventStepFrames(&obj->anim, 0x1e);
