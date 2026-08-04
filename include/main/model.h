@@ -114,7 +114,7 @@ typedef struct ModelFileHeader {
     u8 *extraJointDefs; /* 0x54: extraJointCount 3-byte records {jointA, jointB, weight*4}; modelCalcVtxGroupMtxs blends the two joint matrices into the extra joint at jointCount+i; offset->ptr relocated on load */
     u8 *hitVolumes; /* 0x58: 0x18-byte ModelHitSphereDef records, hitSphereCount entries */
     u8 *collisionTriangles; /* 0x5c: 8-byte triangle vertex-index records (hit-detect mesh) */
-    u8 *collisionBlocks;    /* 0x60: 0x14-byte spatial blocks (AABB + triangle range), count at +0xf0 */
+    u8 *collisionBlocks;    /* 0x60: 0x14-byte spatial blocks (AABB + triangle range), collisionBlockCount entries */
     u8 *animationModelPtrs;
     u8 *animationDataSection;
     u8 *animationHeaderBuffer; /* per-joint s16 table */
@@ -146,7 +146,8 @@ typedef struct ModelFileHeader {
     u16 normalCount;
     u8 unkE8[4];
     u16 animationCount; /* nonzero = per-joint matrix buffers */
-    u8 unkEE[4];
+    u8 unkEE[2];
+    u16 collisionBlockCount; /* 0xF0: number of 0x14-byte collisionBlocks entries */
     u8 textureCount;
     u8 jointCount;
     u8 extraJointCount;
@@ -182,6 +183,7 @@ STATIC_ASSERT(offsetof(ModelFileHeader, modelId) == 0x04);
 STATIC_ASSERT(offsetof(ModelFileHeader, jointData) == 0x3C);
 STATIC_ASSERT(offsetof(ModelFileHeader, textureIds) == 0x20);
 STATIC_ASSERT(offsetof(ModelFileHeader, blendAnimEntries) == 0xC8);
+STATIC_ASSERT(offsetof(ModelFileHeader, collisionBlockCount) == 0xF0);
 STATIC_ASSERT(offsetof(ModelFileHeader, textureCount) == 0xF2);
 STATIC_ASSERT(offsetof(ModelFileHeader, morphTargetCount) == 0xF9);
 STATIC_ASSERT(offsetof(ModelFileHeader, texMtxCount) == 0xFA);
