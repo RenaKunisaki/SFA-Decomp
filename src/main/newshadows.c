@@ -584,7 +584,7 @@ void renderObjectShadowTexture(GameObject* obj)
         gxSetZMode_(1, GX_LEQUAL, 1);
         GXSetTexCopySrc(0x100, 0xb0, 0x80, 0x80);
         GXSetTexCopyDst(0x80, 0x80, GX_CTF_B8, GX_FALSE);
-        GXCopyTex((void*)(gNewShadowFrameTextures[gNewShadowFrameIndex] + 0x60), GX_TRUE);
+        GXCopyTex((Texture*)gNewShadowFrameTextures[gNewShadowFrameIndex] + 1, GX_TRUE);
         boxBlurTexture((u8*)gNewShadowFrameTextures[(gNewShadowFrameIndex + 1) % NEW_SHADOW_FRAME_COUNT], 0x80,
                        0x10, 0);
         obj->anim.modelState->shadowScale = 1.0f / sc;
@@ -1799,11 +1799,11 @@ void allocLotsOfTextures(void)
 
     gNewShadowDiskTexture = (int)textureAlloc(0x20, 0x20, 1, 0, 0, 0, 0, 1, 1);
     fillDiskTexture();
-    DCFlushRange((void*)(gNewShadowDiskTexture + 0x60), ((Texture*)gNewShadowDiskTexture)->dataSize);
+    DCFlushRange((Texture*)gNewShadowDiskTexture + 1, ((Texture*)gNewShadowDiskTexture)->dataSize);
 
     gNewShadowSmallDiskTexture = (int)textureAlloc(0x10, 0x10, 1, 0, 0, 0, 0, 1, 1);
     fillSmallDiskTexture();
-    DCFlushRange((void*)(gNewShadowSmallDiskTexture + 0x60), ((Texture*)gNewShadowSmallDiskTexture)->dataSize);
+    DCFlushRange((Texture*)gNewShadowSmallDiskTexture + 1, ((Texture*)gNewShadowSmallDiskTexture)->dataSize);
 
     gNewShadowBumpTexture = (int)textureAlloc(0x40, 0x40, 5, 0, 0, 0, 0, 1, 1);
     {
@@ -1900,7 +1900,7 @@ void allocLotsOfTextures(void)
             }
         }
     }
-    DCFlushRange((void*)(gNewShadowBumpTexture + 0x60), ((Texture*)gNewShadowBumpTexture)->dataSize);
+    DCFlushRange((Texture*)gNewShadowBumpTexture + 1, ((Texture*)gNewShadowBumpTexture)->dataSize);
 
     gNewShadowWhirlpoolTexture = (u32)textureLoadAsset(0x5b0);
     gNewShadowHeatHazeTexture = textureLoadAsset(0x600);
@@ -1908,15 +1908,15 @@ void allocLotsOfTextures(void)
 
     gNewShadowRampTexture = (int)textureAlloc(0x100, 4, 1, 0, 0, 0, 0, 0, 0);
     fillRampTexture();
-    DCFlushRange((void*)(gNewShadowRampTexture + 0x60), ((Texture*)gNewShadowRampTexture)->dataSize);
+    DCFlushRange((Texture*)gNewShadowRampTexture + 1, ((Texture*)gNewShadowRampTexture)->dataSize);
 
     gNewShadowInverseRampTexture = (int)textureAlloc(0x100, 4, 1, 0, 0, 0, 0, 1, 1);
     fillInverseRampTexture();
-    DCFlushRange((void*)(gNewShadowInverseRampTexture + 0x60), ((Texture*)gNewShadowInverseRampTexture)->dataSize);
+    DCFlushRange((Texture*)gNewShadowInverseRampTexture + 1, ((Texture*)gNewShadowInverseRampTexture)->dataSize);
 
     gNewShadowFalloffTexture = (int)textureAlloc(0x80, 0x80, 1, 0, 0, 0, 0, 1, 1);
     fillFalloffTexture();
-    DCFlushRange((void*)(gNewShadowFalloffTexture + 0x60), ((Texture*)gNewShadowFalloffTexture)->dataSize);
+    DCFlushRange((Texture*)gNewShadowFalloffTexture + 1, ((Texture*)gNewShadowFalloffTexture)->dataSize);
 
     gNewShadowRadialTexture = textureAlloc(0x80, 0x80, 1, 0, 0, 0, 0, 1, 1);
     for (i = 0; i < 0x80; i++)
@@ -1982,7 +1982,7 @@ void allocLotsOfTextures(void)
         t += (i >> 2) * 0x20;
         *(u16*)(t + 0x78) = v;
     }
-    DCFlushRange((void*)(gNewShadowReflectionGradientTexture + 0x60),
+    DCFlushRange((Texture*)gNewShadowReflectionGradientTexture + 1,
                  ((Texture*)gNewShadowReflectionGradientTexture)->dataSize);
 
     frameTexture = textureAlloc(0x80, 0x80, 1, 0, 0, 0, 0, 1, 1);

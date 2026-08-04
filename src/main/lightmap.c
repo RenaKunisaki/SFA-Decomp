@@ -393,7 +393,7 @@ void getVisibleObjects(s8* opacity)
         sub = o;
         for (; j < ((GameObject*)o)->childCount; j++)
         {
-            att = (GameObject*)(*(u8**)(sub + 0xc8));
+            att = ((GameObject*)sub)->childObjs[0];
             if (att != NULL)
             {
                 att->objectFlags &= ~OBJECT_OBJFLAG_RENDERED;
@@ -448,7 +448,7 @@ void getVisibleObjects(s8* opacity)
                     model = (int*)Obj_GetActiveModel((GameObject*)o);
                     if (((GameObject*)o)->anim.renderAlpha == 0xff && (((GameObject*)o)->anim.flags & 0x80) == 0 &&
                         ((tf = ((ObjAnimComponent*)o)->modelInstance->flags) & 0x40000) == 0 &&
-                        *(void**)(model + 0x16) == NULL)
+                        ((ModelFileHeader*)model)->hitVolumes == NULL)
                     {
                         key |= 0x80000000;
                         sortDepth = 1000 - (depthInt & 0xffff);
@@ -816,7 +816,7 @@ void sceneDraw(void)
         cursor = (u8*)player;
         for (; i < player->childCount; i++)
         {
-            GameObject* child = *(GameObject**)(cursor + 200);
+            GameObject* child = ((GameObject*)cursor)->childObjs[0];
             if (child->anim.classId == 45)
             {
                 ((void (*)(GameObject*))(*child->anim.dll)[11])(child);

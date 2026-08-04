@@ -3166,13 +3166,13 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t) {
                             slots[1] = -1;
                             slots[2] = -1;
                             if (t->childA != NULL) {
-                                slots[((TrickyPackedSlots*)((char*)t + 0x7bc))->promptASlot] = 1;
+                                slots[t->packedSlots.promptASlot] = 1;
                             }
                             if (t->childB != NULL) {
-                                slots[((TrickyPackedSlots*)((char*)t + 0x7bc))->promptBSlot] = 1;
+                                slots[t->packedSlots.promptBSlot] = 1;
                             }
                             if (t->child != NULL) {
-                                slots[((TrickyPackedSlots*)((char*)t + 0x7bc))->zzzSlot] = 1;
+                                slots[t->packedSlots.zzzSlot] = 1;
                             }
                             if (slots[0] == -1) {
                                 free_ = 0;
@@ -3185,9 +3185,9 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t) {
                             } else {
                                 free_ = -1;
                             }
-                            ((TrickyPackedSlots*)((char*)t + 0x7bc))->zzzSlot = free_;
+                            t->packedSlots.zzzSlot = free_;
                             t->child = (void*)objSetupObject((ObjPlacement*)o, 4, -1, -1, (void*)gobj->anim.parentAddress);
-                            ObjLink_AttachChild(gobj, t->child, ((TrickyPackedSlots*)((char*)t + 0x7bc))->zzzSlot);
+                            ObjLink_AttachChild(gobj, t->child, t->packedSlots.zzzSlot);
                             {
                                 f32 z3 = 0.0f;
                                 t->childPhaseTimer0 = z3;
@@ -3323,11 +3323,10 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t) {
                 }
             }
             if (bestWarp != NULL) {
-                /* unk724 holds the current warp detour while orbiting. */
-                if (*(void**)((u8*)t + 0x724) == NULL) {
+                if (t->unk724 == NULL) {
                     TRICKY_BARK((int*)gobj, 0x35b, 0x500, orbitCfg);
                 }
-                if (*(void**)((u8*)t + 0x724) == NULL || (int*)t->unk724 != bestWarp) {
+                if (t->unk724 == NULL || (int*)t->unk724 != bestWarp) {
                     t->unk724 = (void*)bestWarp;
                     TRICKY_RETARGET((u8*)t, (int)t->unk724);
                 }
@@ -3335,7 +3334,7 @@ void trickyUpdateCircling(GameObject* gobj, TrickyState* t) {
         }
         {
             u8 orbitMovementStatus;
-            if (*(void**)((u8*)t + 0x724) != NULL) {
+            if (t->unk724 != NULL) {
                 orbitMovementStatus = trickyUpdateMovementState(gobj, 5.0f, t);
             } else {
                 orbitMovementStatus = trickyUpdateMovementState(gobj, 340282346638528859811704183484516925440.0f, t);
@@ -3522,7 +3521,7 @@ void tricky_fetchBall(GameObject* obj, TrickyState* state) {
                 sidekickBall_setIdle((GameObject*)(state->scratch700.i), obj);
             } else if (status == 2) {
                 extra = (int)obj->extra;
-                if ((((u32) * (u8*)(extra + 0x58) >> 6) & 1) == 0) {
+                if ((((u32)((TrickyState*)extra)->statusFlags >> 6) & 1) == 0) {
                     move = (obj)->anim.currentMove;
                     if (move >= 48 || move < 41) {
                         if (Sfx_IsPlayingFromObjectChannel((GameObject*)obj, 16) == 0) {
@@ -3588,7 +3587,7 @@ void tricky_fetchBall(GameObject* obj, TrickyState* state) {
                 if (state->sfxIntervalTimer <= 0.0f) {
                     state->sfxIntervalTimer = (f32)(s32)randomGetRange(150, 300);
                     extra = (int)obj->extra;
-                    if ((((u32) * (u8*)(extra + 0x58) >> 6) & 1) != 0) {
+                    if ((((u32)((TrickyState*)extra)->statusFlags >> 6) & 1) != 0) {
                         break;
                     }
                     move = (obj)->anim.currentMove;
@@ -3748,7 +3747,7 @@ void tricky_idleAndEat(GameObject* obj, TrickyState* state) {
             if (state->idleSfxTimer <= 0.0f) {
                 state->idleSfxTimer = (f32)(s32)randomGetRange(500, 750);
                 extra = (int)obj->extra;
-                if ((((u32) * (u8*)(extra + 0x58) >> 6) & 1) == 0) {
+                if ((((u32)((TrickyState*)extra)->statusFlags >> 6) & 1) == 0) {
                     move = obj->anim.currentMove;
                     if (move >= 48 || move < 41) {
                         if (Sfx_IsPlayingFromObjectChannel((GameObject*)obj, 16) == 0) {
@@ -5685,13 +5684,13 @@ int tricky_substateSleep(GameObject* obj, int* state) {
         slots[1] = -1;
         slots[2] = -1;
         if (((TrickyState*)state)->childA != NULL) {
-            slots[((TrickyPackedSlots*)((u8*)state + 0x7bc))->promptASlot] = 1;
+            slots[((TrickyState*)state)->packedSlots.promptASlot] = 1;
         }
         if (((TrickyState*)state)->childB != NULL) {
-            slots[((TrickyPackedSlots*)((u8*)state + 0x7bc))->promptBSlot] = 1;
+            slots[((TrickyState*)state)->packedSlots.promptBSlot] = 1;
         }
         if (((TrickyState*)state)->child != NULL) {
-            slots[((TrickyPackedSlots*)((u8*)state + 0x7bc))->zzzSlot] = 1;
+            slots[((TrickyState*)state)->packedSlots.zzzSlot] = 1;
         }
         if (slots[0] == -1) {
             idx = 0;
@@ -5704,9 +5703,9 @@ int tricky_substateSleep(GameObject* obj, int* state) {
         } else {
             idx = -1;
         }
-        ((TrickyPackedSlots*)((u8*)state + 0x7bc))->zzzSlot = idx;
+        ((TrickyState*)state)->packedSlots.zzzSlot = idx;
         ((TrickyState*)state)->child = objSetupObject((ObjPlacement*)e, 4, -1, -1, (obj)->anim.parent);
-        ObjLink_AttachChild(obj, ((TrickyState*)state)->child, ((TrickyPackedSlots*)((u8*)state + 0x7bc))->zzzSlot);
+        ObjLink_AttachChild(obj, ((TrickyState*)state)->child, ((TrickyState*)state)->packedSlots.zzzSlot);
         z = 0.0f;
         ((TrickyState*)state)->childPhaseTimer0 = z;
         ((TrickyState*)state)->childPhaseTimer1 = z;
@@ -6744,7 +6743,7 @@ int Tricky_updateSideCommandPrompts(GameObject* obj) {
         }
         ((TrickyState*)state)->commandRequestBits = 0;
         if ((cond) && ((((TrickyState*)state)->stateFlags & 0x200) == 0)) {
-            *(float*)(state + 0x7b4) = 60.0f;
+            ((TrickyState*)state)->promptBDespawnTimer = 60.0f;
             if ((((TrickyState*)state)->childB == NULL) && (Obj_IsLoadingLocked() != 0)) {
                 bitVal = randomGetRange(0, 1);
                 promptId = *(u16*)((int)promptTable + bitVal * 2);
@@ -6760,13 +6759,13 @@ int Tricky_updateSideCommandPrompts(GameObject* obj) {
                 flagsB[1] = -1;
                 flagsB[2] = -1;
                 if (((TrickyState*)state)->childA != NULL) {
-                    flagsB[*(u8*)(state + 0x7bc) >> 6 & 3] = '\x01';
+                    flagsB[((TrickyState*)state)->packedSlots.promptASlot] = '\x01';
                 }
                 if (((TrickyState*)state)->childB != NULL) {
-                    flagsB[*(u8*)(state + 0x7bc) >> 4 & 3] = '\x01';
+                    flagsB[((TrickyState*)state)->packedSlots.promptBSlot] = '\x01';
                 }
                 if (((TrickyState*)state)->child != NULL) {
-                    flagsB[*(u8*)(state + 0x7bc) >> 2 & 3] = '\x01';
+                    flagsB[((TrickyState*)state)->packedSlots.zzzSlot] = '\x01';
                 }
                 if (flagsB[0] == -1) {
                     bitVal = 0;
@@ -6779,7 +6778,7 @@ int Tricky_updateSideCommandPrompts(GameObject* obj) {
                 } else {
                     bitVal = 0xffffffff;
                 }
-                ((TrickyPackedSlots*)(state + 0x7bc))->promptBSlot = bitVal;
+                ((TrickyState*)state)->packedSlots.promptBSlot = bitVal;
                 spawnedObj =
                     (int)objSetupObject((ObjPlacement*)setup, 4, -1, 0xffffffff, obj->anim.parent);
                 *(u32*)(state + 0x7b0) = spawnedObj; /* raw: arrow form shifts bytes */
@@ -6787,14 +6786,14 @@ int Tricky_updateSideCommandPrompts(GameObject* obj) {
                                     ((TrickyState*)state)->packedSlots.promptBSlot);
             }
         } else if (((TrickyState*)state)->childB != NULL) {
-            *(float*)(state + 0x7b4) = *(float*)(state + 0x7b4) - timeDelta;
-            if (*(float*)(state + 0x7b4) <= 0.0f) {
+            ((TrickyState*)state)->promptBDespawnTimer = ((TrickyState*)state)->promptBDespawnTimer - timeDelta;
+            if (((TrickyState*)state)->promptBDespawnTimer <= 0.0f) {
                 objAnimFreeChildren(obj, (TrickyState*)state,
                                     (GameObject**)(state + 0x7b0)); /* raw: arrow form shifts bytes */
             }
         }
         if ((promptA) && ((((TrickyState*)state)->stateFlags & 0x200) == 0)) {
-            *(float*)(state + 0x7ac) = 60.0f;
+            ((TrickyState*)state)->promptADespawnTimer = 60.0f;
             if ((((TrickyState*)state)->childA == NULL) && (Obj_IsLoadingLocked() != 0)) {
                 if (randomGetRange(0, 3) == 0) {
                     if (promptB) {
@@ -6820,13 +6819,13 @@ int Tricky_updateSideCommandPrompts(GameObject* obj) {
                 flagsA[1] = -1;
                 flagsA[2] = -1;
                 if (((TrickyState*)state)->childA != NULL) {
-                    flagsA[*(u8*)(state + 0x7bc) >> 6 & 3] = '\x01';
+                    flagsA[((TrickyState*)state)->packedSlots.promptASlot] = '\x01';
                 }
                 if (((TrickyState*)state)->childB != NULL) {
-                    flagsA[*(u8*)(state + 0x7bc) >> 4 & 3] = '\x01';
+                    flagsA[((TrickyState*)state)->packedSlots.promptBSlot] = '\x01';
                 }
                 if (((TrickyState*)state)->child != NULL) {
-                    flagsA[*(u8*)(state + 0x7bc) >> 2 & 3] = '\x01';
+                    flagsA[((TrickyState*)state)->packedSlots.zzzSlot] = '\x01';
                 }
                 if (flagsA[0] == -1) {
                     bitVal = 0;
@@ -6839,7 +6838,7 @@ int Tricky_updateSideCommandPrompts(GameObject* obj) {
                 } else {
                     bitVal = 0xffffffff;
                 }
-                ((TrickyPackedSlots*)(state + 0x7bc))->promptASlot = bitVal;
+                ((TrickyState*)state)->packedSlots.promptASlot = bitVal;
                 spawnedObj =
                     (int)objSetupObject((ObjPlacement*)setup, 4, -1, 0xffffffff, obj->anim.parent);
                 *(u32*)(state + 0x7a8) = spawnedObj; /* raw: arrow form shifts bytes */
@@ -6847,8 +6846,8 @@ int Tricky_updateSideCommandPrompts(GameObject* obj) {
                                     ((TrickyState*)state)->packedSlots.promptASlot);
             }
         } else if (((TrickyState*)state)->childA != NULL) {
-            *(float*)(state + 0x7ac) = *(float*)(state + 0x7ac) - timeDelta;
-            if (*(float*)(state + 0x7ac) <= 0.0f) {
+            ((TrickyState*)state)->promptADespawnTimer = ((TrickyState*)state)->promptADespawnTimer - timeDelta;
+            if (((TrickyState*)state)->promptADespawnTimer <= 0.0f) {
                 objAnimFreeChildren(obj, (TrickyState*)state,
                                     (GameObject**)(state + 0x7a8)); /* raw: arrow form shifts bytes */
             }
@@ -6918,9 +6917,9 @@ void Tricky_free(GameObject* obj, int shouldKeepFlameChildren) {
     }
     doNothing_onTrickyFree();
     objAnimFreeChildren(obj, (TrickyState*)state,
-                        (GameObject**)(state + 0x7a8)); /* raw: arrow form shifts bytes */
+                        &((TrickyState*)state)->childA);
     objAnimFreeChildren(obj, (TrickyState*)state,
-                        (GameObject**)(state + 0x7b0)); /* raw: arrow form shifts bytes */
+                        &((TrickyState*)state)->childB);
     objAnimFreeChildren(obj, (TrickyState*)state, (GameObject**)&((TrickyState*)state)->child);
     if ((void*)((TrickyState*)state)->spawnedChild != NULL) {
         ObjLink_DetachChild(obj, ((TrickyState*)state)->spawnedChild);

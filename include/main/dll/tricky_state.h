@@ -274,7 +274,7 @@ typedef struct TrickyState {
             TrickyScratch
                 cooldownB; /* .f: countdown paired with cooldownA: -= timeDelta, clamped to floor; == floor gates a move, > floor gates fidget/contact-sfx (tricky/substates/weapone6/tumbleweedbush). .ptr: reused in the animobjd2 orbit substate to hold the circling-target object, copied into followObj */
             union {
-                void* unk724;
+                void* unk724; /* .ptr: in the circling substate, the warp detour currently being routed to (trickyUpdateCircling) */
                 GameObject* circlingObstacle;
                 f32 idleTimer;
                 TrickyActionCallback actionCallback;
@@ -390,8 +390,16 @@ STATIC_ASSERT(offsetof(TrickyState, soundState) == 0x3A8);
 STATIC_ASSERT(offsetof(TrickyState, previousPathPoint) == 0x6F0);
 STATIC_ASSERT(offsetof(TrickyState, flameChildren) == 0x700);
 STATIC_ASSERT(offsetof(TrickyState, scratch704) == 0x704);
+STATIC_ASSERT(offsetof(TrickyState, statusFlags) == 0x58);
+STATIC_ASSERT(offsetof(TrickyState, unk724) == 0x724);
 STATIC_ASSERT(offsetof(TrickyState, commands) == 0x748);
 STATIC_ASSERT(offsetof(TrickyState, commandCount) == 0x798);
+STATIC_ASSERT(offsetof(TrickyState, childA) == 0x7A8);
+STATIC_ASSERT(offsetof(TrickyState, promptADespawnTimer) == 0x7AC);
+STATIC_ASSERT(offsetof(TrickyState, childB) == 0x7B0);
+STATIC_ASSERT(offsetof(TrickyState, promptBDespawnTimer) == 0x7B4);
+STATIC_ASSERT(offsetof(TrickyState, child) == 0x7B8);
+STATIC_ASSERT(offsetof(TrickyState, packedSlots) == 0x7BC);
 STATIC_ASSERT(offsetof(TrickyState, footPoints) == 0x7D8);
 STATIC_ASSERT(offsetof(TrickyState, impressTimer) == 0x808);
 STATIC_ASSERT(offsetof(TrickyState, animEvents) == 0x80C);

@@ -1370,7 +1370,7 @@ void newClouds(CloudSpawnParams* params, void* owner, f32 x, f32 y, f32 z)
     {
         ((NewCloud*)NC_CLOUD)->lightningTimer = 0x64;
     }
-    snowCloudInitFlakes((f32*)(NC_CLOUD + 8), ((NewCloud*)NC_CLOUD)->cloudHeight,
+    snowCloudInitFlakes((f32*)((NewCloud*)NC_CLOUD)->unk0008, ((NewCloud*)NC_CLOUD)->cloudHeight,
                         ((NewCloud*)NC_CLOUD)->scale, id);
     snowCloudBuildBoxVerts(&((NewCloud*)NC_CLOUD)->flakeMinX, ((NewCloud*)NC_CLOUD)->cloudHeight,
                            ((NewCloud*)NC_CLOUD)->scale);
@@ -1620,7 +1620,7 @@ void newclouds_run(void)
         }
         if (p != NULL && ((NewCloud*)p)->active != 0)
         {
-            snowCloudInitFlakes((f32*)(p + 8), ((NewCloud*)p)->cloudHeight,
+            snowCloudInitFlakes((f32*)((NewCloud*)p)->unk0008, ((NewCloud*)p)->cloudHeight,
                                 ((NewCloud*)p)->scale, i);
         }
         else if (p != NULL && ((NewCloud*)p)->finished == 0)
