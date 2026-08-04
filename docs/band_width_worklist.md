@@ -246,45 +246,52 @@ Width >=5 saved band, identical mnemonic stream: the rotation-offset model — e
 | ObjSeq_update | dlls/engine/2/2 | 3912 | 98.569 | 274 | 0 | 9G/4F | 5 | objseq-voxmaps-walls (rotation offset 2/3rd unreachable) |
 | player_SeqFn | dlls/objects/195_Player/player | 7416 | 98.971 | 334 | 104 | 11G/3F | 22 | player-cluster-walls (width 11) |
 
-### scratch-perm/flag-signature (33)
+### scratch-perm/flag-signature (33) — SUBCLASSED 2026-08-03
 
-Scratch-band or narrow-saved-band recolour with identical stream: per-TU flag signature or allocator interaction; narrow band is predictable, not steerable.
+Former catch-all, split by a sequential out-of-tree probe of every member: unit's exact cflags,
+toggling each of nocse/nopropagation/nolifetimes/noloopinvariants against the configured -opt,
+-inline auto<->noauto, and mw_version neighbours (GC/1.3, 2.0, 2.5, 2.7) at base profile; per-cell
+fn_diff vs the retail carve. Refined classes: **per-fn-opt-level (accepted)** = some cell byte-exact
+while siblings break there (STOP probing; same trade as engine/71) — 2 members;
+**multi-role-local candidate** = a named local fed from 2+ sources sits exactly in the permuted
+region (mergeTableFiles precedent; flagged for a fix lane, NOT yet fixed) — 7 members;
+**true scratch rotation** = no cell reaches byte-exact and no multi-role local — 24 members.
 
-| fn | unit | size | fuzzy | ndiff | struc | band | #nm | recorded mechanism |
+| fn | unit | size | fuzzy | ndiff | struc | band | #nm | refined class + evidence cell |
 |---|---|---|---|---|---|---|---|---|
-| objRenderModel | main/objprint_dolphin | 612 | 99.804 | 6 | 0 | 3G/0F | 6 | narrow-band recolour (predictable, not steerable; playerUpdate precedent) |
-| SaveSelectScreen_render | dlls/engine/53/53 | 976 | 99.816 | 7 | 0 | 8G/0F | 1 | web-class-pun-effect named walls |
-| mapBlockRender_setShader | main/tex_dolphin | 968 | 99.814 | 8 | 0 | 1G/0F | 3 | narrow-band recolour (predictable, not steerable; playerUpdate precedent) |
-| mapRomListFindItem | main/lightmap | 220 | 99.000 | 8 | 0 | 1G/0F | 3 | narrow-band recolour (predictable, not steerable; playerUpdate precedent) |
-| shadowVolumeBeginFrame | main/shadow_dolphin | 140 | 98.857 | 8 | 0 | 0G/0F | 2 | narrow-band recolour (predictable, not steerable; playerUpdate precedent) |
-| camcontrol_applyState | dlls/engine/1_camcontrol/camcontrol | 1340 | 99.851 | 9 | 0 | 2G/1F | 1 | web-class-pun-effect named walls |
-| bossdrakor_updateHeadTracking | dlls/objects/589_BossDrakor/BossDrakor | 524 | 99.427 | 9 | 0 | 3G/0F | 2 | narrow-band recolour (predictable, not steerable; playerUpdate precedent) |
-| staff_update | dlls/objects/226/226 | 756 | 99.709 | 10 | 0 | 2G/0F | 2 | narrow-band recolour (predictable, not steerable; playerUpdate precedent) |
-| lightmapQueueShadowRow | main/lightmap_draw | 312 | 98.910 | 11 | 0 | 3G/0F | 1 | biased-base follow-up: scratch-FP whole-function rotation, 119-perm sweep identical |
-| powf | dolphin/MSL_C/PPCEABI/bare/H/exponentialsf | 1916 | 99.781 | 12 | 0 | 0G/0F | 1 | MSL/audio, no recorded probe |
-| pathSearchAddNeighbor | main/pi_pathsearch | 1092 | 99.780 | 12 | 0 | 8G/0F | 1 | sole-straggler (flag signatures) |
-| gameTextRun | main/textrender_run | 1504 | 99.676 | 18 | 0 | 6G/2F | 4 | gametext recolour (other lane holds textrender/gametext) |
-| Vortex_init | dlls/objects/691/691 | 684 | 99.415 | 18 | 0 | 6G/0F | 1 | web-class-pun-effect named walls |
-| SnowBike_UpdateSwingBlend | dlls/objects/597/597 | 620 | 99.161 | 21 | 0 | 3G/0F | 3 | narrow-band recolour (predictable, not steerable; playerUpdate precedent) |
-| waterfx_render | dlls/engine/19/19 | 860 | 99.428 | 24 | 0 | 7G/1F | 2 | web-class-pun-effect named walls |
-| seqStop | musyx/runtime/synth_queue | 464 | 98.491 | 28 | 0 | 6G/0F | 1 | MSL/audio, no recorded probe |
-| ObjAnim_SampleRootCurvePhase | main/objanim | 1140 | 99.386 | 30 | 0 | 0G/0F | 1 | signature: struc 0, band <5 |
-| expgfx_updateSourceFrameFlags | dlls/engine/10_expgfx/expgfx | 248 | 95.403 | 32 | 0 | 0G/0F | 4 | narrow-band recolour (predictable, not steerable; playerUpdate precedent) |
-| gameTextBuildSystemFontAtlas | main/textrender_run | 1100 | 99.029 | 35 | 0 | 11G/0F | 4 | gametext recolour (other lane holds textrender/gametext) |
-| renderGlows | main/tex_dolphin | 1640 | 99.561 | 36 | 0 | 6G/1F | 3 | newshadows walls (licm-discovery + name-the-temp) |
-| mtxRotateByVec3s | main/vecmath | 800 | 98.785 | 38 | 0 | 2G/5F | 1 | priced #82 FP-perm cap |
-| screenTransition_drawWhiteWipe | dlls/engine/22/22 | 1288 | 99.301 | 40 | 0 | 10G/0F | 1 | web-class-pun-effect named walls |
-| createNewShadowDistortionTexture | main/newshadows | 464 | 96.207 | 42 | 0 | 0G/0F | 6 | newshadows walls (licm-discovery + name-the-temp) |
-| SnowBike_UpdateEngineFx | dlls/objects/597/597 | 1080 | 99.167 | 45 | 0 | 4G/1F | 3 | narrow-band recolour (predictable, not steerable; playerUpdate precedent) |
-| CameraModeViewfinder_update | dlls/engine/68/68 | 1452 | 99.339 | 47 | 0 | 4G/0F | 1 | narrow-band recolour (predictable, not steerable; playerUpdate precedent) |
-| trackResolveSurfacePenetration | main/track_dolphin | 1076 | 99.279 | 49 | 0 | 3G/1F | 7 | narrow-band recolour (predictable, not steerable; playerUpdate precedent) |
-| seqInit | musyx/runtime/synth_seq_dispatch | 560 | 97.643 | 53 | 0 | 0G/0F | 1 | MSL/audio, no recorded probe |
-| collectShadowTrackTriangles | main/tex_dolphin | 1152 | 98.507 | 78 | 0 | 10G/2F | 3 | newshadows walls (licm-discovery + name-the-temp) |
-| newShadowsInitProceduralTextures | main/newshadows | 1480 | 98.649 | 82 | 0 | 13G/8F | 6 | newshadows walls (licm-discovery + name-the-temp) |
-| gameTextInitBoxTextures | main/textrender_boxtex | 936 | 96.662 | 137 | 1 | 3G/0F | 1 | gametext recolour (other lane holds textrender/gametext) |
-| blendTextures | main/newshadows | 924 | 94.481 | 153 | 0 | 8G/0F | 6 | newshadows walls (licm-discovery + name-the-temp) |
-| boxBlurTexture | main/newshadows | 5424 | 99.167 | 161 | 1 | 8G/0F | 6 | newshadows walls (licm-discovery + name-the-temp) |
-| allocLotsOfTextures | main/newshadows | 5948 | 98.067 | 370 | 0 | 8G/16F | 6 | newshadows walls (licm-discovery + name-the-temp) |
+| objRenderModel | main/objprint_dolphin | 612 | 99.804 | 6 | 0 | 3G/0F | 6 | multi-role-local candidate: `alpha` in the shadowAlpha clamp (fed by load then by the step sum); best cell -nolifetimes 2/0, mw flat |
+| SaveSelectScreen_render | dlls/engine/53/53 | 976 | 99.816 | 7 | 0 | 8G/0F | 1 | true scratch rotation: addi-base/li-0 cursor pair swapped (r26/r28); all cells 7/0 except +noprop worse |
+| mapBlockRender_setShader | main/tex_dolphin | 968 | 99.814 | 8 | 0 | 1G/0F | 3 | true scratch rotation: fogColor temp vs byteBase r6/r7 scratch swap; flat 8/0, +noprop 15/6 worse |
+| mapRomListFindItem | main/lightmap | 220 | 99.000 | 8 | 0 | 1G/0F | 3 | true scratch rotation: page/pageCursor r8/r9 swap; ALL 9 cells identical 8/0 (fully flat axis) |
+| shadowVolumeBeginFrame | main/shadow_dolphin | 140 | 98.857 | 8 | 0 | 0G/0F | 2 | per-fn-opt-level (accepted): BYTE-EXACT under +nopropagation; craters buildShadowVolumeBox/initTextures/objDrawGroundShadow (17->15 unit controls) |
+| camcontrol_applyState | dlls/engine/1_camcontrol/camcontrol | 1340 | 99.851 | 9 | 0 | 2G/1F | 1 | per-fn-opt-level (accepted): BYTE-EXACT under +nopropagation; craters 7 matching siblings (42->36 unit controls), unit flip net negative |
+| bossdrakor_updateHeadTracking | dlls/objects/589_BossDrakor/BossDrakor | 524 | 99.427 | 9 | 0 | 3G/0F | 2 | multi-role-local candidate: `neckStep` two-branch clamp merge (limitedNeckStep[1] already fought here); flat 9/0, -noprop 15/5 worse |
+| staff_update | dlls/objects/226/226 | 756 | 99.709 | 10 | 0 | 2G/0F | 2 | true scratch rotation: j/startIndex-temp r4/r5 anti-swap; flat 10/0; inline-toggle and GC/1.3 destroy (inline regime) |
+| lightmapQueueShadowRow | main/lightmap_draw | 312 | 98.910 | 11 | 0 | 3G/0F | 1 | true scratch rotation: whole-function FP scratch rotation; flat 11/0 (confirms the 119-perm sweep) |
+| powf | dolphin/MSL_C/PPCEABI/bare/H/exponentialsf | 1916 | 99.781 | 12 | 0 | 0G/0F | 1 | true scratch rotation: commutative fadds operand canon + one temp home; all 1.2.5n cells flat 12/0, GC/1.3+ wrong era (277+); MSL source-spelling lane only |
+| pathSearchAddNeighbor | main/pi_pathsearch | 1092 | 99.780 | 12 | 0 | 8G/0F | 1 | multi-role-local candidate: `heapIndex` fed from the scan (`= searchIndex`) AND the sift-up (`= parent`); flat 12/0, every alternate worse |
+| gameTextRun | main/textrender_run | 1504 | 99.676 | 18 | 0 | 6G/2F | 4 | multi-role-local candidate (merge direction): retail reuses ONE counter reg (li rX,7 x2 + li rX,8) where ours splits webs; flat 18/0; other lane holds gametext |
+| Vortex_init | dlls/objects/691/691 | 684 | 99.415 | 18 | 0 | 6G/0F | 1 | multi-role-local candidate: u8 `i` re-fed in 4 successive loops, per-loop homes permuted (+ mr/addi copy swap); flat 18/0, -noprop 41 worse |
+| SnowBike_UpdateSwingBlend | dlls/objects/597/597 | 620 | 99.161 | 21 | 0 | 3G/0F | 3 | true scratch rotation: copy-class pair (param `o` / `hitResult` return) direction flip, narrow 3G; flat 21/0, GC/1.3 22/1 |
+| waterfx_render | dlls/engine/19/19 | 860 | 99.428 | 24 | 0 | 7G/1F | 2 | multi-role-local candidate: `poolOffset` re-fed in 4 loops (`i`,`j` in 2 each); retail mints a fresh counter reg (r25) where ours reuses; flat 24/0 |
+| seqStop | musyx/runtime/synth_queue | 464 | 98.491 | 28 | 0 | 6G/0F | 1 | true scratch rotation: retail folds runtimeView->voice into one web, ours splits + 4-value loop cluster rotation; 1.2.5n confirmed right era, all alternates worse |
+| ObjAnim_SampleRootCurvePhase | main/objanim | 1140 | 99.386 | 30 | 0 | 0G/0F | 1 | multi-role-local candidate: `moveData` two-branch merge (cached vs direct) permutes the r5/r8 pointer chain; ALL cells flat 30/0 |
+| expgfx_updateSourceFrameFlags | dlls/engine/10_expgfx/expgfx | 248 | 95.403 | 32 | 0 | 0G/0F | 4 | true scratch rotation: whole scratch-window shift keyed on flagWalk's home; +noprop moves 32/0 -> 10/8 (best cell, structurally worse) |
+| gameTextBuildSystemFontAtlas | main/textrender_run | 1100 | 99.029 | 35 | 0 | 11G/0F | 4 | true scratch rotation: scratch temps + two instruction slides in the 32B copy loop; flat 35/0, +noprop 97/31 worse; other lane holds gametext |
+| renderGlows | main/tex_dolphin | 1640 | 99.561 | 36 | 0 | 6G/1F | 3 | true scratch rotation: single fneg compiler temp f2-vs-f0 (no named local behind it) + pool naming noise; flat 36/0, every alternate worse |
+| mtxRotateByVec3s | main/vecmath | 800 | 98.785 | 38 | 0 | 2G/5F | 1 | true scratch rotation: priced #82 FP-perm cap confirmed; flat 38/0, +noprop 48 / +nolifetimes 60 worse |
+| screenTransition_drawWhiteWipe | dlls/engine/22/22 | 1288 | 99.301 | 40 | 0 | 10G/0F | 1 | true scratch rotation: saved band r22-r30 wholesale perm (width 10 rotation regime); flat 40/0 incl. level=3 kept, alternates worse |
+| createNewShadowDistortionTexture | main/newshadows | 464 | 96.207 | 42 | 0 | 0G/0F | 6 | true scratch rotation: LICM pool-load discovery order + FP temp rotation (0G/0F); flat 42/0, alternates worse |
+| SnowBike_UpdateEngineFx | dlls/objects/597/597 | 1080 | 99.167 | 45 | 0 | 4G/1F | 3 | true scratch rotation: copy-class mr trio + one clrlwi home; best cell +nolifetimes 7/0 (45->7, NOT exact) — closest non-match in the whole set |
+| CameraModeViewfinder_update | dlls/engine/68/68 | 1452 | 99.339 | 47 | 0 | 4G/0F | 1 | true scratch rotation: single param-copy home r31-vs-r30 repeated 47x; flat 47/0, inline-toggle 96 worse |
+| trackResolveSurfacePenetration | main/track_dolphin | 1076 | 99.279 | 49 | 0 | 3G/1F | 7 | true scratch rotation: then/else arm ORDER + operand roles swapped in the dot-product pair (struc-0 block swap); flat 49/0, +nocse 77 worse |
+| seqInit | musyx/runtime/synth_seq_dispatch | 560 | 97.643 | 53 | 0 | 0G/0F | 1 | true scratch rotation: runtime/voice cursor pair r5/r7 swap; 1.2.5n cells flat 53/0, GC/1.3+ wrong era (121/108) |
+| collectShadowTrackTriangles | main/tex_dolphin | 1152 | 98.507 | 78 | 0 | 10G/2F | 3 | true scratch rotation: saved band shifted by one across r22-r27+r31 (width 10 rotation regime); flat 78/0, alternates worse |
+| newShadowsInitProceduralTextures | main/newshadows | 1480 | 98.649 | 82 | 0 | 13G/8F | 6 | true scratch rotation: width-13 band rotation (r20/r21/r25/r26/r27) + one li slide; flat 82/0, alternates worse |
+| gameTextInitBoxTextures | main/textrender_boxtex | 936 | 96.662 | 137 | 1 | 3G/0F | 1 | true scratch rotation: r0-temp routing in the unrolled lhzx/sth block (naming proven inert); heavy configured profile confirmed — removing ANY of its 4 tokens is worse; flat 137/1 across inline/mw |
+| blendTextures | main/newshadows | 924 | 94.481 | 153 | 0 | 8G/0F | 6 | true scratch rotation: whole-band recolour; flat 153/0, every alternate worse |
+| boxBlurTexture | main/newshadows | 5424 | 99.167 | 161 | 1 | 8G/0F | 6 | true scratch rotation: flat 161/1; alternates catastrophic (+nolifetimes 1109, +noloopinv 1011) |
+| allocLotsOfTextures | main/newshadows | 5948 | 98.067 | 370 | 0 | 8G/16F | 6 | true scratch rotation: 8G/16F whole-band recolour; flat 370/0, +noprop 388/4, alternates worse |
 
 ### misc-compiler-wall (36)
 
