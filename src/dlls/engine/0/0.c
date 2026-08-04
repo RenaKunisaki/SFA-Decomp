@@ -6899,7 +6899,7 @@ void pauseMenuRunSubmenu(int p1)
                 valid = 1;
             }
         }
-        if (((int)gCMenuButtons & PAD_BUTTON_A) && tbl != gPauseMenuConfirmGrid && 0.0f == gPauseMenuMapSwivelVel)
+        if (((int)gCMenuButtons & PAD_BUTTON_A) && tbl != gPauseMenuConfirmGrid && gPauseMenuMapSwivelVel == 0.0f)
         {
             if (valid != 0)
             {

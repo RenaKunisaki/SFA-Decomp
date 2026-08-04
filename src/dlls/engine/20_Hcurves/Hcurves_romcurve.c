@@ -304,7 +304,7 @@ static inline int RomCurve_CollectUnblockedLinks(RomCurveDef* curve, int* ids)
     for (i = 0; i < ROMCURVE_LINK_COUNT; i++)
     {
         link = *lp++;
-        if ((-1 < link) && ((curve->blockedLinkMask & mask) == 0) && (link != 0))
+        if ((link > -1) && ((curve->blockedLinkMask & mask) == 0) && (link != 0))
         {
             ids[count++] = link;
         }
@@ -327,7 +327,7 @@ static inline int RomCurve_CollectBlockedLinks(RomCurveDef* curve, int* ids)
     for (i = 0; i < ROMCURVE_LINK_COUNT; i++)
     {
         link = *lp++;
-        if ((-1 < link) && ((curve->blockedLinkMask & mask) != 0) && (link != 0))
+        if ((link > -1) && ((curve->blockedLinkMask & mask) != 0) && (link != 0))
         {
             ids[count++] = link;
         }
@@ -366,7 +366,7 @@ static inline int RomCurve_pickRandomControlPointId_2A(RomCurveDef* curve)
     mask = 1;
     for (i = 0; i < 4; i = i + 1)
     {
-        if ((-1 < curve->linkIds[i]) && ((curve->blockedLinkMask & mask) == 0) &&
+        if ((curve->linkIds[i] > -1) && ((curve->blockedLinkMask & mask) == 0) &&
             (curve->linkIds[i] != -1))
         {
             candidates[count++] = curve->linkIds[i];
@@ -396,7 +396,7 @@ static inline int RomCurve_pickRandomControlPointId_2B(RomCurveDef* curve)
     mask = 1;
     for (i = 0; i < 4; i = i + 1)
     {
-        if ((-1 < curve->linkIds[i]) && ((curve->blockedLinkMask & mask) != 0) &&
+        if ((curve->linkIds[i] > -1) && ((curve->blockedLinkMask & mask) != 0) &&
             (curve->linkIds[i] != -1))
         {
             candidates[count++] = curve->linkIds[i];
@@ -1867,7 +1867,7 @@ int RomCurve_func13(u32 curveId, int typeFilter, int matchValue, int* outLink)
                 {
                     for (k = 0, candWalk = (u32)node; k < 4; candWalk += 4, k++)
                     {
-                        if (((-1 < *(s32*)(candWalk + 0x1c)) &&
+                        if (((*(s32*)(candWalk + 0x1c) > -1) &&
                              ((cand = RomCurve_findByIdWithIndex(*(s32*)(candWalk + 0x1c), &idx)) != NULL)) &&
                             (visited[idx] == 0) && (count < ROMCURVE_LINK_SEARCH_QUEUE_CAPACITY))
                         {
@@ -2026,7 +2026,7 @@ int RomCurve_findLinkTowardNearestOfType(RomCurveDef* curve, int typeFilter, int
                 {
                     for (k = 0, candWalk = (u32)node; k < 4; candWalk += 4, k++)
                     {
-                        if (((-1 < *(s32*)(candWalk + 0x1c)) &&
+                        if (((*(s32*)(candWalk + 0x1c) > -1) &&
                              ((cand = RomCurve_findByIdWithIndex(*(s32*)(candWalk + 0x1c), &idx)) != NULL)) &&
                             (visited[idx] == 0) && (count < ROMCURVE_LINK_SEARCH_QUEUE_CAPACITY))
                         {
@@ -2727,7 +2727,7 @@ int RomCurve_getRandomBlockedLink(RomCurveDef* curve, int excludeLinkId)
     for (i = 0; i < ROMCURVE_LINK_COUNT; i = i + 1)
     {
         link = curve->linkIds[i];
-        if ((-1 < link) && ((curve->blockedLinkMask & mask) != 0) && (link != excludeLinkId))
+        if ((link > -1) && ((curve->blockedLinkMask & mask) != 0) && (link != excludeLinkId))
         {
             eligibleLinks[count++] = link;
         }
@@ -2778,7 +2778,7 @@ int RomCurve_getRandomUnblockedLink(RomCurveDef* curve, int excludeLinkId)
     for (i = 0; i < ROMCURVE_LINK_COUNT; i = i + 1)
     {
         link = curve->linkIds[i];
-        if ((-1 < link) && ((curve->blockedLinkMask & mask) == 0) && (link != excludeLinkId))
+        if ((link > -1) && ((curve->blockedLinkMask & mask) == 0) && (link != excludeLinkId))
         {
             eligibleLinks[count++] = link;
         }

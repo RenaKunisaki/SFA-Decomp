@@ -304,7 +304,7 @@ void gameTextTickReveal(int textId, TextDisplayState* state)
         state->f8 = 0;
         state->active = 1;
     }
-    if (2.0f == gGameTextRevealProgress)
+    if (gGameTextRevealProgress == 2.0f)
     {
         Sfx_PlayFromObject(0, SFXTRIG_clock_loop);
     }

@@ -1264,7 +1264,7 @@ void skyUpdateShadowLightDirection(void)
     {
         dot = gSkySunDirection[2] * gSkySunDirection[2] +
               (gSkySunDirection[0] * gSkySunDirection[0] + gSkySunDirection[1] * gSkySunDirection[1]);
-        if (0.0f != dot)
+        if (dot != 0.0f)
         {
             len = sqrtf(dot);
         }
@@ -1277,7 +1277,7 @@ void skyUpdateShadowLightDirection(void)
         gSkySunDirection[2] = gSkySunDirection[2] / len;
         dot = gSkyMoonDirection[2] * gSkyMoonDirection[2] +
               (gSkyMoonDirection[0] * gSkyMoonDirection[0] + gSkyMoonDirection[1] * gSkyMoonDirection[1]);
-        if (0.0f != dot)
+        if (dot != 0.0f)
         {
             len = sqrtf(dot);
         }

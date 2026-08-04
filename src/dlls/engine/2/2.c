@@ -149,7 +149,7 @@ int ObjSeq_StartPreparedStream(int slot)
     }
     streamTime = gObjSeqSlotStreamTimeTable[slot] - (f32)gObjSeqStreamResumeOffset;
     gObjSeqStreamRemainingTime = streamTime;
-    if (0.0f != gObjSeqStreamRemainingTime)
+    if (gObjSeqStreamRemainingTime != 0.0f)
     {
         gObjSeqTimedStreamSlot = slot;
     }
@@ -3888,7 +3888,7 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
             break;
         }
         blend = (f32)(int)((((ObjSeqCommand*)cmd)->param >> 8) & 0xff);
-        if (0.0f != blend)
+        if (blend != 0.0f)
         {
             t = 1.0f / blend;
         }

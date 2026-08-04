@@ -422,7 +422,7 @@ int drakorhoverpad_init(GameObject* obj)
     {
         if (f->state > 3)
         {
-            if (0.0f == ((DrakorHoverpadState*)p)->speed)
+            if (((DrakorHoverpadState*)p)->speed == 0.0f)
             {
                 f->state = 0;
             }
@@ -444,7 +444,7 @@ int drakorhoverpad_init(GameObject* obj)
         }
         if (f->b40 != 0)
         {
-            if (0.0f == ((DrakorHoverpadState*)p)->commandSpeed)
+            if (((DrakorHoverpadState*)p)->commandSpeed == 0.0f)
             {
                 ((DrakorHoverpadState*)p)->commandSpeed = (f->b01 != 0) ? -2.0f : (*(f32*)&gDrakorHoverpadSpeedStep);
             }
@@ -878,7 +878,7 @@ void drakorhoverpad_updateMain(GameObject* obj)
         (*gRomCurveInterface)->setClosed((RomCurveWalker*)(p + 4), 0);
     }
     ((DrakorHoverpadState*)p)->targetSpeed = 0.0f;
-    if (0.0f != ((DrakorHoverpadState*)p)->speed)
+    if (((DrakorHoverpadState*)p)->speed != 0.0f)
     {
         Curve_AdvanceAlongPath(&curve->curve, ((DrakorHoverpadState*)p)->speed);
         c = curve->reverse;
