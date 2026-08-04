@@ -1238,7 +1238,7 @@ void intersectModLineBuild(IntersectModLineObject* obj)
             grp = 1;
             debugPrintf(sTrackIntersectFuncOverflowFormat, 1);
         }
-        if ((s16)grp != previousGroup)
+        if (grp != previousGroup)
         {
             obj->groupRanges[grp][0] = outputLineIndex;
             if (previousGroup != -1)
@@ -1275,7 +1275,7 @@ void intersectModLineBuild(IntersectModLineObject* obj)
         memcpy(&obj->lines[outputLineIndex], (char*)gIntersectLinePool + best * 0x10, 0x10);
         *(u8*)(gIntersectLinePool + best * 0x10 + 3) = 0x14;
     }
-    if ((s16)previousGroup != -1)
+    if (previousGroup != -1)
         obj->groupRanges[previousGroup][1] = gIntersectLineCount;
     memcpy(obj->points, gIntersectPoints, gIntersectPointCount * 0xc);
     gIntersectLineCount = 0;
@@ -1898,7 +1898,7 @@ int trackResolveSurfacePenetration(f32* a, f32* b, f32* c, f32* p, f32 f1p, f32 
     f32 displacement[3];
     f32 horizontalNormal[3];
 
-    if ((u8)type == 3)
+    if (type == 3)
     {
         f32 fa, scale;
         f32 fb;
@@ -1930,7 +1930,7 @@ int trackResolveSurfacePenetration(f32* a, f32* b, f32* c, f32* p, f32 f1p, f32 
         f32 p1 = *(f32*)(p + 1);
         if (p1 < 0.707f && p1 > -0.707f)
         {
-            switch ((u8)type)
+            switch (type)
             {
             case 1:
             case 8:
@@ -2593,7 +2593,7 @@ int trackGetIntersect2(int mode, void* tri1, void* tri2, f32* startPos, f32* end
         sp1 += 3;
         sp2 += 3;
     } while (i < count);
-    return (u8)retLo | ((u8)retHi << 4);
+    return retLo | (retHi << 4);
 }
 
 int trackGetIntersect(GameObject* contactSrc, f32* startPos, f32* endPos, int count, void* results, int flags)
@@ -2767,9 +2767,9 @@ int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int* model, f3
 
     count = ((ModelFileHeader*)hdr)->collisionBlockCount;
     i = 0;
-    flag20 = (u8)flags & 0x20;
-    flag8 = (u8)flags & 8;
-    flag4 = (u8)flags & 4;
+    flag20 = flags & 0x20;
+    flag8 = flags & 8;
+    flag4 = flags & 4;
 
     for (; i < count; i++)
     {
@@ -3435,7 +3435,7 @@ void trackIntersectBroadphase(GameObject* obj, TrackQueryBounds* ranges, u32 que
                 model = (int*)resetObj->banks[(s8)hitState->stateIndex];
                 if (model == NULL)
                     continue;
-                hdr = *(int*)model;
+                hdr = *model;
                 if (((ModelFileHeader*)hdr)->collisionBlockCount == 0)
                     continue;
                 r = (f32)(u32)modelFileHeaderGetCullDistance((ModelFileHeader*)hdr);

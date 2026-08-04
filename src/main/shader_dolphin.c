@@ -630,9 +630,9 @@ void addShadowFalloffTevStages(void)
     player = Obj_GetPlayerObject();
     if (player != NULL)
     {
-        dist = Camera_DistanceToCurrentViewPosition(((GameObject*)player)->anim.worldPosX,
-                                                    ((GameObject*)player)->anim.worldPosY,
-                                                    ((GameObject*)player)->anim.worldPosZ);
+        dist = Camera_DistanceToCurrentViewPosition(player->anim.worldPosX,
+                                                    player->anim.worldPosY,
+                                                    player->anim.worldPosZ);
     }
     else
     {
@@ -2623,7 +2623,7 @@ void addColorFadeStage(GXColor* param)
     int sel;
     int v1;
     GXSetTevDirect(gRcpNextTevStage);
-    GXSetTevColor(GX_TEVREG0, *(GXColor*)param);
+    GXSetTevColor(GX_TEVREG0, *param);
     chooseTevKonstSelectors(param, 1, 0, &sel, &v1);
     GXSetTevKColorSel(gRcpNextTevStage, sel);
     GXSetTevOrder(gRcpNextTevStage, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);

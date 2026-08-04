@@ -244,8 +244,8 @@ void gameTextSetCursor(u16 x, u16 y, int flags)
         gGameTextCommandCount = i + 1;
         cmd = &gGameTextCommandSlots[i];
         cmd->opcode = 0xa;
-        cmd->arg0 = (u16)x;
-        cmd->arg1 = (u16)y;
+        cmd->arg0 = x;
+        cmd->arg1 = y;
     }
 }
 

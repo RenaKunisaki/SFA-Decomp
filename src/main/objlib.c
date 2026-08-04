@@ -1017,7 +1017,7 @@ void ObjPath_GetPointWorldPosition(GameObject* obj, int pointIndex, float* outX,
             *outZ = obj->anim.localPosZ;
         } else {
             if (jointIndex == OBJPATH_ROOT_JOINT_INDEX) {
-                Obj_BuildWorldTransformMatrix((GameObject*)obj, rootMtx, 0);
+                Obj_BuildWorldTransformMatrix(obj, rootMtx, 0);
                 jointMtx = rootMtx;
             } else {
                 jointMtx = (f32*)ObjModel_GetJointMatrix((u8*)model, jointIndex);

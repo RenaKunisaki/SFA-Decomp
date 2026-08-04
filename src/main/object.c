@@ -1425,7 +1425,7 @@ void Obj_UpdateObject(GameObject* obj)
                 }
                 break;
             }
-            Obj_GetWorldPosition((GameObject*)obj, &object->worldPosX, &object->worldPosY, &object->worldPosZ);
+            Obj_GetWorldPosition(obj, &object->worldPosX, &object->worldPosY, &object->worldPosZ);
         } while (0);
     }
     if (object->hitReactState != NULL)

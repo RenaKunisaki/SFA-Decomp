@@ -402,7 +402,7 @@ void getVisibleObjects(s8* opacity)
         }
         if (i >= part)
         {
-            *cur = objUpdateOpacity((GameObject*)o);
+            *cur = objUpdateOpacity(o);
             if (*cur != 0 || (o->anim.modelInstance->flags & 0x200000) != 0)
             {
                 if ((o->anim.modelInstance->flags & 0x80000) != 0)
@@ -435,17 +435,17 @@ void getVisibleObjects(s8* opacity)
                     t = o->anim.modelInstance->shadowType;
                     if (t == 2 || t == 1)
                     {
-                        queueObjectShadow((GameObject*)o);
+                        queueObjectShadow(o);
                     }
                     else if (t == 4)
                     {
-                        renderObjectShadowTexture((GameObject*)o);
+                        renderObjectShadowTexture(o);
                     }
                 }
                 if (gVisibleObjectSortKeyCount < 1000)
                 {
                     key = 0;
-                    model = (int*)Obj_GetActiveModel((GameObject*)o);
+                    model = (int*)Obj_GetActiveModel(o);
                     if (o->anim.renderAlpha == 0xff && (o->anim.flags & 0x80) == 0 &&
                         ((tf = o->anim.modelInstance->flags) & 0x40000) == 0 &&
                         ((ModelFileHeader*)model)->hitVolumes == NULL)

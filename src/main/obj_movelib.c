@@ -111,7 +111,7 @@ int Obj_PredictInterceptPoint(GameObject* obj, f32 dt, const Vec3f* targetPos, V
     int gridA[2];
     int i;
 
-    if ((GameObject*)obj != Obj_GetPlayerObject())
+    if (obj != Obj_GetPlayerObject())
     {
         PSVECSubtract((const Vec*)&(obj)->anim.localPosX, (const Vec*)&(obj)->anim.previousLocalPosX, (Vec*)vel);
     }

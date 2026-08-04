@@ -1124,7 +1124,7 @@ int ObjAnim_SetCurrentMove(int objAnimHandle, int moveId, f32 moveProgress, u8 m
         state->frameLength = state->frameLength - 1.0f;
     }
     frameStep = moveData->frameControl & OBJANIM_FRAME_STEP_MASK;
-    if ((frameStep != 0) && (((u8)moveControlFlags & OBJANIM_MOVE_CONTROL_SKIP_EVENT_COUNTDOWN) == 0))
+    if ((frameStep != 0) && ((moveControlFlags & OBJANIM_MOVE_CONTROL_SKIP_EVENT_COUNTDOWN) == 0))
     {
         state->savedFrameStep = state->frameStep;
         eventCountdownStep = 16384.0f / (float)frameStep;

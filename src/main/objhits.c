@@ -2843,7 +2843,7 @@ int ObjHits_RecordPositionHit(GameObject* obj, GameObject* hitObj, s8 priority, 
     hitVolumeId = hitVolume;
     while (hitSlot < hitState->priorityHitCount) {
         if ((void*)hitState->hitObjects[hitSlot] == (void*)hitObj) {
-            if (hitState->priorities[hitSlot] > (s8)priority) {
+            if (hitState->priorities[hitSlot] > priority) {
                 hitState->sphereIndices[hitSlot] = sphereIndex;
                 hitState->priorities[hitSlot] = priority;
                 hitState->hitVolumes[hitSlot] = hitVolumeId;

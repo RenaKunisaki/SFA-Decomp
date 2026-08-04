@@ -125,7 +125,7 @@ void playerUpdateBlinkAnimation(int obj, int blinkState, u16 flags) {
     case OBJLIB_BLINK_MODE_OPEN:
         bs->timer = (u8)((f32)bs->timer + timeDelta);
         bs->amount = 0;
-        if (((u16)flags & 1) != 0) {
+        if ((flags & 1) != 0) {
             if (randomGetRange(0, 100) == 1) {
                 switch (bs->mode) {
                 case OBJLIB_BLINK_MODE_OPEN:
@@ -856,7 +856,7 @@ s16 objJointTracksAimAtTarget(GameObject* obj, GameObject* target, f32* pos, u8*
             }
         }
         if (found[0] == NULL) {
-            int t = (s16)ret;
+            int t = ret;
             t = (t >= 0) ? t : -t;
             return (s16)(t < 0x100);
         }

@@ -1285,7 +1285,7 @@ void renderGlows(void)
             sunDot = sunDot * gSunFlareFade;
             if (sunDot > 0.0f)
             {
-                PSMTXConcat((MtxPtr)viewMtx, sunMtx, sunMtx);
+                PSMTXConcat(viewMtx, sunMtx, sunMtx);
                 GXLoadPosMtxImm((const f32 (*)[4])sunMtx, GX_PNMTX0);
                 GXSetCurrentMtx(GX_PNMTX0);
                 selectTexture((Texture*)((int)skyGetSkyTexture()), 0);

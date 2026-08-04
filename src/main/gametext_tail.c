@@ -549,7 +549,7 @@ char** gameTextWrapLines(char* str, f32 width, f32 height, int* outCount, f32* o
             if (found != NULL)
             {
                 int advance = (found->width + found->offsetX) + found->advanceX;
-                penX += height * (f32)(int)advance;
+                penX += height * (f32)advance;
                 if (penX >= width)
                 {
                     if (haveSpace == 0)

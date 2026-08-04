@@ -1911,7 +1911,7 @@ u32 objCausticReflectionRenderCb(int handle, void* model)
     GXSetTevColorOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
 
-    temp.a = ((u8*)(int)handle)[0x37];
+    temp.a = ((u8*)handle)[0x37];
     GXSetTevKColor(GX_KCOLOR0, temp);
     GXSetTevKAlphaSel(GX_TEVSTAGE2, GX_TEV_KASEL_K0_A);
     GXSetTevDirect(GX_TEVSTAGE2);
@@ -3662,8 +3662,8 @@ void drawSnowFlashOverlay(f32 s1, u8 flashAlpha, void* vec, f32 s2, u8 alpha0, u
 
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
 
-    PSMTXScale(mtx_58, 6.0f * (f32)s2, 6.0f * (f32)s2, 0.0f);
-    PSMTXTrans(mtx_28, ratio1 * s3, ratio2 * s3 + (f32)s1, 0.0f);
+    PSMTXScale(mtx_58, 6.0f * s2, 6.0f * s2, 0.0f);
+    PSMTXTrans(mtx_28, ratio1 * s3, ratio2 * s3 + s1, 0.0f);
     PSMTXConcat(mtx_28, mtx_58, mtx_58);
     PSMTXRotRad(mtx_28, 'z', angle);
     PSMTXConcat(mtx_58, mtx_28, mtx_58);
@@ -3672,10 +3672,10 @@ void drawSnowFlashOverlay(f32 s1, u8 flashAlpha, void* vec, f32 s2, u8 alpha0, u
     GXLoadTexMtxImm(mtx_58, GX_TEXMTX0, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
 
-    PSMTXScale(mtx_58, 12.0f * (f32)s2, 12.0f * (f32)s2, 0.0f);
+    PSMTXScale(mtx_58, 12.0f * s2, 12.0f * s2, 0.0f);
     fade1 = 2.0f * ratio1;
     fade2 = 2.0f * ratio2;
-    PSMTXTrans(mtx_28, fade1 * s3, 0.75f * (f32)s1 + fade2 * s3, 0.0f);
+    PSMTXTrans(mtx_28, fade1 * s3, 0.75f * s1 + fade2 * s3, 0.0f);
     PSMTXConcat(mtx_28, mtx_58, mtx_58);
     PSMTXRotRad(mtx_28, 'z', 0.5f * angle);
     PSMTXConcat(mtx_58, mtx_28, mtx_58);

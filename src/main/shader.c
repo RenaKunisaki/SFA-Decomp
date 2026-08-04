@@ -2440,7 +2440,7 @@ void doPendingMapLoads(void)
                                 s16 sl = romListSlot->slot;
                                 mapBuildRomListIndex(romListSlot->romlist, &((MapRomListIndex*)(base + 0x4208))[sl], sl, 1);
                                 mm_free(romListSlot->romlist);
-                                *(int*)(sl * 4 + 0x83A8 + (char*)base) = 0;
+                                *(int*)(sl * 4 + 0x83A8 + base) = 0;
                             }
                             romListSlot->romlist = NULL;
                             romListSlot->slot = -1;
@@ -3046,8 +3046,8 @@ int mapProcessRomList(int slot)
     slots = (ShaderRomListSlot*)(base + 0x418C);
     entry = &slots[i];
     entry->romlist = (void*)rl;
-    *(int*)(slot * 4 + 0x83A8 + (char*)base) = rl;
-    ((s16*)((char*)base + 0x4190))[i * 4] = slot;
+    *(int*)(slot * 4 + 0x83A8 + base) = rl;
+    ((s16*)(base + 0x4190))[i * 4] = slot;
     gCurRomListPage = entry->romlist;
     rects = (s16*)(*(int*)(base + 0x417C) + slot * 10);
     ((MapRomListPage*)gCurRomListPage)->mapLayer = *(u8*)(*(int*)(base + 0x4184) + slot);
