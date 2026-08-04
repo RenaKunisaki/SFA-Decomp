@@ -43,6 +43,9 @@ here that the target section already says.
 | **The carve's symbol table is an oracle no score reads.** `.bss` order is free evidence of the source's use order (§11), and a name that contradicts the carve at the same offset is a naming defect that every gate is blind to. | §16 | `tools/bss_order_scan.py` over all 1013 source objects: **21** `.bss` sections ordered differently than the carve and **109** name divergences. Exactly ONE object says `lbl_` where the carve has a recovered name — `597.c`'s `lbl_803E5AE0`, already `sSnowBikePathPointParams` in `config/GSAE01/symbols.txt`: renaming it is byte-identical across all five sections, deleting it costs `matched_data` −396 and `matched_code` −1364. |
 | **`.bss` allocates at the first use that FOLLOWS the definition** — and an object with no use after its definition is allocated at end of TU, in reverse definition order. Refines the `.bss` row above: definition order is inert only among definitions that all precede their uses. **A NonMatching unit is linked from the carve, so its `.bss` order is invisible; a Matching one is linked from our object, and a permuted `.bss` moves every DOL word that names it.** | §17 | A six-case probe battery under the live flag sets, then all 21 mis-ordered sections closed by moving definitions past their last use: `bss_order_scan` 21 -> 0, section contents identical over all 1013 objects, `complete_units` 910 -> 914. |
 | **The sign-in-the-constant class is EMPTY outside `trig`.** The `A + -C` recovery does not generalise; nothing else in the tree holds a value at retail's opposite sign. | §14 | `tools/a71_signscan.py` over all 1050 units: **0** units hold a mirror-signed float, and the opcode partition finds **0** `fnmsubs`/`fnmadds`/`fsubs`-for-`fmadds` rows outside the three never-touch PS islands. |
+| **A dead-stripped body is NOT cleanup fodder — DO NOT DELETE.** A `.text` surplus is 58% *inlining*, not fabrication; every gate in the tree is blind to its deletion. And class C is a linkage test, not a reference test. | §7b | `tools/dead_strip_census.py`: 86 fns / 12 348 B / 49 units, split 50 A / 27 B / 9 C; **excising exactly the stripped ranges reproduces the carve `.text` byte for byte in 34 of the 49 units**, with a 4-byte-shift negative control; **0 fabrications**, and 0 of the 36 class-B/C bodies carry zero relocations. |
+| **A source screen has no power over a GLOBAL function; only the linker does.** Widening the uncalled-function census to any linkage is refused, measured — do not retry it. Widening it to the exempt roots for STATICS is free and was taken. | §7b; `tools/banned_shapes_check.py` | Whole tree, any linkage: **4969 rows, 60 really dead — 1.2% precision**, because a global's reference may be a relocation in data we have not decompiled. Whole tree, statics only: 26 -> **30 rows, 27 really dead**, `lost-old=0`, and the gating hit set is byte-identical at **103**. The 4 new rows are 3 SDK `asm` exception vectors plus `synth_jobs.c streamGainFromVolume`, the one genuinely dead function that nothing in the tree screened. |
+| **5 of the 915 `complete_units` are VACUOUS, and they are excluded from BOTH halves of the completion figure.** A unit with no `total_code`, no `total_data` and no `total_functions` had nothing compared, so its 100.0/complete is not a statement about correctness — and its carve can never gain content, so it can neither be earned nor lost. | `tools/vacuity_audit.py --family report` | `AX`, `MWCriticalSection_gc`, `OSExec`, `synth_sequence`, `synth_seq_queue`: all five carry a **zero-length** `.text` range in `splits.txt`, and all five carve objects are `.text` size 0. Three are stub `.c` files that emit nothing; two emit real code (0x1074 and 0x194) that never entered the link. Separately, the **38 `main/auto_*` units are selected by `total_data` present / `matched_data` absent / no `total_code`** (2 342 B) and **0 of them are inside `complete_units`**. Informative completion: **910 of 1000**. |
 
 ## 1. Target-unmerged dot-compare (purge-priced)
 
@@ -458,6 +461,67 @@ transitive census (a cluster reachable only from other uncalled statics is itsel
 which is how `curveSpeedAt` is caught). `static inline` is out of class: an inline nothing
 calls is never expanded and never emitted. A new hit is not automatically a hack — adjudicate
 it against the unit's pool with the sharing test above before accepting or deleting it.
+
+## 7b. The inlined-and-stripped class: DO NOT DELETE (measured 2026-08-03, re-measured 2026-08-03)
+
+§7 refuted "an uncalled static is fabricated". This section is the standing **do-not-delete
+registry entry** for the much larger class §7 only glimpsed, and it exists because the evidence
+for it is *positive* — not an absence of evidence — and because no gate in the tree can see a
+lane that deletes one of these bodies.
+
+**The population.** `tools/dead_strip_census.py census`: **86 functions, 12 348 B, across 49
+units** are in our objects and absent from the retail carve. They are three mechanisms, and only
+the middle one is §7's:
+
+| class | mechanism | count | bytes |
+|---|---|---|---|
+| **A** | **INLINED-AND-STRIPPED** — live code calls it, MWCC inlined every call site *and* emitted the out-of-line copy, mwld dropped the copy | **50** | **7 332** |
+| B | UNCALLED STATIC (§7's class) | 27 | 2 228 |
+| C | STRIPPED GLOBAL | 9 | 2 788 |
+
+**Class A is 58% of it, and it is the normal fate of a small static helper at `-O4`.** The type
+specimen is `446.c`'s `lavaball1be_applyDebrisGravity`: it is called at line 167 of its own file,
+our object carries the body at `.text+0`, and **our object contains no `bl` to it anywhere** —
+every call was inlined. Retail's compiler did the same, which is *why* the carve's `.text`
+starts later. So a `.text` surplus is not evidence of invented code; for most of this population
+it is evidence the compiler did its job.
+
+**The positive proof.** `dead_strip_census.py excise` removes exactly the stripped byte ranges
+from our `.text` and compares what is left with the carve's. **34 of the 49 units reproduce the
+carve BYTE FOR BYTE.** That proves two things at once: the stripped bodies are the *whole* of the
+difference, and every surviving instruction — including the inlined copies of the class-A
+helpers — is retail's. A fabricated helper would have to inline into exactly retail's instruction
+stream. All 34 are `fuzzy 100.0` / `complete: true`; all 15 that fail are sub-100 on an ordinary
+residual elsewhere, which says nothing about their dead code either way. The negative control is
+in the self-test: shifting every excision range by 4 B keeps the length right, the content wrong,
+and drops the pass count — the test is not comparing sizes.
+
+**Fabrications found: zero.** The only true-positive shape is a body that mints nothing and moves
+no data byte (`203`'s `dll_CB_getStateHandler`, §7). Disassembled over their own byte ranges,
+**0 of the 36 class-B/C bodies carry zero relocations** — every one mints pool literals or names
+real data or callees.
+
+**Class C is a LINKAGE test, not a reference test.** The classifier is literally
+`cls = "C" if not is_static`, so "unreferenced global" was never measured and three of the nine
+are demonstrably called: `__OSFPRInit` by `bl __OSFPRInit` in `src/dolphin/os/__ppc_eabi_init.cpp`,
+`__OSBootDol` at `OSExec.c:349`, `__OSSetExecParams` at `OSExec.c:80` and `:220`. All nine sit in
+two units — `OSExec.o` and `synth_seq_queue.o` — whose carve `.text` is **0**: the whole object
+never entered the link, which is what took their callers with them. `OSExec.c` is settled
+independently: `reference_projects/super_mario_strikers/src/Dolphin/os/OSExec.c` has the same 18
+functions in the same order.
+
+**Genuinely undecidable: 1.** `musyx/runtime/synth_seq_queue.c` — its carve `.text` is 0, so the
+excision test compares 0 bytes with 0 and has **no power at all**, and the only reference project
+carrying its two function names is an older copy of *this* project, which is circular. Leave it
+alone rather than guess in either direction.
+
+**The rule.** A dead-stripped body is **not** cleanup fodder. Before removing one: run
+`dead_strip_census.py census`; if the row is class A it has live call sites and deleting it
+changes what those sites inline; if it is class B, apply §7's pool-sharing test; if it is class C,
+the question is whether the *unit* belongs in the link at all, not whether the body is dead. And
+the deletion is invisible to every score: objdiff pairs by name, a body absent from the DOL has no
+pair, `matched_code` never counted it, and the forced link never notices. Gate on
+`tools/obj_equal.py --tree` and on this census, never on the score.
 
 ## Campaign-wide audit of the purge lane (2026-08-02)
 

@@ -139,7 +139,9 @@ CITE = {
     "SINGLE_ELEM_CONST_ARRAY": "CLAUDE.md Banned constructs: pool-reconstruction consts (1-element pin)",
     "LBL_ARRAY_NAMING_DEBT": "informational: unrecovered name, NOT a ban",
     "UNCALLED_STATIC_FN": "CLAUDE.md Banned constructs: phantom literal-minter functions",
+    "UNCALLED_STATIC_FN_SDK": "informational: dead static in an exempt root, NOT a ban",
 }
+INFORMATIONAL = ("LBL_ARRAY_NAMING_DEBT", "UNCALLED_STATIC_FN_SDK")
 
 # An `extern T name[...];` declaration carries the symbol without using it. Counting
 # it as a read made the census read "used as a real array" (the name is not followed
@@ -198,7 +200,12 @@ RE_ADDR_OF_OBJECT = re.compile(r"\*\s*\(\s*volatile\b[^)]*\)\s*&"
 
 
 def is_c_source(path):
-    return path.endswith(".c") or path.endswith(".h")
+    # .cpp counts: src/dolphin/os/__ppc_eabi_init.cpp and
+    # src/Runtime.PPCEABI.H/__init_cpp_exceptions.cpp are compiled into the DOL,
+    # and while they were excluded every scanner in the tree was blind to them.
+    # __ppc_eabi_init.cpp's `bl __OSFPRInit` is the only reference to that
+    # function anywhere, so excluding it made a live SDK symbol read as dead.
+    return path.endswith((".c", ".h", ".cpp"))
 
 
 def walk(roots, base=REPO):
@@ -406,7 +413,7 @@ def scan_uncalled_statics(files):
     return hits
 
 
-def collect(roots=SCAN_ROOTS, base=REPO, strict_lbl=False):
+def _read(roots, base):
     files = {}
     for rel in walk(roots, base):
         try:
@@ -414,11 +421,32 @@ def collect(roots=SCAN_ROOTS, base=REPO, strict_lbl=False):
                 files[rel] = fh.read()
         except OSError:
             continue
+    return files
+
+
+def collect(roots=SCAN_ROOTS, base=REPO, strict_lbl=False):
+    files = _read(roots, base)
     hits = []
     for rel, text in sorted(files.items()):
         hits += scan_file(rel, text, strict_lbl)
     hits += scan_one_elem(files, base)
-    hits += scan_uncalled_statics(files)
+    # The uncalled-function census runs over the WHOLE tree, not just the game
+    # roots: src/dolphin and src/musyx are exempt from the BANS, but nothing
+    # else in the tree screened them for dead code, so synth_jobs.c's
+    # streamGainFromVolume sat unadjudicated. Widening the file set can only add
+    # callers to a game-code static, never remove one (a static is file-local),
+    # and the widening is measured to lose no previously-reported row. SDK rows
+    # are reported under their own class and never gate: an exempt root is
+    # exempt.
+    if set(roots) == set(SCAN_ROOTS):
+        wide = dict(files)
+        wide.update(_read(EXEMPT_ROOTS, base))
+    else:
+        wide = files
+    for rel, ln, _cls, snip in scan_uncalled_statics(wide):
+        cls = ("UNCALLED_STATIC_FN_SDK"
+               if rel.startswith(tuple(EXEMPT_ROOTS)) else "UNCALLED_STATIC_FN")
+        hits.append((rel, ln, cls, snip))
     return sorted(hits, key=lambda h: (h[0], h[1], h[2]))
 
 
@@ -471,10 +499,13 @@ def self_test():
             ok = False
         print("  %-56s %s %s" % (label, "PASS" if cond else "*** FAIL ***", detail))
 
-    # NEGATIVE 1: the SDK is out of scope and must never appear in results.
+    # NEGATIVE 1: the SDK is out of scope and must never appear in a GATING
+    # result. The uncalled-function census now runs over the SDK too, but only
+    # ever under the informational class -- an exempt root is exempt.
     hits = collect()
-    chk("no result is inside an exempt root",
-        not any(h[0].startswith(tuple(EXEMPT_ROOTS)) for h in hits))
+    chk("no gating result is inside an exempt root",
+        not any(h[0].startswith(tuple(EXEMPT_ROOTS))
+                for h in hits if h[2] not in INFORMATIONAL))
 
     # NEGATIVE 2: genuine hardware volatiles are not puns.
     hw = [h for h in hits if h[2] == "VOLATILE_PUN" and RE_HW_ADDR.search(h[3])
@@ -547,6 +578,32 @@ def self_test():
     # NEGATIVE: an unused `static inline` emits no .text and is out of class.
     chk("unused static inline not flagged",
         not [h for h in uc if h[3].startswith("static inline")])
+
+    # The SDK widening, in both directions. POSITIVE: the exempt roots really do
+    # contain a dead static, and before the widening nothing in the tree
+    # screened it -- src/musyx/runtime/synth_jobs.c's streamGainFromVolume, one
+    # of the functions dead_strip_census.py classifies as stripped.
+    sdkuc = [h for h in hits if h[2] == "UNCALLED_STATIC_FN_SDK"]
+    chk("the SDK census fires on a real dead SDK static",
+        any("streamGainFromVolume" in h[3] for h in sdkuc),
+        "(%d SDK rows)" % len(sdkuc))
+    chk("every SDK census row really is in an exempt root",
+        all(h[0].startswith(tuple(EXEMPT_ROOTS)) for h in sdkuc))
+    # NEGATIVE / NO-LOSS: widening the file set may only ADD callers, so no row
+    # the narrow scan reported may disappear. A static is file-local, but the
+    # census keys on the NAME, so an SDK file that happens to spell a game
+    # static's name could have laundered it. Measured: it does not.
+    narrow = {(h[0], h[1]) for h in scan_uncalled_statics(_read(SCAN_ROOTS, REPO))}
+    widened = {(h[0], h[1]) for h in hits
+               if h[2] in ("UNCALLED_STATIC_FN", "UNCALLED_STATIC_FN_SDK")}
+    chk("widening loses no previously-reported row",
+        not (narrow - widened), "(%d narrow, %d wide)" % (len(narrow), len(widened)))
+
+    # .cpp coverage: the two compiled C++ units were invisible to every scanner
+    # in the tree, and one of them carries the ONLY reference to __OSFPRInit.
+    cpp = [r for r in walk(EXEMPT_ROOTS) if r.endswith(".cpp")]
+    chk("compiled .cpp units are inside the walker", len(cpp) >= 2,
+        ", ".join(cpp))
 
     # POSITIVE: the SDK really does contain the shapes, so the patterns fire
     # when pointed at code that has them. This is the control that proves a
@@ -696,8 +753,8 @@ def main():
         return 0 if ok else 1
 
     hits = collect(strict_lbl=args.strict_lbl)
-    informational = [h for h in hits if h[2] == "LBL_ARRAY_NAMING_DEBT"]
-    hits = [h for h in hits if h[2] != "LBL_ARRAY_NAMING_DEBT"]
+    informational = [h for h in hits if h[2] in INFORMATIONAL]
+    hits = [h for h in hits if h[2] not in INFORMATIONAL]
 
     if args.baseline:
         p = write_baseline(hits)

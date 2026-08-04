@@ -22,9 +22,17 @@ THE THREE MECHANISMS, which are NOT interchangeable
        This is banned_shapes_check.py's UNCALLED_STATIC_FN class; see
        docs/priced_classes.md section 7 for why it is not automatically a hack
        and for the pool-sharing test that adjudicates one.
-    C  UNREFERENCED GLOBAL.  Not static, nothing references it, mwld stripped
-       it.  UNCALLED_STATIC_FN is static-only and skips src/dolphin + src/musyx,
-       so NOTHING else in the tree screens this class.
+    C  STRIPPED GLOBAL.  Not static, and the link dropped it anyway.  The test
+       is LINKAGE ONLY -- `cls = "C" if not is_static` -- so do NOT read this
+       class as "nothing references it".  Measured: `__OSFPRInit` is called by
+       `bl __OSFPRInit` in __ppc_eabi_init.cpp, `__OSBootDol` at OSExec.c:349
+       and `__OSSetExecParams` at OSExec.c:80 and :220.  All nine live in two
+       units (OSExec.o, synth_seq_queue.o) whose carve .text is 0 -- the whole
+       object never entered the link, which is what dropped their callers too.
+       UNCALLED_STATIC_FN is static-only, so no source screen reports this
+       class; and none can, because a global's reference may be a relocation in
+       data we have not decompiled (measured: a whole-tree, any-linkage source
+       screen yields 4969 rows of which 60 are really dead -- 1.2% precision).
 
 THE PROOF, and it is positive rather than an absence of evidence
     `excise` removes exactly the stripped functions' byte ranges from our .text
@@ -184,7 +192,7 @@ def cmd_census():
     print("dead-stripped functions: %d, %d B" % (len(rows), sum(r[3] for r in rows)))
     for cls, label in (("A", "INLINED-AND-STRIPPED"),
                        ("B", "UNCALLED STATIC     "),
-                       ("C", "UNREFERENCED GLOBAL ")):
+                       ("C", "STRIPPED GLOBAL     ")):
         print("  %s %s : %3d  %6d B" % (cls, label, tot[cls][0], tot[cls][1]))
     print()
     for cls, rel, fn, sz in sorted(rows):
@@ -296,8 +304,18 @@ def self_test():
     # OSExec.c is entirely absent from the DOL, so its class-C globals must be
     # seen; this is the class banned_shapes_check structurally cannot report.
     cglobals = {r[2] for r in rows if r[0] == "C"}
-    chk("class C sees unreferenced globals banned_shapes_check cannot",
+    chk("class C sees stripped globals banned_shapes_check cannot",
         "OSExecv" in cglobals or "__OSFPRInit" in cglobals)
+    # ...and class C is a LINKAGE test, not a reference test.  __OSFPRInit has a
+    # real caller (`bl __OSFPRInit` in __ppc_eabi_init.cpp), so a reader who
+    # takes "class C" to mean "unreferenced" is reading a fact that was never
+    # measured.  This control pins that: the class must contain a function the
+    # tree demonstrably references.
+    init = os.path.join(REPO, "src", "dolphin", "os", "__ppc_eabi_init.cpp")
+    chk("class C is linkage, not reference: it holds a CALLED function",
+        "__OSFPRInit" in cglobals
+        and os.path.isfile(init)
+        and "bl __OSFPRInit" in open(init, errors="replace").read())
     print("SELF-TEST", "PASS" if ok else "FAIL")
     return 0 if ok else 1
 

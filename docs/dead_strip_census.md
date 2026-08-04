@@ -30,7 +30,14 @@ The 15 carve-larger rows are not this class: 2 are unsplit gap symbols (`render.
 |---|---|---|---|
 | **A** | **INLINED-AND-STRIPPED** — live code calls it, MWCC inlined every call site and emitted the out-of-line copy anyway, mwld stripped the copy | **50** | **7 332** |
 | **B** | **UNCALLED STATIC** — nothing calls it, not even transitively (`UNCALLED_STATIC_FN`) | 27 | 2 228 |
-| **C** | **UNREFERENCED GLOBAL** — not static, nothing references it, mwld stripped it | 9 | 2 788 |
+| **C** | **STRIPPED GLOBAL** — not static, and the link dropped it anyway | 9 | 2 788 |
+
+Class C's test is `cls = "C" if not is_static` — **linkage only**. Do not read it as "nothing
+references it": that was never measured, and three of the nine are demonstrably called —
+`__OSFPRInit` by `bl __OSFPRInit` in `src/dolphin/os/__ppc_eabi_init.cpp`, `__OSBootDol` at
+`OSExec.c:349`, `__OSSetExecParams` at `OSExec.c:80` and `:220`. All nine sit in the two units
+whose carve `.text` is 0 (`OSExec.o`, `synth_seq_queue.o`): the whole object never entered the
+link, which is what took their callers with them.
 
 Class A is 58% of the population and it is **the normal fate of a small static helper at `-O4`**.
 `446.c`'s `lavaball1be_applyDebrisGravity` is the type specimen: it is called at line 167 of its own
@@ -96,12 +103,32 @@ should be left alone rather than guessed at in either direction.
 anyway, by the reference decomp above. That is the difference between "no gate sees it" and
 "nothing can be known about it".
 
-## Two instrument defects this census exposed
+## Two instrument defects this census exposed — and what closing them cost
 
 1. **`banned_shapes_check`'s `UNCALLED_STATIC_FN` is static-only and skips `src/dolphin` and
    `src/musyx`.** Both restrictions are correct for what that check is for, but the consequence is
    that **10 dead functions totalling 2 818 B (the 9 class-C globals plus `streamGainFromVolume`)
    are screened by nothing in the tree.** `dead_strip_census.py` is what covers them.
+
+   **Closed, in one direction only (measured 2026-08-03).** The census now runs over the whole
+   tree, so `src/musyx`'s `streamGainFromVolume` is reported — under its own class,
+   `UNCALLED_STATIC_FN_SDK`, which never gates, because an exempt root is exempt. The scope
+   change takes the census from 26 to **30 rows, of which 27 are functions the link really
+   dropped**; the three that are not are SDK `asm` exception vectors (`__OSDBIntegrator`,
+   `__OSDBJump`, `OSExceptionVector`), referenced by address at install time. `lost-old=0`, and
+   the **gating** hit set is byte-identical before and after at **103**.
+
+   The other direction is **refused, measured**: extending the census to non-static linkage
+   yields **4969 rows of which 60 are really dead — 1.2% precision.** A source-text screen has no
+   power over a global, because the reference may be a relocation in data we have not
+   decompiled, or a DLL export table. For a global the instrument is the *linker*, i.e. this
+   file. Do not retry the widening.
+
+   A third, quieter hole closed with it: `is_c_source` accepted only `.c`/`.h`, so the two
+   compiled C++ units — `src/dolphin/os/__ppc_eabi_init.cpp` and
+   `src/Runtime.PPCEABI.H/__init_cpp_exceptions.cpp` — were invisible to **every** scanner in the
+   tree, and the first of them holds the only reference to `__OSFPRInit` anywhere. Both live in
+   exempt roots, so the game-code gate count did not move.
 
 2. **Five units report `fuzzy 100.0` and `complete: true` with no code, no data and no functions**
    — `dolphin/ax/AX`, `dolphin/TRK_MINNOW_DOLPHIN/MWCriticalSection_gc`, `dolphin/os/OSExec`,
@@ -111,9 +138,28 @@ anyway, by the reference decomp above. That is the difference between "no gate s
    correctness. Two of them (`OSExec`, `synth_seq_queue`) are exactly the units whose whole `.text`
    was dead-stripped, which is why the vacuity and the census meet here.
 
+   **Decided, and made controlled (2026-08-03).** All five carry a **zero-length `.text` range**
+   in `config/GSAE01/splits.txt` (`start:0xNNN end:0xNNN`) and all five carve objects really are
+   `.text` size 0 — they are TU boundary markers. Three (`AX.c`, `MWCriticalSection_gc.c`,
+   `synth_sequence.c`) are stub sources that emit nothing at all; two (`OSExec.c` 0x1074,
+   `synth_seq_queue.c` 0x194) emit real code that never entered the link. Either way the carve
+   can never gain content, so such a row can neither be earned nor lost: it is excluded from
+   **both** halves of the completion figure, not just the numerator. Separately, the 38
+   `main/auto_*` units are selected by `total_data` present / `matched_data` absent / no
+   `total_code` (2 342 B) — **never** by a missing `complete_units` key — and **0 of them are
+   inside `complete_units`**. The exclusion is not folklore: `vacuity_audit.py --family report`
+   prints both figures and carries the controls (the predicate must fire, must stay silent on the
+   other 1038 units, must be disjoint from the auto-generated ones, and every row it names must
+   really be complete). **Informative completion: 910 of 1000.**
+
 ## What this closes, and what it does not
 
 It closes the question the surplus `.text` raised: **no fabricated function is hiding there.**
-It does not make the class self-policing — a future lane can still add an uncalled static, and only
-`banned_shapes_check` (inside `SCAN_ROOTS`) or this tool (everywhere) will report it. Run
+It does not make the class self-policing — a future lane can still add an uncalled static, and
+`banned_shapes_check` reports one anywhere in the tree (gating inside `SCAN_ROOTS`, informational
+in the exempt roots) while this tool reports it for any linkage. Run
 `dead_strip_census.py census` when a unit's `.text` grows without its score moving.
+
+**And do not delete what it finds.** The standing registry entry is `docs/priced_classes.md`
+§7b: a class-A body has live call sites and deleting it changes what those sites inline; the
+deletion is invisible to every score gate in the tree.

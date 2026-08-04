@@ -995,16 +995,61 @@ def family_report(verbose):
              if u["measures"].get("fuzzy_match_percent") == 100.0]
     print("  units in the report: %d;  with NO ours-side object: %d, of which "
           "%d read 100.0" % (len(rep["units"]), len(blind), len(at100)))
+    autocomp = sum(1 for u in blind if u["measures"].get("complete_units"))
     print("     -> those %d are compared against THEMSELVES.  Their 100.0 is a "
-          "tautology,\n        and they are inside complete_units/total_units."
-          % len(at100))
+          "tautology,\n        and they are inside total_units (%d of them are "
+          "inside complete_units)." % (len(at100), autocomp))
     zero = sum(1 for u in rep["units"]
                for f in (u.get("functions") or [])
                if f.get("fuzzy_match_percent") is None)
     print("  functions carrying NO fuzzy_match_percent at all: %d "
           "(objdiff omits the field at 0.0, so a MISSING score must be read "
           "as -1, never as absent)" % zero)
-    return 0
+
+    # THE COMPLETION FIGURE'S OWN DENOMINATOR AND NUMERATOR, both of which
+    # contain rows that are not statements about correctness.
+    #
+    #   * AUTO-GENERATED units carry `total_data` and no `total_code` at all --
+    #     they are dtk's data-only carve residue, never ours to match, and they
+    #     are never complete.  They belong in neither half.
+    #   * VACUOUS units carry NO total_code, NO total_data and NO total_functions
+    #     -- their carve object is empty, so objdiff compared nothing and
+    #     returned 100.0/complete.  Two of them (OSExec, synth_seq_queue) have a
+    #     real translation unit whose whole .text the retail link never pulled
+    #     in; three are stub .c files that emit nothing.  Either way the carve
+    #     can never gain content, so such a row can neither be earned nor lost:
+    #     it is excluded from BOTH halves, not just the numerator.
+    #
+    # This is stated here rather than left as folklore because the raw
+    # `complete_units/total_units` pair reads as an achievable score and is not.
+    us = rep["units"]
+    auto = [u for u in us if u.get("metadata", {}).get("auto_generated")]
+    vac = [u for u in us
+           if not u["measures"].get("total_code")
+           and not u["measures"].get("total_data")
+           and not u["measures"].get("total_functions")]
+    comp = [u for u in us if u["measures"].get("complete_units")]
+    vacnames = {u["name"] for u in vac}
+    inform_num = len([u for u in comp if u["name"] not in vacnames])
+    inform_den = len(us) - len(auto) - len(vac)
+    print("  complete_units as reported: %d of %d" % (len(comp), len(us)))
+    print("     -- %d auto-generated data-only units (never ours to match)"
+          % len(auto))
+    print("     -- %d VACUOUS units: no code, no data, no functions, so their "
+          "100.0/complete\n        compared nothing: %s"
+          % (len(vac), ", ".join(sorted(u["name"] for u in vac))))
+    print("     => INFORMATIVE completion: %d of %d" % (inform_num, inform_den))
+    # ...and the controls, because an exclusion nobody can see fail is folklore
+    # with a line number.  The predicate must FIRE, must not swallow the tree,
+    # and must not swallow the auto-generated units -- those carry total_data,
+    # which is exactly what tells the two populations apart.
+    ok = (0 < len(vac) < len(us)
+          and not (vacnames & {u["name"] for u in auto})
+          and all(u["measures"].get("complete_units") for u in vac))
+    print("  vacuity predicate: %s  (fires on %d, silent on %d, disjoint from "
+          "auto-generated, every row complete)"
+          % ("held" if ok else "DIVERGES", len(vac), len(us) - len(vac)))
+    return 0 if ok else 1
 
 
 _PERTURB = """
