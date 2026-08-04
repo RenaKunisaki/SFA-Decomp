@@ -80,7 +80,7 @@ f32 gExplosionFalloffScaleRed;
 f32 gExplosionFalloffScaleGreen;
 f32 gExplosionFalloffScaleBlue;
 u8 gExplosionUpdateTick;
-extern f32 gExplosionSpreadDirs[];
+extern Vec gExplosionSpreadDirs[];
 const DimExplosionTextureTable gExplosionTexTable = {{0x5e1, 0x5f7, 0x5f8, 0x5f9}};
 
 volatile PPCWGPipe GXWGFifo : (0xCC008000);
@@ -602,9 +602,9 @@ void explosion_init(GameObject* obj, DimExplosionPlacement* placementAddress) {
                 f32 mag = 2.0f * ((f32)randomGetRange(0x14, 0x28) * 0.01f) + 2.0f;
                 u8 spreadDirectionIndex;
                 spreadDirectionIndex = i % 4;
-                vsp.x = mag * gExplosionSpreadDirs[spreadDirectionIndex * 3];
-                vsp.y = mag * gExplosionSpreadDirs[spreadDirectionIndex * 3 + 1];
-                vsp.z = mag * gExplosionSpreadDirs[spreadDirectionIndex * 3 + 2];
+                vsp.x = mag * gExplosionSpreadDirs[spreadDirectionIndex].x;
+                vsp.y = mag * gExplosionSpreadDirs[spreadDirectionIndex].y;
+                vsp.z = mag * gExplosionSpreadDirs[spreadDirectionIndex].z;
                 PSMTXRotRad(
                     mB, 0x7a,
                     (f32)(sExplosionPi[0] * (f64)(((f32)randomGetRange(0, 0x8000) - 16384.0f) / 65535.0f)));
@@ -705,8 +705,8 @@ void explosion_initialise(void) {
     }
 }
 
-f32 gExplosionSpreadDirs[] = {
-    1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
+Vec gExplosionSpreadDirs[] = {
+    {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, -1.0f, 0.0f},
 };
 
 ObjectDescriptor gExplosionObjDescriptor = {

@@ -117,7 +117,13 @@ extern const ObjFxRandomBurstTable gObjFxRandomBurstTbl;
 extern const ObjFxColorTable gObjFxCrystalSparkleTbl;
 extern ObjFxCrystalBurstTable gObjFxCrystalAmpTbl;
 extern s16 gObjFxCrystalSpinSpeed[4];
-extern u8 gObjFxLightColorTbl[];
+typedef struct ObjFxLightColor {
+    u8 r;
+    u8 g;
+    u8 b;
+} ObjFxLightColor;
+
+extern ObjFxLightColor gObjFxLightColorTbl[];
 
 
 void objShowButtonGlow(void* obj, f32 intensity, u8 mode);

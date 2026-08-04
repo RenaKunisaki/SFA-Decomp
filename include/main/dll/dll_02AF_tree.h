@@ -75,7 +75,13 @@ STATIC_ASSERT(offsetof(TreeState, lastPlayerDistance) == 0x56);
 STATIC_ASSERT(offsetof(TreeState, flags) == 0x58);
 STATIC_ASSERT(sizeof(TreeState) == 0x5c);
 
-extern f32 gTreeEffectColors[];
+typedef struct TreeEffectBurst
+{
+    Vec offset;
+    f32 radius;
+} TreeEffectBurst;
+
+extern TreeEffectBurst gTreeEffectBursts[];
 
 extern ObjectDescriptor gTreeObjDescriptor;
 

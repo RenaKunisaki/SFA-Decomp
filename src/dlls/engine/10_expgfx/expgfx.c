@@ -205,10 +205,10 @@ ObjFxCrystalBurstTable gObjFxCrystalAmpTbl = {
 };
 
 /* Light RGB triplets per fx type (referenced by objfx.c). */
-u8 gObjFxLightColorTbl[36] = {
-    0x00, 0x00, 0x00, 0x40, 0xFF, 0xFF, 0xFF, 0xFF, 0x40, 0xFF, 0x40, 0x7F,
-    0x7F, 0x7F, 0x7F, 0x40, 0xFF, 0x40, 0xFF, 0xFF, 0x00, 0xFF, 0x7F, 0x40,
-    0xFF, 0xFF, 0x40, 0x00, 0x7F, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+ObjFxLightColor gObjFxLightColorTbl[12] = {
+    {0x00, 0x00, 0x00}, {0x40, 0xFF, 0xFF}, {0xFF, 0xFF, 0x40}, {0xFF, 0x40, 0x7F},
+    {0x7F, 0x7F, 0x7F}, {0x40, 0xFF, 0x40}, {0xFF, 0xFF, 0x00}, {0xFF, 0x7F, 0x40},
+    {0xFF, 0xFF, 0x40}, {0x00, 0x7F, 0xFF}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00},
 };
 
 ExpgfxDllInterface expgfx_funcs = {
@@ -1661,10 +1661,10 @@ void objDoHitParticleFx(void* obj, f32 scale, void* origin, u8 type, void* light
         modelLightStruct_setPosition(light, ((GameObject*)origin)->anim.localPosX,
                                      10.0f + ((GameObject*)origin)->anim.localPosY,
                                      ((GameObject*)origin)->anim.localPosZ);
-        modelLightStruct_setDiffuseColor(light, gObjFxLightColorTbl[type * 3], gObjFxLightColorTbl[type * 3 + 1],
-                                         gObjFxLightColorTbl[type * 3 + 2], 0xff);
-        modelLightStruct_setSpecularColor(light, gObjFxLightColorTbl[type * 3], gObjFxLightColorTbl[type * 3 + 1],
-                                          gObjFxLightColorTbl[type * 3 + 2], 0xff);
+        modelLightStruct_setDiffuseColor(light, gObjFxLightColorTbl[type].r, gObjFxLightColorTbl[type].g,
+                                         gObjFxLightColorTbl[type].b, 0xff);
+        modelLightStruct_setSpecularColor(light, gObjFxLightColorTbl[type].r, gObjFxLightColorTbl[type].g,
+                                          gObjFxLightColorTbl[type].b, 0xff);
         modelLightStruct_setDistanceAttenuation(light, 40.0f, 55.0f);
         lightSetField4D(light, 0);
         modelLightStruct_setEnabled(light, 1, 0.0f);

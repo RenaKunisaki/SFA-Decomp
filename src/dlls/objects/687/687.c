@@ -8,7 +8,7 @@
  * ambient effect objects tracked along the object's path points, and
  * TREE_FLAG_PLAYER_PROXIMITY_BURST fires a burst when the player crosses
  * the proximity radius. romDefNo selects an effect-colour profile index into
- * gTreeEffectColors.
+ * gTreeEffectBursts.
  *
  * The ambient effect objects are AppleOnTree instances, driven through that
  * DLL's interface (setPosition / getAnimState).
@@ -206,12 +206,12 @@ void tree_update(GameObject* obj)
                 if (state->flags & TREE_FLAG_BURST_MODE_MASK)
                 {
                     intensity = state->scale;
-                    *(colorPtr = &burstParams.posX) = intensity * gTreeEffectColors[state->effectProfileIndex * 4 + 0];
-                    burstParams.posY = intensity * gTreeEffectColors[state->effectProfileIndex * 4 + 1];
-                    burstParams.posZ = intensity * gTreeEffectColors[state->effectProfileIndex * 4 + 2];
+                    *(colorPtr = &burstParams.posX) = intensity * gTreeEffectBursts[state->effectProfileIndex].offset.x;
+                    burstParams.posY = intensity * gTreeEffectBursts[state->effectProfileIndex].offset.y;
+                    burstParams.posZ = intensity * gTreeEffectBursts[state->effectProfileIndex].offset.z;
                     vecRotateZXY(&obj->anim.rotX, colorPtr);
                     objfx_spawnRandomBurst(obj, state->flags & TREE_FLAG_BURST_MODE_MASK, 0x14, &burstParams,
-                                           state->scale * gTreeEffectColors[state->effectProfileIndex * 4 + 3], 0);
+                                           state->scale * gTreeEffectBursts[state->effectProfileIndex].radius, 0);
                 }
                 state->swayTimer = 0.0225f;
                 state->hitCooldownTimer = 20.0f;
@@ -252,24 +252,24 @@ void tree_update(GameObject* obj)
                     state->lastPlayerDistance >= state->proximityRadius && state->playerBurstCooldown <= 0.0f)
                 {
                     intensity = state->scale;
-                    *(colorPtr = &burstParams.posX) = intensity * gTreeEffectColors[state->effectProfileIndex * 4 + 0];
-                    burstParams.posY = intensity * gTreeEffectColors[state->effectProfileIndex * 4 + 1];
-                    burstParams.posZ = intensity * gTreeEffectColors[state->effectProfileIndex * 4 + 2];
+                    *(colorPtr = &burstParams.posX) = intensity * gTreeEffectBursts[state->effectProfileIndex].offset.x;
+                    burstParams.posY = intensity * gTreeEffectBursts[state->effectProfileIndex].offset.y;
+                    burstParams.posZ = intensity * gTreeEffectBursts[state->effectProfileIndex].offset.z;
                     vecRotateZXY(&obj->anim.rotX, colorPtr);
                     objfx_spawnRandomBurst(obj, state->flags & TREE_FLAG_BURST_MODE_MASK, 0x14, &burstParams,
-                                           state->scale * gTreeEffectColors[state->effectProfileIndex * 4 + 3], 1);
+                                           state->scale * gTreeEffectBursts[state->effectProfileIndex].radius, 1);
                     state->playerBurstCooldown = 340.0f;
                 }
                 state->ambientBurstTimer -= timeDelta;
                 if (state->ambientBurstTimer <= 0.0f)
                 {
                     intensity = state->scale;
-                    *(colorPtr = &burstParams.posX) = intensity * gTreeEffectColors[state->effectProfileIndex * 4 + 0];
-                    burstParams.posY = intensity * gTreeEffectColors[state->effectProfileIndex * 4 + 1];
-                    burstParams.posZ = intensity * gTreeEffectColors[state->effectProfileIndex * 4 + 2];
+                    *(colorPtr = &burstParams.posX) = intensity * gTreeEffectBursts[state->effectProfileIndex].offset.x;
+                    burstParams.posY = intensity * gTreeEffectBursts[state->effectProfileIndex].offset.y;
+                    burstParams.posZ = intensity * gTreeEffectBursts[state->effectProfileIndex].offset.z;
                     vecRotateZXY(&obj->anim.rotX, colorPtr);
                     objfx_spawnRandomBurst(obj, state->flags & TREE_FLAG_BURST_MODE_MASK, 1, &burstParams,
-                                           state->scale * gTreeEffectColors[state->effectProfileIndex * 4 + 3], 0);
+                                           state->scale * gTreeEffectBursts[state->effectProfileIndex].radius, 0);
                     state->ambientBurstTimer += 60.0f;
                 }
             }
@@ -362,10 +362,11 @@ void tree_init(GameObject* obj, TreeSetup* setup)
     }
 }
 
-f32 gTreeEffectColors[] = {
-    0.0f, 250.0f, 0.0f, 80.0f,  0.0f,  250.0f, 0.0f, 110.0f, 25.0f, 200.0f, 0.0f, 80.0f,  0.0f, 100.0f, 0.0f, 60.0f,
-    0.0f, 200.0f, 0.0f, 140.0f, 0.0f,  250.0f, 0.0f, 160.0f, 0.0f,  200.0f, 0.0f, 100.0f, 0.0f, 350.0f, 0.0f, 130.0f,
-    0.0f, 350.0f, 0.0f, 130.0f, 25.0f, 300.0f, 0.0f, 80.0f,  0.0f,  50.0f,  0.0f, 50.0f,
+TreeEffectBurst gTreeEffectBursts[] = {
+    {{0.0f, 250.0f, 0.0f}, 80.0f},  {{0.0f, 250.0f, 0.0f}, 110.0f}, {{25.0f, 200.0f, 0.0f}, 80.0f},
+    {{0.0f, 100.0f, 0.0f}, 60.0f},  {{0.0f, 200.0f, 0.0f}, 140.0f}, {{0.0f, 250.0f, 0.0f}, 160.0f},
+    {{0.0f, 200.0f, 0.0f}, 100.0f}, {{0.0f, 350.0f, 0.0f}, 130.0f}, {{0.0f, 350.0f, 0.0f}, 130.0f},
+    {{25.0f, 300.0f, 0.0f}, 80.0f}, {{0.0f, 50.0f, 0.0f}, 50.0f},
 };
 
 ObjectDescriptor gTreeObjDescriptor = {

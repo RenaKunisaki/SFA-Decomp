@@ -28,8 +28,8 @@
 
 int gKTrexFloorSwitchPrevMoved;
 
-const f32 gKTrexFloorSwitchLocalEdgeZ[3] = {0.0f, 0.0f, 55.0f};
-const f32 gKTrexFloorSwitchLocalEdgeX[3] = {55.0f, 0.0f, 0.0f};
+const Vec gKTrexFloorSwitchLocalEdgeZ = {0.0f, 0.0f, 55.0f};
+const Vec gKTrexFloorSwitchLocalEdgeX = {55.0f, 0.0f, 0.0f};
 int gKTrexFloorSwitchCurveFindResult = 0x19;
 
 /* KtrexfloorswitchState.flags (offset 0x10) bits */
@@ -78,13 +78,13 @@ void KT_RexFloorSwitch_update(GameObject* obj)
     int moved;
     u32 level;
     int scroll;
-    f32 vecA[3];
-    f32 vecB[3];
+    Vec vecA;
+    Vec vecB;
     f32 mtx[12];
     f32 height;
     f32 cx, cz, xLo, xHi, zLo, zHi;
-    *(Vec3Blob*)vecA = *(Vec3Blob*)gKTrexFloorSwitchLocalEdgeZ;
-    *(Vec3Blob*)vecB = *(Vec3Blob*)gKTrexFloorSwitchLocalEdgeX;
+    vecA = gKTrexFloorSwitchLocalEdgeZ;
+    vecB = gKTrexFloorSwitchLocalEdgeX;
     (obj)->userData2 = (obj)->userData1;
     (obj)->userData1 = mainGetBit(placement->activeBit);
     tex = objFindTexture(obj, 0, 0);
@@ -164,11 +164,11 @@ void KT_RexFloorSwitch_update(GameObject* obj)
         if (player != 0)
         {
             PSMTXRotRad((MtxPtr)mtx, 'y', (f32)(3.142 * (f64)(obj)->anim.rotX / 32768.0));
-            PSMTXMultVecSR((MtxPtr)mtx, (Vec*)vecA, (Vec*)vecA);
-            PSMTXMultVecSR((MtxPtr)mtx, (Vec*)vecB, (Vec*)vecB);
+            PSMTXMultVecSR((MtxPtr)mtx, &vecA, &vecA);
+            PSMTXMultVecSR((MtxPtr)mtx, &vecB, &vecB);
             cx = (obj)->anim.localPosX;
             xLo = cx;
-            xHi = vecB[0] + (cx + vecA[0]);
+            xHi = vecB.x + (cx + vecA.x);
             if (xHi < xLo)
             {
                 f32 t = xHi;
@@ -177,7 +177,7 @@ void KT_RexFloorSwitch_update(GameObject* obj)
             }
             cz = (obj)->anim.localPosZ;
             zLo = cz;
-            zHi = vecB[2] + (cz + vecA[2]);
+            zHi = vecB.z + (cz + vecA.z);
             if (zHi < zLo)
             {
                 f32 t = zHi;
