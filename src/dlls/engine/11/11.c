@@ -146,7 +146,7 @@ void dll_0B_setSequenceParamValue(s16 value)
 {
     u8* state = gModgfxSpawnContextStorage;
     state = state + gModgfxSequenceParamIndex * 2;
-    *(s16*)(state + 0x46) = value;
+    ((ModgfxSpawnContext*)state)->sequenceParams[0] = value;
 }
 
 void dll_0B_setSequenceParamIndex(s16 x)
