@@ -33,6 +33,8 @@ here that the target section already says.
 | **The gate blind spots, and why md5-of-every-`.o` dominates.** Demotion blinds the DOL gate; `matched_code`/`matched_functions` are threshold counters; a pool rotation inside an already-NonMatching unit is free on every score axis. | `docs/purge_campaign_audit.md`, "Three sensor blind spots"; the docstring of `tools/score_delta_gate.py` | `4461d0aa45` moved neither counter and still took a function 99.981 -> 94.212; `5d467157cb`/`f5fe00213f`/`620b69dc2d` lost 144/60/16 B at `dfuzzy +0.000000`, zero regressions, zero demotions. The pool word-diff catches the third class; md5 of every `.o` catches all four *and* the score-neutral ones (class #70 renumbering), which no score can see. |
 | **A window where `matched_code` rises and `matched_data` falls is not automatically a partial pool fix.** Bisect it: the two halves can be one commit, and the data half can be the priced cost of retiring a banned shape. | §25 | `3d9406bfe8` alone: `+1900` code / `−408` data / `+0.00043` fuzzy, reproduced to the digit by reverting its seven files and its `nodead` cflag. The `−408` is `tricky` `.sdata2` going 100.0 -> 88.67 (all-or-nothing) because five `UNCALLED_STATIC_FN` baseline rows were deleted; the two pools hold the same 408 bytes and the same 96-slot value sequence, permuted from offset `0x50`. |
 | **The colouring cap is thin, not solid — and it has ONE key.** Declaration order is the only source key for the register assignment; statement order is the source key for emission ORDER, which is why the two sweepers' hit sets are disjoint. (This row used to state §26's two-key model; **§27 refuted it and the row was not updated for a day** — the correction is §27's, the sweep numbers below are still §26's.) Never prune a colouring row on equal length. | §26, corrected by §27 | **34 100 orderings** built and scored over all 128 attackable colouring rows (25 335 decl + 8 236 stmt + 529 by hand): **8 hits**, disjoint between the two axes, tree 99.81612 -> 99.816765 with `matched_code`/`matched_data`/`complete_units` unchanged. `tools/direct_build.py` took a probe from 83 s to 1.9 s by dropping ninja's global mutex. A K&R-style definition is invisible to both sweepers and was the eighth hit — **count a sweep's errors before believing its zero**. |
+| **Statement order IS a source key for the register assignment — §27's "declaration order is the ONLY key" is refuted.** What decides whether a statement permutation moves a home is the run's SHAPE, not reuse: permuting structurally interchangeable statements (§27's control, and three synthetic regimes including a hard-packed one) never moves the band; give the run's members different shapes and it moves in 81 of 100 orders, and eight real frontier bodies move in 31 of 64. Both order axes are nevertheless MEASURED EXHAUSTED on the non-bijective frontier. | §31, refuting §27 | `tools/stmt_reuse_control.py` (band-signature discriminator + a declaration-order positive control, 50/50, + `--real`); **7 000 orderings and rewrites over the 67-row / 113 512 B population — 5 717 statement, 503 split, 381 operand, 399 declaration — 0 hits, 0 bytes.** 12 of the 67 rows have no reorderable run at all and 32 of 40 no split-enlarged neighbourhood: **count what a sweep skipped before believing its zero.** |
+| **The reuse law holds on the FLOAT band too, and a declaration never touches `f0`-`f13`.** 9 float locals under the band -> 120/120 PERM; 24 over it -> 120/120 NONFUNC; **8 085 differing FPR operands, 0 volatile.** So #82's scratch half is not declaration-reachable. And because `perm_class_scan` abstracts only `r` names, every float colouring row in the tree is filed under its **OPERAND** bucket. | §31e | `tools/fpr_reuse_control.py`. FPR-ONLY census: **15 rows / 18 820 B, 13 of them volatile-only**. MWCC saves FPRs one instruction per register, so the save block names the SET and any whole-stream permutation check reports NOTPERM on every float colouring difference unless the spill lines are excluded — 30/30 NOTPERM becomes 30/30 PERM. |
 | **The toolchain caps and the never-touch islands.** Bank on sight; do not re-probe — but §5's wording was audited in §28 and three of its entries were wrong. | §5, audited by §28 | Per-class detail in the memory topic files. |
 | **149 of the 204 sub-100 rows are within THREE instruction-equivalents of exact, and they hold 59% of the code gap.** Rank the frontier by bytes, not by fuzzy: the largest rows are among the closest, and the whole-instruction bucket that §5 named without pricing is 21 rows / 19 032 B, attributed to the byte. | §29 | `Effect3_spawnObject` forfeits **7 796 B for 15 register operands**; `Scarab_update` **3 476 B for one instruction**. Eight rows worked off the byte ranking, **33 spellings, yield 0** — including the six-permutation proof that a parameter home is not reachable from the declaration list, and the `errorThreadFunc` row that **refutes §15's sufficiency test**: the slid instruction is one the source names and nine spellings are still inert. |
 | **objdiff charges per OPERAND, and a displacement is not free.** 0.05 instruction-equivalents per differing register, **0.01 per differing immediate/displacement**, 1.00 per differing mnemonic or inserted instruction, **0.000 for a relocation name at an equal address**. And `matched_code` is a threshold counter, so the cheapest class in fuzzy forfeits exactly as many bytes as the dearest: `matched_code = total_code − Σ(sub-100 function sizes) − Σ(unscored sizes)`, to the byte. | §28 | The 205 sub-100 rows at `34c954cf62`: 92 pure-register rows give `loss/register` = 0.0500 with min equal to max; 8 pure-immediate rows give 0.0100; 110 rows fit the model exactly and **84 of them carry relocation-name differences weighted at 0.000** — the first positive control for class #70 being free. | 
@@ -3188,3 +3190,107 @@ function's homes through a 40-line window with a prologue mnemonic allowlist, so
 PARAM-HOME row as LOCALS-ONLY. The landed tool walks until the first instruction that is neither a
 home nor precedes one, and is controlled by `--self-test`. **Classify the operand, not the token,
 and control the parser before believing the partition.**
+
+## 31. Statement order IS a colouring key — §27 refuted, and both order axes measured exhausted (2026-08-04, A100)
+
+§27 concluded that "declaration order is the ONLY source key for the register assignment;
+statement order is the source key for emission ORDER", from a control that pinned four
+declarations and permuted four assignment statements through all 24 orders for one register
+assignment. A99 then measured that in the REUSE regime (live locals outnumbering the
+callee-saved band) a *declaration*-order change stops being a permutation at all, and left the
+statement axis in that regime unswept. This section crosses the two and reports what the cross
+actually says, which is neither lane's expectation.
+
+### 31a. The discriminator, because neither the score nor the multiset is one
+
+A statement move legitimately reshuffles volatile registers and slides an address base's
+materialisation without touching a single named local's home: in the no-reuse control that
+happens in 80 of 100 orders. A raw instruction-multiset comparison therefore reports "the
+assignment moved" when nothing of the sort did. `tools/stmt_reuse_control.py` compares the
+**callee-saved band signature** instead — the stream restricted to lines mentioning `r14`-`r31`,
+every volatile abstracted to a placeholder — which moves if and only if a web's home moved. The
+tool's `--self-test` runs the positive control that verdict needs: the same bodies swept on
+*declaration* order, where the signature must move. **50 of 50 ASSIGN.** Without that arm a flat
+statement-order result is indistinguishable from a blind instrument.
+
+### 31b. Reuse is NOT what decides it — the run's SHAPE is
+
+| regime | what it varies | 100 statement orders |
+|---|---|---|
+| `noreuse` 6 locals under the band | — | 0 ASSIGN (80 SCRATCH / 20 ORDER) |
+| `reuse` 21 locals over the band | the allocator must host 2+ webs per register | **0 ASSIGN** |
+| `stagger` 21 locals, the run's ten webs die at ten different points | live ranges change by ten different amounts | **0 ASSIGN** |
+| `hetero` 20 locals, the run's eight statements have eight different SHAPES | — | **81 ASSIGN** |
+
+So the reuse regime does not break §27's law and the live-range story behind this lane's brief is
+wrong. What breaks it is that §27's control — and the first three regimes here — permute
+statements that are structurally interchangeable (`ci = gT[n+i]`, eight times over). No
+permutation of interchangeable statements can change which webs interfere or what the value
+numberer sees. Give the run's members different shapes and the band moves.
+
+### 31c. The real-code arm, which is the one that decides
+
+A synthetic can only show the axis reaches the band in *some* body. `stmt_reuse_control.py
+--real` permutes dependence-legal statement runs in eight sub-100 rows, rebuilds the unit,
+disassembles the symbol out of the unit's own object and compares band signatures — no score
+anywhere in the loop. **64 permutations, 31 ASSIGN / 33 BAND-HELD.** `debugPrintDrawRecord` moves
+on 8 of 8; one reorder there takes `x0` from `r24` to `r25`, changes the per-register definition
+profile (`r23` 9->5, `r25` 7->9) and even reselects instructions (`cmplwi r23,2; addi r23,r23,-2`
+becomes `addi r24,rS,2`). **Statement order is a source key for the register assignment.** §26's
+"the two hit sets are disjoint because the tools attack two different buckets" is the wrong
+reason for a right observation.
+
+### 31d. And both order axes are nevertheless exhausted on this frontier
+
+Correcting the mechanism does not move the score, because the tree already sits at the optimum of
+both axes. Population re-derived at `e501a44f87`: `perm_class_scan` NOTPERM 36 / NONFUNC 27 /
+NONINJ 4 = **67 rows / 113 512 B** (A99's total to the byte; one row had moved between its two
+buckets). 14 owner-hot, 3 banked, **12 have no reorderable assignment run at all** — which is not
+the same reading as cleared — leaving 37 sweepable.
+
+| sweep | rows | probes | hits |
+|---|---|---|---|
+| `stmt_sweep --strategy all --max-variants 400` (every run, every scope) | 37 | **5 717** | **0** |
+| `decl_split_sweep --strategy all --apply-best` | 40 attempted, **8** with a split-enlarged neighbourhood | 503 | **0** |
+| `expr_sweep --greedy` over the FPR-only rows | 12 | **381 semantically-cleared rewrites** | **0** |
+| `brute_match --strategy all` on the one workable saved-FPR row | 1 | 399 | 0 |
+
+0 build failures, 0 parse failures, 0 misparses, 0 non-zero exits other than the honest "no block
+whose legal neighbourhood the split enlarges" (32 of 40 rows). Every split control that ran was
+**BYTE-IDENTICAL**, so the split itself remains free. Total **7 000 orderings and rewrites, zero
+bytes recovered.**
+
+### 31e. The float band obeys the same reuse law, and #82 is confirmed unreachable by declaration
+
+`tools/fpr_reuse_control.py` is A99's experiment with `float` locals and an FPR-aware classifier:
+**9 locals under the band -> 120 of 120 PERM; 24 locals over it -> 120 of 120 NONFUNC.** The reuse
+regime is not an integer-side phenomenon. And the number that matters for #82: across both
+regimes, **8 085 differing FPR operands, 0 of them in `f0`-`f13`.** A declaration-order change
+never touches the volatile half of the float file, so a scratch-FPR residual is not
+declaration-reachable — measured, not argued.
+
+**An instrument trap this uncovered.** MWCC saves and restores FPRs one instruction per register
+in this configuration (there is no `_savefpr` helper, unlike `_savegpr`), so the prologue names
+the saved *set*. Two colourings using the same set have an identical save block, and re-applying
+a value map to it can never match — which makes a plain whole-stream permutation check report
+**NOTPERM on every float colouring difference**. `fpr_reuse_control` excludes `stfd/lfd/psq_st/
+psq_l fN,imm(r1)` from the re-application test; without that exclusion the no-reuse regime reads
+30/30 NOTPERM instead of 30/30 PERM.
+
+**And a consequence for the standing partition.** `perm_class_scan.permutation` abstracts only
+`r` names, so a row differing solely in an `f` operand fails its operand-text comparison and is
+filed under **OPERAND**. A99 read that bucket as frame size (#67); it is that *and* every float
+colouring row in the tree. Re-censusing the 204 sub-100 rows by which register class the whole
+residual touches gives LENDIFF 46 / GPR-only 86 / MNEMONIC-or-OPERAND 55 / mixed FPR+GPR 2 /
+**FPR-ONLY 15 rows, 18 820 B** — of which **13 are volatile-only (16 156 B)** and only two touch a
+saved FPR. (The brief carried "11 rows / 13 952 B"; the measured figure is 15 / 18 820.)
+
+### 31f. Arithmetic corrections carried into this window
+
+* **Informative completion is 910 of 1000, not 910 of 1005.** 1043 units; 38 `main/auto_*` are
+  vacuous (`total_data` 2 342 B present, `matched_data` absent, no `total_code`, none complete)
+  and 5 more report 100.0 and `complete` with no code, no data and no functions (`AX`,
+  `MWCriticalSection_gc`, `OSExec`, `synth_sequence`, `synth_seq_queue`). 1005 drops only the
+  auto units while 910 already has the 5 removed; the consistent pair is **910 of 1000**.
+  Raw 915 of 1043 is correct.
+* The FPR-only population above.
