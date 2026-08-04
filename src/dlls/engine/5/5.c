@@ -2100,7 +2100,7 @@ void skyUpdateEnvfxAct(int a, int b, u8* cfg)
     u8 mask;
     int iofs;
     int i;
-    u8* p4;
+    SkyState* slot;
     u32 cloudMode;
     int vis;
     int tmp;
@@ -2138,49 +2138,49 @@ void skyUpdateEnvfxAct(int a, int b, u8* cfg)
             if ((mask & (1 << i)) != 0)
             {
                 envp[2] = (s16)((Sky2Config*)cfg)->envfxActId - 1;
-                *(f32*)(gSkyState + iofs + 0x20) = (f32)(u32)((Sky2Config*)cfg)->redKeys[0];
-                *(f32*)(gSkyState + iofs + 0x24) = (f32)(u32)((Sky2Config*)cfg)->redKeys[0];
-                *(f32*)(gSkyState + iofs + 0x28) = (f32)(u32)((Sky2Config*)cfg)->redKeys[1];
-                *(f32*)(gSkyState + iofs + 0x2c) = (f32)(u32)((Sky2Config*)cfg)->redKeys[2];
-                *(f32*)(gSkyState + iofs + 0x30) = (f32)(u32)((Sky2Config*)cfg)->redKeys[3];
-                *(f32*)(gSkyState + iofs + 0x34) = (f32)(u32)((Sky2Config*)cfg)->redKeys[0];
-                *(f32*)(gSkyState + iofs + 0x38) = (f32)(u32)((Sky2Config*)cfg)->redKeys[0];
-                *(f32*)(gSkyState + iofs + 0x3c) = (f32)(u32)((Sky2Config*)cfg)->greenKeys[0];
-                *(f32*)(gSkyState + iofs + 0x40) = (f32)(u32)((Sky2Config*)cfg)->greenKeys[0];
-                *(f32*)(gSkyState + iofs + 0x44) = (f32)(u32)((Sky2Config*)cfg)->greenKeys[1];
-                *(f32*)(gSkyState + iofs + 0x48) = (f32)(u32)((Sky2Config*)cfg)->greenKeys[2];
-                *(f32*)(gSkyState + iofs + 0x4c) = (f32)(u32)((Sky2Config*)cfg)->greenKeys[3];
-                *(f32*)(gSkyState + iofs + 0x50) = (f32)(u32)((Sky2Config*)cfg)->greenKeys[0];
-                *(f32*)(gSkyState + iofs + 0x54) = (f32)(u32)((Sky2Config*)cfg)->greenKeys[0];
-                *(f32*)(gSkyState + iofs + 0x58) = (f32)(u32)((Sky2Config*)cfg)->blueKeys[0];
-                *(f32*)(gSkyState + iofs + 0x5c) = (f32)(u32)((Sky2Config*)cfg)->blueKeys[0];
-                *(f32*)(gSkyState + iofs + 0x60) = (f32)(u32)((Sky2Config*)cfg)->blueKeys[1];
-                *(f32*)(gSkyState + iofs + 0x64) = (f32)(u32)((Sky2Config*)cfg)->blueKeys[2];
-                *(f32*)(gSkyState + iofs + 0x68) = (f32)(u32)((Sky2Config*)cfg)->blueKeys[3];
-                *(f32*)(gSkyState + iofs + 0x6c) = (f32)(u32)((Sky2Config*)cfg)->blueKeys[0];
-                *(f32*)(gSkyState + iofs + 0x70) = (f32)(u32)((Sky2Config*)cfg)->blueKeys[0];
-                *(f32*)(gSkyState + iofs + 0xb8) = 1.0f;
+                ((SkyState*)(gSkyState + iofs))->lights[0].redCurve[0] = (f32)(u32)((Sky2Config*)cfg)->redKeys[0];
+                ((SkyState*)(gSkyState + iofs))->lights[0].redCurve[1] = (f32)(u32)((Sky2Config*)cfg)->redKeys[0];
+                ((SkyState*)(gSkyState + iofs))->lights[0].redCurve[2] = (f32)(u32)((Sky2Config*)cfg)->redKeys[1];
+                ((SkyState*)(gSkyState + iofs))->lights[0].redCurve[3] = (f32)(u32)((Sky2Config*)cfg)->redKeys[2];
+                ((SkyState*)(gSkyState + iofs))->lights[0].redCurve[4] = (f32)(u32)((Sky2Config*)cfg)->redKeys[3];
+                ((SkyState*)(gSkyState + iofs))->lights[0].redCurve[5] = (f32)(u32)((Sky2Config*)cfg)->redKeys[0];
+                ((SkyState*)(gSkyState + iofs))->lights[0].redCurve[6] = (f32)(u32)((Sky2Config*)cfg)->redKeys[0];
+                ((SkyState*)(gSkyState + iofs))->lights[0].greenCurve[0] = (f32)(u32)((Sky2Config*)cfg)->greenKeys[0];
+                ((SkyState*)(gSkyState + iofs))->lights[0].greenCurve[1] = (f32)(u32)((Sky2Config*)cfg)->greenKeys[0];
+                ((SkyState*)(gSkyState + iofs))->lights[0].greenCurve[2] = (f32)(u32)((Sky2Config*)cfg)->greenKeys[1];
+                ((SkyState*)(gSkyState + iofs))->lights[0].greenCurve[3] = (f32)(u32)((Sky2Config*)cfg)->greenKeys[2];
+                ((SkyState*)(gSkyState + iofs))->lights[0].greenCurve[4] = (f32)(u32)((Sky2Config*)cfg)->greenKeys[3];
+                ((SkyState*)(gSkyState + iofs))->lights[0].greenCurve[5] = (f32)(u32)((Sky2Config*)cfg)->greenKeys[0];
+                ((SkyState*)(gSkyState + iofs))->lights[0].greenCurve[6] = (f32)(u32)((Sky2Config*)cfg)->greenKeys[0];
+                ((SkyState*)(gSkyState + iofs))->lights[0].blueCurve[0] = (f32)(u32)((Sky2Config*)cfg)->blueKeys[0];
+                ((SkyState*)(gSkyState + iofs))->lights[0].blueCurve[1] = (f32)(u32)((Sky2Config*)cfg)->blueKeys[0];
+                ((SkyState*)(gSkyState + iofs))->lights[0].blueCurve[2] = (f32)(u32)((Sky2Config*)cfg)->blueKeys[1];
+                ((SkyState*)(gSkyState + iofs))->lights[0].blueCurve[3] = (f32)(u32)((Sky2Config*)cfg)->blueKeys[2];
+                ((SkyState*)(gSkyState + iofs))->lights[0].blueCurve[4] = (f32)(u32)((Sky2Config*)cfg)->blueKeys[3];
+                ((SkyState*)(gSkyState + iofs))->lights[0].blueCurve[5] = (f32)(u32)((Sky2Config*)cfg)->blueKeys[0];
+                ((SkyState*)(gSkyState + iofs))->lights[0].blueCurve[6] = (f32)(u32)((Sky2Config*)cfg)->blueKeys[0];
+                ((SkyState*)(gSkyState + iofs))->lights[0].blendFactor = 1.0f;
                 if (((Sky2Config*)cfg)->fadeDurationA != 0)
                 {
-                    *(f32*)(gSkyState + iofs + 0xb4) =
+                    ((SkyState*)(gSkyState + iofs))->lights[0].blendRate =
                         1.0f / (10.0f * (f32)(u32)((Sky2Config*)cfg)->fadeDurationA);
                 }
                 else
                 {
-                    *(f32*)(gSkyState + iofs + 0xb4) = 1.0f;
+                    ((SkyState*)(gSkyState + iofs))->lights[0].blendRate = 1.0f;
                 }
-                p4 = gSkyState + iofs;
+                slot = (SkyState*)(gSkyState + iofs);
                 if (gSkyState == NULL)
                 {
-                    p4[0x76] = 0xff;
-                    p4[0x75] = 0xff;
-                    p4[0x74] = 0xff;
+                    slot->lights[0].blendTargetB = 0xff;
+                    slot->lights[0].blendTargetG = 0xff;
+                    slot->lights[0].blendTargetR = 0xff;
                 }
                 else
                 {
-                    p4[0x74] = p4[0x78];
-                    p4[0x75] = gSkyState[iofs + 0x79];
-                    p4[0x76] = gSkyState[iofs + 0x7a];
+                    slot->lights[0].blendTargetR = slot->lights[0].sunColorR;
+                    slot->lights[0].blendTargetG = ((SkyState*)(gSkyState + iofs))->lights[0].sunColorG;
+                    slot->lights[0].blendTargetB = ((SkyState*)(gSkyState + iofs))->lights[0].sunColorB;
                 }
                 if (((Sky2Config*)cfg)->cloudBlendMode != 0)
                 {
