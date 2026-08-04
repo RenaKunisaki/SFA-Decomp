@@ -215,25 +215,25 @@ void DIMbossspit_update(GameObject* obj) {
 }
 
 void DIMbossspit_init(GameObject* obj) {
-    u8* state = obj->extra;
+    DIMbossSpitState* state = obj->extra;
 
-    ((DIMbossSpitState*)state)->light = objCreateLight(obj, 1);
-    if (((DIMbossSpitState*)state)->light != NULL) {
-        modelLightStruct_setLightKind(((DIMbossSpitState*)state)->light, MODEL_LIGHT_KIND_POINT);
-        modelLightStruct_setDiffuseColor(((DIMbossSpitState*)state)->light, 0, 255, 0, 0);
-        modelLightStruct_setSpecularColor(((DIMbossSpitState*)state)->light, 0, 255, 0, 0);
-        modelLightStruct_setDistanceAttenuation(((DIMbossSpitState*)state)->light, 180.0f, 200.0f);
-        lightSetField4D(((DIMbossSpitState*)state)->light, 1);
-        modelLightStruct_setEnabled(((DIMbossSpitState*)state)->light, 1, 0.0f);
-        modelLightStruct_setAffectsAabbLightSelection(((DIMbossSpitState*)state)->light, 1);
-        modelLightStruct_setupGlow(((DIMbossSpitState*)state)->light, 0, 0, 255, 0, 127, 50.0f);
-        modelLightStruct_setGlowProjectionRadius(((DIMbossSpitState*)state)->light, 100.0f);
+    state->light = objCreateLight(obj, 1);
+    if (state->light != NULL) {
+        modelLightStruct_setLightKind(state->light, MODEL_LIGHT_KIND_POINT);
+        modelLightStruct_setDiffuseColor(state->light, 0, 255, 0, 0);
+        modelLightStruct_setSpecularColor(state->light, 0, 255, 0, 0);
+        modelLightStruct_setDistanceAttenuation(state->light, 180.0f, 200.0f);
+        lightSetField4D(state->light, 1);
+        modelLightStruct_setEnabled(state->light, 1, 0.0f);
+        modelLightStruct_setAffectsAabbLightSelection(state->light, 1);
+        modelLightStruct_setupGlow(state->light, 0, 0, 255, 0, 127, 50.0f);
+        modelLightStruct_setGlowProjectionRadius(state->light, 100.0f);
     }
     obj->userData1 = DIMBOSSSPIT_LIFETIME_FRAMES;
     ObjHits_SetHitVolumeSlot(&obj->anim, 0, 0, 0);
     ObjHitbox_SetSphereRadius(&obj->anim, 0);
-    ((DIMbossSpitState*)state)->phase = DIMBOSSSPIT_PHASE_FLIGHT;
-    ((DIMbossSpitState*)state)->unknown02 = 0;
+    state->phase = DIMBOSSSPIT_PHASE_FLIGHT;
+    state->unknown02 = 0;
     ObjHits_EnableObject(obj);
     ObjModel_SetPostRenderCallback(Obj_GetActiveModel(obj), postRenderSetAlphaBlendState);
 }

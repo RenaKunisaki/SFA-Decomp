@@ -108,7 +108,7 @@ void SB_ShipHead_update(GameObject* obj) {
     int cameraState;
     int objectIndex;
     int result;
-    u8* placementBytes;
+    ObjPlacement* placementBytes;
     GameObject* hit;
     int messageParam;
     f32 spawnX;
@@ -194,15 +194,15 @@ void SB_ShipHead_update(GameObject* obj) {
         Obj_GetWorldPosition(obj, &spawnX, &spawnY, &spawnZ);
         object->anim.localPosY = object->anim.localPosY - 50.0f;
         object->anim.localPosZ += 300.0f;
-        placementBytes = (u8*)Obj_AllocObjectSetup(0x18, SB_FIREBALL_OBJECT_ID);
-        ((ObjPlacement*)placementBytes)->color[2] = 0xff;
-        ((ObjPlacement*)placementBytes)->color[3] = 0xff;
-        ((ObjPlacement*)placementBytes)->color[0] = 2;
-        ((ObjPlacement*)placementBytes)->color[1] = 1;
-        ((ObjPlacement*)placementBytes)->posX = spawnX;
-        ((ObjPlacement*)placementBytes)->posY = spawnY;
-        ((ObjPlacement*)placementBytes)->posZ = spawnZ;
-        result = (int)objSetupObject((ObjPlacement*)placementBytes, 5, -1, -1, 0);
+        placementBytes = (ObjPlacement*)Obj_AllocObjectSetup(0x18, SB_FIREBALL_OBJECT_ID);
+        placementBytes->color[2] = 0xff;
+        placementBytes->color[3] = 0xff;
+        placementBytes->color[0] = 2;
+        placementBytes->color[1] = 1;
+        placementBytes->posX = spawnX;
+        placementBytes->posY = spawnY;
+        placementBytes->posZ = spawnZ;
+        result = (int)objSetupObject(placementBytes, 5, -1, -1, 0);
         deltaX = player->anim.worldPosX - ((GameObject*)result)->anim.localPosX;
         deltaY = (player->anim.worldPosY - gSbShipHeadFireballSpeed) - ((GameObject*)result)->anim.localPosY;
         deltaZ = player->anim.worldPosZ - ((GameObject*)result)->anim.localPosZ;
@@ -216,15 +216,15 @@ void SB_ShipHead_update(GameObject* obj) {
     if ((firingCue == 1) && (Obj_IsLoadingLocked() != 0)) {
         Sfx_PlayFromObject((int)obj, SFXTRIG_gcexp1_c);
         player = Obj_GetPlayerObject();
-        placementBytes = (u8*)Obj_AllocObjectSetup(0x18, SB_PROJECTILE_OBJECT_ID);
-        ((ObjPlacement*)placementBytes)->posX = 100.0f + player->anim.worldPosX;
-        ((ObjPlacement*)placementBytes)->posY = 50.0f + (player->anim.worldPosY + (f32)randomGetRange(-6, 6));
-        ((ObjPlacement*)placementBytes)->posZ = 45.0f + (player->anim.worldPosZ + (f32)randomGetRange(-6, 6));
-        ((ObjPlacement*)placementBytes)->color[0] = 2;
-        ((ObjPlacement*)placementBytes)->color[1] = 1;
-        ((ObjPlacement*)placementBytes)->color[2] = 0xff;
-        ((ObjPlacement*)placementBytes)->color[3] = 0xff;
-        objSetupObject((ObjPlacement*)placementBytes, 5, -1, -1, 0);
+        placementBytes = (ObjPlacement*)Obj_AllocObjectSetup(0x18, SB_PROJECTILE_OBJECT_ID);
+        placementBytes->posX = 100.0f + player->anim.worldPosX;
+        placementBytes->posY = 50.0f + (player->anim.worldPosY + (f32)randomGetRange(-6, 6));
+        placementBytes->posZ = 45.0f + (player->anim.worldPosZ + (f32)randomGetRange(-6, 6));
+        placementBytes->color[0] = 2;
+        placementBytes->color[1] = 1;
+        placementBytes->color[2] = 0xff;
+        placementBytes->color[3] = 0xff;
+        objSetupObject(placementBytes, 5, -1, -1, 0);
     }
     result = ObjAnim_AdvanceCurrentMove((int)obj, gSbShipHeadAnimAdvanceRate, timeDelta, NULL);
     if ((object->anim.currentMove == 1) && (result != 0)) {
