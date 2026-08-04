@@ -6879,27 +6879,27 @@ int Tricky_getExtraSize(void) {
 void Tricky_free(GameObject* obj, int shouldKeepFlameChildren) {
     int i;
     int childSlot;
-    int state;
+    TrickyState* state;
     u32 objId = (u32)obj;
 
-    state = (int)obj->extra;
-    freeAndNull((void**)&((TrickyState*)state)->pathSearches[0].nodes);
-    freeAndNull((void**)&((TrickyState*)state)->pathSearches[1].nodes);
-    freeAndNull((void**)&((TrickyState*)state)->pathSearches[2].nodes);
-    freeAndNull((void**)&((TrickyState*)state)->pathSearches[3].nodes);
-    freeAndNull((void**)&((TrickyState*)state)->pathSearches[4].nodes);
-    freeAndNull((void**)&((TrickyState*)state)->pathSearches[5].nodes);
-    freeAndNull((void**)&((TrickyState*)state)->pathSearches[6].nodes);
-    freeAndNull((void**)&((TrickyState*)state)->pathSearches[7].nodes);
-    freeAndNull((void**)&((TrickyState*)state)->pathSearches[8].nodes);
+    state = obj->extra;
+    freeAndNull((void**)&state->pathSearches[0].nodes);
+    freeAndNull((void**)&state->pathSearches[1].nodes);
+    freeAndNull((void**)&state->pathSearches[2].nodes);
+    freeAndNull((void**)&state->pathSearches[3].nodes);
+    freeAndNull((void**)&state->pathSearches[4].nodes);
+    freeAndNull((void**)&state->pathSearches[5].nodes);
+    freeAndNull((void**)&state->pathSearches[6].nodes);
+    freeAndNull((void**)&state->pathSearches[7].nodes);
+    freeAndNull((void**)&state->pathSearches[8].nodes);
     objFreeObjectType((int)obj, TRICKY_OBJGROUP);
     (*gExpgfxInterface)->freeSource(objId);
     if ((shouldKeepFlameChildren == 0) &&
-        ((((TrickyState*)state)->stateFlags & TRICKY_STATE_FLAG_CHILDREN_ACTIVE) != 0)) {
-        ((TrickyState*)state)->stateFlags = ((TrickyState*)state)->stateFlags & ~(u64)TRICKY_STATE_FLAG_CHILDREN_ACTIVE;
-        ((TrickyState*)state)->stateFlags = ((TrickyState*)state)->stateFlags | TRICKY_STATE_FLAG_CHILDREN_CLEANUP;
+        ((state->stateFlags & TRICKY_STATE_FLAG_CHILDREN_ACTIVE) != 0)) {
+        state->stateFlags = state->stateFlags & ~(u64)TRICKY_STATE_FLAG_CHILDREN_ACTIVE;
+        state->stateFlags = state->stateFlags | TRICKY_STATE_FLAG_CHILDREN_CLEANUP;
         i = 0;
-        childSlot = state;
+        childSlot = (int)state;
         do {
             objSetAnimSpeedTo1((GameObject*)((TrickyState*)childSlot)->scratch700.ptr);
             childSlot = childSlot + 4;
@@ -6915,15 +6915,15 @@ void Tricky_free(GameObject* obj, int shouldKeepFlameChildren) {
     }
     doNothing_onTrickyFree();
     objAnimFreeChildren(obj, (TrickyState*)state,
-                        &((TrickyState*)state)->childA);
+                        &state->childA);
     objAnimFreeChildren(obj, (TrickyState*)state,
-                        &((TrickyState*)state)->childB);
-    objAnimFreeChildren(obj, (TrickyState*)state, (GameObject**)&((TrickyState*)state)->child);
-    if ((void*)((TrickyState*)state)->spawnedChild != NULL) {
-        ObjLink_DetachChild(obj, ((TrickyState*)state)->spawnedChild);
-        Obj_FreeObject((GameObject*)((TrickyState*)state)->spawnedChild);
+                        &state->childB);
+    objAnimFreeChildren(obj, (TrickyState*)state, (GameObject**)&state->child);
+    if ((void*)state->spawnedChild != NULL) {
+        ObjLink_DetachChild(obj, state->spawnedChild);
+        Obj_FreeObject((GameObject*)state->spawnedChild);
     }
-    if ((((TrickyState*)state)->statusFlag7 != 0u) && (gTrickyHelperObject != 0)) {
+    if ((state->statusFlag7 != 0u) && (gTrickyHelperObject != 0)) {
         Obj_FreeObject((GameObject*)gTrickyHelperObject);
         gTrickyHelperObject = 0;
     }

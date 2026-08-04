@@ -447,27 +447,27 @@ void firecrawler_spawnProjectile(GameObject* obj, u8* state)
     if (locked != 0)
     {
         GameObject* child;
-        int setup = (int)Obj_AllocObjectSetup(0x24, FIRECRAWLER_PROJECTILE_OBJ);
-        ObjPath_GetPointWorldPosition(obj, 0, (f32*)(setup + 8), (f32*)(setup + 0xc), (f32*)(setup + 0x10),
+        ObjPlacement* setup = Obj_AllocObjectSetup(0x24, FIRECRAWLER_PROJECTILE_OBJ);
+        ObjPath_GetPointWorldPosition(obj, 0, (f32*)((u8*)setup + 8), (f32*)((u8*)setup + 0xc), (f32*)((u8*)setup + 0x10),
                                       0);
-        ((ObjPlacement*)setup)->color[0] = 1;
-        ((ObjPlacement*)setup)->color[1] = 4;
-        ((ObjPlacement*)setup)->color[2] = 0xff;
-        ((ObjPlacement*)setup)->color[3] = 0xff;
+        setup->color[0] = 1;
+        setup->color[1] = 4;
+        setup->color[2] = 0xff;
+        setup->color[3] = 0xff;
         child = (GameObject*)((int)objSetupObject((ObjPlacement*)setup, 5, -1, -1, 0));
         if ((u32)child != 0)
         {
             f32 dur = 60.0f * ((f32)((EnemyState*)state)->targetDist / ((EnemyState*)state)->aggroRange);
             child->anim.velocityX = (((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosX -
-                                                    ((ObjPlacement*)setup)->posX) /
+                                                    setup->posX) /
                                                    dur;
             child->anim.velocityY =
                 ((30.0f + ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosY +
                   (f32)(int)randomGetRange(-10, 10)) -
-                 ((ObjPlacement*)setup)->posY) /
+                 setup->posY) /
                 dur;
             child->anim.velocityZ = (((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosZ -
-                                                    ((ObjPlacement*)setup)->posZ) /
+                                                    setup->posZ) /
                                                    dur;
         }
         Sfx_PlayFromObject(obj, SFXTRIG_en_cvdrip1c_4ae);

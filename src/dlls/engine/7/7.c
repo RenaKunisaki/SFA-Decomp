@@ -723,7 +723,7 @@ static const SnowFlakeUVs kSnowFlakeUVs = {{-48, 0, 176, 0, 64, 256}};
 
 int snowPrintSnowCloud(void* arg, int cloudId)
 {
-    u8* p;
+    NewCloud* p;
     SnowFlake* part;
     int i;
     int j;
@@ -771,18 +771,18 @@ int snowPrintSnowCloud(void* arg, int cloudId)
     }
     for (i = 0; i < 8; i++)
     {
-        p = (u8*)gNewClouds[i];
-        if (p != NULL && cloudId == ((NewCloud*)p)->cloudId)
+        p = gNewClouds[i];
+        if (p != NULL && cloudId == p->cloudId)
         {
             break;
         }
     }
-    p = (u8*)gNewClouds[i];
+    p = gNewClouds[i];
     if (p == NULL || i == 8)
     {
         return 0;
     }
-    if (cloudId != ((NewCloud*)p)->cloudId)
+    if (cloudId != p->cloudId)
     {
         debugPrintf(sSnowPrintSnowCloudInvalidCloudId, cloudId);
         return 0;
@@ -799,8 +799,8 @@ int snowPrintSnowCloud(void* arg, int cloudId)
     mtxB[5] = 1.0f;
     mtxB[10] = 1.0f;
     mtxB[15] = 1.0f;
-    ct = ((NewCloud*)p)->cloudType;
-    if (ct != 4 && ((NewCloud*)p)->spinEnabled != 0)
+    ct = p->cloudType;
+    if (ct != 4 && p->spinEnabled != 0)
     {
         mtxB[0] = mathCosf((3.14159265f * gNewCloudFlashRotAngle) / 32768.0f);
         mtxB[1] = -mathSinf((3.14159265f * gNewCloudFlashRotAngle) / 32768.0f);
@@ -809,41 +809,41 @@ int snowPrintSnowCloud(void* arg, int cloudId)
     }
     else if (ct == 4)
     {
-        if (((NewCloud*)p)->flags144A & NEWCLOUD_CMD_ROTFIXED)
+        if (p->flags144A & NEWCLOUD_CMD_ROTFIXED)
         {
             mtxB[0] = mathCosf(-0.5752428f);
             mtxB[1] = -mathSinf(-0.5752428f);
             mtxB[4] = mathSinf(-0.5752428f);
             mtxB[5] = mathCosf(-0.5752428f);
         }
-        else if (((NewCloud*)p)->spinEnabled != 0)
+        else if (p->spinEnabled != 0)
         {
             gNewCloudFlashRotAngle =
-                6000.0f * (((NewCloud*)p)->driftOffset / 10.0f) + 3000.0f;
+                6000.0f * (p->driftOffset / 10.0f) + 3000.0f;
             mtxB[0] = mathCosf((3.14159265f *  - gNewCloudFlashRotAngle) / 32768.0f);
             mtxB[1] = -mathSinf((3.14159265f *  - gNewCloudFlashRotAngle) / 32768.0f);
             mtxB[4] = mathSinf((3.14159265f *  - gNewCloudFlashRotAngle) / 32768.0f);
             mtxB[5] = mathCosf((3.14159265f *  - gNewCloudFlashRotAngle) / 32768.0f);
         }
     }
-    mtxB[12] = ((NewCloud*)p)->worldPosX - playerMapOffsetX;
-    mtxB[13] = ((NewCloud*)p)->worldPosY;
-    mtxB[14] = ((NewCloud*)p)->worldPosZ - playerMapOffsetZ;
+    mtxB[12] = p->worldPosX - playerMapOffsetX;
+    mtxB[13] = p->worldPosY;
+    mtxB[14] = p->worldPosZ - playerMapOffsetZ;
     mtx44_mult(mtxA, mtxB, mtxOut);
     mtx44Transpose(mtxOut, mtxT);
     PSMTXConcat((MtxPtr)Camera_GetViewMatrix(), (MtxPtr)mtxT, (MtxPtr)mtxT);
     GXLoadPosMtxImm((MtxPtr)mtxT, GX_PNMTX0);
     texIdx = 0;
-    selectTexture((Texture*)(((NewCloud*)p)->cloudType == 0 ? gNewCloudLayerTextures[0] : gNewCloudType1Texture), 0);
+    selectTexture((Texture*)(p->cloudType == 0 ? gNewCloudLayerTextures[0] : gNewCloudType1Texture), 0);
     GXSetCullMode(GX_CULL_NONE);
     gxTevResetStages();
     gxTevTextureTimesColor1Stage();
     gxTevCommitStages();
-    if (((NewCloud*)p)->cloudType == 4)
+    if (p->cloudType == 4)
     {
         setTextColor(arg, 0x7d, 0x7d, 0x9b, 0xff);
     }
-    else if (((NewCloud*)p)->cloudType == 0)
+    else if (p->cloudType == 0)
     {
         skyGetSunColor(0, &attr.cr, &attr.cg, &attr.cb);
         setTextColor(arg, attr.cr, attr.cg, attr.cb, 0xff);
@@ -859,63 +859,63 @@ int snowPrintSnowCloud(void* arg, int cloudId)
     GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
     GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
     hudHidden = getHudHiddenFrameCount();
-    driftX = SNOW_FLAKE_SIZE * (((NewCloud*)p)->curPosX - ((NewCloud*)p)->lastPosX);
-    stepX = (driftX < 0.5f * ((NewCloud*)p)->flakeMinX)
-                ? 0.5f * ((NewCloud*)p)->flakeMinX
-                : ((driftX > 0.5f * ((NewCloud*)p)->driftSpeed)
-                       ? 0.5f * ((NewCloud*)p)->driftSpeed
+    driftX = SNOW_FLAKE_SIZE * (p->curPosX - p->lastPosX);
+    stepX = (driftX < 0.5f * p->flakeMinX)
+                ? 0.5f * p->flakeMinX
+                : ((driftX > 0.5f * p->driftSpeed)
+                       ? 0.5f * p->driftSpeed
                        : driftX);
-    driftZ = SNOW_FLAKE_SIZE * (((NewCloud*)p)->curPosZ - ((NewCloud*)p)->lastPosZ);
-    stepZ = (driftZ < 0.5f * ((NewCloud*)p)->flakeMinZ)
-                ? 0.5f * ((NewCloud*)p)->flakeMinZ
-                : ((driftZ > 0.5f * ((NewCloud*)p)->flakeMaxZ)
-                       ? 0.5f * ((NewCloud*)p)->flakeMaxZ
+    driftZ = SNOW_FLAKE_SIZE * (p->curPosZ - p->lastPosZ);
+    stepZ = (driftZ < 0.5f * p->flakeMinZ)
+                ? 0.5f * p->flakeMinZ
+                : ((driftZ > 0.5f * p->flakeMaxZ)
+                       ? 0.5f * p->flakeMaxZ
                        : driftZ);
-    if (((NewCloud*)p)->cloudType == 4)
+    if (p->cloudType == 4)
     {
-        GXBegin(GX_TRIANGLES, GX_VTXFMT4, (((NewCloud*)p)->flakeCount * 3));
+        GXBegin(GX_TRIANGLES, GX_VTXFMT4, (p->flakeCount * 3));
     }
     else
     {
-        GXBegin(GX_TRIANGLES, GX_VTXFMT4, (((NewCloud*)p)->flakeCount * 3 / 4));
+        GXBegin(GX_TRIANGLES, GX_VTXFMT4, (p->flakeCount * 3 / 4));
     }
-    for (j = 0, part = ((NewCloud*)p)->flakes; j < ((NewCloud*)p)->flakeCount; j++)
+    for (j = 0, part = p->flakes; j < p->flakeCount; j++)
     {
         if (part->texLayer != (u8)texIdx)
         {
             texIdx = part->texLayer;
             selectTexture(gNewCloudLayerTextures[texIdx], 0);
-            GXBegin(GX_TRIANGLES, GX_VTXFMT4, (((NewCloud*)p)->flakeCount * 3 / 4));
+            GXBegin(GX_TRIANGLES, GX_VTXFMT4, (p->flakeCount * 3 / 4));
         }
         if (hudHidden == 0)
         {
-            if (((NewCloud*)p)->stationary == 0)
+            if (p->stationary == 0)
             {
                 part->x = part->x + stepX;
                 part->z = part->z + stepZ;
             }
-            part->x = ((NewCloud*)p)->windVelX * timeDelta + part->x;
-            part->z = ((NewCloud*)p)->windVelZ * timeDelta + part->z;
-            if (part->x < ((NewCloud*)p)->flakeMinX)
+            part->x = p->windVelX * timeDelta + part->x;
+            part->z = p->windVelZ * timeDelta + part->z;
+            if (part->x < p->flakeMinX)
             {
-                part->x = 2.0f * ((NewCloud*)p)->driftSpeed + part->x;
+                part->x = 2.0f * p->driftSpeed + part->x;
             }
-            else if (part->x > ((NewCloud*)p)->driftSpeed)
+            else if (part->x > p->driftSpeed)
             {
-                part->x = part->x - 2.0f * ((NewCloud*)p)->driftSpeed;
+                part->x = part->x - 2.0f * p->driftSpeed;
             }
-            if (part->z < ((NewCloud*)p)->flakeMinZ)
+            if (part->z < p->flakeMinZ)
             {
                 part->z =
-                    2.0f * ((NewCloud*)p)->flakeMaxZ + part->z;
+                    2.0f * p->flakeMaxZ + part->z;
             }
-            else if (part->z > ((NewCloud*)p)->flakeMaxZ)
+            else if (part->z > p->flakeMaxZ)
             {
                 part->z =
-                    part->z - 2.0f * ((NewCloud*)p)->flakeMaxZ;
+                    part->z - 2.0f * p->flakeMaxZ;
             }
         }
-        yb = part->y - *(f32*)(p + part->angle * 4 + 8);
+        yb = part->y - *(f32*)((u8*)p + part->angle * 4 + 8);
         quadOffsetX = ((f32*)p)[part->quadIndex * 11 + 1026];
         vx[0] = quadOffsetX * part->fallSpeed + part->x;
         quadOffsetY = ((f32*)p)[part->quadIndex * 11 + 1029];

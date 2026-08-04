@@ -714,7 +714,7 @@ void* gShopKeeperDefaultStateHandler;
 
 int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
 {
-    int state;
+    ShopkeeperState* state;
     int digit;
     int slot;
     int i;
@@ -726,13 +726,13 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
     f32 range;
     f32 speed;
 
-    state = *(int*)&(obj)->extra;
+    state = (ShopkeeperState*)*(int*)&(obj)->extra;
     /* second copy of the extra pointer */
     state2 = (ShopkeeperState*)(long)*(int*)&(obj)->extra;
     player = Obj_GetPlayerObject();
     range = 1.0f;
-    ((ShopkeeperState*)state)->flags9D4 &= ~SHOPKEEPER_FLAG_TICK;
-    if (((ShopkeeperState*)state)->flags9D4 & SHOPKEEPER_FLAG_LEAVING)
+    state->flags9D4 &= ~SHOPKEEPER_FLAG_TICK;
+    if (state->flags9D4 & SHOPKEEPER_FLAG_LEAVING)
     {
         if ((*gScreenTransitionInterface)->isFinished() != 0)
         {
@@ -741,7 +741,7 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
         }
         return 0;
     }
-    if (dll_2E_updateSequenceTurn(obj, seq, &((ShopkeeperState*)state)->moveLib, 0, 0) != 0)
+    if (dll_2E_updateSequenceTurn(obj, seq, &state->moveLib, 0, 0) != 0)
     {
         return 1;
     }
@@ -749,7 +749,7 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
     seq->flags &= ~0x20;
     speed = 0.0f;
     state2->baddie.animSpeedA = speed;
-    ((ShopkeeperState*)state)->flags9D4 |= SHOPKEEPER_FLAG_FACING;
+    state->flags9D4 |= SHOPKEEPER_FLAG_FACING;
     if (advance != 0)
     {
         ObjAnim_AdvanceCurrentMove((int)obj, speed, timeDelta, NULL);
@@ -758,19 +758,19 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
     {
         if (seq->movementState != 0)
         {
-            slot = SHOP_INTERFACE(((ShopkeeperState*)state)->vendorObj)
-                       ->getItemIndex((GameObject*)((ShopkeeperState*)state)->vendorObj);
+            slot = SHOP_INTERFACE(state->vendorObj)
+                       ->getItemIndex((GameObject*)state->vendorObj);
             if (slot != -1)
             {
-                ((ShopkeeperState*)state)->price =
-                    (s16)SHOP_INTERFACE(((ShopkeeperState*)state)->vendorObj)
-                        ->getItemPrice((GameObject*)((ShopkeeperState*)state)->vendorObj, slot);
-                ((ShopkeeperState*)state)->minPrice =
-                    (s16)SHOP_INTERFACE(((ShopkeeperState*)state)->vendorObj)
-                        ->getItemMinPrice((GameObject*)((ShopkeeperState*)state)->vendorObj, slot);
-                ((ShopkeeperState*)state)->priceShown = ((ShopkeeperState*)state)->price;
-                ((ShopkeeperState*)state)->haggleCount = 0;
-                digit = ((ShopkeeperState*)state)->price;
+                state->price =
+                    (s16)SHOP_INTERFACE(state->vendorObj)
+                        ->getItemPrice((GameObject*)state->vendorObj, slot);
+                state->minPrice =
+                    (s16)SHOP_INTERFACE(state->vendorObj)
+                        ->getItemMinPrice((GameObject*)state->vendorObj, slot);
+                state->priceShown = state->price;
+                state->haggleCount = 0;
+                digit = state->price;
                 tex = objFindTexture(obj, 8, 0);
                 tex->textureId = (digit % 10) * 0x100;
                 tex = objFindTexture(obj, 7, 0);
@@ -786,8 +786,8 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
             seq->movementState = 0;
             seq->conditionCallback = (ObjAnimSequenceConditionCallback)ShopKeeper_handlePromptChoice;
         }
-        if (SHOP_INTERFACE(((ShopkeeperState*)state)->vendorObj)
-                ->getItemIndex((GameObject*)((ShopkeeperState*)state)->vendorObj) != -1)
+        if (SHOP_INTERFACE(state->vendorObj)
+                ->getItemIndex((GameObject*)state->vendorObj) != -1)
         {
             setAButtonIcon(0x12);
             setBButtonIcon(0xA);
@@ -798,18 +798,18 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
         switch (seq->eventIds[i])
         {
         case 1:
-            ShopKeeper_spawnScarabs(obj, (ShopkeeperState*)state, ((ShopkeeperState*)state)->amount);
-            ((ShopkeeperState*)state)->flags9D4 |= SHOPKEEPER_FLAG_PURCHASED;
+            ShopKeeper_spawnScarabs(obj, (ShopkeeperState*)state, state->amount);
+            state->flags9D4 |= SHOPKEEPER_FLAG_PURCHASED;
             break;
         case 2:
             (*gPlayerInterface)->setState((void*)obj, (void*)state2, 3);
             (*gBoneParticleEffectInterface)->spawnEffect((void*)obj, 0x7EF, &range, 0x50, NULL);
-            ((ShopkeeperState*)state)->opacity = 0;
+            state->opacity = 0;
             break;
         case 3:
             (*gPlayerInterface)->setState((void*)obj, (void*)state2, 2);
-            ((ShopkeeperState*)state)->flags9D4 |= SHOPKEEPER_FLAG_TICK;
-            ((ShopkeeperState*)state)->opacity = 0xFF;
+            state->flags9D4 |= SHOPKEEPER_FLAG_TICK;
+            state->opacity = 0xFF;
             break;
         case 4:
             if (player->anim.romDefNo == 0)
@@ -843,17 +843,17 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
             }
             break;
         case 9:
-            playerAddMoney(player, ((ShopkeeperState*)state)->amount);
+            playerAddMoney(player, state->amount);
             break;
         case 10:
-            playerAddMoney(player, -(int)((ShopkeeperState*)state)->amount);
+            playerAddMoney(player, -(int)state->amount);
             break;
         case 0xB:
             (*gBoneParticleEffectInterface)->spawnEffect((void*)obj, 0x7EF, &range, 0x50, NULL);
             break;
         case 0xC:
-            ((ShopkeeperState*)state)->amount = 1;
-            digit = ((ShopkeeperState*)state)->amount;
+            state->amount = 1;
+            digit = state->amount;
             tex = objFindTexture(obj, 8, 0);
             tex->textureId = (digit % 10) * 0x100;
             tex = objFindTexture(obj, 7, 0);
@@ -868,7 +868,7 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
             break;
         }
     }
-    (obj)->anim.alpha = ((ShopkeeperState*)state)->opacity;
+    (obj)->anim.alpha = state->opacity;
     return 0;
 }
 

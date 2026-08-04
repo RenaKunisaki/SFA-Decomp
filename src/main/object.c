@@ -933,7 +933,7 @@ static void objFreeObjdef(u8* obj, int flag)
     int j;
     int n;
     int count;
-    u8* otherObj;
+    GameObject* otherObj;
     int* bp;
     void* curTex;
     void* tex;
@@ -974,11 +974,11 @@ static void objFreeObjdef(u8* obj, int flag)
             count = 0;
             for (i = 0; i < gObjCount; i++)
             {
-                otherObj = (u8*)gObjList[i];
-                if (*(int*)&((GameObject*)otherObj)->anim.parent == (int)obj)
+                otherObj = gObjList[i];
+                if (*(int*)&otherObj->anim.parent == (int)obj)
                 {
-                    *(int*)&((GameObject*)otherObj)->anim.parent = 0;
-                    if (*(void**)&((GameObject*)otherObj)->anim.placementData != NULL)
+                    *(int*)&otherObj->anim.parent = 0;
+                    if (*(void**)&otherObj->anim.placementData != NULL)
                     {
                         defs[count++] = (int)otherObj;
                     }
@@ -995,10 +995,10 @@ static void objFreeObjdef(u8* obj, int flag)
     {
         for (i = 0; i < gObjCount; i++)
         {
-            otherObj = (u8*)gObjList[i];
-            if (*(int*)&((GameObject*)otherObj)->pendingParentObj == (int)obj)
+            otherObj = gObjList[i];
+            if (*(int*)&otherObj->pendingParentObj == (int)obj)
             {
-                *(int*)&((GameObject*)otherObj)->pendingParentObj = 0;
+                *(int*)&otherObj->pendingParentObj = 0;
             }
         }
     }
@@ -1098,14 +1098,14 @@ static void objFreeObjdef(u8* obj, int flag)
             refCounts[type]--;
             if (gObjFileRefCount[type] == 0)
             {
-                otherObj = gObjFileBufferTable[type];
-                if (*(void**)&((GameObject*)otherObj)->anim.parent != NULL)
+                otherObj = (GameObject*)gObjFileBufferTable[type];
+                if (*(void**)&otherObj->anim.parent != NULL)
                 {
-                    mm_free(((GameObject*)otherObj)->anim.parent);
+                    mm_free(otherObj->anim.parent);
                 }
-                if (*(void**)(otherObj + 0x34) != NULL)
+                if (*(void**)((u8*)otherObj + 0x34) != NULL)
                 {
-                    mm_free(*(void**)(otherObj + 0x34));
+                    mm_free(*(void**)((u8*)otherObj + 0x34));
                 }
                 mm_free(otherObj);
             }

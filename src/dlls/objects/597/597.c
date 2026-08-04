@@ -1849,39 +1849,39 @@ void SnowBike_func16(void)
 
 void SnowBike_resetToRomListPosition(GameObject* obj)
 {
-    int state = (int)obj->extra;
+    SnowBikeState* state = obj->extra;
     int* table;
     SnowBikeRomListItem* found;
     f32 zero;
 
-    table = (int*)((int)gSnowBikeMountRomListTable + (int)(((SnowBikeState*)state)->bikeType) * 12);
-    found = (SnowBikeRomListItem*)mapRomListFindItem(table[((SnowBikeState*)state)->bikeVariant], 0, 0, 0, 0);
+    table = (int*)((int)gSnowBikeMountRomListTable + (int)(state->bikeType) * 12);
+    found = (SnowBikeRomListItem*)mapRomListFindItem(table[state->bikeVariant], 0, 0, 0, 0);
     if (found != NULL)
     {
-        if (((SnowBikeState*)state)->bikeType != 0)
+        if (state->bikeType != 0)
         {
             obj->anim.localPosX = found->base.posX;
             obj->anim.localPosY = found->base.posY;
             obj->anim.localPosZ = found->base.posZ;
             obj->anim.rotX = (s16)((found->yawByte) << 8);
         }
-        (*gCheckpointInterface)->findRouteForObject(obj, (CheckpointRouteState*)(state + 0x28), 0);
-        ((SnowBikeState*)state)->posSnapshotX = obj->anim.localPosX;
-        ((SnowBikeState*)state)->posSnapshotY = obj->anim.localPosY;
-        ((SnowBikeState*)state)->posSnapshotZ = obj->anim.localPosZ;
-        ((SnowBikeState*)state)->savedRotX = obj->anim.rotX;
+        (*gCheckpointInterface)->findRouteForObject(obj, (CheckpointRouteState*)((u8*)state + 0x28), 0);
+        state->posSnapshotX = obj->anim.localPosX;
+        state->posSnapshotY = obj->anim.localPosY;
+        state->posSnapshotZ = obj->anim.localPosZ;
+        state->savedRotX = obj->anim.rotX;
         zero = 0.0f;
-        ((SnowBikeState*)state)->localVelX = zero;
-        ((SnowBikeState*)state)->localVelY = zero;
-        ((SnowBikeState*)state)->localVelZ = zero;
-        (*gPathControlInterface)->attachObject((void*)obj, (void*)(state + 0x178));
+        state->localVelX = zero;
+        state->localVelY = zero;
+        state->localVelZ = zero;
+        (*gPathControlInterface)->attachObject((void*)obj, (void*)((u8*)state + 0x178));
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->localPosX = obj->anim.localPosX;
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->localPosY = obj->anim.localPosY;
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->localPosZ = obj->anim.localPosZ;
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->worldPosX = obj->anim.worldPosX;
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->worldPosY = obj->anim.worldPosY;
         ((ObjHitsPriorityState*)obj->anim.hitReactState)->worldPosZ = obj->anim.worldPosZ;
-        ((SnowBikeState*)state)->unk3D3 = 1;
+        state->unk3D3 = 1;
     }
 }
 

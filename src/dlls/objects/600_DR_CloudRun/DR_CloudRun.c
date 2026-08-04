@@ -1277,17 +1277,17 @@ void DR_CloudRunner_update(GameObject* obj)
 void DR_CloudRunner_init(GameObject* obj, DRCloudRunnerPlacement* def)
 {
     MoveLibTarget target;
-    int inner;
+    CloudRunnerState* inner;
     int savedSlot;
     (obj)->anim.rotX = (s16)(def->spawnRot << 8);
     (obj)->animEventCallback = DR_CloudRunner_SeqFn;
     objAddObjectType((int)obj, DRCLOUDRUNNER_OBJGROUP);
-    inner = (int)obj->extra;
-    ((CloudRunnerState*)inner)->spawnVariant = def->spawnVariant;
-    ((CloudRunnerState*)inner)->unkBAE = 5;
-    ((CloudRunnerState*)inner)->airTimeRemaining = def->airMeterCapacity;
-    ((CloudRunnerState*)inner)->sequenceIndex = -1;
-    ((CloudRunnerState*)inner)->pathFollowSpeed = (f32)def->pathSpeedTenths / 10.0f;
+    inner = obj->extra;
+    inner->spawnVariant = def->spawnVariant;
+    inner->unkBAE = 5;
+    inner->airTimeRemaining = def->airMeterCapacity;
+    inner->sequenceIndex = -1;
+    inner->pathFollowSpeed = (f32)def->pathSpeedTenths / 10.0f;
     if ((obj)->anim.modelState != NULL)
     {
         (obj)->anim.modelState->flags |= 0xa10;
@@ -1302,12 +1302,12 @@ void DR_CloudRunner_init(GameObject* obj, DRCloudRunnerPlacement* def)
         (obj)->anim.rotX = target.angle;
     }
     (*gPlayerInterface)->init(obj, (void*)inner, 8, 1);
-    ((CloudRunnerState*)inner)->baddie.gravity = 0.17f;
-    DR_CloudRunner_setupPath(obj, (CloudRunnerState*)inner, ((CloudRunnerState*)inner)->flagsBC0.b20);
-    dll_2E_initState(obj, &((CloudRunnerState*)inner)->moveLib, -0x11c7, 0x1555, 1);
-    dll_2E_setReattackDelay((MoveLibState*)(inner + 0x4c4), 0x12c, 0x78);
+    inner->baddie.gravity = 0.17f;
+    DR_CloudRunner_setupPath(obj, (CloudRunnerState*)inner, inner->flagsBC0.b20);
+    dll_2E_initState(obj, &inner->moveLib, -0x11c7, 0x1555, 1);
+    dll_2E_setReattackDelay((MoveLibState*)((u8*)inner + 0x4c4), 0x12c, 0x78);
     objAddObjectType((int)obj, PLAYER_VEHICLE_OBJGROUP);
-    ((CloudRunnerState*)inner)->flagsBC0.b01 = 0;
+    inner->flagsBC0.b01 = 0;
 }
 
 void DR_CloudRunner_release(void)
