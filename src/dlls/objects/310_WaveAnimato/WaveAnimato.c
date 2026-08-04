@@ -8,6 +8,7 @@
 #include "main/frame_timing.h"
 #include "main/mm.h"
 #include "main/object_render.h"
+#include "main/objtype.h"
 
 typedef struct WaveAnimatorColor {
     u8 red;

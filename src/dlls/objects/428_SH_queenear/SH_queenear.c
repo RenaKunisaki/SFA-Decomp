@@ -11,10 +11,16 @@
  */
 #include "dlls/objects/428_SH_queenear.h"
 
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/dll_0000_gameui_api.h"
+#include "main/dll/player_api.h"
+#include "main/dll/tricky_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/mapEvent.h"
+#include "main/objprint_character_api.h"
 #include "main/objseq.h"
 #include "main/objtype.h"
 #include "main/objprint_anim_api.h"
@@ -99,7 +105,7 @@ int sh_queenearthwalker_processAnimEvents(GameObject* obj, int unusedArg, ObjSeq
     (void)unusedArg;
 
     if ((state->flags & QUEEN_EARTH_WALKER_FLAG_INIT_DONE) == 0) {
-        Sfx_StopObjectChannel((int)obj, QUEEN_EARTH_WALKER_LOOPING_SFX_CHANNEL);
+        Sfx_StopObjectChannel(obj, QUEEN_EARTH_WALKER_LOOPING_SFX_CHANNEL);
         state->flags &= ~QUEEN_EARTH_WALKER_FLAG_ACTIVE;
         state->flags |= QUEEN_EARTH_WALKER_FLAG_INIT_DONE;
     }
@@ -395,7 +401,7 @@ void sh_queenearthwalker_update(GameObject* obj) {
 
     if (RandomTimer_UpdateRangeTrigger(&state->attackTimer, QUEEN_EARTH_WALKER_ATTACK_TIMER_MIN,
                                        QUEEN_EARTH_WALKER_ATTACK_TIMER_MAX) != 0) {
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_thorntail);
+        Sfx_PlayFromObject(obj, SFXTRIG_thorntail);
     }
 }
 

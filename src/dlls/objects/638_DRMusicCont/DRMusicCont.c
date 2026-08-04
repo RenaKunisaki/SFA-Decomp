@@ -12,6 +12,7 @@
  * two more game bits. State: a f32 countdown at 0x4 and the
  * DrMusicContFlags cache at 0x8.
  */
+#include "main/audio/sfx_play_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"

@@ -12,9 +12,12 @@
  */
 #include "dlls/objects/498_SB_CageKyte.h"
 
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
+#include "main/vecmath.h"
+#include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 
 #define SB_CAGE_KYTE_CHIRP_TIMER_MIN 400
@@ -75,7 +78,7 @@ void SB_CageKyte_update(GameObject* obj) {
     if (state->chirpTimer <= 0) {
         (void)randomGetRange(0, 10);
         if (mainGetBit(GAMEBIT_SBRelated0A71) == 0u) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_ice_freeze_316);
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_ice_freeze_316);
         }
         state->chirpTimer = randomGetRange(SB_CAGE_KYTE_CHIRP_TIMER_MIN, SB_CAGE_KYTE_CHIRP_TIMER_MAX);
     }

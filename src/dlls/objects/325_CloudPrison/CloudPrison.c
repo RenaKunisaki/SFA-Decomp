@@ -1,6 +1,7 @@
 #include "dlls/objects/325_CloudPrison.h"
 
 #include "main/dll/rom_curve_interface.h"
+#include "main/obj_message.h"
 #include "main/object_render.h"
 
 #define CLOUD_PRISON_CONTROL_CURVE_ACTION                 8

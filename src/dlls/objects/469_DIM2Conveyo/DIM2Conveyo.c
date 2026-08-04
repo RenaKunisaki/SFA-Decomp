@@ -6,10 +6,13 @@
 #include "dlls/objects/469_DIM2Conveyo.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
+#include "main/audio/music_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
+#include "main/objtype.h"
 
 #define DIM2CONVEYOR_OBJECT_GROUP                   0x16
 #define DIM2CONVEYOR_GAMEBIT_NEGATIVE_DIRECTION     3163
@@ -84,7 +87,7 @@ void dim2conveyor_hitDetect(void) {
 void dim2conveyor_update(GameObject* obj) {
     Dim2ConveyorState* state = obj->extra;
 
-    Sfx_PlayFromObject((int)obj, SFXTRIG_mv_liftloop);
+    Sfx_PlayFromObject(obj, SFXTRIG_mv_liftloop);
     if (state->musicHoldTimer != 0) {
         state->musicHoldTimer = state->musicHoldTimer - 1;
         if (state->musicHoldTimer == 0) {

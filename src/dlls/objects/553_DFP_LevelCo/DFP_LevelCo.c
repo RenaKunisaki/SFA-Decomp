@@ -5,7 +5,15 @@
  * raised, and gamebit-driven progression
  * (1504/1505/1507/1508/1589/3671) plus level unlocks and music triggers.
  */
+#include "main/audio/music_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/dll/dfp_types.h"
+#include "main/dll/player_api.h"
+#include "main/lightmap_api.h"
+#include "main/map_load.h"
+#include "main/obj_message.h"
+#include "main/objtype.h"
+#include "main/vecmath.h"
 #include "sys/objects.h"
 #include "dlls/objects/430_SH_LevelCon.h"
 #include "main/mapEventTypes.h"
@@ -47,12 +55,12 @@ void DFP_LevelControl_updateMapAct2(GameObject* obj)
     }
     if (mainGetBit(0x5e3) == 0 && mainGetBit(0x5e0) != 0 && mainGetBit(0x5e1) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_wp_espk2_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_wp_espk2_c);
         mainSetBits(0x5e3, 1);
     }
     if (mainGetBit(0x792) == 0 && mainGetBit(0xb8c) != 0 && mainGetBit(0xb8c) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_wp_espk2_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_wp_espk2_c);
         mainSetBits(0x792, 1);
     }
     if (mainGetBit(0xe58) == 0)

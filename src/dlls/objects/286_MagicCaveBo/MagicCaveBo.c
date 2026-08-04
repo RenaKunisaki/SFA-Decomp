@@ -7,9 +7,14 @@
  */
 #include "dlls/objects/286_MagicCaveBo.h"
 #include "game/objects/object.h"
+#include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
+#include "main/dll/tricky_api.h"
 #include "main/gamebits.h"
+#include "main/obj_trigger.h"
+#include "main/objprint_render_api.h"
 #include "main/objseq.h"
+#include "main/rcp_dolphin_api.h"
 #include "main/render_envfx_api.h"
 #include "main/sky_api.h"
 

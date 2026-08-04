@@ -13,6 +13,7 @@
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
+#include "sys/objects/lifecycle.h"
 
 #define SB_FIREBALL_SPIN_STEP -800
 

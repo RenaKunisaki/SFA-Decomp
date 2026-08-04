@@ -16,13 +16,16 @@
  * distinct from ktrexfloorswitch's flags byte at the same offset).
  */
 #include "dlls/object_descriptor.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
+#include "main/mm.h"
 #include "main/newclouds.h"
 
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/DR/dll_0252_ktlazerwall.h"
+#include "main/vecmath.h"
 
 void KT_Lazerwall_spawnEnergyArc(GameObject* obj, f32 scale, int angle)
 {
@@ -158,7 +161,7 @@ void KT_Lazerwall_update(GameObject* obj)
         (*gPartfxInterface)->spawnObject((void*)obj, 1164, NULL, 2, -1, &mode);
         if ((state->previousFlags & KT_LAZERWALL_FLAG_FIRING) == 0)
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_wp_beamhit16);
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_beamhit16);
         }
     }
     if (state->flags & KT_LAZERWALL_FLAG_BOLT_ACTIVE)
@@ -171,7 +174,7 @@ void KT_Lazerwall_update(GameObject* obj)
     if ((state->flags & KT_LAZERWALL_FLAG_BOLT_ACTIVE) == 0 &&
         (state->previousFlags & KT_LAZERWALL_FLAG_BOLT_ACTIVE) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_wp_beamgenlp16);
+        Sfx_PlayFromObject(obj, SFXTRIG_wp_beamgenlp16);
     }
     {
         f32 limit;
@@ -182,7 +185,7 @@ void KT_Lazerwall_update(GameObject* obj)
             state->reloadTimer = timer - timeDelta;
             if (state->reloadTimer <= limit)
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_wp_blaserflyby16);
+                Sfx_PlayFromObject(obj, SFXTRIG_wp_blaserflyby16);
                 state->reloadTimer = 0.0f;
             }
         }

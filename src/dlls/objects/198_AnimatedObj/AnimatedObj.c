@@ -8,11 +8,16 @@
  */
 #include "dlls/objects/198_AnimatedObj.h"
 #include "dolphin/mtx.h"
+#include "main/audio/sfx_looped_object_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
 #include "main/camera_interface.h"
 #include "main/dll/dll_0004_dummy04.h"
 #include "main/frame_timing.h"
+#include "main/maketex_sequence_api.h"
+#include "main/obj_link.h"
 #include "main/obj_list.h"
 #include "main/object_render.h"
+#include "main/objprint_render_api.h"
 #include "main/shader_api.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
@@ -32,7 +37,7 @@ void animatedobj_free(GameObject* obj, int clearSequence) {
     (*gObjectTriggerInterface)->freeState(obj->extra);
     gTitleMenuControlInterfaceCopy->vtable->func05(obj, 0xffff, 0, 0, 0);
     Sfx_RemoveLoopedObjectSoundForObject((u32)obj);
-    Sfx_StopObjectChannel((int)obj, 0x7f);
+    Sfx_StopObjectChannel(obj, 0x7f);
     if (obj->anim.romDefNo == ANIMATEDOBJ_SEQID_ANIM_KRYSTAL && obj->childCount != 0) {
         Obj_FreeObject(obj->childObjs[0]);
         ObjLink_DetachChild(obj, obj->childObjs[0]);

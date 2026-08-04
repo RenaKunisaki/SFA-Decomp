@@ -10,13 +10,18 @@
 #include "dlls/objects/421_NW_levcontr.h"
 
 #include "game/objects/object.h"
+#include "main/audio/music_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "dlls/objects/430_SH_LevelCon.h"
+#include "main/dll/savegame_load_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
+#include "main/gametext_show_api.h"
 #include "main/mapEventTypes.h"
 #include "main/model_engine.h"
+#include "main/obj_trigger.h"
 #include "main/objseq.h"
 #include "main/render_envfx_api.h"
 #include "main/sky.h"
@@ -92,10 +97,10 @@ ObjectDescriptor gNWLevelControlObjDescriptor = {
 
 int nwLevelControl_advanceSequenceTable(NwLevelControlState* state) {
     NwLevelControlDataView* data;
-    int obj;
+    GameObject* obj;
 
     data = (NwLevelControlDataView*)gNwLevelControlData;
-    obj = (int)ObjList_FindObjectById(data->targetObjectIds[state->tableIndex]);
+    obj = ObjList_FindObjectById(data->targetObjectIds[state->tableIndex]);
     if (ObjTrigger_IsSetById(obj, NW_LEVEL_CONTROL_TRIGGER_ID) != 0) {
         (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
         state->mode = NW_LEVEL_CONTROL_MODE_WAIT_PARENT_SLACK;
@@ -107,7 +112,7 @@ int nwLevelControl_advanceSequenceTable(NwLevelControlState* state) {
     }
 
     if (state->tableIndex != 0) {
-        obj = (int)ObjList_FindObjectById(data->targetObjectIds[state->tableIndex - 1]);
+        obj = ObjList_FindObjectById(data->targetObjectIds[state->tableIndex - 1]);
         if (ObjTrigger_IsSetById(obj, NW_LEVEL_CONTROL_TRIGGER_ID) != 0) {
             (*gObjectTriggerInterface)->runSequence(0, (void*)obj, -1);
             state->mode = NW_LEVEL_CONTROL_MODE_WAIT_PARENT_SLACK;

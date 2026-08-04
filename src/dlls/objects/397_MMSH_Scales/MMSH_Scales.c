@@ -6,6 +6,7 @@
 
 #include "dlls/objects/298_CFCrate.h"
 #include "main/dll/dll_0004_dummy04.h"
+#include "main/obj_list.h"
 #include "main/object_render.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"

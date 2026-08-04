@@ -4,6 +4,7 @@
 
 #include "main/camera.h"
 #include "main/gamebits_api.h"
+#include "main/obj_query.h"
 #include "main/object_render.h"
 #include "sys/objects.h"
 

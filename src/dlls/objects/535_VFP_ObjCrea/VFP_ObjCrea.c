@@ -13,7 +13,9 @@
  * The spawn cadence is driven by spawnTimer counting down spawnInterval.
  */
 #include "dlls/object_descriptor.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/dll/partfx_interface.h"
+#include "main/vecmath.h"
 #include "sys/objects/lifecycle.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
@@ -149,7 +151,7 @@ void VFP_ObjCreator_update(GameObject* obj)
             launch.ang[1] = 0;
             launch.ang[0] = obj->anim.rotX;
             vecRotateZXY(launch.ang, &spawned->anim.velocityX);
-            Sfx_PlayFromObject((int)spawned, SFXTRIG_id_10c);
+            Sfx_PlayFromObject(spawned, SFXTRIG_id_10c);
             (*gPartfxInterface)->spawnObject(spawned, 0x39a, NULL, 0x10002, -1, NULL);
             (*gPartfxInterface)->spawnObject(spawned, 0x39b, NULL, 0x10002, -1, NULL);
             (*gPartfxInterface)->spawnObject(spawned, 0x39c, NULL, 0x10002, -1, NULL);

@@ -1,7 +1,10 @@
 #include "dlls/objects/371_LINK_levcon.h"
 
+#include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
+#include "main/dll/savegame_load_api.h"
 #include "main/gamebits_api.h"
+#include "main/lightmap_api.h"
 #include "main/render_envfx_api.h"
 #include "main/sky_api.h"
 #include "main/sky_interface.h"

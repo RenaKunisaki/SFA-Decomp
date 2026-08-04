@@ -1,4 +1,8 @@
+#include "main/audio/sfx_limited_object_api.h"
 #include "main/dfplightni.h"
+#include "main/gamebits_api.h"
+#include "main/mm.h"
+#include "main/vecmath.h"
 #include "sys/objects.h"
 #include "main/newclouds.h"
 #include "main/frame_timing.h"
@@ -142,7 +146,7 @@ void DFP_Lightni_update(GameObject* obj)
                 {
                     f32 clampX;
                     f32 clampY;
-                    Sfx_PlayFromObjectLimited((u32)obj, DFPLIGHTNI_SFX_ID, DFPLIGHTNI_SFX_MAX_COUNT);
+                    Sfx_PlayFromObjectLimited(obj, DFPLIGHTNI_SFX_ID, DFPLIGHTNI_SFX_MAX_COUNT);
                     if (eventActive != 0)
                     {
                         clampY = (radiusY < DFPLIGHTNI_RADIUS_MIN)   ? DFPLIGHTNI_RADIUS_MIN

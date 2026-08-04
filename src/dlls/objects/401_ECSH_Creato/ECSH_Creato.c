@@ -7,6 +7,7 @@
  */
 #include "dlls/objects/401_ECSH_Creato.h"
 
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/baddie_placement.h"
 #include "main/dll/baddie_state.h"
@@ -77,7 +78,7 @@ void ecshCreator_update(GameObject* obj) {
         effectResource = Resource_Acquire(ECSH_CREATOR_EFFECT_RESOURCE_ID, 1);
         (*effectResource)->spawn(obj, 0, NULL, 1, -1, NULL);
         (*effectResource)->spawn(obj, 1, NULL, 1, -1, NULL);
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_hitpos_6);
+        Sfx_PlayFromObject(obj, SFXTRIG_wp_hitpos_6);
         Resource_Release(effectResource);
         state->spawnTimerRate = 1;
         obj->userData2 = 1;

@@ -12,10 +12,13 @@
  * arwprojectile_launchForward + arwprojectile_setParamScalar (called from
  * arwarwing's bomb release; the projectile object itself is DLL 0x29B).
  */
+#include "main/audio/sfx_play_api.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/ARW/dll_029C_arwarwingbo.h"
 #include "main/dll/ARW/dll_029A_arwarwing.h"
 #include "main/dll/dll_029B_arwingandrossstuff.h"
+#include "main/objhits.h"
+#include "main/objtype.h"
 #include "main/vecmath.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
@@ -23,6 +26,7 @@
 #include "main/pad.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
+#include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 #include "dolphin/pad.h"
 
@@ -53,7 +57,7 @@ static void arwarwingbo_detonate(GameObject* obj)
     ArwingBombState* state = obj->extra;
 
     arwarwing_clearActiveBomb(getArwing());
-    Sfx_PlayFromObject((int)obj, SFXTRIG_ar_awghitobj16_2a5);
+    Sfx_PlayFromObject(obj, SFXTRIG_ar_awghitobj16_2a5);
     state->explosionTimer = 100.0f;
     state->control.fuseTimer = 0.0f;
     objAnim->alpha = 0;

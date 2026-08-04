@@ -3,8 +3,10 @@
 
 #include "main/dll/partfx_interface.h"
 #include "main/gamebits.h"
+#include "main/obj_message.h"
 #include "main/objseq.h"
 #include "main/object_render.h"
+#include "main/objtype.h"
 
 /* Animation-event opcodes consumed by FEseqobject_SeqFn. */
 typedef enum FEseqobjectEvent {

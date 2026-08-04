@@ -7,6 +7,9 @@
 #include "dlls/objects/288_TrickyGuard.h"
 #include "main/dll/dll_00C4_tricky.h"
 #include "main/frame_timing.h"
+#include "main/gamebits_api.h"
+#include "main/objprint_render_api.h"
+#include "main/objtype.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects/lifecycle.h"
 

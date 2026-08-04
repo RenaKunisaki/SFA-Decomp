@@ -15,6 +15,8 @@
  * "(d - 0x10000) + 1" forms below are the shortest-arc angle wrap-clamps.
  */
 
+#include "main/audio/sfx_play_api.h"
+#include "main/obj_path.h"
 #include "sys/objects.h"
 #include "dolphin/mtx.h"
 #include "main/dll/cloudaction_interface.h"
@@ -41,6 +43,7 @@
 #include "main/dll/ship_battle_api.h"
 #include "main/dll/dll_0255_snowbike.h"
 #include "main/vecmath.h"
+#include "sys/objects/lifecycle.h"
 
 void SB_CloudRunner_onSeqFree(GameObject* obj)
 {
@@ -558,7 +561,7 @@ void SB_CloudRunner_HandlePriorityHit(GameObject* obj, SBCloudRunnerState* state
                 Sfx_PlayFromObject(0, SFXTRIG_dn_gscsc1_c);
                 if (mainGetBit(GAMEBIT_CLOUDRUNNER_HIT_SFX) != 0)
                 {
-                    Sfx_PlayFromObject((int)obj, SFX_CLOUDRUNNER_HIT);
+                    Sfx_PlayFromObject(obj, SFX_CLOUDRUNNER_HIT);
                 }
                 (obj)->anim.rotY = COLORFADE_RUMBLE_PRESET;
                 state->rideSubState = RIDE_SUBSTATE_TILT;

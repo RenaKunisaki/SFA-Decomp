@@ -4,9 +4,15 @@
  */
 #include "dlls/objects/300_Transporter.h"
 
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/gamebits.h"
+#include "main/lightmap_render_control_api.h"
+#include "main/loaded_file_flags.h"
 #include "main/mapEventTypes.h"
+#include "main/map_load.h"
+#include "main/objprint_render_api.h"
+#include "main/rcp_dolphin_api.h"
 #include "main/render_envfx_api.h"
 #include "main/shader_api.h"
 #include "main/sky_api.h"
@@ -283,7 +289,7 @@ int Transporter_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animU
         switch (animUpdate->eventIds[i]) {
         case TRANSPORTER_EVENT_PULSE_FX:
             state->flags |= TRANSPORTER_FLAG_PULSE_FX;
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_id_420);
+            Sfx_PlayFromObject(obj, SFXTRIG_id_420);
             break;
         case TRANSPORTER_EVENT_MAP_PROGRESS:
             id = placement->base.ident;

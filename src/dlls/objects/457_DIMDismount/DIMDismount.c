@@ -8,6 +8,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
+#include "main/objprint_render_api.h"
 #include "main/objseq.h"
 #include "main/objtype.h"
 #include "main/object_render.h"

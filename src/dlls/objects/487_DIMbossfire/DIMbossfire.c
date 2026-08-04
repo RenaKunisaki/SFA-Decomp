@@ -6,11 +6,15 @@
  */
 #include "dlls/objects/487_DIMbossfire.h"
 
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_shake_api.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
+#include "main/gamebits_api.h"
+#include "main/objhits.h"
+#include "main/pad_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
 
@@ -144,7 +148,7 @@ void dimbossfire_update(GameObject* obj) {
                     modelLightStruct_setEnabled(state->light, 0, state->activeTimer / 60.0f);
                 }
             }
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_en_cvdrip1c_188);
+            Sfx_PlayFromObject(obj, SFXTRIG_en_cvdrip1c_188);
         }
         state->activeTimer -= timeDelta;
         if (state->activeTimer <= 0.0f) {

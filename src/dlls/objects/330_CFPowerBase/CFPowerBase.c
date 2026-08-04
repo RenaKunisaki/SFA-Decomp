@@ -4,8 +4,10 @@
 
 #include "main/gamebits.h"
 #include "main/game_ui_interface.h"
+#include "main/obj_message.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
+#include "sys/objects.h"
 
 /* Pylon messages are answered once the base's sequence reaches this frame. */
 #define CFPOWERBASE_MESSAGE_POWERED      0xA0005

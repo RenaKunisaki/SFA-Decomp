@@ -11,7 +11,9 @@
 #include "main/dll/player_api.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
+#include "main/vecmath.h"
 #include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 #define DIM_SNOWBALL_SPAWNER_SETUP_FLAGS 5
 

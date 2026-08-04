@@ -6,9 +6,11 @@
  * player remains inside the interaction range.
  */
 #include "dlls/objects/290_CCTestInfot.h"
+#include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/player_api.h"
 #include "main/frame_timing.h"
 #include "main/minimap_api.h"
+#include "main/obj_trigger.h"
 #include "sys/objects.h"
 
 #define CC_TEST_INFO_TEXT_DISPLAY_DURATION 600.0f

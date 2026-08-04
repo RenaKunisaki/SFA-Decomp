@@ -8,6 +8,7 @@
 #include "dlls/objects/288_TrickyGuard.h"
 #include "main/dll/dll_00C4_tricky.h"
 #include "main/gamebits.h"
+#include "main/objprint_render_api.h"
 #include "sys/objects/lifecycle.h"
 
 #define TRICKYGUARD_GAMEBIT_NONE   -1

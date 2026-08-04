@@ -11,6 +11,7 @@
 #include "main/gamebits_api.h"
 #include "main/objseq.h"
 #include "main/object_render.h"
+#include "main/objtype.h"
 
 #define DIM_BRIDGE_COG_PANEL_GAME_BIT  0x17a
 #define DIM_BRIDGE_COG_BRIDGE_GAME_BIT 0x1e3

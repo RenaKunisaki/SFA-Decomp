@@ -8,10 +8,12 @@
 #include "dlls/objects/387_MMP_gyserve.h"
 
 #include "game/objects/object.h"
+#include "main/audio/sfx_keep_alive_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
+#include "main/vecmath.h"
 
 #define MMP_GEYSER_VENT_PARTICLE_GEYSER     0x724
 #define MMP_GEYSER_VENT_PARTICLE_SPAWN_MODE 2

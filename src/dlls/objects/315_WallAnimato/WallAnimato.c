@@ -1,11 +1,14 @@
 /* Tricky-activated wall that emits debris while its completion timer advances. */
 #include "dlls/objects/315_WallAnimato.h"
 
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_00C4_tricky.h"
 #include "main/dll/partfx_interface.h"
 #include "main/gamebits.h"
 #include "main/object_render.h"
+#include "main/objprint_render_api.h"
+#include "main/vecmath.h"
 #include "sys/objects/lifecycle.h"
 
 #define WALL_ANIMATOR_DONE_TIMER               3000
@@ -114,7 +117,7 @@ void WallAnimator_update(GameObject* obj) {
     if (state->timer >= WALL_ANIMATOR_DONE_TIMER) {
         state->complete = 1;
         mainSetBits((int)placement->completionBit, 1);
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_menuups16k);
+        Sfx_PlayFromObject(obj, SFXTRIG_menuups16k);
         return;
     }
 

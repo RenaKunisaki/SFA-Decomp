@@ -7,6 +7,7 @@
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/resource.h"
+#include "main/vecmath.h"
 
 #define VFP_LAVASTAR_RESOURCE_ID                 0xa6
 #define VFP_LAVASTAR_PARTFX                     0x3a4

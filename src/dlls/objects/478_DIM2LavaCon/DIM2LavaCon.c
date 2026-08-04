@@ -5,9 +5,11 @@
 
 #include "dlls/objects/478_DIM2LavaCon.h"
 
+#include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/dll/dll_0011_screens.h"
 #include "main/dll/player_objects.h"
+#include "main/dll/savegame_load_api.h"
 #include "main/object_render.h"
 #include "main/pi_dolphin_api.h"
 #include "main/render_envfx_api.h"

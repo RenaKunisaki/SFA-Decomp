@@ -1,6 +1,8 @@
 #include "dlls/objects/372_CCriverflow.h"
 
 #include "game/objects/object.h"
+#include "main/gamebits_api.h"
+#include "main/objtype.h"
 
 #define CC_RIVER_FLOW_OBJECT_GROUP        0x14
 #define CC_RIVER_FLOW_DEFAULT_SPEED       0xFF

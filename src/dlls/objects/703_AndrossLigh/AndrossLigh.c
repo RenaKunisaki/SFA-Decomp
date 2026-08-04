@@ -13,6 +13,7 @@
  */
 #include "dolphin/mtx.h"
 #include "main/frame_timing.h"
+#include "main/mm.h"
 #include "sys/objects.h"
 #include "main/newclouds.h"
 #include "main/shader_api.h"

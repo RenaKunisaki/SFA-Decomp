@@ -12,6 +12,7 @@
  * The animEventCallback snapshots tracked-tile positions or resets the
  * object and clears solvedBit.
  */
+#include "main/audio/sfx_play_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/objtexture.h"
@@ -19,6 +20,7 @@
 #include "main/dll/WC/dll_028F_wcpressures.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
+#include "main/objtype.h"
 
 #define WCPRESSURES_EXTRA_SIZE        0x7c
 #define WCPRESSURES_OBJECT_GROUP      0x31
@@ -164,7 +166,7 @@ void wcpressures_update(GameObject* obj) {
     switch (state->mode) {
     case WCPRESSURES_MODE_RAISED:
         if (state->pressTimer != 0 && obj->anim.localPosY >= pressedY) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_c7);
+            Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_c7);
             state->mode = WCPRESSURES_MODE_LOWERING;
         }
         break;
@@ -178,7 +180,7 @@ void wcpressures_update(GameObject* obj) {
         break;
     case WCPRESSURES_MODE_PRESSED:
         if (mainGetBit(setup->solvedBit) == 0) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_c7);
+            Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_c7);
             state->mode = WCPRESSURES_MODE_RISING;
         }
         break;

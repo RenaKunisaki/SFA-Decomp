@@ -9,12 +9,14 @@
  */
 #include "dlls/objects/494_SB_CannonBa.h"
 
+#include "main/audio/sfx_play_api.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/dll/objfx.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/model_light.h"
 #include "main/object_render.h"
+#include "sys/objects/lifecycle.h"
 
 #define SB_CLOUDBALL_ALIAS_OBJECT_TYPE 0x0119
 
@@ -109,7 +111,7 @@ void SB_CannonBall_hitDetect(GameObject* obj) {
         return;
     }
 
-    Sfx_PlayFromObject((u32)obj, SB_CANNONBALL_IMPACT_SFX);
+    Sfx_PlayFromObject(obj, SB_CANNONBALL_IMPACT_SFX);
     {
         ObjHitsPriorityState* hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
         hitState->flags = (s16)(hitState->flags & ~OBJHITS_PRIORITY_STATE_ENABLED);
@@ -200,8 +202,8 @@ void SB_CannonBall_init(GameObject* obj) {
     }
     obj->anim.rootMotionScale *= 0.0125f;
     state->flags = (s8)(state->flags | SB_CANNONBALL_INITIAL_BURST_FLAG);
-    Sfx_PlayFromObject((u32)obj, SB_CANNONBALL_LAUNCH_SFX);
-    Sfx_PlayFromObject((u32)obj, SB_CANNONBALL_LOOP_SFX);
+    Sfx_PlayFromObject(obj, SB_CANNONBALL_LAUNCH_SFX);
+    Sfx_PlayFromObject(obj, SB_CANNONBALL_LOOP_SFX);
 }
 
 void SB_CannonBall_release(void) {

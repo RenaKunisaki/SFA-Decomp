@@ -6,6 +6,7 @@
  * the player stands in the correct scoring zone (matched against
  * requiredScore); a wrong zone trips game bit 0x5e5 to reset.
  */
+#include "main/audio/sfx_keep_alive_api.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/dll/DF/dll_0229_dfplevelcontrol.h"
 #include "main/dll/baddie/dll_022F_dfpfloorbar.h"

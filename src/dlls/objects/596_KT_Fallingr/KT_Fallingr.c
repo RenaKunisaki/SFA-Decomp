@@ -8,6 +8,7 @@
  * bit so the burst only fires once per trigger.
  */
 #include "dlls/object_descriptor.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/gamebits.h"
@@ -69,7 +70,7 @@ void ktfallingrocks_update(GameObject* obj)
         (*gPartfxInterface)
             ->spawnObject((void*)obj, placement->effectId, &params, 0x200001, -1, NULL);
     }
-    Sfx_PlayFromObject((int)obj, SFXTRIG_en_birdynight11);
+    Sfx_PlayFromObject(obj, SFXTRIG_en_birdynight11);
     mainSetBits(placement->triggerBit, 0);
 }
 

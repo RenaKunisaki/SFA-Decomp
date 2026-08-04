@@ -9,13 +9,17 @@
  */
 #include "dlls/objects/499_SB_MiniFire.h"
 
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_0075_modgfx.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/dll/modgfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
+#include "main/rcp_dolphin_api.h"
 #include "main/resource.h"
+#include "main/vecmath.h"
+#include "sys/objects/lifecycle.h"
 
 int gSbMiniFireResourceVariant = 1;
 
@@ -118,8 +122,8 @@ void SB_MiniFire_init(GameObject* obj) {
         gSbMiniFireResourceVariant = SB_MINIFIRE_VARIANT_FIRST;
     }
     Resource_Release(resource);
-    Sfx_PlayFromObject((u32)obj, SFXTRIG_en_trpopn_c_35);
-    Sfx_PlayFromObject((u32)obj, SFXTRIG_dn_boar1_c_2ca);
+    Sfx_PlayFromObject(obj, SFXTRIG_en_trpopn_c_35);
+    Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_2ca);
 }
 
 void SB_MiniFire_release(void) {

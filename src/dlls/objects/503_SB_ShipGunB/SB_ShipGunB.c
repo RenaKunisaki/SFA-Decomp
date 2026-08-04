@@ -10,7 +10,9 @@
  */
 #include "dlls/objects/503_SB_ShipGunB.h"
 
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/gamebits_api.h"
 #include "main/object_render.h"
 
 int SB_ShipGunBroke_getExtraSize(void) {
@@ -39,7 +41,7 @@ void SB_ShipGunBroke_update(GameObject* obj) {
     const SBShipGunBrokePlacementView* placement = (const SBShipGunBrokePlacementView*)obj->anim.placementData;
 
     if (mainGetBit(placement->destroyedGameBit) != 0u) {
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_en_trpopn_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_en_trpopn_c);
     }
 }
 

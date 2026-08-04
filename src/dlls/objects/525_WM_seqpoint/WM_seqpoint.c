@@ -13,6 +13,7 @@
  */
 #include "dlls/object_descriptor.h"
 #include "main/dll/WM/dll_020D_wmseqpoint.h"
+#include "main/dll/player_api.h"
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
 #include "main/object_render.h"

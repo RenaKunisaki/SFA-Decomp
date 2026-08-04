@@ -14,15 +14,19 @@
 #include "dlls/objects/424_SH_killermu.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/player_api.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
+#include "main/gamebits_api.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
 #include "main/objhits.h"
 #include "main/obj_path.h"
+#include "main/objtype.h"
 #include "main/shader_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
@@ -168,7 +172,7 @@ void EnemyMushroom_update(GameObject* obj) {
             hitInfo.x += playerMapOffsetX;
             hitInfo.z += playerMapOffsetZ;
             objDoHitParticleFx(obj, ENEMY_MUSHROOM_HIT_EFFECT_SCALE, &hitInfo, 1, 0);
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_barrel_bounce1);
+            Sfx_PlayFromObject(obj, SFXTRIG_barrel_bounce1);
             Obj_Shatter(obj);
         }
         return;
@@ -340,7 +344,7 @@ void EnemyMushroom_update(GameObject* obj) {
                     state->stateFlags = (u8)(state->stateFlags & ~ENEMY_MUSHROOM_STATE_FLAG_HIT_PLAYER);
                     state->stateId = ENEMY_MUSHROOM_STATE_STARTLED;
                     state->timer = 0.0f;
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_baddie_haga_talk3);
+                    Sfx_PlayFromObject(obj, SFXTRIG_baddie_haga_talk3);
                 }
             }
         }
@@ -357,7 +361,7 @@ void EnemyMushroom_update(GameObject* obj) {
                 Obj_StartModelFadeIn(obj, 0x12C);
             } else {
                 if (state->stateId != ENEMY_MUSHROOM_STATE_STUNNED) {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_ladderslide16);
+                    Sfx_PlayFromObject(obj, SFXTRIG_mv_ladderslide16);
                 }
                 state->stateFlags = (u8)(state->stateFlags & ~ENEMY_MUSHROOM_STATE_FLAG_HIT_PLAYER);
                 if (placement->popGameBit != -1) {

@@ -8,6 +8,8 @@
 #include "main/objhits.h"
 #include "main/resource.h"
 #include "game/objects/object_setup.h"
+#include "main/vecmath.h"
+#include "sys/objects/lifecycle.h"
 
 #define VFPDRAGHEAD_RESOURCE_ID     0xA5
 #define VFPDRAGHEAD_HIT_VOLUME_SLOT 0xE

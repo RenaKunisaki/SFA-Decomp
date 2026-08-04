@@ -7,6 +7,8 @@
  * The runtime record holds the active sequence id and status flags for
  * the watched bit, sequence startup, and the initially-armed path.
  */
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
 #include "main/gamebits.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
@@ -22,20 +24,20 @@ int DR_CageControl_SeqFn(GameObject* obj)
     {
         if (mainGetBit(placement->armGameBit) != 0)
         {
-            Sfx_StopObjectChannel((int)obj, 8);
+            Sfx_StopObjectChannel(obj, 8);
             return 4;
         }
         if (state->flags.watchBitSet != mainGetBit(placement->watchGameBit))
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_mv_blkhit_c);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_mv_persquk2);
+            Sfx_PlayFromObject(obj, SFXTRIG_mv_blkhit_c);
+            Sfx_PlayFromObject(obj, SFXTRIG_mv_persquk2);
             if (mainGetBit(placement->watchGameBit) != 0)
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_mv_wickpickup16_194);
+                Sfx_PlayFromObject(obj, SFXTRIG_mv_wickpickup16_194);
             }
             else
             {
-                Sfx_StopObjectChannel((int)obj, 8);
+                Sfx_StopObjectChannel(obj, 8);
             }
         }
         state->flags.watchBitSet = mainGetBit(placement->watchGameBit);

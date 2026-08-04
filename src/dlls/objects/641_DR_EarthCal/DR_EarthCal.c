@@ -1,7 +1,10 @@
 /* DR_EarthCal (DLL 641) */
 #include "main/dll/player_api.h"
 #include "main/dll/DR/dll_0281_drearthcal.h"
+#include "main/dll/tricky_api.h"
+#include "main/obj_trigger.h"
 #include "main/objfx.h"
+#include "main/objtype.h"
 #include "sys/objects.h"
 #include "main/objseq.h"
 

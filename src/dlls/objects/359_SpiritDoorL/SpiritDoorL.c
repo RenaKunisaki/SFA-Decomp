@@ -4,6 +4,8 @@
 
 #include "dlls/objects/343_SpiritDoorS.h"
 
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_interface.h"
 #include "main/dll/dll_0051_cameramodecannon.h"
@@ -12,8 +14,11 @@
 #include "main/gamebits_api.h"
 #include "main/model_light.h"
 #include "main/object_render.h"
+#include "main/object_transform.h"
+#include "main/objhits.h"
 #include "main/objseq.h"
 #include "main/objtexture.h"
+#include "main/objtype.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 

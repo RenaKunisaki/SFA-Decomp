@@ -12,12 +12,14 @@
  * TUs.
  */
 #include "main/frame_timing.h"
+#include "main/vecmath.h"
 #include "sys/objects.h"
 #include "main/dll/ARW/dll_02A2_arwspeedstr.h"
 #include "main/dll/ARW/dll_02A3.h"
 #include "main/dll/ARW/dll_02A5_arwgenerato.h"
 #include "main/dll/ARW/dll_02A6_arwsquadron.h"
 #include "main/object_render.h"
+#include "sys/objects/lifecycle.h"
 
 /* squadron-ship object ids spawned by the generator's two modes */
 #define OBJ_ID_SQUADRON_SHIP_A 0x616

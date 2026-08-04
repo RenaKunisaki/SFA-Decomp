@@ -8,6 +8,7 @@
 
 #include "dlls/objects/377_DFSH_ObjCre.h"
 
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/baddie_placement.h"
 #include "main/dll/dll_0082_modgfx.h"
@@ -16,6 +17,7 @@
 #include "main/object_render.h"
 #include "main/resource.h"
 #include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 #define DFSH_OBJ_CREATOR_SHARPCLAW_OBJECT_ID       0x11
 #define DFSH_OBJ_CREATOR_EFFECT_RESOURCE_ID        0x82
@@ -70,7 +72,7 @@ void dfshObjCreator_update(GameObject* obj) {
         effectResource = Resource_Acquire(DFSH_OBJ_CREATOR_EFFECT_RESOURCE_ID, 1);
         (*effectResource)->spawn(obj, 0, NULL, 1, -1, NULL);
         (*effectResource)->spawn(obj, 1, NULL, 1, -1, NULL);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_hitpos_6);
+        Sfx_PlayFromObject(obj, SFXTRIG_hitpos_6);
         Resource_Release(effectResource);
         state->spawnTimerRate = 1;
         obj->userData2 = 1;

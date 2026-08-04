@@ -7,6 +7,9 @@
 #include "game/objects/object.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
+#include "main/gameloop_gamebit_api.h"
+#include "main/obj_trigger.h"
+#include "main/objprint_render_api.h"
 #include "main/objseq.h"
 
 void BombPlantingSpot_update(GameObject* obj) {

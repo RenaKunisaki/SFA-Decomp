@@ -13,11 +13,16 @@
 #include "dlls/objects/496_SB_KyteCage.h"
 
 #include "dolphin/pad.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
+#include "main/obj_link.h"
+#include "main/obj_list.h"
 #include "main/objprint_api.h"
 #include "main/objseq.h"
+#include "main/pad_api.h"
+#include "main/render_lactions_api.h"
 
 /* objType of the loose Kyte child the cage attaches */
 #define SB_KYTECAGE_KYTE_OBJECT_TYPE 0x121
@@ -72,7 +77,7 @@ int SB_KyteCage_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     if (obj->seqIndex != -1) {
         animUpdate->flags &= ~4;
         if (ObjAnim_AdvanceCurrentMove((int)obj, SB_KYTECAGE_ANIMATION_RATE, timeDelta, NULL) != 0) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_gdtur2_c);
+            Sfx_PlayFromObject(obj, SFXTRIG_mv_gdtur2_c);
         }
     }
 
@@ -151,7 +156,7 @@ void SB_KyteCage_update(GameObject* obj) {
         }
     }
     if (ObjAnim_AdvanceCurrentMove((int)obj, SB_KYTECAGE_ANIMATION_RATE, timeDelta, NULL) != 0) {
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_gdtur2_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_mv_gdtur2_c);
     }
 }
 

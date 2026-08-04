@@ -2,6 +2,8 @@
 #include "dlls/object_descriptor.h"
 #include "main/dll/dll_00C4_tricky.h"
 #include "main/gamebits.h"
+#include "main/objprint_render_api.h"
+#include "main/objtype.h"
 #include "sys/objects/lifecycle.h"
 
 #define VFP_FLAMEPOINT_OBJFLAG_HIDDEN             0x4000

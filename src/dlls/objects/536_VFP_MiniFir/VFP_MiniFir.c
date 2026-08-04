@@ -10,6 +10,8 @@
  * it fires a burst of flame particles, fades its alpha out, and frees
  * itself once it falls past the floor.
  */
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "game/objects/object_setup.h"
@@ -17,6 +19,10 @@
 #include "main/dll/expgfx_interface.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/VF/dll_0218_vfpminifire.h"
+#include "main/rcp_dolphin_api.h"
+#include "main/track_dolphin_api.h"
+#include "main/vecmath.h"
+#include "sys/objects/lifecycle.h"
 
 #define VFPMINIFIRE_PERSIST_EFFECT 0x38c
 #define VFPMINIFIRE_SMOKE_EFFECT   0x38a
@@ -132,7 +138,7 @@ void VFP_MiniFire_update(GameObject* obj)
     {
         state->burstStarted = 1;
         i = VFPMINIFIRE_BURST_COUNT;
-        Sfx_StopObjectChannel((int)obj, 0x7f);
+        Sfx_StopObjectChannel(obj, 0x7f);
         for (; i != 0; i--)
         {
             (*gPartfxInterface)->spawnObject((void*)obj, VFPMINIFIRE_BURST_EFFECT, &args, 1, -1, NULL);
@@ -161,7 +167,7 @@ void VFP_MiniFire_init(GameObject* obj, u8* init)
     obj->anim.localPosY = 400.0f + ((ObjPlacement*)init)->posY;
     obj->anim.rootMotionScale *= 2.0f;
     (*gPartfxInterface)->spawnObject(obj, VFPMINIFIRE_PERSIST_EFFECT, NULL, 2, -1, NULL);
-    Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_103);
+    Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_103);
     obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
 }
 

@@ -8,12 +8,14 @@
 #include "dlls/objects/403_GPSH_ObjCre.h"
 
 #include "dlls/objects/402_GPSH_Shrine.h"
+#include "main/audio/sfx_limited_object_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
 #include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 typedef struct GPSHObjCreatorChildSetup {
     ObjPlacement base;

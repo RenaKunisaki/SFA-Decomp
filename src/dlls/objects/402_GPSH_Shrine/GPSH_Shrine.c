@@ -8,11 +8,16 @@
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "game/objects/object_setup.h"
+#include "main/audio/audio_control_api.h"
+#include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "dlls/objects/430_SH_LevelCon.h"
 #include "main/dll/objfx_api.h"
+#include "main/dll/player_api.h"
 #include "main/frame_timing.h"
+#include "main/game_timer_control_api.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "main/map_load.h"
@@ -27,6 +32,7 @@
 #include "main/sky_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 #define GPSH_SHRINE_ENVFX_A 0xCC
 #define GPSH_SHRINE_ENVFX_B 0xCD
@@ -313,7 +319,7 @@ void gpshShrine_update(GameObject* obj) {
                 idleSfxTimer = state->idleSfxTimer - timeDelta;
                 state->idleSfxTimer = idleSfxTimer;
                 if (idleSfxTimer <= zero) {
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_spirit_voice);
+                    Sfx_PlayFromObject(obj, SFXTRIG_spirit_voice);
                     state->idleSfxTimer = (f32)randomGetRange(500, 1000);
                 }
                 if (obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) {

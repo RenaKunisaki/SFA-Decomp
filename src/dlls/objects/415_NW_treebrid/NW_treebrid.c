@@ -8,6 +8,7 @@
 
 #include "main/dll/partfx_interface.h"
 #include "main/gamebits_api.h"
+#include "main/obj_path.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
 #include "main/objtype.h"
