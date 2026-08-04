@@ -33,6 +33,24 @@ folds `b + K` into the scaled index of `((S*)b)->arr[i]` while retail keeps the
 two-step. A **constant** subscript is not a hazard: `((GameObject*)cursor)->childObjs[0]`
 on a walking `cursor` is byte-identical (`lightmap.c`, measured).
 
+Re-measured directly: `pi_dolphin.c` `mapCheckCurBlocksImpl` spelled
+`((s16*)((char*)gObjMapBlockInfo + 0x4a))[0]` — a literal subscript on a fixed
+offset. As `gObjMapBlockInfo[0x25]` / `[0x47]` the object is **byte-identical**
+(md5 unchanged, 2 sites). A constant subscript costs nothing.
+
+### Two units traps in any offset census
+
+1. **The literal is only a byte offset when a byte-typed pointer governs it.**
+   `*(s32*)(out_vec + 4)` on an `f32* out_vec` is byte **16**;
+   `(Vec*)&sEnvMapBumpIndMtx + 8` is byte **96**. Eleven rows tree-wide are
+   scaled this way, and reading them as bytes flips the verdict on three of
+   them. Take the scale from the governing cast, and report *unknown* rather
+   than assuming bytes when the pointee size is not known.
+2. **Macro bodies are not sites.** 51 of the 1273 fixed-offset rows in the tree
+   are inside `#define` continuations (32 in `tricky.c` alone, from
+   `TRICKY_RETARGET`). They have no enclosing function and their `st` has no
+   type; counting them inflates the census by 4%.
+
 ---
 
 ## Registry
@@ -138,6 +156,53 @@ here that no score gate can see. This is why `obj_equal` is the gate.
 | `226/226.c` `staff_setupSwipe` param re-type | 99.91625 → 99.74876 |
 | `376_DFSH_Shrine` `dfshShrine_updateHoverMotion` param re-type | 100.0 → 99.7479 |
 
+## Declined because retail's own relocations settle it — 76 rows
+
+A raw offset that reaches **past the end of its base object** is not a field at
+all. Whether the original source named the neighbour is not a matter of
+judgement: the object file records it.
+
+**The test.** Had the source written the neighbour's name, the object would
+carry a relocation against that name. So compare, per unit, the number of
+relocations naming the neighbour in the **retail** object against the number in
+**ours**:
+
+| retail vs ours | meaning |
+| --- | --- |
+| equal | retail reached those bytes by offset from the same base we use — **our spelling is already faithful; decline** |
+| retail > ours | retail named the neighbour somewhere we do not — a real candidate |
+| ours > retail | we named something retail reached by offset — a defect |
+
+Run over every fixed-offset row whose byte offset exceeds its base symbol's
+recorded size (76 rows, 21 base symbols, tree-wide): **76 equal, 0 candidates,
+0 over-namings.** Every one is faithful as written.
+
+This is **score-invisible** (a relocation name at an equal address scores equal,
+class #70), so no other instrument in the tree screens for it.
+
+Worked examples, all now proven rather than argued:
+
+- `main/lightmap.c` `sceneDraw`, `q = (char*)gLightmapDrawQueue` with
+  `q + 0x3f48 … + 0x3f74`. `gLightmapDrawQueue` is `0x3F48` bytes, so those 12
+  float stores land in `gCloudLayerTexMatrix` (size `0x30`, exactly 12 floats),
+  which `tex_dolphin.c` passes by name. Retail's `lightmap.o` nevertheless
+  carries **one** `gLightmapDrawQueue` address pair and **zero** for any
+  neighbour. The offsets are what retail wrote. Same for `+ 0x4108` /
+  `+ 0x4164`, and for `shader.c`'s `+ 0x8588` (`gCameraPosByTransformSpace`)
+  and `+ 0x417c` (`gShaderMapRomBuffers`).
+- `dlls/engine/2/2.c` `ObjSeq_start` `base + 0x2bd4/8/c` → `objSeqOverridePos`.
+  Retail's `2.o` references `objSeqOverridePos` **twice**, and so does ours —
+  both from its own writer, neither from `ObjSeq_start`. This confirms by
+  relocation what the measurement below already priced at 99.311295 → 99.011020.
+- `main/textrender_gettext.c` `gGameTextLastEntry + 8` → `gGameTextBufferIndex`
+  (6 sites), `main/pad.c` `gPadButtonsPrevious + 0x10` → `gPadButtonsHeld`
+  (3 sites), `dlls/engine/10_expgfx` `gObjFxCrystalSparkleTbl + 0x48…0x104` →
+  `gObjFxHitPulseTbl` (12 sites), `589_BossDrakor` `gBossDrakorMoveStateTable +
+  0x84…0x98` → `gBossDrakorTurnMoveStates` (6 sites). Every count matches.
+
+`.sbss` cases are the sharpest: SDA21 is one relocation per access, so the
+counts are site-exact.
+
 ## Declined for want of evidence, not for bytes
 
 These were never measured because there is nothing to name them from. They are
@@ -146,10 +211,24 @@ not load-bearing; they are simply unnamed.
 - `dlls/engine/2/maketex.c` `gSaveCardImageBuffer + 0x20 / 0x2a40`,
   `gSaveCardIoBuffer + 0xa40` — byte offsets into a serialized memory-card
   image. The offsets *are* the file format; no struct exists to name them with.
-- `dlls/engine/11/11.c` the `dstv` vertex record — no named type exists, and
-  naming it would be an invention.
-- `main/lightmap.c` `q + 0x3f48` / `+ 0x4108` / `+ 0x4164` where
-  `q = (char*)gLightmapDrawQueue` and `gLightmapDrawQueue` is declared
-  `char[0x3F48]` — these address *past the end* of the array, i.e. the
-  neighbouring `.bss` objects. That is the `.bss`-order lane's territory
-  (A74), not a field-naming question.
+- `dlls/engine/11/11.c` the `dstv` vertex record — 3 position `s16` at
+  `0/2/4`, `s16` U and V at `8/0xa` derived from the texture's width and
+  height, four `0xff` colour bytes at `0xc…0xf`, stride `0x10`. The one named
+  vertex type in the tree, `ModgfxEffectVertex`, is a **different format**
+  (`0x0A` bytes, texcoords at `6/8`), so this would be a new invented struct,
+  not a recovery.
+- `main/lightmap.c` `q + 0x3f48` / `+ 0x4108` / `+ 0x4164` — superseded: these
+  are now **proven** faithful by the relocation test above, not merely declined
+  for want of a name.
+
+### What the tree's own offset pins cannot decide
+
+Matching a group's offset set against all 1332 `STATIC_ASSERT`-pinned struct
+types (8423 field pins) over the 140 unresolved-base groups yields **7 unique
+matches and no usable lead**: 109 groups match three or more types, and every
+unique match is a coincidence — `239/239.c`'s `pushable_push` "matches"
+`EdibleMushroomState` and `CameraModeViewfinderState`; `666_ARWArwing` "matches"
+`CameraModeStaffAnimState`. Offset-set matching alone is coincidence-dominated
+and is **not** evidence. Only a group whose offsets are many *and* whose
+candidate type is semantically related is informative, and outside the cases
+already recorded above there are none.

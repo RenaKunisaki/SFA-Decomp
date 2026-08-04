@@ -1279,9 +1279,9 @@ void modelsTabReadCb(s32 result, DVDFileInfo* fileInfo)
 
 static inline s32 mapCheckCurBlocksImpl(int v)
 {
-    if (((s16*)((char*)gObjMapBlockInfo + 0x4a))[0] == v)
+    if (gObjMapBlockInfo[0x25] == v)
         return 0;
-    if (((s16*)((char*)gObjMapBlockInfo + 0x8e))[0] == v)
+    if (gObjMapBlockInfo[0x47] == v)
         return 1;
     return -1;
 }
