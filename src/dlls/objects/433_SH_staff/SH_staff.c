@@ -373,7 +373,7 @@ int sh_staff_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpda
 
 void sh_staff_deactivate(GameObject* obj, ShStaffState* state, int clearChildren) {
     int player;
-    void* child;
+    GameObject* child;
     int i;
 
     player = (int)Obj_GetPlayerObject();
@@ -385,9 +385,9 @@ void sh_staff_deactivate(GameObject* obj, ShStaffState* state, int clearChildren
         staffToggle((GameObject*)player, 1);
         playerPutAwayStaff((GameObject*)player, 1);
         for (i = 0; i < SHSTAFF_HAZE_CHILD_COUNT; i++) {
-            child = (void*)state->hazeChildren[i];
+            child = (GameObject*)state->hazeChildren[i];
             if (child != NULL) {
-                ((GameObject*)child)->anim.flags = (s16)(((GameObject*)child)->anim.flags | OBJANIM_FLAG_HIDDEN);
+                child->anim.flags = (s16)(child->anim.flags | OBJANIM_FLAG_HIDDEN);
                 state->hazeChildren[i] = 0;
             }
         }

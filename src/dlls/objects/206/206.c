@@ -145,10 +145,10 @@ int dll_CE_checkChooseAttackState(GameObject* obj, GroundBaddieState* state) {
         maxSiblingState = 0;
         objects = ObjList_GetObjects(&objectIndex, &objectCount);
         for (; objectIndex < objectCount; objectIndex++) {
-            void* sibling = (void*)objects[objectIndex];
-            if (sibling != (void*)obj && ((GameObject*)sibling)->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
+            GameObject* sibling = (GameObject*)objects[objectIndex];
+            if (sibling != obj && sibling->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
                 int siblingState =
-                    (*(DllCESiblingInterface**)((GameObject*)sibling)->anim.dll)->getControlMode(sibling, 0);
+                    (*(DllCESiblingInterface**)sibling->anim.dll)->getControlMode(sibling, 0);
                 if (siblingState > maxSiblingState) {
                     maxSiblingState = siblingState;
                 }
@@ -314,10 +314,10 @@ int dll_CE_updateAlertState(GameObject* obj, GroundBaddieState* state) {
     if (state->baddie.moveJustStartedA != '\0') {
         objects = ObjList_GetObjects(&objectIndex, &objectCount);
         for (; objectIndex < objectCount; objectIndex++) {
-            void* sibling = (void*)objects[objectIndex];
+            GameObject* sibling = (GameObject*)objects[objectIndex];
 
-            if (sibling != obj && ((GameObject*)sibling)->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
-                (*(DllCESiblingInterface**)((GameObject*)sibling)->anim.dll)
+            if (sibling != obj && sibling->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
+                (*(DllCESiblingInterface**)sibling->anim.dll)
                     ->handleMessage(sibling, DLL_CE_MESSAGE_RELEASE, 0);
             }
         }
@@ -424,10 +424,10 @@ int dll_CE_updateAttackState(GameObject* obj, GroundBaddieState* state) {
     if (state->baddie.moveJustStartedA != '\0') {
         objects = ObjList_GetObjects(&objectIndex, &objectCount);
         for (; objectIndex < objectCount; objectIndex++) {
-            void* sibling = (void*)objects[objectIndex];
+            GameObject* sibling = (GameObject*)objects[objectIndex];
 
-            if (sibling != obj && ((GameObject*)sibling)->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
-                (*(DllCESiblingInterface**)((GameObject*)sibling)->anim.dll)
+            if (sibling != obj && sibling->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
+                (*(DllCESiblingInterface**)sibling->anim.dll)
                     ->handleMessage(sibling, DLL_CE_MESSAGE_RELEASE, 0);
             }
         }

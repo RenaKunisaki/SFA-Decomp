@@ -391,7 +391,7 @@ void dbegg_computeFlocking(GameObject* obj, f32* vel)
     f32 sumZ;
     int count;
     int* objCursor;
-    u8* sibling;
+    GameObject* sibling;
     int i;
 
     int* objList;
@@ -400,20 +400,20 @@ void dbegg_computeFlocking(GameObject* obj, f32* vel)
     for (i = 0, objCursor = objList, limit = 7.0f; i < count; i++)
     {
         f32 dy;
-        sibling = (u8*)*objCursor;
-        dy = ((GameObject*)sibling)->anim.localPosY - obj->anim.localPosY;
+        sibling = (GameObject*)*objCursor;
+        dy = sibling->anim.localPosY - obj->anim.localPosY;
         if (dy <= limit && dy >= -7.0f)
         {
-            f32 dx = ((GameObject*)sibling)->anim.localPosX - obj->anim.localPosX;
-            f32 dz = ((GameObject*)sibling)->anim.localPosZ - obj->anim.localPosZ;
+            f32 dx = sibling->anim.localPosX - obj->anim.localPosX;
+            f32 dz = sibling->anim.localPosZ - obj->anim.localPosZ;
             f32 dist = sqrtf(dx * dx + dz * dz);
-            f32 radius = 1.5f * (f32)(u32)((DbeggPlacement*)((GameObject*)sibling)->anim.placementDataAddress)->forceRadiusByte;
+            f32 radius = 1.5f * (f32)(u32)((DbeggPlacement*)sibling->anim.placementDataAddress)->forceRadiusByte;
             if (dist < radius)
             {
                 force = (radius - dist) / radius;
-                force = force * (10.0f * ((GameObject*)sibling)->anim.rootMotionScale);
-                sumX += force * mathSinf((3.1415927f * (f32)(int)((GameObject*)sibling)->anim.rotX) / 32768.0f);
-                sumZ += force * mathCosf((3.1415927f * (f32)(int)((GameObject*)sibling)->anim.rotX) / 32768.0f);
+                force = force * (10.0f * sibling->anim.rootMotionScale);
+                sumX += force * mathSinf((3.1415927f * (f32)(int)sibling->anim.rotX) / 32768.0f);
+                sumZ += force * mathCosf((3.1415927f * (f32)(int)sibling->anim.rotX) / 32768.0f);
             }
         }
         objCursor++;
