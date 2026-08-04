@@ -923,7 +923,7 @@ void ShopKeeper_spawnScarabs(GameObject* obj, ShopkeeperState* state, int count)
 {
     int i;
     f32 groundHeight;
-    int setup;
+    ShopkeeperSpawnSetup* setup;
 
     if (Obj_IsLoadingLocked() == 0)
         return;
@@ -935,34 +935,34 @@ void ShopKeeper_spawnScarabs(GameObject* obj, ShopkeeperState* state, int count)
 
     for (i = 0; i < count; i++)
     {
-        setup = (int)Obj_AllocObjectSetup(0x24, OBJTYPE_SPSCARAB);
-        ((ShopkeeperSpawnSetup*)setup)->base.posX = (obj)->anim.localPosX;
-        ((ShopkeeperSpawnSetup*)setup)->base.posY = (obj)->anim.localPosY;
-        ((ShopkeeperSpawnSetup*)setup)->base.posZ = (obj)->anim.localPosZ;
-        ((ShopkeeperSpawnSetup*)setup)->rotXByte = randomGetRange(-128, 127);
-        ((ShopkeeperSpawnSetup*)setup)->groundY = (obj)->anim.localPosY - groundHeight;
-        ((ShopkeeperSpawnSetup*)setup)->base.color[1] = 1;
-        ((ShopkeeperSpawnSetup*)setup)->base.color[3] = 255;
-        ((ShopkeeperSpawnSetup*)setup)->base.color[0] = 16;
-        ((ShopkeeperSpawnSetup*)setup)->base.color[2] = 6;
-        ((ShopkeeperSpawnSetup*)setup)->base.ident = (int)state->vendorObj;
+        setup = (ShopkeeperSpawnSetup*)Obj_AllocObjectSetup(0x24, OBJTYPE_SPSCARAB);
+        setup->base.posX = (obj)->anim.localPosX;
+        setup->base.posY = (obj)->anim.localPosY;
+        setup->base.posZ = (obj)->anim.localPosZ;
+        setup->rotXByte = randomGetRange(-128, 127);
+        setup->groundY = (obj)->anim.localPosY - groundHeight;
+        setup->base.color[1] = 1;
+        setup->base.color[3] = 255;
+        setup->base.color[0] = 16;
+        setup->base.color[2] = 6;
+        setup->base.ident = (int)state->vendorObj;
         objSetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
     }
 
     for (i = 0; i < count; i++)
     {
-        setup = (int)Obj_AllocObjectSetup(0x24, OBJTYPE_SPSCARAB);
-        ((ShopkeeperSpawnSetup*)setup)->base.posX = (obj)->anim.localPosX;
-        ((ShopkeeperSpawnSetup*)setup)->base.posY = (obj)->anim.localPosY;
-        ((ShopkeeperSpawnSetup*)setup)->base.posZ = (obj)->anim.localPosZ;
-        ((ShopkeeperSpawnSetup*)setup)->rotXByte = randomGetRange(-128, 127);
-        ((ShopkeeperSpawnSetup*)setup)->groundY = (obj)->anim.localPosY - groundHeight;
-        ((ShopkeeperSpawnSetup*)setup)->base.color[1] = 1;
-        ((ShopkeeperSpawnSetup*)setup)->base.color[3] = 255;
-        ((ShopkeeperSpawnSetup*)setup)->base.color[0] = 16;
-        ((ShopkeeperSpawnSetup*)setup)->base.color[2] = 6;
-        ((ShopkeeperSpawnSetup*)setup)->kind = 1;
-        ((ShopkeeperSpawnSetup*)setup)->base.ident = (int)state->vendorObj;
+        setup = (ShopkeeperSpawnSetup*)Obj_AllocObjectSetup(0x24, OBJTYPE_SPSCARAB);
+        setup->base.posX = (obj)->anim.localPosX;
+        setup->base.posY = (obj)->anim.localPosY;
+        setup->base.posZ = (obj)->anim.localPosZ;
+        setup->rotXByte = randomGetRange(-128, 127);
+        setup->groundY = (obj)->anim.localPosY - groundHeight;
+        setup->base.color[1] = 1;
+        setup->base.color[3] = 255;
+        setup->base.color[0] = 16;
+        setup->base.color[2] = 6;
+        setup->kind = 1;
+        setup->base.ident = (int)state->vendorObj;
         objSetupObject((ObjPlacement*)setup, 5, (obj)->anim.mapEventSlot, -1, (obj)->anim.parent);
     }
 }
@@ -1006,36 +1006,36 @@ void ShopKeeper_hitDetect(void)
 void ShopKeeper_update(GameObject* obj)
 {
     void* player;
-    int state;
+    ShopkeeperState* state;
     f32 dist;
     player = Obj_GetPlayerObject();
-    state = *(int*)&(obj)->extra;
+    state = obj->extra;
     dist = 10000.0f;
-    ((ShopkeeperState*)state)->flags9D4 &= ~SHOPKEEPER_FLAG_TICK;
-    if (((ShopkeeperState*)state)->textTimer > 0.0f)
+    state->flags9D4 &= ~SHOPKEEPER_FLAG_TICK;
+    if (state->textTimer > 0.0f)
     {
         gameTextShow(0x433);
-        ((ShopkeeperState*)state)->textTimer = ((ShopkeeperState*)state)->textTimer - timeDelta;
-        if (((ShopkeeperState*)state)->textTimer < 0.0f)
+        state->textTimer = state->textTimer - timeDelta;
+        if (state->textTimer < 0.0f)
         {
-            ((ShopkeeperState*)state)->textTimer = 0.0f;
+            state->textTimer = 0.0f;
         }
     }
-    if ((((ShopkeeperState*)state)->flags9D4 & SHOPKEEPER_FLAG_FACING) != 0)
+    if ((state->flags9D4 & SHOPKEEPER_FLAG_FACING) != 0)
     {
         ShopKeeper_turnTowardPlayer(obj, player, 1);
     }
     (obj)->anim.rootMotionScale = (obj)->anim.modelInstance->rootMotionScaleBase;
-    if (((ShopkeeperState*)state)->vendorObj == NULL)
+    if (state->vendorObj == NULL)
     {
-        ((ShopkeeperState*)state)->vendorObj =
+        state->vendorObj =
             objGetNearestTypeTo(SHOPKEEPER_VENDOR_OBJGROUP, obj, &dist);
     }
-    ((ShopkeeperState*)state)->playerMoney = playerGetMoney(player);
+    state->playerMoney = playerGetMoney(player);
     (*gPlayerInterface)->update((void*)obj, (void*)state, timeDelta, timeDelta, gShopKeeperStateHandlers, &gShopKeeperDefaultStateHandler);
-    dll_2E_updateLookAt(obj, &((ShopkeeperState*)state)->moveLib);
-    characterDoEyeAnims(obj, &((ShopkeeperState*)state)->eyeAnimState);
-    (obj)->anim.alpha = ((ShopkeeperState*)state)->opacity;
+    dll_2E_updateLookAt(obj, &state->moveLib);
+    characterDoEyeAnims(obj, &state->eyeAnimState);
+    (obj)->anim.alpha = state->opacity;
 }
 
 void ShopKeeper_init(GameObject* obj)

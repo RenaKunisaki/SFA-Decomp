@@ -310,7 +310,7 @@ void warpstone_loadBaseUi(void) {
 }
 
 int warpstone_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animObj) {
-    int state = (int)obj->extra;
+    WarpStoneState* state = obj->extra;
     int i;
     int child;
     u8 command;
@@ -323,7 +323,7 @@ int warpstone_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animObj) {
         }
     }
 
-    child = *(int*)state;
+    child = (int)state->child;
     if ((void*)child != NULL) {
         ObjAnim_AdvanceCurrentMove(
             child, obj->anim.currentMoveProgress - ((GameObject*)child)->anim.currentMoveProgress, timeDelta, NULL);
@@ -333,9 +333,9 @@ int warpstone_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animObj) {
     animUpdate->freeCallback = (ObjAnimSequenceFreeCallback)warpstone_loadBaseUi;
 
     if ((s8)animUpdate->movementState != 0) {
-        ((WarpStoneState*)state)->sequenceFlags = ((WarpStoneState*)state)->sequenceFlags & ~3;
+        state->sequenceFlags = state->sequenceFlags & ~3;
         if ((s32)warpstoneProbePlayerAnimState() != 0) {
-            ((WarpStoneState*)state)->sequenceFlags = ((WarpStoneState*)state)->sequenceFlags | 1;
+            state->sequenceFlags = state->sequenceFlags | 1;
         }
         {
             int hit;
@@ -347,12 +347,12 @@ int warpstone_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animObj) {
                 hit = 0;
             }
             if (hit) {
-                ((WarpStoneState*)state)->sequenceFlags = ((WarpStoneState*)state)->sequenceFlags | 2;
+                state->sequenceFlags = state->sequenceFlags | 2;
             }
         }
         animUpdate->movementState = 0;
 
-        if (mainGetBit(((WarpStoneState*)state)->sequenceGameBit) != 0 &&
+        if (mainGetBit(state->sequenceGameBit) != 0 &&
             animatedObjGetSeqId(animObj) == 0x35f) {
             AudioStream_CancelPrepared();
             seqClearTaskTexts();
@@ -365,16 +365,16 @@ int warpstone_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animObj) {
         command = animUpdate->eventIds[i];
         switch (command) {
         case 0x17:
-            ((WarpStoneState*)state)->dustEffectFlags = ((WarpStoneState*)state)->dustEffectFlags | 4;
+            state->dustEffectFlags = state->dustEffectFlags | 4;
             Sfx_PlayFromObject(0, SFXTRIG_id_420);
             break;
 
         case 3:
-            ((WarpStoneState*)state)->pathPointIndex = 0;
+            state->pathPointIndex = 0;
             break;
 
         case 4:
-            ((WarpStoneState*)state)->pathPointIndex = 1;
+            state->pathPointIndex = 1;
             break;
 
         case 6:
@@ -391,7 +391,7 @@ int warpstone_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animObj) {
             break;
 
         case 0xa:
-            ((WarpStoneState*)state)->sequenceToggle = ((WarpStoneState*)state)->sequenceToggle ^ 1;
+            state->sequenceToggle = state->sequenceToggle ^ 1;
             break;
 
         case 9:
@@ -417,7 +417,7 @@ int warpstone_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animObj) {
                 UiDllVTable** uiDll = getCurUiDllInterface();
                 (*uiDll)->setState(animUpdate->eventIds[i] - 0xd);
             }
-            mainSetBits(((WarpStoneState*)state)->sequenceGameBit, 1);
+            mainSetBits(state->sequenceGameBit, 1);
             mainSetBits(GAMEBIT_SH_SawWarpStoneIntro, 1);
             break;
 

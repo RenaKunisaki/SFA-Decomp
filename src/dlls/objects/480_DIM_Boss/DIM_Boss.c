@@ -1063,7 +1063,7 @@ typedef struct DimBossHitEntry {
 } DimBossHitEntry;
 
 void DIMboss_updateHitResponse(GameObject* obj, BaddieState* playerState) {
-    int* state;
+    GroundBaddieState* state;
     u8 hit;
     int hitResult;
     GameObject* player;
@@ -1084,11 +1084,11 @@ void DIMboss_updateHitResponse(GameObject* obj, BaddieState* playerState) {
     hitResult = ObjHits_GetPriorityHit(obj, &hitId, &hitType, &hitVolume);
     if (hitResult != 0) {
         gDIMbossSequenceFlags = gDIMbossSequenceFlags & ~(u64)DIMBOSS_SEQUENCE_FLAG_0040;
-        if (((GroundBaddieState*)state)->targetState == 1) {
+        if (state->targetState == 1) {
             if ((gDIMbossSequenceFlags & DIMBOSS_SEQUENCE_FLAG_TONSIL_GUARD_ACTIVE) == 0 || hitType != 2) {
                 hit = 1;
             }
-        } else if (((GroundBaddieState*)state)->targetState == 2) {
+        } else if (state->targetState == 2) {
             if (hitType != 4 || obj->anim.currentMoveProgress < 0.3f || obj->anim.currentMove != 0x12) {
                 hit = 1;
             }
@@ -1120,19 +1120,19 @@ void DIMboss_updateHitResponse(GameObject* obj, BaddieState* playerState) {
                 player = Obj_GetPlayerObject();
                 if (playerGetStateValue(player, 1) != 0) {
                     (*gBaddieControlInterface)
-                        ->startHitReaction((GameObject*)obj, playerState, &((GroundBaddieState*)state)->routeNav,
-                                           ((GroundBaddieState*)state)->gameBitB, NULL, 2, 10, -1, -1);
+                        ->startHitReaction((GameObject*)obj, playerState, &state->routeNav,
+                                           state->gameBitB, NULL, 2, 10, -1, -1);
                     playerState->targetObj = player;
                     playerState->hasTarget = 0;
                 }
             }
-            if (((GroundBaddieState*)state)->targetState == 1) {
+            if (state->targetState == 1) {
                 if (playerState->hitPoints == 3) {
                     gTitleMenuControlInterfaceCopy->vtable->func04(obj, 0x68, 0, 0, 0);
                 } else if (playerState->hitPoints == 2) {
                     gTitleMenuControlInterfaceCopy->vtable->func04(obj, 0x6c, 0, 0, 0);
                 }
-            } else if (((GroundBaddieState*)state)->targetState == 2) {
+            } else if (state->targetState == 2) {
                 if (playerState->hitPoints == 3) {
                     gTitleMenuControlInterfaceCopy->vtable->func04(obj, 0x77, 0, 0, 0);
                 } else if (playerState->hitPoints == 2) {
@@ -1152,12 +1152,12 @@ void DIMboss_updateHitResponse(GameObject* obj, BaddieState* playerState) {
                 obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                 obj->anim.resetHitboxFlags &= ~0x80;
                 mainSetBits(DIMBOSS_GAMEBIT_ICICLE_DEFEATED, 1);
-                if (((GroundBaddieState*)state)->targetState == 1) {
+                if (state->targetState == 1) {
                     mainSetBits(GAMEBIT_DIM2_ICICLE_PHASE1_WIN, 1);
-                } else if (((GroundBaddieState*)state)->targetState == 2) {
+                } else if (state->targetState == 2) {
                     mainSetBits(GAMEBIT_DIM2_ICICLE_PHASE2_WIN, 1);
                 }
-            } else if (((GroundBaddieState*)state)->targetState == 1) {
+            } else if (state->targetState == 1) {
                 (*gPlayerInterface)->setState(obj, playerState, 10);
             } else {
                 (*gPlayerInterface)->setState(obj, playerState, 0xb);

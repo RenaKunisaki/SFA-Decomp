@@ -57,7 +57,7 @@ void dimsnowball_update(GameObject* obj) {
     f32 y[4];
     f32 z[4];
     void* ap;
-    int* state;
+    DimSnowBallState* state;
     GameObject* player;
     int count;
     int last;
@@ -73,12 +73,12 @@ void dimsnowball_update(GameObject* obj) {
     ap = z;
     state = obj->extra;
     player = Obj_GetPlayerObject();
-    if (*(void**)state == NULL) {
+    if (state->target == NULL) {
         Obj_FreeObject(obj);
         return;
     }
     frames = framesThisStep;
-    idx[1] = ((DimSnowBallState*)state)->pathPointIndex;
+    idx[1] = state->pathPointIndex;
     count = gDimSnowballPathPointCount;
     last = count - 1;
     if (idx[1] >= last) {
@@ -151,27 +151,27 @@ void dimsnowball_update(GameObject* obj) {
     }
     dy1 = y[1] - y[0];
     dy2 = y[2] - y[3];
-    if (dy2 <= 0.0f && dy1 <= 0.0f && ((DimSnowBallState*)state)->jingleCooldown <= 0) {
+    if (dy2 <= 0.0f && dy1 <= 0.0f && state->jingleCooldown <= 0) {
         sqrtf(obj->anim.velocityZ * obj->anim.velocityZ +
               (obj->anim.velocityX * obj->anim.velocityX + obj->anim.velocityY * obj->anim.velocityY));
         if ((player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
             Sfx_PlayFromObject((int)obj, SFXTRIG_en_fireup_c_1fb);
         }
-        ((DimSnowBallState*)state)->jingleCooldown = DIM_SNOWBALL_JINGLE_COOLDOWN;
+        state->jingleCooldown = DIM_SNOWBALL_JINGLE_COOLDOWN;
     }
     dy1 = 0.0f;
     obj->anim.localPosX = x[1] + dy1 * (x[2] - x[1]);
     obj->anim.localPosY = y[1] + dy1 * (y[2] - y[1]);
     obj->anim.localPosZ = z[1] + dy1 * (z[2] - z[1]);
-    obj->anim.localPosX = obj->anim.localPosX + ((DimSnowBallState*)state)->target->anim.localPosX;
-    obj->anim.localPosY = obj->anim.localPosY + ((DimSnowBallState*)state)->target->anim.localPosY;
-    obj->anim.localPosZ = obj->anim.localPosZ + ((DimSnowBallState*)state)->target->anim.localPosZ;
+    obj->anim.localPosX = obj->anim.localPosX + state->target->anim.localPosX;
+    obj->anim.localPosY = obj->anim.localPosY + state->target->anim.localPosY;
+    obj->anim.localPosZ = obj->anim.localPosZ + state->target->anim.localPosZ;
     obj->anim.velocityX = oneOverTimeDelta * (obj->anim.localPosX - obj->anim.previousLocalPosX);
     obj->anim.velocityY = oneOverTimeDelta * (obj->anim.localPosY - obj->anim.previousLocalPosY);
     obj->anim.velocityZ = oneOverTimeDelta * (obj->anim.localPosZ - obj->anim.previousLocalPosZ);
-    ((DimSnowBallState*)state)->pathPointIndex = ((DimSnowBallState*)state)->pathPointIndex + frames;
-    if (((DimSnowBallState*)state)->jingleCooldown > 0) {
-        ((DimSnowBallState*)state)->jingleCooldown -= frames;
+    state->pathPointIndex = state->pathPointIndex + frames;
+    if (state->jingleCooldown > 0) {
+        state->jingleCooldown -= frames;
     }
     velocityX = obj->anim.velocityX;
     dy2 = DIM_SNOWBALL_ROTATION_SCALE;

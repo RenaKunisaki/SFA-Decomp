@@ -53,19 +53,19 @@
 #define DIMBOSSSPIT_GLOW_ALPHA_MAX                   0xFF
 
 void DIMbossspit_updateBurst(GameObject* obj) {
-    int stateAddress;
+    DIMbossSpitState* stateAddress;
     s16 burstTimer;
     int alphaFade;
     int alpha;
     int radius;
     int i;
 
-    stateAddress = (int)obj->extra;
+    stateAddress = obj->extra;
     obj->anim.rootMotionScale += DIMBOSSSPIT_BURST_SCALE_STEP;
     obj->anim.rotX += DIMBOSSSPIT_BURST_ROT_X_STEP;
     obj->anim.rotZ += DIMBOSSSPIT_BURST_ROT_YZ_STEP;
     obj->anim.rotY += DIMBOSSSPIT_BURST_ROT_YZ_STEP;
-    if (((DIMbossSpitState*)stateAddress)->burstTimer == DIMBOSSSPIT_BURST_START_FRAME) {
+    if (stateAddress->burstTimer == DIMBOSSSPIT_BURST_START_FRAME) {
         i = 0;
         do {
             (*gPartfxInterface)
@@ -80,12 +80,12 @@ void DIMbossspit_updateBurst(GameObject* obj) {
         Sfx_PlayFromObject((int)obj, SFXTRIG_mn_lummy311);
         CameraShake_SetOffset(3.0f);
         doRumble(12.0f);
-        if (((DIMbossSpitState*)stateAddress)->light != NULL) {
-            modelLightStruct_setEnabled(((DIMbossSpitState*)stateAddress)->light, 0, 1.0f);
+        if (stateAddress->light != NULL) {
+            modelLightStruct_setEnabled(stateAddress->light, 0, 1.0f);
         }
     }
-    ((DIMbossSpitState*)stateAddress)->burstTimer += framesThisStep;
-    burstTimer = ((DIMbossSpitState*)stateAddress)->burstTimer;
+    stateAddress->burstTimer += framesThisStep;
+    burstTimer = stateAddress->burstTimer;
     if (burstTimer > DIMBOSSSPIT_BURST_EFFECT_END_FRAME) {
         if (burstTimer > DIMBOSSSPIT_BURST_FREE_FRAME) {
             Obj_FreeObject(obj);
@@ -101,9 +101,9 @@ void DIMbossspit_updateBurst(GameObject* obj) {
         ObjHitbox_SetSphereRadius(&obj->anim, (s16)((radius - DIMBOSSSPIT_BURST_RADIUS_BASE) >> 1));
         obj->anim.alpha = alpha;
     } else {
-        if (((DIMbossSpitState*)stateAddress)->light != NULL) {
-            ModelLightStruct_free(((DIMbossSpitState*)stateAddress)->light);
-            ((DIMbossSpitState*)stateAddress)->light = NULL;
+        if (stateAddress->light != NULL) {
+            ModelLightStruct_free(stateAddress->light);
+            stateAddress->light = NULL;
         }
         obj->anim.alpha = 0;
         if ((f32)(s32)((radius - DIMBOSSSPIT_BURST_RADIUS_BASE) >> 1) > DIMBOSSSPIT_BURST_MIN_HIT_RADIUS) {

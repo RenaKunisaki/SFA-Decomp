@@ -1008,7 +1008,7 @@ void Lightfoot_init(GameObject* obj, const LightfootPlacement* placement, int is
     PlayerLightfootAnimTable* playerAnimTableBase = &gPlayerLightfootAnimTable;
     int inner = (int)obj->extra;
     const LightfootPlacement* placementData = placement;
-    int control;
+    LightfootControlState* control;
     u8 initFlags = 0x16;
 
     if (isReload != 0) {
@@ -1020,61 +1020,61 @@ void Lightfoot_init(GameObject* obj, const LightfootPlacement* placement, int is
     ((GroundBaddieState*)inner)->baddie.controlMode = 0;
     ((GroundBaddieState*)inner)->baddie.substate = 0;
     obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HITDETECT_DISABLED);
-    control = (int)((LightfootState*)inner)->groundBaddie.control;
-    ((LightfootControlState*)control)->weaponDefNoSentinel = -1;
-    ((LightfootControlState*)control)->weaponDefNo = ((LightfootControlState*)control)->weaponDefNoSentinel;
+    control = ((LightfootState*)inner)->groundBaddie.control;
+    control->weaponDefNoSentinel = -1;
+    control->weaponDefNo = control->weaponDefNoSentinel;
     obj->objectFlags = (u16)(obj->objectFlags | (placement->objectFlags & 0x7));
     if (placement->completionGameBit == DLL1B5_COMPLETION_GAMEBIT_SC_TOTEM_BOND) {
         ((GroundBaddieState*)inner)->baddie.controlMode = 2;
         ((GroundBaddieState*)inner)->baddie.substate = 1;
         ObjHits_DisableObject(obj);
-        ((LightfootControlState*)control)->moveIndex = randomGetRange(0, 3);
-        ((LightfootControlState*)control)->weaponDefNo = DLL1B5_WEAPON_DEF_1;
-        ((LightfootControlState*)control)->moveIds = gLightfootMoveIds0;
-        ((LightfootControlState*)control)->moveSpeeds = gLightfootMoveSpeeds0;
+        control->moveIndex = randomGetRange(0, 3);
+        control->weaponDefNo = DLL1B5_WEAPON_DEF_1;
+        control->moveIds = gLightfootMoveIds0;
+        control->moveSpeeds = gLightfootMoveSpeeds0;
         obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
         obj->userData2 = 0;
     } else {
         switch (placementData->base.ident) {
         case 0x34316:
-            ((LightfootControlState*)control)->moveIds = gLightfootMoveIds3;
-            ((LightfootControlState*)control)->moveSpeeds = gLightfootMoveSpeeds3;
+            control->moveIds = gLightfootMoveIds3;
+            control->moveSpeeds = gLightfootMoveSpeeds3;
             ObjHits_DisableObject(obj);
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x33E3C:
-            ((LightfootControlState*)control)->moveIds = gLightfootMoveIds0;
-            ((LightfootControlState*)control)->moveSpeeds = gLightfootMoveSpeeds0;
-            ((LightfootControlState*)control)->weaponDefNo = DLL1B5_WEAPON_DEF_1;
+            control->moveIds = gLightfootMoveIds0;
+            control->moveSpeeds = gLightfootMoveSpeeds0;
+            control->weaponDefNo = DLL1B5_WEAPON_DEF_1;
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x33E34:
-            ((LightfootControlState*)control)->moveIds = gLightfootMoveIds1;
-            ((LightfootControlState*)control)->moveSpeeds = gLightfootMoveSpeeds1;
-            ((LightfootControlState*)control)->weaponDefNo = DLL1B5_WEAPON_DEF_1;
+            control->moveIds = gLightfootMoveIds1;
+            control->moveSpeeds = gLightfootMoveSpeeds1;
+            control->weaponDefNo = DLL1B5_WEAPON_DEF_1;
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x45C47:
-            ((LightfootControlState*)control)->moveIds = gLightfootMoveIds2;
-            ((LightfootControlState*)control)->moveSpeeds = gLightfootMoveSpeeds2;
+            control->moveIds = gLightfootMoveIds2;
+            control->moveSpeeds = gLightfootMoveSpeeds2;
             ObjHits_DisableObject(obj);
-            ((LightfootControlState*)control)->weaponDefNo = DLL1B5_WEAPON_DEF_2;
+            control->weaponDefNo = DLL1B5_WEAPON_DEF_2;
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x460B6:
-            ((LightfootControlState*)control)->moveIds = gLightfootMoveIds4;
-            ((LightfootControlState*)control)->moveSpeeds = gLightfootMoveSpeeds4;
+            control->moveIds = gLightfootMoveIds4;
+            control->moveSpeeds = gLightfootMoveSpeeds4;
             ObjHits_DisableObject(obj);
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x3433F:
-            ((LightfootControlState*)control)->moveIds = playerAnimTableBase->heavyScuff.anims;
-            ((LightfootControlState*)control)->moveSpeeds = playerAnimTableBase->heavyScuff.rates;
+            control->moveIds = playerAnimTableBase->heavyScuff.anims;
+            control->moveSpeeds = playerAnimTableBase->heavyScuff.rates;
             obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
@@ -1082,22 +1082,22 @@ void Lightfoot_init(GameObject* obj, const LightfootPlacement* placement, int is
             if (mainGetBit(GAMEBIT_LV_ChallengeGate1Complete)) {
                 obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             }
-            ((LightfootControlState*)control)->moveIds = playerAnimTableBase->lightScuff.anims;
-            ((LightfootControlState*)control)->moveSpeeds = playerAnimTableBase->lightScuff.rates;
+            control->moveIds = playerAnimTableBase->lightScuff.anims;
+            control->moveSpeeds = playerAnimTableBase->lightScuff.rates;
             break;
         case 0x46A55:
             if (mainGetBit(GAMEBIT_LV_ChallengeGate2Complete)) {
                 obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             }
-            ((LightfootControlState*)control)->moveIds = playerAnimTableBase->lightScuff.anims;
-            ((LightfootControlState*)control)->moveSpeeds = playerAnimTableBase->lightScuff.rates;
+            control->moveIds = playerAnimTableBase->lightScuff.anims;
+            control->moveSpeeds = playerAnimTableBase->lightScuff.rates;
             break;
         case 0x49928:
             if (mainGetBit(GAMEBIT_SC_ChallengeGate3Complete)) {
                 obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED;
             }
-            ((LightfootControlState*)control)->moveIds = playerAnimTableBase->lightScuff.anims;
-            ((LightfootControlState*)control)->moveSpeeds = playerAnimTableBase->lightScuff.rates;
+            control->moveIds = playerAnimTableBase->lightScuff.anims;
+            control->moveSpeeds = playerAnimTableBase->lightScuff.rates;
             break;
         case 0x499AC:
         case 0x499AE:
@@ -1106,27 +1106,27 @@ void Lightfoot_init(GameObject* obj, const LightfootPlacement* placement, int is
         case 0x499B1:
         case 0x499B2:
             ((GroundBaddieState*)inner)->baddie.substate = 2;
-            ((LightfootControlState*)control)->moveIds = playerAnimTableBase->heavyScuff.anims;
-            ((LightfootControlState*)control)->moveSpeeds = playerAnimTableBase->heavyScuff.rates;
-            ((LightfootControlState*)control)->wanderTimer = (f32)(s32)randomGetRange(0x78, 0xB4);
+            control->moveIds = playerAnimTableBase->heavyScuff.anims;
+            control->moveSpeeds = playerAnimTableBase->heavyScuff.rates;
+            control->wanderTimer = (f32)(s32)randomGetRange(0x78, 0xB4);
             obj->anim.currentMoveProgress = (f32)(s32)randomGetRange(0, 0x63) / 100.0f;
             break;
         case 0x499B5:
         case 0x499B6:
             obj->userData1 = 1;
-            ((LightfootControlState*)control)->moveIds = playerAnimTableBase->heavyScuff.anims;
-            ((LightfootControlState*)control)->moveSpeeds = playerAnimTableBase->heavyScuff.rates;
+            control->moveIds = playerAnimTableBase->heavyScuff.anims;
+            control->moveSpeeds = playerAnimTableBase->heavyScuff.rates;
             break;
         default:
-            ((LightfootControlState*)control)->moveIds = playerAnimTableBase->lightScuff.anims;
-            ((LightfootControlState*)control)->moveSpeeds = playerAnimTableBase->lightScuff.rates;
+            control->moveIds = playerAnimTableBase->lightScuff.anims;
+            control->moveSpeeds = playerAnimTableBase->lightScuff.rates;
             break;
         }
     }
     Lightfoot_ResetScriptedPosition(obj);
     ObjAnim_SetMoveProgress((ObjAnimComponent*)obj, (f32)(s32)randomGetRange(0, 0x63) / 100.0f);
-    ((LightfootControlState*)control)->movementSfxId = (u16)(randomGetRange(0, 1) != 0 ? 0x133 : 0x134);
-    ((LightfootControlState*)control)->pulseTimer = gLightfootPulseTimerInterval[0];
+    control->movementSfxId = (u16)(randomGetRange(0, 1) != 0 ? 0x133 : 0x134);
+    control->pulseTimer = gLightfootPulseTimerInterval[0];
     if (obj->userData1 != 0) {
         ObjHits_DisableObject(obj);
     }
