@@ -1023,11 +1023,10 @@ int moveTricky(GameObject* obj, f32* targetPos) {
                 trickyDebugPrint(debugStrings + 0x1d0);
                 flags = state->stateFlags;
                 if ((flags & 0x400000) != 0) {
-                    td = td >= 0 ? td : -td;
-                    if (td > 0x3555) {
+                    if ((td >= 0 ? td : -td) > 0x3555) {
                         animId = 0x27;
                     } else {
-                        td = td >= 0 ? td : -td;
+                        td = td >= 0 ? turnDelta : -td;
                         if (td > 0x2000) {
                             animId = 0xb;
                         } else {
@@ -1035,11 +1034,10 @@ int moveTricky(GameObject* obj, f32* targetPos) {
                         }
                     }
                 } else if ((flags & 0x800000) != 0) {
-                    td = td >= 0 ? td : -td;
-                    if (td > 0x3555) {
+                    if ((td >= 0 ? td : -td) > 0x3555) {
                         animId = 0x28;
                     } else {
-                        td = td >= 0 ? td : -td;
+                        td = td >= 0 ? turnDelta : -td;
                         if (td > 0x2000) {
                             animId = 0xc;
                         } else {

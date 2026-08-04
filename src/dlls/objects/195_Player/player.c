@@ -11649,10 +11649,10 @@ int playerBuildWallTransitionProbe(GameObject* obj, char* cam, f32* out, f32* ve
                     wallHit = 1;
                 }
             }
-            i++;
+            pl += 4;
             dp++;
             cp += 2;
-            pl += 4;
+            i++;
         } while (i < 2);
         if (dists[0] < dists[1])
         {
@@ -11689,19 +11689,20 @@ int playerBuildWallTransitionProbe(GameObject* obj, char* cam, f32* out, f32* ve
             {
                 TrackGroundHit** pp;
                 f32 best = 10000.0f;
+                f32 dy;
                 f32 best2 = best;
                 int bi = -1;
                 int i2 = 0;
                 pp = list;
                 for (; cnt > 0; cnt--)
                 {
-                    f32 dy = probe.y - (*pp)->height;
+                    dy = probe.y - (*pp)->height;
                     if (dy >= 0.0f && (best < 0.0f || dy < best))
                     {
                         best = dy;
                         bi = i2;
                     }
-                    if ((*pp)->normalY > 0.707f && dy >= 0.0f && (best2 < 0.0f || best2 > dy))
+                    if ((*pp)->normalY > 0.707f && dy >= 0.0f && (best2 < 0.0f || dy < best2))
                     {
                         best2 = dy;
                     }

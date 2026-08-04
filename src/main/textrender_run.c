@@ -1040,7 +1040,7 @@ void gameTextFinalizeLoad(GameTextLoadSlot* loadSlot)
     {
         cs->entries[i].strings = (char**)(strs + (int)cs->entries[i].strings);
     }
-    txt = (u8*)&stringTable->offsets[numStrings];
+    txt = (u8*)(numStrings * 4 + (u32)stringTable->offsets);
     {
         int j;
         for (j = 0; j < numStrings; j++)
