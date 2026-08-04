@@ -1765,7 +1765,7 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
         {
             nl += 1;
         }
-        envtex = addEnvMapBumpStages(t, nl, ((u8*)op)[0x42], ((Shader*)op)->layers[0].textureIndex);
+        envtex = addEnvMapBumpStages(t, nl, ((Shader*)op)->envMapParams, ((Shader*)op)->layers[0].textureIndex);
         envtex &= 0xff;
     }
     if (refs[0] != 0)
@@ -1779,7 +1779,7 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
             color[0] = 0xff;
             color[1] = 0xff;
             color[2] = 0xff;
-            color[3] = ((u8*)op)[0x22];
+            color[3] = ((Shader*)op)->reg2Alpha;
         }
         else
         {
