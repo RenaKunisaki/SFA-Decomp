@@ -565,7 +565,7 @@ void objDrawShadowCasterMesh(Vec3f* vertices, ObjModelState* modelState, GameObj
     GXLoadPosMtxImm((const f32 (*)[4])viewWorldMtx, GX_PNMTX0);
     if (obj->anim.modelInstance->renderFlags & OBJDEF_RENDERFLAG_PROJECTED_SHADOW)
     {
-        u32 color = *(u32*)shadowColor;
+        GXColor color = *(GXColor*)shadowColor;
         objectShadow_setupSwappedProjectedTexture(modelState->shadowCastSlot, &color, worldMtx);
     }
     else
@@ -578,17 +578,17 @@ void objDrawShadowCasterMesh(Vec3f* vertices, ObjModelState* modelState, GameObj
             (diskTexture = getNewShadowSmallDiskTexture(),
              (u32)modelState->shadowCastSlot->texture == diskTexture))
         {
-            u32 color = *(u32*)shadowColor;
+            GXColor color = *(GXColor*)shadowColor;
             objectShadow_setupProjectedTexture(modelState->shadowCastSlot, &color, worldMtx);
         }
         else if (modelState->shadowCastSlot->mode == 0xff)
         {
-            u32 color = *(u32*)shadowColor;
+            GXColor color = *(GXColor*)shadowColor;
             objectShadow_setupProjectedTextureDepthFade(modelState->shadowCastSlot, &color, worldMtx, projectionScale);
         }
         else
         {
-            u32 color = *(u32*)shadowColor;
+            GXColor color = *(GXColor*)shadowColor;
             objectShadow_setupProjectedTextureChannel(modelState->shadowCastSlot, &color, worldMtx, projectionScale);
         }
     }

@@ -2768,7 +2768,7 @@ void drawTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale)
     Camera_RebuildProjectionMatrix();
 }
 
-void objectShadow_setupSwappedProjectedTexture(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx)
+void objectShadow_setupSwappedProjectedTexture(ProjectedShadowTexture* shadow, GXColor* colorPtr, Mtx mtx)
 {
     Mtx tmp;
 
@@ -2777,7 +2777,7 @@ void objectShadow_setupSwappedProjectedTexture(ProjectedShadowTexture* shadow, u
     GXLoadTexMtxImm(tmp, GX_TEXMTX0, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_POS, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
     selectTexture(shadow->texture, 0);
-    GXSetTevKColor(GX_KCOLOR0, *(GXColor*)colorPtr);
+    GXSetTevKColor(GX_KCOLOR0, *colorPtr);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
     GXSetTevKColorSel(GX_TEVSTAGE0, GX_TEV_KCSEL_K0);
     GXSetTevColor(GX_TEVREG1, *(GXColor*)&gObjectShadowTevColor);
@@ -2812,7 +2812,7 @@ void objectShadow_setupSwappedProjectedTexture(ProjectedShadowTexture* shadow, u
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void objectShadow_setupProjectedTexture(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx)
+void objectShadow_setupProjectedTexture(ProjectedShadowTexture* shadow, GXColor* colorPtr, Mtx mtx)
 {
     Mtx tmp;
 
@@ -2820,7 +2820,7 @@ void objectShadow_setupProjectedTexture(ProjectedShadowTexture* shadow, u32* col
     GXLoadTexMtxImm(tmp, GX_TEXMTX0, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_POS, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
     selectTexture(shadow->texture, 0);
-    GXSetTevKColor(GX_KCOLOR0, *(GXColor*)colorPtr);
+    GXSetTevKColor(GX_KCOLOR0, *colorPtr);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
     GXSetTevKColorSel(GX_TEVSTAGE0, GX_TEV_KCSEL_K0);
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
@@ -2854,7 +2854,7 @@ void objectShadow_setupProjectedTexture(ProjectedShadowTexture* shadow, u32* col
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void objectShadow_setupProjectedTextureDepthFade(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 depth)
+void objectShadow_setupProjectedTextureDepthFade(ProjectedShadowTexture* shadow, GXColor* colorPtr, Mtx mtx, f32 depth)
 {
     Mtx m58;
     Mtx m28;
@@ -2872,11 +2872,11 @@ void objectShadow_setupProjectedTextureDepthFade(ProjectedShadowTexture* shadow,
     GXLoadTexMtxImm(m58, GX_TEXMTX0, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_POS, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
     selectTexture(shadow->texture, 0);
-    t = ((GXColor*)colorPtr)->a;
-    ((GXColor*)colorPtr)->a = (t >> 1) + (t >> 2);
-    c.r = ((GXColor*)colorPtr)->a;
-    c.g = ((GXColor*)colorPtr)->a;
-    c.b = ((GXColor*)colorPtr)->a;
+    t = colorPtr->a;
+    colorPtr->a = (t >> 1) + (t >> 2);
+    c.r = colorPtr->a;
+    c.g = colorPtr->a;
+    c.b = colorPtr->a;
     GXSetTevKColor(GX_KCOLOR0, c);
     GXSetTevKColorSel(GX_TEVSTAGE0, GX_TEV_KCSEL_K0);
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
@@ -2938,7 +2938,7 @@ void objectShadow_setupProjectedTextureDepthFade(ProjectedShadowTexture* shadow,
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 scale)
+void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, GXColor* colorPtr, Mtx mtx, f32 scale)
 {
     typedef struct
     {
@@ -2996,10 +2996,10 @@ void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u
     color2.b = 0x7F;
     GXSetTevColor(GX_TEVREG0, color2);
 
-    ((GXColor*)colorPtr)->a = (u8)((((GXColor*)colorPtr)->a >> 1) + (((GXColor*)colorPtr)->a >> 2));
-    temp.r = ((GXColor*)colorPtr)->a;
-    temp.g = ((GXColor*)colorPtr)->a;
-    temp.b = ((GXColor*)colorPtr)->a;
+    colorPtr->a = (u8)((colorPtr->a >> 1) + (colorPtr->a >> 2));
+    temp.r = colorPtr->a;
+    temp.g = colorPtr->a;
+    temp.b = colorPtr->a;
     GXSetTevKColor(GX_KCOLOR0, temp);
 
     stage_base = 0;
