@@ -244,7 +244,7 @@ int playerStateIceSpell(int obj, int state, f32 fv);
 void playerStagedRestoreDefaultControl(GameObject* obj, int state);
 int playerState00(int obj, int state);
 void playerGetMovementOrFacingDirection(GameObject* obj, int state, f32* out);
-int playerBuildWallPlaneProbe(int p1, int p2, void* src, f32* vec, int out, int flag);
+int playerBuildWallPlaneProbe(int p1, int p2, TrackBBoxHit* src, f32* vec, int out, int flag);
 int playerBuildLedgeClimbProbe(int a, int b, void* c, int d, f32* e, f32 distance);
 void playerRestoreAfterSequence(GameObject* obj, int p2, int p3);
 void playerCastIceSpell(GameObject* unused);
@@ -290,7 +290,7 @@ void playerUpdateTargetSelection(GameObject* obj, int inner, int inner2);
 void playerAnimate(GameObject* obj, int state, f32 fv);
 void playerInitFuncPtrs(void);
 int playerBuildWallTransitionProbe(GameObject* obj, char* cam, f32* out, f32* vec, f32 fa, f32 fb);
-int player_probeClimbable(GameObject* obj, int p4, void* src, int dst, int flag);
+int player_probeClimbable(GameObject* obj, int p4, TrackBBoxHit* src, int dst, int flag);
 int playerStateClimbLedge(int obj, int state, f32 fv);
 int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag);
 int playerSetMoveBlendFromPlane(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int* blendPlane,
@@ -11349,7 +11349,7 @@ void playerGetMovementOrFacingDirection(GameObject* obj, int state, f32* out)
  * climbStep) and return 1; return 0 when no ladder is in range. Called per
  * candidate direction from the player move handler.
  */
-int player_probeClimbable(GameObject* obj, int p4, void* src, int dst, int flag)
+int player_probeClimbable(GameObject* obj, int p4, TrackBBoxHit* src, int dst, int flag)
 {
     TrackGroundHit** hits;
     f32 pos[3];
@@ -11369,39 +11369,38 @@ int player_probeClimbable(GameObject* obj, int p4, void* src, int dst, int flag)
     }
 
     {
-        f32 s4 = *(f32*)((char*)src + 0x4);
+        f32 s4 = src->lineStartX;
         f32 t = 0.5f;
-        *(f32*)((char*)dst + 0x48) = s4 + t * (*(f32*)((char*)src + 0x8) - s4);
-        *(f32*)((char*)dst + 0x4c) = *(f32*)((char*)src + 0xc);
-        *(f32*)((char*)dst + 0x50) =
-            *(f32*)((char*)src + 0x14) + t * (*(f32*)((char*)src + 0x18) - *(f32*)((char*)src + 0x14));
+        *(f32*)((char*)dst + 0x48) = s4 + t * (src->lineEndX - s4);
+        *(f32*)((char*)dst + 0x4c) = src->lineStartY;
+        *(f32*)((char*)dst + 0x50) = src->lineStartZ + t * (src->lineEndZ - src->lineStartZ);
     }
 
     if (flag != 0)
     {
-        *(f32*)((char*)dst + 0x28) = -*(f32*)((char*)src + 0x1c);
-        *(f32*)((char*)dst + 0x2c) = -*(f32*)((char*)src + 0x20);
-        *(f32*)((char*)dst + 0x30) = -*(f32*)((char*)src + 0x24);
-        *(f32*)((char*)dst + 0x34) = -*(f32*)((char*)src + 0x28);
+        *(f32*)((char*)dst + 0x28) = -src->normalX;
+        *(f32*)((char*)dst + 0x2c) = -src->normalY;
+        *(f32*)((char*)dst + 0x30) = -src->normalZ;
+        *(f32*)((char*)dst + 0x34) = -src->normalW;
     }
     else
     {
-        *(f32*)((char*)dst + 0x28) = *(f32*)((char*)src + 0x1c);
-        *(f32*)((char*)dst + 0x2c) = *(f32*)((char*)src + 0x20);
-        *(f32*)((char*)dst + 0x30) = *(f32*)((char*)src + 0x24);
-        *(f32*)((char*)dst + 0x34) = *(f32*)((char*)src + 0x28);
+        *(f32*)((char*)dst + 0x28) = src->normalX;
+        *(f32*)((char*)dst + 0x2c) = src->normalY;
+        *(f32*)((char*)dst + 0x30) = src->normalZ;
+        *(f32*)((char*)dst + 0x34) = src->normalW;
     }
 
-    *(f32*)((char*)dst + 0x38) = -*(f32*)((char*)src + 0x24);
+    *(f32*)((char*)dst + 0x38) = -src->normalZ;
     *(f32*)((char*)dst + 0x3c) = zero = 0.0f;
-    *(f32*)((char*)dst + 0x40) = *(f32*)((int)src + 0x1c);
+    *(f32*)((char*)dst + 0x40) = src->normalX;
     *(f32*)((char*)dst + 0x44) = -(*(f32*)((char*)dst + 0x48) * *(f32*)((char*)dst + 0x38) +
                                    *(f32*)((char*)dst + 0x4c) * *(f32*)((char*)dst + 0x3c) +
                                    *(f32*)((char*)dst + 0x50) * *(f32*)((char*)dst + 0x40));
 
-    *(f32*)((char*)dst + 0x54) = *(f32*)((char*)p4 + 0x768);
+    *(f32*)((char*)dst + 0x54) = ((PlayerState*)p4)->savedPosX;
     *(f32*)((char*)dst + 0x58) = zero;
-    *(f32*)((char*)dst + 0x5c) = *(f32*)((char*)p4 + 0x770);
+    *(f32*)((char*)dst + 0x5c) = ((PlayerState*)p4)->savedPosZ;
     *(f32*)((char*)dst + 0x18) = *(f32*)((char*)dst + 0x54) * *(f32*)((char*)dst + 0x38) +
                                  *(f32*)((char*)dst + 0x58) * *(f32*)((char*)dst + 0x3c) +
                                  *(f32*)((char*)dst + 0x5c) * *(f32*)((char*)dst + 0x40) + *(f32*)((char*)dst + 0x44);
@@ -11410,10 +11409,10 @@ int player_probeClimbable(GameObject* obj, int p4, void* src, int dst, int flag)
 
     if (*(f32*)((char*)dst + 0x18) > -9.0f && *(f32*)((char*)dst + 0x18) < 9.0f)
     {
-        *(f32*)((char*)dst + 0x8) = *(f32*)((char*)src + 0xc);
-        PSVECScale((Vec*)((char*)src + 0x1c), (Vec*)pos, -lbl_803DC6B8[1]);
+        *(f32*)((char*)dst + 0x8) = src->lineStartY;
+        PSVECScale((Vec*)&src->normalX, (Vec*)pos, -lbl_803DC6B8[1]);
         PSVECAdd((Vec*)((int)dst + 0x48), (Vec*)pos, (Vec*)pos);
-        y = *(f32*)((char*)src + 0x3c);
+        y = src->upperY0;
         pos[1] = y;
         count = trackGetHeight(obj, pos[0], y, pos[2], &hits, 0, HITQUERY_CLIMB_SURFACE);
 
@@ -11439,9 +11438,8 @@ int player_probeClimbable(GameObject* obj, int p4, void* src, int dst, int flag)
 
         chosen = hits[best];
         *(f32*)((char*)dst + 0x4) = chosen->height;
-        *(s8*)((char*)dst + 0x1) = (s8)(s32)((2.2f + (*(f32*)((char*)src + 0x3c) - *(f32*)((char*)dst + 0x8))) / 8.8f);
-        *(f32*)((char*)dst + 0xc) =
-            (*(f32*)((char*)src + 0x3c) - *(f32*)((char*)dst + 0x8)) / (f32) * (s8*)((char*)dst + 0x1);
+        *(s8*)((char*)dst + 0x1) = (s8)(s32)((2.2f + (src->upperY0 - *(f32*)((char*)dst + 0x8))) / 8.8f);
+        *(f32*)((char*)dst + 0xc) = (src->upperY0 - *(f32*)((char*)dst + 0x8)) / (f32) * (s8*)((char*)dst + 0x1);
 
         if (obj->anim.localPosY > *(f32*)((char*)dst + 0x4) - 10.0f)
         {
@@ -11456,7 +11454,7 @@ int player_probeClimbable(GameObject* obj, int p4, void* src, int dst, int flag)
     return 0;
 }
 
-int playerBuildWallPlaneProbe(int p1, int p2, void* src, f32* vec, int out, int flag)
+int playerBuildWallPlaneProbe(int p1, int p2, TrackBBoxHit* src, f32* vec, int out, int flag)
 {
     f32 p48;
     f32 m44;
@@ -11467,7 +11465,7 @@ int playerBuildWallPlaneProbe(int p1, int p2, void* src, f32* vec, int out, int 
     f32 d2;
     f32 c38;
     *(f32*)((char*)out + 0x44) = *(f32*)((char*)vec + 0x0);
-    *(f32*)((char*)out + 0x48) = *(f32*)((char*)src + 0xc);
+    *(f32*)((char*)out + 0x48) = src->lineStartY;
     *(f32*)((char*)out + 0x4c) = *(f32*)((char*)vec + 0x8);
     *(f32*)((char*)out + 0x50) = ((PlayerState*)p2)->savedPosX;
     *(f32*)((char*)out + 0x54) = 0.0f;
@@ -11480,29 +11478,29 @@ int playerBuildWallPlaneProbe(int p1, int p2, void* src, f32* vec, int out, int 
     {
         *(u8*)((char*)out + 0x1) = 0;
     }
-    *(f32*)((char*)out + 0x24) = *(f32*)((char*)src + 0x1c);
-    *(f32*)((char*)out + 0x28) = *(f32*)((char*)src + 0x20);
-    *(f32*)((char*)out + 0x2c) = *(f32*)((char*)src + 0x24);
-    *(f32*)((char*)out + 0x30) = *(f32*)((char*)src + 0x28);
-    *(f32*)((char*)out + 0x34) = -*(f32*)((char*)src + 0x24);
+    *(f32*)((char*)out + 0x24) = src->normalX;
+    *(f32*)((char*)out + 0x28) = src->normalY;
+    *(f32*)((char*)out + 0x2c) = src->normalZ;
+    *(f32*)((char*)out + 0x30) = src->normalW;
+    *(f32*)((char*)out + 0x34) = -src->normalZ;
     c38 = 0.0f;
     *(f32*)((char*)out + 0x38) = c38;
-    *(f32*)((char*)out + 0x3c) = *(f32*)((char*)src + 0x1c);
+    *(f32*)((char*)out + 0x3c) = src->normalX;
     *(f32*)((char*)out + 0x40) = -(*(f32*)((char*)out + 0x44) * *(f32*)((char*)out + 0x34) +
                                    *(f32*)((char*)out + 0x48) * *(f32*)((char*)out + 0x38) +
                                    *(f32*)((char*)out + 0x4c) * *(f32*)((char*)out + 0x3c));
     nx = -*(f32*)((char*)out + 0x2c);
     ny = *(f32*)((char*)out + 0x24);
-    d1 = -(nx * *(f32*)((char*)src + 0x4) + ny * *(f32*)((char*)src + 0x14)) +
+    d1 = -(nx * src->lineStartX + ny * src->lineStartZ) +
          (ny * (m4c = *(f32*)((char*)out + 0x4c)) +
           (nx * (m44 = *(f32*)((char*)out + 0x44)) + (p48 = c38 * *(f32*)((char*)out + 0x48))));
     nx = -nx;
     ny = -ny;
-    d2 = -(nx * *(f32*)((char*)src + 0x8) + ny * *(f32*)((char*)src + 0x18)) + (ny * m4c + (nx * m44 + p48));
+    d2 = -(nx * src->lineEndX + ny * src->lineEndZ) + (ny * m4c + (nx * m44 + p48));
     if (d1 > 7.5f && d2 > 7.5f)
     {
-        *(f32*)((char*)out + 0x8) = *(f32*)((char*)src + 0xc);
-        *(f32*)((char*)out + 0x4) = *(f32*)((char*)src + 0x3c);
+        *(f32*)((char*)out + 0x8) = src->lineStartY;
+        *(f32*)((char*)out + 0x4) = src->upperY0;
         *(s8*)((char*)out + 0x2) = (int)*(s8*)((char*)src + 0x53);
         return 1;
     }
@@ -17104,11 +17102,11 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
             }
             case 0x17:
                 va = (int)((GameObject*)obj)->extra;
-                if (*(u32*)(va + 0x7f8) != 0)
+                if (((PlayerState*)va)->heldObj != NULL)
                 {
-                    *(u8*)(va + 0x800) = 0;
+                    ((PlayerState*)va)->isHoldingObject = 0;
                     {
-                        int p17 = *(int*)(va + 0x7f8);
+                        int p17 = (int)((PlayerState*)va)->heldObj;
                         if ((u32)p17 != 0)
                         {
                             s16 romDefNo = ((GameObject*)p17)->anim.romDefNo;
@@ -17120,9 +17118,9 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
                             {
                                 Carryable_putDownAndSavePos((GameObject*)p17);
                             }
-                            *(s16*)(*(int*)(va + 0x7f8) + 6) &= ~0x4000;
-                            *(int*)(*(int*)(va + 0x7f8) + 0xf8) = 0;
-                            *(int*)(va + 0x7f8) = 0;
+                            ((PlayerState*)va)->heldObj->anim.flags &= ~0x4000;
+                            ((PlayerState*)va)->heldObj->userData2 = 0;
+                            ((PlayerState*)va)->heldObj = NULL;
                         }
                     }
                     ((PlayerState*)va)->flags360 |= 0x800000LL;
