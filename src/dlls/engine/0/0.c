@@ -1564,7 +1564,7 @@ void hudDrawAirMeter(void)
         {
             Texture* texture =
                 (i < meter->value) ? meter->textures.segments.filled : meter->textures.segments.empty;
-            drawTexture(texture, (f32)(int)x, (f32)(u32)(0x1a4 - meter->yOffset), meter->alpha, 0x100);
+            drawTexture(texture, (f32)x, (f32)(u32)(0x1a4 - meter->yOffset), meter->alpha, 0x100);
             x += meter->segmentWidth;
         }
         break;
@@ -1603,13 +1603,13 @@ void hudDrawAirMeter(void)
         clampVal = (meter->value < 0) ? 0 : ((meter->value > meter->fillWidth) ? meter->fillWidth : meter->value);
         meter->value = clampVal;
         alpha = clampVal;
-        drawScaledTexture(meter->textures.bar.empty, (f32)(int)(barX + alpha), (f32)(int)barY, meter->alpha, 0x100,
+        drawScaledTexture(meter->textures.bar.empty, (f32)(int)(barX + alpha), (f32)barY, meter->alpha, 0x100,
                           meter->fillWidth - alpha, 0x1a, 0);
-        drawScaledTexture(meter->textures.bar.filled, (f32)(int)barX, (f32)(int)barY, meter->alpha, 0x100, alpha, 0x1a,
+        drawScaledTexture(meter->textures.bar.filled, (f32)barX, (f32)barY, meter->alpha, 0x100, alpha, 0x1a,
                           0);
         barY = 0x1a4;
         barY -= (u32)meter->textures.bar.end->height >> 1;
-        drawTexture(meter->textures.bar.end, (f32)(int)(barX + meter->fillWidth), (f32)(int)barY, meter->alpha, 0x100);
+        drawTexture(meter->textures.bar.end, (f32)(int)(barX + meter->fillWidth), (f32)barY, meter->alpha, 0x100);
         break;
     }
     }
@@ -1884,12 +1884,12 @@ void drawViewFinderHud(void)
                     break;
                 }
                 heading++;
-                if ((u8)textAlpha != 0)
+                if (textAlpha != 0)
                 {
                     f32 sn;
                     f32 phase;
                     f32 scale;
-                    gameTextSetColor(0, 0xff, 0, (int)((f32)(u8)textAlpha * gViewFinderFadeLevel));
+                    gameTextSetColor(0, 0xff, 0, (int)((f32)textAlpha * gViewFinderFadeLevel));
                     scale = gGameUiPi;
                     phase = lbl_803E1F34 - tickX;
                     sn = lbl_803DBAE4 * mathCosf(scale * (phase * lbl_803DBAE0) / gGameUiAngleDivisor);
@@ -4516,7 +4516,7 @@ void drawArwingHud(int unused1, int unused2, int unused3)
                 drawTexture(hudTextures[57], (f32)(bombSlot * 0x1c + 0x23), 72.0f, (int)arwingHudAlpha & 0xff, 0x100);
             }
         }
-        if (((GameObject*)arwing)->anim.mapEventSlot != 0x26)
+        if (arwing->anim.mapEventSlot != 0x26)
         {
             drawTexture(hudTextures[61], 6e+02f, 31.0f, (int)arwingHudAlpha & 0xff, 0x100);
             for (i = 0; (int)(i & 0xff) < rings; i++)
@@ -4813,7 +4813,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
                 textHeight = boundsRight - boundsLeft;
                 gPauseMenuActiveGrid[1].trailX = textHeight;
                 x = textBox->x + (textHeight >> 1) - 0x140;
-                gPauseMenuActiveGrid[1].x = gPauseMenuTextScale * (f32)(s32)x + lbl_803E1F34;
+                gPauseMenuActiveGrid[1].x = gPauseMenuTextScale * (f32)x + lbl_803E1F34;
 
                 if (gPauseMenuGridCursor != 0)
                 {
@@ -5075,7 +5075,7 @@ void pauseMenuDrawStatusPage(GameObject* player)
             u16 ii;
             for (ii = 0; ii < 7; ii++)
             {
-                f32 fy = 31.0f * (f32)(u32)(u16)ii + lbl_803E1F30;
+                f32 fy = 31.0f * (f32)(u32)ii + lbl_803E1F30;
                 pauseMenuDrawElement((int*)((HudTextures*)hudTextures)->tex5C, fy, 436.0f, px, ty,
                                      (s32)lbl_803E20B8, 0);
             }
@@ -5153,7 +5153,7 @@ void pauseMenuDrawSideRails(s32 alpha)
     brightness = 512.0f - phase * brightnessStep;
     for (; j >= 0; j -= 10)
     {
-        f32 off = phase * (40.0f - (f32)(s32)(s8)j) / 40.0f;
+        f32 off = phase * (40.0f - (f32)(s32)j) / 40.0f;
         pauseMenuDrawElement(((HudTextures*)hudTextures)->tex118, 595.0f + off, 289.0f,
                              x2 = (s16)((0xff - j) - gPauseMenuSlideOut), alpha, (s32)(f64)brightness, 0);
         pauseMenuDrawElement(((HudTextures*)hudTextures)->tex118, 27.0f - off, 289.0f, x2, alpha,
@@ -6141,7 +6141,7 @@ void pauseMenuUpdate(void)
                     {
                         gPauseMenuPageIndex = menuMin;
                     }
-                    if (gPauseMenuPageIndex != (u8)prev)
+                    if (gPauseMenuPageIndex != prev)
                     {
                         Sfx_PlayFromObject(0, SFXTRIG_menu_fox_select);
                     }
@@ -8784,7 +8784,7 @@ void GameUI_frameEnd(void)
                 gGameUiHelpTextPending = 0;
                 sv = gGameUiHelpTextId;
             }
-            if ((s16)sv > -1)
+            if (sv > -1)
             {
                 gMinimapAreaNameId = sv;
                 gMinimapAreaNameActive = 1;
