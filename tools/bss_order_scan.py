@@ -32,11 +32,20 @@ def secs(p,raw=False):
 
 
 if __name__ == "__main__":
+    targets=set()
+    try:
+        out=subprocess.run(['ninja','-C',ROOT,'-t','targets','all'],capture_output=True,text=True).stdout
+        for ln in out.splitlines():
+            t=ln.split(':',1)[0].strip()
+            if t.endswith('.o'): targets.add(os.path.abspath(os.path.join(ROOT,t)))
+    except OSError:
+        pass
     bad=[]; names=[]
     for dp,_,fs in os.walk(SRC):
         for f in fs:
             if not f.endswith('.o'): continue
             ours=os.path.join(dp,f); rel=os.path.relpath(ours,SRC)
+            if targets and os.path.abspath(ours) not in targets: continue
             th=os.path.join(OBJ,rel)
             if not os.path.isfile(th): continue
             a=secs(ours,True); b=secs(th,True)
