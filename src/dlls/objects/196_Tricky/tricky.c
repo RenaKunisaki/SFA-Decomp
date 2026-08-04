@@ -1270,7 +1270,7 @@ void* trickySelectRouteEntry(TrickyState* state, u8* routeDef, u8 routeFlagValue
 
     entry = NULL;
 
-    if ((*(u8**)&state->cachedRouteDef == routeDef) &&
+    if ((state->cachedRouteDef == routeDef) &&
         (state->cachedWalkGroup == state->walkGroup) &&
         (state->cachedRouteFlags == (routeFlagValue & 0xffu))) {
         entry = skeetla_validateRouteEntry(state->validatedRouteEntry);
@@ -1302,7 +1302,7 @@ void* trickySelectRouteEntry(TrickyState* state, u8* routeDef, u8 routeFlagValue
         }
     }
 
-    *(u8**)&state->cachedRouteDef = routeDef;
+    state->cachedRouteDef = routeDef;
     state->validatedRouteEntry = entry;
     state->cachedWalkGroup = state->walkGroup;
     state->cachedRouteFlags = routeFlagValue;
@@ -7006,7 +7006,7 @@ void Tricky_hitDetect(GameObject* obj) {
     if (1.0f == dy) {
         if (y == obj->anim.worldPosY) {
             ((TrickyState*)state)->heightTracking = 1;
-            *(s32*)&((TrickyState*)state)->heightTrackObjId = -1;
+            ((TrickyState*)state)->heightTrackObjId = -1;
             ((TrickyState*)state)->trackedHeight = 0.0f;
         }
     } else {
@@ -7480,7 +7480,7 @@ void Tricky_update(int obj) {
         if ((flags & 0x10000) != 0) {
             if ((flags & 0x20000) != 0) {
                 TRICKY_RESET_COMMAND(state);
-                *(u8*)&trickyState->commandPhase = 0;
+                trickyState->commandPhase = 0;
             } else {
                 TRICKY_RESET_COMMAND(state);
             }
