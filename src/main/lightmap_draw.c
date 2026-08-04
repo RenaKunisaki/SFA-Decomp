@@ -38,7 +38,7 @@
 #include "dolphin/mtx.h"
 #include "dolphin/os/OSFastCast.h"
 
-extern f32 widescreenAspect_803DEC1C;
+extern f32 widescreenAspect;
 
 void sceneDraw(void);
 void sceneDrawTransparentPolys(void);
@@ -153,7 +153,7 @@ int setWidescreen(u8 v)
     if (v != 0)
     {
         renderFlags |= RENDERFLAG_WIDESCREEN;
-        Camera_SetAspectRatio(widescreenAspect_803DEC1C);
+        Camera_SetAspectRatio(widescreenAspect);
     }
     else
     {
