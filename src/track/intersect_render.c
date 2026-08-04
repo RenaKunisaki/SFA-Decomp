@@ -2871,11 +2871,11 @@ void objectShadow_setupProjectedTextureDepthFade(ProjectedShadowTexture* shadow,
     GXLoadTexMtxImm(m58, GX_TEXMTX0, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_POS, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
     selectTexture(shadow->texture, 0);
-    t = ((u8*)colorPtr)[3];
-    ((u8*)colorPtr)[3] = (t >> 1) + (t >> 2);
-    c.r = ((u8*)colorPtr)[3];
-    c.g = ((u8*)colorPtr)[3];
-    c.b = ((u8*)colorPtr)[3];
+    t = ((GXColor*)colorPtr)->a;
+    ((GXColor*)colorPtr)->a = (t >> 1) + (t >> 2);
+    c.r = ((GXColor*)colorPtr)->a;
+    c.g = ((GXColor*)colorPtr)->a;
+    c.b = ((GXColor*)colorPtr)->a;
     GXSetTevKColor(GX_KCOLOR0, c);
     GXSetTevKColorSel(GX_TEVSTAGE0, GX_TEV_KCSEL_K0);
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
@@ -2995,10 +2995,10 @@ void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u
     color2.b = 0x7F;
     GXSetTevColor(GX_TEVREG0, color2);
 
-    ((u8*)colorPtr)[3] = (u8)((((u8*)colorPtr)[3] >> 1) + (((u8*)colorPtr)[3] >> 2));
-    temp.r = ((u8*)colorPtr)[3];
-    temp.g = ((u8*)colorPtr)[3];
-    temp.b = ((u8*)colorPtr)[3];
+    ((GXColor*)colorPtr)->a = (u8)((((GXColor*)colorPtr)->a >> 1) + (((GXColor*)colorPtr)->a >> 2));
+    temp.r = ((GXColor*)colorPtr)->a;
+    temp.g = ((GXColor*)colorPtr)->a;
+    temp.b = ((GXColor*)colorPtr)->a;
     GXSetTevKColor(GX_KCOLOR0, temp);
 
     stage_base = 0;
