@@ -111,7 +111,7 @@ int drshackle_renderAtPathPoint(GameObject* obj, int a, int b, int c, int d, int
     if (q->quarterTurns != 0)
     {
         obj->anim.rotZ =
-            (s16)(((placement = (DrshacklePlacement*)q)->quarterTurns << 14) + getAngle(jointPos[2], jointPos[0]));
+            (s16)(((placement = q)->quarterTurns << 14) + getAngle(jointPos[2], jointPos[0]));
         obj->anim.rotY = (s16)getAngle(jointPos[2], jointPos[1]);
     }
     else
