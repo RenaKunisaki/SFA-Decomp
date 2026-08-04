@@ -967,8 +967,8 @@ int dll_19_updateSequenceMovement(GameObject* obj, ObjSeqState* seq, char* st, v
         }
         if (dist >= total || gDll19SeqStallCount > 9)
         {
-            char* t2 = (char*)((BaddieState*)st)->targetObj;
-            int delta = (obj)->anim.rotX - (u16)((GameObject*)t2)->anim.rotX;
+            GameObject* t2 = ((BaddieState*)st)->targetObj;
+            int delta = (obj)->anim.rotX - (u16)t2->anim.rotX;
             if (delta > 0x8000)
             {
                 delta -= 0xffff;

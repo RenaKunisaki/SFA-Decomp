@@ -168,8 +168,8 @@ int drakorhoverpad_getDismountSide(void)
 
 int drakorhoverpad_canDismount(GameObject* obj)
 {
-    u8* p = obj->extra;
-    return ((DrakorHoverpadState*)p)->pathFlags.f04 == 0;
+    DrakorHoverpadState* p = obj->extra;
+    return p->pathFlags.f04 == 0;
 }
 
 void drakorhoverpad_getRiderPosition(GameObject* obj, f32* ox, f32* oy, f32* oz)
@@ -186,8 +186,8 @@ int drakorhoverpad_getMountSide(void)
 
 int drakorhoverpad_canMount(GameObject* obj)
 {
-    u8* p = obj->extra;
-    return ((DrakorHoverpadState*)p)->pathFlags.f04;
+    DrakorHoverpadState* p = obj->extra;
+    return p->pathFlags.f04;
 }
 
 static void drakorhoverpad_setupPathCurve(GameObject* obj, u8* p)

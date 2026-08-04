@@ -94,7 +94,7 @@ static const f32 sExplosionFadeOutExponent[1] = {25.0f};
 static const f32 sExplosionSpawnDelay[1] = {8.0f};
 
 void explosion_spawnFlame(GameObject* obj, u8 generation, f32 speed, f32 x, f32 y, f32 z) {
-    s16* placement = (obj)->anim.placementData;
+    DimExplosionPlacement* placement = (DimExplosionPlacement*)(obj)->anim.placementData;
     DimExplosionState* state = (obj)->extra;
     DimExplosionFlame* flames = (DimExplosionFlame*)state->flames;
     int flameIndex = state->flameCount++;
@@ -117,7 +117,7 @@ void explosion_spawnFlame(GameObject* obj, u8 generation, f32 speed, f32 x, f32 
         flames[flameIndex].lifetime = clampedLifetime;
     }
     if (flames[flameIndex].generation < 1) {
-        s8 sfxKind = ((DimExplosionPlacement*)placement)->sfxKind;
+        s8 sfxKind = placement->sfxKind;
         if (sfxKind != 0) {
             if (sfxKind == 2) {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_wp_sexpl2_c_4bf);
@@ -240,13 +240,13 @@ void explosion_render(GameObject* obj, int renderArg2, int renderArg3, int rende
     Mtx m2;
     Mtx m1;
     DimExplosionState* state;
-    int model;
+    ObjModel* model;
     int i;
     int cursor;
     colA = sExplosionQuadColorA[0];
     colB = lbl_803E8468;
     state = obj->extra;
-    model = (int)Obj_GetActiveModel(obj);
+    model = Obj_GetActiveModel(obj);
     cursor = (int)state;
     if (visible != 0) {
         GXClearVtxDesc();
@@ -328,7 +328,7 @@ void explosion_render(GameObject* obj, int renderArg2, int renderArg3, int rende
                 obj->anim.rotX = (s16)state->rays[i].pitch;
                 objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, visible);
                 if (i < state->rayCount - 1) {
-                    ((ObjModel*)model)->bufferFlags &= ~8;
+                    model->bufferFlags &= ~8;
                 }
             }
         }

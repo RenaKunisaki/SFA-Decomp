@@ -171,7 +171,7 @@ void PressureSwitchFB_update(GameObject* obj) {
     PressureSwitchFBPlacement* placement;
     PressureSwitchFBState* state;
     int i;
-    int scratch;
+    GameObject* scratch;
     int effectIndex;
     int isTrackedType;
     ObjTextureRuntimeSlot* texture;
@@ -297,8 +297,8 @@ void PressureSwitchFB_update(GameObject* obj) {
         }
         if (((obj->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0) && (state->flags.update.latched == 0) &&
             (state->flags.update.active != 0)) {
-            scratch = (int)Obj_GetPlayerObject();
-            if (Vec_distance(&obj->anim.worldPosX, &((GameObject*)scratch)->anim.worldPosX) <
+            scratch = Obj_GetPlayerObject();
+            if (Vec_distance(&obj->anim.worldPosX, &scratch->anim.worldPosX) <
                 PRESSURESWITCHFB_PARTICLE_DISTANCE) {
                 effectParams.posX = 0.0f;
                 effectParams.posY = PRESSURESWITCHFB_PARTICLE_Y_OFFSET;

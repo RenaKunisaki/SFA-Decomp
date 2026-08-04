@@ -171,7 +171,7 @@ void DIMCannon_updateAim(GameObject* obj, f32 targetX, f32 unusedTargetY, f32 ta
     DimCannonState* state;
     DimCannonPlacement* placement;
     s16* modelRotation;
-    int player;
+    GameObject* player;
     f32 dx;
     f32 dz;
     f32 distSq;
@@ -191,7 +191,7 @@ void DIMCannon_updateAim(GameObject* obj, f32 targetX, f32 unusedTargetY, f32 ta
     (void)unusedDistance;
 
     placement = *(DimCannonPlacement**)&(obj)->anim.placementData;
-    player = (int)Obj_GetPlayerObject();
+    player = Obj_GetPlayerObject();
     state = (obj)->extra;
     if (state->shotCooldown <= 0) {
         f32 launchSpeed;
@@ -238,7 +238,7 @@ void DIMCannon_updateAim(GameObject* obj, f32 targetX, f32 unusedTargetY, f32 ta
         heightDelta = (10.0f + state->aimTargetY) - state->launchOriginY;
         distSq = (distSq < 10.0f) ? 10.0f : distSq;
         if ((distSq < (f32)((s32)(placement->targetRadius * 2) * (s32)(placement->targetRadius * 2))) ||
-            (heightDelta < lbl_803DBF14) || ((((GameObject*)player)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0)) {
+            (heightDelta < lbl_803DBF14) || ((player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0)) {
             state->shouldSpawnProjectile = 0;
         }
         distSq = (distSq > (f32)((s32)(placement->targetRadius * 2) * (s32)(placement->targetRadius * 2)))

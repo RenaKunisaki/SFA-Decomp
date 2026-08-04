@@ -369,7 +369,7 @@ void getVisibleObjects(s8* opacity)
     GameObject* att;
     int j;
     u8* interactState;
-    int* model;
+    ObjModel* model;
     u32 tf;
     u32 mode;
     s16 t;
@@ -445,10 +445,10 @@ void getVisibleObjects(s8* opacity)
                 if (gVisibleObjectSortKeyCount < 1000)
                 {
                     key = 0;
-                    model = (int*)Obj_GetActiveModel(o);
+                    model = Obj_GetActiveModel(o);
                     if (o->anim.renderAlpha == 0xff && (o->anim.flags & 0x80) == 0 &&
                         ((tf = o->anim.modelInstance->flags) & 0x40000) == 0 &&
-                        ((ModelFileHeader*)model)->hitVolumes == NULL)
+                        model->renderAttachment == NULL)
                     {
                         key |= 0x80000000;
                         sortDepth = 1000 - (depthInt & 0xffff);

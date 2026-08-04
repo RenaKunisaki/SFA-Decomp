@@ -522,8 +522,8 @@ void TrickyCurve_hitDetect(void)
 
 void TrickyCurve_update(GameObject* obj)
 {
-    u8* inner = obj->extra;
-    u32 state = ((TrickyCurveObjState*)inner)->mode;
+    TrickyCurveObjState* inner = obj->extra;
+    u32 state = inner->mode;
     if (state == 0)
     {
         TrickyCurve_updateBurstTrigger(obj);

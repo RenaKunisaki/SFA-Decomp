@@ -2615,9 +2615,9 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
     if (((ObjAnimComponent*)obj)->modelInstance->flags & 0x400)
     {
         GameObject* player = Obj_GetPlayerObject();
-        int* cam = (int*)(*gCameraInterface)->getCamera();
+        GameObject* cam = (*gCameraInterface)->getCamera();
         if (player != NULL && !(player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) &&
-            ((GameObject*)cam)->anim.targetObj == player)
+            cam->anim.targetObj == player)
         {
             f32 d = 2e+01f + (((GameObject*)obj)->anim.hitboxScale * ((GameObject*)obj)->anim.rootMotionScale +
                                     *(f32*)&((GameObject*)obj)->anim.targetObj);

@@ -1535,8 +1535,8 @@ f32 playerGetAnimSpeed(GameObject* obj)
 
 int playerGetTargetObject(GameObject* obj)
 {
-    int inner = (int)obj->extra;
-    return (int)((PlayerState*)inner)->baddie.targetObj;
+    PlayerState* inner = obj->extra;
+    return (int)inner->baddie.targetObj;
 }
 
 void playerTeleport(GameObject* obj, const Vec3f* position, const Vec3s* rotation, int unused)
@@ -2066,8 +2066,8 @@ int objGetAnimState80A(GameObject* obj)
 
 void playerDisableHitDetect(GameObject* obj)
 {
-    int inner = (int)obj->extra;
-    ((PlayerState*)inner)->flags360 &= ~PLAYER_FLAG_HITDETECT;
+    PlayerState* inner = obj->extra;
+    inner->flags360 &= ~PLAYER_FLAG_HITDETECT;
 }
 
 void cameraGetPrevPos2(GameObject* obj, f32* x, f32* y, f32* z)
@@ -2111,8 +2111,8 @@ int playerHasRevived(GameObject* player)
 
 void playerSetIsDead(GameObject* obj, int flag)
 {
-    int inner = (int)obj->extra;
-    ((PlayerState*)inner)->flags3F3.b02 = flag;
+    PlayerState* inner = obj->extra;
+    inner->flags3F3.b02 = flag;
 }
 
 void playerHeal(GameObject* obj)
@@ -2300,26 +2300,26 @@ void playerReparentPreservingWorldTransform(GameObject* obj, GameObject* newPare
 
 void playerSetInCutscene(GameObject* obj)
 {
-    int inner = (int)obj->extra;
-    ((PlayerState*)inner)->flags3F2.b20 = 1;
+    PlayerState* inner = obj->extra;
+    inner->flags3F2.b20 = 1;
 }
 
 void playerSetCutsceneCameraFlag(GameObject* obj)
 {
-    int inner = (int)obj->extra;
-    ((PlayerState*)inner)->flags3F2.b40 = 1;
+    PlayerState* inner = obj->extra;
+    inner->flags3F2.b40 = 1;
 }
 
 void playerSetOverrideParentSlack(GameObject* obj)
 {
-    int inner = (int)obj->extra;
-    ((PlayerState*)inner)->flags3F2.b80 = 1;
+    PlayerState* inner = obj->extra;
+    inner->flags3F2.b80 = 1;
 }
 
 u32 playerGetStateFlag310(GameObject* obj)
 {
-    int inner = (int)obj->extra;
-    return ((PlayerState*)inner)->baddie.queuedBitMask;
+    PlayerState* inner = obj->extra;
+    return inner->baddie.queuedBitMask;
 }
 
 GameObject* playerGetFocusObject(GameObject* obj)
@@ -2905,9 +2905,9 @@ int playerState38(GameObject* obj, int state, f32 fv)
 
 int playerState37(GameObject* obj, int state)
 {
-    int inner = (int)obj->extra;
+    PlayerState* inner = obj->extra;
     u8 v;
-    ((PlayerState*)inner)->flags3F6.b20 = 1;
+    inner->flags3F6.b20 = 1;
     v = ((PlayerState*)state)->baddie.inputSector;
     if (v == 3)
     {

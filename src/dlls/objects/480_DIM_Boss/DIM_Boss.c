@@ -390,8 +390,8 @@ int DIMbossAnim_returnToIdleWhenDone(GameObject* obj, BaddieState* runtime) {
 }
 
 int DIMbossAnim_selectTargetControlMode(GameObject* obj) {
-    int* state = obj->extra;
-    switch (((GroundBaddieState*)state)->targetState) {
+    GroundBaddieState* state = obj->extra;
+    switch (state->targetState) {
     case 1:
         return 5;
     case 2:

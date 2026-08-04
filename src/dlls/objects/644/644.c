@@ -188,13 +188,13 @@ void shopitem_renderSparkle(GameObject* obj, int p2, int p3, int p4, int p5)
 void shopitem_onSeqFree(GameObject* obj)
 {
     ShopItemState* state = obj->extra;
-    int def = obj->anim.placementDataAddress;
+    ShopItemDef* def = (ShopItemDef*)obj->anim.placementDataAddress;
     PushcartState97* b = &state->flags97;
     if (b->flag_40 == 0)
     {
         GameObject* vptr = (GameObject*)state->vendorObj;
         ShopInterface* cls = SHOP_INTERFACE(vptr);
-        if (cls->isItemBought(vptr, ((ShopItemDef*)def)->itemSlot) != 0)
+        if (cls->isItemBought(vptr, def->itemSlot) != 0)
         {
             b->flag_80 = 1;
         }

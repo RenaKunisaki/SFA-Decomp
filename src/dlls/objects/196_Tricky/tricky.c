@@ -896,11 +896,11 @@ static inline void skeetla_faceMoveVector(GameObject* obj) {
 }
 
 static inline void skeetla_playFootstepSfx(GameObject* obj, u16 sfxId) {
-    u8* state = obj->extra;
+    TrickyState* state = obj->extra;
     if (((TrickyState*)obj->extra)->soundSuppressed == 0u &&
         ((obj->anim.currentMove >= 0x30) || (obj->anim.currentMove < 0x29)) &&
         (Sfx_IsPlayingFromObjectChannel(obj, 0x10) == 0)) {
-        objSoundStartTimed(obj, &((TrickyState*)state)->soundState, sfxId, 0x500, -1, 0);
+        objSoundStartTimed(obj, &state->soundState, sfxId, 0x500, -1, 0);
     }
 }
 
@@ -6665,7 +6665,7 @@ int Tricky_getCurrentCommandType(int* obj, int* out) {
 }
 
 int Tricky_updateSideCommandPrompts(GameObject* obj) {
-    int state;
+    TrickyState* state;
     u32 commandMask;
     char cmdByte;
     u16 promptId;
@@ -6675,8 +6675,8 @@ int Tricky_updateSideCommandPrompts(GameObject* obj) {
     u8 promptC;
     u32 bitVal;
     int ref;
-    int refB;
-    int refC;
+    TrickyState* refB;
+    TrickyState* refC;
     u16* setup;
     u32 spawnedObj;
     u8 i;
@@ -6684,7 +6684,7 @@ int Tricky_updateSideCommandPrompts(GameObject* obj) {
     char flagsA[4];
     u32 promptTable[4];
 
-    state = (int)obj->extra;
+    state = obj->extra;
     cond = false;
     promptA = false;
     promptB = false;
@@ -6692,23 +6692,23 @@ int Tricky_updateSideCommandPrompts(GameObject* obj) {
     promptTable[0] = *(u32*)lbl_803E23C8;
     bitVal = mainGetBit(GAMEBIT_Tricky_Usable);
     if (bitVal != 0) {
-        if ((((TrickyState*)state)->stateFlags & 0x10) != 0) {
-            ((TrickyState*)state)->commandRequestBits = 0;
+        if ((state->stateFlags & 0x10) != 0) {
+            state->commandRequestBits = 0;
         }
-        commandMask = ((TrickyState*)state)->commandRequestBits | 9;
-        if (((((TrickyState*)state)->stateIndex == 8) || (((TrickyState*)state)->stateIndex == 0xd)) ||
-            ((((TrickyState*)state)->stateIndex == 0xe && (((TrickyState*)state)->substate == 1)))) {
+        commandMask = state->commandRequestBits | 9;
+        if (((state->stateIndex == 8) || (state->stateIndex == 0xd)) ||
+            ((state->stateIndex == 0xe && (state->substate == 1)))) {
             commandMask |= 0x10;
             promptA = true;
         } else {
-            if (trickyFindNearestUsableBaddie(((TrickyState*)state)->playerObj, 200.0f, 1) != NULL) {
+            if (trickyFindNearestUsableBaddie(state->playerObj, 200.0f, 1) != NULL) {
                 promptA = true;
                 promptC = true;
             }
         }
-        if (((TrickyState*)state)->commandRequestBits != 0) {
-            for (i = 0; i < ((TrickyState*)state)->commandCount; i++) {
-                ref = state + i * 8;
+        if (state->commandRequestBits != 0) {
+            for (i = 0; i < state->commandCount; i++) {
+                ref = (int)state + i * 8;
                 cmdByte = ((TrickyCommand*)(ref + 0x748))->kind;
                 if (cmdByte == '\0') {
                     if ((((TrickyCommand*)(ref + 0x748))->targetObj)->anim.romDefNo == TRICKY_OBJ_BLUE_MUSHROOM) {
@@ -6720,12 +6720,12 @@ int Tricky_updateSideCommandPrompts(GameObject* obj) {
                 }
             }
         }
-        if (((((TrickyState*)state)->stateFlags & 0x10) == 0) &&
+        if (((state->stateFlags & 0x10) == 0) &&
             (bitVal = mainGetBit(GAMEBIT_ITEM_TrickyBall_Usable), bitVal != 0)) {
             ref = (int)Obj_GetPlayerObject();
             ref = playerIsInNormalControlUndisguisedOnLand((GameObject*)(ref));
             if ((ref != 0) && (bitVal = mainGetBit(GAMEBIT_NoBallsAllowed), bitVal == 0)) {
-                if (playerGetFlags3F0Bit5(((TrickyState*)state)->playerObj) == 0) {
+                if (playerGetFlags3F0Bit5(state->playerObj) == 0) {
                     commandMask |= 0x20;
                 }
             }
@@ -6739,10 +6739,10 @@ int Tricky_updateSideCommandPrompts(GameObject* obj) {
         if (mainGetBit(GAMEBIT_ITEM_TrickyFlame_Got) == 0) {
             commandMask &= ~0x10;
         }
-        ((TrickyState*)state)->commandRequestBits = 0;
-        if ((cond) && ((((TrickyState*)state)->stateFlags & 0x200) == 0)) {
-            ((TrickyState*)state)->promptBDespawnTimer = 60.0f;
-            if ((((TrickyState*)state)->childB == NULL) && (Obj_IsLoadingLocked() != 0)) {
+        state->commandRequestBits = 0;
+        if ((cond) && ((state->stateFlags & 0x200) == 0)) {
+            state->promptBDespawnTimer = 60.0f;
+            if ((state->childB == NULL) && (Obj_IsLoadingLocked() != 0)) {
                 bitVal = randomGetRange(0, 1);
                 promptId = *(u16*)((int)promptTable + bitVal * 2);
                 ref = (int)obj->extra;
@@ -6756,14 +6756,14 @@ int Tricky_updateSideCommandPrompts(GameObject* obj) {
                 flagsB[0] = -1;
                 flagsB[1] = -1;
                 flagsB[2] = -1;
-                if (((TrickyState*)state)->childA != NULL) {
-                    flagsB[((TrickyState*)state)->packedSlots.promptASlot] = '\x01';
+                if (state->childA != NULL) {
+                    flagsB[state->packedSlots.promptASlot] = '\x01';
                 }
-                if (((TrickyState*)state)->childB != NULL) {
-                    flagsB[((TrickyState*)state)->packedSlots.promptBSlot] = '\x01';
+                if (state->childB != NULL) {
+                    flagsB[state->packedSlots.promptBSlot] = '\x01';
                 }
-                if (((TrickyState*)state)->child != NULL) {
-                    flagsB[((TrickyState*)state)->packedSlots.zzzSlot] = '\x01';
+                if (state->child != NULL) {
+                    flagsB[state->packedSlots.zzzSlot] = '\x01';
                 }
                 if (flagsB[0] == -1) {
                     bitVal = 0;
@@ -6776,39 +6776,39 @@ int Tricky_updateSideCommandPrompts(GameObject* obj) {
                 } else {
                     bitVal = 0xffffffff;
                 }
-                ((TrickyState*)state)->packedSlots.promptBSlot = bitVal;
+                state->packedSlots.promptBSlot = bitVal;
                 spawnedObj =
                     (int)objSetupObject((ObjPlacement*)setup, 4, -1, 0xffffffff, obj->anim.parent);
-                *(u32*)(state + 0x7b0) = spawnedObj; /* raw: arrow form shifts bytes */
-                ObjLink_AttachChild(obj, ((TrickyState*)state)->childB,
-                                    ((TrickyState*)state)->packedSlots.promptBSlot);
+                *(u32*)((u8*)state + 0x7b0) = spawnedObj; /* raw: arrow form shifts bytes */
+                ObjLink_AttachChild(obj, state->childB,
+                                    state->packedSlots.promptBSlot);
             }
-        } else if (((TrickyState*)state)->childB != NULL) {
-            ((TrickyState*)state)->promptBDespawnTimer = ((TrickyState*)state)->promptBDespawnTimer - timeDelta;
-            if (((TrickyState*)state)->promptBDespawnTimer <= 0.0f) {
-                objAnimFreeChildren(obj, (TrickyState*)state,
-                                    (GameObject**)(state + 0x7b0)); /* raw: arrow form shifts bytes */
+        } else if (state->childB != NULL) {
+            state->promptBDespawnTimer = state->promptBDespawnTimer - timeDelta;
+            if (state->promptBDespawnTimer <= 0.0f) {
+                objAnimFreeChildren(obj, state,
+                                    (GameObject**)((u8*)state + 0x7b0)); /* raw: arrow form shifts bytes */
             }
         }
-        if ((promptA) && ((((TrickyState*)state)->stateFlags & 0x200) == 0)) {
-            ((TrickyState*)state)->promptADespawnTimer = 60.0f;
-            if ((((TrickyState*)state)->childA == NULL) && (Obj_IsLoadingLocked() != 0)) {
+        if ((promptA) && ((state->stateFlags & 0x200) == 0)) {
+            state->promptADespawnTimer = 60.0f;
+            if ((state->childA == NULL) && (Obj_IsLoadingLocked() != 0)) {
                 if (randomGetRange(0, 3) == 0) {
                     if (promptB) {
-                        refB = (int)obj->extra;
-                        if ((((TrickyState*)refB)->soundSuppressed == 0) &&
+                        refB = obj->extra;
+                        if ((refB->soundSuppressed == 0) &&
                             (((obj->anim.currentMove >= 0x30 ||
                                (obj->anim.currentMove < 0x29)) &&
                               !Sfx_IsPlayingFromObjectChannel(obj, 0x10)))) {
-                            objSoundStartTimed(obj, &((TrickyState*)refB)->soundState, 0x359, 0x500,
+                            objSoundStartTimed(obj, &refB->soundState, 0x359, 0x500,
                                                0xffffffff, 0);
                         }
-                    } else if ((((promptC) && (refC = (int)obj->extra,
-                                               ((TrickyState*)refC)->soundSuppressed == 0)) &&
+                    } else if ((((promptC) && (refC = obj->extra,
+                                               refC->soundSuppressed == 0)) &&
                                 ((obj->anim.currentMove >= 0x30 ||
                                   (obj->anim.currentMove < 0x29)))) &&
                                !Sfx_IsPlayingFromObjectChannel(obj, 0x10)) {
-                        objSoundStartTimed(obj, &((TrickyState*)refC)->soundState, 0x358, 0x500,
+                        objSoundStartTimed(obj, &refC->soundState, 0x358, 0x500,
                                            0xffffffff, 0);
                     }
                 }
@@ -6816,14 +6816,14 @@ int Tricky_updateSideCommandPrompts(GameObject* obj) {
                 flagsA[0] = -1;
                 flagsA[1] = -1;
                 flagsA[2] = -1;
-                if (((TrickyState*)state)->childA != NULL) {
-                    flagsA[((TrickyState*)state)->packedSlots.promptASlot] = '\x01';
+                if (state->childA != NULL) {
+                    flagsA[state->packedSlots.promptASlot] = '\x01';
                 }
-                if (((TrickyState*)state)->childB != NULL) {
-                    flagsA[((TrickyState*)state)->packedSlots.promptBSlot] = '\x01';
+                if (state->childB != NULL) {
+                    flagsA[state->packedSlots.promptBSlot] = '\x01';
                 }
-                if (((TrickyState*)state)->child != NULL) {
-                    flagsA[((TrickyState*)state)->packedSlots.zzzSlot] = '\x01';
+                if (state->child != NULL) {
+                    flagsA[state->packedSlots.zzzSlot] = '\x01';
                 }
                 if (flagsA[0] == -1) {
                     bitVal = 0;
@@ -6836,18 +6836,18 @@ int Tricky_updateSideCommandPrompts(GameObject* obj) {
                 } else {
                     bitVal = 0xffffffff;
                 }
-                ((TrickyState*)state)->packedSlots.promptASlot = bitVal;
+                state->packedSlots.promptASlot = bitVal;
                 spawnedObj =
                     (int)objSetupObject((ObjPlacement*)setup, 4, -1, 0xffffffff, obj->anim.parent);
-                *(u32*)(state + 0x7a8) = spawnedObj; /* raw: arrow form shifts bytes */
-                ObjLink_AttachChild(obj, ((TrickyState*)state)->childA,
-                                    ((TrickyState*)state)->packedSlots.promptASlot);
+                *(u32*)((u8*)state + 0x7a8) = spawnedObj; /* raw: arrow form shifts bytes */
+                ObjLink_AttachChild(obj, state->childA,
+                                    state->packedSlots.promptASlot);
             }
-        } else if (((TrickyState*)state)->childA != NULL) {
-            ((TrickyState*)state)->promptADespawnTimer = ((TrickyState*)state)->promptADespawnTimer - timeDelta;
-            if (((TrickyState*)state)->promptADespawnTimer <= 0.0f) {
-                objAnimFreeChildren(obj, (TrickyState*)state,
-                                    (GameObject**)(state + 0x7a8)); /* raw: arrow form shifts bytes */
+        } else if (state->childA != NULL) {
+            state->promptADespawnTimer = state->promptADespawnTimer - timeDelta;
+            if (state->promptADespawnTimer <= 0.0f) {
+                objAnimFreeChildren(obj, state,
+                                    (GameObject**)((u8*)state + 0x7a8)); /* raw: arrow form shifts bytes */
             }
         }
         return commandMask;
@@ -7755,7 +7755,7 @@ void Tricky_update(int obj) {
 
 void Tricky_init(GameObject* obj) {
     TrickyState* state;
-    int model;
+    ObjModel* model;
     int pathState;
     u32 modelVariant;
     u16 startPath[4];
@@ -7788,8 +7788,8 @@ void Tricky_init(GameObject* obj) {
     state->homePosZ = (obj)->anim.worldPosZ;
     modelVariant = state->progressPtr[2] / 10;
     state->modelVariant = modelVariant;
-    model = (int)Obj_GetActiveModel(obj);
-    ((ObjModel*)model)->textureRefs->swapSelector = state->modelVariant;
+    model = Obj_GetActiveModel(obj);
+    model->textureRefs->swapSelector = state->modelVariant;
     pathState = (int)&state->pathControlFlags;
     (*gPathControlInterface)->init((void*)pathState, 1, 0xa7, 1);
     (*gPathControlInterface)->setLocalPointCollision((void*)pathState, 1, gTrickyPathPointCollision, &lbl_803DBC48, 2);

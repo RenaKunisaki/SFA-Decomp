@@ -2186,9 +2186,9 @@ int dbstealerworm_getObjectTypeId(void)
 void dbstealerworm_free(GameObject* obj)
 {
     u8* sub = obj->extra;
-    int* p40c = (int*)((GroundBaddieState*)sub)->control;
+    DbStealerwormControl* p40c = ((GroundBaddieState*)sub)->control;
     objFreeObjectType((int)obj, DBSTEALERWORM_OBJGROUP);
-    Stack_Free(((DbStealerwormControl*)p40c)->msgStack);
+    Stack_Free(p40c->msgStack);
     if (obj->childObjs[0] != NULL)
     {
         Obj_FreeObject(obj->childObjs[0]);

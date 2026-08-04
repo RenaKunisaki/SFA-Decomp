@@ -695,16 +695,16 @@ typedef struct SHthorntailTailSwingEffectScratch {
 #define SHTHORNTAIL_STATE_TRIGGER7_SFX(tables)     ((u8*)((tables) + SHTHORNTAIL_STATE_TRIGGER7_SFX_OFFSET))
 
 void SHthorntail_updateLevelControlMode1(GameObject* objectId, SHthorntailState* runtime, SHthorntailPlacement* placement) {
-    int playerObj;
+    GameObject* playerObj;
     int randomIdleWait;
     u8 closeToPlayer;
     u32 gameBit;
     int triggerIsSet;
 
     runtime->impactSfxTable = gSHthorntailLevelControlMode1ImpactSfxTable;
-    playerObj = (int)Obj_GetPlayerObject();
+    playerObj = Obj_GetPlayerObject();
     {
-        int cmp = getXZDistanceSquared(&objectId->anim.worldPosX, &((GameObject*)playerObj)->anim.worldPosX) <
+        int cmp = getXZDistanceSquared(&objectId->anim.worldPosX, &playerObj->anim.worldPosX) <
                   SHTHORNTAIL_CLOSE_ATTACK_DISTANCE;
         closeToPlayer = cmp;
     }
