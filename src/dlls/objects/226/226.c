@@ -533,7 +533,7 @@ void staff_setupSwipe(int unused1, StaffState* swipe, int unused3, int objArg) {
     int count2;
     int ibase;
     int first;
-    u8* vp;
+    SwipeVertex* vp;
     int idx[4];
     f32 ptAx[4];
     f32 ptAy[4];
@@ -664,31 +664,31 @@ void staff_setupSwipe(int unused1, StaffState* swipe, int unused3, int objArg) {
                             }
                             first = 0;
                         }
-                        vp = ((StaffSwipeSlot*)slot)->vertexData + ((StaffSwipeSlot*)slot)->endIndex * 20;
-                        ((SwipeVertex*)vp)[0].x = Curve_EvalBSpline(ptBx, frac, NULL);
-                        ((SwipeVertex*)vp)[0].y = Curve_EvalBSpline(ptBy, frac, NULL);
-                        ((SwipeVertex*)vp)[0].z = Curve_EvalBSpline(ptBz, frac, NULL);
-                        ((SwipeVertex*)vp)[0].x += swipe->anchorX + acc * (obj->anim.worldPosX - swipe->anchorX);
-                        ((SwipeVertex*)vp)[0].y += swipe->anchorY + acc * (obj->anim.worldPosY - swipe->anchorY);
-                        ((SwipeVertex*)vp)[0].z += swipe->anchorZ + acc * (obj->anim.worldPosZ - swipe->anchorZ);
+                        vp = (SwipeVertex*)(((StaffSwipeSlot*)slot)->vertexData + ((StaffSwipeSlot*)slot)->endIndex * 20);
+                        vp[0].x = Curve_EvalBSpline(ptBx, frac, NULL);
+                        vp[0].y = Curve_EvalBSpline(ptBy, frac, NULL);
+                        vp[0].z = Curve_EvalBSpline(ptBz, frac, NULL);
+                        vp[0].x += swipe->anchorX + acc * (obj->anim.worldPosX - swipe->anchorX);
+                        vp[0].y += swipe->anchorY + acc * (obj->anim.worldPosY - swipe->anchorY);
+                        vp[0].z += swipe->anchorZ + acc * (obj->anim.worldPosZ - swipe->anchorZ);
                         vidx = ibase + frac;
-                        ((SwipeVertex*)vp)[0].life = vidx;
+                        vp[0].life = vidx;
                         {
-                            f32 t = 255.0f * ((flb - ((SwipeVertex*)vp)[0].life) / 8.0f);
+                            f32 t = 255.0f * ((flb - vp[0].life) / 8.0f);
                             f32 clamped = (t < 0.0f) ? 0.0f : ((t > 255.0f) ? 255.0f : t);
-                            ((SwipeVertex*)vp)[0].alpha = 255.0f - clamped;
+                            vp[0].alpha = 255.0f - clamped;
                         }
-                        ((SwipeVertex*)vp)[1].x = Curve_EvalBSpline(ptAx, frac, NULL);
-                        ((SwipeVertex*)vp)[1].y = Curve_EvalBSpline(ptAy, frac, NULL);
-                        ((SwipeVertex*)vp)[1].z = Curve_EvalBSpline(ptAz, frac, NULL);
-                        ((SwipeVertex*)vp)[1].x += swipe->anchorX + acc * (obj->anim.worldPosX - swipe->anchorX);
-                        ((SwipeVertex*)vp)[1].y += swipe->anchorY + acc * (obj->anim.worldPosY - swipe->anchorY);
-                        ((SwipeVertex*)vp)[1].z += swipe->anchorZ + acc * (obj->anim.worldPosZ - swipe->anchorZ);
-                        ((SwipeVertex*)vp)[1].life = vidx;
+                        vp[1].x = Curve_EvalBSpline(ptAx, frac, NULL);
+                        vp[1].y = Curve_EvalBSpline(ptAy, frac, NULL);
+                        vp[1].z = Curve_EvalBSpline(ptAz, frac, NULL);
+                        vp[1].x += swipe->anchorX + acc * (obj->anim.worldPosX - swipe->anchorX);
+                        vp[1].y += swipe->anchorY + acc * (obj->anim.worldPosY - swipe->anchorY);
+                        vp[1].z += swipe->anchorZ + acc * (obj->anim.worldPosZ - swipe->anchorZ);
+                        vp[1].life = vidx;
                         {
-                            f32 t = 255.0f * ((flb - ((SwipeVertex*)vp)[1].life) / 8.0f);
+                            f32 t = 255.0f * ((flb - vp[1].life) / 8.0f);
                             f32 clamped = (t < 0.0f) ? 0.0f : ((t > 255.0f) ? 255.0f : t);
-                            ((SwipeVertex*)vp)[1].alpha = 255.0f - clamped;
+                            vp[1].alpha = 255.0f - clamped;
                         }
                         ((StaffSwipeSlot*)slot)->vertexCount += 2;
                         ((StaffSwipeSlot*)slot)->endIndex += 2;
