@@ -4,6 +4,7 @@
 #include "sys/objects.h"
 #include "main/newshadows.h"
 #include "main/texture.h"
+#include "main/model.h"
 #include "dolphin/os/OSCache.h"
 #include "string.h"
 #include "main/pad.h"
@@ -688,7 +689,7 @@ void addShadowFalloffTevStages(void)
 void addRenderOpFadeStage(void* p1)
 {
     u8 buf[3];
-    u8 b = *(u8*)((char*)p1 + 0x43);
+    u8 b = ((Shader*)p1)->alphaOverride;
     buf[2] = b;
     buf[1] = b;
     buf[0] = b;
@@ -863,7 +864,7 @@ void setupHeatShimmerTevStages(char* p1)
         }
     }
     {
-        u8 b = *(u8*)(p1 + 0x2a);
+        u8 b = ((Shader*)p1)->layers[0].scrollMtx;
         if (b != 0xff)
         {
             mapTextureScrollGetOffset(b, &tsx, &tsy);

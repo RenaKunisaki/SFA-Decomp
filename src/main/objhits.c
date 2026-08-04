@@ -1911,16 +1911,16 @@ void ObjHits_CheckTrackContact(GameObject* objA, GameObject* objB) {
                             sphereIdx = (((u16)bits & 0xf000) >> 0xc) + i & 0xffff;
                             if (pointCount < 4) {
                                 float* curEntry;
-                                int prevEntry;
+                                float* prevEntry;
                                 int sphereOff = sphereIdx * 0x10;
                                 curEntry = (float*)((u8*)curSpheres + sphereOff);
                                 endPoints[pointCount * 3] = playerMapOffsetX + curEntry[1];
                                 endPoints[pointCount * 3 + 1] = curEntry[2];
                                 endPoints[pointCount * 3 + 2] = playerMapOffsetZ + curEntry[3];
-                                prevEntry = prevSpheres + sphereOff;
-                                startPoints[pointCount * 3] = playerMapOffsetX + *(float*)(prevEntry + 4);
-                                startPoints[pointCount * 3 + 1] = *(float*)(prevEntry + 8);
-                                startPoints[pointCount * 3 + 2] = playerMapOffsetZ + *(float*)(prevEntry + 0xc);
+                                prevEntry = (float*)(prevSpheres + sphereOff);
+                                startPoints[pointCount * 3] = playerMapOffsetX + prevEntry[1];
+                                startPoints[pointCount * 3 + 1] = prevEntry[2];
+                                startPoints[pointCount * 3 + 2] = playerMapOffsetZ + prevEntry[3];
                                 hb.radii[pointCount] = *curEntry;
                                 hb.ids[pointCount] = -1;
                                 hb.sevens[pointCount] = 7;
@@ -1932,10 +1932,10 @@ void ObjHits_CheckTrackContact(GameObject* objA, GameObject* objB) {
                             endPoints[pointCount * 3] = playerMapOffsetX + curSpheres[i * 4 + 1];
                             endPoints[pointCount * 3 + 1] = curSpheres[i * 4 + 2];
                             endPoints[pointCount * 3 + 2] = playerMapOffsetZ + curSpheres[i * 4 + 3];
-                            startPoints[pointCount * 3] = playerMapOffsetX + *(float*)(prevSpheres + i * 0x10 + 4);
-                            startPoints[pointCount * 3 + 1] = *(float*)(prevSpheres + i * 0x10 + 8);
+                            startPoints[pointCount * 3] = playerMapOffsetX + ((float*)prevSpheres)[i * 4 + 1];
+                            startPoints[pointCount * 3 + 1] = ((float*)prevSpheres)[i * 4 + 2];
                             startPoints[pointCount * 3 + 2] =
-                                playerMapOffsetZ + *(float*)(prevSpheres + i * 0x10 + 0xc);
+                                playerMapOffsetZ + ((float*)prevSpheres)[i * 4 + 3];
                             hb.radii[pointCount] = curSpheres[i * 4];
                             hb.ids[pointCount] = -1;
                             hb.sevens[pointCount] = 7;

@@ -2784,11 +2784,11 @@ static void modelDoRenderInstrs(int* obj, int* obj2, u8* m, u8 passMask)
     {
         if (fuzzPass || fuzzShadowPass || (passMaskCopy & 8))
         {
-            sc2 = 1.0f + (1.5f * ((f32)(gObjFuzzLayerIndex + 1) * fade)) / *(f32*)(m + 0x50);
-            PSMTXTrans((MtxPtr)tm, -*(f32*)(m + 0x44), -*(f32*)(m + 0x48), -*(f32*)(m + 0x4c));
+            sc2 = 1.0f + (1.5f * ((f32)(gObjFuzzLayerIndex + 1) * fade)) / ((ModelFileHeader*)m)->vertexAnimScaleDivisor;
+            PSMTXTrans((MtxPtr)tm, -((ModelFileHeader*)m)->vertexAnimPivot[0], -((ModelFileHeader*)m)->vertexAnimPivot[1], -((ModelFileHeader*)m)->vertexAnimPivot[2]);
             PSMTXScale((MtxPtr)sm, sc2, sc2, sc2);
             PSMTXConcat((MtxPtr)sm, (MtxPtr)tm, (MtxPtr)sm);
-            PSMTXTrans((MtxPtr)tm, *(f32*)(m + 0x44), *(f32*)(m + 0x48), *(f32*)(m + 0x4c));
+            PSMTXTrans((MtxPtr)tm, ((ModelFileHeader*)m)->vertexAnimPivot[0], ((ModelFileHeader*)m)->vertexAnimPivot[1], ((ModelFileHeader*)m)->vertexAnimPivot[2]);
             PSMTXConcat((MtxPtr)tm, (MtxPtr)sm, (MtxPtr)sm);
             PSMTXConcat((MtxPtr)wm, (MtxPtr)sm, (MtxPtr)t2m);
             PSMTXConcat((MtxPtr)vm, (MtxPtr)t2m, (MtxPtr)fm);

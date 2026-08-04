@@ -367,8 +367,8 @@ typedef struct WarpDestination
 
 void loadNextMap(void)
 {
-    u8* pos;
-    pos = (*gMapEventInterface)->getCurCharPos();
+    SaveGameCharacterPosition* pos;
+    pos = (SaveGameCharacterPosition*)(*gMapEventInterface)->getCurCharPos();
     if (gArrivedWarpIndex != -1)
     {
         gWarpArrivalTimer -= 1;
@@ -393,11 +393,11 @@ void loadNextMap(void)
             (*gNewCloudsInterface)->onMapSetup();
             gameUiResetMenuState();
             gWarpRequested = 0;
-            *(f32*)(pos + 0) = ((WarpDestination*)gRcpPendingWarpDest)->x;
-            *(f32*)(pos + 4) = ((WarpDestination*)gRcpPendingWarpDest)->y;
-            *(f32*)(pos + 8) = ((WarpDestination*)gRcpPendingWarpDest)->z;
-            *(s8*)(pos + 0xd) = (s8)((WarpDestination*)gRcpPendingWarpDest)->layer;
-            *(s8*)(pos + 0xc) = (s8)((WarpDestination*)gRcpPendingWarpDest)->angle;
+            pos->x = ((WarpDestination*)gRcpPendingWarpDest)->x;
+            pos->y = ((WarpDestination*)gRcpPendingWarpDest)->y;
+            pos->z = ((WarpDestination*)gRcpPendingWarpDest)->z;
+            pos->mapLayer = (s8)((WarpDestination*)gRcpPendingWarpDest)->layer;
+            pos->angle = (s8)((WarpDestination*)gRcpPendingWarpDest)->angle;
             mapReload();
             gArrivedWarpIndex = gPendingWarpIndex;
             gPendingWarpIndex = -1;
@@ -475,7 +475,7 @@ void mapInstantiateObjects(MapRomListPage* page, int mapId, int index, GameObjec
     while (p < objStart)
     {
         objIndex++;
-        p += *(u8*)(p + 2) * 4;
+        p += ((ObjPlacement*)p)->size * 4;
     }
     for (i = index + 1; i <= 0x20; i++)
     {
@@ -531,7 +531,7 @@ void mapInstantiateObjects(MapRomListPage* page, int mapId, int index, GameObjec
             }
         }
         objIndex++;
-        obj += *(u8*)(obj + 2) * 4;
+        obj += ((ObjPlacement*)obj)->size * 4;
     }
 }
 
@@ -1012,20 +1012,20 @@ void mapLoadUnloadObjects(int flag)
                             while (*bp == -1)
                             {
                                 bit += 8;
-                                cur = objStart + *(u8*)(objStart + 2) * 4;
-                                cur += *(u8*)(cur + 2) * 4;
-                                cur += *(u8*)(cur + 2) * 4;
-                                cur += *(u8*)(cur + 2) * 4;
-                                cur += *(u8*)(cur + 2) * 4;
-                                cur += *(u8*)(cur + 2) * 4;
-                                cur += *(u8*)(cur + 2) * 4;
-                                cur += *(u8*)(cur + 2) * 4;
+                                cur = objStart + ((ObjPlacement*)objStart)->size * 4;
+                                cur += ((ObjPlacement*)cur)->size * 4;
+                                cur += ((ObjPlacement*)cur)->size * 4;
+                                cur += ((ObjPlacement*)cur)->size * 4;
+                                cur += ((ObjPlacement*)cur)->size * 4;
+                                cur += ((ObjPlacement*)cur)->size * 4;
+                                cur += ((ObjPlacement*)cur)->size * 4;
+                                cur += ((ObjPlacement*)cur)->size * 4;
                                 objStart = cur;
                                 bp++;
                             }
                             mask = 1;
                         }
-                        cur = objStart + *(u8*)(objStart + 2) * 4;
+                        cur = objStart + ((ObjPlacement*)objStart)->size * 4;
                     }
                 }
             }
@@ -1099,7 +1099,7 @@ void mapLoadUnloadObjects(int flag)
                             objSetupObject((ObjPlacement*)cur, 1, mid2, bit, obj2);
                         }
                         bit++;
-                        cur += *(u8*)(cur + 2) * 4;
+                        cur += ((ObjPlacement*)cur)->size * 4;
                     }
                 }
             }
@@ -1269,41 +1269,34 @@ void mapTextureScrollSetStep(int idx, int xStep, int yStep, int texWidthFixed, i
     e->yStep = (s16)((yStep << 16) / (texHeightFixed >> 6));
 }
 
-typedef struct
-{
-    u32 romList;
-    s16 mapId;
-    u16 flags;
-} BlockEntry;
+extern ShaderRomListSlot gShaderRomListSlots[8];
 
-extern BlockEntry gShaderRomListSlots[8];
-
-static inline int mapFindRomListSlot(char* slots, int id)
+static inline int mapFindRomListSlot(ShaderRomListSlot* slots, int id)
 {
     int i2 = 0;
-    char* q2 = slots;
+    ShaderRomListSlot* q2 = slots;
     int cn = gShaderRomListSlotCount;
     int k;
     for (k = 0; k < cn; k++)
     {
-        if (*(void**)q2 != NULL && id == *(s16*)(q2 + 4))
+        if (q2->romlist != NULL && id == q2->slot)
             return i2;
-        q2 += 8;
+        q2++;
         i2++;
     }
     return -1;
 }
 
-static inline int mapFindRomListSlotAndAdvance(char** slots, int id)
+static inline int mapFindRomListSlotAndAdvance(ShaderRomListSlot** slots, int id)
 {
     int i2 = 0;
     int cn = gShaderRomListSlotCount;
     int k;
     for (k = 0; k < cn; k++)
     {
-        if (*(void**)*slots != NULL && id == *(s16*)(*slots + 4))
+        if ((*slots)->romlist != NULL && id == (*slots)->slot)
             return i2;
-        *slots += 8;
+        (*slots)++;
         i2++;
     }
     return -1;
@@ -1311,18 +1304,18 @@ static inline int mapFindRomListSlotAndAdvance(char** slots, int id)
 
 static inline int mapFindRomListSlotByIdAt(char* base, int id)
 {
-    char* q2;
+    ShaderRomListSlot* q2;
     int i2;
     int cn;
     int k;
     i2 = 0;
-    q2 = base + 0x418C;
+    q2 = (ShaderRomListSlot*)(base + 0x418C);
     cn = gShaderRomListSlotCount;
     for (k = 0; k < cn; k++)
     {
-        if (*(void**)q2 != NULL && id == *(s16*)(q2 + 4))
+        if (q2->romlist != NULL && id == q2->slot)
             return i2;
-        q2 += 8;
+        q2++;
         i2++;
     }
     return -1;
@@ -1330,38 +1323,38 @@ static inline int mapFindRomListSlotByIdAt(char* base, int id)
 
 static inline int mapFindRomListSlotById(int id)
 {
-    char* q2;
+    ShaderRomListSlot* q2;
     int i2;
     int cn;
     int k;
     i2 = 0;
-    q2 = (char*)gShaderRomListSlots;
+    q2 = gShaderRomListSlots;
     cn = gShaderRomListSlotCount;
     for (k = 0; k < cn; k++)
     {
-        if (*(void**)q2 != NULL && id == *(s16*)(q2 + 4))
+        if (q2->romlist != NULL && id == q2->slot)
             return i2;
-        q2 += 8;
+        q2++;
         i2++;
     }
     return -1;
 }
 
-static inline int mapFindRomListSlotByIdAndGetBase(char** slots, int id)
+static inline int mapFindRomListSlotByIdAndGetBase(ShaderRomListSlot** slots, int id)
 {
     int slotIndex;
-    char* cursor;
+    ShaderRomListSlot* cursor;
     int slotCount;
     int i;
 
     slotIndex = 0;
-    *slots = cursor = (char*)gShaderRomListSlots;
+    *slots = cursor = gShaderRomListSlots;
     slotCount = gShaderRomListSlotCount;
     for (i = 0; i < slotCount; i++)
     {
-        if (*(void**)cursor != NULL && id == *(s16*)(cursor + 4))
+        if (cursor->romlist != NULL && id == cursor->slot)
             return slotIndex;
-        cursor += 8;
+        cursor++;
         slotIndex++;
     }
     return -1;
@@ -1729,7 +1722,7 @@ void beginLoadingMap(void)
     f32 positionX, positionY, positionZ;
     Camera* camera;
     GameObject* player;
-    u8* environmentState;
+    SaveGameEnvState* environmentState;
     int enabled;
     char buf[0x110];
 
@@ -1826,57 +1819,57 @@ void beginLoadingMap(void)
         }
         environmentState = saveGameGetEnvState();
         {
-            s16 v = *(s16*)(environmentState + 4);
+            s16 v = environmentState->skyEnvfxActIds[0];
             if (v != -1)
                 getEnvfxActImmediately(player, player, v & 0xFFFF, 0);
-            v = *(s16*)(environmentState + 6);
+            v = environmentState->skyEnvfxActIds[1];
             if (v != -1)
                 getEnvfxActImmediately(player, player, v & 0xFFFF, 0);
-            v = *(s16*)(environmentState + 0xa);
+            v = environmentState->cloudActionEnvfxActId;
             if (v != -1)
                 getEnvfxActImmediately(player, player, v & 0xFFFF, 0);
-            v = *(s16*)(environmentState + 0xc);
+            v = environmentState->sky2EnvfxActId;
             if (v != -1)
                 getEnvfxActImmediately(player, player, v & 0xFFFF, 0);
         }
-        skySetSlotFlag80(1, (*(u8*)(environmentState + 0x40) & 2) ? 1 : 0);
-        skySetSlotFlag80(2, (*(u8*)(environmentState + 0x40) & 4) ? 1 : 0);
-        skySetLightIndex((*(u8*)(environmentState + 0x40) & 0x10) ? 1 : 0, 0.0f);
-        if (*(u8*)(environmentState + 0x40) & 1)
+        skySetSlotFlag80(1, (environmentState->envFlags & 2) ? 1 : 0);
+        skySetSlotFlag80(2, (environmentState->envFlags & 4) ? 1 : 0);
+        skySetLightIndex((environmentState->envFlags & 0x10) ? 1 : 0, 0.0f);
+        if (environmentState->envFlags & 1)
             enabled = 1;
         else
             enabled = 0;
         {
-            u8* e2 = saveGameGetEnvState();
+            SaveGameEnvState* e2 = saveGameGetEnvState();
             if (enabled)
             {
                 renderFlags |= 0x50;
-                *(u8*)(e2 + 0x40) = *(u8*)(e2 + 0x40) | 9;
+                e2->envFlags = e2->envFlags | 9;
             }
             else
             {
                 renderFlags &= ~0x50;
-                *(u8*)(e2 + 0x40) = *(u8*)(e2 + 0x40) & ~9;
+                e2->envFlags = e2->envFlags & ~9;
             }
         }
-        if (*(u8*)(environmentState + 0x40) & 8)
+        if (environmentState->envFlags & 8)
             enabled = 1;
         else
             enabled = 0;
         {
-            u8* e3 = saveGameGetEnvState();
+            SaveGameEnvState* e3 = saveGameGetEnvState();
             if (enabled)
             {
                 renderFlags |= 0x40;
-                *(u8*)(e3 + 0x40) = *(u8*)(e3 + 0x40) | 8;
+                e3->envFlags = e3->envFlags | 8;
             }
             else
             {
                 renderFlags &= ~0x40LL;
-                *(u8*)(e3 + 0x40) = *(u8*)(e3 + 0x40) & ~8;
+                e3->envFlags = e3->envFlags & ~8;
             }
         }
-        if (*(u8*)(environmentState + 0x40) & 0x20)
+        if (environmentState->envFlags & 0x20)
             gHeatEffectFadeDirection = 1;
         else
             gHeatEffectFadeDirection = -1;
@@ -1888,28 +1881,28 @@ void beginLoadingMap(void)
         *(f32*)(buf + 0x1c) = 0.0f;
         *(f32*)(buf + 0x20) = 0.0f;
         {
-            s16 index = *(s16*)(environmentState + 0xe);
+            s16 index = environmentState->cloudEnvfxActIds[0];
             if (index != -1)
             {
-                *(f32*)(buf + 0xc) = (f32) * (int*)(environmentState + 0x14);
-                *(f32*)(buf + 0x10) = (f32) * (int*)(environmentState + 0x18);
-                *(f32*)(buf + 0x14) = (f32) * (int*)(environmentState + 0x1c);
+                *(f32*)(buf + 0xc) = (f32)environmentState->cloudPos[0][0];
+                *(f32*)(buf + 0x10) = (f32)environmentState->cloudPos[0][1];
+                *(f32*)(buf + 0x14) = (f32)environmentState->cloudPos[0][2];
                 getEnvfxAct(buf, player, index & 0xFFFF, 0);
             }
-            index = *(s16*)(environmentState + 0x10);
+            index = environmentState->cloudEnvfxActIds[1];
             if (index != -1)
             {
-                *(f32*)(buf + 0xc) = (f32) * (int*)(environmentState + 0x20);
-                *(f32*)(buf + 0x10) = (f32) * (int*)(environmentState + 0x24);
-                *(f32*)(buf + 0x14) = (f32) * (int*)(environmentState + 0x28);
+                *(f32*)(buf + 0xc) = (f32)environmentState->cloudPos[1][0];
+                *(f32*)(buf + 0x10) = (f32)environmentState->cloudPos[1][1];
+                *(f32*)(buf + 0x14) = (f32)environmentState->cloudPos[1][2];
                 getEnvfxAct(buf, player, index & 0xFFFF, 0);
             }
-            index = *(s16*)(environmentState + 0x12);
+            index = environmentState->cloudEnvfxActIds[2];
             if (index != -1)
             {
-                *(f32*)(buf + 0xc) = (f32) * (int*)(environmentState + 0x2c);
-                *(f32*)(buf + 0x10) = (f32) * (int*)(environmentState + 0x30);
-                *(f32*)(buf + 0x14) = (f32) * (int*)(environmentState + 0x34);
+                *(f32*)(buf + 0xc) = (f32)environmentState->cloudPos[2][0];
+                *(f32*)(buf + 0x10) = (f32)environmentState->cloudPos[2][1];
+                *(f32*)(buf + 0x14) = (f32)environmentState->cloudPos[2][2];
                 getEnvfxAct(buf, player, index & 0xFFFF, 0);
             }
         }
@@ -1961,10 +1954,10 @@ void mapGetBlockGridRects(int gridX, int gridZ, int* rectA, int* rectB, int* rec
         return;
     }
     base = gShaderMapRomBuffers[1];
-    e2 = (MapBounds*)base + gShaderRomListSlots[slot].mapId;
+    e2 = (MapBounds*)base + gShaderRomListSlots[slot].slot;
     aa = gridX - e2->minX;
     bb = gridZ - e2->minZ;
-    page = (MapRomListPage*)gShaderRomListSlots[slot].romList;
+    page = (MapRomListPage*)gShaderRomListSlots[slot].romlist;
     if (slot == -1)
     {
         rectA[0] = -1;
@@ -2656,7 +2649,7 @@ void mapFillCellEntry(int gridX, int gridZ, MapCellEntry* out, int layer)
     {
         MapRomListPage* grid;
         int adjacentMapId2;
-        char* slots;
+        ShaderRomListSlot* slots;
         char* activeFlags;
         int slot;
         int adjacentMapId1;
@@ -2668,7 +2661,7 @@ void mapFillCellEntry(int gridX, int gridZ, MapCellEntry* out, int layer)
         if (slot == -1)
             slot = mapProcessRomList(id);
         *(s8*)((activeFlags = (char*)gShaderRomListSlots + 6) + slot * 8) = 1;
-        grid = (MapRomListPage*)gShaderRomListSlots[slot].romList;
+        grid = (MapRomListPage*)gShaderRomListSlots[slot].romlist;
         adjacentMapIds = (s16*)gShaderMapRomBuffers[2];
         adjacentMapId1 = (s8)adjacentMapIds[id << 1];
         adjacentMapId2 = adjacentMapIds[(id << 1) + 1];
@@ -2809,14 +2802,14 @@ static void mapBuildRomListIndex(MapRomListPage* p, MapRomListIndex* tbl, int id
         {
             if (flag != 0)
             {
-                if (*(s16*)cur == 110)
+                if (((ObjPlacement*)cur)->objectId == 110)
                     (*gRomCurveInterface)->remove((RomCurveDef*)cur);
-                if (*(s16*)cur == 5)
+                if (((ObjPlacement*)cur)->objectId == 5)
                     (*gCheckpointInterface)->removeRouteEntry((CheckpointRouteEntry*)cur);
             }
             else
             {
-                t = *(s16*)cur;
+                t = ((ObjPlacement*)cur)->objectId;
                 if (t == 110 || t == 5)
                 {
                     if (t == 110)
@@ -2829,16 +2822,16 @@ static void mapBuildRomListIndex(MapRomListPage* p, MapRomListIndex* tbl, int id
                         found = 1;
                     }
                 }
-                else if (*(u8*)(cur + 4) & 0x10)
+                else if (((ObjPlacement*)cur)->loadFlags & 0x10)
                 {
-                    if ((mask & (1 << *(u8*)(cur + 6))) == 0)
+                    if ((mask & (1 << ((ObjPlacement*)cur)->loadRange)) == 0)
                     {
-                        tbl->groupOffset[*(u8*)(cur + 6)] = (int)cur - (int)p->objects;
-                        mask |= 1 << *(u8*)(cur + 6);
+                        tbl->groupOffset[((ObjPlacement*)cur)->loadRange] = (int)cur - (int)p->objects;
+                        mask |= 1 << ((ObjPlacement*)cur)->loadRange;
                     }
                 }
             }
-            step = *(u8*)(cur + 2) * 4;
+            step = ((ObjPlacement*)cur)->size * 4;
             pos += step;
             cur += step;
         }
@@ -3073,7 +3066,7 @@ int mapProcessRomList(int slot)
                 ((GameObject*)obj)->anim.rootMotionScale += dx;
                 ((GameObject*)obj)->anim.localPosY += dz;
             }
-            step = *(u8*)(obj + 2) * 4;
+            step = ((ObjPlacement*)obj)->size * 4;
             j += step;
             obj += step;
         }
@@ -3146,7 +3139,7 @@ int ViewFrustum_IsSphereVisible(float* center, float radius)
 int objUpdateOpacity(GameObject* obj)
 {
     u8 op;
-    char* ptr;
+    ObjPlacement* ptr;
     int alpha;
     f32 range;
     f32 d;
@@ -3165,8 +3158,8 @@ int objUpdateOpacity(GameObject* obj)
         obj->anim.renderAlpha = 0;
         return 0;
     }
-    ptr = (void*)obj->anim.placementData;
-    if (ptr != 0 && (*(u8*)(ptr + 5) & 1))
+    ptr = (ObjPlacement*)obj->anim.placementData;
+    if (ptr != 0 && (ptr->mapActFlagsHi & 1))
     {
         obj->anim.renderAlpha = (u8)(((op + 1) * 255) >> 8);
     }
@@ -3179,7 +3172,7 @@ int objUpdateOpacity(GameObject* obj)
             return 0;
         }
         player = Obj_GetPlayerObject();
-        if (ptr != 0 && (*(u8*)(ptr + 5) & 2) && player != 0)
+        if (ptr != 0 && (ptr->mapActFlagsHi & 2) && player != 0)
         {
             d = Vec_distance(&obj->anim.worldPosX, &player->anim.worldPosX);
         }
@@ -3495,7 +3488,7 @@ MapRomListIndex gMapRomListIndexes[120];
 s8* gMapBlockLayerTables[MAP_BLOCK_LAYER_COUNT];
 int gMapBlockCellEntryTables[5];
 int gMapBlockCellStateTables[5];
-BlockEntry gShaderRomListSlots[8];
+ShaderRomListSlot gShaderRomListSlots[8];
 int gShaderMapRomBuffers[0x5];
 f32 distortionFilterVector[0x1c];
 ModelLightStruct* gGlowLightList[100];

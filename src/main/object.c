@@ -954,7 +954,7 @@ static void objFreeObjdef(u8* obj, int flag)
     default:
         if (((GameObject*)obj)->anim.dll != NULL)
         {
-            fp = *(void (**)(u8*, int))((char*)*((GameObject*)obj)->anim.dll + 0x14);
+            fp = (void (*)(u8*, int))((ObjectInterface*)*((GameObject*)obj)->anim.dll)->free;
             if (fp != NULL)
             {
                 fp(obj, flag);
@@ -1343,7 +1343,7 @@ void Obj_UpdateObject(GameObject* obj)
         case OBJECT_SEQID_DIE_DUSTER:
         case OBJECT_SEQID_DIE_FOX:
         case OBJECT_SEQID_DIE_KRYSTAL:
-            cb2 = (void (*)(GameObject*)) * (int*)((u8*)*object->dll + 8);
+            cb2 = (void (*)(GameObject*))((ObjectInterface*)*object->dll)->update;
             cb2(obj);
             break;
         }
@@ -1417,7 +1417,7 @@ void Obj_UpdateObject(GameObject* obj)
                 {
                     continue;
                 }
-                cb2 = (void (*)(GameObject*)) * (int*)((u8*)*object->dll + 8);
+                cb2 = (void (*)(GameObject*))((ObjectInterface*)*object->dll)->update;
                 if (cb2 != 0)
                 {
                     cb2(obj);
@@ -1671,10 +1671,10 @@ void modelInitBones(f32 scale, void* model)
                 *(f32*)((u8*)tbl->radii + off) = sc * *srcP;
                 *(f32*)((u8*)tbl->radiiSq + off) = *(f32*)((u8*)tbl->radii + off) * *(f32*)((u8*)tbl->radii + off);
                 bone = ((ModelFileHeader*)hdr)->jointData + boneOff;
-                parent = *(s8*)bone;
-                vx = *(f32*)(bone + 4);
-                vy = *(f32*)(bone + 8);
-                vz = *(f32*)(bone + 0xc);
+                parent = ((ModelBone*)bone)->parent;
+                vx = ((ModelBone*)bone)->head[0];
+                vy = ((ModelBone*)bone)->head[1];
+                vz = ((ModelBone*)bone)->head[2];
                 len = sqrtf(vx * vx + vy * vy + vz * vz);
                 *(f32*)((u8*)tbl->boneLengths + off) = sc * len;
                 v = *(f32*)((u8*)tbl->boneLengths + off);
@@ -2586,7 +2586,7 @@ void Obj_UpdateAllObjects(u8 flags)
                     {
                         continue;
                     }
-                    cb = (void (*)(int)) * (int*)((u8*)*((GameObject*)obj3)->anim.dll + 0xc);
+                    cb = (void (*)(int))((ObjectInterface*)*((GameObject*)obj3)->anim.dll)->hitDetect;
                     if (cb == 0)
                     {
                         continue;
@@ -2620,7 +2620,7 @@ void Obj_UpdateAllObjects(u8 flags)
                         {
                             continue;
                         }
-                        cb = (void (*)(int)) * (int*)((u8*)*((GameObject*)child)->anim.dll + 0xc);
+                        cb = (void (*)(int))((ObjectInterface*)*((GameObject*)child)->anim.dll)->hitDetect;
                         if (cb == 0)
                         {
                             continue;

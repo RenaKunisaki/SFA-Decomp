@@ -217,10 +217,10 @@ void playerUpdateBlinkAnimation(int obj, int blinkState, u16 flags) {
     wave = 0.25f * mathCosfHighPrecision(phase);
     wave = wave * bs->amount / 255.0f;
     rotation = (32768.0f * (leftScale * wave)) / 3.142f;
-    *(s16*)(playerEyeAnim_FindJoint(objAnim, OBJLIB_BLINK_LEFT_JOINT_TAG) + 2) = rotation;
+    ((ObjJointPose18*)playerEyeAnim_FindJoint(objAnim, OBJLIB_BLINK_LEFT_JOINT_TAG))->v[1] = rotation;
 
     rotation = (32768.0f * (rightScale * wave)) / 3.142f;
-    *(s16*)(playerEyeAnim_FindJoint(objAnim, OBJLIB_BLINK_RIGHT_JOINT_TAG) + 2) = -rotation;
+    ((ObjJointPose18*)playerEyeAnim_FindJoint(objAnim, OBJLIB_BLINK_RIGHT_JOINT_TAG))->v[1] = -rotation;
 }
 
 void objSetLookAtFlip(int mode, u8 enabled) {

@@ -542,7 +542,7 @@ void gameTextInitRendererState(void)
     u8* gameTextBase;
     int glyphPageCount;
     u8* request;
-    u8* p;
+    GameTextBox* p;
     f32 zero;
     int i;
     int j;
@@ -550,11 +550,11 @@ void gameTextInitRendererState(void)
     gameTextBase = gGameTextBase;
 
     i = GAMETEXT_BOX_COUNT;
-    p = textWindow = (u8*)&gTextBoxes[GAMETEXT_BOX_COUNT];
-    while (p -= 0x20, i-- != 0)
+    p = (GameTextBox*)(textWindow = (u8*)&gTextBoxes[GAMETEXT_BOX_COUNT]);
+    while (p--, i-- != 0)
     {
-        *(u16*)(p + 8) = *(u16*)(p + 2);
-        *(u16*)(p + 0xa) = *(u16*)(p + 6);
+        p->width = p->maxWidth;
+        p->height = p->maxHeight;
     }
 
     glyphPageCount = GAMETEXT_LOAD_SLOT_COUNT;
@@ -576,7 +576,7 @@ void gameTextInitRendererState(void)
     i = GAMETEXT_BOX_COUNT;
     while (textWindow -= 0x20, i-- != 0)
     {
-        textWindow[0x1e] = 0xff;
+        ((GameTextBox*)textWindow)->alpha = 0xff;
     }
 
     j = 4;

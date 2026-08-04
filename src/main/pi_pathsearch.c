@@ -255,7 +255,7 @@ void pathSearchExpandNode(PathSearch* search, PathSearchNode* node, int idx) {
     link = (char*)point;
     mask = t;
     for (; bit < 4; bit++) {
-        int linkId = *(int*)(link + 0x1c);
+        int linkId = ((RomCurveDef*)link)->linkIds[0];
         if (linkId > -1 && (mask & (1 << bit)) != 0) {
             linked = (RomCurveDef*)(*gRomCurveInterface)->getById(linkId);
             if (linked != NULL) {
