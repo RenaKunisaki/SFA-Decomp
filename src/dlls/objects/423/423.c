@@ -111,13 +111,12 @@ void EdibleMushroom_updateBehavior(GameObject* obj, EdibleMushroomState* state, 
                     while (1) {
                         dx = state->curve.posX - obj->anim.localPosX;
                         dz = state->curve.posZ - obj->anim.localPosZ;
-                        if (dx * dx + dz * dz < rangeSq) {
-                            if (Curve_AdvanceAlongPath(&state->curve.curve, state->curveAdvanceStep) != 0 ||
-                                state->curve.atSegmentEnd != 0) {
-                                (*gRomCurveInterface)->goNextPoint(&state->curve);
-                            }
-                        } else {
+                        if (!(dx * dx + dz * dz < rangeSq)) {
                             break;
+                        }
+                        if (Curve_AdvanceAlongPath(&state->curve.curve, state->curveAdvanceStep) != 0 ||
+                            state->curve.atSegmentEnd != 0) {
+                            (*gRomCurveInterface)->goNextPoint(&state->curve);
                         }
                     }
                     ang = getAngle(-dx, -dz);
@@ -184,13 +183,12 @@ void EdibleMushroom_updateBehavior(GameObject* obj, EdibleMushroomState* state, 
                         while (1) {
                             dx = state->curve.posX - obj->anim.localPosX;
                             dz = state->curve.posZ - obj->anim.localPosZ;
-                            if (dx * dx + dz * dz < rangeSq) {
-                                if (Curve_AdvanceAlongPath(&state->curve.curve, state->curveAdvanceStep) != 0 ||
-                                    state->curve.atSegmentEnd != 0) {
-                                    (*gRomCurveInterface)->goNextPoint(&state->curve);
-                                }
-                            } else {
+                            if (!(dx * dx + dz * dz < rangeSq)) {
                                 break;
+                            }
+                            if (Curve_AdvanceAlongPath(&state->curve.curve, state->curveAdvanceStep) != 0 ||
+                                state->curve.atSegmentEnd != 0) {
+                                (*gRomCurveInterface)->goNextPoint(&state->curve);
                             }
                         }
                         ang = getAngle(-dx, -dz);
@@ -206,13 +204,12 @@ void EdibleMushroom_updateBehavior(GameObject* obj, EdibleMushroomState* state, 
                         while (1) {
                             dx = state->curve.posX - obj->anim.localPosX;
                             dz = state->curve.posZ - obj->anim.localPosZ;
-                            if (dx * dx + dz * dz < rangeSq) {
-                                if (Curve_AdvanceAlongPath(&state->curve.curve, state->curveAdvanceStep) != 0 ||
-                                    state->curve.atSegmentEnd != 0) {
-                                    (*gRomCurveInterface)->goNextPoint(&state->curve);
-                                }
-                            } else {
+                            if (!(dx * dx + dz * dz < rangeSq)) {
                                 break;
+                            }
+                            if (Curve_AdvanceAlongPath(&state->curve.curve, state->curveAdvanceStep) != 0 ||
+                                state->curve.atSegmentEnd != 0) {
+                                (*gRomCurveInterface)->goNextPoint(&state->curve);
                             }
                         }
                         ang = getAngle(-dx, -dz);
@@ -241,13 +238,12 @@ void EdibleMushroom_updateBehavior(GameObject* obj, EdibleMushroomState* state, 
                 while (1) {
                     dx = state->curve.posX - obj->anim.localPosX;
                     dz = state->curve.posZ - obj->anim.localPosZ;
-                    if (dx * dx + dz * dz < rangeSq) {
-                        if (Curve_AdvanceAlongPath(&state->curve.curve, state->curveAdvanceStep) != 0 ||
-                            state->curve.atSegmentEnd != 0) {
-                            (*gRomCurveInterface)->goNextPoint(&state->curve);
-                        }
-                    } else {
+                    if (!(dx * dx + dz * dz < rangeSq)) {
                         break;
+                    }
+                    if (Curve_AdvanceAlongPath(&state->curve.curve, state->curveAdvanceStep) != 0 ||
+                        state->curve.atSegmentEnd != 0) {
+                        (*gRomCurveInterface)->goNextPoint(&state->curve);
                     }
                 }
                 ang = getAngle(-dx, -dz);
