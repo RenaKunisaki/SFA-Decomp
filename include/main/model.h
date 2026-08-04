@@ -42,7 +42,10 @@ typedef struct Shader
         u32 auxTextureIndex;
         Texture* auxTexture;
     };
-    s32 indTextureId;
+    union {
+        s32 indTextureId;
+        Texture* indTexture;
+    };
     u32 flags;
     u8 vtxAttrFlags;
     u8 layerCount;

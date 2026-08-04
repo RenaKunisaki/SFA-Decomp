@@ -674,7 +674,7 @@ int objFuzzRenderCb(GameObject* obj, ObjModel* model, int ropIdx)
     GXSetTevAlphaIn(stage, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_APREV);
     GXSetTevColorOp(stage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(stage, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_FALSE, GX_TEVPREV);
-    if (*(void**)(rop + 0x38) != NULL)
+    if (((Shader*)rop)->indTexture != NULL)
     {
         selectTexture((Texture*)(textureIdxToPtr(((Shader*)rop)->indTextureId)), 2);
         GXSetTexCoordGen2(GX_TEXCOORD3, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
@@ -699,7 +699,7 @@ int objFuzzRenderCb(GameObject* obj, ObjModel* model, int ropIdx)
     GXLoadTexMtxImm(mtx4, GX_PTTEXMTX0, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD4, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_TRUE, GX_PTTEXMTX0);
     GXSetTevKColorSel(stage + 1, GX_TEV_KCSEL_1_2);
-    if (*(void**)(rop + 0x38) != NULL)
+    if (((Shader*)rop)->indTexture != NULL)
     {
         GXSetTevOrder(stage + 1, GX_TEXCOORD4, GX_TEXMAP3, GX_ALPHA_BUMPN);
         GXSetTevAlphaIn(stage + 1, GX_CA_ZERO, GX_CA_TEXA, GX_CA_RASA, GX_CA_APREV);
@@ -1796,7 +1796,7 @@ static u32 objSetupRenderOpGxState(u8* obj, u8* p2, int* am, MtxBitStream* bs)
             {
                 hasBaseTexture = 0;
             }
-            addLightTexReg2Stage((void*)refs[1], hasBaseTexture, ((u8*)op)[0x20]);
+            addLightTexReg2Stage((void*)refs[1], hasBaseTexture, ((Shader*)op)->reg2TexSlot);
         }
         if (color[3] != 0)
         {
@@ -2509,11 +2509,11 @@ static void objRenderShadowModel(int* obj, int* obj2, u8* m, int p4)
                 bs.pos = pos + 1;
                 GXSetVtxDesc(GX_VA_POS, (((int)(w >> (pos & 7)) & 1) ? GX_INDEX16 : GX_INDEX8));
             }
-            if (((u8*)op)[0x40] & 1)
+            if (((Shader*)op)->vtxAttrFlags & 1)
             {
                 bs.pos += 1;
             }
-            if (((u8*)op)[0x40] & 2)
+            if (((Shader*)op)->vtxAttrFlags & 2)
             {
                 bs.pos += 1;
             }
