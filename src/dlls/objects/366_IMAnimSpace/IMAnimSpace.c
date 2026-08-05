@@ -3,6 +3,7 @@
 #include "main/dll/expgfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
+#include "main/gamebits_api.h"
 #include "main/object_render.h"
 #include "main/objtexture.h"
 

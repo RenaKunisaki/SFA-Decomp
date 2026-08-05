@@ -1,13 +1,20 @@
 /* CloudRunner Fortress level controller. */
 
+#include "dlls/objects/274.h"
 #include "dlls/objects/356_CFLevelCont.h"
 
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_interface.h"
+#include "main/dll/player_api.h"
+#include "main/dll/player_staff_api.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
+#include "main/maketex_timer_api.h"
 #include "main/mapEvent.h"
+#include "main/map_load.h"
 #include "main/object_render.h"
+#include "main/pi_dolphin_api.h"
 #include "main/render_envfx_api.h"
 #include "main/shader_api.h"
 #include "main/sky_api.h"

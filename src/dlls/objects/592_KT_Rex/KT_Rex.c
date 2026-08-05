@@ -26,6 +26,7 @@
 #include "main/newclouds.h"
 #include "game/objects/object.h"
 #include "main/object_render.h"
+#include "string.h"
 #include "sys/objects.h"
 #include "main/resource.h"
 #include "main/screen_transition.h"
@@ -182,13 +183,13 @@ void ktrex_spawnRandomEnergyArc(GameObject* obj, int angle, f32 arcLen, int slot
     localPoint.y = 0.0f;
     localPoint.z = 0.0f;
 
-    PSMTXMultVec((MtxPtr)ObjModel_GetJointMatrix((u8*)model, randomGetRange(0, *(u8*)(*(int*)model + 0xf3) - 1)), &localPoint,
+    PSMTXMultVec((MtxPtr)ObjModel_GetJointMatrix((u8*)model, randomGetRange(0, *(u8*)(*model + 0xf3) - 1)), &localPoint,
                  &point1);
     point1.x = point1.x + playerMapOffsetX;
     point1.y += 50.0f;
     point1.z = point1.z + playerMapOffsetZ;
 
-    PSMTXMultVec((MtxPtr)ObjModel_GetJointMatrix((u8*)model, randomGetRange(0, *(u8*)(*(int*)model + 0xf3) - 1)), &localPoint,
+    PSMTXMultVec((MtxPtr)ObjModel_GetJointMatrix((u8*)model, randomGetRange(0, *(u8*)(*model + 0xf3) - 1)), &localPoint,
                  &point2);
     point2.x = point2.x + playerMapOffsetX;
     point2.z = point2.z + playerMapOffsetZ;
@@ -1012,7 +1013,7 @@ void ktrex_updateContactEffects(GameObject* obj, GroundBaddieState* runtime)
 {
     int hitType;
     u32 hitC;
-    int hitA;
+    GameObject* hitA;
     KtrexMsgBlob msg;
     int hit;
     f32* contactPoints;
@@ -1095,7 +1096,7 @@ void ktrex_updateContactEffects(GameObject* obj, GroundBaddieState* runtime)
     {
         runtime->baddie.hitPoints = 0;
     }
-    ObjMsg_SendToObject((void*)hitA, KTREX_ADVANCE_MSG, obj, 0);
+    ObjMsg_SendToObject(hitA, KTREX_ADVANCE_MSG, obj, 0);
 }
 
 void ktrex_updateAttackEffects(GameObject* obj)
@@ -1439,9 +1440,9 @@ void ktrex_func0B(void)
 
 int ktrex_getControlMode(GameObject* obj)
 {
-    void* p = obj->extra;
-    gKTRexRuntime = p;
-    return ((KtrexState*)p)->controlMode;
+    KtrexState* p = obj->extra;
+    gKTRexRuntime = (GroundBaddieState*)p;
+    return p->controlMode;
 }
 
 int ktrex_getExtraSize(void)
@@ -1703,21 +1704,21 @@ void ktrex_init(GameObject* obj, char* arg, int flag)
         cp = (RomCurveDef*)(*gRomCurveInterface)->getById(*pA);
         if (cp != NULL)
         {
-            *(f32*)((char*)gKTRexState + iv + 0x10) = cp->x;
-            *(f32*)((char*)gKTRexState + iv + 0x20) = cp->y;
-            *(f32*)((char*)gKTRexState + iv + 0x30) = cp->z;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneAX[0] = cp->x;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneAY[0] = cp->y;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneAZ[0] = cp->z;
             cp = (RomCurveDef*)(*gRomCurveInterface)->getById(*pB);
-            *(f32*)((char*)gKTRexState + iv + 0x40) = cp->x;
-            *(f32*)((char*)gKTRexState + iv + 0x50) = cp->y;
-            *(f32*)((char*)gKTRexState + iv + 0x60) = cp->z;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneBX[0] = cp->x;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneBY[0] = cp->y;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneBZ[0] = cp->z;
             cp = (RomCurveDef*)(*gRomCurveInterface)->getById(*pC);
-            *(f32*)((char*)gKTRexState + iv + 0x70) = cp->x;
-            *(f32*)((char*)gKTRexState + iv + 0x80) = cp->y;
-            *(f32*)((char*)gKTRexState + iv + 0x90) = cp->z;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneCX[0] = cp->x;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneCY[0] = cp->y;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneCZ[0] = cp->z;
             cp = (RomCurveDef*)(*gRomCurveInterface)->getById(*base);
-            *(f32*)((char*)gKTRexState + iv + 0xa0) = cp->x;
-            *(f32*)((char*)gKTRexState + iv + 0xb0) = cp->y;
-            *(f32*)((char*)gKTRexState + iv + 0xc0) = cp->z;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneDX[0] = cp->x;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneDY[0] = cp->y;
+            ((KTRexArenaState*)((char*)gKTRexState + iv))->laneDZ[0] = cp->z;
         }
         pA++;
         iv += 4;

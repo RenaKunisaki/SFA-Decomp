@@ -1,5 +1,6 @@
 #include "dlls/objects/367_IMSpaceThru.h"
 
+#include "main/asset_load.h"
 #include "main/frame_timing.h"
 #include "main/mldf_fileid.h"
 #include "main/mm.h"

@@ -945,7 +945,7 @@ int ObjHits_CheckHitVolumes(GameObject* objA, GameObject* objB, GameObject* srcO
     char modeA;
     char miss;
     s64 maskB;
-    ObjHitsModelHitVolume* p;
+    ObjHitsModelHitVolume* vol;
     float* pb2;
     ObjHitsModelBank* modelBank;
     ObjHitsModelFileHeader* modelFile;
@@ -1101,25 +1101,25 @@ int ObjHits_CheckHitVolumes(GameObject* objA, GameObject* objB, GameObject* srcO
     maskB = 0;
     volBits = 0;
     i = 0;
-    p = volA;
+    vol = volA;
     for (; i < countA; i++) {
-        if (i == p->sphereIndex) {
-            if ((mask & 1 << p->maskBit) != 0) {
+        if (i == vol->sphereIndex) {
+            if ((mask & 1 << vol->maskBit) != 0) {
                 maskA |= 1 << i;
             }
-            if ((volMask & 1 << p->maskBit) != 0) {
+            if ((volMask & 1 << vol->maskBit) != 0) {
                 volBits |= 1 << i;
             }
         }
-        p++;
+        vol++;
     }
     j = 0;
-    p = volB;
+    vol = volB;
     for (; j < countB; j++) {
-        if (j == p->sphereIndex) {
+        if (j == vol->sphereIndex) {
             maskB |= 1 << j;
         }
-        p++;
+        vol++;
     }
     contactBase = gObjHitsContactScratch;
     bestDepth = -1.0f;
@@ -1911,16 +1911,16 @@ void ObjHits_CheckTrackContact(GameObject* objA, GameObject* objB) {
                             sphereIdx = (((u16)bits & 0xf000) >> 0xc) + i & 0xffff;
                             if (pointCount < 4) {
                                 float* curEntry;
-                                int prevEntry;
+                                float* prevEntry;
                                 int sphereOff = sphereIdx * 0x10;
                                 curEntry = (float*)((u8*)curSpheres + sphereOff);
                                 endPoints[pointCount * 3] = playerMapOffsetX + curEntry[1];
                                 endPoints[pointCount * 3 + 1] = curEntry[2];
                                 endPoints[pointCount * 3 + 2] = playerMapOffsetZ + curEntry[3];
-                                prevEntry = prevSpheres + sphereOff;
-                                startPoints[pointCount * 3] = playerMapOffsetX + *(float*)(prevEntry + 4);
-                                startPoints[pointCount * 3 + 1] = *(float*)(prevEntry + 8);
-                                startPoints[pointCount * 3 + 2] = playerMapOffsetZ + *(float*)(prevEntry + 0xc);
+                                prevEntry = (float*)(prevSpheres + sphereOff);
+                                startPoints[pointCount * 3] = playerMapOffsetX + prevEntry[1];
+                                startPoints[pointCount * 3 + 1] = prevEntry[2];
+                                startPoints[pointCount * 3 + 2] = playerMapOffsetZ + prevEntry[3];
                                 hb.radii[pointCount] = *curEntry;
                                 hb.ids[pointCount] = -1;
                                 hb.sevens[pointCount] = 7;
@@ -1932,10 +1932,10 @@ void ObjHits_CheckTrackContact(GameObject* objA, GameObject* objB) {
                             endPoints[pointCount * 3] = playerMapOffsetX + curSpheres[i * 4 + 1];
                             endPoints[pointCount * 3 + 1] = curSpheres[i * 4 + 2];
                             endPoints[pointCount * 3 + 2] = playerMapOffsetZ + curSpheres[i * 4 + 3];
-                            startPoints[pointCount * 3] = playerMapOffsetX + *(float*)(prevSpheres + i * 0x10 + 4);
-                            startPoints[pointCount * 3 + 1] = *(float*)(prevSpheres + i * 0x10 + 8);
+                            startPoints[pointCount * 3] = playerMapOffsetX + ((float*)prevSpheres)[i * 4 + 1];
+                            startPoints[pointCount * 3 + 1] = ((float*)prevSpheres)[i * 4 + 2];
                             startPoints[pointCount * 3 + 2] =
-                                playerMapOffsetZ + *(float*)(prevSpheres + i * 0x10 + 0xc);
+                                playerMapOffsetZ + ((float*)prevSpheres)[i * 4 + 3];
                             hb.radii[pointCount] = curSpheres[i * 4];
                             hb.ids[pointCount] = -1;
                             hb.sevens[pointCount] = 7;
@@ -2018,7 +2018,7 @@ void ObjHits_Update(int objectCount) {
     f32 diff;
     int hitVolumeIndex;
 
-    objectList = (GameObject**)ObjList_GetObjects(&startIndex, &listCount);
+    objectList = ObjList_GetObjects(&startIndex, &listCount);
     sweepEntries = gObjHitsSweepEntries;
     sweepEntries->minX = -36288576.0f;
     sweepEntries->maxX = -36288576.0f;
@@ -2843,7 +2843,7 @@ int ObjHits_RecordPositionHit(GameObject* obj, GameObject* hitObj, s8 priority, 
     hitVolumeId = hitVolume;
     while (hitSlot < hitState->priorityHitCount) {
         if ((void*)hitState->hitObjects[hitSlot] == (void*)hitObj) {
-            if (hitState->priorities[hitSlot] > (s8)priority) {
+            if (hitState->priorities[hitSlot] > priority) {
                 hitState->sphereIndices[hitSlot] = sphereIndex;
                 hitState->priorities[hitSlot] = priority;
                 hitState->hitVolumes[hitSlot] = hitVolumeId;
@@ -2946,7 +2946,7 @@ int ObjHits_GetPriorityHitWithPosition(GameObject* obj, GameObject** outHitObjec
     return 0;
 }
 
-int ObjHits_GetPriorityHit(GameObject* obj, int* outHitObject, int* outSphereIndex, u32* outHitVolume) {
+int ObjHits_GetPriorityHit(GameObject* obj, GameObject** outHitObject, int* outSphereIndex, u32* outHitVolume) {
     u8 hitPriority;
     int hitCount;
     ObjHitsPriorityState* hitState;
@@ -2971,7 +2971,7 @@ int ObjHits_GetPriorityHit(GameObject* obj, int* outHitObject, int* outSphereInd
         }
         if (bestHitSlot != -1) {
             if (outHitObject != 0x0) {
-                *outHitObject = hitState->hitObjects[bestHitSlot];
+                *outHitObject = (GameObject*)hitState->hitObjects[bestHitSlot];
             }
             if (outSphereIndex != 0x0) {
                 *outSphereIndex = hitState->sphereIndices[bestHitSlot];

@@ -10,6 +10,7 @@
 #include "main/frame_timing.h"
 #include "main/mm.h"
 #include "main/object_transform.h"
+#include "string.h"
 
 CameraModeCrawlState* gCameraModeCrawlState;
 
@@ -86,7 +87,7 @@ void CameraModeCrawl_update(CameraObject* camera) {
             int targetYaw = 0x8000 - (u16)getAngle(relativeX, relativeZ);
             yawDelta = targetYaw - (u16)camera->anim.rotX;
         }
-        if (0x8000 < yawDelta) {
+        if (yawDelta > 0x8000) {
             yawDelta = yawDelta - 0xffff;
         }
         if (yawDelta < -0x8000) {
@@ -103,7 +104,7 @@ void CameraModeCrawl_update(CameraObject* camera) {
             int targetYaw = 0x8000 - (u16)getAngle(relativeX, relativeZ);
             yawDelta = targetYaw - (u16)camera->anim.rotX;
         }
-        if (0x8000 < yawDelta) {
+        if (yawDelta > 0x8000) {
             yawDelta = yawDelta - 0xffff;
         }
         if (yawDelta < -0x8000) {

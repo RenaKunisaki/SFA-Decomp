@@ -184,8 +184,9 @@ def read_report(report_name: str, symbol: str):
         fn = None
         for f in (unit.get("functions") or []):
             if f["name"] == symbol:
-                fn = round(f["fuzzy_match_percent"], 6)
-        return round(unit["measures"]["fuzzy_match_percent"], 6), fn
+                # objdiff omits the key at 0.0; absent means zero, not absent
+                fn = round(float(f.get("fuzzy_match_percent") or 0.0), 6)
+        return round(float(unit["measures"].get("fuzzy_match_percent") or 0.0), 6), fn
     raise LookupError(f"unit '{report_name}' absent from report.json")
 
 

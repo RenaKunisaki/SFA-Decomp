@@ -12,10 +12,16 @@
 #include "dlls/objects/489_SB_Propelle.h"
 
 #include "dlls/objects/488_SB_Galleon.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
+#include "main/obj_path.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
+#include "main/objhits.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
 
 /* anim.romDefNo tag identifying a live propeller (vs. a placeholder stand-in) */
 #define SB_PROPELLER_SEQ_ID 0x69c
@@ -63,7 +69,7 @@ void SB_Propeller_update(GameObject* obj) {
     int parentTimer;
     int smokeCount;
     int frameIndex;
-    int hitObjectAddress;
+    GameObject* hitObjectAddress;
     SBPropellerState* state;
     PartFxSpawnParams spawnParams;
 
@@ -87,7 +93,7 @@ void SB_Propeller_update(GameObject* obj) {
             }
             state->smokeTimer = (f32)randomGetRange(0x5a, 0xf0);
         }
-        if (2 < galleonStage && obj->anim.bankIndex == 1) {
+        if (galleonStage > 2 && obj->anim.bankIndex == 1) {
             spawnParams.scale = 2.5f;
             spawnParams.arg3 = 0xc0a;
             ObjPath_GetPointWorldPosition(obj, 0, &spawnParams.posX, &spawnParams.posY, &spawnParams.posZ, 0);
@@ -115,13 +121,13 @@ void SB_Propeller_update(GameObject* obj) {
             obj->userData1 = 0;
         }
         if (galleonPhase == 1 && ObjHits_GetPriorityHit(obj, &hitObjectAddress, 0, 0) != 0 && obj->userData1 == 0 &&
-            (void*)hitObjectAddress != NULL && (void*)hitObjectAddress != (void*)Obj_GetPlayerObject() &&
-            ((GameObject*)hitObjectAddress)->anim.romDefNo != SB_PROPELLER_SEQ_ID &&
-            ((GameObject*)hitObjectAddress)->anim.romDefNo != SB_OTHER_SEQ_ID &&
+            hitObjectAddress != NULL && hitObjectAddress != Obj_GetPlayerObject() &&
+            hitObjectAddress->anim.romDefNo != SB_PROPELLER_SEQ_ID &&
+            hitObjectAddress->anim.romDefNo != SB_OTHER_SEQ_ID &&
             (obj->userData1 = 0x14, obj->anim.parent != NULL) && (galleonStage == 2 || galleonStage == 5) &&
             obj->anim.romDefNo == SB_PROPELLER_SEQ_ID) {
             Obj_SetModelColorFadeRecursive(obj, 0xf, 200, 0, 0, 1);
-            Sfx_PlayFromObject((int)obj, SB_PROPELLER_SFX_HIT);
+            Sfx_PlayFromObject(obj, SB_PROPELLER_SFX_HIT);
             state->health -= 1;
             if (state->health <= 0) {
                 state->health = 0;
@@ -129,7 +135,7 @@ void SB_Propeller_update(GameObject* obj) {
                 ObjHits_DisableObject(obj);
                 obj->anim.flags = obj->anim.flags | OBJANIM_FLAG_HIDDEN;
                 spawnExplosion(obj, 100.0f, 1, 1, 1, 0, 1, 1, 0);
-                Sfx_PlayFromObject((int)obj, SB_PROPELLER_SFX_DESTROYED);
+                Sfx_PlayFromObject(obj, SB_PROPELLER_SFX_DESTROYED);
             }
         }
         if (obj->userData1 == 0) {

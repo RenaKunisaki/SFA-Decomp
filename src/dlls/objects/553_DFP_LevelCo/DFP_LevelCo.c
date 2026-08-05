@@ -5,7 +5,15 @@
  * raised, and gamebit-driven progression
  * (1504/1505/1507/1508/1589/3671) plus level unlocks and music triggers.
  */
+#include "main/audio/music_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/dll/dfp_types.h"
+#include "main/dll/player_api.h"
+#include "main/lightmap_api.h"
+#include "main/map_load.h"
+#include "main/obj_message.h"
+#include "main/objtype.h"
+#include "main/vecmath.h"
 #include "sys/objects.h"
 #include "dlls/objects/430_SH_LevelCon.h"
 #include "main/mapEventTypes.h"
@@ -47,12 +55,12 @@ void DFP_LevelControl_updateMapAct2(GameObject* obj)
     }
     if (mainGetBit(0x5e3) == 0 && mainGetBit(0x5e0) != 0 && mainGetBit(0x5e1) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_wp_espk2_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_wp_espk2_c);
         mainSetBits(0x5e3, 1);
     }
     if (mainGetBit(0x792) == 0 && mainGetBit(0xb8c) != 0 && mainGetBit(0xb8c) != 0)
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_wp_espk2_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_wp_espk2_c);
         mainSetBits(0x792, 1);
     }
     if (mainGetBit(0xe58) == 0)
@@ -204,14 +212,14 @@ void DFP_LevelControl_update(GameObject* obj)
     b1 = mainGetBit(0xd5d);
     b2 = mainGetBit(0xd59);
     b3 = mainGetBit(0xd5a);
-    if ((b1 != 0 && ((u32)state->flags07 >> 7 & 1) == 0) || (b2 != 0 && ((u32)state->flags07 >> 6 & 1) == 0) ||
-        (b3 != 0 && ((u32)state->flags07 >> 5 & 1) == 0))
+    if ((b1 != 0 && state->flags07.b80 == 0) || (b2 != 0 && state->flags07.b40 == 0) ||
+        (b3 != 0 && state->flags07.b20 == 0))
     {
         Sfx_PlayFromObject(0, SFXTRIG_menuups16k);
     }
-    ((DfpFlags7*)&state->flags07)->b80 = b1;
-    ((DfpFlags7*)&state->flags07)->b40 = b2;
-    ((DfpFlags7*)&state->flags07)->b20 = b3;
+    state->flags07.b80 = b1;
+    state->flags07.b40 = b2;
+    state->flags07.b20 = b3;
     if (mainGetBit(0x5e8) == 0 && mainGetBit(0x5ee) != 0 && mainGetBit(0x5ef) != 0)
     {
         mainSetBits(0x5e8, 1);
@@ -249,9 +257,9 @@ void DFP_LevelControl_init(GameObject* obj, DfpLevelControlPlacement* placement)
     DfpLevelControlState* state = (obj)->extra;
     int mode;
     objAddObjectType((int)obj, DFPLEVELCONTROL_OBJGROUP);
-    ((DfpFlags7*)&state->flags07)->b80 = mainGetBit(0xd5d);
-    ((DfpFlags7*)&state->flags07)->b40 = mainGetBit(0xd59);
-    ((DfpFlags7*)&state->flags07)->b20 = mainGetBit(0xd5a);
+    state->flags07.b80 = mainGetBit(0xd5d);
+    state->flags07.b40 = mainGetBit(0xd59);
+    state->flags07.b20 = mainGetBit(0xd5a);
     (obj)->animEventCallback = (void*)DFP_LevelControl_sequenceCallback;
     state->mode = 1;
     mode = placement->mode;

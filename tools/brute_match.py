@@ -75,6 +75,7 @@ from __future__ import annotations
 import argparse
 import itertools
 import random
+import re
 import subprocess
 import sys
 import tempfile
@@ -644,6 +645,112 @@ def _apply_op(order: list, op) -> list:
     return o
 
 
+# ------------------------------------------- side effects in an initialiser
+CALL_TOKEN_RE = re.compile(r"(?<!\w)([A-Za-z_]\w*)\s*\(")
+NON_CALL_KEYWORDS = {"sizeof", "if", "while", "for", "switch", "return",
+                     "defined", "asm", "offsetof", "__alignof__"}
+
+
+def initialiser_eq(item: str) -> int:
+    """Index of an item's initialiser `=`, or -1.  Skips ==/!=/<=/>=/+= and
+    any `=` nested in parens, brackets, braces or a string literal."""
+    depth = 0
+    i = 0
+    n = len(item)
+    while i < n:
+        c = item[i]
+        if c in "([{":
+            depth += 1
+        elif c in ")]}":
+            depth -= 1
+        elif c in '"\'':
+            i = skip_string(item, i)
+            continue
+        elif c == "=" and depth == 0:
+            if i + 1 < n and item[i + 1] == "=":
+                i += 2
+                continue
+            if i > 0 and item[i - 1] in "!<>=+-*/%&|^":
+                i += 1
+                continue
+            return i
+        i += 1
+    return -1
+
+
+def initialiser_calls(item: str) -> list[str]:
+    """Call tokens in an item's INITIALISER (empty if it has none).
+
+    A cast does not match: in `(u32)(p)` the identifier is inside the parens
+    and is followed by `)`, not `(`.  A macro that expands to a cast DOES
+    match, which is the conservative direction -- the reader can clear it.
+
+    An INDIRECT call through a struct member matches too -- `p->fn(x)`,
+    `s.fn(x)`, `tbl[i].fn(x)`.  It is only the `(` that distinguishes a member
+    CALL from a member READ, so a lookbehind that excluded `>` and `.` went
+    blind to every interface dispatch in the tree, which is exactly the class
+    whose purity cannot be established from the source at all:
+    `(*gCameraInterface)->getCamera()` resolves to a DLL vtable slot.  Being
+    blind where the answer is least knowable is the wrong direction to fail in.
+    """
+    eq = initialiser_eq(item)
+    if eq < 0:
+        return []
+    return [m.group(1) for m in CALL_TOKEN_RE.finditer(item[eq + 1:])
+            if m.group(1) not in NON_CALL_KEYWORDS]
+
+
+def side_effect_reorders(items, order):
+    """Item pairs whose RELATIVE ORDER this permutation changes and where at
+    least one of the two carries a call in its initialiser.
+
+    WHY THIS EXISTS.  `looks_like_decl` refuses a member-access STORE because
+    permuting stores changes the computation and no gate in this project can
+    see that.  But a DECLARATION whose initialiser calls something is a
+    declaration by every test the parser applies, and its side effect is just
+    as invisible:
+
+        s32 rnd1 = randomGetRange(0, 0x1e) * 2;
+        s32 rnd2 = randomGetRange(0, 0x1e) * 2;
+
+    is two draws from a PRNG, and swapping the two declarations swaps which
+    draw lands in which variable.  objdiff fuzzy, obj_equal, score_delta_gate
+    and the forced link all compare retail's BYTES, never its MEANING, so an
+    ordering that scored better would have landed as "a declaration ordering".
+
+    The rule is deliberately CONSERVATIVE rather than clever: a pure helper
+    (`__fabsf(x)`) is flagged too.  Flagging is not refusing -- the sweep still
+    measures the ordering; it only loses the right to APPLY it unread.
+    """
+    calls = [bool(initialiser_calls(it)) for it in items]
+    pos = {v: k for k, v in enumerate(order)}
+    out = []
+    for i in range(len(items)):
+        for j in range(i + 1, len(items)):
+            if not (calls[i] or calls[j]):
+                continue
+            if pos[i] > pos[j]:
+                out.append((i, j))
+    return out
+
+
+def report_side_effect_reorders(items, order, label=""):
+    """Print the flagged pairs; return True if there are any."""
+    pairs = side_effect_reorders(items, order)
+    if not pairs:
+        return False
+    print(f"# SIDE-EFFECT REORDER{(' ' + label) if label else ''}: this "
+          f"ordering changes the relative order of {len(pairs)} pair(s) in "
+          f"which at least one initialiser CALLS something.")
+    for i, j in pairs:
+        print(f"#   [{i}] {' '.join(items[i].split())[:72]}")
+        print(f"#   [{j}] {' '.join(items[j].split())[:72]}")
+    print("# No gate in this project compares MEANING, so this is not applied "
+          "automatically; read the pair and re-run with "
+          "--allow-side-effect-reorder if the calls are pure.")
+    return True
+
+
 def gen_variants(n: int, strategy: str, cap: int, seed: int = 12345):
     """Yield orderings (as tuples of indices) excluding the identity first."""
     base = tuple(range(n))
@@ -768,6 +875,14 @@ def install_restore_guard(src_file: Path, original: bytes):
     the process is hard-killed (SIGTERM/SIGKILL, a wrapper timeout, a closed
     terminal) the next invocation finds the sidecar and restores from it before
     doing anything else.  atexit + SIGINT/SIGTERM handle the recoverable cases.
+
+    Restoring is CONDITIONAL on the file still holding the bytes this process
+    last wrote.  Without that test the exit path reverts the file to `original`
+    whatever is on disk, so a peer lane that edited the same file inside our
+    sweep window loses its work silently -- and this is the most-run tool in
+    the tree.  `stmt_sweep` grew the check when it was written; the copy here
+    did not, which is the same fix-at-one-paste-site shape the zero-key read
+    had.  Both now refuse and say so, keeping the sidecar for reconciliation.
     """
     import atexit
     import os
@@ -776,31 +891,37 @@ def install_restore_guard(src_file: Path, original: bytes):
     bak = src_file.with_suffix(src_file.suffix + ".brutebak")
     bak.write_bytes(original)
 
-    state = {"done": False}
+    state = {"done": False, "last": original, "keepbak": False}
 
     def restore(*_a):
         if state["done"]:
             return
         state["done"] = True
         try:
-            if src_file.read_bytes() != original:
-                src_file.write_bytes(original)
+            on_disk = src_file.read_bytes()
         except OSError:
-            pass
+            return
+        if on_disk == original:
+            return
+        if on_disk != state["last"]:
+            print(f"\n!! {src_file.name} was modified by another process "
+                  f"during this sweep -- NOT restoring.\n"
+                  f"!! pristine bytes are preserved in {bak.name}; "
+                  f"reconcile by hand.", file=sys.stderr)
+            state["keepbak"] = True
+            return
+        src_file.write_bytes(original)
 
     def finish():
         restore()
-        try:
-            bak.unlink()
-        except OSError:
-            pass
+        if not state["keepbak"]:
+            try:
+                bak.unlink()
+            except OSError:
+                pass
 
     def on_signal(signum, _frame):
-        restore()
-        try:
-            bak.unlink()
-        except OSError:
-            pass
+        finish()
         os._exit(130)
 
     atexit.register(finish)
@@ -813,6 +934,24 @@ def install_restore_guard(src_file: Path, original: bytes):
         except (ValueError, OSError):
             pass
 
+    def write(data: bytes) -> bool:
+        """Write `data`, but only while the file still holds OUR last bytes."""
+        try:
+            on_disk = src_file.read_bytes()
+        except OSError:
+            on_disk = state["last"]
+        if on_disk != state["last"]:
+            print(f"\n!! {src_file.name} changed underneath this sweep "
+                  f"(peer edit) -- refusing to write.\n"
+                  f"!! pristine bytes preserved in {bak.name}.",
+                  file=sys.stderr)
+            state["done"] = True
+            state["keepbak"] = True
+            return False
+        state["last"] = data
+        src_file.write_bytes(data)
+        return True
+
     def keep(newbytes: bytes):
         """Adopt `newbytes` as the value to leave on disk (a confirmed win)."""
         state["done"] = True
@@ -822,7 +961,7 @@ def install_restore_guard(src_file: Path, original: bytes):
         except OSError:
             pass
 
-    return keep
+    return write, keep
 
 
 def recover_stale_backup(src_file: Path):
@@ -856,6 +995,9 @@ def main():
                          "default sweeps every block")
     ap.add_argument("--top-level-only", action="store_true",
                     help="old (buggy) behaviour: leading block of the body only")
+    ap.add_argument("--allow-side-effect-reorder", action="store_true",
+                    help="apply a winner even when it reorders two "
+                         "declarations whose initialisers call something")
     ap.add_argument("--cross", action="store_true",
                     help="after the per-block pass, also try the cross-product "
                          "of the winning orderings of small blocks")
@@ -942,7 +1084,7 @@ def main():
             print(newsrc[blocks[bi]["start"]:blocks[bi]["start"] + 300])
         return
 
-    keep = install_restore_guard(src_file, original)
+    write, keep = install_restore_guard(src_file, original)
 
     # baseline measure. ALWAYS rebuild cur_o from the on-disk (original) source
     # first: in a multi-agent tree the .o can be stale (a peer rebuilt it, or a
@@ -997,8 +1139,15 @@ def main():
     t0 = time.time()
     stop = False
 
+    class PeerEdit(Exception):
+        pass
+
     def trial(orders):
-        src_file.write_bytes(render(orders).encode("latin-1"))
+        # A refused write means a peer edited the file. Abort loudly: an
+        # aborted sweep that returns quietly reads exactly like an exhausted
+        # one, and every "N orderings, 0 hits" count downstream would be wrong.
+        if not write(render(orders).encode("latin-1")):
+            raise PeerEdit()
         if not rebuild(unit["object"], args.version):
             return None
         px, reg = proxy()
@@ -1071,9 +1220,12 @@ def main():
                               "  <== best")
             else:
                 print(f"\n# cross-product skipped ({combos} combos > cap)")
+    except PeerEdit:
+        raise SystemExit("aborted: the source file was edited by another "
+                         "process mid-sweep")
     finally:
         # never leave a permutation on disk while deciding
-        src_file.write_bytes(original)
+        write(original)
 
     print(f"\n# orderings BUILT {n_built}, rejected by the compiler "
           f"{n_failed} (planned {total}) -- a row whose declarations "
@@ -1085,10 +1237,24 @@ def main():
         print(f"  fuzzy={fz:8.4f}% proxy={px:7.3f}% reg={reg:2d} "
               f"block {bi} {list(order)}")
 
+    # MEANING GATE, ahead of the score gate.  Every instrument in this project
+    # compares retail's bytes; none of them can see that two calls swapped.
+    flagged = False
+    for bi, order in sorted(held.items()):
+        if report_side_effect_reorders(blocks[bi]["items"], order,
+                                       f"(block {bi})"):
+            flagged = True
+    if flagged and not args.allow_side_effect_reorder:
+        write(original)
+        rebuild(unit["object"], args.version)
+        print("\n# NOT APPLIED: the winning ordering reorders side effects.")
+        return
+
     # commit gate: true fuzzy must strictly rise
     if held and cur_fz > base_fz + 1e-4:
         newbytes = render(held).encode("latin-1")
-        src_file.write_bytes(newbytes)
+        if not write(newbytes):
+            return
         rebuild(unit["object"], args.version)
         confirm = fuzzy()
         print(f"\n# APPLIED: fuzzy {base_fz:.4f}% -> {confirm:.4f}%")
@@ -1097,7 +1263,7 @@ def main():
         if confirm <= base_fz + 1e-4:
             print("# WARNING: re-measured fuzzy did NOT confirm the gain -- "
                   "restoring original.")
-            src_file.write_bytes(original)
+            write(original)
             rebuild(unit["object"], args.version)
         else:
             keep(newbytes)

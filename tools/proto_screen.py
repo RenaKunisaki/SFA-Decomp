@@ -61,7 +61,7 @@ def parse_ninja(path):
             i += 1
             stmt = stmt[:-1] + lines[i]
         i += 1
-        match = re.match(r"^build ([^:]+): (mwcc\w*) (.*)$", stmt)
+        match = re.match(r"^build ([^:]+):\s+(mwcc\w*)\s+(.*)$", stmt)
         variables = {}
         while i < len(lines) and lines[i].startswith("  "):
             vstmt = lines[i]

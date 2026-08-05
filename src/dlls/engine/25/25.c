@@ -201,7 +201,7 @@ void dll_19_initGroundBaddie(GameObject* obj, GroundBaddiePlacement* config, u8*
 
     curveLocal = gDll19DefaultCurveMode.u;
     byteLocal = 1;
-    ((GroundBaddieState*)state)->control = (void*)(state + 1040);
+    ((GroundBaddieState*)state)->control = (void*)(state + sizeof(GroundBaddieState));
     ((GroundBaddieState*)state)->targetState = 0;
 
     flags = initFlags;
@@ -515,7 +515,7 @@ int dll_19_updateHitReaction(GameObject* obj, void* baddieState, void* hitbox, s
 GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, int alt)
 {
     GameObject* source = obj;
-    u8* state = (u8*)obj->anim.placementData;
+    GroundBaddiePlacement* state = (GroundBaddiePlacement*)obj->anim.placementData;
     CollectibleSetup* setup;
     u16 ids1[4];
     u16 ids2[4];
@@ -535,7 +535,7 @@ GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, i
     {
         return 0;
     }
-    if ((((GroundBaddiePlacement*)state)->triggerId & 0xf00) != 0)
+    if ((state->triggerId & 0xf00) != 0)
     {
         idx = ((spawnType & 0xf00) >> 8) - 1;
         if (idx > 3)
@@ -545,7 +545,7 @@ GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, i
         setup = (CollectibleSetup*)Obj_AllocObjectSetup(sizeof(CollectibleSetup), ids1[idx]);
         scale = 30.0f;
     }
-    if ((((GroundBaddiePlacement*)state)->triggerId & 0xf000) != 0)
+    if ((state->triggerId & 0xf000) != 0)
     {
         idx = ((spawnType & 0xf000) >> 12) - 1;
         if (idx > 3)
@@ -555,7 +555,7 @@ GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, i
         setup = (CollectibleSetup*)Obj_AllocObjectSetup(sizeof(CollectibleSetup), ids2[idx]);
         scale = 30.0f;
     }
-    if ((int)(u8)((GroundBaddiePlacement*)state)->triggerId != 0)
+    if ((int)(u8)state->triggerId != 0)
     {
         switch (spawnType)
         {
@@ -589,7 +589,7 @@ GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, i
                 }
             }
             nearDist = 750.0f;
-            gDll19NearestObj = objGetNearestTypeTo(DLL19_TARGET_OBJGROUP, (GameObject*)obj, &nearDist);
+            gDll19NearestObj = objGetNearestTypeTo(DLL19_TARGET_OBJGROUP, obj, &nearDist);
             source->anim.worldPosX = savedX;
             source->anim.worldPosY = savedY;
             source->anim.worldPosZ = savedZ;
@@ -634,10 +634,10 @@ GameObject* dll_19_dropCollectable(GameObject* obj, int spawnType, int unused, i
     {
         setup->spawnMode = 1;
     }
-    setup->base.color[0] = state[4];
-    setup->base.color[2] = state[6];
-    setup->base.color[1] = state[5];
-    setup->base.color[3] = state[7];
+    setup->base.color[0] = ((u8*)state)[4];
+    setup->base.color[2] = ((u8*)state)[6];
+    setup->base.color[1] = ((u8*)state)[5];
+    setup->base.color[3] = ((u8*)state)[7];
     gDll19NearestObj = objSetupObject(&setup->base, 5, obj->anim.mapEventSlot, -1, source->anim.parent);
     return gDll19NearestObj;
 }
@@ -916,7 +916,7 @@ int dll_19_updateSequenceMovement(GameObject* obj, ObjSeqState* seq, char* st, v
     f32 dist;
     f32 nx;
     f32 nz;
-    char* t;
+    GameObject* t;
 
     ((BaddieState*)st)->heldButtons = 0;
     ((BaddieState*)st)->pressedButtons = 0;
@@ -941,13 +941,13 @@ int dll_19_updateSequenceMovement(GameObject* obj, ObjSeqState* seq, char* st, v
         f32 ez = seq->posOffsetZ - (obj)->anim.localPosZ;
         dist = sqrtf(ex * ex + ez * ez);
     }
-    t = (char*)((BaddieState*)st)->targetObj;
+    t = ((BaddieState*)st)->targetObj;
     if (t == NULL)
     {
         return 0;
     }
-    nx = ((GameObject*)t)->anim.localPosX - seq->posOffsetX;
-    nz = ((GameObject*)t)->anim.localPosZ - seq->posOffsetZ;
+    nx = t->anim.localPosX - seq->posOffsetX;
+    nz = t->anim.localPosZ - seq->posOffsetZ;
     {
         f32 total = sqrtf(nx * nx + nz * nz);
         f32 step = timeDelta * (total - dist);
@@ -967,8 +967,8 @@ int dll_19_updateSequenceMovement(GameObject* obj, ObjSeqState* seq, char* st, v
         }
         if (dist >= total || gDll19SeqStallCount > 9)
         {
-            char* t2 = (char*)((BaddieState*)st)->targetObj;
-            int delta = (obj)->anim.rotX - (u16)((GameObject*)t2)->anim.rotX;
+            GameObject* t2 = ((BaddieState*)st)->targetObj;
+            int delta = (obj)->anim.rotX - (u16)t2->anim.rotX;
             if (delta > 0x8000)
             {
                 delta -= 0xffff;
@@ -1126,7 +1126,7 @@ f32 dll_19_func05(GameObject* obj, f32 px, f32 pz, f32 range, GameObject* mover)
  * target, updating the wide-turn flag. */
 void dll_19_getTargetGeometry(GameObject* obj, GameObject* target, int div, u16* outYaw, u16* outDelta, u16* outDist)
 {
-    char* st = (obj)->extra;
+    Dll19State* st = (obj)->extra;
     f32 d[3];
     f32* dp = d;
     s16* ovr;
@@ -1167,11 +1167,11 @@ void dll_19_getTargetGeometry(GameObject* obj, GameObject* target, int div, u16*
         *outDelta = delta;
         if ((u16)delta < 0x31c4 || (u16)delta > 0xce3b)
         {
-            ((Dll19State*)st)->flags &= ~DLL19_FLAG_YAW_ALIGNED;
+            st->flags &= ~DLL19_FLAG_YAW_ALIGNED;
         }
         else
         {
-            ((Dll19State*)st)->flags |= DLL19_FLAG_YAW_ALIGNED;
+            st->flags |= DLL19_FLAG_YAW_ALIGNED;
         }
         *outYaw = (u16)delta / (0x10000 / (u8)div);
         *outDist = sqrtf(dp[2] * dp[2] + (dp[0] * dp[0] + dp[1] * dp[1]));
@@ -1235,7 +1235,7 @@ u8 dll_19_getClearDirectionMask(GameObject* obj, void* state, f32 dist)
         if (ok != 0)
         {
             if (trackGetLineIntersect(&obj->anim.localPosX, world, 1.0f, 0, (TrackBBoxHit*)bboxOut,
-                                   (GameObject*)obj, ((Dll19State*)state)->bboxTraceFlags, -1, 0, 0) != 0)
+                                   obj, ((Dll19State*)state)->bboxTraceFlags, -1, 0, 0) != 0)
             {
                 ok = 0;
             }

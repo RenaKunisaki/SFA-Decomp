@@ -15,6 +15,7 @@
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "dolphin/os/OSCache.h"
+#include "main/dll/player_api.h"
 #include "main/dll/ppcwgpipe_struct.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
@@ -22,6 +23,7 @@
 #include "main/objseq.h"
 #include "main/object_render.h"
 #include "main/objtexture.h"
+#include "main/track_dolphin_api.h"
 #include "sys/objects.h"
 
 #define DIM_MAGIC_BRIDGE_GAMEBIT_IGNITED 0x1e9
@@ -46,10 +48,10 @@ void dimmagicbridge_updateVertexWave(GameObject* obj, u8* stateBytes) {
         wavePosition = wavePosition + state->wavePhase;
         if (*baseVertex > 0) {
             *currentVertex =
-                256.0f * mathSinf((3.1415927f * (f32)(int)wavePosition) / 32768.0f) + (f32)(int)*baseVertex;
+                256.0f * mathSinf((3.1415927f * (f32)wavePosition) / 32768.0f) + (f32)(int)*baseVertex;
         } else {
             *currentVertex =
-                -(256.0f * mathSinf((3.1415927f * (f32)(int)wavePosition) / 32768.0f) - (f32)(int)*baseVertex);
+                -(256.0f * mathSinf((3.1415927f * (f32)wavePosition) / 32768.0f) - (f32)(int)*baseVertex);
         }
     }
     DCStoreRange((void*)ObjModel_GetCurrentVertexCoords(model, 0), vertexCount * 6);

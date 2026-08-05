@@ -419,13 +419,13 @@ void camcontrol_initialiseTargetReticle(void) {
     }
 }
 
-static inline int camcontrol_isTargetCandidate(GameObject* obj, ObjHitVolumeRuntimeBounds* data) {
+static inline int camcontrol_isTargetCandidate(GameObject* obj, ObjHitVolumeRuntimeBounds* bounds) {
     int accept;
-    if (data != NULL && obj->anim.alpha == 0xff && !(obj->anim.resetHitboxFlags & 0x28) &&
+    if (bounds != NULL && obj->anim.alpha == 0xff && !(obj->anim.resetHitboxFlags & 0x28) &&
         ((obj->objectFlags & OBJECT_OBJFLAG_RENDERED) || (obj->anim.modelInstance->flags & 1)) &&
         !(obj->anim.flags & OBJANIM_FLAG_HIDDEN) && !(obj->objectFlags & OBJECT_OBJFLAG_FREED) &&
         (gCamcontrolTargetClassMask &
-         ((accept = 1) << (data[obj->hitVolumeIndex].flags & CAMCONTROL_TARGET_KIND_MASK)))) {
+         ((accept = 1) << (bounds[obj->hitVolumeIndex].flags & CAMCONTROL_TARGET_KIND_MASK)))) {
         return accept;
     }
     return 0;
@@ -449,7 +449,7 @@ GameObject* camcontrol_findBestTarget(CamcontrolCameraState* cameraState, ObjAni
     int count;
     GameObject* player;
     u8 canTarget;
-    ObjHitVolumeRuntimeBounds* data;
+    ObjHitVolumeRuntimeBounds* bounds;
     ObjHitVolumeRuntimeBounds* entry;
     ObjDefHitVolume* row;
     GameObject* best;
@@ -466,20 +466,20 @@ GameObject* camcontrol_findBestTarget(CamcontrolCameraState* cameraState, ObjAni
         playerCanUseCombatTargeting(player) == 0) {
         return NULL;
     }
-    ptr = (GameObject**)ObjList_GetObjects(&objIndex, &objCount);
+    ptr = ObjList_GetObjects(&objIndex, &objCount);
     idx = objIndex;
     ptr += idx;
     for (; idx < objCount; ptr++, idx++) {
         obj = *ptr;
-        data = obj->anim.hitVolumeBounds;
-        accept = camcontrol_isTargetCandidate(obj, data);
+        bounds = obj->anim.hitVolumeBounds;
+        accept = camcontrol_isTargetCandidate(obj, bounds);
         if (accept == 0) {
             continue;
         }
         if ((int)obj->anim.modelInstance->hitVolumes[obj->hitVolumeIndex].priorityUnsigned < bestPri) {
             continue;
         }
-        if ((obj->anim.resetHitboxFlags & 0x80) || (data[obj->hitVolumeIndex].flags & 0x80)) {
+        if ((obj->anim.resetHitboxFlags & 0x80) || (bounds[obj->hitVolumeIndex].flags & 0x80)) {
             dy = 0.0f;
         } else {
             dy = focus->worldPosY - obj->anim.hitVolumeTransforms[obj->hitVolumeIndex].centerY;
@@ -493,7 +493,7 @@ GameObject* camcontrol_findBestTarget(CamcontrolCameraState* cameraState, ObjAni
         dx = focus->worldPosX - obj->anim.hitVolumeTransforms[obj->hitVolumeIndex].centerX;
         dz = focus->worldPosZ - obj->anim.hitVolumeTransforms[obj->hitVolumeIndex].centerZ;
         distsq = dx * dx + dz * dz;
-        entry = &data[obj->hitVolumeIndex];
+        entry = &bounds[obj->hitVolumeIndex];
         range = (f32)(int)(entry->bounds[2] << 2);
         if (!(distsq < range * range)) {
             continue;
@@ -706,7 +706,7 @@ void camcontrol_applyState(CamcontrolCameraState* camera) {
     view->yaw = camera->yaw;
     view->pitch = camera->pitch;
     view->roll = camera->roll;
-    if (((camera->smoothingFlags >> 7) & 1) != 0u) {
+    if (camera->smoothingFlags.b0 != 0u) {
         PSVECSubtract((Vec*)&camera->worldX, (Vec*)&view->x, (Vec*)delta);
         mag = PSVECMag((Vec*)delta);
         if (mag > 0.0f) {
@@ -725,13 +725,10 @@ void camcontrol_applyState(CamcontrolCameraState* camera) {
     gCamcontrolFovY = camera->fovY;
     if (camera->blendProgress > 0.0f) {
         f32 prog;
-        f32 clamped;
 
         camera->blendProgress = -(camera->blendStep * timeDelta - camera->blendProgress);
         prog = camera->blendProgress;
-        clamped = 0.0f;
-        clamped = (prog < clamped) ? clamped : ((prog > 1.0f) ? 1.0f : prog);
-        camera->blendProgress = clamped;
+        camera->blendProgress = (prog < 0.0f) ? 0.0f : ((prog > 1.0f) ? 1.0f : prog);
         if (gCamcontrolCamera->blendCurveMode == 2) {
             mag = 1.0f - camera->blendProgress * camera->blendProgress * camera->blendProgress;
         } else if (gCamcontrolCamera->blendCurveMode == 1) {

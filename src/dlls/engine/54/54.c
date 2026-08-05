@@ -131,7 +131,7 @@ u32 EnterSaveNameScreen_run(void)
             gEnterSaveNameScrollPos = gEnterSaveNameScrollPos + gEnterSaveNameTotalWidth;
             moved = 1;
         }
-        if ((0 < gEnterSaveNameSelectedIndex) &&
+        if ((gEnterSaveNameSelectedIndex > 0) &&
             (gEnterSaveNameScrollPos <= (f32)(gEnterSaveNameCharOffsets[gEnterSaveNameSelectedIndex] -
                                               gEnterSaveNameCharWidths[gEnterSaveNameSelectedIndex - 1] / 2)))
         {
@@ -139,7 +139,7 @@ u32 EnterSaveNameScreen_run(void)
         }
         if (moved != 0)
         {
-            if (0.0f == gEnterSaveNameTargetScrollVel)
+            if (gEnterSaveNameTargetScrollVel == 0.0f)
             {
                 gEnterSaveNameScrollVelocity = 0.0f;
             }
@@ -172,7 +172,7 @@ u32 EnterSaveNameScreen_run(void)
         }
         if (moved != 0)
         {
-            if (0.0f == gEnterSaveNameTargetScrollVel)
+            if (gEnterSaveNameTargetScrollVel == 0.0f)
             {
                 gEnterSaveNameScrollVelocity = 0.0f;
             }
@@ -190,7 +190,7 @@ u32 EnterSaveNameScreen_run(void)
         }
     }
     gEnterSaveNameScrollWrapOffset = (gEnterSaveNameScrollPos < (f32)(gEnterSaveNameTotalWidth >> 2)) ? gEnterSaveNameTotalWidth : 0;
-    if ((0.0f != gEnterSaveNameScrollVelocity) || (0.0f != gEnterSaveNameTargetScrollVel))
+    if ((gEnterSaveNameScrollVelocity != 0.0f) || (gEnterSaveNameTargetScrollVel != 0.0f))
     {
         if ((gEnterSaveNameScrollVelocity < 0.0f) || (gEnterSaveNameTargetScrollVel < 0.0f))
         {
@@ -212,7 +212,7 @@ u32 EnterSaveNameScreen_run(void)
             gEnterSaveNameScrollVelocity = 0.025f * (gEnterSaveNameTargetScrollVel - gEnterSaveNameScrollVelocity) + gEnterSaveNameScrollVelocity;
         }
     }
-    if ((stickX == 0) && (0.0f == gEnterSaveNameScrollVelocity))
+    if ((stickX == 0) && (gEnterSaveNameScrollVelocity == 0.0f))
     {
         buttons = getButtonsJustPressed(0);
         buttonDisable(0, buttons);

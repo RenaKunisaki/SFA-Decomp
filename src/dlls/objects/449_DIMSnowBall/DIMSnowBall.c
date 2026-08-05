@@ -6,10 +6,13 @@
 
 #include "dlls/objects/449_DIMSnowBall.h"
 
+#include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 #define DIM_SNOWBALL_COORDINATES_PER_POINT 3
 #define DIM_SNOWBALL_COORDINATE_SCALE      16.0f
@@ -57,12 +60,12 @@ void dimsnowball_update(GameObject* obj) {
     f32 y[4];
     f32 z[4];
     void* ap;
-    int* state;
+    DimSnowBallState* state;
     GameObject* player;
     int count;
     int last;
     u8 frames;
-    u8* model;
+    ObjHitsPriorityState* model;
     f32 dy2;
     f32 dy1;
     f32 velocityX;
@@ -73,12 +76,12 @@ void dimsnowball_update(GameObject* obj) {
     ap = z;
     state = obj->extra;
     player = Obj_GetPlayerObject();
-    if (*(void**)state == NULL) {
+    if (state->target == NULL) {
         Obj_FreeObject(obj);
         return;
     }
     frames = framesThisStep;
-    idx[1] = ((DimSnowBallState*)state)->pathPointIndex;
+    idx[1] = state->pathPointIndex;
     count = gDimSnowballPathPointCount;
     last = count - 1;
     if (idx[1] >= last) {
@@ -151,39 +154,39 @@ void dimsnowball_update(GameObject* obj) {
     }
     dy1 = y[1] - y[0];
     dy2 = y[2] - y[3];
-    if (dy2 <= 0.0f && dy1 <= 0.0f && ((DimSnowBallState*)state)->jingleCooldown <= 0) {
+    if (dy2 <= 0.0f && dy1 <= 0.0f && state->jingleCooldown <= 0) {
         sqrtf(obj->anim.velocityZ * obj->anim.velocityZ +
               (obj->anim.velocityX * obj->anim.velocityX + obj->anim.velocityY * obj->anim.velocityY));
         if ((player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_en_fireup_c_1fb);
+            Sfx_PlayFromObject(obj, SFXTRIG_en_fireup_c_1fb);
         }
-        ((DimSnowBallState*)state)->jingleCooldown = DIM_SNOWBALL_JINGLE_COOLDOWN;
+        state->jingleCooldown = DIM_SNOWBALL_JINGLE_COOLDOWN;
     }
     dy1 = 0.0f;
     obj->anim.localPosX = x[1] + dy1 * (x[2] - x[1]);
     obj->anim.localPosY = y[1] + dy1 * (y[2] - y[1]);
     obj->anim.localPosZ = z[1] + dy1 * (z[2] - z[1]);
-    obj->anim.localPosX = obj->anim.localPosX + ((DimSnowBallState*)state)->target->anim.localPosX;
-    obj->anim.localPosY = obj->anim.localPosY + ((DimSnowBallState*)state)->target->anim.localPosY;
-    obj->anim.localPosZ = obj->anim.localPosZ + ((DimSnowBallState*)state)->target->anim.localPosZ;
+    obj->anim.localPosX = obj->anim.localPosX + state->target->anim.localPosX;
+    obj->anim.localPosY = obj->anim.localPosY + state->target->anim.localPosY;
+    obj->anim.localPosZ = obj->anim.localPosZ + state->target->anim.localPosZ;
     obj->anim.velocityX = oneOverTimeDelta * (obj->anim.localPosX - obj->anim.previousLocalPosX);
     obj->anim.velocityY = oneOverTimeDelta * (obj->anim.localPosY - obj->anim.previousLocalPosY);
     obj->anim.velocityZ = oneOverTimeDelta * (obj->anim.localPosZ - obj->anim.previousLocalPosZ);
-    ((DimSnowBallState*)state)->pathPointIndex = ((DimSnowBallState*)state)->pathPointIndex + frames;
-    if (((DimSnowBallState*)state)->jingleCooldown > 0) {
-        ((DimSnowBallState*)state)->jingleCooldown -= frames;
+    state->pathPointIndex = state->pathPointIndex + frames;
+    if (state->jingleCooldown > 0) {
+        state->jingleCooldown -= frames;
     }
     velocityX = obj->anim.velocityX;
     dy2 = DIM_SNOWBALL_ROTATION_SCALE;
     obj->anim.rotY = -(dy2 * -obj->anim.velocityZ - (f32)obj->anim.rotY);
     obj->anim.rotZ = -(dy2 * velocityX - (f32)obj->anim.rotZ);
-    model = (u8*)obj->anim.hitReactState;
+    model = (ObjHitsPriorityState*)obj->anim.hitReactState;
     if (model != NULL) {
-        ((ObjHitsPriorityState*)model)->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
-        *(u8*)&((ObjHitsPriorityState*)model)->hitVolumePriority = DIM_SNOWBALL_HIT_VOLUME_PRIORITY;
-        ((ObjHitsPriorityState*)model)->hitVolumeId = DIM_SNOWBALL_HIT_VOLUME_ID;
-        ((ObjHitsPriorityState*)model)->objectHitMask = DIM_SNOWBALL_HIT_MASK;
-        ((ObjHitsPriorityState*)model)->skeletonHitMask = DIM_SNOWBALL_HIT_MASK;
+        model->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
+        *(u8*)&model->hitVolumePriority = DIM_SNOWBALL_HIT_VOLUME_PRIORITY;
+        model->hitVolumeId = DIM_SNOWBALL_HIT_VOLUME_ID;
+        model->objectHitMask = DIM_SNOWBALL_HIT_MASK;
+        model->skeletonHitMask = DIM_SNOWBALL_HIT_MASK;
     }
 }
 

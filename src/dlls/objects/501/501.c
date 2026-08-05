@@ -72,11 +72,11 @@ void dll501_hitDetect(void) {
 
 void dll501_update(GameObject* obj) {
     int groupId;
-    int* objects;
+    GameObject** objects;
     int i;
     int objectCount;
-    int current;
-    int linkedObject;
+    GameObject* current;
+    GameObject* linkedObject;
     int groupId2;
     int sameGroupCount;
 
@@ -104,19 +104,19 @@ void dll501_update(GameObject* obj) {
     groupId2 |= groupId;
     while (i < objectCount) {
         current = objects[i];
-        if (((GameObject*)current)->seqIndex == groupId) {
+        if (current->seqIndex == groupId) {
             linkedObject = current;
         }
-        if (((GameObject*)current)->seqIndex == DLL1F5_SEQ_INDEX_PENDING &&
-            ((GameObject*)current)->anim.classId == DLL1F5_SEQUENCE_OBJECT_CLASS_ID &&
-            groupId2 == ((Dll1F5State*)((GameObject*)current)->extra)->sequence.slot) {
+        if (current->seqIndex == DLL1F5_SEQ_INDEX_PENDING &&
+            current->anim.classId == DLL1F5_SEQUENCE_OBJECT_CLASS_ID &&
+            groupId2 == ((Dll1F5State*)current->extra)->sequence.slot) {
             sameGroupCount++;
         }
         i++;
     }
 
-    if (sameGroupCount <= 1 && (void*)linkedObject != NULL && ((GameObject*)linkedObject)->seqIndex != -1) {
-        ((GameObject*)linkedObject)->seqIndex = -1;
+    if (sameGroupCount <= 1 && (void*)linkedObject != NULL && linkedObject->seqIndex != -1) {
+        linkedObject->seqIndex = -1;
         (*gObjectTriggerInterface)->endSequence(groupId2);
     }
     obj->seqIndex = -1;

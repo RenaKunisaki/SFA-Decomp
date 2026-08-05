@@ -126,7 +126,7 @@ static void wbTickDecoyTimer(u32 obj, EnemyState* state)
             randVal = randomGetRange(600, 0x352);
             state->duster.decoyTimer = (float)(int)randVal;
         }
-        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_eba_pollenspin);
+        Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_baddie_eba_pollenspin);
     }
 }
 
@@ -145,7 +145,7 @@ void wbUpdateEngaged(u32 obj, int state)
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DUSTER_HIT_VOLUME_SLOT, 1, 0);
     if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
-        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_mn_heart1_c_261);
+        Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_mn_heart1_c_261);
     }
     wbTickDecoyTimer(obj, (EnemyState*)state);
     if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
@@ -222,7 +222,7 @@ void wbUpdateIdle(u32 obj, int state)
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)obj, DUSTER_HIT_VOLUME_SLOT, 1, 0);
     if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
-        Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_mn_heart1_c_261);
+        Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_mn_heart1_c_261);
     }
     wbTickDecoyTimer(obj, (EnemyState*)state);
     if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)

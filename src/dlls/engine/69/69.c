@@ -10,6 +10,7 @@
 #include "main/mm.h"
 #include "main/object_transform.h"
 #include "main/vecmath.h"
+#include "string.h"
 
 int lbl_803DD544;
 CameraModeTalkState* gCameraModeTalkState;
@@ -77,7 +78,7 @@ void CameraModeTalk_update(CameraObject* camera) {
         targetAngle = 3072.0f - gCameraModeTalkState->pitchTarget;
         cameraAngle = camera->anim.rotY;
         angleDelta = targetAngle - cameraAngle;
-        if (0x8000 < angleDelta) {
+        if (angleDelta > 0x8000) {
             angleDelta = angleDelta - 0xFFFF;
         }
         if (angleDelta < -0x8000) {
@@ -91,9 +92,9 @@ void CameraModeTalk_update(CameraObject* camera) {
         state = gCameraModeTalkState;
         heightT = -state->heightInput / 6.0f;
         followTermA = 0.2f;
-        followTermB = 50.0f;
-        heightT = (heightT < 0.0f) ? 0.0f : ((heightT > 1.0f) ? 1.0f : heightT);
-        state->followDistance += followTermA * ((25.0f * heightT + followTermB) - state->followDistance);
+        state->followDistance +=
+            followTermA * ((50.0f + 25.0f * ((heightT < 0.0f) ? 0.0f : ((heightT > 1.0f) ? 1.0f : heightT))) -
+                           state->followDistance);
         followDist = gCameraModeTalkState->followDistance;
         followTermA = followDist * sinPitch;
         followTermB = followDist * cosPitch;
@@ -105,7 +106,7 @@ void CameraModeTalk_update(CameraObject* camera) {
         targetAngle = 0.2f * gCameraModeTalkState->rollInput;
         cameraAngle = camera->anim.rotZ;
         angleDelta = targetAngle - cameraAngle;
-        if (0x8000 < angleDelta) {
+        if (angleDelta > 0x8000) {
             angleDelta = angleDelta - 0xFFFF;
         }
         if (angleDelta < -0x8000) {

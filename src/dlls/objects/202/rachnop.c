@@ -142,7 +142,7 @@ void fireflyLanternGetTargetAngleAndDistance(GameObject* obj, int state, u16* ou
     axisA[2] = 0.0f;
     PSVECCrossProduct((Vec*)axisA, (Vec*)(state + 0x344), (Vec*)crossA);
     PSVECNormalize((Vec*)crossA, (Vec*)crossA);
-    if (0.0f != crossA[0])
+    if (crossA[0] != 0.0f)
     {
         dxDiff = (obj->anim.localPosX - ((EnemyState*)state)->wallPlane.anchorX) / crossA[0];
     }
@@ -167,7 +167,7 @@ void fireflyLanternGetTargetAngleAndDistance(GameObject* obj, int state, u16* ou
     axisB[2] = 0.0f;
     PSVECCrossProduct((Vec*)axisB, (Vec*)(state + 0x344), (Vec*)crossB);
     PSVECNormalize((Vec*)crossB, (Vec*)crossB);
-    if (0.0f != crossB[0])
+    if (crossB[0] != 0.0f)
     {
         d = (targetPos[0] - ((EnemyState*)state)->wallPlane.anchorX) / crossB[0];
     }
@@ -226,7 +226,7 @@ u32 fireflyLanternSteerTowardTarget(short* obj, int state, u32 turnTime, f32 max
     vecA[0] = fs->wallPlane.anchorX;
     vecA[1] = fs->wallPlane.anchorY;
     vecA[2] = fs->wallPlane.anchorZ;
-    PSVECSubtract((Vec*)vecA, (Vec*)(obj + 6), (Vec*)tmpA);
+    PSVECSubtract((Vec*)vecA, &o->anim.localPos, (Vec*)tmpA);
     d = PSVECDotProduct((Vec*)tmpA, (Vec*)fs->wallPlane.normal);
     vecA[0] = fs->wallPlane.normal[0] * d + o->anim.localPosX;
     vecA[1] = fs->wallPlane.normal[1] * d + (objY = o->anim.localPosY);
@@ -236,7 +236,7 @@ u32 fireflyLanternSteerTowardTarget(short* obj, int state, u32 turnTime, f32 max
     axisA[2] = 0.0f;
     PSVECCrossProduct((Vec*)axisA, (Vec*)fs->wallPlane.normal, (Vec*)crossA);
     PSVECNormalize((Vec*)crossA, (Vec*)crossA);
-    if (0.0f != crossA[0])
+    if (crossA[0] != 0.0f)
     {
         dxA = (o->anim.localPosX - fs->wallPlane.anchorX) / crossA[0];
     }
@@ -261,7 +261,7 @@ u32 fireflyLanternSteerTowardTarget(short* obj, int state, u32 turnTime, f32 max
     axisB[2] = 0.0f;
     PSVECCrossProduct((Vec*)axisB, (Vec*)fs->wallPlane.normal, (Vec*)crossB);
     PSVECNormalize((Vec*)crossB, (Vec*)crossB);
-    if (0.0f != crossB[0])
+    if (crossB[0] != 0.0f)
     {
         d = (targetPos[0] - fs->wallPlane.anchorX) / crossB[0];
     }
@@ -302,7 +302,7 @@ u32 fireflyLanternSteerTowardTarget(short* obj, int state, u32 turnTime, f32 max
     dxA -= dxDiff;
     dy = objY - dy;
     wallPlaneClampMoveTarget(moveTarget, &fs->wallPlane, dxA, dy);
-    PSVECSubtract((Vec*)moveTarget, (Vec*)(obj + 6), (Vec*)moveDelta);
+    PSVECSubtract((Vec*)moveTarget, &o->anim.localPos, (Vec*)moveDelta);
     objMove((GameObject*)obj, moveDelta[0], moveDelta[1], moveDelta[2]);
     turnStep = 0.0f;
     o->anim.velocityX = turnStep;
@@ -435,7 +435,7 @@ void rachnopFindWallPlane(GameObject* obj, int state)
         dv[2] = 0.0f;
         PSVECCrossProduct((Vec*)dv, (Vec*)(state + DUSTER_WALL_PLANE_OFFSET), (Vec*)sideAxis);
         PSVECNormalize((Vec*)sideAxis, (Vec*)sideAxis);
-        if (0.0f != sideAxis[0])
+        if (sideAxis[0] != 0.0f)
         {
             ((EnemyState*)state)->wallPlane.axisLimit =
                 (cv[0] - ((EnemyState*)state)->wallPlane.anchorX) / sideAxis[0];

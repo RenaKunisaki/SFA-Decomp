@@ -376,7 +376,7 @@ def write_md(rows, report):
     P("## Score arithmetic")
     P("")
     if game:
-        gt = int(game['total_data']); gm = int(game['matched_data'])
+        gt = int(game.get('total_data') or 0); gm = int(game.get('matched_data') or 0)
         P(f"`game` data today: {gm:,}/{gt:,} = {100*gm/gt:.2f}%. Folding all {total:,} auto bytes into")
         P(f"that denominator with today's source would give {gm:,}/{gt+total:,} = "
           f"{100*gm/(gt+total):.2f}%, i.e. **{100*gm/gt - 100*gm/(gt+total):.2f} pp worse**.")

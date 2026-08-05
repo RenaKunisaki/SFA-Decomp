@@ -1,6 +1,7 @@
 #include "dlls/objects/458_DIMExplosio.h"
 #include "main/dll/partfx_interface.h"
 #include "dolphin/mtx.h"
+#include "string.h"
 #include "track/intersect_depth_state_api.h"
 #include "track/intersect_fog_api.h"
 #include "track/intersect_render_setup_api.h"
@@ -118,7 +119,7 @@ static inline ExpgfxSlot* Expgfx_GetSlot(int poolIndex, int slotIndex)
 
 static inline ExpgfxPlaneOffsets* Expgfx_GetPlaneOffsets(int setIndex)
 {
-    return &((ExpgfxPlaneOffsets*)gExpgfxStaticData)[setIndex];
+    return &gExpgfxStaticData[setIndex];
 }
 
 #define EXPGFX_POOL_ACTIVE_MASK_PTR(runtime, poolIndex) \
@@ -170,7 +171,10 @@ void viewFinderSetZoomTo50(void)
 #include "main/dll/partfx_interface.h"
 #include "dolphin/gx/GXGeometry.h"
 
-f32 gExpgfxStaticData[12] = {-5.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f};
+ExpgfxPlaneOffsets gExpgfxStaticData[EXPGFX_STATIC_PLANE_OFFSET_SET_COUNT] = {
+    {{-5.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f}},
+    {{50.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f}},
+};
 
 s16 gExpgfxStaticPoolSlotTypeIds[80] = {
     -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 0, 0, 0, 0, 0, 0, 0,
@@ -204,10 +208,10 @@ ObjFxCrystalBurstTable gObjFxCrystalAmpTbl = {
 };
 
 /* Light RGB triplets per fx type (referenced by objfx.c). */
-u8 gObjFxLightColorTbl[36] = {
-    0x00, 0x00, 0x00, 0x40, 0xFF, 0xFF, 0xFF, 0xFF, 0x40, 0xFF, 0x40, 0x7F,
-    0x7F, 0x7F, 0x7F, 0x40, 0xFF, 0x40, 0xFF, 0xFF, 0x00, 0xFF, 0x7F, 0x40,
-    0xFF, 0xFF, 0x40, 0x00, 0x7F, 0xFF, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
+ObjFxLightColor gObjFxLightColorTbl[12] = {
+    {0x00, 0x00, 0x00}, {0x40, 0xFF, 0xFF}, {0xFF, 0xFF, 0x40}, {0xFF, 0x40, 0x7F},
+    {0x7F, 0x7F, 0x7F}, {0x40, 0xFF, 0x40}, {0xFF, 0xFF, 0x00}, {0xFF, 0x7F, 0x40},
+    {0xFF, 0xFF, 0x40}, {0x00, 0x7F, 0xFF}, {0x00, 0x00, 0x00}, {0x00, 0x00, 0x00},
 };
 
 ExpgfxDllInterface expgfx_funcs = {
@@ -542,7 +546,7 @@ void objfx_spawnArcedBurst(void* obj, u8 idx, f32 scale, u8 kind, u8 mode, int c
     f32 angularT;
 
     params.scale = scale;
-    params.effectParam = effectParams.values[(u8)kind];
+    params.effectParam = effectParams.values[kind];
     params.pad00[1] = 0x3c;
     for (i = 0; i < 4; i++) {
         u16 val;
@@ -600,9 +604,9 @@ void objfx_spawnArcedBurst(void* obj, u8 idx, f32 scale, u8 kind, u8 mode, int c
             params.position[1] += ((GameObject*)origin)->anim.localPosY;
             params.position[2] += ((GameObject*)origin)->anim.localPosZ;
         }
-        params.pad00[2] = paramC.values[(u8)idx];
-        params.pad00[0] = paramD.values[(u8)idx];
-        (*gPartfxInterface)->spawnObject(obj, spawnIds.values[(u8)idx], &params, flags | 2, -1, NULL);
+        params.pad00[2] = paramC.values[idx];
+        params.pad00[0] = paramD.values[idx];
+        (*gPartfxInterface)->spawnObject(obj, spawnIds.values[idx], &params, flags | 2, -1, NULL);
     }
 }
 
@@ -1660,10 +1664,10 @@ void objDoHitParticleFx(void* obj, f32 scale, void* origin, u8 type, void* light
         modelLightStruct_setPosition(light, ((GameObject*)origin)->anim.localPosX,
                                      10.0f + ((GameObject*)origin)->anim.localPosY,
                                      ((GameObject*)origin)->anim.localPosZ);
-        modelLightStruct_setDiffuseColor(light, gObjFxLightColorTbl[type * 3], gObjFxLightColorTbl[type * 3 + 1],
-                                         gObjFxLightColorTbl[type * 3 + 2], 0xff);
-        modelLightStruct_setSpecularColor(light, gObjFxLightColorTbl[type * 3], gObjFxLightColorTbl[type * 3 + 1],
-                                          gObjFxLightColorTbl[type * 3 + 2], 0xff);
+        modelLightStruct_setDiffuseColor(light, gObjFxLightColorTbl[type].r, gObjFxLightColorTbl[type].g,
+                                         gObjFxLightColorTbl[type].b, 0xff);
+        modelLightStruct_setSpecularColor(light, gObjFxLightColorTbl[type].r, gObjFxLightColorTbl[type].g,
+                                          gObjFxLightColorTbl[type].b, 0xff);
         modelLightStruct_setDistanceAttenuation(light, 40.0f, 55.0f);
         lightSetField4D(light, 0);
         modelLightStruct_setEnabled(light, 1, 0.0f);
@@ -3028,7 +3032,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                         workB = -(prevDX * dirZ - prevDZ * dirX);
                         attractRatio = dirY * prevDX - prevDY * dirX;
                         normSq = attractRatio * attractRatio + (workA * workA + workB * workB);
-                        if (0.0f != normSq)
+                        if (normSq != 0.0f)
                         {
                             norm = sqrtf(normSq);
                         }
@@ -4241,15 +4245,15 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
     ExpgfxResourceHandle* resourceHandle;
     ExpgfxRuntimeDataLayout* runtime;
     GameObject* playerObj;
-    s16 texT1 = 0;
+    s16 texT1;
     int expTabIndex;
     int attachedTableKey;
     short poolIndex;
     short slotIndex;
-    s16 texT0 = 0;
-    int resourceTableIndex;
-    s16 texS1 = 0;
-    s16 texS0 = 0;
+    s16 texT0;
+    s16 texS1;
+    s16 texS0;
+    short resourceTableIndex;
     f32 scaleVal;
     u32 sourceModeValue;
 
@@ -4266,7 +4270,7 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
     {
         return EXPGFX_INVALID_POOL_INDEX;
     }
-    if (expgfxGetSlot(&poolIndex, &slotIndex, (int)slotType, preferredPoolIndex, (u32)(int)config->attachedSource) ==
+    if (expgfxGetSlot(&poolIndex, &slotIndex, slotType, preferredPoolIndex, (u32)(int)config->attachedSource) ==
         EXPGFX_INVALID_POOL_INDEX)
     {
         return EXPGFX_INVALID_POOL_INDEX;
@@ -4299,7 +4303,7 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
         slot->renderFlags = config->renderFlags;
         slot->stateBits.bits.initPhase = 0;
 
-        resourceTableIndex = (int)(short)expgfx_acquireResourceEntry(config->texture.parts.textureId);
+        resourceTableIndex = expgfx_acquireResourceEntry(config->texture.parts.textureId);
         if (resourceTableIndex < 0)
         {
             expgfxRemove(runtime->slotPoolBases[poolIndex], poolIndex, slotIndex, 1, 1);
@@ -4456,7 +4460,7 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
                 dx = playerObj->anim.worldPosX - slot->startPosX.value;
                 dz = playerObj->anim.worldPosZ - slot->startPosZ.value;
                 distSq = dx * dx + dz * dz;
-                if (distSq < 3600.0f && 0.0f != playerObj->anim.velocityX &&
+                if (distSq < 3600.0f && playerObj->anim.velocityX != 0.0f &&
                     0.0f != playerObj->anim.velocityZ)
                 {
                     slot->velocityX = slot->velocityX + dx / (f32)(s32)((int)slot->lifetimeFrame << 1);
@@ -4472,7 +4476,7 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
                 dx = playerObj->anim.worldPosX - (slot->startPosX.value + attachedSource->localPosX);
                 dz = playerObj->anim.worldPosZ - (slot->startPosZ.value + attachedSource->localPosZ);
                 distSq = dx * dx + dz * dz;
-                if (distSq < 3600.0f && 0.0f != playerObj->anim.velocityX &&
+                if (distSq < 3600.0f && playerObj->anim.velocityX != 0.0f &&
                     0.0f != playerObj->anim.velocityZ)
                 {
                     slot->velocityX = slot->velocityX - dx / (f32)(s32)((int)slot->lifetimeFrame << 1);
@@ -4488,7 +4492,7 @@ int expgfx_addremove(ExpgfxSpawnConfig* config, int preferredPoolIndex, int slot
             }
         }
 
-        if (slotType == 1)
+        if (resourceTableIndex == 1)
         {
             gExpgfxSlotType1Count = gExpgfxSlotType1Count + 1;
             gExpgfxSlotType1Average = gExpgfxSlotType1Sum / gExpgfxSlotType1Count;

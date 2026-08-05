@@ -275,9 +275,9 @@ void ring_update(GameObject* obj)
     RingPlacement* setup;
     int bit;
     int alpha;
-    int hitA;
-    int hitB;
-    int hit;
+    GameObject* hitA;
+    GameObject* hitB;
+    GameObject* hit;
     int ang;
     f32 dir[3];
     PartFxSpawnParams spawnBuf;
@@ -331,9 +331,9 @@ void ring_update(GameObject* obj)
         {
         case RING_ROUTE_MOVING_SHOT_A:
         case RING_ROUTE_MOVING_SHOT_B:
-            if (ObjHits_GetPriorityHit(obj, &hitA, 0, 0) != 0 && (void*)(hit = hitA) != NULL &&
-                (((GameObject*)hit)->anim.romDefNo == RING_SHOT_TYPE_A ||
-                 ((GameObject*)hit)->anim.romDefNo == RING_SHOT_TYPE_B))
+            if (ObjHits_GetPriorityHit(obj, &hitA, 0, 0) != 0 && (hit = hitA) != NULL &&
+                (hit->anim.romDefNo == RING_SHOT_TYPE_A ||
+                 hit->anim.romDefNo == RING_SHOT_TYPE_B))
             {
                 arwarwing_addScore(getArwing(), RING_SCORE_VALUE);
                 obj->anim.rootMotionScale = obj->anim.modelInstance->rootMotionScaleBase;
@@ -349,9 +349,9 @@ void ring_update(GameObject* obj)
             ring_updateMovingAxis(obj, state);
             break;
         case RING_ROUTE_STATIONARY_SHOT:
-            if (ObjHits_GetPriorityHit(obj, &hitB, 0, 0) != 0 && (void*)(hit = hitB) != NULL &&
-                (((GameObject*)hit)->anim.romDefNo == RING_SHOT_TYPE_A ||
-                 ((GameObject*)hit)->anim.romDefNo == RING_SHOT_TYPE_B))
+            if (ObjHits_GetPriorityHit(obj, &hitB, 0, 0) != 0 && (hit = hitB) != NULL &&
+                (hit->anim.romDefNo == RING_SHOT_TYPE_A ||
+                 hit->anim.romDefNo == RING_SHOT_TYPE_B))
             {
                 arwarwing_addScore(getArwing(), RING_SCORE_VALUE);
                 obj->anim.rootMotionScale = obj->anim.modelInstance->rootMotionScaleBase;
@@ -390,7 +390,7 @@ void ring_update(GameObject* obj)
                     oneOverTimeDelta * (state->arwingYOffset +
                                         (arwing->anim.localPosY - obj->anim.localPosY));
                 obj->anim.velocityZ = oneOverTimeDelta * (arwing->anim.localPosZ - obj->anim.localPosZ);
-                objMove((GameObject*)obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
+                objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
                         obj->anim.velocityZ * timeDelta);
             }
             {
@@ -402,7 +402,7 @@ void ring_update(GameObject* obj)
                         f32 frac = (state->pullTimer - sixty) / sixty;
                         obj->anim.rootMotionScale = frac * obj->anim.modelInstance->rootMotionScaleBase;
                     }
-                    if (120.0f != state->pullTimer)
+                    if (state->pullTimer != 120.0f)
                     {
                         Obj_BuildWorldTransformMatrix(obj, mtx, 0);
                         for (ang = -0x7fff; ang < 0x7fff; ang += gRingModeParams[state->mode].spiralAngleStep)

@@ -11,7 +11,7 @@ typedef struct
 typedef struct GCRobotBlastState
 {
     int mode; /* def+0x19 */
-    u8 flags04; /* bit 0x80 = blast fired (BlastFlags4 overlay) */
+    BlastFlags4 flags04;
     u8 unk05[3];
 } GCRobotBlastState;
 

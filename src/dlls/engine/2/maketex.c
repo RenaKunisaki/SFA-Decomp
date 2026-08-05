@@ -1,6 +1,7 @@
 #include "dolphin/dvd.h"
 #include "dolphin/os/OSCache.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/printf.h"
+#include "main/fileio.h"
 #include "main/frame_timing.h"
 #include "main/maketex.h"
 #include "main/maketex_api.h"

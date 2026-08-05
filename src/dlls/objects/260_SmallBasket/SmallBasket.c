@@ -187,7 +187,7 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
     u8 useHitVelocity;
     int selectedSubtype;
     u8* childPlacement;
-    u8* child;
+    GameObject* child;
     int enableGameBit;
     int maxCount;
     int heading;
@@ -248,30 +248,30 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         ((ObjPlacement*)childPlacement)->posY = obj->anim.localPosY;
         ((ObjPlacement*)childPlacement)->posZ = obj->anim.localPosZ;
         ((ScarabPlacement*)childPlacement)->activeTimer = 0x190;
-        child = (u8*)objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+        child = objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
         if (useHitVelocity) {
             burstScale = 3.0f;
-            ((GameObject*)child)->anim.velocityX = burstScale * gSmallBasketHitVelocity[0];
-            ((GameObject*)child)->anim.velocityY = 4.0f * hitVelocity[1];
-            ((GameObject*)child)->anim.velocityZ = burstScale * collisionVelocity[2];
+            child->anim.velocityX = burstScale * gSmallBasketHitVelocity[0];
+            child->anim.velocityY = 4.0f * hitVelocity[1];
+            child->anim.velocityZ = burstScale * collisionVelocity[2];
         } else {
-            ((GameObject*)child)->anim.velocityX = obj->anim.localPosX - playerRef->anim.localPosX;
-            ((GameObject*)child)->anim.velocityZ = obj->anim.localPosZ - playerRef->anim.localPosZ;
+            child->anim.velocityX = obj->anim.localPosX - playerRef->anim.localPosX;
+            child->anim.velocityZ = obj->anim.localPosZ - playerRef->anim.localPosZ;
         }
-        horizontalMagnitude = ((GameObject*)child)->anim.velocityX * ((GameObject*)child)->anim.velocityX;
-        horizontalMagnitude += ((GameObject*)child)->anim.velocityZ * ((GameObject*)child)->anim.velocityZ;
+        horizontalMagnitude = child->anim.velocityX * child->anim.velocityX;
+        horizontalMagnitude += child->anim.velocityZ * child->anim.velocityZ;
         if (horizontalMagnitude) {
             horizontalMagnitude = sqrtf(horizontalMagnitude);
-            ((GameObject*)child)->anim.velocityX = ((GameObject*)child)->anim.velocityX / horizontalMagnitude;
-            ((GameObject*)child)->anim.velocityZ = ((GameObject*)child)->anim.velocityZ / horizontalMagnitude;
+            child->anim.velocityX = child->anim.velocityX / horizontalMagnitude;
+            child->anim.velocityZ = child->anim.velocityZ / horizontalMagnitude;
         }
-        ((GameObject*)child)->anim.velocityX =
-            ((GameObject*)child)->anim.velocityX *
+        child->anim.velocityX =
+            child->anim.velocityX *
             (1.0f - 0.01f * (f32)randomGetRange(0, 0x19));
-        ((GameObject*)child)->anim.velocityZ =
-            ((GameObject*)child)->anim.velocityZ *
+        child->anim.velocityZ =
+            child->anim.velocityZ *
             (1.0f - 0.01f * (f32)randomGetRange(0, 0x19));
-        ((GameObject*)child)->anim.velocityY = 2.2f;
+        child->anim.velocityY = 2.2f;
         rotation.posX = 0.0f;
         rotation.posY = 0.0f;
         rotation.posZ = 0.0f;
@@ -279,16 +279,16 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         rotation.rotZ = 0;
         rotation.rotY = 0;
         rotation.rotX = randomGetRange(-10000, 10000);
-        vecRotateZXY(&rotation.rotX, (f32*)(child + 0x24));
-        heading = (u16)(s16)getAngle(((GameObject*)child)->anim.velocityX, -((GameObject*)child)->anim.velocityZ);
-        angleDelta = ((GameObject*)child)->anim.rotX - heading;
+        vecRotateZXY(&rotation.rotX, &child->anim.velocityX);
+        heading = (u16)(s16)getAngle(child->anim.velocityX, -child->anim.velocityZ);
+        angleDelta = child->anim.rotX - heading;
         if (angleDelta > SMALLBASKET_YAW_HALF_TURN) {
             angleDelta -= SMALLBASKET_YAW_WRAP;
         }
         if (angleDelta < -SMALLBASKET_YAW_HALF_TURN) {
             angleDelta += SMALLBASKET_YAW_WRAP;
         }
-        ((GameObject*)child)->anim.rotX = angleDelta;
+        child->anim.rotX = angleDelta;
         break;
     case SMALLBASKET_SUBTYPE_RED_SCARAB:
         childPlacement = (u8*)Obj_AllocObjectSetup(SCARAB_PLACEMENT_SIZE, SCARAB_OBJECT_RED);
@@ -297,30 +297,30 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         ((ObjPlacement*)childPlacement)->posY = obj->anim.localPosY;
         ((ObjPlacement*)childPlacement)->posZ = obj->anim.localPosZ;
         ((ScarabPlacement*)childPlacement)->activeTimer = 0x190;
-        child = (u8*)objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+        child = objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
         if (useHitVelocity) {
             burstScale = 3.0f;
-            ((GameObject*)child)->anim.velocityX = burstScale * gSmallBasketHitVelocity[0];
-            ((GameObject*)child)->anim.velocityY = 4.0f * hitVelocity[1];
-            ((GameObject*)child)->anim.velocityZ = burstScale * collisionVelocity[2];
+            child->anim.velocityX = burstScale * gSmallBasketHitVelocity[0];
+            child->anim.velocityY = 4.0f * hitVelocity[1];
+            child->anim.velocityZ = burstScale * collisionVelocity[2];
         } else {
-            ((GameObject*)child)->anim.velocityX = obj->anim.localPosX - playerRef->anim.localPosX;
-            ((GameObject*)child)->anim.velocityZ = obj->anim.localPosZ - playerRef->anim.localPosZ;
+            child->anim.velocityX = obj->anim.localPosX - playerRef->anim.localPosX;
+            child->anim.velocityZ = obj->anim.localPosZ - playerRef->anim.localPosZ;
         }
-        horizontalMagnitude = ((GameObject*)child)->anim.velocityX * ((GameObject*)child)->anim.velocityX;
-        horizontalMagnitude += ((GameObject*)child)->anim.velocityZ * ((GameObject*)child)->anim.velocityZ;
+        horizontalMagnitude = child->anim.velocityX * child->anim.velocityX;
+        horizontalMagnitude += child->anim.velocityZ * child->anim.velocityZ;
         if (horizontalMagnitude) {
             horizontalMagnitude = sqrtf(horizontalMagnitude);
-            ((GameObject*)child)->anim.velocityX = ((GameObject*)child)->anim.velocityX / horizontalMagnitude;
-            ((GameObject*)child)->anim.velocityZ = ((GameObject*)child)->anim.velocityZ / horizontalMagnitude;
+            child->anim.velocityX = child->anim.velocityX / horizontalMagnitude;
+            child->anim.velocityZ = child->anim.velocityZ / horizontalMagnitude;
         }
-        ((GameObject*)child)->anim.velocityX =
-            ((GameObject*)child)->anim.velocityX *
+        child->anim.velocityX =
+            child->anim.velocityX *
             (1.0f - 0.01f * (f32)randomGetRange(0, 0x19));
-        ((GameObject*)child)->anim.velocityZ =
-            ((GameObject*)child)->anim.velocityZ *
+        child->anim.velocityZ =
+            child->anim.velocityZ *
             (1.0f - 0.01f * (f32)randomGetRange(0, 0x19));
-        ((GameObject*)child)->anim.velocityY = 2.2f;
+        child->anim.velocityY = 2.2f;
         rotation.posX = 0.0f;
         rotation.posY = 0.0f;
         rotation.posZ = 0.0f;
@@ -328,16 +328,16 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         rotation.rotZ = 0;
         rotation.rotY = 0;
         rotation.rotX = randomGetRange(-10000, 10000);
-        vecRotateZXY(&rotation.rotX, (f32*)(child + 0x24));
-        heading = (u16)(s16)getAngle(((GameObject*)child)->anim.velocityX, -((GameObject*)child)->anim.velocityZ);
-        angleDelta = ((GameObject*)child)->anim.rotX - heading;
+        vecRotateZXY(&rotation.rotX, &child->anim.velocityX);
+        heading = (u16)(s16)getAngle(child->anim.velocityX, -child->anim.velocityZ);
+        angleDelta = child->anim.rotX - heading;
         if (angleDelta > SMALLBASKET_YAW_HALF_TURN) {
             angleDelta -= SMALLBASKET_YAW_WRAP;
         }
         if (angleDelta < -SMALLBASKET_YAW_HALF_TURN) {
             angleDelta += SMALLBASKET_YAW_WRAP;
         }
-        ((GameObject*)child)->anim.rotX = angleDelta;
+        child->anim.rotX = angleDelta;
         break;
     case SMALLBASKET_SUBTYPE_GOLD_SCARAB:
         childPlacement = (u8*)Obj_AllocObjectSetup(SCARAB_PLACEMENT_SIZE, SCARAB_OBJECT_GOLD);
@@ -346,30 +346,30 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         ((ObjPlacement*)childPlacement)->posY = obj->anim.localPosY;
         ((ObjPlacement*)childPlacement)->posZ = obj->anim.localPosZ;
         ((ScarabPlacement*)childPlacement)->activeTimer = 0x7D0;
-        child = (u8*)objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+        child = objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
         if (useHitVelocity) {
             burstScale = 3.0f;
-            ((GameObject*)child)->anim.velocityX = burstScale * gSmallBasketHitVelocity[0];
-            ((GameObject*)child)->anim.velocityY = 4.0f * hitVelocity[1];
-            ((GameObject*)child)->anim.velocityZ = burstScale * collisionVelocity[2];
+            child->anim.velocityX = burstScale * gSmallBasketHitVelocity[0];
+            child->anim.velocityY = 4.0f * hitVelocity[1];
+            child->anim.velocityZ = burstScale * collisionVelocity[2];
         } else {
-            ((GameObject*)child)->anim.velocityX = obj->anim.localPosX - playerRef->anim.localPosX;
-            ((GameObject*)child)->anim.velocityZ = obj->anim.localPosZ - playerRef->anim.localPosZ;
+            child->anim.velocityX = obj->anim.localPosX - playerRef->anim.localPosX;
+            child->anim.velocityZ = obj->anim.localPosZ - playerRef->anim.localPosZ;
         }
-        horizontalMagnitude = ((GameObject*)child)->anim.velocityX * ((GameObject*)child)->anim.velocityX;
-        horizontalMagnitude += ((GameObject*)child)->anim.velocityZ * ((GameObject*)child)->anim.velocityZ;
+        horizontalMagnitude = child->anim.velocityX * child->anim.velocityX;
+        horizontalMagnitude += child->anim.velocityZ * child->anim.velocityZ;
         if (horizontalMagnitude) {
             horizontalMagnitude = sqrtf(horizontalMagnitude);
-            ((GameObject*)child)->anim.velocityX = ((GameObject*)child)->anim.velocityX / horizontalMagnitude;
-            ((GameObject*)child)->anim.velocityZ = ((GameObject*)child)->anim.velocityZ / horizontalMagnitude;
+            child->anim.velocityX = child->anim.velocityX / horizontalMagnitude;
+            child->anim.velocityZ = child->anim.velocityZ / horizontalMagnitude;
         }
-        ((GameObject*)child)->anim.velocityX =
-            ((GameObject*)child)->anim.velocityX *
+        child->anim.velocityX =
+            child->anim.velocityX *
             (1.0f - 0.01f * (f32)randomGetRange(0, 0x19));
-        ((GameObject*)child)->anim.velocityZ =
-            ((GameObject*)child)->anim.velocityZ *
+        child->anim.velocityZ =
+            child->anim.velocityZ *
             (1.0f - 0.01f * (f32)randomGetRange(0, 0x19));
-        ((GameObject*)child)->anim.velocityY = 2.2f;
+        child->anim.velocityY = 2.2f;
         rotation.posX = 0.0f;
         rotation.posY = 0.0f;
         rotation.posZ = 0.0f;
@@ -377,16 +377,16 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         rotation.rotZ = 0;
         rotation.rotY = 0;
         rotation.rotX = randomGetRange(-10000, 10000);
-        vecRotateZXY(&rotation.rotX, (f32*)(child + 0x24));
-        heading = (u16)(s16)getAngle(((GameObject*)child)->anim.velocityX, -((GameObject*)child)->anim.velocityZ);
-        angleDelta = ((GameObject*)child)->anim.rotX - heading;
+        vecRotateZXY(&rotation.rotX, &child->anim.velocityX);
+        heading = (u16)(s16)getAngle(child->anim.velocityX, -child->anim.velocityZ);
+        angleDelta = child->anim.rotX - heading;
         if (angleDelta > SMALLBASKET_YAW_HALF_TURN) {
             angleDelta -= SMALLBASKET_YAW_WRAP;
         }
         if (angleDelta < -SMALLBASKET_YAW_HALF_TURN) {
             angleDelta += SMALLBASKET_YAW_WRAP;
         }
-        ((GameObject*)child)->anim.rotX = angleDelta;
+        child->anim.rotX = angleDelta;
         break;
     case SMALLBASKET_SUBTYPE_ENERGY_EGG:
     case SMALLBASKET_SUBTYPE_APPLE:
@@ -408,31 +408,31 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
             ((ObjPlacement*)childPlacement)->posZ = obj->anim.localPosZ;
         }
         ((CollectibleSetup*)childPlacement)->visibilityGameBit = -1;
-        child = (u8*)objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
+        child = objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, obj->anim.parent);
         if (useHitVelocity) {
             burstScale = 3.0f;
-            ((GameObject*)child)->anim.velocityX = burstScale * gSmallBasketHitVelocity[0];
-            ((GameObject*)child)->anim.velocityY = 4.0f * hitVelocity[1];
-            ((GameObject*)child)->anim.velocityZ = burstScale * collisionVelocity[2];
+            child->anim.velocityX = burstScale * gSmallBasketHitVelocity[0];
+            child->anim.velocityY = 4.0f * hitVelocity[1];
+            child->anim.velocityZ = burstScale * collisionVelocity[2];
         }
-        horizontalMagnitude = ((GameObject*)child)->anim.velocityX * ((GameObject*)child)->anim.velocityX;
-        horizontalMagnitude += ((GameObject*)child)->anim.velocityZ * ((GameObject*)child)->anim.velocityZ;
+        horizontalMagnitude = child->anim.velocityX * child->anim.velocityX;
+        horizontalMagnitude += child->anim.velocityZ * child->anim.velocityZ;
         if (horizontalMagnitude) {
             horizontalMagnitude = sqrtf(horizontalMagnitude);
-            ((GameObject*)child)->anim.velocityX =
-                ((GameObject*)child)->anim.velocityX / (horizontalMagnitude = (2.0f) * horizontalMagnitude);
-            ((GameObject*)child)->anim.velocityZ = ((GameObject*)child)->anim.velocityZ / horizontalMagnitude;
+            child->anim.velocityX =
+                child->anim.velocityX / (horizontalMagnitude = (2.0f) * horizontalMagnitude);
+            child->anim.velocityZ = child->anim.velocityZ / horizontalMagnitude;
         }
-        ((GameObject*)child)->anim.velocityX =
-            ((GameObject*)child)->anim.velocityX *
+        child->anim.velocityX =
+            child->anim.velocityX *
             (1.0f - 0.01f * (f32)randomGetRange(0, 0x19));
-        ((GameObject*)child)->anim.velocityZ =
-            ((GameObject*)child)->anim.velocityZ *
+        child->anim.velocityZ =
+            child->anim.velocityZ *
             (1.0f - 0.01f * (f32)randomGetRange(0, 0x19));
-        ((GameObject*)child)->anim.velocityY = 2.2f;
-        (*(CollectibleInterface**)((GameObject*)child)->anim.dll)
-            ->startBounceMotion((GameObject*)child, ((GameObject*)child)->anim.velocityX,
-                                ((GameObject*)child)->anim.velocityY, ((GameObject*)child)->anim.velocityZ);
+        child->anim.velocityY = 2.2f;
+        (*(CollectibleInterface**)child->anim.dll)
+            ->startBounceMotion(child, child->anim.velocityX,
+                                child->anim.velocityY, child->anim.velocityZ);
         rotation.posX = 0.0f;
         rotation.posY = 0.0f;
         rotation.posZ = 0.0f;
@@ -440,16 +440,16 @@ int SmallBasket_spawnContents(GameObject* obj, GameObject* player, SmallBasketSt
         rotation.rotZ = 0;
         rotation.rotY = 0;
         rotation.rotX = randomGetRange(-10000, 10000);
-        vecRotateZXY(&rotation.rotX, (f32*)(child + 0x24));
-        heading = (u16)(s16)getAngle(((GameObject*)child)->anim.velocityX, -((GameObject*)child)->anim.velocityZ);
-        angleDelta = ((GameObject*)child)->anim.rotX - heading;
+        vecRotateZXY(&rotation.rotX, &child->anim.velocityX);
+        heading = (u16)(s16)getAngle(child->anim.velocityX, -child->anim.velocityZ);
+        angleDelta = child->anim.rotX - heading;
         if (angleDelta > SMALLBASKET_YAW_HALF_TURN) {
             angleDelta -= SMALLBASKET_YAW_WRAP;
         }
         if (angleDelta < -SMALLBASKET_YAW_HALF_TURN) {
             angleDelta += SMALLBASKET_YAW_WRAP;
         }
-        ((GameObject*)child)->anim.rotX = angleDelta;
+        child->anim.rotX = angleDelta;
         break;
     }
     return 1;

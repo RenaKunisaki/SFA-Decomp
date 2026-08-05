@@ -16,6 +16,7 @@
 #include "main/object_transform.h"
 #include "main/pad.h"
 #include "main/vecmath.h"
+#include "string.h"
 
 enum CameraModePathCurveType {
     CAMERA_MODE_PATH_CURVE_TYPE_MOVE_8 = 8,
@@ -366,7 +367,7 @@ f32 pathcam_segmentParam(f32 x, f32 unusedY, f32 z, int* nodeIds) {
     nx = 0.5f * (psx + dx1);
     nz = 0.5f * (sz + dz1);
     len = sqrtf(nx * nx + nz * nz);
-    if (0.0f != len) {
+    if (len != 0.0f) {
         nx = nx / len;
         nz = nz / len;
     }
@@ -375,7 +376,7 @@ f32 pathcam_segmentParam(f32 x, f32 unusedY, f32 z, int* nodeIds) {
     negdot = nx * p1x + nz * p1z;
     negdot = -negdot;
     t1 = nx * dx1 + nz * dz1;
-    if (0.0f != t1) {
+    if (t1 != 0.0f) {
         t1 = -(negdot + (nx * x + nz * z)) / t1;
     }
     sx = windowNodes[2]->x - p1x;
@@ -390,14 +391,14 @@ f32 pathcam_segmentParam(f32 x, f32 unusedY, f32 z, int* nodeIds) {
     nx = 0.5f * (nsx + sx);
     nz = 0.5f * (nsz + sz);
     len = sqrtf(nx * nx + nz * nz);
-    if (0.0f != len) {
+    if (len != 0.0f) {
         nx = nx / len;
         nz = nz / len;
     }
     negdot = nx * windowNodes[2]->x + nz * windowNodes[2]->z;
     negdot = -negdot;
     t2 = nx * dx1 + nz * dz1;
-    if (0.0f != t2) {
+    if (t2 != 0.0f) {
         t2 = -(negdot + (nx * x + nz * z)) / t2;
     }
     return -t1 / (t2 - t1);
@@ -419,7 +420,7 @@ u32 CameraModePath_updateTransition(CameraObject* camera, u32 flagsIn) {
     gCameraModePathState->rotationZEnd = camera->anim.rotZ;
     gCameraModePathState->fovEnd = camera->fov;
 
-    if (0.0f != gCameraModePathState->transitionDuration) {
+    if (gCameraModePathState->transitionDuration != 0.0f) {
         speed = gCameraModePathState->transitionElapsed / gCameraModePathState->transitionDuration;
     } else {
         speed = 0.0f;
@@ -619,7 +620,7 @@ void CameraModePath_update(CameraObject* cam) {
         }
         cam->fov = Curve_EvalBSpline(fov, t, 0);
         if (gCameraModePathState->transitionComplete == 0 &&
-            (s32)CameraModePath_updateTransition((CameraObject*)cam, (u32)flags) != 0) {
+            (s32)CameraModePath_updateTransition(cam, (u32)flags) != 0) {
             gCameraModePathState->transitionComplete = 1;
         }
         dx = cam->anim.worldPosX - obj->anim.worldPosX;

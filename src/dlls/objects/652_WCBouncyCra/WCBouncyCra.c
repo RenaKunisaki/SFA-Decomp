@@ -3,6 +3,7 @@
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
+#include "main/objtype.h"
 
 #define WCBLOCK_VARIANT_A          1
 
@@ -143,7 +144,7 @@ int wcblock_isPlayerAwayFromStoredCell(GameObject* obj, WCBlockState* state, Gam
     }
 
     min = cellX - WCBLOCK_PLAYER_CELL_MARGIN;
-    playerObj = (GameObject*)player;
+    playerObj = player;
     pos = playerObj->anim.localPosX;
     max = WCBLOCK_PLAYER_CELL_MARGIN + cellX;
     if (pos > max || pos < min)

@@ -304,7 +304,7 @@ void gameTextTickReveal(int textId, TextDisplayState* state)
         state->f8 = 0;
         state->active = 1;
     }
-    if (2.0f == gGameTextRevealProgress)
+    if (gGameTextRevealProgress == 2.0f)
     {
         Sfx_PlayFromObject(0, SFXTRIG_clock_loop);
     }
@@ -549,7 +549,7 @@ char** gameTextWrapLines(char* str, f32 width, f32 height, int* outCount, f32* o
             if (found != NULL)
             {
                 int advance = (found->width + found->offsetX) + found->advanceX;
-                penX += height * (f32)(int)advance;
+                penX += height * (f32)advance;
                 if (penX >= width)
                 {
                     if (haveSpace == 0)

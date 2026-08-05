@@ -15,9 +15,14 @@
 #include "dlls/object_descriptor.h"
 #include "main/dll/WM/dll_020C_wmspiritplace.h"
 #include "main/dll/partfx_interface.h"
+#include "main/dll/tricky_api.h"
 #include "main/gamebits.h"
 #include "main/mapEventTypes.h"
+#include "main/map_load.h"
+#include "main/objprint_render_api.h"
 #include "main/objseq.h"
+#include "main/pi_dolphin_api.h"
+#include "main/rcp_dolphin_api.h"
 #include "main/render_envfx_api.h"
 #include "main/sky_api.h"
 #include "main/lightmap_render_control_api.h"
@@ -220,7 +225,7 @@ void WM_spiritplace_hitDetect(GameObject* obj)
 {
     if (obj->anim.hitVolumeTransforms != NULL)
     {
-        objUpdateHitVolumeTransforms((GameObject*)obj);
+        objUpdateHitVolumeTransforms(obj);
     }
 }
 

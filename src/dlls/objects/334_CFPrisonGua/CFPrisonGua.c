@@ -2,13 +2,20 @@
 
 #include "dlls/objects/334_CFPrisonGua.h"
 
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/objfx_api.h"
+#include "main/dll/player_api.h"
 #include "main/dll/waterfx.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
+#include "main/obj_message.h"
 #include "main/object_render.h"
+#include "main/object_update_list.h"
+#include "main/objhits.h"
 #include "main/objseq.h"
+#include "main/render_lactions_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
 
@@ -151,9 +158,9 @@ int cfPrisonGuard_sequenceCallback(GameObject* obj, int unused, ObjSeqState* ani
         break;
     }
     if (obj->anim.currentMove == CFPRISONGUARD_WATER_MOVE_B || obj->anim.currentMove == CFPRISONGUARD_WATER_MOVE_A) {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_foot_water_roll);
+        Sfx_PlayFromObject(obj, SFXTRIG_foot_water_roll);
     } else {
-        Sfx_StopObjectChannel((int)obj, CFPRISONGUARD_WATER_SFX_CHANNEL);
+        Sfx_StopObjectChannel(obj, CFPRISONGUARD_WATER_SFX_CHANNEL);
     }
     if (uncleFlewOff != 0 && state->uncleFlewOffLatch == 0) {
         shouldTransition = 1;
@@ -235,9 +242,8 @@ void cfPrisonGuard_update(GameObject* obj) {
     }
     if (hasPrisonKey == 0) {
         if (state->stateId != CFPRISONGUARD_STATE_ALERT) {
-            if (distance < (f32)(s32)placement->watchRadius) {
-                /* Player proximity is sufficient to continue into the alert check. */
-            } else if (waterfx_consumePendingImpactNearPoint(&obj->anim.localPosX, 600.0f) == 0) {
+            if (!(distance < (f32)(s32)placement->watchRadius) &&
+                waterfx_consumePendingImpactNearPoint(&obj->anim.localPosX, 600.0f) == 0) {
                 return;
             }
         }

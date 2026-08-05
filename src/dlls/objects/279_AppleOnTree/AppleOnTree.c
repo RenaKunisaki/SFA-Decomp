@@ -1,12 +1,15 @@
 #include "dlls/objects/279_AppleOnTree.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
+#include "main/dll/player_api.h"
 #include "main/dll/waterfx_interface.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
+#include "main/obj_message.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
 #include "main/objhits.h"
@@ -17,6 +20,7 @@
 #include "main/vecmath.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 #define APPLE_ON_TREE_FLAG_INACTIVE           0x02
 #define APPLE_ON_TREE_FLAG_PICKUP_PENDING     0x04
@@ -185,7 +189,7 @@ void appleontree_knockLoose(GameObject* obj, int message) {
             if (obj->anim.hitReactState != NULL) {
                 ObjHits_DisableObject(obj);
             }
-            Sfx_PlayFromObject((int)obj, SFXTRIG_en_tranch_6);
+            Sfx_PlayFromObject(obj, SFXTRIG_en_tranch_6);
         }
     }
 }
@@ -210,7 +214,7 @@ void appleontree_handleCollectableHit(GameObject* obj) {
     } else {
         playerAddHealth(player, state->healthRestore);
         itemPickupDoParticleFx(obj, 1.0f, 0xff, 0x28);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_cam90_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_cam90_c);
         appleontree_markFallen(obj);
     }
 }
@@ -274,7 +278,7 @@ int appleontree_bounceGroundStep(GameObject* obj, AppleOnTreeState* state, f32 p
                 (obj)->anim.rotZ = state->rotZ;
                 state->bounceVelocity = -state->waterAcceleration;
                 if ((state->flags & APPLE_ON_TREE_FLAG_LANDING_SFX_PLAYED) == 0) {
-                    Sfx_PlayFromObject((int)obj, SFXTRIG_pk_fruit_lands);
+                    Sfx_PlayFromObject(obj, SFXTRIG_pk_fruit_lands);
                     state->flags = (u8)(state->flags | APPLE_ON_TREE_FLAG_LANDING_SFX_PLAYED);
                 }
                 return 1;
@@ -322,7 +326,7 @@ int appleontree_bounceGroundStep(GameObject* obj, AppleOnTreeState* state, f32 p
 }
 
 int appleontree_bounceWaterStep(GameObject* obj, AppleOnTreeState* state, f32 positionY) {
-    if (0.0f == state->extraAcceleration) {
+    if (state->extraAcceleration == 0.0f) {
         if (state->dropHeight - (state->positionY - positionY) <= 0.0f) {
             f32 b;
             f32 m = state->gravity;
@@ -434,7 +438,7 @@ void AppleOnTree_update(GameObject* obj) {
             case APPLE_ON_TREE_MESSAGE_PICKUP: {
                 playerAddHealth(Obj_GetPlayerObject(), (int)((AppleOnTreeState*)state)->healthRestore);
                 itemPickupDoParticleFx(obj, 1.0f, 0xff, 0x28);
-                Sfx_PlayFromObject((int)obj, SFXTRIG_cam90_c);
+                Sfx_PlayFromObject(obj, SFXTRIG_cam90_c);
                 val = (int)obj->extra;
                 if (obj->anim.flags & OBJANIM_FLAG_OWNS_PLACEMENT_DATA) {
                     Obj_FreeObject(obj);
@@ -477,15 +481,13 @@ void AppleOnTree_update(GameObject* obj) {
                 ((AppleOnTreeState*)state)->flags = ((AppleOnTreeState*)state)->flags | APPLE_ON_TREE_FLAG_INACTIVE;
                 ((AppleOnTreeState*)state)->elapsedTime = timeDelta;
                 ((AppleOnTreeState*)state)->animState = APPLE_ON_TREE_STATE_BURST;
+            } else if (frac > ((AppleOnTreeState*)state)->growthEnd) {
+                obj->anim.rootMotionScale = obj->anim.modelInstance->rootMotionScaleBase;
+                ((AppleOnTreeState*)state)->animState = APPLE_ON_TREE_STATE_RIPE;
             } else {
-                if (frac > ((AppleOnTreeState*)state)->growthEnd) {
-                    obj->anim.rootMotionScale = obj->anim.modelInstance->rootMotionScaleBase;
-                    ((AppleOnTreeState*)state)->animState = APPLE_ON_TREE_STATE_RIPE;
-                } else {
-                    fb = ((AppleOnTreeState*)obj->extra)->elapsedTime / ((AppleOnTreeState*)obj->extra)->phaseDuration;
-                    fb = fb * (1.0f / ((AppleOnTreeState*)obj->extra)->growthEnd);
-                    obj->anim.rootMotionScale = obj->anim.modelInstance->rootMotionScaleBase * fb;
-                }
+                fb = ((AppleOnTreeState*)obj->extra)->elapsedTime / ((AppleOnTreeState*)obj->extra)->phaseDuration;
+                fb = fb * (1.0f / ((AppleOnTreeState*)obj->extra)->growthEnd);
+                obj->anim.rootMotionScale = obj->anim.modelInstance->rootMotionScaleBase * fb;
             }
             break;
         case APPLE_ON_TREE_STATE_RIPE:
@@ -505,21 +507,17 @@ void AppleOnTree_update(GameObject* obj) {
                 ((AppleOnTreeState*)state)->flags = ((AppleOnTreeState*)state)->flags | APPLE_ON_TREE_FLAG_INACTIVE;
                 ((AppleOnTreeState*)state)->elapsedTime = timeDelta;
                 ((AppleOnTreeState*)state)->animState = APPLE_ON_TREE_STATE_BURST;
+            } else if (frac > ((AppleOnTreeState*)state)->ripeEnd) {
+                particleIndex = 0;
+                do {
+                    (*gPartfxInterface)->spawnObject(obj, APPLE_ON_TREE_PARTICLE_BURST, NULL, 2, -1, NULL);
+                    particleIndex = particleIndex + 1;
+                } while (particleIndex < APPLE_ON_TREE_PARTICLE_BURST_COUNT);
+                ((AppleOnTreeState*)state)->animState = APPLE_ON_TREE_STATE_FALLING;
+            } else if ((*gSkyInterface)->getSunPosition(&sunTime) != 0) {
+                ObjAnim_AdvanceCurrentMove((int)obj, -0.006f, timeDelta, 0);
             } else {
-                if (frac > ((AppleOnTreeState*)state)->ripeEnd) {
-                    particleIndex = 0;
-                    do {
-                        (*gPartfxInterface)->spawnObject(obj, APPLE_ON_TREE_PARTICLE_BURST, NULL, 2, -1, NULL);
-                        particleIndex = particleIndex + 1;
-                    } while (particleIndex < APPLE_ON_TREE_PARTICLE_BURST_COUNT);
-                    ((AppleOnTreeState*)state)->animState = APPLE_ON_TREE_STATE_FALLING;
-                } else {
-                    if ((*gSkyInterface)->getSunPosition(&sunTime) != 0) {
-                        ObjAnim_AdvanceCurrentMove((int)obj, -0.006f, timeDelta, 0);
-                    } else {
-                        ObjAnim_AdvanceCurrentMove((int)obj, 0.006f, timeDelta, 0);
-                    }
-                }
+                ObjAnim_AdvanceCurrentMove((int)obj, 0.006f, timeDelta, 0);
             }
             break;
         case APPLE_ON_TREE_STATE_FALLING:
@@ -593,7 +591,7 @@ void AppleOnTree_update(GameObject* obj) {
                     if (!((iteration == 100) || (iteration != 0x66)))
                         break;
                 }
-                if (0.0f != ((AppleOnTreeState*)state)->dropHeight) {
+                if (((AppleOnTreeState*)state)->dropHeight != 0.0f) {
                     fb = ((AppleOnTreeState*)state)->flightTime / ((AppleOnTreeState*)state)->totalFlightTime;
                     obj->anim.rotX = (f32)((AppleOnTreeState*)state)->rotX * fb;
                     obj->anim.rotY = (f32)((AppleOnTreeState*)state)->rotY * fb;

@@ -131,7 +131,7 @@ def main() -> None:
         ]
         if not incomplete:
             continue
-        best = max(function["fuzzy_match_percent"] for function in incomplete)
+        best = max(function.get("fuzzy_match_percent", 0.0) for function in incomplete)
         candidates.append((best, unit))
     candidates.sort(reverse=True, key=lambda item: item[0])
 

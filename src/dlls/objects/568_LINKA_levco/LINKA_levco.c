@@ -14,7 +14,12 @@
  * sets three progression game bits, kicks an env-fx act and fades the active
  * music channels. A looping object sound is kept alive while sequences run.
  */
+#include "main/audio/sfx_keep_alive_api.h"
 #include "main/dll/dll_0238_linkalevco.h"
+#include "main/map_load.h"
+#include "main/model_engine.h"
+#include "main/pi_dolphin_api.h"
+#include "main/rcp_dolphin_api.h"
 #include "main/sky_api.h"
 #include "main/audio/music_api.h"
 #include "main/gamebits.h"

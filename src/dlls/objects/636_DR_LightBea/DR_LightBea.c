@@ -10,14 +10,19 @@
  * lightningCreate handle at offset 0 and the active/free bit flags at
  * offset 4.
  */
+#include "main/audio/sfx_play_api.h"
 #include "main/dll/dll_002E_moveLib.h"
+#include "main/gamebits_api.h"
+#include "main/mm.h"
 #include "main/newclouds.h"
+#include "main/vecmath.h"
 #include "sys/objects.h"
 #include "dlls/object_descriptor.h"
 
 #include "main/audio/sfx_trigger_ids.h"
 
 #include "main/dll/DR/dll_027C_drlightbea.h"
+#include "sys/objects/lifecycle.h"
 
 
 int DR_LightBea_getExtraSize(void)
@@ -86,7 +91,7 @@ void DR_LightBea_render(GameObject* obj, int p2, int p3, int p4, int p5)
         state->flags.bit80 = mainGetBit(setup->gameBit);
         if (state->flags.bit80)
         {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_id_30f);
+            Sfx_PlayFromObject(obj, SFXTRIG_id_30f);
             sourcePos[0] = (obj)->anim.localPosX;
             sourcePos[1] = (obj)->anim.localPosY;
             sourcePos[2] = (obj)->anim.localPosZ;

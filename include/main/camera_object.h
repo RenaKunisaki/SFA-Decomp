@@ -2,6 +2,7 @@
 #define MAIN_CAMERA_OBJECT_H_
 
 #include "global.h"
+#include "main/dll/DR/dr_types.h"
 #include "main/objanim_internal.h"
 
 /*
@@ -68,7 +69,7 @@ typedef struct CameraObject {
     u8 pad13F[2];
     u8 targetFlags;
     u8 cameraCollisionActive;
-    u8 smoothingFlags;
+    BitFlags8 smoothingFlags;
     u8 pad144[0x148 - 0x144];
     int unk148;
 } CameraObject;

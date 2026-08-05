@@ -6,15 +6,20 @@
 #include "dlls/objects/482_DIM_BossTon.h"
 
 #include "dlls/objects/480_DIM_Boss.h"
+#include "main/audio/music_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/camera_shake_api.h"
 #include "main/dll/baddie_control_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/mapEvent.h"
+#include "main/obj_message.h"
+#include "main/obj_path.h"
 #include "main/object_render.h"
 #include "main/objfx.h"
 #include "main/objhits.h"
 #include "main/objseq.h"
+#include "main/objtype.h"
 #include "main/pad.h"
 #include "main/player_control_interface.h"
 #include "main/render_envfx_api.h"
@@ -121,7 +126,7 @@ const f32 gDIMbosstonsilThirty[1] = {30.0f};
 const f32 gDIMbosstonsilFifty[1] = {50.0f};
 
 void DIMbosstonsil_checkHit(GameObject* obj, GroundBaddieState* state) {
-    int hitObj;
+    GameObject* hitObj;
     int modelPart;
     u32 hitVolume;
     PartFxSpawnParams spawnArgs;
@@ -143,15 +148,15 @@ void DIMbosstonsil_checkHit(GameObject* obj, GroundBaddieState* state) {
         (*gPartfxInterface)
             ->spawnObject(obj, DIMBOSSTONSIL_HIT_EFFECT_ALT_ID, &spawnArgs, DIMBOSSTONSIL_HIT_FX_FLAGS, -1, NULL);
         objDoHitParticleFx(obj, 0.028f, &spawnArgs, 3, 0);
-        Sfx_PlayFromObject((u32)obj, DIMBOSSTONSIL_PRIMARY_HIT_SFX);
+        Sfx_PlayFromObject(obj, DIMBOSSTONSIL_PRIMARY_HIT_SFX);
         doRumble(16.0f);
         if (state->baddie.hitPoints != 0) {
-            Sfx_PlayFromObject((u32)obj, DIMBOSSTONSIL_ALT_HIT_SFX);
+            Sfx_PlayFromObject(obj, DIMBOSSTONSIL_ALT_HIT_SFX);
         } else {
-            Sfx_PlayFromObject((u32)obj, DIMBOSSTONSIL_NORMAL_HIT_SFX);
+            Sfx_PlayFromObject(obj, DIMBOSSTONSIL_NORMAL_HIT_SFX);
         }
         CameraShake_SetOffset(3.0f);
-        if (0.0f == gDIMbosstonsilRouteDelayTimer) {
+        if (gDIMbosstonsilRouteDelayTimer == 0.0f) {
             state->baddie.moveJustStartedA = 1;
             state->baddie.moveDone = 0;
             state->baddie.lastHitPriority = hit;
@@ -165,7 +170,7 @@ void DIMbosstonsil_checkHit(GameObject* obj, GroundBaddieState* state) {
             }
             (*gPlayerInterface)->setState(obj, state, 1);
             state->baddie.substate = 1;
-            ObjMsg_SendToObject((void*)hitObj, DIMBOSSTONSIL_ADVANCE_MSG, obj, 0);
+            ObjMsg_SendToObject(hitObj, DIMBOSSTONSIL_ADVANCE_MSG, obj, 0);
         }
     }
 }
@@ -196,7 +201,7 @@ void dimBossTonsil_newState_hitFightMain(GameObject* obj, ObjSeqState* animUpdat
         ->processMessages(obj, updateState, &state->routeNav, state->gameBitB, &state->subMode, 0,
                           0, 0);
 
-    if (0.0f != gDIMbosstonsilFightTimer) {
+    if (gDIMbosstonsilFightTimer != 0.0f) {
         gDIMbosstonsilFightTimer = gDIMbosstonsilFightTimer - timeDelta;
         timer = gDIMbosstonsilFightTimer / 8.0f;
         if (gDIMbosstonsilFightTimer <= 1.0f) {
@@ -216,7 +221,7 @@ void dimBossTonsil_newState_hitFightMain(GameObject* obj, ObjSeqState* animUpdat
     }
 
     if (gDIMbosstonsilRumbleElapsed >= gDIMbosstonsilNextRumbleTime) {
-        Sfx_PlayFromObject((u32)obj, DIMBOSSTONSIL_RUMBLE_SFX);
+        Sfx_PlayFromObject(obj, DIMBOSSTONSIL_RUMBLE_SFX);
         if (timer > 100.0f) {
             timer = 100.0f;
         }
@@ -230,7 +235,7 @@ void dimBossTonsil_newState_hitFightMain(GameObject* obj, ObjSeqState* animUpdat
     gDIMbosstonsilRumbleElapsed = gDIMbosstonsilRumbleElapsed + timeDelta;
     DIMbosstonsil_checkHit(obj, updateState);
 
-    if (0.0f != gDIMbosstonsilRouteDelayTimer) {
+    if (gDIMbosstonsilRouteDelayTimer != 0.0f) {
         gDIMbosstonsilRouteDelayTimer = gDIMbosstonsilRouteDelayTimer - timeDelta;
         if (gDIMbosstonsilRouteDelayTimer <= 0.0f) {
             gDIMbosstonsilRouteDelayTimer = 0.0f;
@@ -336,19 +341,19 @@ int DIMbosstonsil_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animUpdate) {
     }
 
     if (gDIMbosstonsilRumbleElapsed >= gDIMbosstonsilNextRumbleTime) {
-        Sfx_PlayFromObject((u32)obj, DIMBOSSTONSIL_RUMBLE_SFX);
+        Sfx_PlayFromObject(obj, DIMBOSSTONSIL_RUMBLE_SFX);
         gDIMbosstonsilNextRumbleTime += 100.0f;
         doRumble(8.0f);
     }
     gDIMbosstonsilRumbleElapsed += timeDelta;
 
     if (obj->seqIndex != -1) {
-        animOk = (*gBaddieControlInterface)->isObjectValid((GameObject*)obj, state, 1);
+        animOk = (*gBaddieControlInterface)->isObjectValid(obj, state, 1);
         if (animOk == 0) {
             return 1;
         }
         if ((state->gameBitC != -1) && (mainGetBit(state->gameBitC) != 0)) {
-            (*gObjectTriggerInterface)->yield((ObjSeqState*)animUpdate, config->eventId);
+            (*gObjectTriggerInterface)->yield(animUpdate, config->eventId);
             state->gameBitC = -1;
         }
 
@@ -366,10 +371,10 @@ int DIMbosstonsil_SeqFn(GameObject* obj, u32 unused, ObjSeqState* animUpdate) {
             break;
         case 1:
             animOk = (*gBaddieControlInterface)
-                         ->updateSequenceMovement((GameObject*)obj, (ObjSeqState*)animUpdate, (char*)state,
+                         ->updateSequenceMovement(obj, animUpdate, (char*)state,
                                                   &gDIMbosstonsilStateHandlers, &gDIMbosstonsilSubstateHandlers, 0);
             if (animOk != 0) {
-                (*gBaddieControlInterface)->updateGravity((GameObject*)obj, state, 0.0f, 1);
+                (*gBaddieControlInterface)->updateGravity(obj, state, 0.0f, 1);
             }
             break;
         case 0:
@@ -408,7 +413,7 @@ void DIMbosstonsil_free(GameObject* obj) {
 
     state = obj->extra;
     objFreeObjectType((int)obj, DIMBOSSTONSIL_OBJGROUP);
-    (*gBaddieControlInterface)->releaseState((GameObject*)obj, state, 1);
+    (*gBaddieControlInterface)->releaseState(obj, state, 1);
     if (gDIMbosstonsilLight != NULL) {
         ModelLightStruct_free(gDIMbosstonsilLight);
     }

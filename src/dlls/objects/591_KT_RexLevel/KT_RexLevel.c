@@ -12,6 +12,7 @@
  *
  * The 4-byte extra block holds a single f32 scratch value seeded at init.
  */
+#include "main/lightmap_render_control_api.h"
 #include "main/render_envfx_api.h"
 #include "main/gamebits.h"
 #include "main/object_render.h"

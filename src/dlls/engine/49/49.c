@@ -474,27 +474,23 @@ int Minimap_update(void)
                     }
                     e = boxW - texW * gMinimapZoom;
                     e = e / 2.0f;
-                    t = 0.0f;
-                    t = (t > e) ? t : e;
+                    t = (0.0f > e) ? 0.0f : e;
                     panx = -t;
                     e = boxH - texH * gMinimapZoom;
                     e = e / 2.0f;
-                    t = 0.0f;
-                    t = (t > e) ? t : e;
+                    t = (0.0f > e) ? 0.0f : e;
                     pany = -t;
-                    t = 0.0f;
-                    if (t == panx)
+                    if (panx == 0.0f)
                     {
                         a = gMinimapZoom * (xrel * gMinimapWorldToTexScale) - (f32)(boxW / 2);
-                        t = (t > a) ? t : a;
+                        t = (0.0f > a) ? 0.0f : a;
                         t = (t < (b = texW * gMinimapZoom - boxW)) ? t : b;
                         ox = t;
                     }
-                    t = 0.0f;
-                    if (t == pany)
+                    if (pany == 0.0f)
                     {
                         a = gMinimapZoom * (yrel * gMinimapWorldToTexScale) - (f32)(boxH / 2);
-                        t = (t > a) ? t : a;
+                        t = (0.0f > a) ? 0.0f : a;
                         t = (t < (b = texH * gMinimapZoom - boxH)) ? t : b;
                         oy = t;
                     }
@@ -981,7 +977,7 @@ void Minimap_frameStart(void)
                     gMinimapZoomSfxActive = 0;
                 }
                 gMinimapRadarTarget =
-                    objGetNearestTypeTo(FUEL_CELL_OBJECT_GROUP, (GameObject*)player, &dist);
+                    objGetNearestTypeTo(FUEL_CELL_OBJECT_GROUP, player, &dist);
                 if ((void*)gMinimapRadarTarget != NULL)
                 {
                     if (dist < 500.0f)

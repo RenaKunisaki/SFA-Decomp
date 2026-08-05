@@ -161,14 +161,11 @@ void windLift107_render(GameObject* obj, int renderArg2, int renderArg3, int ren
         return;
     }
     if (obj->userData2 != 0) {
-        if (visible == -1) {
-        } else {
+        if (visible != -1) {
             return;
         }
-    } else {
-        if (visible == 0) {
-            return;
-        }
+    } else if (visible == 0) {
+        return;
     }
     burstTimer = state->burstTimer;
     if (burstTimer != 0) {

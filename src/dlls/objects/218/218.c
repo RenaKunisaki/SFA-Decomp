@@ -118,7 +118,7 @@ void pollenfragment_hitDetect(GameObject* obj)
 {
     PollenFragmentExtra* extra;
     int hitType;
-    int hitObject;
+    GameObject* hitObject;
 
     extra = obj->extra;
     if (timerIsActive(&extra->deathTimer) == 0)
@@ -155,7 +155,7 @@ void pollenfragment_update(GameObject* obj)
     PollenFragmentExtra* extra;
     GameObject* nearObj;
     PollenFragmentConfig* def;
-    void* hit;
+    GameObject* hit;
     int i;
     f32 horizDamping;
     f32 t;
@@ -288,8 +288,8 @@ void pollenfragment_update(GameObject* obj)
             obj->anim.velocityZ * timeDelta);
     ObjHits_SetHitVolumeSlot(&obj->anim, POLLENFRAGMENT_HIT_VOLUME_SLOT, 1, 0);
     ObjHits_EnableObject(obj);
-    hit = (void*)((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject;
-    if (hit != NULL && ((GameObject*)hit)->anim.romDefNo != obj->anim.romDefNo &&
+    hit = (GameObject*)((ObjHitsPriorityState*)obj->anim.hitReactState)->lastHitObject;
+    if (hit != NULL && hit->anim.romDefNo != obj->anim.romDefNo &&
         hit != (void*)extra->ownerObj)
     {
         extra->timer = 0.0f;

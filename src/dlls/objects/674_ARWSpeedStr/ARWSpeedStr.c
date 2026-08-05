@@ -12,6 +12,8 @@
 #include "main/shader_api.h"
 #include "main/dll/ARW/dll_02A2_arwspeedstr.h"
 #include "main/object_render.h"
+#include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 static f32 ARWSpeedStr_randomSpread(f32 spread)
 {

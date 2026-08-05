@@ -2,6 +2,7 @@
 #include "main/dll/savegame_env_api.h"
 #include "main/render_envfx_api.h"
 #include "main/sky_interface.h"
+#include "string.h"
 #include "sys/objects.h"
 #include "main/curve_eval.h"
 #include "main/frame_timing.h"
@@ -66,13 +67,13 @@ void skySetLightSlot(int slot, f32 x, f32 y, f32 z, int red, int green, int blue
 
 void sky2GetFogRange(int* fogNear, int* fogFar)
 {
-    u8* state;
+    SkySlotAnim* state;
     f32 value;
 
-    state = gSky2State;
+    state = (SkySlotAnim*)gSky2State;
     if (state != NULL)
     {
-        value = ((SkySlotAnim*)state)->fogNear;
+        value = state->fogNear;
         *fogNear = value;
         value = ((SkySlotAnim*)gSky2State)->fogFar;
         *fogFar = value;
@@ -81,14 +82,14 @@ void sky2GetFogRange(int* fogNear, int* fogFar)
 
 void sky2GetTargetColor(int* red, int* green, int* blue, f32* blend)
 {
-    u8* state;
+    SkySlotAnim* state;
 
-    state = gSky2State;
+    state = (SkySlotAnim*)gSky2State;
     if (state == NULL)
     {
         return;
     }
-    *red = ((SkySlotAnim*)state)->colorR;
+    *red = state->colorR;
     *green = ((SkySlotAnim*)gSky2State)->colorG;
     *blue = ((SkySlotAnim*)gSky2State)->colorB;
     *blend = ((SkySlotAnim*)gSky2State)->prevT;
@@ -279,16 +280,16 @@ void sky2StepSlotAnim(int slot)
 
 int sky2GetFogFadeAlpha(void)
 {
-    u8* state;
+    SkySlotAnim* state;
     f32 y;
     int alpha;
 
-    state = gSky2State;
+    state = (SkySlotAnim*)gSky2State;
     if (state == NULL)
     {
         return 0xff;
     }
-    y = ((SkySlotAnim*)state)->fogNear;
+    y = state->fogNear;
     if (y < 950.0f)
     {
         alpha = 0;
@@ -480,14 +481,13 @@ void sky2_run(void)
     Camera* cam;
     u8** pp;
     int i;
-    u8* p;
+    SkySlotAnim* p;
     f32* dst;
     f32* knot;
     f32 colorMax;
     int k;
     int d;
-    int bestKnotOffset;
-    int secondKnotOffset;
+    int knotOffset;
     u16 angle;
     int range;
     int redInt;
@@ -503,6 +503,7 @@ void sky2_run(void)
     f32 t;
     f32 u;
     f32 directionWeight;
+    f32 weight;
     f32 zero;
     f32 c158;
     f32 c154;
@@ -581,25 +582,25 @@ void sky2_run(void)
         if (*pp != NULL && ((SkySlotAnim*)*pp)->b317 != 0)
         {
             gSky2TintDisabled = 0;
-            p = *pp;
-            if (((SkySlotAnim*)p)->unk48 != 0)
+            p = (SkySlotAnim*)*pp;
+            if (p->unk48 != 0)
             {
-                if ((((SkySlotAnim*)p)->flags4 & 1) == 0)
+                if ((p->flags4 & 1) == 0)
                 {
                     spd = 255.0f;
-                    ((SkySlotAnim*)p)->blend = spd * ((SkySlotAnim*)p)->prevT;
+                    p->blend = spd * p->prevT;
                     if (((SkySlotAnim*)*pp)->blend > spd)
                     {
                         ((SkySlotAnim*)*pp)->blend = spd;
                     }
                 }
             }
-            else if (((SkySlotAnim*)p)->unk44 != 0)
+            else if (p->unk44 != 0)
             {
-                ((SkySlotAnim*)p)->prevT = ((SkySlotAnim*)p)->blend / 255.0f;
-                p = *pp;
-                if ((((SkySlotAnim*)p)->flags4 & 1) == 0) {
-                    ((SkySlotAnim*)p)->blend = -(timeDelta * ((SkySlotAnim*)p)->fadeRate - ((SkySlotAnim*)p)->blend);
+                p->prevT = p->blend / 255.0f;
+                p = (SkySlotAnim*)*pp;
+                if ((p->flags4 & 1) == 0) {
+                    p->blend = -(timeDelta * p->fadeRate - p->blend);
                     value = ((SkySlotAnim*)*pp)->blend;
                     if (value < 0.0f) {
                         ((SkySlotAnim*)*pp)->blend = 0.0f;
@@ -610,16 +611,16 @@ void sky2_run(void)
             {
                 sky2StepSlotAnim(i);
             }
-            p = *pp;
-            if ((((SkySlotAnim*)p)->flags4 & 0x10) != 0)
+            p = (SkySlotAnim*)*pp;
+            if ((p->flags4 & 0x10) != 0)
             {
-                r = ((SkySlotAnim*)p)->cur[0];
-                g = ((SkySlotAnim*)p)->cur[0xb];
-                b = ((SkySlotAnim*)p)->cur[0x16];
-                sa = ((SkySlotAnim*)p)->cur2[0];
-                sb = ((SkySlotAnim*)p)->cur2[0xb];
+                r = p->cur[0];
+                g = p->cur[0xb];
+                b = p->cur[0x16];
+                sa = p->cur2[0];
+                sb = p->cur2[0xb];
             }
-            else if ((((SkySlotAnim*)p)->flags6 & 0x20) != 0)
+            else if ((p->flags6 & 0x20) != 0)
             {
                 (*gSkyInterface)->getTimeOfDay(&height);
                 if ((t = height / 86400.0f) < 0.0f)
@@ -713,25 +714,19 @@ void sky2_run(void)
                     k++;
                 } while (k < 8);
                 zero = 0.0f;
-                if (zero < best.x)
+                for (k = 0; k < 2; k++)
                 {
-                    p = *pp + (bestKnotOffset = idx.best * 4);
-                    r = ((SkySlotAnim*)p)->cur[0] * best.x + r;
-                    g = ((SkySlotAnim*)p)->cur[0xb] * best.x + g;
-                    b = ((SkySlotAnim*)p)->cur[0x16] * best.x + b;
-                    knot = (f32*)(*pp + bestKnotOffset + 0x1fc);
-                    sa = *knot * best.x + sa;
-                    sb = ((SkySlotAnim*)p)->cur2[0xb] * best.x + sb;
-                }
-                if (best.y > zero)
-                {
-                    p = *pp + (secondKnotOffset = idx.second * 4);
-                    r = ((SkySlotAnim*)p)->cur[0] * best.y + r;
-                    g = ((SkySlotAnim*)p)->cur[0xb] * best.y + g;
-                    b = ((SkySlotAnim*)p)->cur[0x16] * best.y + b;
-                    knot = (f32*)(*pp + secondKnotOffset + 0x1fc);
-                    sa = *knot * best.y + sa;
-                    sb = ((SkySlotAnim*)p)->cur2[0xb] * best.y + sb;
+                    weight = (&best.x)[k];
+                    if (weight > zero)
+                    {
+                        p = (SkySlotAnim*)(*pp + (knotOffset = (&idx.best)[k] * 4));
+                        r = p->cur[0] * weight + r;
+                        g = p->cur[0xb] * weight + g;
+                        b = p->cur[0x16] * weight + b;
+                        knot = (f32*)(*pp + knotOffset + 0x1fc);
+                        sa = *knot * weight + sa;
+                        sb = p->cur2[0xb] * weight + sb;
+                    }
                 }
             }
             if (r > 255.0f)
@@ -759,12 +754,12 @@ void sky2_run(void)
             {
                 b = 0.0f;
             }
-            p = *pp;
-            if ((((SkySlotAnim*)p)->flags6 & 0x40) != 0)
+            p = (SkySlotAnim*)*pp;
+            if ((p->flags6 & 0x40) != 0)
             {
-                if (((SkySlotAnim*)p)->b314 == -1)
+                if (p->b314 == -1)
                 {
-                    ((SkySlotAnim*)p)->b314 = 1;
+                    p->b314 = 1;
                     value = 0.0f;
                     ((SkySlotAnim*)*pp)->wobbleOffset = value;
                     wobbleRange = sb - sa;
@@ -773,26 +768,26 @@ void sky2_run(void)
                         randomGetRange((int)(-wobbleRange * half), (int)(wobbleRange * half));
                     ((SkySlotAnim*)*pp)->wobbleStep = 0.05f * randomGetRange(1, 10);
                 }
-                else if (((SkySlotAnim*)p)->b314 == 1)
+                else if (p->b314 == 1)
                 {
-                    offset = ((SkySlotAnim*)p)->wobbleOffset;
+                    offset = p->wobbleOffset;
                     sa = sa + offset;
-                    ((SkySlotAnim*)p)->wobbleOffset = offset + ((SkySlotAnim*)p)->wobbleStep;
-                    p = *pp;
-                    if (((SkySlotAnim*)p)->wobbleOffset > ((SkySlotAnim*)p)->wobbleAmp)
+                    p->wobbleOffset = offset + p->wobbleStep;
+                    p = (SkySlotAnim*)*pp;
+                    if (p->wobbleOffset > p->wobbleAmp)
                     {
-                        ((SkySlotAnim*)p)->b314 = (s8)(1 - ((SkySlotAnim*)p)->b314);
+                        p->b314 = (s8)(1 - p->b314);
                     }
                 }
                 else
                 {
-                    offset = ((SkySlotAnim*)p)->wobbleOffset;
+                    offset = p->wobbleOffset;
                     sa = sa + offset;
-                    ((SkySlotAnim*)p)->wobbleOffset = offset - ((SkySlotAnim*)p)->wobbleStep;
-                    p = *pp;
-                    value = ((SkySlotAnim*)p)->wobbleOffset;
+                    p->wobbleOffset = offset - p->wobbleStep;
+                    p = (SkySlotAnim*)*pp;
+                    value = p->wobbleOffset;
                     if (value < 0.0f) {
-                        ((SkySlotAnim*)p)->b314 = (s8)(1 - ((SkySlotAnim*)p)->b314);
+                        p->b314 = (s8)(1 - p->b314);
                         ((SkySlotAnim*)*pp)->wobbleOffset = 0.0f;
                         range = (s16)(int)(sb - sa);
                         ((SkySlotAnim*)*pp)->wobbleAmp = randomGetRange(-range / 2, range / 2);
@@ -816,8 +811,8 @@ void sky2_run(void)
             {
                 setStarsHidden(0);
             }
-            p = *pp;
-            flags = ((SkySlotAnim*)p)->flags4;
+            p = (SkySlotAnim*)*pp;
+            flags = p->flags4;
             if ((flags & 8) == 0)
             {
                 ambientScale = (f32)(red + green + blue) / 765.0f;
@@ -827,7 +822,7 @@ void sky2_run(void)
             }
             if ((flags & 1) != 0)
             {
-                ((SkySlotAnim*)p)->colorR = r;
+                p->colorR = r;
                 ((SkySlotAnim*)*pp)->colorG = g;
                 ((SkySlotAnim*)*pp)->colorB = b;
                 ((SkySlotAnim*)*pp)->fogNear = sa;
@@ -843,7 +838,7 @@ void sky2_run(void)
             }
             else if ((flags & 4) != 0)
             {
-                ((SkySlotAnim*)p)->colorR2 = r;
+                p->colorR2 = r;
                 ((SkySlotAnim*)*pp)->colorG2 = g;
                 ((SkySlotAnim*)*pp)->colorB2 = b;
                 ((SkySlotAnim*)*pp)->fogNear2 = sa;
@@ -860,7 +855,7 @@ void sky2_run(void)
             else
             {
                 redInt = r;
-                ((SkySlotAnim*)p)->colorR = redInt;
+                p->colorR = redInt;
                 greenInt = g;
                 ((SkySlotAnim*)*pp)->colorG = greenInt;
                 blueInt = b;

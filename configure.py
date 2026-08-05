@@ -786,7 +786,6 @@ config.libs = [
         "dvd",
         [
             Object(MatchingFor("GSAE01"), "dolphin/dvd/dvdlow.c"),
-            Object(MatchingFor("GSAE01"), "dolphin/dvd/DVDLowFirstRead.c"),
             Object(MatchingFor("GSAE01"), "dolphin/dvd/dvdfs.c"),
             Object(MatchingFor("GSAE01"), "dolphin/dvd/dvd.c"),
             Object(MatchingFor("GSAE01"), "dolphin/dvd/dvdqueue.c"),

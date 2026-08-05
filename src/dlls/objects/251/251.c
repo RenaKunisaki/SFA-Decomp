@@ -70,24 +70,24 @@
 int PressureSwitchFB_animEventCallback(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     s16 sequenceId;
     PressureSwitchFBPlacement* placement;
-    u32 trackedObject;
+    GameObject* trackedObject;
     u32 trackedObjectOffset;
-    int stateAddress;
+    PressureSwitchFBState* stateAddress;
     int positionAddress;
     u8 trackedIndex;
 
-    stateAddress = (int)obj->extra;
+    stateAddress = obj->extra;
     placement = (PressureSwitchFBPlacement*)obj->anim.placementData;
     if (animUpdate->curEventId == PRESSURESWITCHFB_ANIM_COMMAND_CAPTURE_POSITIONS) {
         for (trackedIndex = 0; trackedIndex < PRESSURESWITCHFB_TRACKED_OBJECT_COUNT; trackedIndex++) {
             trackedObjectOffset = (u32)trackedIndex * 4 + PRESSURESWITCHFB_RUNTIME_TRACKED_OBJECTS_OFFSET;
-            trackedObject = *(u32*)(stateAddress + trackedObjectOffset);
+            trackedObject = (GameObject*)*(u32*)((int)stateAddress + trackedObjectOffset);
             if (trackedObject != 0) {
-                ((PressureSwitchFBState*)(positionAddress = stateAddress + (u32)trackedIndex * 8))
+                ((PressureSwitchFBState*)(positionAddress = (int)stateAddress + (u32)trackedIndex * 8))
                     ->trackedPositions[0]
-                    .x = ((GameObject*)trackedObject)->anim.localPosX;
+                    .x = trackedObject->anim.localPosX;
                 ((PressureSwitchFBState*)positionAddress)->trackedPositions[0].z =
-                    ((GameObject*)*(int*)(stateAddress + trackedObjectOffset))->anim.localPosZ;
+                    ((GameObject*)*(int*)((int)stateAddress + trackedObjectOffset))->anim.localPosZ;
             }
         }
         animUpdate->curEventId = PRESSURESWITCHFB_ANIM_COMMAND_IDLE;
@@ -95,7 +95,7 @@ int PressureSwitchFB_animEventCallback(GameObject* obj, int unused, ObjSeqState*
         for (trackedIndex = 0; trackedIndex < PRESSURESWITCHFB_TRACKED_OBJECT_COUNT;
              trackedIndex += PRESSURESWITCHFB_TRACKED_OBJECT_BATCH) {
             *(int*)(positionAddress =
-                        stateAddress + trackedIndex * 4 + PRESSURESWITCHFB_RUNTIME_TRACKED_OBJECTS_OFFSET) = 0;
+                        (int)stateAddress + trackedIndex * 4 + PRESSURESWITCHFB_RUNTIME_TRACKED_OBJECTS_OFFSET) = 0;
             *(int*)(positionAddress + 0x4) = 0;
             *(int*)(positionAddress + 0x8) = 0;
             *(int*)(positionAddress + 0xC) = 0;
@@ -103,7 +103,7 @@ int PressureSwitchFB_animEventCallback(GameObject* obj, int unused, ObjSeqState*
         }
         /* Retail performs both horizontal reset stores through localPosZ. */
         obj->anim.localPosZ = placement->base.posX;
-        obj->anim.localPosY = ((PressureSwitchFBState*)stateAddress)->targetPosY;
+        obj->anim.localPosY = stateAddress->targetPosY;
         obj->anim.localPosZ = placement->base.posZ;
         mainSetBits(placement->pressedGameBit, 0);
         animUpdate->curEventId = PRESSURESWITCHFB_ANIM_COMMAND_IDLE;
@@ -112,7 +112,7 @@ int PressureSwitchFB_animEventCallback(GameObject* obj, int unused, ObjSeqState*
     if ((((sequenceId != PRESSURESWITCHFB_SEQ_ID_LINK_SNOWPR) && (sequenceId != PRESSURESWITCHFB_SEQ_ID_SH_PRESSURE)) &&
          (sequenceId != PRESSURESWITCHFB_SEQ_ID_LINK_UNDERW)) &&
         (sequenceId != PRESSURESWITCHFB_SEQ_ID_CC_PRESSURE)) {
-        ((PressureSwitchFBState*)stateAddress)->targetPosY = obj->anim.localPosY;
+        stateAddress->targetPosY = obj->anim.localPosY;
     }
     return 0;
 }
@@ -166,12 +166,12 @@ static inline void PressureSwitchFB_addTrackedObject(GameObject* obj, GameObject
 
 void PressureSwitchFB_update(GameObject* obj) {
     int foundTrackedObject;
-    u32 nearbyObject;
+    GameObject* nearbyObject;
     int isMoving;
     PressureSwitchFBPlacement* placement;
     PressureSwitchFBState* state;
     int i;
-    int scratch;
+    GameObject* scratch;
     int effectIndex;
     int isTrackedType;
     ObjTextureRuntimeSlot* texture;
@@ -204,19 +204,19 @@ void PressureSwitchFB_update(GameObject* obj) {
         }
         if (obj->anim.hitboxTransformState->contactObjectCount > 0) {
             for (i = 0; i < obj->anim.hitboxTransformState->contactObjectCount; i++) {
-                nearbyObject = (u32)obj->anim.hitboxTransformState->contactObjects[i];
-                if ((((GameObject*)nearbyObject)->anim.classId == PRESSURESWITCHFB_TRACKED_CLASS_PLAYER) ||
-                    (((GameObject*)nearbyObject)->anim.classId == PRESSURESWITCHFB_TRACKED_CLASS_TRICKY) ||
-                    (((GameObject*)nearbyObject)->anim.romDefNo == PRESSURESWITCHFB_TRACKED_SEQ_ID_A) ||
-                    (((GameObject*)nearbyObject)->anim.romDefNo == PRESSURESWITCHFB_TRACKED_SEQ_ID_B)) {
+                nearbyObject = obj->anim.hitboxTransformState->contactObjects[i];
+                if ((nearbyObject->anim.classId == PRESSURESWITCHFB_TRACKED_CLASS_PLAYER) ||
+                    (nearbyObject->anim.classId == PRESSURESWITCHFB_TRACKED_CLASS_TRICKY) ||
+                    (nearbyObject->anim.romDefNo == PRESSURESWITCHFB_TRACKED_SEQ_ID_A) ||
+                    (nearbyObject->anim.romDefNo == PRESSURESWITCHFB_TRACKED_SEQ_ID_B)) {
                     isTrackedType = 1;
                 } else {
                     isTrackedType = 0;
                 }
-                if (isTrackedType && (nearbyObject != nearestTarget)) {
-                    if (((GameObject*)nearbyObject)->anim.localPosY - obj->anim.localPosY >
+                if (isTrackedType && ((int)nearbyObject != nearestTarget)) {
+                    if (nearbyObject->anim.localPosY - obj->anim.localPosY >
                         (f32)(u32)placement->triggerHeight) {
-                        PressureSwitchFB_addTrackedObject(obj, (GameObject*)nearbyObject);
+                        PressureSwitchFB_addTrackedObject(obj, nearbyObject);
                     }
                 }
             }
@@ -297,8 +297,8 @@ void PressureSwitchFB_update(GameObject* obj) {
         }
         if (((obj->objectFlags & OBJECT_OBJFLAG_RENDERED) != 0) && (state->flags.update.latched == 0) &&
             (state->flags.update.active != 0)) {
-            scratch = (int)Obj_GetPlayerObject();
-            if (Vec_distance(&obj->anim.worldPosX, &((GameObject*)scratch)->anim.worldPosX) <
+            scratch = Obj_GetPlayerObject();
+            if (Vec_distance(&obj->anim.worldPosX, &scratch->anim.worldPosX) <
                 PRESSURESWITCHFB_PARTICLE_DISTANCE) {
                 effectParams.posX = 0.0f;
                 effectParams.posY = PRESSURESWITCHFB_PARTICLE_Y_OFFSET;

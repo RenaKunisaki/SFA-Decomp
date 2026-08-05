@@ -2,11 +2,14 @@
 #include "dlls/objects/316_XYZAnimator.h"
 
 #include "dolphin/os/OSCache.h"
+#include "main/audio/sfx_keep_alive_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
+#include "main/lightmap_api.h"
 #include "main/map_block.h"
 #include "main/mm.h"
 #include "main/object_render.h"
+#include "main/objtype.h"
 #include "main/pi_dolphin_api.h"
 #include "main/track_dolphin_api.h"
 
@@ -55,7 +58,7 @@ void XyzAnimator_captureGeometry(XyzAnimatorPlacement* placement, XyzAnimatorSta
     groupDataOffset[0] = 0;
     triangleDataOffset[0] = groupDataOffset[0];
     for (; blockIndex < (int)(u32)blockData->polyGroupCount; blockIndex++) {
-        mapEntry = mapBlockGetPolygonGroup(blockAddress, blockIndex);
+        mapEntry = (u16*)mapBlockGetPolygonGroup(blockAddress, blockIndex);
         t = mapBlockGetPolygonGroupType(mapEntry);
         if ((int)placement->blockLayer == t) {
             *(s16*)(state->posABuffer + groupDataOffset[0]) = ((MapTriGroup*)mapEntry)->minY;
@@ -65,13 +68,13 @@ void XyzAnimator_captureGeometry(XyzAnimatorPlacement* placement, XyzAnimatorSta
             triangle = *mapEntry;
             vertexDataOffset[0] = triangleDataOffset[0];
             for (; triangle < triangleEnd; triangle++) {
-                mapEntry = mapBlockGetPolygon((int*)blockAddress, triangle);
+                mapEntry = mapBlockGetPolygon(blockAddress, triangle);
                 dataOffset = vertexDataOffset[0];
                 for (index = 3; index != 0; index--) {
                     vertex = (Vec3s*)(blockData->vertices + (u32)*mapEntry * 6);
-                    *(s16*)(state->geometryBuffer + dataOffset) = vertex->x;
-                    *(s16*)(state->geometryBuffer + dataOffset + 2) = vertex->y;
-                    *(s16*)(state->geometryBuffer + dataOffset + 4) = vertex->z;
+                    ((Vec3s*)(state->geometryBuffer + dataOffset))->x = vertex->x;
+                    ((Vec3s*)(state->geometryBuffer + dataOffset))->y = vertex->y;
+                    ((Vec3s*)(state->geometryBuffer + dataOffset))->z = vertex->z;
                     dataOffset += 6;
                     mapEntry++;
                 }
@@ -152,7 +155,7 @@ void XyzAnimator_applyToMapBlock(XyzAnimatorPlacement* placement, XyzAnimatorSta
     groupDataOffset[0] = 0;
     vertexOffset[0] = groupDataOffset[0];
     for (; polygonGroupIndex < (int)(u32)blockData->polyGroupCount; polygonGroupIndex++) {
-        mapEntry = mapBlockGetPolygonGroup(blockAddress, polygonGroupIndex);
+        mapEntry = (u16*)mapBlockGetPolygonGroup(blockAddress, polygonGroupIndex);
         polygonGroupType = mapBlockGetPolygonGroupType(mapEntry);
         if ((int)placement->blockLayer == polygonGroupType) {
             ((MapTriGroup*)mapEntry)->minY =
@@ -165,13 +168,13 @@ void XyzAnimator_applyToMapBlock(XyzAnimatorPlacement* placement, XyzAnimatorSta
             vertexIndex = vertexOffset[0];
             scale = 8.0f;
             for (; triangle < triangleEnd; triangle++) {
-                mapEntry = mapBlockGetPolygon((int*)blockAddress, triangle);
+                mapEntry = mapBlockGetPolygon(blockAddress, triangle);
                 dataOffset = vertexIndex;
                 for (index = 3; index != 0; index--) {
                     vertex = (Vec3s*)(blockData->vertices + (u32)*mapEntry * 6);
-                    vertex->x = (s16)(scale * state->offsetX + (f32) * (s16*)(state->geometryBuffer + dataOffset));
-                    vertex->y = (s16)(scale * state->offsetY + (f32) * (s16*)(state->geometryBuffer + dataOffset + 2));
-                    vertex->z = (s16)(scale * state->offsetZ + (f32) * (s16*)(state->geometryBuffer + dataOffset + 4));
+                    vertex->x = (s16)(scale * state->offsetX + (f32)((Vec3s*)(state->geometryBuffer + dataOffset))->x);
+                    vertex->y = (s16)(scale * state->offsetY + (f32)((Vec3s*)(state->geometryBuffer + dataOffset))->y);
+                    vertex->z = (s16)(scale * state->offsetZ + (f32)((Vec3s*)(state->geometryBuffer + dataOffset))->z);
                     dataOffset += 6;
                     vertexIndex += 6;
                     vertexOffset[0] += 6;
@@ -210,30 +213,30 @@ void XyzAnimator_applyToMapBlock(XyzAnimatorPlacement* placement, XyzAnimatorSta
 void XyzAnimator_update(GameObject* obj) {
     XyzAnimatorPlacement* placement = (XyzAnimatorPlacement*)obj->anim.placementData;
     XyzAnimatorState* state = (XyzAnimatorState*)obj->extra;
-    int blockAddress;
-    u8* polygonGroup;
+    MapBlockData* blockAddress;
+    MapTriGroup* polygonGroup;
     int polygonGroupIndex;
     int completedAxes;
     u8* bufferAddress;
     int streamSize;
     int value;
 
-    blockAddress = (int)mapGetBlock(objPosToMapBlockIdx(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ));
+    blockAddress = (MapBlockData*)mapGetBlock(objPosToMapBlockIdx(obj->anim.localPosX, obj->anim.localPosY, obj->anim.localPosZ));
     if ((u32)blockAddress == 0) {
         state->passCount = 0;
         return;
     }
-    if ((((MapBlockData*)blockAddress)->flags4 & MAP_BLOCK_FLAG_LOADED) == 0) {
+    if ((blockAddress->flags4 & MAP_BLOCK_FLAG_LOADED) == 0) {
         return;
     }
     if (state->vertexCount == 0) {
-        for (polygonGroupIndex = 0; polygonGroupIndex < ((MapBlockData*)blockAddress)->polyGroupCount;
+        for (polygonGroupIndex = 0; polygonGroupIndex < blockAddress->polyGroupCount;
              polygonGroupIndex++) {
             polygonGroup = mapBlockGetPolygonGroup((void*)blockAddress, polygonGroupIndex);
             value = mapBlockGetPolygonGroupType(polygonGroup);
             if (placement->blockLayer == value) {
                 state->polygonGroupCount++;
-                state->vertexCount += ((MapTriGroup*)polygonGroup)[1].firstTri - ((MapTriGroup*)polygonGroup)->firstTri;
+                state->vertexCount += ((MapTriGroup*)polygonGroup)[1].firstTri - polygonGroup->firstTri;
             }
         }
         if (state->vertexCount == 0) {
@@ -245,7 +248,7 @@ void XyzAnimator_update(GameObject* obj) {
         } else {
             state->triggerBitValue = mainGetBit(placement->triggerGameBit);
         }
-        state->displayListCount = ((MapBlockData*)blockAddress)->displayListCount;
+        state->displayListCount = blockAddress->displayListCount;
         state->offsetX = (f32)placement->startX;
         state->offsetY = (f32)placement->startY;
         state->offsetZ = (f32)placement->startZ;
@@ -288,9 +291,9 @@ void XyzAnimator_update(GameObject* obj) {
         XyzAnimator_captureGeometry(placement, state, (MapBlockData*)blockAddress);
         if (placement->mode != XYZ_ANIMATOR_MODE_DEFERRED_ONESHOT) {
             XyzAnimator_applyToMapBlock(placement, state, (MapBlockData*)blockAddress);
-            ((MapBlockData*)blockAddress)->flags4 = ((MapBlockData*)blockAddress)->flags4 ^ 1;
+            blockAddress->flags4 = blockAddress->flags4 ^ 1;
             XyzAnimator_applyToMapBlock(placement, state, (MapBlockData*)blockAddress);
-            ((MapBlockData*)blockAddress)->flags4 = ((MapBlockData*)blockAddress)->flags4 ^ 1;
+            blockAddress->flags4 = blockAddress->flags4 ^ 1;
         }
     }
     if (placement->mode == XYZ_ANIMATOR_MODE_GATED) {

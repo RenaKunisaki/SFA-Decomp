@@ -4,6 +4,7 @@
 #include "game/objects/object.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/dll/rom_curve_def.h"
+#include "main/dll/dll_0271_drakorhoverpad.h"
 
 extern const f32 gDrakorHoverpadSpeedStep;
 extern f32 gDrakorHoverpadSteerMaxSpeed;
@@ -44,7 +45,9 @@ typedef struct DrakorHoverpadState
     int unk170;
     s16 anglePhase;
     s16 frameCounter;
-    u8 pad178[4];
+    DrakorHoverpadFlags flags;         /* 0x178 */
+    DrakorHoverpadPathFlags pathFlags; /* 0x179 */
+    u8 pad17A[2];
 } DrakorHoverpadState;
 
 STATIC_ASSERT(sizeof(DrakorHoverpadState) == 0x17c);

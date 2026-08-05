@@ -1,25 +1,24 @@
 #include "dlls/objects/268_LanternFire.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "main/audio/sfx_keep_alive_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/curve_eval.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
+#include "main/gameloop_gamebit_api.h"
 #include "main/model_light.h"
 #include "main/object_render.h"
+#include "main/objtype.h"
+#include "main/track_dolphin_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
-
-typedef struct LanternFireFlyControlBits {
-    u8 motionMode : 2;
-    u8 unused : 6;
-} LanternFireFlyControlBits;
+#include "sys/objects/lifecycle.h"
 
 #define LANTERN_FIREFLY_OBJECT_GROUP              0x30
 #define LANTERN_FIREFLY_ACTIVE_COUNT_GAMEBIT      0x698
 #define LANTERN_FIREFLY_PLAYER_FOLLOW_MOTION_MODE 1
-#define LANTERN_FIREFLY_ACTIVE_OBJECT_MODE        1u
 #define LANTERN_FIREFLY_LIGHT_STATE_A             1
 #define LANTERN_FIREFLY_LIGHT_STATE_B             4
 #define LANTERN_FIREFLY_EFFECT_GLOW_A             0x19F
@@ -38,8 +37,8 @@ typedef struct LanternFireFlyControlBits {
 #define LANTERN_FIREFLY_RANDOM_ANGLE_MAX          0xFDE8
 #define LANTERN_FIREFLY_DEFAULT_WANDER_RANGE      4
 #define LANTERN_FIREFLY_LIGHT_ANGLE_SHIFT         11
-#define LANTERN_FIREFLY_OBJECT_MODE(state)        (((u32)(state)->modeFlags >> 6) & 3)
-#define LANTERN_FIREFLY_IS_ACTIVE(state)          (LANTERN_FIREFLY_OBJECT_MODE(state) == LANTERN_FIREFLY_ACTIVE_OBJECT_MODE)
+#define LANTERN_FIREFLY_IS_FOLLOWING_PLAYER(state)                                                          \
+    ((state)->modeFlags.motionMode == LANTERN_FIREFLY_PLAYER_FOLLOW_MOTION_MODE)
 
 static f32 sLanternFireFlyEffectSpawnTimerThreshold = 60.0f;
 static u8 sLanternFireFlyLightActive;
@@ -105,7 +104,7 @@ void LanternFireFly_releaseFromLantern(GameObject* obj) {
     LanternFireFly_advanceControlRing(obj);
     LanternFireFly_advanceControlRing(obj);
     LanternFireFly_advanceControlRing(obj);
-    ((LanternFireFlyControlBits*)&state->modeFlags)->motionMode = LANTERN_FIREFLY_PLAYER_FOLLOW_MOTION_MODE;
+    state->modeFlags.motionMode = LANTERN_FIREFLY_PLAYER_FOLLOW_MOTION_MODE;
     state->timer = placement->timer;
     gameBitIncrement(LANTERN_FIREFLY_ACTIVE_COUNT_GAMEBIT);
 }
@@ -162,7 +161,7 @@ static void LanternFireFly_advanceControlRing(GameObject* obj) {
     state->controlX[2] = state->controlX[3];
     state->controlY[2] = state->controlY[3];
     state->controlZ[2] = state->controlZ[3];
-    if (((LanternFireFlyControlBits*)&state->modeFlags)->motionMode == LANTERN_FIREFLY_PLAYER_FOLLOW_MOTION_MODE) {
+    if (state->modeFlags.motionMode == LANTERN_FIREFLY_PLAYER_FOLLOW_MOTION_MODE) {
         GameObject* player = Obj_GetPlayerObject();
         state->speed = 0.0015f * Vec_distance((void*)&obj->anim.worldPosX, &player->anim.worldPosX) + 0.0001f;
     } else {
@@ -188,7 +187,7 @@ void LanternFireFly_free(GameObject* obj, int flag) {
         ModelLightStruct_free(state->light);
         state->light = NULL;
     }
-    if (flag == 0 && state->light != NULL && LANTERN_FIREFLY_OBJECT_MODE(state) != LANTERN_FIREFLY_ACTIVE_OBJECT_MODE) {
+    if (flag == 0 && state->light != NULL && state->modeFlags.motionMode != LANTERN_FIREFLY_PLAYER_FOLLOW_MOTION_MODE) {
         sLanternFireFlyLightActive = 0;
     }
     objFreeObjectType((int)obj, LANTERN_FIREFLY_OBJECT_GROUP);
@@ -240,7 +239,7 @@ void LanternFireFly_update(GameObject* obj) {
     obj->anim.localPosY = state->anchorY + Curve_EvalBSpline(state->controlY, state->splineT, NULL);
     obj->anim.localPosZ = state->anchorZ + Curve_EvalBSpline(state->controlZ, state->splineT, NULL);
 
-    if (LANTERN_FIREFLY_IS_ACTIVE(state)) {
+    if (LANTERN_FIREFLY_IS_FOLLOWING_PLAYER(state)) {
         state->speed = (f32)(0.0015f * Vec_distance((void*)&obj->anim.worldPosX,
                                                     &((GameObject*)Obj_GetPlayerObject())->anim.worldPosX) +
                              0.0001f);
@@ -248,7 +247,7 @@ void LanternFireFly_update(GameObject* obj) {
     state->splineT += state->speed * timeDelta;
 
     if ((state->stateId == LANTERN_FIREFLY_LIGHT_STATE_A || state->stateId == LANTERN_FIREFLY_LIGHT_STATE_B) &&
-        LANTERN_FIREFLY_IS_ACTIVE(state) && state->lightSpawned == 0) {
+        LANTERN_FIREFLY_IS_FOLLOWING_PLAYER(state) && state->lightSpawned == 0) {
         ModelLightStruct* light;
 
         state->lightSpawned = 1;
@@ -264,7 +263,7 @@ void LanternFireFly_update(GameObject* obj) {
             modelLightStruct_setAffectsAabbLightSelection(light, 1);
         }
         state->light = light;
-        if (!LANTERN_FIREFLY_IS_ACTIVE(state)) {
+        if (!LANTERN_FIREFLY_IS_FOLLOWING_PLAYER(state)) {
             sLanternFireFlyLightActive = 1;
         }
     }
@@ -281,7 +280,7 @@ void LanternFireFly_update(GameObject* obj) {
     velocityPtr[1] = velocityPtr[1] * stepScale;
     velocityPtr[2] = velocityPtr[2] * stepScale;
 
-    if (LANTERN_FIREFLY_IS_ACTIVE(state)) {
+    if (LANTERN_FIREFLY_IS_FOLLOWING_PLAYER(state)) {
         Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_pk_lightcritter_lp);
         if ((f32)state->timer > sLanternFireFlyEffectSpawnTimerThreshold) {
             if (state->stateId == LANTERN_FIREFLY_LIGHT_STATE_A || state->stateId == LANTERN_FIREFLY_LIGHT_STATE_B) {
@@ -364,7 +363,7 @@ void LanternFireFly_init(GameObject* obj, LanternFireFlyPlacement* placement) {
     state->anchorZ = placement->base.posZ;
     zeroFlag = 0;
     state->unk6F = zeroFlag;
-    ((LanternFireFlyControlBits*)&state->modeFlags)->motionMode = zeroFlag;
+    state->modeFlags.motionMode = zeroFlag;
 }
 
 void LanternFireFly_release(void) {

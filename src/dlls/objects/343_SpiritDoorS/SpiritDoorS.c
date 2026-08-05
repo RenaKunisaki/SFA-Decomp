@@ -2,8 +2,10 @@
 
 #include "dlls/objects/343_SpiritDoorS.h"
 
+#include "main/gamebits_api.h"
 #include "main/objfx.h"
 #include "main/object_render.h"
+#include "main/objtype.h"
 
 #define SPIRIT_DOOR_SPIRIT_PULSE_TYPE 5
 #define SPIRIT_DOOR_SPIRIT_MAX_ALPHA  0xFF

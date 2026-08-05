@@ -3,9 +3,15 @@
 #include "dlls/objects/335_CFPrisonUnc.h"
 
 #include "main/audio/sfx_ids.h"
+#include "main/dll/player_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
+#include "main/obj_list.h"
+#include "main/obj_message.h"
+#include "main/obj_path.h"
+#include "main/obj_trigger.h"
 #include "main/object_render.h"
+#include "main/objprint_anim_api.h"
 #include "main/objprint_api.h"
 #include "main/objseq.h"
 #include "main/shader_api.h"
@@ -105,7 +111,7 @@ void cfPrisonUncle_update(GameObject* obj) {
         state->companion = NULL;
     }
     if (state->companion == NULL) {
-        objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
+        objects = ObjList_GetObjects(&objectIndex, &objectCount);
         for (index = objectIndex; index < objectCount; index++) {
             if (objects[index]->anim.classId == CFPRISONUNCLE_COMPANION_CLASS_ID) {
                 state->companion = objects[index];

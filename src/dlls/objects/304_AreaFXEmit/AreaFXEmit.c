@@ -272,15 +272,15 @@ void AreaFXEmit_update(GameObject* obj) {
                 ySquared = yDelta * yDelta;
                 distance = sqrtf(ySquared + xDelta * xDelta + zDelta * zDelta);
                 radius = state->triggerRadius;
-                if (distance <= radius || 0.0f == radius) {
-                    if ((state->emitType >= 4) && ((state->lastDistance > radius && (0.0f != radius)))) {
+                if (distance <= radius || radius == 0.0f) {
+                    if ((state->emitType >= 4) && ((state->lastDistance > radius && (radius != 0.0f)))) {
                         AreaFXEmit_emitBurst(obj, AREAFXEMIT_APPROACH_BURST_COUNT);
                     }
                     AreaFXEmit_emitEffect(obj);
                 }
                 obj->userData1 = -state->emitCount;
                 state->lastDistance = distance;
-            } else if ((state->emitCount < 0) && (0 < obj->userData1)) {
+            } else if ((state->emitCount < 0) && (obj->userData1 > 0)) {
                 obj->userData1 = obj->userData1 - framesThisStep;
             }
             break;

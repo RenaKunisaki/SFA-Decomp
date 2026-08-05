@@ -103,13 +103,13 @@ void mutatedEbaPlayMoveSfx(u32 obj, EnemyState* state)
     case 5:
         if (state->animEventMask != 0)
         {
-            Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_rach_bite);
+            Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_baddie_rach_bite);
         }
         break;
     case 6:
         if (state->animEventMask != 0)
         {
-            Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_rach_bite);
+            Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_baddie_rach_bite);
         }
         break;
     case 7:
@@ -117,11 +117,11 @@ void mutatedEbaPlayMoveSfx(u32 obj, EnemyState* state)
         {
             if (((GameObject*)obj)->anim.currentMoveProgress < 0.15f)
             {
-                Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_rach_bite);
+                Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_baddie_rach_bite);
             }
             else
             {
-                Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_kooshy_death);
+                Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_baddie_kooshy_death);
             }
         }
         break;
@@ -130,15 +130,15 @@ void mutatedEbaPlayMoveSfx(u32 obj, EnemyState* state)
         {
             if (((GameObject*)obj)->anim.currentMoveProgress < 0.25f)
             {
-                Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_kooshy_hit);
+                Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_baddie_kooshy_hit);
             }
             else if (((GameObject*)obj)->anim.currentMoveProgress < 0.75f)
             {
-                Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_rach_call1);
+                Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_baddie_rach_call1);
             }
             else
             {
-                Sfx_PlayFromObject((GameObject*)(u32)obj, SFXTRIG_baddie_kooshy_death);
+                Sfx_PlayFromObject((GameObject*)obj, SFXTRIG_baddie_kooshy_death);
             }
         }
         break;
@@ -191,7 +191,7 @@ void mutatedEbaUpdateEngaged(u32 obj, int state)
     if ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0)
     {
         ((EnemyState*)state)->userData1 += 1;
-        if (10 < ((EnemyState*)state)->userData1)
+        if (((EnemyState*)state)->userData1 > 10)
         {
             ((EnemyState*)state)->userData1 = 3;
         }

@@ -1,8 +1,11 @@
 #include "dlls/objects/369_IMSpaceRing.h"
 
 #include "main/frame_timing.h"
+#include "main/obj_list.h"
 #include "main/object_render.h"
+#include "main/vecmath.h"
 #include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 #define IM_SPACE_RING_GENERATOR_SEQUENCE_ID_A 0x164
 #define IM_SPACE_RING_GENERATOR_SEQUENCE_ID_B 0x168
@@ -45,7 +48,7 @@ void imSpaceRingGenerator_update(GameObject* obj) {
     placement = obj->anim.placement;
     state = obj->extra;
     if (state->ringA == NULL || state->ringB == NULL) {
-        GameObject** objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
+        GameObject** objects = ObjList_GetObjects(&objectIndex, &objectCount);
 
         for (objectIndex = 0; objectIndex < objectCount; objectIndex++) {
             GameObject* candidate = objects[objectIndex];

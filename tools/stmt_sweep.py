@@ -78,6 +78,7 @@ from ndiff import normalize
 from brute_match import (
     REPO,
     TYPE_TOKENS,
+    fuzzy_measure,
     collect_decl_blocks,
     find_function_body,
     find_objdump,
@@ -773,20 +774,17 @@ def main():
 
     write, keep = install_restore_guard(src_file, original)
 
-    import unitfuzzy
+    # ONE measurement, shared with the declaration sweeper.  This was a
+    # verbatim copy of `brute_match.fuzzy_measure`, INCLUDING the unguarded
+    # `f["fuzzy_match_percent"]` -- objdiff omits that key at 0.0, so a probe
+    # that zeroed the function raised KeyError straight out of the sweep loop
+    # and killed the run, and a sweep that dies part-way reads exactly like a
+    # sweep that finished and found nothing.  The copy in brute_match was
+    # fixed; this one was not, because the fix was made where the defect was
+    # noticed rather than everywhere the code had been pasted.
 
     def fuzzy():
-        for attempt in range(3):
-            try:
-                u = unitfuzzy.measure(unit, args.version)
-            except Exception:
-                time.sleep(0.3 * (attempt + 1))
-                continue
-            for f in (u.get("functions") or []):
-                if f["name"] == args.symbol:
-                    return float(f["fuzzy_match_percent"])
-            return -1.0
-        return -1.0
+        return fuzzy_measure(unit, args.symbol, args.version)
 
     t_norm = objdump_norm(objdump, tgt_o, args.symbol)
 

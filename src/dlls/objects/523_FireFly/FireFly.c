@@ -335,7 +335,7 @@ void firefly_update(GameObject* obj)
 
     state = obj->extra;
     def = (FireFlyMapData*)obj->anim.placement;
-    while (ObjMsg_Pop((void*)obj, (u32*)msg, NULL, NULL) != 0)
+    while (ObjMsg_Pop(obj, (u32*)msg, NULL, NULL) != 0)
     {
         switch (msg[0])
         {
@@ -352,15 +352,15 @@ void firefly_update(GameObject* obj)
         }
     }
 
-    if (((FireFlyActiveBits*)&state->activeFlags)->active == 0)
+    if (state->activeFlags.active == 0)
     {
         isActive = 0;
         if ((def->requiredGameBit == -1) || (mainGetBit(def->requiredGameBit) != 0))
         {
             isActive = 1;
         }
-        ((FireFlyActiveBits*)&state->activeFlags)->active = isActive;
-        if (((FireFlyActiveBits*)&state->activeFlags)->active != 0)
+        state->activeFlags.active = isActive;
+        if (state->activeFlags.active != 0)
         {
             state->light = modelLightStruct_createPointLight((void*)obj, 100, 0xFF, 100, 0);
         }

@@ -5,6 +5,7 @@
 #include "main/frame_timing.h"
 #include "main/lightmap_api.h"
 #include "main/lightmap_text_color_api.h"
+#include "string.h"
 #include "track/intersect_render_setup_api.h"
 #include "track/intersect_geom_api.h"
 #include "main/shader_api.h"
@@ -87,7 +88,7 @@ STATIC_ASSERT(offsetof(PartfxEffectState, activeVertexBufferIndex) == 0x130);
 STATIC_ASSERT(offsetof(PartfxEffectState, emitterCount) == 0x139);
 STATIC_ASSERT(offsetof(PartfxEffectState, textureIsBorrowed) == 0x13F);
 
-u8 gModgfxSpawnContextStorage[0x60];
+ModgfxSpawnContext gModgfxSpawnContext;
 ModgfxPendingSpawn gModgfxPendingSpawnQueue[0x300 / sizeof(ModgfxPendingSpawn)];
 void partfx_freeEffectsBySequence(s16 a, int b);
 #define MODGFX_ZERO 0.0f
@@ -96,7 +97,6 @@ void partfx_freeEffectsBySequence(s16 a, int b);
 s16 dll_0B_spawnEffect(ModgfxSpawnContext* context, int unused, int vertexCount, s16* vertexData, int colorCount,
                        s16* colorData, int textureAssetId, void* textureResource);
 
-#define gModgfxSpawnContext (*(ModgfxSpawnContext*)gModgfxSpawnContextStorage)
 s16 dll_0B_getLastSpawnHandle(void)
 {
     return gModgfxLastSpawnHandle;
@@ -144,9 +144,7 @@ void dll_0B_setSequenceParams(void* params)
 
 void dll_0B_setSequenceParamValue(s16 value)
 {
-    u8* state = gModgfxSpawnContextStorage;
-    state = state + gModgfxSequenceParamIndex * 2;
-    *(s16*)(state + 0x46) = value;
+    gModgfxSpawnContext.sequenceParams[gModgfxSequenceParamIndex] = value;
 }
 
 void dll_0B_setSequenceParamIndex(s16 x)
@@ -1215,7 +1213,7 @@ void dll_0B_updateActiveEffects(void)
                         ((ObjPlacement*)o)->posX = tmpl.posX;
                         ((ObjPlacement*)o)->posY = tmpl.posY;
                         ((ObjPlacement*)o)->posZ = tmpl.posZ;
-                        *(int*)eff = (int)objSetupObject((ObjPlacement*)o, 5, -1, -1, NULL);
+                        *eff = (int)objSetupObject((ObjPlacement*)o, 5, -1, -1, NULL);
                         ((PartfxEffectState*)eff)->instanceObject->userData2 = 1;
                     }
                     else if (*(void**)eff != NULL)
@@ -1245,7 +1243,7 @@ void dll_0B_updateActiveEffects(void)
                             if (*(s16*)((char*)list + 0x44) == (int)((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->posX)
                             {
                                 Obj_FreeObject((GameObject*)o);
-                                *(int*)eff = 0;
+                                *eff = 0;
                                 ((ModgfxPendingSpawn*)(PENDING_SPAWNS + emIdx * 0x18))->modelOrResource ^= 0x10000000;
                                 if (((ModgfxPendingSpawn*)(PENDING_SPAWNS + emIdx * 0x18))->posZ >= MODGFX_ZERO &&
                                     (int*)((PartfxEffectState*)eff)->sourceObject != NULL)
@@ -1308,7 +1306,7 @@ void dll_0B_updateActiveEffects(void)
                     else
                     {
                         Sfx_PlayFromObject((GameObject*)((PartfxEffectState*)eff)->sourceObject,
-                                           (u16) * (s16*)(PENDING_SPAWNS + emOff + 0x14));
+                                           (u16)((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->param14);
                     }
                 }
                 if (((ModgfxPendingSpawn*)(PENDING_SPAWNS + emOff))->modelOrResource & 0x100000)
@@ -1577,7 +1575,7 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* context, int unused, int vertexCount,
             int bias;
             u8* dstc;
 
-            dstc = *(u8**)((u8*)arr[slot] + 0x84 + off);
+            dstc = (u8*)((PartfxEffectState*)((u8*)arr[slot] + off))->colorBuffers[0];
             bias = 0;
             j = 0;
             sd = colorData;
@@ -1616,7 +1614,7 @@ s16 dll_0B_spawnEffect(ModgfxSpawnContext* context, int unused, int vertexCount,
             int j;
             s16* sb;
             u8* dstv;
-            dstv = *(u8**)((u8*)arr[slot] + 0x78 + off);
+            dstv = (u8*)((PartfxEffectState*)((u8*)arr[slot] + off))->vertexBuffers[0];
             sb = vertexData;
             for (j = 0; j < vertexCount; j++)
             {

@@ -332,12 +332,12 @@ f32 lbl_80310410[70] = {
 };
 
 void boneParticleEffect_spawnAtBones(GameObject* obj, int effectId, void* extraArg, u8 prob, short* src) {
-    void* model;
+    ObjModel* model;
     int i;
     PartFxSpawnParams data;
 
     model = Obj_GetActiveModel(obj);
-    for (i = 0; i < ((ObjModel*)model)->file->jointCount; i++) {
+    for (i = 0; i < model->file->jointCount; i++) {
         if (randomGetRange(1, 0x64) <= prob) {
             MtxPtr mtx;
             data.posX = (0.0f);
@@ -347,7 +347,7 @@ void boneParticleEffect_spawnAtBones(GameObject* obj, int effectId, void* extraA
             data.unk4 = 0;
             data.unk2 = 0;
             data.unk0 = 0;
-            mtx = (MtxPtr)ObjModel_GetJointMatrix(model, i);
+            mtx = (MtxPtr)ObjModel_GetJointMatrix((u8*)model, i);
             PSMTXMultVec(mtx, &data.pos, &data.pos);
             data.posX = data.posX - (obj)->anim.worldPosX;
             data.posY = data.posY - (obj)->anim.worldPosY;

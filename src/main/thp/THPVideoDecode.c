@@ -43,7 +43,7 @@ static void AttractMovieVideo_Decode(void* param) {
     AttractMoviePlayer* player;
     char* db;
     AttractMoviePlayer* player2;
-    void** readMsg;
+    AttractMovieTextureSet* readMsg;
     u8* componentKind;
     u32 i;
     u32* compSizes;
@@ -64,9 +64,9 @@ static void AttractMovieVideo_Decode(void* param) {
     while (i < player->compInfo.mNumComponents) {
         switch (componentKind[0x70]) {
         case THP_COMPONENT_VIDEO: {
-            s32 dec = THPVideoDecode(dvdData, ((AttractMovieTextureSet*)readMsg)->yTexture,
-                                     ((AttractMovieTextureSet*)readMsg)->uTexture,
-                                     ((AttractMovieTextureSet*)readMsg)->vTexture, player2->thpWorkArea);
+            s32 dec = THPVideoDecode(dvdData, readMsg->yTexture,
+                                     readMsg->uTexture,
+                                     readMsg->vTexture, player2->thpWorkArea);
             player2->videoError = dec;
             if (dec != 0) {
                 if (gPicMenuVideoDecodePrepareReady != 0) {
@@ -75,7 +75,7 @@ static void AttractMovieVideo_Decode(void* param) {
                 }
                 OSSuspendThread((OSThread*)(db + 0x1058));
             }
-            ((AttractMovieTextureSet*)readMsg)->frameNumber = ((AttractMovieReadBuffer*)param)->frameNumber;
+            readMsg->frameNumber = ((AttractMovieReadBuffer*)param)->frameNumber;
             OSSendMessage((OSMessageQueue*)(db + 0x18), (OSMessage)readMsg, OS_MESSAGE_BLOCK);
             {
                 u32 intr = OSDisableInterrupts();

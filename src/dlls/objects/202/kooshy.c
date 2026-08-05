@@ -100,7 +100,7 @@ u8 gMagicPlantSeqEntryTable[8] = {1, 1, 3, 2, 0, 0, 0, 0};
 void kooshy_spawnProjectile(GameObject* obj, int state)
 {
     ObjPlacement* fx;
-    int newObj;
+    GameObject* newObj;
 
     if ((u8)Obj_IsLoadingLocked() != 0)
     {
@@ -112,20 +112,20 @@ void kooshy_spawnProjectile(GameObject* obj, int state)
         fx->color[1] = 1;
         fx->color[2] = 0xff;
         fx->color[3] = 0xff;
-        newObj = (int)objSetupObject(fx, 5, -1, -1, 0);
+        newObj = objSetupObject(fx, 5, -1, -1, 0);
         if ((void*)newObj != NULL)
         {
-            ((GameObject*)newObj)->anim.velocityX =
+            newObj->anim.velocityX =
                 0.02f * (((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosX - fx->posX);
             {
-                ((GameObject*)newObj)->anim.velocityY =
+                newObj->anim.velocityY =
                     0.02f * ((14.0f + ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosY +
                               (f32)(s32)randomGetRange(-10, 10)) -
                              fx->posY);
-                ((GameObject*)newObj)->anim.velocityZ =
+                newObj->anim.velocityZ =
                     0.02f * (((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosZ - fx->posZ);
             }
-            ((GameObject*)newObj)->ownerObj = (void*)obj;
+            newObj->ownerObj = (void*)obj;
         }
         Sfx_PlayFromObject(obj, SFXTRIG_baddie_blooplaugh2);
     }

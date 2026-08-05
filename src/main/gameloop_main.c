@@ -753,19 +753,19 @@ static void gameLoop(void) {
     if (gameState == GAME_STATE_RUNNING) {
         if (gGameLoopButtonObjectCount != 0) {
             if (screenBlankFrameCount == 0) {
-                GameObject** p;
+                GameObject** objectCursor;
                 int i;
 
                 drawRect(0.0f, 0.0f, 0x280, 0x1e0);
                 i = 0;
-                p = gGameLoopButtonObjects;
+                objectCursor = gGameLoopButtonObjects;
                 for (; i < gGameLoopButtonObjectCount; i++) {
-                    objRenderModelAndHitVolumes(*p, 0, 0, 0, 0, 1.0f);
-                    if ((*p)->anim.romDefNo == GAMELOOP_SEQID_DIE_FOX ||
-                        (*p)->anim.romDefNo == GAMELOOP_SEQID_DIE_KRYSTAL) {
-                        objRenderFuzz((int*)*p);
+                    objRenderModelAndHitVolumes(*objectCursor, 0, 0, 0, 0, 1.0f);
+                    if ((*objectCursor)->anim.romDefNo == GAMELOOP_SEQID_DIE_FOX ||
+                        (*objectCursor)->anim.romDefNo == GAMELOOP_SEQID_DIE_KRYSTAL) {
+                        objRenderFuzz(*objectCursor);
                     }
-                    p++;
+                    objectCursor++;
                 }
                 curUiDllDraw(0, 0, 0, 0);
             }

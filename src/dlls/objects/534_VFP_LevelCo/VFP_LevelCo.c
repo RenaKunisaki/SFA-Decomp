@@ -14,12 +14,18 @@
  *    "sequence done" bit when all four are set;
  *  - two music latches driven through GameBitLatch_Update.
  */
+#include "main/audio/music_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
+#include "main/lightmap_api.h"
 #include "main/mapEventTypes.h"
+#include "main/map_load.h"
+#include "main/objtype.h"
+#include "main/rcp_dolphin_api.h"
 #include "main/render_envfx_api.h"
 #include "dlls/objects/430_SH_LevelCon.h"
 #include "main/sky_api.h"
+#include "sys/objects.h"
 #include "main/dll/VF/dll_0216_vfplevelcontrol.h"
 
 int gVfpLevelControlTimer = 0x82;
@@ -124,7 +130,7 @@ void VFP_LevelControl_hitDetect(void)
 void VFP_LevelControl_update(GameObject* obj)
 {
     VfpLevelControlState* state = (obj)->extra;
-    GameObject* player = (GameObject*)Obj_GetPlayerObject();
+    GameObject* player = Obj_GetPlayerObject();
     u8 mapEventState;
 
     if ((obj)->userData1 == 0 && mainGetBit(GAMEBIT_VFP_EnvironmentRelated0EF6) == 0u)

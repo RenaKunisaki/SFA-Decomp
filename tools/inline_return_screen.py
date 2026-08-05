@@ -52,23 +52,25 @@ def edges(ins):
         else: cb += 1
     return ub, cb
 
-rows = []
-for ro in glob.glob('build/GSAE01/obj/**/*.o', recursive=True):
-    co = ro.replace('build/GSAE01/obj/', 'build/GSAE01/src/', 1)
-    if not os.path.exists(co): continue
-    T, C = parse(ro), parse(co)
-    if not T or not C: continue
-    unit = ro[len('build/GSAE01/obj/'):-2]
-    for name, ti in T.items():
-        ci = C.get(name)
-        if not ci: continue
-        if [x[1] for x in ti] == [x[1] for x in ci]: continue   # byte-identical
-        tub, tcb = edges(ti); cub, ccb = edges(ci)
-        ub, cb = tub - cub, ccb - tcb
-        if ub > 0 or cb > 0:
-            rows.append((ub, cb, len(ci) - len(ti), len(ti), unit, name))
-rows.sort(key=lambda r: (-(r[0] + r[1]), -abs(r[2])))
-print("%3s %3s %5s %6s  %-42s %s" % ("ub", "cb", "dlen", "size", "unit", "function"))
-for r in rows:
-    print("%3d %3d %5d %6d  %-42s %s" % (r[0], r[1], r[2], r[3], r[4], r[5]))
-print("\n-- %d candidate functions" % len(rows))
+
+if __name__ == "__main__":
+    rows = []
+    for ro in glob.glob('build/GSAE01/obj/**/*.o', recursive=True):
+        co = ro.replace('build/GSAE01/obj/', 'build/GSAE01/src/', 1)
+        if not os.path.exists(co): continue
+        T, C = parse(ro), parse(co)
+        if not T or not C: continue
+        unit = ro[len('build/GSAE01/obj/'):-2]
+        for name, ti in T.items():
+            ci = C.get(name)
+            if not ci: continue
+            if [x[1] for x in ti] == [x[1] for x in ci]: continue   # byte-identical
+            tub, tcb = edges(ti); cub, ccb = edges(ci)
+            ub, cb = tub - cub, ccb - tcb
+            if ub > 0 or cb > 0:
+                rows.append((ub, cb, len(ci) - len(ti), len(ti), unit, name))
+    rows.sort(key=lambda r: (-(r[0] + r[1]), -abs(r[2])))
+    print("%3s %3s %5s %6s  %-42s %s" % ("ub", "cb", "dlen", "size", "unit", "function"))
+    for r in rows:
+        print("%3d %3d %5d %6d  %-42s %s" % (r[0], r[1], r[2], r[3], r[4], r[5]))
+    print("\n-- %d candidate functions" % len(rows))

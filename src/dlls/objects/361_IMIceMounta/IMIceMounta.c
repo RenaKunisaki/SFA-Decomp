@@ -1,13 +1,17 @@
 /* Ice Mountain event and world-map controller. */
 #include "dlls/objects/361_IMIceMounta.h"
 
+#include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/dll/cloudaction_interface.h"
 #include "main/dll/dll_0011_screens.h"
 #include "main/dll/player_api.h"
 #include "main/frame_timing.h"
 #include "main/game_ui_interface.h"
+#include "main/gametext_color_api.h"
+#include "main/gametext_show_api.h"
 #include "main/mapEventTypes.h"
+#include "main/map_load.h"
 #include "main/objseq.h"
 #include "main/object_render.h"
 #include "main/pi_dolphin_api.h"

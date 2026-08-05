@@ -169,7 +169,7 @@ void CurveFish_update(GameObject* obj) {
             state->animStep = (CURVEFISH_FAST_ANIM_STEP * state->speed) / state->maxSpeed;
         }
 
-        if (0.0f != state->speed) {
+        if (state->speed != 0.0f) {
             travelDistanceSq = state->speed * timeDelta;
             travelDistanceSq *= travelDistanceSq;
             distanceSq = getXZDistanceSquared(&state->route.posX, &obj->anim.localPosX);

@@ -28,7 +28,7 @@ void dll_59_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* s
     ModgfxSpawnPacket packet;
     u8* resource = (u8*)(int)gDll59EffectResourceData;
     GfxCmd* commands = packet.entries;
-    int sourceContext;
+    GameObject* sourceContext;
     f32 one;
     f32 zero;
     commands[0].layer = 1;
@@ -95,8 +95,8 @@ void dll_59_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* s
     commands[8].y = 2.0f;
     commands[8].z = 2.0f;
     packet.v58 = 0;
-    sourceContext = (int)sourceObj;
-    packet.ctx = sourceContext;
+    sourceContext = sourceObj;
+    packet.ctx = (int)sourceContext;
     packet.v44 = variant;
     packet.pos[0] = zero;
     packet.pos[1] = 135.0f;
@@ -123,9 +123,9 @@ void dll_59_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* s
     packet.flags |= spawnFlags;
     if ((packet.flags & 1) != 0) {
         if ((void*)sourceContext != NULL) {
-            packet.pos[0] = zero + ((GameObject*)sourceContext)->anim.worldPosX;
-            packet.pos[1] = 135.0f + ((GameObject*)sourceContext)->anim.worldPosY;
-            packet.pos[2] = zero + ((GameObject*)sourceContext)->anim.worldPosZ;
+            packet.pos[0] = zero + sourceContext->anim.worldPosX;
+            packet.pos[1] = 135.0f + sourceContext->anim.worldPosY;
+            packet.pos[2] = zero + sourceContext->anim.worldPosZ;
         } else {
             packet.pos[0] = zero + spawnParams->posX;
             packet.pos[1] = 135.0f + spawnParams->posY;

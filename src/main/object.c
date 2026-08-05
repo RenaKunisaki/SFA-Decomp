@@ -447,9 +447,9 @@ void Obj_Shatter(GameObject* obj)
     (*gBoneParticleEffectInterface)->spawnEffect(obj, 0x7fc, NULL, 0x32, NULL);
 }
 
-int objIsFrozen(u8* obj)
+int objIsFrozen(GameObject* obj)
 {
-    return ((GameObject*)obj)->colorFadeFlags & OBJ_COLOR_FADE_FLAG_FROZEN;
+    return obj->colorFadeFlags & OBJ_COLOR_FADE_FLAG_FROZEN;
 }
 
 void Obj_StartModelFadeIn(GameObject* obj, int frames)
@@ -828,7 +828,7 @@ void mapSetupPlayer(void)
     u8* base;
     int playerNo;
     int mapType;
-    u8* obj;
+    GameObject* obj;
     SaveGameCharacterPosition* pos;
     f32 x, y, z;
     int uiDll;
@@ -877,7 +877,7 @@ void mapSetupPlayer(void)
                 if (obj != 0)
                 {
                     Obj_RegisterObject((GameObject*)obj, 1);
-                    OSReport((char*)(base + 0x5c), ((GameObject*)obj)->anim.modelInstance->name);
+                    OSReport((char*)(base + 0x5c), obj->anim.modelInstance->name);
                 }
             }
         }
@@ -933,7 +933,7 @@ static void objFreeObjdef(u8* obj, int flag)
     int j;
     int n;
     int count;
-    u8* otherObj;
+    GameObject* otherObj;
     int* bp;
     void* curTex;
     void* tex;
@@ -954,7 +954,7 @@ static void objFreeObjdef(u8* obj, int flag)
     default:
         if (((GameObject*)obj)->anim.dll != NULL)
         {
-            fp = *(void (**)(u8*, int))((char*)*((GameObject*)obj)->anim.dll + 0x14);
+            fp = (void (*)(u8*, int))((ObjectInterface*)*((GameObject*)obj)->anim.dll)->free;
             if (fp != NULL)
             {
                 fp(obj, flag);
@@ -974,11 +974,11 @@ static void objFreeObjdef(u8* obj, int flag)
             count = 0;
             for (i = 0; i < gObjCount; i++)
             {
-                otherObj = (u8*)gObjList[i];
-                if (*(int*)&((GameObject*)otherObj)->anim.parent == (int)obj)
+                otherObj = gObjList[i];
+                if (*(int*)&otherObj->anim.parent == (int)obj)
                 {
-                    *(int*)&((GameObject*)otherObj)->anim.parent = 0;
-                    if (*(void**)&((GameObject*)otherObj)->anim.placementData != NULL)
+                    *(int*)&otherObj->anim.parent = 0;
+                    if (*(void**)&otherObj->anim.placementData != NULL)
                     {
                         defs[count++] = (int)otherObj;
                     }
@@ -995,10 +995,10 @@ static void objFreeObjdef(u8* obj, int flag)
     {
         for (i = 0; i < gObjCount; i++)
         {
-            otherObj = (u8*)gObjList[i];
-            if (*(int*)&((GameObject*)otherObj)->pendingParentObj == (int)obj)
+            otherObj = gObjList[i];
+            if (*(int*)&otherObj->pendingParentObj == (int)obj)
             {
-                *(int*)&((GameObject*)otherObj)->pendingParentObj = 0;
+                *(int*)&otherObj->pendingParentObj = 0;
             }
         }
     }
@@ -1050,10 +1050,10 @@ static void objFreeObjdef(u8* obj, int flag)
             mm_free(shadowMesh);
         }
     }
-    if (*(void**)&((GameObject*)obj)->unkDC != NULL)
+    if (*(void**)&((GameObject*)obj)->msgQueue != NULL)
     {
-        mm_free(((GameObject*)obj)->unkDC);
-        *(int*)&((GameObject*)obj)->unkDC = 0;
+        mm_free(((GameObject*)obj)->msgQueue);
+        *(int*)&((GameObject*)obj)->msgQueue = 0;
     }
     modelCount = ((ObjAnimComponent*)obj)->modelInstance->modelCount;
     for (j = 0; j < modelCount; j++)
@@ -1098,14 +1098,14 @@ static void objFreeObjdef(u8* obj, int flag)
             refCounts[type]--;
             if (gObjFileRefCount[type] == 0)
             {
-                otherObj = gObjFileBufferTable[type];
-                if (*(void**)&((GameObject*)otherObj)->anim.parent != NULL)
+                otherObj = (GameObject*)gObjFileBufferTable[type];
+                if (*(void**)&otherObj->anim.parent != NULL)
                 {
-                    mm_free(((GameObject*)otherObj)->anim.parent);
+                    mm_free(otherObj->anim.parent);
                 }
-                if (*(void**)(otherObj + 0x34) != NULL)
+                if (*(void**)((u8*)otherObj + 0x34) != NULL)
                 {
-                    mm_free(*(void**)(otherObj + 0x34));
+                    mm_free(*(void**)((u8*)otherObj + 0x34));
                 }
                 mm_free(otherObj);
             }
@@ -1174,7 +1174,7 @@ u8* loadObjectFile(int id)
     extern int loadModLines(int idx, s16* outCount);
     int size;
     int base;
-    u8* buf;
+    ObjDef* buf;
     int n;
     s16 modLine;
 
@@ -1192,55 +1192,56 @@ u8* loadObjectFile(int id)
         base = offsets[id];
         size = (&offsets[id])[1] - base;
     }
-    buf = mmAlloc(size, 0xe, 0);
+    buf = (ObjDef*)mmAlloc(size, 0xe, 0);
     if (buf != 0)
     {
-        fileLoadToBufferOffset(MLDF_FILEID_OBJECTS_BIN, buf, base, size);
-        if (*(void**)(buf + 0x20) != 0)
+        fileLoadToBufferOffset(MLDF_FILEID_OBJECTS_BIN, (u8*)buf, base, size);
+        if (buf->eventMoveTable != NULL)
         {
-            *(int*)(buf + 0x20) = (int)buf + *(int*)(buf + 0x20);
+            buf->eventMoveTable = (s16*)((int)buf + (int)buf->eventMoveTable);
         }
-        if (*(void**)(buf + 0x24) != 0)
+        if (buf->hitReactMoveTable != NULL)
         {
-            *(int*)(buf + 0x24) = (int)buf + *(int*)(buf + 0x24);
+            buf->hitReactMoveTable =
+                (ObjHitReactMoveEntry*)((int)buf + (int)buf->hitReactMoveTable);
         }
-        if (*(void**)(buf + 0x28) != 0)
+        if (buf->weaponDaTable != NULL)
         {
-            *(int*)(buf + 0x28) = (int)buf + *(int*)(buf + 0x28);
+            buf->weaponDaTable = (s16*)((int)buf + (int)buf->weaponDaTable);
         }
-        *(int*)(buf + 8) = (int)buf + *(int*)(buf + 8);
-        *(int*)(buf + 0xc) = (int)buf + *(int*)(buf + 0xc);
-        *(int*)(buf + 0x10) = (int)buf + *(int*)(buf + 0x10);
-        if (*(void**)(buf + 0x18) != 0)
+        buf->modelFileIds = (s32*)((int)buf + (int)buf->modelFileIds);
+        buf->textureSlotDefs = (ObjTextureSlotDef*)((int)buf + (int)buf->textureSlotDefs);
+        buf->jointData = (s8*)((int)buf + (int)buf->jointData);
+        if (buf->extraSetupData != NULL)
         {
-            *(int*)(buf + 0x18) = (int)buf + *(int*)(buf + 0x18);
+            buf->extraSetupData = (u8*)((int)buf + (int)buf->extraSetupData);
         }
-        if (*(void**)(buf + 0x40) != 0)
+        if (buf->hitVolumes != NULL)
         {
-            *(int*)(buf + 0x40) = (int)buf + *(int*)(buf + 0x40);
+            buf->hitVolumes = (ObjDefHitVolume*)((int)buf + (int)buf->hitVolumes);
         }
-        if (*(void**)(buf + 0x1c) != 0)
+        if (buf->sequenceMap != NULL)
         {
-            *(int*)(buf + 0x1c) = (int)buf + *(int*)(buf + 0x1c);
+            buf->sequenceMap = (s16*)((int)buf + (int)buf->sequenceMap);
         }
-        *(int*)(buf + 0x2c) = (int)buf + *(int*)(buf + 0x2c);
-        *(int*)(buf + 0x30) = 0;
-        *(int*)(buf + 0x34) = 0;
-        n = (s8)buf[0x5d];
+        buf->attachPoints = (ObjAttachPoint*)((int)buf + (int)buf->attachPoints);
+        buf->modLines = NULL;
+        buf->intersectionLines = NULL;
+        n = (s8)((u8*)buf)[0x5d];
         if (n > -1)
         {
-            *(int*)(buf + 0x30) = loadModLines(n, &modLine);
-            *(u8*)(buf + 0x5c) = modLine;
+            buf->modLines = (struct MapHitLine*)loadModLines(n, &modLine);
+            buf->modLineCount = modLine;
             intersectModLineBuild((IntersectModLineObject*)buf);
         }
-        gObjFileBufferTable[id] = buf;
+        gObjFileBufferTable[id] = (u8*)buf;
         gObjFileRefCount[id] = 1;
     }
     else
     {
         return 0;
     }
-    return buf;
+    return (u8*)buf;
 }
 
 void objGetWeaponDa(u8* obj, int objType, ObjWeaponDaTable* weaponDaTable, int key, u8 load)
@@ -1343,7 +1344,7 @@ void Obj_UpdateObject(GameObject* obj)
         case OBJECT_SEQID_DIE_DUSTER:
         case OBJECT_SEQID_DIE_FOX:
         case OBJECT_SEQID_DIE_KRYSTAL:
-            cb2 = (void (*)(GameObject*)) * (int*)((u8*)*object->dll + 8);
+            cb2 = (void (*)(GameObject*))((ObjectInterface*)*object->dll)->update;
             cb2(obj);
             break;
         }
@@ -1417,14 +1418,14 @@ void Obj_UpdateObject(GameObject* obj)
                 {
                     continue;
                 }
-                cb2 = (void (*)(GameObject*)) * (int*)((u8*)*object->dll + 8);
+                cb2 = (void (*)(GameObject*))((ObjectInterface*)*object->dll)->update;
                 if (cb2 != 0)
                 {
                     cb2(obj);
                 }
                 break;
             }
-            Obj_GetWorldPosition((GameObject*)obj, &object->worldPosX, &object->worldPosY, &object->worldPosZ);
+            Obj_GetWorldPosition(obj, &object->worldPosX, &object->worldPosY, &object->worldPosZ);
         } while (0);
     }
     if (object->hitReactState != NULL)
@@ -1624,12 +1625,12 @@ void modelInitBones(f32 scale, void* model)
     int off;
     int boneOff;
     f32* sumP;
-    u8* hdr;
+    ModelFileHeader* hdr;
     ModelJointWork* tbl;
     int i;
     int parent;
     f32* src;
-    u8* bone;
+    ModelBone* bone;
     f32 zero;
     f32 sc;
     f32 w;
@@ -1640,16 +1641,16 @@ void modelInitBones(f32 scale, void* model)
     f32 v;
     f32 pv;
     f32 sums[152];
-    u8* m = model;
+    ObjModel* m = model;
 
     sc = scale;
-    hdr = *(u8**)m;
-    if ((!((ModelFileHeader*)hdr)->flags & 0x1000) || (((ModelFileHeader*)hdr)->jointCount == 0))
+    hdr = (ModelFileHeader*)*(u8**)m;
+    if ((!hdr->flags & 0x1000) || (hdr->jointCount == 0))
     {
         return;
     }
     {
-        if ((src = (f32*)((ModelFileHeader*)hdr)->unk18) != NULL && (tbl = ((ObjModel*)m)->jointWorkspace) != NULL)
+        if ((src = (f32*)hdr->unk18) != NULL && (tbl = m->jointWorkspace) != NULL)
         {
             zero = 0.0f;
             tbl->radii[0] = src[0] * sc;
@@ -1666,15 +1667,15 @@ void modelInitBones(f32 scale, void* model)
             off = 4;
             boneOff = 0x1c;
             sumP = &sums[1];
-            for (; i < ((ObjModel*)m)->file->jointCount; srcP++, off += 4, boneOff += 0x1c, sumP++, i++)
+            for (; i < m->file->jointCount; srcP++, off += 4, boneOff += 0x1c, sumP++, i++)
             {
                 *(f32*)((u8*)tbl->radii + off) = sc * *srcP;
                 *(f32*)((u8*)tbl->radiiSq + off) = *(f32*)((u8*)tbl->radii + off) * *(f32*)((u8*)tbl->radii + off);
-                bone = ((ModelFileHeader*)hdr)->jointData + boneOff;
-                parent = *(s8*)bone;
-                vx = *(f32*)(bone + 4);
-                vy = *(f32*)(bone + 8);
-                vz = *(f32*)(bone + 0xc);
+                bone = (ModelBone*)(hdr->jointData + boneOff);
+                parent = bone->parent;
+                vx = bone->head[0];
+                vy = bone->head[1];
+                vz = bone->head[2];
                 len = sqrtf(vx * vx + vy * vy + vz * vz);
                 *(f32*)((u8*)tbl->boneLengths + off) = sc * len;
                 v = *(f32*)((u8*)tbl->boneLengths + off);
@@ -1682,7 +1683,7 @@ void modelInitBones(f32 scale, void* model)
                 {
                     *(f32*)((u8*)tbl->boneLengths + off) = 0.1f;
                 }
-                w = *(f32*)(((ModelFileHeader*)hdr)->unk1C + off);
+                w = *(f32*)(hdr->unk1C + off);
                 if (w >= 1.0f)
                 {
                     *(f32*)((u8*)tbl->boneLengths + off) *= w;
@@ -1892,7 +1893,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
     u16 modelFlags;
     u8 renderFlags;
     f32 max;
-    s16 seq2;
+    s16 seq2[1];
     u32 cullScale;
     int size;
     int dllStateSize;
@@ -1950,9 +1951,9 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
     tmpl.f36 = 0xff;
     tmpl.fdc = 0;
     tmpl.ff1 = 0xff;
-    tmpl.f3c = (f32)(int)(((u8*)data)[6] << 3);
-    tmpl.f40 = (f32)(int)(((u8*)data)[7] << 3);
-    n = (((u8*)data)[5] & 0x18) >> 3;
+    tmpl.f3c = (f32)(int)(((ObjPlacement*)data)->loadRange << 3);
+    tmpl.f40 = (f32)(int)(((ObjPlacement*)data)->unk07 << 3);
+    n = (((ObjPlacement*)data)->mapActFlagsHi & 0x18) >> 3;
     tmpl.ff2 = n;
     if (n == 0)
     {
@@ -2131,12 +2132,12 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
     }
     if ((loadFlags & OBJLOAD_FLAG_ANIM_EVENTS) || (((ObjModelInstance*)obj->def)->flags & 0x400000))
     {
-        seq2 = obj->romDefNo;
+        seq2[0] = obj->romDefNo;
         alignedCursor = roundUpTo4(cursor);
         obj->objAnimEventTable = (ObjAnimEventTable*)alignedCursor;
         cursor = roundUpTo8(alignedCursor + 8);
         obj->objAnimEventTable->entries = (s16*)cursor;
-        ObjAnim_LoadMoveEvents((u8*)obj, seq2, obj->objAnimEventTable, 0, 1);
+        ObjAnim_LoadMoveEvents((u8*)obj, seq2[0], obj->objAnimEventTable, 0, 1);
         cursor += 0x50;
     }
     if (!(loadFlags & OBJLOAD_FLAG_WEAPON_DA) || *(void**)obj->models == NULL)
@@ -2285,7 +2286,7 @@ GameObject* ObjList_FindObjectById(u32 objectId)
     return NULL;
 }
 
-void* ObjList_GetObjects(int* outA, int* outB)
+GameObject** ObjList_GetObjects(int* outA, int* outB)
 {
     if (outA != NULL)
     {
@@ -2428,9 +2429,9 @@ void Obj_UpdateModelBlendStates(void)
     int k;
     int i;
     int j;
-    u8* obj;
-    u8* child;
-    u8* m;
+    GameObject* obj;
+    GameObject* child;
+    ObjModel* m;
     GameObject* c0;
     u8* bp;
     ObjModelState* modelState;
@@ -2438,7 +2439,7 @@ void Obj_UpdateModelBlendStates(void)
     i = 0;
     for (; i < gObjCount; i++)
     {
-        obj = (u8*)gObjList[i];
+        obj = gObjList[i];
         objAnim = (ObjAnimComponent*)obj;
         if (obj != 0 && objAnim->modelInstance != NULL)
         {
@@ -2450,33 +2451,33 @@ void Obj_UpdateModelBlendStates(void)
             k = 0;
             for (; k < objAnim->modelInstance->modelCount; k++)
             {
-                m = (u8*)objAnim->banks[k];
+                m = (ObjModel*)objAnim->banks[k];
                 if (m != 0)
                 {
-                    ((ObjModel*)m)->bufferFlags &= ~8;
-                    if (((ObjModel*)m)->file->morphTargetCount != 0)
+                    m->bufferFlags &= ~8;
+                    if (m->file->morphTargetCount != 0)
                     {
-                        ObjModel_AdvanceBlendChannels(m, timeDelta);
+                        ObjModel_AdvanceBlendChannels((u8*)m, timeDelta);
                     }
                 }
             }
             j = 0;
-            for (; j < ((GameObject*)obj)->childCount; j++)
+            for (; j < obj->childCount; j++)
             {
-                child = (u8*)((GameObject*)obj)->childObjs[j];
+                child = obj->childObjs[j];
                 childAnim = (ObjAnimComponent*)child;
                 if (child != 0 && childAnim->modelInstance != NULL)
                 {
                     k = 0;
                     for (; k < childAnim->modelInstance->modelCount; k++)
                     {
-                        m = (u8*)childAnim->banks[k];
+                        m = (ObjModel*)childAnim->banks[k];
                         if (m != 0)
                         {
-                            ((ObjModel*)m)->bufferFlags &= ~8;
-                            if (((ObjModel*)m)->file->morphTargetCount != 0)
+                            m->bufferFlags &= ~8;
+                            if (m->file->morphTargetCount != 0)
                             {
-                                c0 = (GameObject*)(((GameObject*)child)->pendingParentObj);
+                                c0 = (GameObject*)(child->pendingParentObj);
                                 if (c0 != 0)
                                 {
                                     bp = (u8*)c0->extra;
@@ -2487,7 +2488,7 @@ void Obj_UpdateModelBlendStates(void)
                                 }
                                 if (c0 == 0 || (bp != 0 && *(s8*)(bp + 0x56) == 0))
                                 {
-                                    ObjModel_AdvanceBlendChannels(m, timeDelta);
+                                    ObjModel_AdvanceBlendChannels((u8*)m, timeDelta);
                                 }
                             }
                         }
@@ -2586,7 +2587,7 @@ void Obj_UpdateAllObjects(u8 flags)
                     {
                         continue;
                     }
-                    cb = (void (*)(int)) * (int*)((u8*)*((GameObject*)obj3)->anim.dll + 0xc);
+                    cb = (void (*)(int))((ObjectInterface*)*((GameObject*)obj3)->anim.dll)->hitDetect;
                     if (cb == 0)
                     {
                         continue;
@@ -2620,7 +2621,7 @@ void Obj_UpdateAllObjects(u8 flags)
                         {
                             continue;
                         }
-                        cb = (void (*)(int)) * (int*)((u8*)*((GameObject*)child)->anim.dll + 0xc);
+                        cb = (void (*)(int))((ObjectInterface*)*((GameObject*)child)->anim.dll)->hitDetect;
                         if (cb == 0)
                         {
                             continue;

@@ -17,7 +17,17 @@
 
 void crawler_playReactionEffects(struct GameObject* obj, int* st);
 
-extern u8 gCrawlerSeqTable[];
+typedef struct CrawlerSeq12
+{
+    f32 spd;   /* 0x0 */
+    u32 mask;  /* 0x4 */
+    u8 moveId; /* 0x8 */
+    u8 next;   /* 0x9 */
+    u8 mode;   /* 0xa */
+    u8 pad;
+} CrawlerSeq12;
+
+extern CrawlerSeq12 gCrawlerSeqTable[];
 extern u8 gSnowwormSeqIndexReset[4];
 extern u8 gSnowwormSeqIndexMax[4];
 

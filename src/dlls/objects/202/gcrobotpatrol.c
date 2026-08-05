@@ -303,7 +303,7 @@ void gcRobotPatrol_update(GameObject* obj, u8* state)
     {
         obj->anim.velocityY = 0.5f;
     }
-    if (0.0f == ((EnemyState*)state)->gcRobot.cooldownTimer)
+    if (((EnemyState*)state)->gcRobot.cooldownTimer == 0.0f)
     {
         GameObject* child2;
 

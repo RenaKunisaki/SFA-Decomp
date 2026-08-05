@@ -1,7 +1,10 @@
 /* WCLevelCont (DLL 653) */
+#include "main/audio/music_api.h"
 #include "main/game_timer.h"
 #include "main/gamebits.h"
+#include "main/lightmap_api.h"
 #include "main/mapEventTypes.h"
+#include "main/objtype.h"
 #include "main/sky_interface.h"
 #include "main/dll/WC/dll_0290_wcpushblock.h"
 #include "main/dll/WC/dll_028D_wclevelcont.h"
@@ -16,6 +19,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/audio/sfx_play_legacy_api.h"
 #include "main/vecmath.h"
+#include "string.h"
 #include "sys/objects.h"
 
 #define WCLEVELCONT_OBJGROUP 0x9

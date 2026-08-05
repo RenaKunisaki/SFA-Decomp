@@ -12,6 +12,7 @@
  */
 #include "main/dll/ARW/dll_029D_arwarwinggu.h"
 #include "main/frame_timing.h"
+#include "main/rcp_dolphin_api.h"
 #include "sys/objects.h"
 #include "main/model.h"
 #include "main/objtexture.h"

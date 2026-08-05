@@ -6,12 +6,17 @@
 #include "dlls/objects/483_DIM_BossGut.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "main/curve.h"
 #include "main/dll/baddie_control_interface.h"
 #include "main/dll/curve_walker.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/rom_curve_interface.h"
 #include "main/frame_timing.h"
+#include "main/lightmap_api.h"
+#include "main/obj_message.h"
 #include "main/object_render.h"
+#include "main/objhits.h"
+#include "main/objtype.h"
 #include "main/track_dolphin_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
@@ -83,7 +88,7 @@ void dimbossgut2_updateTracking(GameObject* obj, DimBossGut2State* state) {
     s16 angle;
     int angleMag;
     f32 angleScale;
-    int player;
+    GameObject* player;
     int rel;
 
     control = state->groundBaddie.control;
@@ -123,9 +128,9 @@ void dimbossgut2_updateTracking(GameObject* obj, DimBossGut2State* state) {
         obj->anim.localPosX = pathWalker->posX;
         obj->anim.localPosZ = pathWalker->posZ;
     } else {
-        player = (int)Obj_GetPlayerObject();
-        rel = (int)(u16)getAngle(-(((GameObject*)player)->anim.worldPosX - obj->anim.worldPosX),
-                                 -(((GameObject*)player)->anim.worldPosZ - obj->anim.worldPosZ)) -
+        player = Obj_GetPlayerObject();
+        rel = (int)(u16)getAngle(-(player->anim.worldPosX - obj->anim.worldPosX),
+                                 -(player->anim.worldPosZ - obj->anim.worldPosZ)) -
               (int)(u16)obj->anim.rotX;
         if (rel > 0x8000) {
             rel = rel - 0xffff;
@@ -236,9 +241,9 @@ void DIM_BossGut2_update(GameObject* obj) {
         light = lightOwner->light;
         if ((light != NULL) && (light->glowType != 0) && (light->enabled != 0)) {
             brightness = (light->glowAlpha + light->glowAlphaStep) & 0xffff;
-            if (0xc < brightness) {
+            if (brightness > 0xc) {
                 brightness = (brightness + randomGetRange(-12, 12)) & 0xffff;
-                if (0xff < brightness) {
+                if (brightness > 0xff) {
                     brightness = 0xff;
                     lightOwner->light->glowAlphaStep = 0;
                 }

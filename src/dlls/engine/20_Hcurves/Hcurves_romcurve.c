@@ -13,6 +13,7 @@
 #include "main/vecmath_distance_api.h"
 #include "main/vecmath.h"
 #include "main/shader_api.h"
+#include "string.h"
 
 int nRomCurves;
 RomCurveDef* gRomCurveLastFindStart;
@@ -50,8 +51,6 @@ int RomCurve_getControlPointId(RomCurveDef* curve, int exclude, int pickIdx);
 int RomCurve_segmentIntersectsOriginRayXZ(f32 x, f32 unusedY, f32 z, RomCurveDef* a, RomCurveDef* b, f32 unusedW);
 
 RomCurveDef* romCurves[ROMCURVE_MAX_CURVES];
-extern ObjfsaPatch gObjfsaPatches[0x3000 / sizeof(ObjfsaPatch)];
-extern ObjfsaWalkGroup gObjfsaWalkGroups[0x1C48 / sizeof(ObjfsaWalkGroup)];
 
 #define OBJFSA_CORNER(BASE, OFF, POSOFF) (f32)((f32) * (s8*)(OFF) * scale + *(f32*)((BASE) + (POSOFF)))
 #define OBJFSA_SET_PLANE(P, K, XA, ZA)                                                                                 \
@@ -304,7 +303,7 @@ static inline int RomCurve_CollectUnblockedLinks(RomCurveDef* curve, int* ids)
     for (i = 0; i < ROMCURVE_LINK_COUNT; i++)
     {
         link = *lp++;
-        if ((-1 < link) && ((curve->blockedLinkMask & mask) == 0) && (link != 0))
+        if ((link > -1) && ((curve->blockedLinkMask & mask) == 0) && (link != 0))
         {
             ids[count++] = link;
         }
@@ -327,7 +326,7 @@ static inline int RomCurve_CollectBlockedLinks(RomCurveDef* curve, int* ids)
     for (i = 0; i < ROMCURVE_LINK_COUNT; i++)
     {
         link = *lp++;
-        if ((-1 < link) && ((curve->blockedLinkMask & mask) != 0) && (link != 0))
+        if ((link > -1) && ((curve->blockedLinkMask & mask) != 0) && (link != 0))
         {
             ids[count++] = link;
         }
@@ -366,7 +365,7 @@ static inline int RomCurve_pickRandomControlPointId_2A(RomCurveDef* curve)
     mask = 1;
     for (i = 0; i < 4; i = i + 1)
     {
-        if ((-1 < curve->linkIds[i]) && ((curve->blockedLinkMask & mask) == 0) &&
+        if ((curve->linkIds[i] > -1) && ((curve->blockedLinkMask & mask) == 0) &&
             (curve->linkIds[i] != -1))
         {
             candidates[count++] = curve->linkIds[i];
@@ -396,7 +395,7 @@ static inline int RomCurve_pickRandomControlPointId_2B(RomCurveDef* curve)
     mask = 1;
     for (i = 0; i < 4; i = i + 1)
     {
-        if ((-1 < curve->linkIds[i]) && ((curve->blockedLinkMask & mask) != 0) &&
+        if ((curve->linkIds[i] > -1) && ((curve->blockedLinkMask & mask) != 0) &&
             (curve->linkIds[i] != -1))
         {
             candidates[count++] = curve->linkIds[i];
@@ -1721,7 +1720,7 @@ int curves_isPointInsideLoop(int curveId, f32 x, f32 y, f32 z, f32* outDistance)
             previousCurveId = nextCurveId;
             curve = nextCurve;
         }
-    } while ((previousCurveId != (int)curveId) && (nextCurveId != (int)ROMCURVE_LINK_ID_NONE));
+    } while ((previousCurveId != curveId) && (nextCurveId != (int)ROMCURVE_LINK_ID_NONE));
 
     return hitCount & 1;
 }
@@ -1848,8 +1847,8 @@ int RomCurve_func13(u32 curveId, int typeFilter, int matchValue, int* outLink)
                 curDist = queueDist[count];
                 best[0] = 0;
                 if ((((int)node->type == typeFilter) || (typeFilter == -1)) &&
-                    ((((RomCurvePathNode*)node)->tag0 == (int)matchValue ||
-                      ((((RomCurvePathNode*)node)->tag1 == (int)matchValue || (((RomCurvePathNode*)node)->tag2 == (int)matchValue))))))
+                    ((((RomCurvePathNode*)node)->tag0 == matchValue ||
+                      ((((RomCurvePathNode*)node)->tag1 == matchValue || (((RomCurvePathNode*)node)->tag2 == matchValue))))))
                 {
                     done = 1;
                     *distWrite = curDist;
@@ -1867,7 +1866,7 @@ int RomCurve_func13(u32 curveId, int typeFilter, int matchValue, int* outLink)
                 {
                     for (k = 0, candWalk = (u32)node; k < 4; candWalk += 4, k++)
                     {
-                        if (((-1 < *(s32*)(candWalk + 0x1c)) &&
+                        if (((*(s32*)(candWalk + 0x1c) > -1) &&
                              ((cand = RomCurve_findByIdWithIndex(*(s32*)(candWalk + 0x1c), &idx)) != NULL)) &&
                             (visited[idx] == 0) && (count < ROMCURVE_LINK_SEARCH_QUEUE_CAPACITY))
                         {
@@ -2026,7 +2025,7 @@ int RomCurve_findLinkTowardNearestOfType(RomCurveDef* curve, int typeFilter, int
                 {
                     for (k = 0, candWalk = (u32)node; k < 4; candWalk += 4, k++)
                     {
-                        if (((-1 < *(s32*)(candWalk + 0x1c)) &&
+                        if (((*(s32*)(candWalk + 0x1c) > -1) &&
                              ((cand = RomCurve_findByIdWithIndex(*(s32*)(candWalk + 0x1c), &idx)) != NULL)) &&
                             (visited[idx] == 0) && (count < ROMCURVE_LINK_SEARCH_QUEUE_CAPACITY))
                         {
@@ -2372,7 +2371,7 @@ int RomCurve_buildRandomPoints(RomCurveDef* curve, f32* outX, f32* outY, f32* ou
     {
         while (curve != NULL && !RomCurve_noUnblockedLinks(curve))
         {
-            count = RomCurve_CollectUnblockedLinks((RomCurveDef*)curve, idsB);
+            count = RomCurve_CollectUnblockedLinks(curve, idsB);
             if (count != 0)
             {
                 id = idsB[randomGetRange(0, count - 1)];
@@ -2400,19 +2399,19 @@ int RomCurve_buildRandomPoints(RomCurveDef* curve, f32* outX, f32* outY, f32* ou
                 outY[n] = ROMCURVE_TANGENT_SCALE * ((f32)curve->tangentMag * mathSinf(ROMCURVE_PLACEMENT_ANGLE(curve->pitch)));
                 tz = ROMCURVE_TANGENT_SCALE * ((f32)curve->tangentMag * mathCosf(ROMCURVE_PLACEMENT_ANGLE(curve->yaw)));
                 outZ[n++] = tz;
-                outX[n] = ROMCURVE_TANGENT_SCALE * ((f32)((RomCurveDef*)next)->tangentMag * mathSinf(ROMCURVE_PLACEMENT_ANGLE(((RomCurveDef*)next)->yaw)));
-                outY[n] = ROMCURVE_TANGENT_SCALE * ((f32)((RomCurveDef*)next)->tangentMag * mathSinf(ROMCURVE_PLACEMENT_ANGLE(((RomCurveDef*)next)->pitch)));
-                tz = ROMCURVE_TANGENT_SCALE * ((f32)((RomCurveDef*)next)->tangentMag * mathCosf(ROMCURVE_PLACEMENT_ANGLE(((RomCurveDef*)next)->yaw)));
+                outX[n] = ROMCURVE_TANGENT_SCALE * ((f32)next->tangentMag * mathSinf(ROMCURVE_PLACEMENT_ANGLE(next->yaw)));
+                outY[n] = ROMCURVE_TANGENT_SCALE * ((f32)next->tangentMag * mathSinf(ROMCURVE_PLACEMENT_ANGLE(next->pitch)));
+                tz = ROMCURVE_TANGENT_SCALE * ((f32)next->tangentMag * mathCosf(ROMCURVE_PLACEMENT_ANGLE(next->yaw)));
                 outZ[n++] = tz;
             }
-            curve = (RomCurveDef*)hold;
+            curve = hold;
         }
     }
     else
     {
         while (curve != NULL && !RomCurve_noBlockedLinks(curve))
         {
-            count = RomCurve_CollectBlockedLinks((RomCurveDef*)curve, idsA);
+            count = RomCurve_CollectBlockedLinks(curve, idsA);
             if (count != 0)
             {
                 id = idsA[randomGetRange(0, count - 1)];
@@ -2439,12 +2438,12 @@ int RomCurve_buildRandomPoints(RomCurveDef* curve, f32* outX, f32* outY, f32* ou
                 outY[n] = ROMCURVE_TANGENT_SCALE * ((f32)curve->tangentMag * mathSinf(ROMCURVE_PLACEMENT_ANGLE(curve->pitch)));
                 tz = ROMCURVE_TANGENT_SCALE * ((f32)curve->tangentMag * mathCosf(ROMCURVE_PLACEMENT_ANGLE(curve->yaw)));
                 outZ[n++] = tz;
-                outX[n] = ROMCURVE_TANGENT_SCALE * ((f32)((RomCurveDef*)next)->tangentMag * mathSinf(ROMCURVE_PLACEMENT_ANGLE(((RomCurveDef*)next)->yaw)));
-                outY[n] = ROMCURVE_TANGENT_SCALE * ((f32)((RomCurveDef*)next)->tangentMag * mathSinf(ROMCURVE_PLACEMENT_ANGLE(((RomCurveDef*)next)->pitch)));
-                tz = ROMCURVE_TANGENT_SCALE * ((f32)((RomCurveDef*)next)->tangentMag * mathCosf(ROMCURVE_PLACEMENT_ANGLE(((RomCurveDef*)next)->yaw)));
+                outX[n] = ROMCURVE_TANGENT_SCALE * ((f32)next->tangentMag * mathSinf(ROMCURVE_PLACEMENT_ANGLE(next->yaw)));
+                outY[n] = ROMCURVE_TANGENT_SCALE * ((f32)next->tangentMag * mathSinf(ROMCURVE_PLACEMENT_ANGLE(next->pitch)));
+                tz = ROMCURVE_TANGENT_SCALE * ((f32)next->tangentMag * mathCosf(ROMCURVE_PLACEMENT_ANGLE(next->yaw)));
                 outZ[n++] = tz;
             }
-            curve = (RomCurveDef*)next;
+            curve = next;
         }
     }
     return n;
@@ -2457,7 +2456,7 @@ int RomCurve_countRandomPoints(RomCurveDef* curve)
     int ids[ROMCURVE_LINK_COUNT];
 
     count = 1;
-    while (curve != NULL && !RomCurve_noUnblockedLinks((RomCurveDef*)curve))
+    while (curve != NULL && !RomCurve_noUnblockedLinks(curve))
     {
         linkCount = RomCurve_CollectUnblockedLinks(curve, ids);
         if (linkCount != 0)
@@ -2727,7 +2726,7 @@ int RomCurve_getRandomBlockedLink(RomCurveDef* curve, int excludeLinkId)
     for (i = 0; i < ROMCURVE_LINK_COUNT; i = i + 1)
     {
         link = curve->linkIds[i];
-        if ((-1 < link) && ((curve->blockedLinkMask & mask) != 0) && (link != excludeLinkId))
+        if ((link > -1) && ((curve->blockedLinkMask & mask) != 0) && (link != excludeLinkId))
         {
             eligibleLinks[count++] = link;
         }
@@ -2778,7 +2777,7 @@ int RomCurve_getRandomUnblockedLink(RomCurveDef* curve, int excludeLinkId)
     for (i = 0; i < ROMCURVE_LINK_COUNT; i = i + 1)
     {
         link = curve->linkIds[i];
-        if ((-1 < link) && ((curve->blockedLinkMask & mask) == 0) && (link != excludeLinkId))
+        if ((link > -1) && ((curve->blockedLinkMask & mask) == 0) && (link != excludeLinkId))
         {
             eligibleLinks[count++] = link;
         }

@@ -7,13 +7,19 @@
 #include "dlls/objects/405_DBSH_Shrine.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
+#include "main/audio/audio_control_api.h"
+#include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/objfx_api.h"
+#include "main/dll/player_api.h"
 #include "main/frame_timing.h"
+#include "main/game_timer_control_api.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "main/mapEventTypes.h"
+#include "main/map_load.h"
 #include "main/model_light.h"
 #include "main/object_render.h"
 #include "main/objtype.h"
@@ -262,7 +268,7 @@ void dbshShrine_update(GameObject* obj) {
         idleSfxTimer = state->idleSfxTimer - timeDelta;
         state->idleSfxTimer = idleSfxTimer;
         if (idleSfxTimer <= 0.0f) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_spirit_voice);
+            Sfx_PlayFromObject(obj, SFXTRIG_spirit_voice);
             state->idleSfxTimer = (f32)randomGetRange(500, 1000);
         }
         if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) {

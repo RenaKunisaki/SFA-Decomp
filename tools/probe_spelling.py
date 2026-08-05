@@ -51,11 +51,12 @@ def score(unit_name, fns):
     for unit in data["units"]:
         if unit["name"] == unit_name:
             per_fn = {
-                f["name"]: round(f["fuzzy_match_percent"], 4)
+                # objdiff omits the key at 0.0; absent means zero, not absent
+                f["name"]: round(float(f.get("fuzzy_match_percent") or 0.0), 4)
                 for f in (unit.get("functions") or [])
                 if f["name"] in fns
             }
-            return unit["measures"]["fuzzy_match_percent"], per_fn
+            return float(unit["measures"].get("fuzzy_match_percent") or 0.0), per_fn
     return None, None
 
 

@@ -354,7 +354,7 @@ int Effect2_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawnP
             cfg.renderFlags = 0x202;
         else
             cfg.renderFlags = 0x102;
-        if (0.0f == spawnParams->scale)
+        if (spawnParams->scale == 0.0f)
         {
             cfg.scale = 0.0003f * (f32)(s32)randomGetRange(0, 3) + 0.001f;
             cfg.textureId = 0xc0f;
@@ -377,7 +377,7 @@ int Effect2_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawnP
         cfg.lifetimeFrames = 0x3c;
         cfg.initialAlpha = 0xff;
         cfg.behaviorFlags = 0x480010;
-        if (0.0f == spawnParams->scale)
+        if (spawnParams->scale == 0.0f)
         {
             cfg.scale = 0.0042f;
             cfg.textureId = 0x74;
@@ -402,7 +402,7 @@ int Effect2_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawnP
         cfg.initialAlpha = 0xff;
         cfg.behaviorFlags = 0x480010;
         cfg.renderFlags = 2;
-        if (0.0f == spawnParams->scale)
+        if (spawnParams->scale == 0.0f)
         {
             cfg.scale = 0.008f;
             cfg.textureId = 0xc22;
@@ -420,7 +420,7 @@ int Effect2_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawnP
         cfg.linkGroup = 0;
         cfg.initialAlpha = 0x37;
         cfg.behaviorFlags = 0x180010;
-        if (0.0f == spawnParams->scale)
+        if (spawnParams->scale == 0.0f)
         {
             cfg.scale = 0.00013f * (f32)(s32)randomGetRange(0x14, 0x32);
             cfg.textureId = 0x73;
@@ -439,7 +439,7 @@ int Effect2_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawnP
         cfg.initialAlpha = 0x37;
         cfg.behaviorFlags = 0x480010;
         cfg.renderFlags = 2;
-        if (0.0f == spawnParams->scale)
+        if (spawnParams->scale == 0.0f)
         {
             cfg.scale = 0.0001f * (f32)(s32)randomGetRange(0x46, 0x50);
             cfg.textureId = 0x73;

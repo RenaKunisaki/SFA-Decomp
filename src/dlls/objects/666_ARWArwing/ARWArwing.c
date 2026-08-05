@@ -777,7 +777,7 @@ void arwarwing_handlePathDamage(GameObject* obj, ArwingState* state)
             Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_bomb_pickup);
         }
         Sfx_PlayFromObject(obj, SFXTRIG_wmap_select);
-        ((Arw339Flags*)&state->flags339)->scoreFlag = 1;
+        state->flags339.scoreFlag = 1;
         Obj_SetModelColorFadeRecursive(obj, 0x4b, 0xc8, 0, 0, 1);
         state->damageFlashTimer = 25.0f;
         state->hitShake = 1;
@@ -798,7 +798,7 @@ void arwarwing_handlePathDamage(GameObject* obj, ArwingState* state)
 void arwarwing_handleObjectDamage(GameObject* obj, ArwingState* state)
 {
     int hitVol;
-    int hitObj;
+    GameObject* hitObj;
 
     if (objGetFlagsE5_2((u8*)obj) != 0)
         return;
@@ -821,7 +821,7 @@ void arwarwing_handleObjectDamage(GameObject* obj, ArwingState* state)
             doRumble(10.0f);
             *(s8*)&state->health = *(s8*)&state->health - hitVol;
             Sfx_PlayFromObject(obj, SFXTRIG_wmap_select_2ac);
-            ((Arw339Flags*)&state->flags339)->scoreFlag = 1;
+            state->flags339.scoreFlag = 1;
             Obj_SetModelColorFadeRecursive(obj, 0x4b, 0xc8, 0, 0, 1);
             state->damageFlashTimer = 25.0f;
             state->hitShake = 1;
@@ -1153,7 +1153,7 @@ int arwarwing_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
             lockLevel(mapGetDirIdx(0x29), 0);
             break;
         case 7:
-            if (!((Arw339Flags*)&state->flags339)->scoreFlag)
+            if (!state->flags339.scoreFlag)
             {
                 ArwarwingState* scoreView = obj->extra;
                 int clampedScore;

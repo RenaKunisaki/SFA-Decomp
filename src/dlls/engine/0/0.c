@@ -399,8 +399,6 @@ extern const f32 gPauseMenuRingScale;
 extern const f32 lbl_803E209C;
 extern const f32 lbl_803E20B8;
 extern const f32 gGameUiAngleDivisor;
-extern f32 gTrickyHudTexScaleX, gTrickyHudTexScaleY, gTrickyHudTexScaleZ;
-extern f32 gTrickyHudIconFovY, gTrickyHudIconAspect, gTrickyHudIconNearPlane, gTrickyHudIconFarPlane;
 extern Texture* hudTextures[102];
 extern s16 gFearTestMeterAlpha;
 extern s8 lbl_803DD7F8;
@@ -769,7 +767,7 @@ void cMenuPlayTrickyCommandSfx(GameObject* obj)
 
 void gameUiLoadResources(void)
 {
-    char* base = lbl_803A87F0;
+    CMenuHud* base = (CMenuHud*)lbl_803A87F0;
     if (gameUiResourcesLoaded == 0)
     {
         GameObject** ringModels;
@@ -786,8 +784,8 @@ void gameUiLoadResources(void)
 
         rotation = 0;
         i = 0;
-        ringModels = ((CMenuHud*)base)->ringModels;
-        ringIcons = ((CMenuHud*)base)->ringIcons;
+        ringModels = base->ringModels;
+        ringIcons = base->ringIcons;
         x = 0.0f;
         y = 35.0f;
         z = -200.0f;
@@ -850,7 +848,7 @@ void gameUiLoadResources(void)
 
         j = 4;
         ids = &gGameUiHudAnimObjIds[4];
-        menuObjects = ((CMenuHud*)base)->menuObjects;
+        menuObjects = base->menuObjects;
         z = 0.0f;
         y = -5.0f;
         addressLimit = 0x90000000;
@@ -1564,7 +1562,7 @@ void hudDrawAirMeter(void)
         {
             Texture* texture =
                 (i < meter->value) ? meter->textures.segments.filled : meter->textures.segments.empty;
-            drawTexture(texture, (f32)(int)x, (f32)(u32)(0x1a4 - meter->yOffset), meter->alpha, 0x100);
+            drawTexture(texture, (f32)x, (f32)(u32)(0x1a4 - meter->yOffset), meter->alpha, 0x100);
             x += meter->segmentWidth;
         }
         break;
@@ -1603,13 +1601,13 @@ void hudDrawAirMeter(void)
         clampVal = (meter->value < 0) ? 0 : ((meter->value > meter->fillWidth) ? meter->fillWidth : meter->value);
         meter->value = clampVal;
         alpha = clampVal;
-        drawScaledTexture(meter->textures.bar.empty, (f32)(int)(barX + alpha), (f32)(int)barY, meter->alpha, 0x100,
+        drawScaledTexture(meter->textures.bar.empty, (f32)(int)(barX + alpha), (f32)barY, meter->alpha, 0x100,
                           meter->fillWidth - alpha, 0x1a, 0);
-        drawScaledTexture(meter->textures.bar.filled, (f32)(int)barX, (f32)(int)barY, meter->alpha, 0x100, alpha, 0x1a,
+        drawScaledTexture(meter->textures.bar.filled, (f32)barX, (f32)barY, meter->alpha, 0x100, alpha, 0x1a,
                           0);
         barY = 0x1a4;
         barY -= (u32)meter->textures.bar.end->height >> 1;
-        drawTexture(meter->textures.bar.end, (f32)(int)(barX + meter->fillWidth), (f32)(int)barY, meter->alpha, 0x100);
+        drawTexture(meter->textures.bar.end, (f32)(int)(barX + meter->fillWidth), (f32)barY, meter->alpha, 0x100);
         break;
     }
     }
@@ -1884,12 +1882,12 @@ void drawViewFinderHud(void)
                     break;
                 }
                 heading++;
-                if ((u8)textAlpha != 0)
+                if (textAlpha != 0)
                 {
                     f32 sn;
                     f32 phase;
                     f32 scale;
-                    gameTextSetColor(0, 0xff, 0, (int)((f32)(u8)textAlpha * gViewFinderFadeLevel));
+                    gameTextSetColor(0, 0xff, 0, (int)((f32)textAlpha * gViewFinderFadeLevel));
                     scale = gGameUiPi;
                     phase = lbl_803E1F34 - tickX;
                     sn = lbl_803DBAE4 * mathCosf(scale * (phase * lbl_803DBAE0) / gGameUiAngleDivisor);
@@ -2141,12 +2139,12 @@ void hudDrawStatusBarsAndCounters(int unused1, int unused2, int unused3)
     {
         int c2 = 0, c1 = 0, c0 = 0;
         f32 radius = 10000.0f;
-        int* near;
-        near = (int*)objGetNearestTypeTo(9, Obj_GetPlayerObject(), &radius);
+        GameObject* near;
+        near = objGetNearestTypeTo(9, Obj_GetPlayerObject(), &radius);
         if (near != NULL && pauseMenuState == 0)
         {
             (*(void (*)(int*, int*, int*, int*)) *
-             (int*)((char*)*(int*)((int)((GameObject*)near)->anim.dll) + 0x54))(near, &c2, &c1, &c0);
+             (int*)((char*)*(int*)((int)near->anim.dll) + 0x54))((int*)near, &c2, &c1, &c0);
             hcArg = 0x118;
             hudDrawCounter(0x1e, (s16)(c1 - c2), (s16)c0, 0xff, 0, &hcArg, 1);
         }
@@ -2765,6 +2763,7 @@ void pauseMenuDrawStatus(void)
     f32 flashThreshold;
     f32 previousOpacity;
     s8 maxMagicDelta;
+    f32 zero = 0.0f;
     int statuses[HUD_STATUS_COUNT];
 
     base = (u8*)lbl_803A87F0;
@@ -2802,7 +2801,7 @@ void pauseMenuDrawStatus(void)
     }
     maxMagicDelta = -magicDelta;
     statuses[HUD_STATUS_MAX_MAGIC] = hud->statusPrevious[HUD_STATUS_MAX_MAGIC] + maxMagicDelta;
-    if ((maxMagicDelta != 0) && (gHudStatusAlpha != 0.0f) && (objIsCurModelNotZero(player) != 0) &&
+    if ((maxMagicDelta != 0) && (gHudStatusAlpha != zero) && (objIsCurModelNotZero(player) != 0) &&
         (mainGetBit(GAMEBIT_ITEM_Magic_Got) != 0))
     {
         Sfx_KeepAliveLoopedObjectSound(0, SFXTRIG_pda_compassbeep_3f0);
@@ -3610,7 +3609,7 @@ int cMenuSetItems(CMenuItemDef* itemsArg, char useTricky)
     s16* dst;
     int count;
     int* wordP;
-    u8* base;
+    CMenuHud* base;
     u8* flP;
     int wordOff;
     s16* w1;
@@ -3623,14 +3622,14 @@ int cMenuSetItems(CMenuItemDef* itemsArg, char useTricky)
     int i;
     s16 saved[CMENU_ITEM_SLOT_COUNT];
 
-    base = (u8*)lbl_803A87F0;
-    ids = ((CMenuHud*)base)->textureIds;
+    base = (CMenuHud*)lbl_803A87F0;
+    ids = base->textureIds;
     w1 = ids;
     dst = saved;
     w2 = dst;
-    stP = ((CMenuHud*)base)->textIds;
+    stP = base->textIds;
     w3 = stP;
-    flP = ((CMenuHud*)base)->itemFlags;
+    flP = base->itemFlags;
     w4 = flP;
     for (i = 0; i < CMENU_ITEM_SLOT_COUNT; i++)
     {
@@ -3646,7 +3645,7 @@ int cMenuSetItems(CMenuItemDef* itemsArg, char useTricky)
     }
     count = 0;
     wordOff = 0;
-    wordP = ((CMenuHud*)base)->ownedBits;
+    wordP = base->ownedBits;
     *wordP = -1;
     if (useTricky == 0)
     {
@@ -3660,22 +3659,22 @@ int cMenuSetItems(CMenuItemDef* itemsArg, char useTricky)
                 {
                     if (src[1] < 0 || mainGetBit(src[1]) == 0)
                     {
-                        *(s16*)(base + halfOff[0] + 0x948) = src[3];
-                        *(int*)(base + wordOff + 0x848) = src[0];
-                        *(int*)(base + wordOff + 0x748) = src[2];
-                        *(int*)(base + wordOff + 0x648) = src[1];
-                        *(u8*)(base + count + 0x448) = active;
-                        *(s16*)(base + halfOff[0] + 0x548) = src[6];
-                        *(s16*)(base + halfOff[0] + 0x5c8) = src[5];
-                        *(u8*)(base + count + 0x508) = *(u8*)(src + 7);
-                        *(u8*)(base + count + 0x4c8) = ((u8*)src)[0xf];
+                        *(s16*)((char*)base + halfOff[0] + 0x948) = src[3];
+                        *(int*)((char*)base + wordOff + 0x848) = src[0];
+                        *(int*)((char*)base + wordOff + 0x748) = src[2];
+                        *(int*)((char*)base + wordOff + 0x648) = src[1];
+                        *(u8*)((char*)base + count + 0x448) = active;
+                        *(s16*)((char*)base + halfOff[0] + 0x548) = src[6];
+                        *(s16*)((char*)base + halfOff[0] + 0x5c8) = src[5];
+                        *(u8*)((char*)base + count + 0x508) = *(u8*)(src + 7);
+                        *(u8*)((char*)base + count + 0x4c8) = ((u8*)src)[0xf];
                         if (src[2] < 0 || mainGetBit(src[2]) == 0)
                         {
-                            *(u8*)(count + 0x488 + base) = 1;
+                            *(u8*)(count + 0x488 + (char*)base) = 1;
                         }
                         else
                         {
-                            *(u8*)(count + 0x488 + base) = 0;
+                            *(u8*)(count + 0x488 + (char*)base) = 0;
                         }
                         count++;
                         wordOff += 4;
@@ -3688,22 +3687,22 @@ int cMenuSetItems(CMenuItemDef* itemsArg, char useTricky)
                     {
                         gCMenuForcedSelIndex = count;
                     }
-                    *(s16*)(base + halfOff[0] + 0x948) = src[3];
-                    *(int*)(base + wordOff + 0x848) = src[0];
-                    *(int*)(base + wordOff + 0x748) = src[2];
-                    *(int*)(base + wordOff + 0x648) = src[1];
-                    *(u8*)(base + count + 0x448) = active;
-                    *(s16*)(base + halfOff[0] + 0x548) = src[6];
-                    *(s16*)(base + halfOff[0] + 0x5c8) = src[5];
-                    *(u8*)(base + count + 0x508) = *(u8*)(src + 7);
-                    *(u8*)(base + count + 0x4c8) = ((u8*)src)[0xf];
+                    *(s16*)((char*)base + halfOff[0] + 0x948) = src[3];
+                    *(int*)((char*)base + wordOff + 0x848) = src[0];
+                    *(int*)((char*)base + wordOff + 0x748) = src[2];
+                    *(int*)((char*)base + wordOff + 0x648) = src[1];
+                    *(u8*)((char*)base + count + 0x448) = active;
+                    *(s16*)((char*)base + halfOff[0] + 0x548) = src[6];
+                    *(s16*)((char*)base + halfOff[0] + 0x5c8) = src[5];
+                    *(u8*)((char*)base + count + 0x508) = *(u8*)(src + 7);
+                    *(u8*)((char*)base + count + 0x4c8) = ((u8*)src)[0xf];
                     if (src[2] < 0 || mainGetBit(src[2]) == 0)
                     {
-                        *(u8*)(count + 0x488 + base) = 1;
+                        *(u8*)(count + 0x488 + (char*)base) = 1;
                     }
                     else
                     {
-                        *(u8*)(count + 0x488 + base) = 0;
+                        *(u8*)(count + 0x488 + (char*)base) = 0;
                     }
                     count++;
                     wordOff += 4;
@@ -3729,10 +3728,10 @@ int cMenuSetItems(CMenuItemDef* itemsArg, char useTricky)
         {
             src = items;
             idsW = ids;
-            aW = ((CMenuHud*)base)->auxiliaryValues;
-            cW = ((CMenuHud*)base)->auxiliaryBytes;
-            dW = ((CMenuHud*)base)->closeMode;
-            eW = ((CMenuHud*)base)->enabled;
+            aW = base->auxiliaryValues;
+            cW = base->auxiliaryBytes;
+            dW = base->closeMode;
+            eW = base->enabled;
             actionMask = gTrickyHudActionMask;
             yItem = yButtonItem;
             for (; *src > -1; src += 8)
@@ -3782,7 +3781,7 @@ int cMenuSetItems(CMenuItemDef* itemsArg, char useTricky)
     }
     i = 0;
     w1 = ids;
-    texP2 = (void**)((CMenuHud*)base)->itemTextures;
+    texP2 = (void**)base->itemTextures;
     texW = texP2;
     do
     {
@@ -4515,7 +4514,7 @@ void drawArwingHud(int unused1, int unused2, int unused3)
                 drawTexture(hudTextures[57], (f32)(bombSlot * 0x1c + 0x23), 72.0f, (int)arwingHudAlpha & 0xff, 0x100);
             }
         }
-        if (((GameObject*)arwing)->anim.mapEventSlot != 0x26)
+        if (arwing->anim.mapEventSlot != 0x26)
         {
             drawTexture(hudTextures[61], 6e+02f, 31.0f, (int)arwingHudAlpha & 0xff, 0x100);
             for (i = 0; (int)(i & 0xff) < rings; i++)
@@ -4812,7 +4811,7 @@ void pauseMenuDraw(int boxDrawParamA, int boxDrawParamB, int boxDrawParamC)
                 textHeight = boundsRight - boundsLeft;
                 gPauseMenuActiveGrid[1].trailX = textHeight;
                 x = textBox->x + (textHeight >> 1) - 0x140;
-                gPauseMenuActiveGrid[1].x = gPauseMenuTextScale * (f32)(s32)x + lbl_803E1F34;
+                gPauseMenuActiveGrid[1].x = gPauseMenuTextScale * (f32)x + lbl_803E1F34;
 
                 if (gPauseMenuGridCursor != 0)
                 {
@@ -5074,7 +5073,7 @@ void pauseMenuDrawStatusPage(GameObject* player)
             u16 ii;
             for (ii = 0; ii < 7; ii++)
             {
-                f32 fy = 31.0f * (f32)(u32)(u16)ii + lbl_803E1F30;
+                f32 fy = 31.0f * (f32)(u32)ii + lbl_803E1F30;
                 pauseMenuDrawElement((int*)((HudTextures*)hudTextures)->tex5C, fy, 436.0f, px, ty,
                                      (s32)lbl_803E20B8, 0);
             }
@@ -5152,7 +5151,7 @@ void pauseMenuDrawSideRails(s32 alpha)
     brightness = 512.0f - phase * brightnessStep;
     for (; j >= 0; j -= 10)
     {
-        f32 off = phase * (40.0f - (f32)(s32)(s8)j) / 40.0f;
+        f32 off = phase * (40.0f - (f32)(s32)j) / 40.0f;
         pauseMenuDrawElement(((HudTextures*)hudTextures)->tex118, 595.0f + off, 289.0f,
                              x2 = (s16)((0xff - j) - gPauseMenuSlideOut), alpha, (s32)(f64)brightness, 0);
         pauseMenuDrawElement(((HudTextures*)hudTextures)->tex118, 27.0f - off, 289.0f, x2, alpha,
@@ -5382,8 +5381,6 @@ void pauseMenuDrawGridCell(u8 i, int alpha, int flag)
     cnt = gPauseMenuActiveGrid[i].count;
     div15 = (s16)scaled / 15;
     quarter = lbl_803E20B8;
-    k2128 = lbl_803E2128;
-    k2108 = gPauseMenuGridCursorScale;
     for (; cnt >= 0; cnt -= 4)
     {
         spd = quarter * gPauseMenuActiveGrid[i].f10;
@@ -5424,7 +5421,10 @@ void pauseMenuDrawGridCell(u8 i, int alpha, int flag)
             y = (f32)(pr * 0.001953125 + y);
         }
         {
-            f32 prod = spd * gPauseMenuActiveGrid[i].trailX;
+            f32 prod;
+            k2108 = gPauseMenuGridCursorScale;
+            k2128 = lbl_803E2128;
+            prod = spd * gPauseMenuActiveGrid[i].trailX;
             x -= k2108 * (prod * k2128);
             prod = spd * gPauseMenuActiveGrid[i].trailY;
             y -= k2108 * (prod * k2128);
@@ -6139,7 +6139,7 @@ void pauseMenuUpdate(void)
                     {
                         gPauseMenuPageIndex = menuMin;
                     }
-                    if (gPauseMenuPageIndex != (u8)prev)
+                    if (gPauseMenuPageIndex != prev)
                     {
                         Sfx_PlayFromObject(0, SFXTRIG_menu_fox_select);
                     }
@@ -6702,7 +6702,7 @@ int pauseMenuUpdateMapScroll(void)
 /* Returns whether the current player can appear in the pause-menu carousel. */
 int pauseMenuIsFox(void)
 {
-    void* s;
+    GameObject* s;
     void* inner;
     u8 lookup;
     u8 i;
@@ -6714,14 +6714,14 @@ int pauseMenuIsFox(void)
     is_zero = objIsCurModelNotZero(s) == 0;
     if (is_zero)
         return 0;
-    inner = ((GameObject*)s)->anim.parent;
+    inner = s->anim.parent;
     if (inner != NULL)
     {
         lookup = *((u8*)inner + 0xac);
     }
     else
     {
-        lookup = coordsToMapCell(((GameObject*)s)->anim.localPosX, ((GameObject*)s)->anim.localPosZ);
+        lookup = coordsToMapCell(s->anim.localPosX, s->anim.localPosZ);
     }
     for (i = 0; i < 9; i++)
     {
@@ -6899,7 +6899,7 @@ void pauseMenuRunSubmenu(int p1)
                 valid = 1;
             }
         }
-        if (((int)gCMenuButtons & PAD_BUTTON_A) && tbl != gPauseMenuConfirmGrid && 0.0f == gPauseMenuMapSwivelVel)
+        if (((int)gCMenuButtons & PAD_BUTTON_A) && tbl != gPauseMenuConfirmGrid && gPauseMenuMapSwivelVel == 0.0f)
         {
             if (valid != 0)
             {
@@ -7200,14 +7200,14 @@ void mapScreenDrawHud(int unused1, int unused2, int unused3)
             revealedHeight = 0;
         }
         revealedHeight *= 0x10;
-        if (revealedHeight > ((TextSlot*)gTextBoxes)[12].maxHeight)
+        if (revealedHeight > gTextBoxes[12].maxHeight)
         {
-            revealedHeight = ((TextSlot*)gTextBoxes)[12].maxHeight;
+            revealedHeight = gTextBoxes[12].maxHeight;
         }
-        panelX = ((TextSlot*)gTextBoxes)[12].x;
-        panelY = ((TextSlot*)gTextBoxes)[12].y;
+        panelX = gTextBoxes[12].x;
+        panelY = gTextBoxes[12].y;
         height = revealedHeight;
-        width = ((TextSlot*)gTextBoxes)[12].maxWidth;
+        width = gTextBoxes[12].maxWidth;
         drawTexture(((HudTextures*)hudTextures)->tex28, panelX - 5, panelY - 5, panelAlpha, 0x100);
         drawScaledTexture(((HudTextures*)hudTextures)->tex34, panelX, panelY - 5, panelAlpha, 0x100, width, 5, 0);
         drawScaledTexture(((HudTextures*)hudTextures)->tex2C, panelX - 5, panelY, panelAlpha, 0x100, 5, height, 0);
@@ -7218,7 +7218,7 @@ void mapScreenDrawHud(int unused1, int unused2, int unused3)
                           3);
         drawScaledTexture(((HudTextures*)hudTextures)->tex28, panelX + width, panelY - 5, panelAlpha, 0x100, 5, 5, 1);
         drawScaledTexture(((HudTextures*)hudTextures)->tex28, panelX - 5, panelY + height, panelAlpha, 0x100, 5, 5, 2);
-        ((TextSlot*)gTextBoxes)[12].height = revealedHeight;
+        gTextBoxes[12].height = revealedHeight;
         {
             s8 firstAvailableHint;
             s8 progressHint;
@@ -8416,13 +8416,13 @@ void GameUI_hudDraw(int a, int b, int c)
             f32 sx, sy;
             if (playerGetAimScreenPos((GameObject*)(player), &sx, &sy) != 0)
             {
-                void* tex;
+                Texture* tex;
                 f32 scale, x, y;
                 textureUpdateAnimationFrame(gGameUiBlinkTexture, &gGameUiBlinkAnimFlags, &gGameUiBlinkAnimFrame);
                 tex = gGameUiBlinkTexture;
                 scale = 0.5f;
-                x = sx - scale * (f32)(u32) ((Texture*)tex)->width;
-                y = sy - scale * (f32)(u32) ((Texture*)tex)->height;
+                x = sx - scale * (f32)(u32) tex->width;
+                y = sy - scale * (f32)(u32) tex->height;
                 drawTexture(tex, x, y, 0x96, 0x100);
             }
             hudDrawStatusBarsAndCounters(a, b, c);
@@ -8782,7 +8782,7 @@ void GameUI_frameEnd(void)
                 gGameUiHelpTextPending = 0;
                 sv = gGameUiHelpTextId;
             }
-            if ((s16)sv > -1)
+            if (sv > -1)
             {
                 gMinimapAreaNameId = sv;
                 gMinimapAreaNameActive = 1;
@@ -9009,7 +9009,7 @@ void GameUI_initialise(void)
     int height;
     int width;
     int i;
-    void* p;
+    Texture* p;
 
     gCMenuPreselectOwnedBit = -1;
     gCMenuForcedSelIndex = -1;
@@ -9030,7 +9030,7 @@ void GameUI_initialise(void)
     }
     p = textureLoadAsset(GAMEUI_TEXTURE_BLINK);
     gGameUiBlinkTexture = p;
-    ((Texture*)p)->animationFrameStep = 40;
+    p->animationFrameStep = 40;
     gGameUiBlinkAnimFlags = 0x80000;
     gGameUiBlinkAnimFrame = 0;
     gHudItemInfoPopup.framesLeft = -1;

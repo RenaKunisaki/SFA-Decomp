@@ -421,13 +421,13 @@ void objTypeInit(void) {
     return;
 }
 
-int ObjMsg_Peek(void* obj, u32* outMessage, u32* outSender, u32* outParam) {
+int ObjMsg_Peek(GameObject* obj, u32* outMessage, u32* outSender, u32* outParam) {
     ObjMsgQueue* queue;
 
     if (obj == 0x0) {
         return 0;
     }
-    queue = *(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET);
+    queue = obj->msgQueue;
     if ((queue != (ObjMsgQueue*)0x0) && (queue->count != 0)) {
         if (outMessage != 0x0) {
             *outMessage = queue->entries[0].message;
@@ -443,7 +443,7 @@ int ObjMsg_Peek(void* obj, u32* outMessage, u32* outSender, u32* outParam) {
     return 0;
 }
 
-int ObjMsg_Pop(void* obj, u32* outMessage, u32* outSender, u32* outParam) {
+int ObjMsg_Pop(GameObject* obj, u32* outMessage, u32* outSender, u32* outParam) {
     ObjMsgQueue* queue;
     ObjMsgQueueCursor* slot;
     u32 i;
@@ -451,7 +451,7 @@ int ObjMsg_Pop(void* obj, u32* outMessage, u32* outSender, u32* outParam) {
     if (obj == 0x0) {
         return 0;
     }
-    queue = *(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET);
+    queue = obj->msgQueue;
     if ((queue != (ObjMsgQueue*)0x0) && (queue->count != 0)) {
         queue->count = queue->count - 1;
         if (outMessage != 0x0) {
@@ -477,7 +477,7 @@ int ObjMsg_Pop(void* obj, u32* outMessage, u32* outSender, u32* outParam) {
 char sObjMsgOverflowInObjectWarning[64] = "objmsg (%x): overflow in object %d defno=%d FROM: defno %d\n";
 
 void ObjMsg_SendToNearbyObjects(int targetId, float radius, u32 flags, void* sender, u32 message, u32 param) {
-    int* objects;
+    GameObject** objects;
     u32 count;
     int maskedFlags;
     ObjMsgQueue* queue;
@@ -487,18 +487,18 @@ void ObjMsg_SendToNearbyObjects(int targetId, float radius, u32 flags, void* sen
     GameObject* obj;
     int includeSender;
     int matchAny;
-    GameObject* s;
+    GameObject* senderObj;
 
     objects = ObjList_GetObjects(&objectIndex, &objectCount);
     maskedFlags = flags & 0xffff;
     includeSender = maskedFlags & OBJMSG_SEND_INCLUDE_SENDER;
     matchAny = maskedFlags & OBJMSG_SEND_MATCH_ANY;
-    s = (GameObject*)sender;
+    senderObj = (GameObject*)sender;
     for (; objectIndex < objectCount; objectIndex = objectIndex + 1) {
-        obj = (GameObject*)objects[objectIndex];
+        obj = objects[objectIndex];
         if (((obj != sender) || (includeSender == 0)) && ((obj->anim.romDefNo == (s16)targetId || (matchAny != 0))) &&
-            ((Vec_distance(&s->anim.worldPosX, &obj->anim.worldPosX) < radius && (obj != 0x0)) &&
-             (queue = *(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET), queue != (ObjMsgQueue*)0x0))) {
+            ((Vec_distance(&senderObj->anim.worldPosX, &obj->anim.worldPosX) < radius && (obj != 0x0)) &&
+             (queue = obj->msgQueue, queue != (ObjMsgQueue*)0x0))) {
             count = queue->count;
             if (count < queue->capacity) {
                 slot = (ObjMsgQueueCursor*)((u8*)queue + ((count + count + count) << 2));
@@ -508,7 +508,7 @@ void ObjMsg_SendToNearbyObjects(int targetId, float radius, u32 flags, void* sen
                 queue->count = queue->count + 1;
             } else {
                 debugPrintf(sObjMsgOverflowInObjectWarning, message, (int)obj->anim.classId, (int)obj->anim.romDefNo,
-                            (int)s->anim.romDefNo);
+                            (int)senderObj->anim.romDefNo);
             }
         }
     }
@@ -516,7 +516,7 @@ void ObjMsg_SendToNearbyObjects(int targetId, float radius, u32 flags, void* sen
 }
 
 void ObjMsg_SendToObjects(int targetId, u32 flags, void* sender, u32 message, u32 param) {
-    int* objects;
+    GameObject** objects;
     u32 count;
     int maskedFlags;
     ObjMsgQueue* queue;
@@ -529,11 +529,11 @@ void ObjMsg_SendToObjects(int targetId, u32 flags, void* sender, u32 message, u3
     maskedFlags = flags & 0xffff;
     if ((maskedFlags & OBJMSG_SEND_MATCH_OBJTYPE) != 0) {
         for (; objectIndex < objectCount; objectIndex = objectIndex + 1) {
-            obj = (GameObject*)objects[objectIndex];
+            obj = objects[objectIndex];
             if (((obj != sender) || ((maskedFlags & OBJMSG_SEND_INCLUDE_SENDER) == 0)) &&
                 (((maskedFlags & OBJMSG_SEND_MATCH_ANY) != 0 || (targetId == obj->anim.romDefNo))) &&
                 ((obj != 0x0 &&
-                  (queue = *(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET), queue != (ObjMsgQueue*)0x0)))) {
+                  (queue = obj->msgQueue, queue != (ObjMsgQueue*)0x0)))) {
                 count = queue->count;
                 if (count < queue->capacity) {
                     slot = (ObjMsgQueueCursor*)((u8*)queue + ((count + count + count) << 2));
@@ -549,11 +549,11 @@ void ObjMsg_SendToObjects(int targetId, u32 flags, void* sender, u32 message, u3
         }
     } else {
         for (; objectIndex < objectCount; objectIndex = objectIndex + 1) {
-            obj = (GameObject*)objects[objectIndex];
+            obj = objects[objectIndex];
             if (((obj != sender) || ((maskedFlags & OBJMSG_SEND_INCLUDE_SENDER) == 0)) &&
                 (((maskedFlags & OBJMSG_SEND_MATCH_ANY) != 0 || (targetId == obj->anim.classId))) &&
                 ((obj != 0x0 &&
-                  (queue = *(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET), queue != (ObjMsgQueue*)0x0)))) {
+                  (queue = obj->msgQueue, queue != (ObjMsgQueue*)0x0)))) {
                 count = queue->count;
                 if (count < queue->capacity) {
                     slot = (ObjMsgQueueCursor*)((u8*)queue + ((count + count + count) << 2));
@@ -573,7 +573,7 @@ void ObjMsg_SendToObjects(int targetId, u32 flags, void* sender, u32 message, u3
 
 u32 ObjMsg_SendToObject(GameObject* obj, u32 message, void* sender, u32 param) {
     u32 count;
-    void* senderObj;
+    GameObject* senderObj;
     ObjMsgQueue* queue;
     ObjMsgQueueCursor* slot;
 
@@ -581,7 +581,7 @@ u32 ObjMsg_SendToObject(GameObject* obj, u32 message, void* sender, u32 param) {
     if (obj == NULL) {
         return 0;
     }
-    queue = *(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET);
+    queue = obj->msgQueue;
     if (queue != (ObjMsgQueue*)0x0) {
         count = queue->count;
         if (count < queue->capacity) {
@@ -593,21 +593,21 @@ u32 ObjMsg_SendToObject(GameObject* obj, u32 message, void* sender, u32 param) {
             return queue->count;
         }
         debugPrintf(sObjMsgOverflowInObjectWarning, message, (int)obj->anim.classId, (int)obj->anim.romDefNo,
-                    (int)((GameObject*)senderObj)->anim.romDefNo);
+                    (int)senderObj->anim.romDefNo);
     }
     return 0;
 }
 
-void ObjMsg_AllocQueue(void* obj, int capacity) {
+void ObjMsg_AllocQueue(GameObject* obj, int capacity) {
     int queueBytes;
     ObjMsgQueue* queue;
 
-    if (((capacity != 0) && (obj != 0x0)) && (*(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET) == (ObjMsgQueue*)0x0)) {
+    if (((capacity != 0) && (obj != 0x0)) && (obj->msgQueue == (ObjMsgQueue*)0x0)) {
         queueBytes = (capacity * 3 + 2) * 4;
         queue = (ObjMsgQueue*)mmAlloc(queueBytes, 0xe, 0);
         queue->count = 0;
         queue->capacity = capacity;
-        *(ObjMsgQueue**)((u8*)obj + OBJMSG_QUEUE_OFFSET) = queue;
+        obj->msgQueue = queue;
     }
     return;
 }
@@ -652,7 +652,7 @@ int ObjHits_PollPriorityHitWithCooldown(GameObject* obj, float* cooldown, GameOb
                 ObjHits_ConvertHitPositionToWorld(obj, outHitPos);
             }
         } else {
-            collisionType = ObjHits_GetPriorityHit(obj, (int*)outHitObject, 0x0, 0x0);
+            collisionType = ObjHits_GetPriorityHit(obj, outHitObject, 0x0, 0x0);
         }
         if (collisionType != 0) {
             *cooldown = 30.0f;
@@ -867,10 +867,10 @@ GameObject* ObjList_FindNearestObjectByDefNo(GameObject* obj, int defNo, float* 
     int objectCount;
     float invalidDistance;
     float distanceSq;
-    u32 otherObj;
+    GameObject* otherObj;
     int objectIndex;
-    int* objects;
-    int* walker;
+    GameObject** objects;
+    GameObject** walker;
     GameObject* foundObj;
 
     objects = ObjList_GetObjects(&startIndex, &objectCount);
@@ -883,9 +883,9 @@ GameObject* ObjList_FindNearestObjectByDefNo(GameObject* obj, int defNo, float* 
         walker = objects + startIndex;
 
         while (objectIndex < objectCount) {
-            otherObj = *walker;
-            if (((defNo == ((GameObject*)otherObj)->anim.romDefNo) && ((int)obj != otherObj)) &&
-                (distanceSq = vec3f_distanceSquared(&(obj)->anim.worldPosX, &((GameObject*)otherObj)->anim.worldPosX),
+            otherObj = (GameObject*)*walker;
+            if (((defNo == otherObj->anim.romDefNo) && ((u32)obj != (u32)otherObj)) &&
+                (distanceSq = vec3f_distanceSquared(&(obj)->anim.worldPosX, &otherObj->anim.worldPosX),
                  distanceSq < *maxDistanceSq)) {
                 *maxDistanceSq = distanceSq;
                 foundObj = (GameObject*)*walker;
@@ -912,8 +912,8 @@ GameObject* ObjList_FindNearestObjectByDefNo(GameObject* obj, int defNo, float* 
     return foundObj;
 }
 
-int ObjList_ContainsObject(int obj) {
-    u32* entry;
+int ObjList_ContainsObject(GameObject* obj) {
+    GameObject** entry;
     int i;
     int count;
 
@@ -1017,7 +1017,7 @@ void ObjPath_GetPointWorldPosition(GameObject* obj, int pointIndex, float* outX,
             *outZ = obj->anim.localPosZ;
         } else {
             if (jointIndex == OBJPATH_ROOT_JOINT_INDEX) {
-                Obj_BuildWorldTransformMatrix((GameObject*)obj, rootMtx, 0);
+                Obj_BuildWorldTransformMatrix(obj, rootMtx, 0);
                 jointMtx = rootMtx;
             } else {
                 jointMtx = (f32*)ObjModel_GetJointMatrix((u8*)model, jointIndex);
@@ -1061,7 +1061,7 @@ int Obj_GetYawDeltaToObject(GameObject* obj, GameObject* target, float* distOut)
         *distOut = sqrtf(dx * dx + dz * dz);
     }
     yawDelta = (int)(short)yawDelta - (u32)(u16) * (s16*)obj;
-    if (0x8000 < yawDelta) {
+    if (yawDelta > 0x8000) {
         yawDelta = yawDelta + -0xffff;
     }
     if (yawDelta < -0x8000) {

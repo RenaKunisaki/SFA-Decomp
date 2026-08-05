@@ -539,7 +539,7 @@ int Effect20_spawnObject(void* sourceObj, int effectId, PartFxSpawnParams* spawn
             if (extraArgs != NULL)
             {
                 cfg.velocityX = 0.3f * *extraArgs + 0.001f * (f32)(s32)randomGetRange(0xffffff9c, 100);
-                if (0.0f != cfg.velocityY)
+                if (cfg.velocityY != 0.0f)
                 {
                     cfg.velocityY =
                         0.3f * extraArgs[1] + 0.001f * (f32)(s32)randomGetRange(0xffffff9c, 100);

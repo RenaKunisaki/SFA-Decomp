@@ -7,13 +7,16 @@
  */
 #include "dlls/objects/393_CCSharpclaw.h"
 
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/dll_0000_gameui_api.h"
 #include "main/dll/player_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "main/dll/partfx_interface.h"
 #include "main/minimap_api.h"
+#include "main/obj_trigger.h"
 #include "main/objfx.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
@@ -84,7 +87,7 @@ void ccSharpClawPad_update(GameObject* obj) {
         if (vec3f_distanceSquared(&obj->anim.worldPosX, &player->anim.worldPosX) <
                 CC_SHARPCLAW_PAD_ACTIVATION_DISTANCE_SQUARED &&
             playerIsDisguised(player) != 0) {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_menuups16k);
+            Sfx_PlayFromObject(obj, SFXTRIG_menuups16k);
             mainSetBits(((const CCSharpClawPadPlacement*)obj->anim.placement)->activationGameBit, 1);
             obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         }

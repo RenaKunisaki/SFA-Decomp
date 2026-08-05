@@ -1,6 +1,9 @@
 #include "dlls/objects/370_LINKB_levco.h"
 
+#include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
+#include "main/dll/dll_80136a40.h"
+#include "main/dll/savegame_load_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"

@@ -34,7 +34,7 @@
 typedef struct ChukChukHitResult {
     u32 hitVolume;
     int sphereIndex;
-    int hitObject;
+    GameObject* hitObject;
     f32 toPlayer[3];
 } ChukChukHitResult;
 

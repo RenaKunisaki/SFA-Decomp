@@ -26,9 +26,7 @@ typedef struct ShopBuyItemState
 typedef struct ShopItemRow
 {
     u8 price;      /* 0x0 "P$" */
-    u8 discount1;  /* 0x1 "D1" */
-    u8 discount2;  /* 0x2 "D2" */
-    u8 discount3;  /* 0x3 "D3" (observed always == price) */
+    u8 discount[3]; /* 0x1 "D1".."D3"; one is picked at random into minPrice */
     u8 specialPrice; /* 0x4 */
     u8 minPrice;   /* 0x5 */
     s16 availBit;  /* 0x6 "available" GameBit slot (-1 = always available) */

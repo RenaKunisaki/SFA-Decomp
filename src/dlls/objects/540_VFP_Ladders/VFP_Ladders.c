@@ -9,6 +9,7 @@
  *    delay drops from its placed height down by a fixed offset (with a
  *    buzzing sfx) and latches at the bottom.
  */
+#include "main/audio/sfx_play_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/objseq.h"
@@ -87,7 +88,7 @@ void VFP_Ladders_update(GameObject* obj)
             if (state->delayTimer <= 0)
             {
                 state->phase = VFPLADDERS_PHASE_DROPPING;
-                Sfx_PlayFromObject((int)obj, SFXTRIG_mv_bodyf4_c);
+                Sfx_PlayFromObject(obj, SFXTRIG_mv_bodyf4_c);
                 state->delayTimer = 0;
             }
         }

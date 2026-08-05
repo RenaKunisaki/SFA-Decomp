@@ -77,6 +77,11 @@ import tempfile
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 PY = sys.executable
 
+# The measure objdiff omits when it is 0.0.  Held in a name so the ablation
+# that demonstrates the pre-fix unguarded read is not itself flagged by the
+# scan that looks for one.
+ZERO_KEY = "fuzzy_match_percent"
+
 
 # ------------------------------------------------------------------ ELF32 BE
 #
@@ -542,10 +547,12 @@ def family_build(unit_object, verbose):
         except Exception:
             handled = False
         # ABLATION: the pre-fix unguarded read must still blow up, or the
-        # tolerance above is somebody else's doing.
+        # tolerance above is somebody else's doing.  The key goes through a
+        # name, not a literal, so this demonstration of the defect is not
+        # itself an instance of it for the scan further down.
         try:
             u_ = unitfuzzy.measure(None, None)
-            float(u_["functions"][0]["fuzzy_match_percent"])
+            float(u_["functions"][0][ZERO_KEY])
             ablated_raises = False
         except KeyError:
             ablated_raises = True
@@ -579,7 +586,7 @@ def family_build(unit_object, verbose):
             m = unitfuzzy.measure(u, "GSAE01")
         except Exception:
             continue
-        got = next((f["fuzzy_match_percent"]
+        got = next((f.get("fuzzy_match_percent")
                     for f in (m.get("functions") or []) if f["name"] == fn),
                    None)
         checked += 1
@@ -591,6 +598,386 @@ def family_build(unit_object, verbose):
     bad += not ok
     print("  [%s] unitfuzzy agrees with report.json on %d/%d sub-100 "
           "functions" % ("held" if ok else "DIVERGES", agreed, checked))
+
+    # THE SAME TRAP, EVERYWHERE ELSE IT WAS PASTED -- AND THE OTHER POLARITY.
+    #
+    # `fuzzy_measure` was fixed where the defect was noticed; `stmt_sweep`,
+    # `permsweep` and `probe_spelling` each carried their own copy of the
+    # identical unguarded read and none was touched.  Enumerating fourteen
+    # ranking tools by name fixed that round and reproduced the shape one level
+    # up: the SCOPE was a hand-written list, so a reader outside it is invisible
+    # exactly the way a paste site outside the fix was.  The scope is now
+    # DERIVED -- every tool that reads one of these keys is in it.
+    #
+    # And the rule is bigger than the key it was found on.  `report.json`
+    # SERIALISES NO ZERO, at any level: `fuzzy_match_percent`,
+    # `complete_units`, `matched_code`, `matched_data`, `matched_functions`,
+    # `total_code` and `total_data` are all simply absent when they are 0, and
+    # NONE of them is ever present-as-zero.  So the key set is derived from the
+    # live report too, and both failure modes are checked:
+    #
+    #   * a bare subscript  -> KeyError, kills a sweep mid-run, and an aborted
+    #     sweep reads exactly like an exhausted one;
+    #   * `.get(key, 100.0)` -> reports the WORST rows as perfect and a
+    #     `< 100.0` filter then drops them in silence.  This one is worse: a
+    #     crash is loud, a screen that finds nothing looks like a clean tree.
+    import ast
+
+    # ...and the KEY SET has to be derived too, for the same reason the reader
+    # scope did.  This block used to enumerate seven key names by hand while
+    # its own comment explained that a hand-written scope hides whatever sits
+    # outside it.  `matched_data_percent` sat outside it, so the
+    # `.get(key, 100.0)` half below -- the half the comment calls "worse" --
+    # could not see the one live instance of that exact shape in the tree
+    # (`promotion_candidates.is_report_exact`).  The vocabulary is the
+    # tree-level `measures` dict; a key is omitted-at-zero if some instance of
+    # a scope kind that uses it does not carry it.  Each kind is asked
+    # separately, because a function scope has no `matched_data` to omit.
+    rep_doc = rep
+    measure_vocab = set(rep_doc["measures"])
+
+    def _omitted(scopes):
+        used = set()
+        for s in scopes:
+            used |= measure_vocab & set(s)
+        return {k for k in used if any(k not in s for s in scopes)}
+
+    omit_keys = _omitted([u.get("measures") or {} for u in rep_doc["units"]])
+    omit_keys |= _omitted([f for u in rep_doc["units"]
+                           for f in (u.get("functions") or [])])
+    omit_keys |= _omitted([s for u in rep_doc["units"]
+                           for s in (u.get("sections") or [])])
+    present_zero = [(u["name"], k) for u in rep_doc["units"]
+                    for k, v in (u.get("measures") or {}).items() if v == 0]
+    ok = bool(omit_keys) and not present_zero
+    bad += not ok
+    print("  [%s] report.json serialises no zero: %d measure keys go ABSENT, "
+          "0 are present-as-zero (%d present-as-zero found)"
+          % ("held" if ok else "PREMISE BROKEN", len(omit_keys),
+             len(present_zero)))
+
+    def _guarded_keys(tree):
+        """Keys the file tests for with `in` / `not in` -- AST, so the guard is
+        found whichever quote style wrote it."""
+        out = set()
+        for n in ast.walk(tree):
+            if isinstance(n, ast.Compare) and isinstance(n.left, ast.Constant) \
+               and isinstance(n.left.value, str) \
+               and any(isinstance(o, (ast.In, ast.NotIn)) for o in n.ops):
+                out.add(n.left.value)
+        return out
+
+    def offences(text, keys):
+        """(bare-subscript keys, [(key, default)] positive defaults)."""
+        try:
+            tree = ast.parse(text)
+        except SyntaxError:
+            return set(), []
+        guarded = _guarded_keys(tree)
+        bare, defaults = set(), []
+        for n in ast.walk(tree):
+            if isinstance(n, ast.Subscript) \
+               and isinstance(getattr(n, "slice", None), ast.Constant) \
+               and n.slice.value in keys and n.slice.value not in guarded:
+                base = n.value
+                chain = isinstance(base, ast.Subscript) \
+                    and isinstance(getattr(base, "slice", None), ast.Constant) \
+                    and base.slice.value == "measures"
+                if not chain:
+                    bare.add(n.slice.value)
+            if isinstance(n, ast.Call) and isinstance(n.func, ast.Attribute) \
+               and n.func.attr == "get" and len(n.args) > 1 \
+               and isinstance(n.args[0], ast.Constant) \
+               and n.args[0].value in keys \
+               and isinstance(n.args[1], ast.Constant) \
+               and isinstance(n.args[1].value, (int, float)) \
+               and not isinstance(n.args[1].value, bool) \
+               and n.args[1].value > 0:
+                defaults.append((n.args[0].value, n.args[1].value))
+        return bare, defaults
+
+    tools_dir = os.path.join(REPO, "tools")
+    readers, bare_off, dflt_off = [], [], []
+    for fn_ in sorted(os.listdir(tools_dir)):
+        if not fn_.endswith(".py"):
+            continue
+        text = open(os.path.join(tools_dir, fn_)).read()
+        if not any(k in text for k in omit_keys):
+            continue
+        readers.append(fn_)
+        b, d = offences(text, omit_keys)
+        if b:
+            bare_off.append((fn_, sorted(b)))
+        if d:
+            dflt_off.append((fn_, d))
+    ok = not bare_off and len(readers) >= 30
+    bad += not ok
+    print("  [%s] no tool subscripts an omitted-at-zero measure unguarded "
+          "(%d readers discovered)%s"
+          % ("held" if ok else "UNGUARDED", len(readers),
+             "" if not bare_off else "  *** " + ", ".join(
+                 "%s%s" % (f, k) for f, k in bare_off)))
+    ok = not dflt_off
+    bad += not ok
+    print("  [%s] ...and none DEFAULTS one to a positive value, which would "
+          "report a 0.0 row as perfect%s"
+          % ("held" if ok else "WRONG DEFAULT",
+             "" if not dflt_off else "  *** " + ", ".join(
+                 "%s%s" % (f, d) for f, d in dflt_off)))
+
+    # ...and the one live instance, checked by BEHAVIOUR and not by grep, so a
+    # future respelling of the same mistake is still caught.  A unit with no
+    # `matched_data_percent` matched no data; `promotion_candidates` must
+    # reject it, and must still accept the same unit once the key is present at
+    # 100.0 -- otherwise a stricter default would simply have turned the tool
+    # off.
+    # The predicate is lifted out by AST and executed on its own -- importing
+    # the module would be the very side effect the arm below checks for.
+    _pc_src = open(os.path.join(REPO, "tools", "promotion_candidates.py")).read()
+    _pc_fn = next(n for n in ast.parse(_pc_src).body
+                  if isinstance(n, ast.FunctionDef)
+                  and n.name == "is_report_exact")
+    _ns = {}
+    exec(compile(ast.Module(body=[_pc_fn], type_ignores=[]),
+                 "promotion_candidates.py", "exec"), _ns)
+    is_report_exact = _ns["is_report_exact"]
+    _base = {"measures": {"matched_code_percent": 100.0},
+             "metadata": {"complete": False, "auto_generated": False}}
+    _absent = is_report_exact(_base)
+    _present = dict(_base, measures=dict(_base["measures"],
+                                         matched_data_percent=100.0))
+    _zero = dict(_base, measures=dict(_base["measures"],
+                                      matched_data_percent=0.0))
+    ok = (not _absent) and is_report_exact(_present) \
+        and not is_report_exact(_zero)
+    bad += not ok
+    print("  [%s] promotion_candidates rejects a unit whose "
+          "matched_data_percent is ABSENT, and still accepts one at 100.0"
+          % ("held" if ok else "WRONG DEFAULT"))
+
+    # ABLATION.  A checker that finds nothing because it is looking in the
+    # wrong place is indistinguishable from a clean tree, so every arm gets an
+    # injected subject -- including the two spellings that must NOT fire and
+    # the single-quoted guard the old textual test could not see.
+    K = "fuzzy_match_percent"
+    probes = [
+        ("bare subscript caught", "def f(r):\n    return float(r['%s'])\n" % K,
+         True, False),
+        (".get with no default passes", "def f(r):\n    return r.get('%s')\n" % K,
+         False, False),
+        (".get(key, 0.0) passes", "def f(r):\n    return r.get('%s', 0.0)\n" % K,
+         False, False),
+        (".get(key, -1.0) passes (the MISSING sentinel)",
+         "def f(r):\n    return r.get('%s', -1.0)\n" % K, False, False),
+        (".get(key, 100.0) caught",
+         "def f(r):\n    return r.get('%s', 100.0)\n" % K, False, True),
+        ("single-quoted `in` guard passes",
+         "def f(r):\n    if '%s' in r:\n        return r['%s']\n" % (K, K),
+         False, False),
+        ("double-quoted `in` guard passes",
+         'def f(r):\n    if "%s" in r:\n        return r["%s"]\n' % (K, K),
+         False, False),
+        ("a ['measures'] chain passes",
+         "def f(u):\n    return u['measures']['%s']\n" % K, False, False),
+    ]
+    misread = []
+    for label, text, want_bare, want_dflt in probes:
+        b, d = offences(text, {K})
+        if bool(b) != want_bare or bool(d) != want_dflt:
+            misread.append(label)
+    ok = not misread
+    bad += not ok
+    print("  [%s] the scan reads all %d injected spellings correctly%s"
+          % ("held" if ok else "BLIND", len(probes),
+             "" if not misread else "  *** " + "; ".join(misread)))
+
+    # A SWEEP THAT DIES ON ONE ROW READS EXACTLY LIKE A SWEEP THAT FINISHED.
+    #
+    # Restoring the omitted-at-zero rows put a `.s` unit -- `.init`, no split
+    # object -- into `pool_value_sequence`'s population, and its per-row helper
+    # answered a missing object with `raise SystemExit`.  That killed the
+    # `--all` loop at row 18 of 21, so the three rows behind it were never
+    # scanned and the run still printed a full-looking table.  A row a tool
+    # cannot open must be REPORTED as unscanned, never skipped by ending the
+    # loop; so the sweep is required to state its own population and to account
+    # for every row in it.
+    import importlib.util as _ilu
+
+    def _load(name):
+        spec = _ilu.spec_from_file_location(
+            "va_" + name, os.path.join(REPO, "tools", name + ".py"))
+        mod = _ilu.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        return mod
+
+    pvs = _load("pool_value_sequence")
+    population = len(pvs.sub100_sections())
+    rc, out = run([sys.executable,
+                   os.path.join(REPO, "tools", "pool_value_sequence.py"),
+                   "--all"], cwd=REPO)
+    tail = [l for l in out.splitlines() if l.startswith("population ")]
+    accounted = None
+    if tail:
+        f = tail[-1].split()
+        accounted = int(f[1]), int(f[3]) + int(f[7])
+    ok = (accounted is not None and accounted[0] == population
+          and accounted[1] == population and population > 0)
+    bad += not ok
+    print("  [%s] pool_value_sequence --all accounts for every row it selected"
+          " (population %d, %s)"
+          % ("held" if ok else "LOOP TRUNCATED", population,
+             "scanned+unscanned %d" % accounted[1] if accounted
+             else "NO POPULATION LINE"))
+
+    # ABLATION: make the first row unopenable and prove the loop still reaches
+    # the last one.  Without it, "no differing rows" would be unfalsifiable.
+    saved = pvs.compare
+    seen = []
+
+    def _explode(src_rel, section, quiet=False):
+        seen.append(src_rel)
+        if len(seen) == 1:
+            raise pvs.MissingObject("injected")
+        return 0, 0
+
+    pvs.compare = _explode
+    try:
+        pvs.main_argv = None
+        rows = [r for r in pvs.sub100_sections()]
+        reached = 0
+        for src, sec, _s, _z in rows:
+            try:
+                pvs.compare(src, sec, quiet=True)
+            except pvs.MissingObject:
+                pass
+            reached += 1
+    finally:
+        pvs.compare = saved
+    ok = reached == len(rows) and len(seen) == len(rows)
+    bad += not ok
+    print("  [%s] ...and an unopenable row does not end the loop "
+          "(%d of %d rows still reached after an injected failure)"
+          % ("held" if ok else "ABORTS", reached, len(rows)))
+
+    # IMPORTING A SWEEPER MUST NOT SWEEP.
+    #
+    # `batch_brute` kept its whole body at module level with no `__main__`
+    # guard, so `import batch_brute` -- to read its selector, to reuse its
+    # population -- launched a tree-wide `brute_match --apply-best` run that
+    # EDITS THE WORKING TREE of whatever repo it was imported from.  That is
+    # the mirror of A91's `direct_build` defect (no `__main__`, so the CLI
+    # built nothing): the same missing line, opposite blast radius, and no
+    # gate in this project can see a sweep that ran when nobody asked.
+    #
+    # Static, so it costs nothing and cannot itself run anything: a tool that
+    # calls out or opens a file for writing at MODULE level, and has no
+    # `__main__` guard, is an import-time side effect.
+    #
+    # The first version of this check only looked for the effect SYNTACTICALLY
+    # inside the module-level statement, so a module-level loop that calls a
+    # helper defined in the same file -- `for o in objs: rows = secs(o)`, with
+    # `subprocess.run` one frame down inside `secs` -- read as clean.  Nine
+    # tools had exactly that shape and the check reported zero.  The call graph
+    # is followed now, and the write vocabulary covers the pathlib/shutil verbs
+    # that never go through `open`.  Names that collide with str/list methods
+    # (`replace`, `remove`, `rename`, `copy`, `move`) are deliberately NOT in
+    # it: they cost four false offenders and caught nothing.
+    WRITE_CALLS = {"run", "check_call", "check_output", "call", "Popen", "system"}
+    WRITE_METHODS = {"write_text", "write_bytes", "makedirs", "mkdir",
+                     "rmtree", "unlink"}
+
+    def import_side_effects(text):
+        try:
+            tree = ast.parse(text)
+        except SyntaxError:
+            return None
+        guarded = any(
+            isinstance(n, ast.If) and isinstance(n.test, ast.Compare)
+            and isinstance(n.test.left, ast.Name) and n.test.left.id == "__name__"
+            for n in tree.body)
+        if guarded:
+            return []
+        funcs = {n.name: n for n in ast.walk(tree)
+                 if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))}
+
+        def effects(node, seen):
+            hits = []
+            for n in ast.walk(node):
+                if not isinstance(n, ast.Call):
+                    continue
+                f = n.func
+                name = f.attr if isinstance(f, ast.Attribute) else \
+                    (f.id if isinstance(f, ast.Name) else "")
+                if name in WRITE_CALLS or name in WRITE_METHODS:
+                    hits.append(name)
+                elif name == "open" and any(
+                        isinstance(a, ast.Constant) and isinstance(a.value, str)
+                        and ("w" in a.value or "a" in a.value) for a in n.args[1:]):
+                    hits.append("open-for-write")
+                elif isinstance(f, ast.Name) and f.id in funcs and f.id not in seen:
+                    hits += effects(funcs[f.id], seen | {f.id})
+            return hits
+
+        hits = []
+        for node in tree.body:
+            if isinstance(node, (ast.Import, ast.ImportFrom, ast.FunctionDef,
+                                 ast.AsyncFunctionDef, ast.ClassDef)):
+                continue
+            hits += effects(node, frozenset())
+        return hits
+
+    offenders = []
+    for fn_ in sorted(os.listdir(tools_dir)):
+        if not fn_.endswith(".py") or fn_ == "__init__.py":
+            continue
+        h = import_side_effects(open(os.path.join(tools_dir, fn_)).read())
+        if h:
+            offenders.append((fn_, sorted(set(h))))
+    ok = not offenders
+    bad += not ok
+    print("  [%s] no tool runs a subprocess or opens a file for writing at "
+          "IMPORT time%s"
+          % ("held" if ok else "IMPORT SWEEPS",
+             "" if not offenders else "  *** " + ", ".join(
+                 "%s%s" % (f, h) for f, h in offenders)))
+
+    # ABLATION -- the check must catch the exact shape that bit us, and must
+    # not fire on the guarded form or on a call inside a function.
+    shapes = [
+        ("unguarded module-level subprocess.run caught",
+         "import subprocess\nsubprocess.run(['x'])\n", True),
+        ("unguarded module-level open(w) caught",
+         "log = open('/tmp/x', 'w')\n", True),
+        ("the same body behind a __main__ guard passes",
+         "import subprocess\nif __name__ == '__main__':\n    subprocess.run(['x'])\n",
+         False),
+        ("a call inside a function passes",
+         "import subprocess\ndef f():\n    subprocess.run(['x'])\n", False),
+        ("a module-level read-only open passes",
+         "d = open('/tmp/x')\n", False),
+        ("the INDIRECT shape -- a module-level loop calling a local helper "
+         "that shells out -- is caught",
+         "import subprocess\ndef secs(p):\n    return subprocess.run([p])\n"
+         "for p in ['a']:\n    secs(p)\n", True),
+        ("...and the same body behind a __main__ guard passes",
+         "import subprocess\ndef secs(p):\n    return subprocess.run([p])\n"
+         "if __name__ == '__main__':\n    for p in ['a']:\n        secs(p)\n",
+         False),
+        ("a module-level Path.write_text is caught without any open()",
+         "from pathlib import Path\nPath('/tmp/x').write_text('y')\n", True),
+        ("...and two mutually recursive helpers do not hang the walk",
+         "def a():\n    b()\ndef b():\n    a()\na()\n", False),
+        ("a module-level str.replace is NOT a filesystem write",
+         "s = 'a'.replace('a', 'b')\n", False),
+    ]
+    misread = [lbl for lbl, text, want in shapes
+               if bool(import_side_effects(text)) != want]
+    ok = not misread
+    bad += not ok
+    print("  [%s] ...and the import-side-effect scan reads all %d injected "
+          "shapes correctly%s"
+          % ("held" if ok else "BLIND", len(shapes),
+             "" if not misread else "  *** " + "; ".join(misread)))
     return bad
 
 
@@ -608,16 +995,61 @@ def family_report(verbose):
              if u["measures"].get("fuzzy_match_percent") == 100.0]
     print("  units in the report: %d;  with NO ours-side object: %d, of which "
           "%d read 100.0" % (len(rep["units"]), len(blind), len(at100)))
+    autocomp = sum(1 for u in blind if u["measures"].get("complete_units"))
     print("     -> those %d are compared against THEMSELVES.  Their 100.0 is a "
-          "tautology,\n        and they are inside complete_units/total_units."
-          % len(at100))
+          "tautology,\n        and they are inside total_units (%d of them are "
+          "inside complete_units)." % (len(at100), autocomp))
     zero = sum(1 for u in rep["units"]
                for f in (u.get("functions") or [])
                if f.get("fuzzy_match_percent") is None)
     print("  functions carrying NO fuzzy_match_percent at all: %d "
           "(objdiff omits the field at 0.0, so a MISSING score must be read "
           "as -1, never as absent)" % zero)
-    return 0
+
+    # THE COMPLETION FIGURE'S OWN DENOMINATOR AND NUMERATOR, both of which
+    # contain rows that are not statements about correctness.
+    #
+    #   * AUTO-GENERATED units carry `total_data` and no `total_code` at all --
+    #     they are dtk's data-only carve residue, never ours to match, and they
+    #     are never complete.  They belong in neither half.
+    #   * VACUOUS units carry NO total_code, NO total_data and NO total_functions
+    #     -- their carve object is empty, so objdiff compared nothing and
+    #     returned 100.0/complete.  Two of them (OSExec, synth_seq_queue) have a
+    #     real translation unit whose whole .text the retail link never pulled
+    #     in; three are stub .c files that emit nothing.  Either way the carve
+    #     can never gain content, so such a row can neither be earned nor lost:
+    #     it is excluded from BOTH halves, not just the numerator.
+    #
+    # This is stated here rather than left as folklore because the raw
+    # `complete_units/total_units` pair reads as an achievable score and is not.
+    us = rep["units"]
+    auto = [u for u in us if u.get("metadata", {}).get("auto_generated")]
+    vac = [u for u in us
+           if not u["measures"].get("total_code")
+           and not u["measures"].get("total_data")
+           and not u["measures"].get("total_functions")]
+    comp = [u for u in us if u["measures"].get("complete_units")]
+    vacnames = {u["name"] for u in vac}
+    inform_num = len([u for u in comp if u["name"] not in vacnames])
+    inform_den = len(us) - len(auto) - len(vac)
+    print("  complete_units as reported: %d of %d" % (len(comp), len(us)))
+    print("     -- %d auto-generated data-only units (never ours to match)"
+          % len(auto))
+    print("     -- %d VACUOUS units: no code, no data, no functions, so their "
+          "100.0/complete\n        compared nothing: %s"
+          % (len(vac), ", ".join(sorted(u["name"] for u in vac))))
+    print("     => INFORMATIVE completion: %d of %d" % (inform_num, inform_den))
+    # ...and the controls, because an exclusion nobody can see fail is folklore
+    # with a line number.  The predicate must FIRE, must not swallow the tree,
+    # and must not swallow the auto-generated units -- those carry total_data,
+    # which is exactly what tells the two populations apart.
+    ok = (0 < len(vac) < len(us)
+          and not (vacnames & {u["name"] for u in auto})
+          and all(u["measures"].get("complete_units") for u in vac))
+    print("  vacuity predicate: %s  (fires on %d, silent on %d, disjoint from "
+          "auto-generated, every row complete)"
+          % ("held" if ok else "DIVERGES", len(vac), len(us) - len(vac)))
+    return 0 if ok else 1
 
 
 _PERTURB = """
@@ -787,6 +1219,138 @@ def family_parser(verbose):
     print("  [%s] ablating the guard makes the parser accept all %d stores "
           "again (%d)" % ("held" if ok else "VACUOUS", len(must_refuse),
                           len(revived)))
+
+    # THE SAME HAZARD, ONE STEP PAST THE PARSER.  Everything above asks "is
+    # this a declaration".  What the sweeps actually depend on is "is this
+    # permutation semantics-preserving", and for a declaration whose
+    # INITIALISER calls something the two come apart: it is a declaration by
+    # every test the parser applies, and swapping two of them changes the
+    # computation exactly the way a swapped pair of stores would.  So the
+    # detector that guards the apply gate gets its own subjects.
+    must_flag = [
+        "s32 rnd1 = randomGetRange(0, 0x1e) * 2;",
+        "s32 rnd2 = randomGetRange(0, 0x1e) * 2;",
+    ]
+    must_not_flag = [
+        "int i;",
+        "u64 x = (u32)(p);",
+        "int n = a->count;",
+        "f32 v = base[i] * 0.5f;",
+    ]
+    got = [B.side_effect_reorders(must_flag, [1, 0]),
+           B.side_effect_reorders(must_flag, [0, 1])]
+    ok = got[0] == [(0, 1)] and got[1] == []
+    bad += not ok
+    print("  [%s] swapping two PRNG-draw initialisers is flagged, and the "
+          "identity is not  (%s)" % ("held" if ok else "BLIND", got))
+    quiet = [t for t in must_not_flag if B.initialiser_calls(t)]
+    ok = not quiet
+    bad += not ok
+    print("  [%s] a plain declaration, a cast and a field read carry no call "
+          "(%d/%d quiet)" % ("held" if not quiet else "FALSE POSITIVE",
+                             len(must_not_flag) - len(quiet), len(must_not_flag)))
+    for t in quiet:
+        print("        *** flagged: %s" % t)
+
+    # THE CALLS THE DETECTOR COULD NOT SEE.  Only the `(` tells a member CALL
+    # apart from a member READ, so a lookbehind that skipped an identifier
+    # preceded by `>` or `.` went blind to every indirect dispatch -- and this
+    # tree dispatches its DLL interfaces exactly that way.  Those are the calls
+    # whose purity is LEAST establishable from source, so they are the last
+    # ones a conservative detector may miss.
+    indirect = [
+        "int* cam = (int*)(*gCameraInterface)->getCamera();",
+        "PauseMenuCharacterState* s = mapEvents->getCurCharacterState();",
+        "int pt = (int)(*gRomCurveInterface)->getById(found);",
+        "f32 v = iface.getValue(obj);",
+        "int r = handlers[i].run(a);",
+    ]
+    unseen = [t for t in indirect if not B.initialiser_calls(t)]
+    ok = not unseen
+    bad += not ok
+    print("  [%s] an INDIRECT call through a struct member is a call "
+          "(%d/%d seen)" % ("held" if ok else "BLIND",
+                            len(indirect) - len(unseen), len(indirect)))
+    for t in unseen:
+        print("        *** missed: %s" % t)
+
+    # ABLATION: restore the lookbehind that excluded `>` and `.` and require
+    # every one of those subjects to go dark again, so the detection above is
+    # the fix doing work and not the regex being permissive for another reason.
+    saved_re = B.CALL_TOKEN_RE
+    try:
+        B.CALL_TOKEN_RE = re.compile(r"(?<![\w>.])([A-Za-z_]\w*)\s*\(")
+        went_dark = [t for t in indirect if not B.initialiser_calls(t)]
+        still_seen = B.initialiser_calls("int w = plainCall(1);")
+    finally:
+        B.CALL_TOKEN_RE = saved_re
+    ok = len(went_dark) == len(indirect) and still_seen == ["plainCall"]
+    bad += not ok
+    print("  [%s] the pre-fix lookbehind misses all %d of them while still "
+          "seeing a direct call (%d dark)"
+          % ("held" if ok else "VACUOUS", len(indirect), len(went_dark)))
+
+    # ABLATION: a detector that never finds a call reports nothing at all and
+    # looks exactly like a clean tree, so blind the call scanner and require
+    # the flag to disappear.
+    saved_re = B.CALL_TOKEN_RE
+    try:
+        B.CALL_TOKEN_RE = re.compile(r"(?!x)x")
+        blinded = B.side_effect_reorders(must_flag, [1, 0])
+    finally:
+        B.CALL_TOKEN_RE = saved_re
+    ok = blinded == []
+    bad += not ok
+    print("  [%s] blinding the call scanner makes the flag vanish, so the "
+          "flag comes from the CALL (%s)"
+          % ("held" if ok else "VACUOUS", blinded))
+
+    # THE OTHER THING A SWEEP CAN DESTROY: A PEER'S EDIT.
+    #
+    # Every sweeper writes variants into a real source file and restores at
+    # exit.  `stmt_sweep` compares the on-disk bytes against the bytes IT last
+    # wrote before restoring, so a peer lane that edited the same file inside
+    # the sweep window is not reverted; the copy in `brute_match` -- the tool
+    # the fleet actually runs, and the one `decl_split_sweep` imports -- did
+    # not, and silently overwrote the peer with its own pristine copy.  No
+    # score gate can see a lost edit either, so the guard gets subjects.
+    import tempfile as _tf
+    from pathlib import Path as _Path
+    for mod_name, mod in (("brute_match", B),
+                          ("stmt_sweep", __import__("stmt_sweep"))):
+        d = _tf.mkdtemp(prefix="vac_guard_")
+        f = os.path.join(d, "probe.c")
+        orig = b"int a;\n"
+        open(f, "wb").write(orig)
+        got = mod.install_restore_guard(_Path(f), orig)
+        w, _k = got if isinstance(got, tuple) else (None, got)
+        arity_ok = w is not None
+        peer_refused = own_ok = False
+        if arity_ok:
+            own_ok = w(b"int b;\n") and open(f, "rb").read() == b"int b;\n"
+            open(f, "wb").write(b"/* peer lane */\nint a;\n")   # peer edit
+            peer_refused = (w(b"int c;\n") is False
+                            and open(f, "rb").read() == b"/* peer lane */\nint a;\n")
+        for ok_, msg in (
+                (arity_ok, "%s's restore guard hands back a tracked writer"
+                           % mod_name),
+                (own_ok, "  ...which writes while the file still holds our bytes"),
+                (peer_refused, "  ...and REFUSES once a peer has edited it")):
+            bad += not ok_
+            print("  [%s] %s" % ("held" if ok_ else "CLOBBERS", msg))
+        shutil.rmtree(d, ignore_errors=True)
+
+    # And the gate must be wired into both sweepers, not merely defined.
+    wired = 0
+    for tool in ("brute_match.py", "decl_split_sweep.py"):
+        txt = open(os.path.join(REPO, "tools", tool)).read()
+        if "report_side_effect_reorders" in txt and \
+           "allow_side_effect_reorder" in txt:
+            wired += 1
+    ok = wired == 2
+    bad += not ok
+    print("  [%s] the apply gate is wired into both sweepers (%d/2)"
+          % ("held" if ok else "DEFINED BUT UNUSED", wired))
 
     # And the ablation must be VISIBLE where it matters: a block whose stores
     # are order-dependent.  `slot->scaleCurrent = v; slot->scaleTarget =

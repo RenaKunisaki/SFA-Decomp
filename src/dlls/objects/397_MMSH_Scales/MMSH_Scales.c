@@ -6,6 +6,7 @@
 
 #include "dlls/objects/298_CFCrate.h"
 #include "main/dll/dll_0004_dummy04.h"
+#include "main/obj_list.h"
 #include "main/object_render.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
@@ -75,7 +76,7 @@ void mmshScales_update(GameObject* obj) {
         if (objectIndex != 0 && obj->seqIndex == MMSH_SCALES_SEQUENCE_PENDING) {
             slot = ((MMSHScalesState*)obj->extra)->sequence.slot;
             sequenceOwner = NULL;
-            objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
+            objects = ObjList_GetObjects(&objectIndex, &objectCount);
             siblingCount = 0;
             for (objectIndex = 0, groupSlot = (int)(s8)slot; objectIndex < objectCount; objectIndex++) {
                 otherObj = *objects;

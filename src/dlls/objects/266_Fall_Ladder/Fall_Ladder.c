@@ -20,6 +20,7 @@
  */
 #include "dlls/objects/266_Fall_Ladder.h"
 
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/frame_timing.h"
@@ -83,7 +84,7 @@ void Fall_Ladders_update(GameObject* obj) {
         if (state->fallDelay <= 0) {
             state->motionState = FALL_LADDER_MOTION_FALLING;
             if (state->playFallSound != 0) {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_totem_slide);
+                Sfx_PlayFromObject(obj, SFXTRIG_totem_slide);
                 state->playFallSound = 0;
             }
             state->fallDelay = 0;

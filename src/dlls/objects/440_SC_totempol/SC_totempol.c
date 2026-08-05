@@ -5,12 +5,15 @@
 
 #include "dlls/objects/440_SC_totempol.h"
 
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "main/model_engine.h"
+#include "main/obj_list.h"
 #include "main/object_render.h"
+#include "main/objhits.h"
 
 #define SC_TOTEM_POLE_RECORD_COUNT 3
 
@@ -124,14 +127,14 @@ void sc_totempole_update(GameObject* obj) {
     state->lit = mainGetBit(state->litGameBit);
     if (state->wasLit != state->lit) {
         if (state->lit != 0) {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_cflap2_c);
+            Sfx_PlayFromObject(obj, SFXTRIG_cflap2_c);
             state->animationSpeed = SC_TOTEM_POLE_ANIMATION_SPEED;
             allPolesLit = 0;
             if (mainGetBit(SC_TOTEM_POLE_GAMEBIT_FRONT) != 0 && mainGetBit(SC_TOTEM_POLE_GAMEBIT_LEFT) != 0 &&
                 mainGetBit(SC_TOTEM_POLE_GAMEBIT_RIGHT) != 0 && mainGetBit(SC_TOTEM_POLE_GAMEBIT_REAR) != 0) {
                 Sfx_PlayFromObject(0, SFXTRIG_mpick1_b);
                 allPolesLit = 1;
-                objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
+                objects = ObjList_GetObjects(&objectIndex, &objectCount);
                 for (; objectIndex < objectCount; objectIndex++) {
                     if (objects[objectIndex] != obj && objects[objectIndex]->anim.romDefNo == SC_TOTEM_POLE_SEQUENCE_ID) {
                         (*(ScTotemPoleInterfaceVTable**)objects[objectIndex]->anim.dll)
@@ -147,7 +150,7 @@ void sc_totempole_update(GameObject* obj) {
                 Sfx_PlayFromObject(0, SFXTRIG_menuups16k);
             }
         } else {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_cflap2_c);
+            Sfx_PlayFromObject(obj, SFXTRIG_cflap2_c);
             state->animationSpeed = -SC_TOTEM_POLE_ANIMATION_SPEED;
         }
     }

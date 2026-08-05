@@ -52,7 +52,7 @@ def main():
         if os.path.basename(srcobj) not in ninja and srcobj.replace(ROOT + "/", "") not in ninja:
             continue
         fns = {f["name"]: f for f in (unit.get("functions") or [])
-               if f.get("fuzzy_match_percent", 100) < 100}
+               if f.get("fuzzy_match_percent", 0.0) < 100}
         if not fns:
             continue
         try:
@@ -74,9 +74,10 @@ def main():
                 size = int(size)
             except Exception:
                 size = 0
-            wb = size * (100.0 - f["fuzzy_match_percent"]) / 100.0
+            fz = f.get("fuzzy_match_percent", 0.0)
+            wb = size * (100.0 - fz) / 100.0
             rows.append((wb, load_def, narrow_sur, name, fname,
-                         f["fuzzy_match_percent"], size,
+                         fz, size,
                          len(cur[fname]) - len(tgt[fname])))
     rows.sort(reverse=True)
     print("%-8s %5s %5s %6s %5s  %s" % ("wB", "ldΔ", "nrwΔ", "fuzzy", "insΔ", "unit :: fn"))
@@ -85,4 +86,5 @@ def main():
     print("\ntotal hits: %d" % len(rows))
 
 
-main()
+if __name__ == "__main__":
+    main()

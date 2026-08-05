@@ -194,4 +194,5 @@ def main():
                      % (checked, skipped, len(findings)))
 
 
-main()
+if __name__ == "__main__":
+    main()

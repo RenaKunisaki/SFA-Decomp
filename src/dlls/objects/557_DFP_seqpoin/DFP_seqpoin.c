@@ -5,13 +5,17 @@
  * gamebit.
  */
 #include "main/dll/dfp_types.h"
+#include "main/map_load.h"
 #include "main/object_render_legacy.h"
 #include "main/gamebits.h"
 #include "game/objects/object_setup.h"
 #include "main/mapEventTypes.h"
 #include "main/dll/DF/dll_022D_dfpseqpoint.h"
 #include "main/objseq.h"
+#include "main/pi_dolphin_api.h"
+#include "main/rcp_dolphin_api.h"
 #include "main/vecmath.h"
+#include "sys/objects.h"
 #include "dlls/object_descriptor.h"
 
 /* Placement trigger-mode selector (DfpSeqPointState::triggerMode). */
@@ -79,7 +83,7 @@ int DFP_seqpoint_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
             case 0x14:
                 if (*(u32*)&data->head.ident == 0x49de8)
                 {
-                    ((DfpFlags7*)&blob->flags0F)->b80 = 1;
+                    blob->flags0F.b80 = 1;
                 }
                 else
                 {
@@ -133,12 +137,12 @@ void DFP_seqpoint_update(GameObject* obj)
     int gameBit;
 
     self = obj;
-    player = (GameObject*)Obj_GetPlayerObject();
+    player = Obj_GetPlayerObject();
     state = self->extra;
-    if (((u32)state->flags0F >> 7 & 1) != 0)
+    if (state->flags0F.b80 != 0)
     {
         mainSetBits(0xef7, 1);
-        ((DfpFlags7*)&state->flags0F)->b80 = 0;
+        state->flags0F.b80 = 0;
     }
     gameBit = state->disableGameBit;
     if (gameBit != -1)
@@ -234,7 +238,7 @@ void DFP_seqpoint_init(GameObject* obj, u8* init)
     sub->conditionGameBit = ((DfpSeqPointPlacement*)init)->conditionGameBit;
     sub->disableGameBit = ((DfpSeqPointPlacement*)init)->disableGameBit;
     obj->objectFlags = (u16)(obj->objectFlags | OBJECT_OBJFLAG_HITDETECT_DISABLED);
-    ((DfpFlags7*)&sub->flags0F)->b80 = 0;
+    sub->flags0F.b80 = 0;
 }
 
 void DFP_seqpoint_release(void)

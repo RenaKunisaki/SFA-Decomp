@@ -18,6 +18,9 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "dlls/object_descriptor.h"
 #include "main/audio/sfx_play_legacy_api.h"
+#include "main/objhits.h"
+#include "main/track_dolphin_api.h"
+#include "main/vecmath.h"
 
 
 int wcfloortile_getExtraSize(void)
@@ -65,7 +68,7 @@ void wcfloortile_update(GameObject* obj)
     default:
         if (state->flags & 4)
         {
-            if (0 < obj->anim.hitboxTransformState->contactObjectCount)
+            if (obj->anim.hitboxTransformState->contactObjectCount > 0)
             {
                 f32 z = 0.0f;
                 for (i = 0, off = 0; i < obj->anim.hitboxTransformState->contactObjectCount; off += 4, i++)

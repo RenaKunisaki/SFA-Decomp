@@ -8,11 +8,18 @@
 #include "dlls/objects/438_SC_levelcon.h"
 
 #include "dlls/objects/440_SC_totempol.h"
+#include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/dll_0000_gameui_api.h"
+#include "main/dll/savegame_load_api.h"
 #include "main/frame_timing.h"
+#include "main/game_timer_control_api.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
+#include "main/gametext_show_api.h"
+#include "main/lightmap_api.h"
 #include "main/map_load.h"
 #include "main/mapEventTypes.h"
 #include "main/object_render.h"
@@ -209,7 +216,7 @@ void sc_levelcontrol_update(GameObject* obj) {
         }
     }
     if (state->fadeTimer && (player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
-        if (120.0f == state->fadeTimer) {
+        if (state->fadeTimer == 120.0f) {
             (*gScreenTransitionInterface)->start(0x73, 1);
         }
         state->fadeTimer -= timeDelta;
@@ -226,7 +233,7 @@ void sc_levelcontrol_update(GameObject* obj) {
             mainSetBits(0x7cf, 1);
         }
     } else if (state->exitTimer && (player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
-        if (120.0f == state->exitTimer) {
+        if (state->exitTimer == 120.0f) {
             (*gScreenTransitionInterface)->start(0x73, 1);
         }
         state->exitTimer -= timeDelta;
@@ -275,10 +282,8 @@ void sc_levelcontrol_update(GameObject* obj) {
             if (state->fogNear < state->fogNearTarget) {
                 state->fogNear = state->fogNearTarget;
             }
-        } else {
-            if (state->fogNear > state->fogNearTarget) {
-                state->fogNear = state->fogNearTarget;
-            }
+        } else if (state->fogNear > state->fogNearTarget) {
+            state->fogNear = state->fogNearTarget;
         }
         enableHeavyFog(50.0f + state->fogNear, state->fogNear, 1000.0f, 0.1f, 0.0005f, 0);
     }
@@ -315,10 +320,8 @@ void sc_levelcontrol_update(GameObject* obj) {
             if (mainGetBit(0x627) != 0 && mainGetBit(0x63e) != 0) {
                 mainSetBits(GAMEBIT_LV_DoneTests, 1);
             }
-        } else {
-            if (mainGetBit(GAMEBIT_LV_DoneTests) != 0) {
-                mainSetBits(0x85, 1);
-            }
+        } else if (mainGetBit(GAMEBIT_LV_DoneTests) != 0) {
+            mainSetBits(0x85, 1);
         }
     }
     if (state->animEventState == 0) {

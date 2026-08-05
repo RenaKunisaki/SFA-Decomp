@@ -81,7 +81,7 @@ void crrockfall_hitDetect(void) {
 void crrockfall_update(GameObject* obj) {
     CrRockfallState* state = obj->extra;
     ObjHitsPriorityState* hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
-    void* phaseData = obj->anim.modelState;
+    ObjModelState* phaseData = obj->anim.modelState;
     const CrRockfallPlacement* placement = (const CrRockfallPlacement*)obj->anim.placementData;
 
     if (gCrRockfallResource == NULL) {
@@ -91,7 +91,7 @@ void crrockfall_update(GameObject* obj) {
     if (state->floorFound == 0) {
         state->floorY = crrockfall_findFloorY(obj);
         if (state->floorFound != 0 && phaseData != NULL) {
-            ((ObjModelState*)phaseData)->overrideWorldPosY = state->floorY;
+            phaseData->overrideWorldPosY = state->floorY;
             objShadowInvalidate(obj);
         }
         return;
@@ -124,7 +124,7 @@ void crrockfall_update(GameObject* obj) {
             playerDistance = (playerDistance - 250.0f) / 100.0f;
             playerDistance = 1.0f - playerDistance;
             alphaScale = (int)(120.0f * height) + 0x40;
-            ((ObjModelState*)phaseData)->shadowAlpha =
+            phaseData->shadowAlpha =
                 (int)(((f32)(u32)obj->anim.renderAlpha / 255.0f) * ((f32)alphaScale * playerDistance));
         }
 
@@ -142,7 +142,7 @@ void crrockfall_update(GameObject* obj) {
             if (player == NULL) {
                 inRange = 0;
             } else {
-                phaseData = obj->anim.placementData;
+                phaseData = (ObjModelState*)obj->anim.placementData;
                 xzDistance = Vec_xzDistance(&obj->anim.worldPosX, &player->anim.worldPosX);
                 verticalDistance = obj->anim.localPosY - player->anim.localPosY;
                 if (verticalDistance < 0.0f) {

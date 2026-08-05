@@ -557,8 +557,8 @@ int trackSweepCircleAgainstLines(f32* startPos, f32* endPos, f32 radius, int fla
             kind = ((IntersectLine*)rec)->kind;
             if (kind & 0x40)
                 continue;
-            i0 = *(s16*)(rec + 4);
-            i1 = *(s16*)(rec + 6);
+            i0 = ((IntersectLine*)rec)->pt[0];
+            i1 = ((IntersectLine*)rec)->pt[1];
             if (kind & 0x80)
             {
                 if (flag4 != 0)
@@ -1238,7 +1238,7 @@ void intersectModLineBuild(IntersectModLineObject* obj)
             grp = 1;
             debugPrintf(sTrackIntersectFuncOverflowFormat, 1);
         }
-        if ((s16)grp != previousGroup)
+        if (grp != previousGroup)
         {
             obj->groupRanges[grp][0] = outputLineIndex;
             if (previousGroup != -1)
@@ -1275,7 +1275,7 @@ void intersectModLineBuild(IntersectModLineObject* obj)
         memcpy(&obj->lines[outputLineIndex], (char*)gIntersectLinePool + best * 0x10, 0x10);
         *(u8*)(gIntersectLinePool + best * 0x10 + 3) = 0x14;
     }
-    if ((s16)previousGroup != -1)
+    if (previousGroup != -1)
         obj->groupRanges[previousGroup][1] = gIntersectLineCount;
     memcpy(obj->points, gIntersectPoints, gIntersectPointCount * 0xc);
     gIntersectLineCount = 0;
@@ -1532,13 +1532,13 @@ void trackSetLinesEnabledByParam(int matchVal, GameObject* obj, int flag)
 {
     int count;
     int i;
-    int base;
+    struct IntersectModLineObject* mod;
     IntersectLine* e;
     if ((u32)obj != 0)
     {
-        base = (int)(obj)->anim.modelInstance;
-        e = *(IntersectLine**)(base + 0x34);
-        count = *(u8*)(base + 0x5c);
+        mod = (struct IntersectModLineObject*)(obj)->anim.modelInstance;
+        e = mod->lines;
+        count = mod->sourceLineCount;
     }
     else
     {
@@ -1898,7 +1898,7 @@ int trackResolveSurfacePenetration(f32* a, f32* b, f32* c, f32* p, f32 f1p, f32 
     f32 displacement[3];
     f32 horizontalNormal[3];
 
-    if ((u8)type == 3)
+    if (type == 3)
     {
         f32 fa, scale;
         f32 fb;
@@ -1930,14 +1930,17 @@ int trackResolveSurfacePenetration(f32* a, f32* b, f32* c, f32* p, f32 f1p, f32 
         f32 p1 = *(f32*)(p + 1);
         if (p1 < 0.707f && p1 > -0.707f)
         {
-            switch ((u8)type)
+            switch (type)
             {
             case 1:
             case 8:
             case 0xa:
             {
-                f32 normalX = p[0];
-                f32 normalZ = p[2];
+                f32 normalZ;
+                f32 normalX;
+
+                normalX = p[0];
+                normalZ = p[2];
                 y = y - (p[3] + (b[2] * normalZ + (normalX * b[0] + b[1] * p[1])));
                 if (y > 0.0f)
                 {
@@ -1991,8 +1994,11 @@ int trackResolveSurfacePenetration(f32* a, f32* b, f32* c, f32* p, f32 f1p, f32 
             case 0xa:
             default:
             {
-                f32 normalX = p[0];
-                f32 normalZ = p[2];
+                f32 normalZ;
+                f32 normalX;
+
+                normalX = p[0];
+                normalZ = p[2];
                 y = y - (p[3] + (b[2] * normalZ + (normalX * b[0] + b[1] * p[1])));
                 if (y > 0.0f)
                 {
@@ -2587,7 +2593,7 @@ int trackGetIntersect2(int mode, void* tri1, void* tri2, f32* startPos, f32* end
         sp1 += 3;
         sp2 += 3;
     } while (i < count);
-    return (u8)retLo | ((u8)retHi << 4);
+    return retLo | (retHi << 4);
 }
 
 int trackGetIntersect(GameObject* contactSrc, f32* startPos, f32* endPos, int count, void* results, int flags)
@@ -2601,7 +2607,7 @@ int trackGetIntersect(GameObject* contactSrc, f32* startPos, f32* endPos, int co
 
     if (count > 4)
         count = 4;
-    *(u16*)((u8*)results + 0x6c) = 0;
+    ((TrackHitResults*)results)->hitCount = 0;
 
     i = 0;
     if (count > 0)
@@ -2698,7 +2704,7 @@ int trackGetIntersect(GameObject* contactSrc, f32* startPos, f32* endPos, int co
         }
     }
 
-    *(u8*)((u8*)results + 0x6e) = hitCount;
+    ((TrackHitResults*)results)->hitMask = hitCount;
     return hitCount;
 }
 
@@ -2717,7 +2723,7 @@ int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int* model, f3
     int k22;
     u8* blk;
     s16 *xs, *ys, *zs;
-    int hdr;
+    ModelFileHeader* hdr;
     int deg;
     int flag20;
     int flag8;
@@ -2725,7 +2731,7 @@ int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int* model, f3
     int count;
     int flag4;
 
-    hdr = *model;
+    hdr = (ModelFileHeader*)*model;
 
     Matrix_TransformPoint(desc->currentMatrix, x0, y0, z0, &xa, &ytmp, &za);
     Matrix_TransformPoint(desc->currentMatrix, x0, y0, z1, &xb, &y0, &zb);
@@ -2759,11 +2765,11 @@ int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int* model, f3
     if (zd > z1)
         z1 = zd;
 
-    count = *(u16*)(hdr + 0xf0);
+    count = hdr->collisionBlockCount;
     i = 0;
-    flag20 = (u8)flags & 0x20;
-    flag8 = (u8)flags & 8;
-    flag4 = (u8)flags & 4;
+    flag20 = flags & 0x20;
+    flag8 = flags & 8;
+    flag4 = flags & 4;
 
     for (; i < count; i++)
     {
@@ -2813,7 +2819,7 @@ int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int* model, f3
             {
                 s16* v = ObjModel_GetBaseVertexCoords((ModelFileHeader*)hdr, *tw);
                 f32 fx, fy, fz;
-                if (((ModelFileHeader*)hdr)->flags & 0x800)
+                if (hdr->flags & 0x800)
                 {
                     fx = v[0] * scale;
                     fy = v[1] * scale;
@@ -2843,9 +2849,9 @@ int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int* model, f3
                     tMaxZ = fz;
                 if (fz < tMinZ)
                     tMinZ = fz;
-                *(s16*)(vout + 0x10) = fx;
-                *(s16*)(vout + 0x16) = fy;
-                *(s16*)(vout + 0x1c) = fz;
+                ((TrackTriangle*)vout)->vx[0] = fx;
+                ((TrackTriangle*)vout)->vy[0] = fy;
+                ((TrackTriangle*)vout)->vz[0] = fz;
                 tw++;
                 vout += 2;
             }
@@ -2876,20 +2882,20 @@ int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int* model, f3
             if (!(len > 0.0f))
                 continue;
             inv = 1.0f / len;
-            *(f32*)(cur + 4) = fnx * inv;
-            *(f32*)(cur + 8) = fny * inv;
-            *(f32*)(cur + 0xc) = fnz * inv;
+            ((TrackTriangle*)cur)->planeN[0] = fnx * inv;
+            ((TrackTriangle*)cur)->planeN[1] = fny * inv;
+            ((TrackTriangle*)cur)->planeN[2] = fnz * inv;
 
             if (flag8)
             {
-                if (*(f32*)(cur + 8) >= 0.707f)
+                if (((TrackTriangle*)cur)->planeN[1] >= 0.707f)
                     continue;
-                if (*(f32*)(cur + 8) <= -0.707f)
+                if (((TrackTriangle*)cur)->planeN[1] <= -0.707f)
                     continue;
             }
             if (flag4)
             {
-                if (*(f32*)(cur + 8) < 0.707f && *(f32*)(cur + 8) > -0.707f)
+                if (((TrackTriangle*)cur)->planeN[1] < 0.707f && ((TrackTriangle*)cur)->planeN[1] > -0.707f)
                     continue;
             }
 
@@ -2912,9 +2918,9 @@ int trackBuildModelTriangles(int cur, TrackBlockDescriptor* desc, int* model, f3
                     f32 px, py, pz;
                     if (k > 2)
                         k = 0;
-                    px = *(f32*)(cur + 4) + xw[0];
-                    py = *(f32*)(cur + 8) + yw[0];
-                    pz = *(f32*)(cur + 0xc) + zw[0];
+                    px = ((TrackTriangle*)cur)->planeN[0] + xw[0];
+                    py = ((TrackTriangle*)cur)->planeN[1] + yw[0];
+                    pz = ((TrackTriangle*)cur)->planeN[2] + zw[0];
                     ex = py * (f32)(zw[0] - zs[k]) + ((f32)yw[0] * ((f32)zs[k] - pz) + ys[k] * (pz - zw[0]));
                     ey = pz * (f32)(xw[0] - xs[k]) + ((f32)zw[0] * ((f32)xs[k] - px) + zs[k] * (px - xw[0]));
                     ez = px * (f32)(yw[0] - ys[k]) + ((f32)xw[0] * ((f32)ys[k] - py) + xs[k] * (py - yw[0]));
@@ -3061,7 +3067,7 @@ u8 doEdges;
 
     {
         MapBlockData* c0 = cells[0];
-        void* p = mapBlockGetPolygon((int*)c0, 0);
+        void* p = mapBlockGetPolygon(c0, 0);
         dmaflip = 0;
         offA = 0;
         cacheAllocAndCopy((u8*)p, c0->nPolygons << 3, &offA, &offB, 0x2000);
@@ -3099,7 +3105,7 @@ u8 doEdges;
             int c13, c14;
             dmaflip ^= 0x2000;
             nextBase = dmaflip + 0x2000;
-            p = mapBlockGetPolygon((int*)next, 0);
+            p = mapBlockGetPolygon(next, 0);
             offA = dmaflip;
             c13 = cacheAllocAndCopy((u8*)p, next->nPolygons << 3, &offA, &offB, nextBase);
             c14 = cacheAllocAndCopy((u8*)next->vertices, next->vertexCount * 6, &offB, &offC, nextBase);
@@ -3251,12 +3257,12 @@ u8 doEdges;
                         maxZ = z;
                     else if (z < minZ)
                         minZ = z;
-                    *(s16*)(vo + 0x10) = x + dxoff;
-                    *(s16*)(vo + 0x16) = yy;
-                    *(s16*)(vo + 0x1c) = z + dzoff;
-                    vf[0] = __OSs16tof32((s16*)(vo + 0x10));
-                    vf[1] = __OSs16tof32((s16*)(vo + 0x16));
-                    vf[2] = __OSs16tof32((s16*)(vo + 0x1c));
+                    ((TrackTriangle*)vo)->vx[0] = x + dxoff;
+                    ((TrackTriangle*)vo)->vy[0] = yy;
+                    ((TrackTriangle*)vo)->vz[0] = z + dzoff;
+                    vf[0] = __OSs16tof32(((TrackTriangle*)vo)->vx);
+                    vf[1] = __OSs16tof32(((TrackTriangle*)vo)->vy);
+                    vf[2] = __OSs16tof32(((TrackTriangle*)vo)->vz);
                     tw++;
                     vo += 2;
                     vf += 3;
@@ -3284,7 +3290,7 @@ u8 doEdges;
                 PSVECScale((Vec*)(cur + 4), (Vec*)(cur + 4), mag);
                 if (f8)
                 {
-                    if (*(f32*)(cur + 8) >= 0.707f || *(f32*)(cur + 8) <= -0.707f)
+                    if (((TrackTriangle*)cur)->planeN[1] >= 0.707f || ((TrackTriangle*)cur)->planeN[1] <= -0.707f)
                     {
                         if (type != 4)
                             continue;
@@ -3294,7 +3300,7 @@ u8 doEdges;
                 }
                 if (f4)
                 {
-                    if (*(f32*)(cur + 8) < 0.707f && *(f32*)(cur + 8) > -0.707f)
+                    if (((TrackTriangle*)cur)->planeN[1] < 0.707f && ((TrackTriangle*)cur)->planeN[1] > -0.707f)
                         continue;
                 }
                 ((TrackTriangle*)cur)->planeD = -PSVECDotProduct((Vec*)(cur + 4), (Vec*)v0);
@@ -3410,7 +3416,7 @@ void trackIntersectBroadphase(GameObject* obj, TrackQueryBounds* ranges, u32 que
             {
                 ObjHitsPriorityState* hitState;
                 ObjHitboxTransformState* transformState;
-                int hdr;
+                ModelFileHeader* hdr;
                 f32 r, c;
 
                 resetObj = *resetObjects;
@@ -3429,8 +3435,8 @@ void trackIntersectBroadphase(GameObject* obj, TrackQueryBounds* ranges, u32 que
                 model = (int*)resetObj->banks[(s8)hitState->stateIndex];
                 if (model == NULL)
                     continue;
-                hdr = *(int*)model;
-                if (*(u16*)(hdr + 0xf0) == 0)
+                hdr = (ModelFileHeader*)*model;
+                if (hdr->collisionBlockCount == 0)
                     continue;
                 r = (f32)(u32)modelFileHeaderGetCullDistance((ModelFileHeader*)hdr);
                 c = resetObj->worldPosX;

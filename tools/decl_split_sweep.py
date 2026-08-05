@@ -121,29 +121,12 @@ def strip_trailing_comment(item: str) -> tuple[str, str]:
 
 def top_level_eq(code: str) -> int:
     """Index of the initialiser `=`, or -1.  Skips ==, !=, <=, >=, and any `=`
-    nested in parens/brackets/braces or inside a string."""
-    depth = 0
-    i = 0
-    n = len(code)
-    while i < n:
-        c = code[i]
-        if c in "([{":
-            depth += 1
-        elif c in ")]}":
-            depth -= 1
-        elif c in '"\'':
-            i = BM.skip_string(code, i)
-            continue
-        elif c == "=" and depth == 0:
-            if i + 1 < n and code[i + 1] == "=":
-                i += 2
-                continue
-            if i > 0 and code[i - 1] in "!<>=+-*/%&|^":
-                i += 1
-                continue
-            return i
-        i += 1
-    return -1
+    nested in parens/brackets/braces or inside a string.
+
+    ONE implementation, shared with the sweeper that decides whether an
+    initialiser carries a call: two copies of this scan would be two things to
+    control, and only one of them would ever get the control."""
+    return BM.initialiser_eq(code)
 
 
 IDENT_RE = re.compile(r"[A-Za-z_]\w*")
@@ -472,6 +455,31 @@ def self_test() -> int:
           rendered.index("reducedAngle =") < rendered.index("reducedSquared =")
           < rendered.index("tangent ="))
 
+    # THE PROPERTY THAT MAKES SPLIT SPACE SAFE, and it is only interesting
+    # under a NON-IDENTITY order: the assignments must come out in the
+    # ORIGINAL declaration sequence whatever the permutation says, or the
+    # split would be reordering initialiser evaluation -- a change in the
+    # computation that no gate in this project can see.
+    chain_src = ("float g(float angle) {\n"
+                 "    u16 quadrant;\n"
+                 "    float reducedAngle = trigReduceQuadrant(&quadrant, angle);\n"
+                 "    float reducedSquared = reducedAngle * reducedAngle;\n"
+                 "    float tangent = reducedAngle * reducedSquared;\n"
+                 "    return tangent;\n}\n")
+    cb = collect_decl_blocks(chain_src, *find_function_body(chain_src, "g"))[0]
+    cmask = split_mask_for(cb["items"])
+    check("all three chain declarations split when nothing blocks them",
+          cmask == [False, True, True, True], str(cmask))
+    rev = list(reversed(range(len(cb["items"]))))
+    r2 = render_split(chain_src, cb, rev, cmask)
+    ia = r2.index("reducedAngle =")
+    isq = r2.index("reducedSquared =")
+    it_ = r2.index("tangent =")
+    check("a REVERSED order still emits the assignments in original order",
+          ia < isq < it_, f"{ia} {isq} {it_}")
+    check("...and it really did reverse the DECLARATIONS",
+          r2.index("float tangent;") < r2.index("u16 quadrant;"))
+
     # ---- MUTATION CONTROLS: each instrument must SCREAM when broken.
     print("  -- mutation controls (each must be caught) --")
     real_top_eq = top_level_eq
@@ -506,6 +514,23 @@ def self_test() -> int:
     finally:
         pass
 
+    # --skip RESUMES a sweep by dropping a prefix of the variant list.  That is
+    # only sound if the list is the SAME list every time, and a resume that
+    # silently drops the wrong orderings is exactly the partial-sweep failure
+    # the option exists to cure -- so the determinism is asserted, not assumed.
+    print("  -- resume (--skip) --")
+    a1 = BM.gen_variants(9, "all", 10 ** 6)
+    a2 = BM.gen_variants(9, "all", 10 ** 6)
+    check("gen_variants is deterministic, which is what makes --skip sound",
+          a1 == a2, f"{len(a1)} vs {len(a2)}")
+    resumed = [a1[0]] + a1[1 + 40:]
+    check("--skip keeps the identity and exactly the untried tail",
+          resumed[0] == a1[0] and resumed[1:] == a1[41:]
+          and len(resumed) == len(a1) - 40)
+    check("control: a different seed gives a different list, so determinism "
+          "is a property and not a tautology",
+          BM.gen_variants(9, "all", 10 ** 6, seed=999) != a1)
+
     print(f"\n{'PASSED' if not fails else 'FAILED: ' + ', '.join(fails)}"
           f"  ({'0' if not fails else len(fails)} failure(s))")
     return 0 if not fails else 1
@@ -526,6 +551,13 @@ def main():
                     choices=["swaps", "moves", "all", "radius2", "radius2only",
                              "full"])
     ap.add_argument("--apply-best", action="store_true")
+    ap.add_argument("--allow-side-effect-reorder", action="store_true",
+                    help="apply a winner even when it reorders two UNSPLIT "
+                         "declarations whose initialisers call something")
+    ap.add_argument("--skip", type=int, default=0,
+                    help="resume: drop the first N non-identity orderings of "
+                         "the (deterministic) variant list, which a previous "
+                         "run of the SAME strategy+cap already measured")
     ap.add_argument("--new-only", action="store_true",
                     help="sweep ONLY the orderings the split made legal")
     ap.add_argument("--self-test", action="store_true")
@@ -582,7 +614,7 @@ def main():
     def md5o():
         return hashlib.md5(src_o.read_bytes()).hexdigest()
 
-    keep = install_restore_guard(src_file, original)
+    write, keep = install_restore_guard(src_file, original)
 
     # pristine baseline, rebuilt from the on-disk original (a peer or a prior
     # run can leave a stale .o, and a stale baseline lets a REGRESSION win)
@@ -601,11 +633,13 @@ def main():
         n = len(b["items"])
 
         # ---- THE CONTROL: split alone, original order, must be byte-identical
-        src_file.write_bytes(render_split(src, b, list(range(n)), mask)
-                             .encode("latin-1"))
+        if not write(render_split(src, b, list(range(n)), mask)
+                     .encode("latin-1")):
+            raise SystemExit("aborted: the source file was edited by another "
+                             "process mid-sweep")
         if not rebuild(unit["object"], args.version):
             print(f"# block {bi}: SPLIT DID NOT COMPILE -- skipping")
-            src_file.write_bytes(original)
+            write(original)
             continue
         split_md5 = md5o()
         split_fz = fuzzy_measure(unit, args.symbol, args.version)
@@ -641,6 +675,11 @@ def main():
 
             variants = [variants[0]] + [v for v in variants[1:]
                                         if not legal_before(list(v))]
+        if args.skip:
+            skipped = len(variants) - 1
+            variants = [variants[0]] + variants[1 + args.skip:]
+            print(f"# block {bi}: RESUME, skipping {args.skip} of {skipped} "
+                  f"already-measured orderings")
         print(f"# block {bi}: {len(variants)-1} non-identity orderings "
               f"(split enlarged the neighbourhood"
               f"{'; NEW-ONLY' if args.new_only else ''})")
@@ -651,8 +690,10 @@ def main():
             if time.time() - t0 > args.time_budget:
                 print("# time budget reached")
                 break
-            src_file.write_bytes(render_split(src, b, list(order), mask)
-                                 .encode("latin-1"))
+            if not write(render_split(src, b, list(order), mask)
+                         .encode("latin-1")):
+                raise SystemExit("aborted: the source file was edited by "
+                                 "another process mid-sweep")
             if not rebuild(unit["object"], args.version):
                 continue
             fz = fuzzy_measure(unit, args.symbol, args.version)
@@ -669,13 +710,27 @@ def main():
 
     if best[1] and (best[0] > base_fz + 1e-9 or args.apply_best):
         bi, order, mask = best[1]
+        # MEANING GATE.  A SPLIT initialiser cannot move: render_split emits
+        # every assignment at the top of the block in the ORIGINAL declaration
+        # order whatever `order` says.  An UNSPLIT initialised declaration is
+        # evaluated where its declaration sits, so two of those swapping is a
+        # real change in the computation -- and no gate here compares meaning.
+        movable = [("int _pinned_%d;" % k) if mask[k] else it
+                   for k, it in enumerate(blocks[bi]["items"])]
+        if BM.report_side_effect_reorders(movable, list(order),
+                                          f"(block {bi}, unsplit items only)") \
+                and not args.allow_side_effect_reorder:
+            write(original)
+            rebuild(unit["object"], args.version)
+            print("\nNOT APPLIED: the winning ordering reorders side effects.")
+            return
         newsrc = render_split(src, blocks[bi], list(order), mask)
         keep(newsrc.encode("latin-1"))
         rebuild(unit["object"], args.version)
         print(f"\nAPPLIED block {bi} order {list(order)}: "
               f"{base_fz:.6f} -> {best[0]:.6f}")
     else:
-        src_file.write_bytes(original)
+        write(original)
         rebuild(unit["object"], args.version)
         print(f"\nno improvement over baseline {base_fz:.6f}; restored")
 

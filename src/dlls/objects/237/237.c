@@ -257,7 +257,7 @@ void collectible_updateLooseMotion(GameObject* obj) {
         f32 inverseVelocityZ = -obj->anim.velocityZ;
         f32 speed = sqrtf(inverseVelocityX * inverseVelocityX + inverseVelocityY * inverseVelocityY +
                           inverseVelocityZ * inverseVelocityZ);
-        if (0.0f != speed) {
+        if (speed != 0.0f) {
             f32 inverseSpeed = 1.0f / speed;
             inverseVelocityX = inverseVelocityX * inverseSpeed;
             inverseVelocityY = inverseVelocityY * inverseSpeed;
@@ -547,7 +547,7 @@ void collectible_update(GameObject* obj) {
             return;
         }
     }
-    while (ObjMsg_Pop((void*)obj, (u32*)&messageId, (u32*)&messageParam, NULL) != 0) {
+    while (ObjMsg_Pop(obj, (u32*)&messageId, (u32*)&messageParam, NULL) != 0) {
         switch (messageId) {
         case COLLECTIBLE_MSG_PICKUP:
             collectible_applyPickup(obj);

@@ -66,7 +66,7 @@ int earthwalker_SeqFn(GameObject* ewObj, int unused, ObjSeqState* animUpdate, in
 
     ewState->flags &= ~1;
     characterDoEyeAnims(ewObj, &ewState->eyeAnimState);
-    if (dll_2E_updateSequenceTurn(ewObj, (ObjSeqState*)animUpdate, (MoveLibState*)ewState, 0, 0) != 0)
+    if (dll_2E_updateSequenceTurn(ewObj, animUpdate, (MoveLibState*)ewState, 0, 0) != 0)
     {
         return 0;
     }

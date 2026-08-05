@@ -12,7 +12,9 @@
 #include "dlls/objects/390_CCgasventCo.h"
 #include "dlls/objects/389_CCgasvent.h"
 
+#include "main/audio/sfx_looped_object_api.h"
 #include "main/audio/sfx_object_volume_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_interface.h"
 #include "main/frame_timing.h"

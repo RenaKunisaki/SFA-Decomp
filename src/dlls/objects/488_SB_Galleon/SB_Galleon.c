@@ -196,21 +196,21 @@ void SB_Galleon_updateFlight(GameObject* obj) {
         camShake = 120.0f;
         Sfx_StopObjectChannel((int)obj, 1);
         (*gCameraInterface)->releaseAction(&camShake, 0);
-        ((GameObject*)obj)->userData1 = 1;
-        tx = ((SBGalleonState*)state)->homeX - 1600.0f;
-        tz = 150.0f * mathCosf((3.14159265f * (f32)((SBGalleonState*)state)->bobPhase) / 32768.0f) +
-             ((SBGalleonState*)state)->homeZ;
-        ty = 60.0f * mathSinf((3.14159265f * (f32)((SBGalleonState*)state)->bobPhase) / 32768.0f) +
-             (((SBGalleonState*)state)->homeY - 300.0f);
-        ((SBGalleonState*)state)->bobPhase = ((SBGalleonState*)state)->bobPhase + framesThisStep * 0xB6;
-        dx = tx - ((GameObject*)obj)->anim.localPosX;
-        dy = ty - ((GameObject*)obj)->anim.localPosY;
-        dz = tz - ((GameObject*)obj)->anim.localPosZ;
-        ((SBGalleonState*)state)->speed = 3.0f;
+        obj->userData1 = 1;
+        tx = state->homeX - 1600.0f;
+        tz = 150.0f * mathCosf((3.14159265f * (f32)state->bobPhase) / 32768.0f) +
+             state->homeZ;
+        ty = 60.0f * mathSinf((3.14159265f * (f32)state->bobPhase) / 32768.0f) +
+             (state->homeY - 300.0f);
+        state->bobPhase = state->bobPhase + framesThisStep * 0xB6;
+        dx = tx - obj->anim.localPosX;
+        dy = ty - obj->anim.localPosY;
+        dz = tz - obj->anim.localPosZ;
+        state->speed = 3.0f;
         dx *= 0.03125f;
         dy *= 0.03125f;
         dz *= 0.03125f;
-        limit = ((SBGalleonState*)state)->speed;
+        limit = state->speed;
         if (dx > limit) {
             dx = limit;
         }
@@ -230,123 +230,123 @@ void SB_Galleon_updateFlight(GameObject* obj) {
         if (dz < negLimit) {
             dz = negLimit;
         }
-        t = ((SBGalleonState*)state)->phaseTimer;
+        t = state->phaseTimer;
         if (t < 0x78) {
             dy = 0.0f;
         } else if (t < 0xB4) {
             dy = dy * ((f32)(t - 0x78) / 60.0f);
         }
-        ((SBGalleonState*)state)->phaseTimer += framesThisStep;
-        lerpD = dx - ((SBGalleonState*)state)->driftX;
-        ((SBGalleonState*)state)->driftX += lerpD * (blendK = 0.0625f);
-        ((SBGalleonState*)state)->driftY += (dy - ((SBGalleonState*)state)->driftY) * (blendK = blendK);
-        ((SBGalleonState*)state)->driftZ += (dz - ((SBGalleonState*)state)->driftZ) * (blendK = blendK);
+        state->phaseTimer += framesThisStep;
+        lerpD = dx - state->driftX;
+        state->driftX += lerpD * (blendK = 0.0625f);
+        state->driftY += (dy - state->driftY) * (blendK = blendK);
+        state->driftZ += (dz - state->driftZ) * (blendK = blendK);
         ambA = 50.0f;
         ambB = 0.001f;
         ambC = 10.0f;
-        if (((SBGalleonState*)state)->cycleKind == 0) {
-            switch (((SBGalleonState*)state)->stage) {
+        if (state->cycleKind == 0) {
+            switch (state->stage) {
             case 0:
             case 1:
-                if (((SBGalleonState*)state)->headingLatch != 0) {
-                    ((SBGalleonState*)state)->headingLatch -= 1;
-                    if (((SBGalleonState*)state)->headingLatch <= 0) {
-                        ((SBGalleonState*)state)->headingLatch = 200;
+                if (state->headingLatch != 0) {
+                    state->headingLatch -= 1;
+                    if (state->headingLatch <= 0) {
+                        state->headingLatch = 200;
                     }
                 }
                 break;
             default:
-                ((SBGalleonState*)state)->stage = 2;
-                ((SBGalleonState*)state)->phaseTimer = 0;
-                ((SBGalleonState*)state)->phase = 1;
-                ((SBGalleonState*)state)->cycleKind = 1;
-                ((SBGalleonState*)state)->phaseCounter = 0;
-                ((SBGalleonState*)state)->flightPattern = 0;
-                ((SBGalleonState*)state)->headingLatch = 200;
+                state->stage = 2;
+                state->phaseTimer = 0;
+                state->phase = 1;
+                state->cycleKind = 1;
+                state->phaseCounter = 0;
+                state->flightPattern = 0;
+                state->headingLatch = 200;
                 mainSetBits(DBPROTECTION_GAMEBIT_DIVE_ACTIVE, 1);
                 break;
             }
         } else {
-            switch (((SBGalleonState*)state)->stage) {
+            switch (state->stage) {
             case 3:
             case 4:
-                if (((SBGalleonState*)state)->headingLatch != 0) {
-                    ((SBGalleonState*)state)->headingLatch -= 1;
-                    if (((SBGalleonState*)state)->headingLatch <= 0) {
-                        ((SBGalleonState*)state)->headingLatch = 200;
+                if (state->headingLatch != 0) {
+                    state->headingLatch -= 1;
+                    if (state->headingLatch <= 0) {
+                        state->headingLatch = 200;
                     }
                 }
                 break;
             default:
-                ((SBGalleonState*)state)->stage = 5;
-                ((SBGalleonState*)state)->phaseTimer = 0;
-                ((SBGalleonState*)state)->phase = 1;
-                ((SBGalleonState*)state)->cycleKind = 2;
-                ((SBGalleonState*)state)->flightPattern = 0;
-                ((SBGalleonState*)state)->headingLatch = 200;
+                state->stage = 5;
+                state->phaseTimer = 0;
+                state->phase = 1;
+                state->cycleKind = 2;
+                state->flightPattern = 0;
+                state->headingLatch = 200;
                 break;
             }
         }
         break;
     case 1:
-        ((GameObject*)obj)->userData1 = 2;
+        obj->userData1 = 2;
         camShake = 120.0f;
         (*gCameraInterface)->releaseAction(&camShake, 0);
-        if (((SBGalleonState*)state)->headingLatch != 0) {
-            ((SBGalleonState*)state)->headingLatch -= 1;
+        if (state->headingLatch != 0) {
+            state->headingLatch -= 1;
         }
-        switch (((SBGalleonState*)state)->flightPattern) {
+        switch (state->flightPattern) {
         case 0:
-            tx = ((SBGalleonState*)state)->homeX - 1700.0f;
-            tz = ((SBGalleonState*)state)->homeZ;
+            tx = state->homeX - 1700.0f;
+            tz = state->homeZ;
             ty = 300.0f + tricky->anim.localPosY;
-            if ((((SBGalleonState*)state)->headingLatch <= 0) &&
-                ((((SBGalleonState*)state)->phaseCounter == 0) || (((SBGalleonState*)state)->phaseCounter == 5))) {
-                ((SBGalleonState*)state)->headingLatch = 200;
+            if ((state->headingLatch <= 0) &&
+                ((state->phaseCounter == 0) || (state->phaseCounter == 5))) {
+                state->headingLatch = 200;
             }
             Sfx_IsPlayingFromObjectChannel(obj, 2); /* The result is intentionally unused. */
             break;
         case 1:
-            tx = ((SBGalleonState*)state)->homeX - 800.0f;
-            tz = ((SBGalleonState*)state)->homeZ;
+            tx = state->homeX - 800.0f;
+            tz = state->homeZ;
             ty = 300.0f + tricky->anim.localPosY;
             break;
         case 2:
             tx = tricky->anim.localPosX - 500.0f;
-            tz = ((SBGalleonState*)state)->homeZ;
+            tz = state->homeZ;
             ty = 250.0f + tricky->anim.localPosY;
             break;
         case 3:
             tx = tricky->anim.localPosX - 535.0f;
-            tz = 220.0f + ((SBGalleonState*)state)->homeZ;
+            tz = 220.0f + state->homeZ;
             ty = 250.0f + tricky->anim.localPosY;
-            tz = tz + (tricky->anim.localPosZ - ((SBGalleonState*)state)->posZ);
-            ((SBGalleonState*)state)->unk7B = 0;
+            tz = tz + (tricky->anim.localPosZ - state->posZ);
+            state->unk7B = 0;
             break;
         case 4:
             tx = tricky->anim.localPosX - 535.0f;
-            tz = 100.0f + ((SBGalleonState*)state)->homeZ;
+            tz = 100.0f + state->homeZ;
             ty = 250.0f + tricky->anim.localPosY;
-            ((SBGalleonState*)state)->unk7B = 0;
+            state->unk7B = 0;
             break;
         case 5:
             tx = tricky->anim.localPosX - 535.0f;
-            tz = ((SBGalleonState*)state)->homeZ - 220.0f;
+            tz = state->homeZ - 220.0f;
             ty = 250.0f + tricky->anim.localPosY;
-            tz = tz + (tricky->anim.localPosZ - ((SBGalleonState*)state)->posZ);
-            ((SBGalleonState*)state)->unk7B = 0;
+            tz = tz + (tricky->anim.localPosZ - state->posZ);
+            state->unk7B = 0;
             break;
         default:
-            ((SBGalleonState*)state)->unk7B = 0;
-            tx = ((SBGalleonState*)state)->homeX - 880.0f;
-            tz = ((SBGalleonState*)state)->homeZ;
+            state->unk7B = 0;
+            tx = state->homeX - 880.0f;
+            tz = state->homeZ;
             ty = 260.0f + tricky->anim.localPosY;
             break;
         }
-        tx = tx - ((GameObject*)obj)->anim.localPosX;
-        dy = ty - ((GameObject*)obj)->anim.localPosY;
-        tz = tz - ((GameObject*)obj)->anim.localPosZ;
-        ((SBGalleonState*)state)->speed = 3.0f;
+        tx = tx - obj->anim.localPosX;
+        dy = ty - obj->anim.localPosY;
+        tz = tz - obj->anim.localPosZ;
+        state->speed = 3.0f;
         dist = sqrtf(tz * tz + (tx * tx + dy * dy));
         tx *= 0.0625f;
         dy *= 0.03125f;
@@ -369,84 +369,84 @@ void SB_Galleon_updateFlight(GameObject* obj) {
         if (tz < -3.5f) {
             tz = -3.5f;
         }
-        ((SBGalleonState*)state)->phaseTimer += framesThisStep;
-        lerpD = tx - ((SBGalleonState*)state)->driftX;
+        state->phaseTimer += framesThisStep;
+        lerpD = tx - state->driftX;
         blendK = 0.125f;
-        ((SBGalleonState*)state)->driftX += lerpD * blendK;
-        ((SBGalleonState*)state)->driftY += (dy - ((SBGalleonState*)state)->driftY) / 14.0f;
-        ((SBGalleonState*)state)->driftZ += (tz - ((SBGalleonState*)state)->driftZ) / 24.0f;
+        state->driftX += lerpD * blendK;
+        state->driftY += (dy - state->driftY) / 14.0f;
+        state->driftZ += (tz - state->driftZ) / 24.0f;
         ambA = 1911.0f;
         ambB = 0.005f;
         ambC = 0.0f;
-        switch (((SBGalleonState*)state)->flightPattern) {
+        switch (state->flightPattern) {
         case 0:
             if (dist < 15.0f) {
-                ((SBGalleonState*)state)->flightPattern = 1;
-                ((SBGalleonState*)state)->phaseTimer = 0;
+                state->flightPattern = 1;
+                state->phaseTimer = 0;
             }
             break;
         case 1:
             if (dist < 10.0f) {
-                ((SBGalleonState*)state)->flightPattern = 2;
-                ((SBGalleonState*)state)->phaseTimer = 0;
+                state->flightPattern = 2;
+                state->phaseTimer = 0;
             }
             break;
         case 2:
-            if ((((SBGalleonState*)state)->phaseTimer > 0xF0) || (dist < 10.0f)) {
-                ((SBGalleonState*)state)->flightPattern = 0;
-                ((SBGalleonState*)state)->phaseTimer = 0;
+            if ((state->phaseTimer > 0xF0) || (dist < 10.0f)) {
+                state->flightPattern = 0;
+                state->phaseTimer = 0;
             }
             break;
         case 3:
-            if ((dist < 10.0f) || (((SBGalleonState*)state)->phaseTimer > 0x78)) {
-                ((SBGalleonState*)state)->flightPattern = 0;
-                ((SBGalleonState*)state)->phaseTimer = 0;
+            if ((dist < 10.0f) || (state->phaseTimer > 0x78)) {
+                state->flightPattern = 0;
+                state->phaseTimer = 0;
             }
             break;
         case 4:
-            if ((dist < 10.0f) || (((SBGalleonState*)state)->phaseTimer > 0x78)) {
-                ((SBGalleonState*)state)->flightPattern = 5;
-                ((SBGalleonState*)state)->phaseTimer = 3;
+            if ((dist < 10.0f) || (state->phaseTimer > 0x78)) {
+                state->flightPattern = 5;
+                state->phaseTimer = 3;
             }
             break;
         case 5:
-            if ((dist < 10.0f) || (((SBGalleonState*)state)->phaseTimer > 0x78)) {
-                ((SBGalleonState*)state)->flightPattern = 0;
-                ((SBGalleonState*)state)->phaseTimer = 0;
+            if ((dist < 10.0f) || (state->phaseTimer > 0x78)) {
+                state->flightPattern = 0;
+                state->phaseTimer = 0;
             }
             break;
         default:
             if (dist < 25.0f) {
-                if (((SBGalleonState*)state)->stage == 2) {
-                    ((SBGalleonState*)state)->phaseTimer = 0;
-                    ((SBGalleonState*)state)->phase = 0;
-                    ((SBGalleonState*)state)->stage = 3;
-                } else if (((SBGalleonState*)state)->stage == 5) {
-                    ((SBGalleonState*)state)->phase = 2;
-                    ((SBGalleonState*)state)->stage = 6;
+                if (state->stage == 2) {
+                    state->phaseTimer = 0;
+                    state->phase = 0;
+                    state->stage = 3;
+                } else if (state->stage == 5) {
+                    state->phase = 2;
+                    state->stage = 6;
                 }
             }
             break;
         }
-        ((SBGalleonState*)state)->timer26 = 300;
-        if ((((SBGalleonState*)state)->phaseCounter >= 4) && (((SBGalleonState*)state)->stage < 3)) {
-            ((SBGalleonState*)state)->phase = 0;
-            ((SBGalleonState*)state)->cycleKind = 1;
-            ((SBGalleonState*)state)->stage = 3;
-            ((SBGalleonState*)state)->phaseCounter = 5;
-            ((SBGalleonState*)state)->headingLatch = 200;
+        state->timer26 = 300;
+        if ((state->phaseCounter >= 4) && (state->stage < 3)) {
+            state->phase = 0;
+            state->cycleKind = 1;
+            state->stage = 3;
+            state->phaseCounter = 5;
+            state->headingLatch = 200;
             {
                 int sfxObj = sbGetPropeller();
                 Sfx_StopFromObject((GameObject*)sfxObj, SFXTRIG_swtst1_c);
                 Sfx_PlayFromObject((GameObject*)sfxObj, SFXTRIG_mv_curtainloop16);
             }
             mainSetBits(DBPROTECTION_GAMEBIT_DIVE_ACTIVE, 0);
-        } else if (((SBGalleonState*)state)->phaseCounter >= 4) {
-            ((SBGalleonState*)state)->phase = 2;
-            ((SBGalleonState*)state)->cycleKind = 3;
-            ((SBGalleonState*)state)->stage = 6;
-            ((SBGalleonState*)state)->headingLatch = 200;
-            ((SBGalleonState*)state)->refZ = tricky->anim.localPosZ;
+        } else if (state->phaseCounter >= 4) {
+            state->phase = 2;
+            state->cycleKind = 3;
+            state->stage = 6;
+            state->headingLatch = 200;
+            state->refZ = tricky->anim.localPosZ;
         }
         break;
     case 2:
@@ -460,108 +460,105 @@ void SB_Galleon_updateFlight(GameObject* obj) {
         camShake = 120.0f;
         Sfx_StopObjectChannel((int)obj, 2);
         (*gCameraInterface)->releaseAction(&camShake, 0);
-        ((GameObject*)obj)->userData1 = 3;
-        if (((SBGalleonState*)state)->headingLatch != 0) {
-            ((SBGalleonState*)state)->headingLatch -= 1;
+        obj->userData1 = 3;
+        if (state->headingLatch != 0) {
+            state->headingLatch -= 1;
         }
-        switch (((SBGalleonState*)state)->phase) {
+        switch (state->phase) {
         case 2:
             speedTarget = 20.0f;
-            tx = ((SBGalleonState*)state)->homeX - 4700.0f;
-            tz = -(1500.0f * (f32)((SBGalleonState*)state)->sweepDir - ((SBGalleonState*)state)->homeZ);
-            ty = ((SBGalleonState*)state)->homeY;
+            tx = state->homeX - 4700.0f;
+            tz = -(1500.0f * (f32)state->sweepDir - state->homeZ);
+            ty = state->homeY;
             threshold = 1000.0f;
             nextState = 3;
             break;
         case 3:
             speedTarget = 12.0f;
-            tx = ((SBGalleonState*)state)->homeX - 5000.0f;
-            tz = -(1000.0f * (f32)((SBGalleonState*)state)->sweepDir - ((SBGalleonState*)state)->homeZ);
-            ty = 100.0f + ((SBGalleonState*)state)->homeY;
+            tx = state->homeX - 5000.0f;
+            tz = -(1000.0f * (f32)state->sweepDir - state->homeZ);
+            ty = 100.0f + state->homeY;
             nextState = 4;
             threshold = 700.0f;
             break;
         case 4:
             speedTarget = 12.0f;
-            tx = ((SBGalleonState*)state)->homeX - 4700.0f;
-            tz = -(10.0f * (f32)((SBGalleonState*)state)->sweepDir - ((SBGalleonState*)state)->homeZ);
-            ty = 100.0f + ((SBGalleonState*)state)->homeY;
+            tx = state->homeX - 4700.0f;
+            tz = -(10.0f * (f32)state->sweepDir - state->homeZ);
+            ty = 100.0f + state->homeY;
             nextState = 5;
             threshold = 700.0f;
             break;
         case 5:
             speedTarget = 10.0f;
-            ((GameObject*)obj)->userData1 = 4;
-            tx = ((SBGalleonState*)state)->homeX - 1100.0f;
-            tz = ((SBGalleonState*)state)->homeZ;
-            ty = ((SBGalleonState*)state)->homeY - 100.0f;
+            obj->userData1 = 4;
+            tx = state->homeX - 1100.0f;
+            tz = state->homeZ;
+            ty = state->homeY - 100.0f;
             nextState = 6;
             threshold = 700.0f;
-            if ((((SBGalleonState*)state)->headingLatch <= 0) && (((SBGalleonState*)state)->stage == 6)) {
-                ((SBGalleonState*)state)->headingLatch = 200;
+            if ((state->headingLatch <= 0) && (state->stage == 6)) {
+                state->headingLatch = 200;
             }
             break;
         case 6:
             speedTarget = 4.0f;
-            tx = 200.0f + ((SBGalleonState*)state)->homeX;
-            tz = -(1500.0f * (f32)((SBGalleonState*)state)->sweepDir - ((SBGalleonState*)state)->homeZ);
-            ty = 250.0f + ((SBGalleonState*)state)->homeY;
+            tx = 200.0f + state->homeX;
+            tz = -(1500.0f * (f32)state->sweepDir - state->homeZ);
+            ty = 250.0f + state->homeY;
             nextState = 7;
             threshold = 100.0f;
             break;
         case 7:
             speedTarget = 4.0f;
-            tx = 1400.0f + ((SBGalleonState*)state)->homeX;
-            tz = ((SBGalleonState*)state)->homeZ;
+            tx = 1400.0f + state->homeX;
+            tz = state->homeZ;
             ty = 280.0f + tricky->anim.localPosY;
             nextState = 8;
             threshold = 100.0f;
             break;
         case 8:
             speedTarget = 8.0f;
-            tx = ((SBGalleonState*)state)->homeX - 1200.0f;
-            tz = ((SBGalleonState*)state)->homeZ;
+            tx = state->homeX - 1200.0f;
+            tz = state->homeZ;
             ty = 100.0f + tricky->anim.localPosY;
             nextState = 2;
             threshold = 200.0f;
             break;
         }
-        dx = tx - ((SBGalleonState*)state)->posX;
-        dy = ty - ((SBGalleonState*)state)->posY;
-        dz = tz - ((SBGalleonState*)state)->posZ;
-        ((SBGalleonState*)state)->speed =
-            ((SBGalleonState*)state)->speed + (speedTarget - ((SBGalleonState*)state)->speed) / 30.0f;
+        dx = tx - state->posX;
+        dy = ty - state->posY;
+        dz = tz - state->posZ;
+        state->speed =
+            state->speed + (speedTarget - state->speed) / 30.0f;
         dist = sqrtf(dx * dx + dz * dz);
-        if ((((SBGalleonState*)state)->phase == 5) && (dist < 3000.0f)) {
-            ((GameObject*)obj)->userData1 = 5;
+        if ((state->phase == 5) && (dist < 3000.0f)) {
+            obj->userData1 = 5;
         }
         if (dist < threshold) {
-            if (((SBGalleonState*)state)->phase == 5) {
-                ((SBGalleonState*)state)->sweepDir = -((SBGalleonState*)state)->sweepDir;
+            if (state->phase == 5) {
+                state->sweepDir = -state->sweepDir;
             }
-            ((SBGalleonState*)state)->phase = nextState;
+            state->phase = nextState;
         }
         wrap = (getAngle(dx, dz) & 0xFFFF) + 0x8000;
         angY = getAngle(dy, dist) & 0xFFFF;
-        diff = wrap - (((GameObject*)obj)->anim.rotX & 0xFFFF);
+        diff = wrap - (obj->anim.rotX & 0xFFFF);
         if (diff > 0x8000) {
             diff = diff - 0xFFFF;
         }
         if (diff < -0x8000) {
             diff = diff + 0xFFFF;
         }
-        ((SBGalleonState*)state)->turnRate =
-            ((SBGalleonState*)state)->turnRate + ((framesThisStep * (diff - ((SBGalleonState*)state)->turnRate)) >> 4);
-        c = ((SBGalleonState*)state)->phase;
+        state->turnRate =
+            state->turnRate + ((framesThisStep * (diff - state->turnRate)) >> 4);
+        c = state->phase;
         if ((c == 3) || (c == 4)) {
-            ((GameObject*)obj)->anim.rotX =
-                ((GameObject*)obj)->anim.rotX + (((SBGalleonState*)state)->turnRate * framesThisStep) / 0x3C;
+            obj->anim.rotX = obj->anim.rotX + (state->turnRate * framesThisStep) / 0x3C;
         } else if ((c == 6) || (c == 2)) {
-            ((GameObject*)obj)->anim.rotX =
-                ((GameObject*)obj)->anim.rotX + (((SBGalleonState*)state)->turnRate * framesThisStep) / 0x78;
+            obj->anim.rotX = obj->anim.rotX + (state->turnRate * framesThisStep) / 0x78;
         } else {
-            ((GameObject*)obj)->anim.rotX =
-                ((GameObject*)obj)->anim.rotX + (((SBGalleonState*)state)->turnRate * framesThisStep) / 0x3C;
+            obj->anim.rotX = obj->anim.rotX + (state->turnRate * framesThisStep) / 0x3C;
         }
         wrap = angY - (((GameObject*)obj)->anim.rotY & 0xFFFF);
         if (wrap > 0x8000) {
@@ -571,11 +568,11 @@ void SB_Galleon_updateFlight(GameObject* obj) {
             wrap = wrap + 0xFFFF;
         }
         obj->anim.rotY = obj->anim.rotY + ((wrap * framesThisStep) >> 6);
-        dx = ((SBGalleonState*)state)->homeX - ((GameObject*)obj)->anim.localPosX;
-        dz = ((SBGalleonState*)state)->homeZ - ((GameObject*)obj)->anim.localPosZ;
+        dx = state->homeX - obj->anim.localPosX;
+        dz = state->homeZ - obj->anim.localPosZ;
         sqrtf(dx * dx + dz * dz); /* The result is intentionally unused. */
         t = ((GameObject*)obj)->anim.rotZ;
-        iv = (int)(0.45f * (f32)((SBGalleonState*)state)->turnRate);
+        iv = (int)(0.45f * (f32)state->turnRate);
         dv = (iv - t) >> 3;
         if (dv > 0x3C) {
             dv = 0x3C;
@@ -588,49 +585,49 @@ void SB_Galleon_updateFlight(GameObject* obj) {
         objPos.y = 0.0f;
         objPos.z = 0.0f;
         objPos.scale = 1.0f;
-        objPos.rotX = ((GameObject*)obj)->anim.rotX;
+        objPos.rotX = obj->anim.rotX;
         objPos.rotY = obj->anim.rotY;
         objPos.rotZ = obj->anim.rotZ;
         setMatrixFromObjectPos(mtx, &objPos);
-        Matrix_TransformPoint(mtx, 0.0f, 0.0f, -((SBGalleonState*)state)->speed * timeDelta,
+        Matrix_TransformPoint(mtx, 0.0f, 0.0f, -state->speed * timeDelta,
                               &state->driftX, &state->driftY, &state->driftZ);
-        if (((SBGalleonState*)state)->phase == 7) {
-            ((SBGalleonState*)state)->posX = tx;
-            ((SBGalleonState*)state)->posY = ty;
-            ((SBGalleonState*)state)->posZ = tz;
+        if (state->phase == 7) {
+            state->posX = tx;
+            state->posY = ty;
+            state->posZ = tz;
             zero = 0.0f;
-            ((SBGalleonState*)state)->swayX = zero;
-            ((SBGalleonState*)state)->swayY = zero;
-            ((SBGalleonState*)state)->swayZ = zero;
+            state->swayX = zero;
+            state->swayY = zero;
+            state->swayZ = zero;
         } else {
-            ((SBGalleonState*)state)->posX = ((SBGalleonState*)state)->posX + ((SBGalleonState*)state)->driftX;
-            ((SBGalleonState*)state)->posY = ((SBGalleonState*)state)->posY + ((SBGalleonState*)state)->driftY;
-            ((SBGalleonState*)state)->posZ = ((SBGalleonState*)state)->posZ + ((SBGalleonState*)state)->driftZ;
+            state->posX = state->posX + state->driftX;
+            state->posY = state->posY + state->driftY;
+            state->posZ = state->posZ + state->driftZ;
         }
         ambB = 0.17f;
-        ((GameObject*)obj)->anim.localPosX = ((SBGalleonState*)state)->posX + ((SBGalleonState*)state)->swayX;
-        ((GameObject*)obj)->anim.localPosY = ((SBGalleonState*)state)->posY + ((SBGalleonState*)state)->swayY;
-        ((GameObject*)obj)->anim.localPosZ = ((SBGalleonState*)state)->posZ + ((SBGalleonState*)state)->swayZ +
-                                             (tricky->anim.localPosZ - ((SBGalleonState*)state)->refZ);
-        if (((SBGalleonState*)state)->stage >= 7) {
-            if (((SBGalleonState*)state)->fadeTimer == 0) {
+        obj->anim.localPosX = state->posX + state->swayX;
+        obj->anim.localPosY = state->posY + state->swayY;
+        obj->anim.localPosZ =
+            state->posZ + state->swayZ + (tricky->anim.localPosZ - state->refZ);
+        if (state->stage >= 7) {
+            if (state->fadeTimer == 0) {
                 ObjHits_DisableObject(obj);
                 (*gScreenTransitionInterface)->start(0x41, 1);
             }
-            ((SBGalleonState*)state)->fadeTimer += framesThisStep;
-            if (((SBGalleonState*)state)->fadeTimer > 0x41) {
-                ((GameObject*)obj)->anim.rotX = 0;
-                ((SBGalleonState*)state)->phase = 6;
+            state->fadeTimer += framesThisStep;
+            if (state->fadeTimer > 0x41) {
+                obj->anim.rotX = 0;
+                state->phase = 6;
                 (*gCloudActionInterface)->func10Nop(0);
                 (*gCloudActionInterface)->func11Nop(0);
                 (*gCloudActionInterface)->func12Nop(0.0f, 25.0f);
-                if (((SBGalleonState*)state)->musicLatch == 0) {
-                    ((SBGalleonState*)state)->musicLatch = 1;
+                if (state->musicLatch == 0) {
+                    state->musicLatch = 1;
                 }
-                ((SBGalleonState*)state)->cameraState = 1;
-                ((GameObject*)obj)->anim.localPosX = spawnData->posX;
-                ((GameObject*)obj)->anim.localPosY = -1.0f;
-                ((GameObject*)obj)->anim.localPosZ = spawnData->posZ;
+                state->cameraState = 1;
+                obj->anim.localPosX = spawnData->posX;
+                obj->anim.localPosY = -1.0f;
+                obj->anim.localPosZ = spawnData->posZ;
                 Sfx_StopObjectChannel((int)obj, 1);
                 (*gMapEventInterface)->setObjGroupStatus(obj->anim.hostedMapSlot, 2, 1);
                 (*gObjectTriggerInterface)->runSequence(0, obj, -1);
@@ -640,65 +637,61 @@ void SB_Galleon_updateFlight(GameObject* obj) {
         break;
     }
     default:
-        ((GameObject*)obj)->userData1 = 7;
+        obj->userData1 = 7;
         break;
     }
 
     /* Integrate the current drift while the Galleon is in a flight phase. */
-    if (((SBGalleonState*)state)->phase < 2) {
-        ((SBGalleonState*)state)->posX =
-            ((SBGalleonState*)state)->moveScale * (((SBGalleonState*)state)->driftX * timeDelta) +
-            ((SBGalleonState*)state)->posX;
-        ((SBGalleonState*)state)->posY =
-            ((SBGalleonState*)state)->moveScale * (((SBGalleonState*)state)->driftY * timeDelta) +
-            ((SBGalleonState*)state)->posY;
-        ((SBGalleonState*)state)->posZ =
-            ((SBGalleonState*)state)->moveScale * (((SBGalleonState*)state)->driftZ * timeDelta) +
-            ((SBGalleonState*)state)->posZ;
-        ((SBGalleonState*)state)->moveScale += 0.004166667f;
-        if (((SBGalleonState*)state)->moveScale > 1.0f) {
-            ((SBGalleonState*)state)->moveScale = 1.0f;
+    if (state->phase < 2) {
+        state->posX =
+            state->moveScale * (state->driftX * timeDelta) +
+            state->posX;
+        state->posY =
+            state->moveScale * (state->driftY * timeDelta) +
+            state->posY;
+        state->posZ =
+            state->moveScale * (state->driftZ * timeDelta) +
+            state->posZ;
+        state->moveScale += 0.004166667f;
+        if (state->moveScale > 1.0f) {
+            state->moveScale = 1.0f;
         }
         blendK = 0.02f;
-        ((SBGalleonState*)state)->swayScaleSmooth +=
-            blendK * (timeDelta * (ambA - ((SBGalleonState*)state)->swayScaleSmooth));
-        ((SBGalleonState*)state)->rollScaleSmooth +=
-            blendK * (timeDelta * (ambC - ((SBGalleonState*)state)->rollScaleSmooth));
-        ((SBGalleonState*)state)->swayResponseSmooth +=
-            blendK * (timeDelta * (ambB - ((SBGalleonState*)state)->swayResponseSmooth));
-        if (((SBGalleonState*)state)->phase == 0) {
-            zRatio = (f32)tricky->anim.rotY / ((SBGalleonState*)state)->swayScaleSmooth;
-            ((SBGalleonState*)state)->swayZ +=
-                timeDelta * (((SBGalleonState*)state)->swayResponseSmooth *
-                             ((f32)-tricky->anim.rotZ / ((SBGalleonState*)state)->swayScaleSmooth -
-                              ((SBGalleonState*)state)->swayZ));
-            ((SBGalleonState*)state)->swayY +=
-                timeDelta * (((SBGalleonState*)state)->swayResponseSmooth * (zRatio - ((SBGalleonState*)state)->swayY));
+        state->swayScaleSmooth +=
+            blendK * (timeDelta * (ambA - state->swayScaleSmooth));
+        state->rollScaleSmooth +=
+            blendK * (timeDelta * (ambC - state->rollScaleSmooth));
+        state->swayResponseSmooth +=
+            blendK * (timeDelta * (ambB - state->swayResponseSmooth));
+        if (state->phase == 0) {
+            zRatio = (f32)tricky->anim.rotY / state->swayScaleSmooth;
+            state->swayZ +=
+                timeDelta * (state->swayResponseSmooth *
+                             ((f32)-tricky->anim.rotZ / state->swayScaleSmooth -
+                              state->swayZ));
+            state->swayY +=
+                timeDelta * (state->swayResponseSmooth * (zRatio - state->swayY));
             zero = 0.0f;
-            ((SBGalleonState*)state)->swayX = zero;
-            ((SBGalleonState*)state)->swayY = zero;
-            t = (s16)(-((SBGalleonState*)state)->swayZ * ((SBGalleonState*)state)->rollScaleSmooth);
-            wrap = (s16)(0.5f * (-((SBGalleonState*)state)->swayY * ((SBGalleonState*)state)->rollScaleSmooth));
+            state->swayX = zero;
+            state->swayY = zero;
+            t = (s16)(-state->swayZ * state->rollScaleSmooth);
+            wrap = (s16)(0.5f * (-state->swayY * state->rollScaleSmooth));
         } else {
-            ((SBGalleonState*)state)->swayZ -=
-                timeDelta * (((SBGalleonState*)state)->swayZ * ((SBGalleonState*)state)->swayResponseSmooth);
-            ((SBGalleonState*)state)->swayY -=
-                timeDelta * (((SBGalleonState*)state)->swayY * ((SBGalleonState*)state)->swayResponseSmooth);
+            state->swayZ -=
+                timeDelta * (state->swayZ * state->swayResponseSmooth);
+            state->swayY -=
+                timeDelta * (state->swayY * state->swayResponseSmooth);
             t = 0;
             wrap = t;
         }
-        ((GameObject*)obj)->anim.localPosX =
-            ((SBGalleonState*)state)->swayX * ((SBGalleonState*)state)->moveScale + ((SBGalleonState*)state)->posX;
-        ((GameObject*)obj)->anim.localPosY =
-            ((SBGalleonState*)state)->swayY * ((SBGalleonState*)state)->moveScale + ((SBGalleonState*)state)->posY;
-        ((GameObject*)obj)->anim.localPosZ =
-            ((SBGalleonState*)state)->swayZ * ((SBGalleonState*)state)->moveScale + ((SBGalleonState*)state)->posZ;
-        ((SBGalleonState*)state)->rollLatch = ((SBGalleonState*)state)->rollLatch +
-                                              ((framesThisStep * (t - ((SBGalleonState*)state)->rollLatch)) >> 5);
-        ((GameObject*)obj)->anim.rotY =
-            ((GameObject*)obj)->anim.rotY + ((framesThisStep * (wrap - ((GameObject*)obj)->anim.rotY)) >> 5);
-        ((GameObject*)obj)->anim.rotX = ((SBGalleonState*)state)->rollLatch + 0x4000;
-        ((GameObject*)obj)->anim.rotZ = ((GameObject*)obj)->anim.rotX - 0x4000;
+        obj->anim.localPosX = state->swayX * state->moveScale + state->posX;
+        obj->anim.localPosY = state->swayY * state->moveScale + state->posY;
+        obj->anim.localPosZ = state->swayZ * state->moveScale + state->posZ;
+        state->rollLatch =
+            state->rollLatch + ((framesThisStep * (t - state->rollLatch)) >> 5);
+        obj->anim.rotY = obj->anim.rotY + ((framesThisStep * (wrap - obj->anim.rotY)) >> 5);
+        obj->anim.rotX = state->rollLatch + 0x4000;
+        obj->anim.rotZ = obj->anim.rotX - 0x4000;
     }
 }
 
@@ -990,9 +983,9 @@ int SB_Galleon_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
         case SBGALLEON_SEQEV_SPRAY_ON: {
             int start;
             int end;
-            int* arr = ObjList_GetObjects(&start, &end);
+            GameObject** arr = ObjList_GetObjects(&start, &end);
             for (i = start; i < end; i++) {
-                if (((GameObject*)arr[i])->anim.romDefNo == SBGALLEON_ROMLIST_LINKED) {
+                if ((arr[i])->anim.romDefNo == SBGALLEON_ROMLIST_LINKED) {
                     state->linkedActor = arr[i];
                     i = end;
                 }
@@ -1204,14 +1197,14 @@ void SB_Galleon_hitDetect(GameObject* obj) {
         f32 c;
         f32 d;
     } stk;
-    if (state->sprayActive != 0 && (void*)state->linkedActor != NULL) {
+    if (state->sprayActive != 0 && state->linkedActor != NULL) {
         stk.a = 1.5f;
         stk.mode = 0xc0a;
         stk.b = 0.0f;
         stk.c = 60.0f;
         stk.d = 120.0f;
         for (i = 0; i < framesThisStep; i++) {
-            (*gPartfxInterface)->spawnObject((void*)state->linkedActor, SBGALLEON_FX_SPRAY, stk.pad, 2, -1, 0);
+            (*gPartfxInterface)->spawnObject(state->linkedActor, SBGALLEON_FX_SPRAY, stk.pad, 2, -1, 0);
         }
     }
 }

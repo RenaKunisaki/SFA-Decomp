@@ -96,7 +96,7 @@ int sh_staff_getExtraSize(void) {
 
 void sh_staff_free(GameObject* obj, int freeArg) {
     ShStaffState* state = obj->extra;
-    int* child;
+    GameObject* child;
     int i;
 
     if (freeArg != 0) {
@@ -105,9 +105,9 @@ void sh_staff_free(GameObject* obj, int freeArg) {
 
     i = 0;
     for (; i < SHSTAFF_HAZE_CHILD_COUNT; i++) {
-        child = (int*)state->hazeChildren[i];
+        child = (GameObject*)state->hazeChildren[i];
         if (child != NULL) {
-            ((GameObject*)child)->anim.flags = (s16)(((GameObject*)child)->anim.flags | OBJANIM_FLAG_HIDDEN);
+            child->anim.flags = (s16)(child->anim.flags | OBJANIM_FLAG_HIDDEN);
         }
     }
 }
@@ -123,7 +123,7 @@ void sh_staff_render(GameObject* obj, int renderArg2, int renderArg3, int render
     int player;
     int i;
     int j;
-    int hazeChild;
+    GameObject* hazeChild;
     f32 dx;
     f32 dy;
     f32 dz;
@@ -157,7 +157,7 @@ void sh_staff_render(GameObject* obj, int renderArg2, int renderArg3, int render
         }
         if (state->phase == SHSTAFF_PHASE_CARRY_RENDER) {
             PSMTXConcat((MtxPtr)ObjPath_GetPointModelMtx((GameObject*)player, 0), (MtxPtr)state->carryMatrix, (MtxPtr)mtxB);
-            objSetCurrentMatrix((u32)mtxB);
+            objSetCurrentMatrix((MtxPtr)mtxB);
             objRenderModel(obj);
         } else {
             objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
@@ -273,9 +273,9 @@ void sh_staff_render(GameObject* obj, int renderArg2, int renderArg3, int render
             if (cur2 != bx) {
                 state->hazeFadeTimer = cur2 - timeDelta;
                 if (state->hazeFadeTimer <= bx) {
-                    hazeChild = state->hazeChildren[0];
+                    hazeChild = (GameObject*)state->hazeChildren[0];
                     if ((u32)hazeChild != 0) {
-                        ((GameObject*)hazeChild)->anim.flags |= OBJANIM_FLAG_HIDDEN;
+                        hazeChild->anim.flags |= OBJANIM_FLAG_HIDDEN;
                         state->hazeChildren[0] = 0;
                         state->hazeFadeTimer = bx;
                     }
@@ -373,7 +373,7 @@ int sh_staff_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUpda
 
 void sh_staff_deactivate(GameObject* obj, ShStaffState* state, int clearChildren) {
     int player;
-    void* child;
+    GameObject* child;
     int i;
 
     player = (int)Obj_GetPlayerObject();
@@ -385,9 +385,9 @@ void sh_staff_deactivate(GameObject* obj, ShStaffState* state, int clearChildren
         staffToggle((GameObject*)player, 1);
         playerPutAwayStaff((GameObject*)player, 1);
         for (i = 0; i < SHSTAFF_HAZE_CHILD_COUNT; i++) {
-            child = (void*)state->hazeChildren[i];
+            child = (GameObject*)state->hazeChildren[i];
             if (child != NULL) {
-                ((GameObject*)child)->anim.flags = (s16)(((GameObject*)child)->anim.flags | OBJANIM_FLAG_HIDDEN);
+                child->anim.flags = (s16)(child->anim.flags | OBJANIM_FLAG_HIDDEN);
                 state->hazeChildren[i] = 0;
             }
         }
@@ -409,7 +409,7 @@ void sh_staff_update(GameObject* obj) {
                 sh_staff_deactivate(obj, obj->extra, 0);
             } else {
                 int loadResult;
-                staffToggle((GameObject*)player, 0);
+                staffToggle(player, 0);
                 ObjAnim_SetMoveProgress((ObjAnimComponent*)obj, 1.0f);
                 obj->anim.rotY = (s16)(placement->rotYByte << 8);
                 obj->anim.rotZ = (s16)(placement->rotZByte << 8);
@@ -446,12 +446,10 @@ void sh_staff_update(GameObject* obj) {
                 loadMapAndParent(SHSTAFF_PICKUP_MAP_ID);
             }
         }
-    } else {
-        if (state->pickupMapLoaded != 0) {
-            state->pickupMapLoaded = 0;
-            mapUnload(SHSTAFF_PICKUP_MAP_CELL, SHSTAFF_PICKUP_MAP_LOAD_FLAGS);
-            mainSetBits(GAMEBIT_STAFF_PICKUP_MAP_UNLOADED, 1);
-        }
+    } else if (state->pickupMapLoaded != 0) {
+        state->pickupMapLoaded = 0;
+        mapUnload(SHSTAFF_PICKUP_MAP_CELL, SHSTAFF_PICKUP_MAP_LOAD_FLAGS);
+        mainSetBits(GAMEBIT_STAFF_PICKUP_MAP_UNLOADED, 1);
     }
     setHudForceShowMask(0);
     state->hazeClimbT = 0.01f * timeDelta + state->hazeClimbT;

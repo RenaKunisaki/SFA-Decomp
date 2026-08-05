@@ -111,13 +111,12 @@ void EdibleMushroom_updateBehavior(GameObject* obj, EdibleMushroomState* state, 
                     while (1) {
                         dx = state->curve.posX - obj->anim.localPosX;
                         dz = state->curve.posZ - obj->anim.localPosZ;
-                        if (dx * dx + dz * dz < rangeSq) {
-                            if (Curve_AdvanceAlongPath(&state->curve.curve, state->curveAdvanceStep) != 0 ||
-                                state->curve.atSegmentEnd != 0) {
-                                (*gRomCurveInterface)->goNextPoint(&state->curve);
-                            }
-                        } else {
+                        if (!(dx * dx + dz * dz < rangeSq)) {
                             break;
+                        }
+                        if (Curve_AdvanceAlongPath(&state->curve.curve, state->curveAdvanceStep) != 0 ||
+                            state->curve.atSegmentEnd != 0) {
+                            (*gRomCurveInterface)->goNextPoint(&state->curve);
                         }
                     }
                     ang = getAngle(-dx, -dz);
@@ -184,13 +183,12 @@ void EdibleMushroom_updateBehavior(GameObject* obj, EdibleMushroomState* state, 
                         while (1) {
                             dx = state->curve.posX - obj->anim.localPosX;
                             dz = state->curve.posZ - obj->anim.localPosZ;
-                            if (dx * dx + dz * dz < rangeSq) {
-                                if (Curve_AdvanceAlongPath(&state->curve.curve, state->curveAdvanceStep) != 0 ||
-                                    state->curve.atSegmentEnd != 0) {
-                                    (*gRomCurveInterface)->goNextPoint(&state->curve);
-                                }
-                            } else {
+                            if (!(dx * dx + dz * dz < rangeSq)) {
                                 break;
+                            }
+                            if (Curve_AdvanceAlongPath(&state->curve.curve, state->curveAdvanceStep) != 0 ||
+                                state->curve.atSegmentEnd != 0) {
+                                (*gRomCurveInterface)->goNextPoint(&state->curve);
                             }
                         }
                         ang = getAngle(-dx, -dz);
@@ -206,13 +204,12 @@ void EdibleMushroom_updateBehavior(GameObject* obj, EdibleMushroomState* state, 
                         while (1) {
                             dx = state->curve.posX - obj->anim.localPosX;
                             dz = state->curve.posZ - obj->anim.localPosZ;
-                            if (dx * dx + dz * dz < rangeSq) {
-                                if (Curve_AdvanceAlongPath(&state->curve.curve, state->curveAdvanceStep) != 0 ||
-                                    state->curve.atSegmentEnd != 0) {
-                                    (*gRomCurveInterface)->goNextPoint(&state->curve);
-                                }
-                            } else {
+                            if (!(dx * dx + dz * dz < rangeSq)) {
                                 break;
+                            }
+                            if (Curve_AdvanceAlongPath(&state->curve.curve, state->curveAdvanceStep) != 0 ||
+                                state->curve.atSegmentEnd != 0) {
+                                (*gRomCurveInterface)->goNextPoint(&state->curve);
                             }
                         }
                         ang = getAngle(-dx, -dz);
@@ -241,13 +238,12 @@ void EdibleMushroom_updateBehavior(GameObject* obj, EdibleMushroomState* state, 
                 while (1) {
                     dx = state->curve.posX - obj->anim.localPosX;
                     dz = state->curve.posZ - obj->anim.localPosZ;
-                    if (dx * dx + dz * dz < rangeSq) {
-                        if (Curve_AdvanceAlongPath(&state->curve.curve, state->curveAdvanceStep) != 0 ||
-                            state->curve.atSegmentEnd != 0) {
-                            (*gRomCurveInterface)->goNextPoint(&state->curve);
-                        }
-                    } else {
+                    if (!(dx * dx + dz * dz < rangeSq)) {
                         break;
+                    }
+                    if (Curve_AdvanceAlongPath(&state->curve.curve, state->curveAdvanceStep) != 0 ||
+                        state->curve.atSegmentEnd != 0) {
+                        (*gRomCurveInterface)->goNextPoint(&state->curve);
                     }
                 }
                 ang = getAngle(-dx, -dz);
@@ -342,7 +338,7 @@ void EdibleMushroom_updateBehavior(GameObject* obj, EdibleMushroomState* state, 
         speed = 0.0f;
     }
 
-    if (0.0f != speed) {
+    if (speed != 0.0f) {
         state->flags |= EDIBLE_MUSHROOM_FLAG_MOVING;
     } else {
         state->flags &= ~EDIBLE_MUSHROOM_FLAG_MOVING;
@@ -462,7 +458,7 @@ void EdibleMushroom_update(GameObject* obj) {
     EdibleMushroomPlacement* placement;
     GameObject* player;
     GameObject* enemy;
-    int hitObj;
+    GameObject* hitObj;
     int msg;
     int hitKind;
     f32 distState;
@@ -473,7 +469,7 @@ void EdibleMushroom_update(GameObject* obj) {
     player = Obj_GetPlayerObject();
     enemy = getTrickyObject();
 
-    if (objIsFrozen((u8*)obj) != 0) {
+    if (objIsFrozen(obj) != 0) {
         return;
     }
 
@@ -526,7 +522,7 @@ void EdibleMushroom_update(GameObject* obj) {
             Obj_StartModelFadeIn(obj, 0x12C);
         } else {
             Obj_SetModelColorFadeRecursive(obj, 0xF, 0xC8, 0, 0, 1);
-            if (((GameObject*)hitObj)->anim.romDefNo != EDIBLE_MUSHROOM_EARTH_WARRIOR_ALIAS_ID) {
+            if (hitObj->anim.romDefNo != EDIBLE_MUSHROOM_EARTH_WARRIOR_ALIAS_ID) {
                 if ((state->flags & EDIBLE_MUSHROOM_FLAG_STRUCK) == 0) {
                     Sfx_PlayFromObject(obj, SFXTRIG_mv_ladderslide16);
                 }

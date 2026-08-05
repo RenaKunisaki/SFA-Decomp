@@ -9,13 +9,17 @@
  */
 #include "dlls/objects/495_SB_CloudBal.h"
 
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/dll/objfx.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
+#include "main/modellight_api.h"
 #include "main/object_render.h"
+#include "main/vecmath.h"
 #include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 enum {
     SB_CLOUD_BALL_LIGHT_KIND = 2
@@ -93,7 +97,7 @@ void SB_CloudBall_hitDetect(GameObject* obj) {
         return;
     }
     if (target->anim.romDefNo == SB_CLOUD_BALL_HIT_SFX_TARGET_SEQUENCE_ID) {
-        Sfx_PlayFromObject((u32)obj, SFXTRIG_wp_gcfir1_c);
+        Sfx_PlayFromObject(obj, SFXTRIG_wp_gcfir1_c);
     }
     {
         ObjHitsPriorityState* hitState = ObjAnim_GetPriorityHitState(&obj->anim);

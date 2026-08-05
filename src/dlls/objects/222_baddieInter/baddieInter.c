@@ -5,6 +5,7 @@
  * time-of-day conditions are satisfied.
  */
 #include "dlls/objects/222_BaddieInterestP.h"
+#include "main/dll/wispbaddieseq_ext.h"
 #include "main/gamebits.h"
 #include "main/objtype.h"
 #include "main/object_render.h"

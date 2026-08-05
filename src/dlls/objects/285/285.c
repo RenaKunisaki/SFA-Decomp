@@ -116,7 +116,7 @@ void TreasureChest_hitDetect(GameObject* obj) {
 void TreasureChest_update(GameObject* obj) {
     TreasureChestObjectState* state;
     TreasureChestPlacement* placement;
-    u32 nearestCollectible;
+    GameObject* nearestCollectible;
     int hitType;
     PartFxSpawnParams spawnParams;
     StaffCollisionColorArgs hitEffectColors;
@@ -137,9 +137,9 @@ void TreasureChest_update(GameObject* obj) {
         if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) {
             obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             playerPullOutStaff(Obj_GetPlayerObject(), TREASURE_CHEST_STAFF_MODE);
-            nearestCollectible = (u32)objGetNearestTypeTo(COLLECTIBLE_OBJECT_GROUP, obj, &nearestDist);
+            nearestCollectible = objGetNearestTypeTo(COLLECTIBLE_OBJECT_GROUP, obj, &nearestDist);
             if (nearestCollectible != 0) {
-                (*gObjectTriggerInterface)->setObjects((int)((GameObject*)nearestCollectible)->anim.romDefNo, 0, 0);
+                (*gObjectTriggerInterface)->setObjects((int)nearestCollectible->anim.romDefNo, 0, 0);
                 (*gObjectTriggerInterface)
                     ->runSequence(TREASURE_CHEST_COLLECTIBLE_SEQUENCE, obj, TREASURE_CHEST_SEQUENCE_ARG_NONE);
             } else {

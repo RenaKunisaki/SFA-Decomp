@@ -7,11 +7,18 @@
 #include "dlls/objects/396_MMSH_Shrine.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
+#include "main/audio/audio_control_api.h"
+#include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/dll_0000_gameui.h"
 #include "main/dll/objfx_api.h"
+#include "main/dll/player_api.h"
+#include "main/dll/tricky_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
+#include "main/gamebits_api.h"
 #include "main/map_load.h"
 #include "main/mapEventTypes.h"
 #include "main/object_render.h"
@@ -419,7 +426,7 @@ void mmshShrine_update(GameObject* obj) {
 
         state->idleSfxTimer = idleSfxTimer;
         if (idleSfxTimer <= 0.0f) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_spirit_voice);
+            Sfx_PlayFromObject(obj, SFXTRIG_spirit_voice);
             state->idleSfxTimer =
                 (f32)(s32)randomGetRange(MMSH_SHRINE_IDLE_SFX_DELAY_MIN, MMSH_SHRINE_IDLE_SFX_DELAY_MAX);
         }
@@ -484,7 +491,7 @@ void mmshShrine_init(GameObject* obj, const MMSHShrinePlacement* placement) {
     obj->animEventCallback = mmshShrine_processAnimEvents;
     state->unknown1C = MMSH_SHRINE_DEFAULT_INITIAL_VALUE;
     state->phase = MMSH_SHRINE_PHASE_IDLE;
-    if (0 < placement->initialValue) {
+    if (placement->initialValue > 0) {
         state->unknown1C = placement->initialValue >> MMSH_SHRINE_INITIAL_VALUE_SHIFT;
     }
     mainSetBits(MMSH_SHRINE_GAMEBIT_012B, 0);

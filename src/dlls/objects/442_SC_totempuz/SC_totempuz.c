@@ -4,6 +4,8 @@
  */
 #include "dlls/objects/442_SC_totempuz.h"
 
+#include "main/audio/sfx_limited_object_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
@@ -12,6 +14,7 @@
 #include "main/obj_list.h"
 #include "main/objHitReact_types.h"
 #include "main/objfx.h"
+#include "main/objhits.h"
 #include "main/objtexture.h"
 #include "main/object_render.h"
 #include "main/shader_api.h"
@@ -61,7 +64,7 @@ u8 sc_totempuzzle_checkSolvedSequence(GameObject* obj, ScTotemPuzzleState* state
     PartFxSpawnParams particleOrigin;
     int objectIndex;
     int objectCount;
-    int* objects;
+    GameObject** objects;
     int solvedCount;
     u8 solvedThisObject;
 
@@ -74,7 +77,7 @@ u8 sc_totempuzzle_checkSolvedSequence(GameObject* obj, ScTotemPuzzleState* state
         ScTotemPuzzleState* peerState;
         s16 flags;
 
-        peer = (GameObject*)objects[objectIndex];
+        peer = objects[objectIndex];
         if (peer->anim.romDefNo == SC_TOTEM_PUZZLE_SEQUENCE_ID) {
             peerState = peer->extra;
             flags = peerState->flags;
@@ -167,8 +170,8 @@ s16 gTotemPuzzleStepAngles[6] = {-8192, 0, 8192, 16384, 24576, -32768};
 void sc_totempuzzle_update(GameObject* obj) {
     ScTotemPuzzleState* state;
     int hitKind;
-    int* objects;
-    int other;
+    GameObject** objects;
+    GameObject* other;
     ObjTextureRuntimeSlot* texture;
     PartFxSpawnParams lightArgs;
     GameObject* hitObject;
@@ -183,7 +186,7 @@ void sc_totempuzzle_update(GameObject* obj) {
     if ((obj->anim.bankIndex == SC_TOTEM_PUZZLE_CAP_INDEX) || (mainGetBit(GAMEBIT_SC_totempuzzle_running) != 0) ||
         (mainGetBit(SC_TOTEM_PUZZLE_GAMEBIT_ACTIVATED) == 0)) {
         if ((hitKind != 0) && (hitKind != OBJHITREACT_COLLISION_SKIP_REACTION)) {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_wp_swdtest222);
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_swdtest222);
             lightArgs.posX += playerMapOffsetX;
             lightArgs.posZ += playerMapOffsetZ;
             objDoHitParticleFx((void*)obj, 0.014f, &lightArgs, 1, 0);
@@ -192,7 +195,7 @@ void sc_totempuzzle_update(GameObject* obj) {
     }
 
     if ((hitKind != 0) && (hitKind != OBJHITREACT_COLLISION_SKIP_REACTION)) {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_wp_swdtest222);
+        Sfx_PlayFromObject(obj, SFXTRIG_wp_swdtest222);
         lightArgs.posX += playerMapOffsetX;
         lightArgs.posZ += playerMapOffsetZ;
         objDoHitParticleFx((void*)obj, 0.014f, &lightArgs, 1, 0);
@@ -206,8 +209,8 @@ void sc_totempuzzle_update(GameObject* obj) {
             objects = ObjList_GetObjects(&startA, &countA);
             while (startA < countA) {
                 other = objects[startA];
-                if ((((GameObject*)other)->anim.romDefNo == SC_TOTEM_PUZZLE_SEQUENCE_ID) && ((GameObject*)other != obj)) {
-                    ((ScTotemPuzzleState*)((GameObject*)other)->extra)->peerPhaseOffset += 0.65f;
+                if ((other->anim.romDefNo == SC_TOTEM_PUZZLE_SEQUENCE_ID) && ((GameObject*)other != obj)) {
+                    ((ScTotemPuzzleState*)other->extra)->peerPhaseOffset += 0.65f;
                 }
                 startA++;
             }
@@ -215,8 +218,8 @@ void sc_totempuzzle_update(GameObject* obj) {
             objects = ObjList_GetObjects(&startB, &countB);
             while (startB < countB) {
                 other = objects[startB];
-                if ((((GameObject*)other)->anim.romDefNo == SC_TOTEM_PUZZLE_SEQUENCE_ID) && ((GameObject*)other != obj)) {
-                    ((ScTotemPuzzleState*)((GameObject*)other)->extra)->peerPhaseOffset += -0.65f;
+                if ((other->anim.romDefNo == SC_TOTEM_PUZZLE_SEQUENCE_ID) && ((GameObject*)other != obj)) {
+                    ((ScTotemPuzzleState*)other->extra)->peerPhaseOffset += -0.65f;
                 }
                 startB++;
             }
@@ -235,31 +238,27 @@ void sc_totempuzzle_update(GameObject* obj) {
         state->pulseTimer -= timeDelta;
         if (state->pulseTimer < 0.0f) {
             state->flags &= ~SC_TOTEM_PUZZLE_FLAG_PULSE_ACTIVE;
-            Sfx_PlayFromObjectLimited((int)obj, SFXTRIG_mv_cagerat01, 2);
+            Sfx_PlayFromObjectLimited(obj, SFXTRIG_mv_cagerat01, 2);
             if ((state->flags & SC_TOTEM_PUZZLE_FLAG_REVERSED) != 0) {
                 if (--state->stepIndex < 0) {
                     state->angle += 65535.0f;
                     state->stepIndex = SC_TOTEM_PUZZLE_LAST_STEP_INDEX;
                 }
-            } else {
-                if (++state->stepIndex > SC_TOTEM_PUZZLE_LAST_STEP_INDEX) {
-                    state->angle -= 65535.0f;
-                    state->stepIndex = 0;
-                }
+            } else if (++state->stepIndex > SC_TOTEM_PUZZLE_LAST_STEP_INDEX) {
+                state->angle -= 65535.0f;
+                state->stepIndex = 0;
             }
         }
+    } else if (((state->flags & SC_TOTEM_PUZZLE_FLAG_REVERSED) != 0) &&
+               (state->angle > (SC_TOTEM_PUZZLE_ANGLE_STEP * (f32)(s32)(state->stepIndex + 1)))) {
+        f32 step = 512.0f * state->peerPhaseOffset;
+        state->angle -= step * timeDelta;
+    } else if (state->angle < (SC_TOTEM_PUZZLE_ANGLE_STEP * (f32)(s32)state->stepIndex)) {
+        f32 step = 512.0f * state->peerPhaseOffset;
+        state->angle += step * timeDelta;
     } else {
-        if (((state->flags & SC_TOTEM_PUZZLE_FLAG_REVERSED) != 0) &&
-            (state->angle > (SC_TOTEM_PUZZLE_ANGLE_STEP * (f32)(s32)(state->stepIndex + 1)))) {
-            f32 step = 512.0f * state->peerPhaseOffset;
-            state->angle -= step * timeDelta;
-        } else if (state->angle < (SC_TOTEM_PUZZLE_ANGLE_STEP * (f32)(s32)state->stepIndex)) {
-            f32 step = 512.0f * state->peerPhaseOffset;
-            state->angle += step * timeDelta;
-        } else {
-            state->pulseTimer = state->pulseTimerReset / state->peerPhaseOffset;
-            state->flags |= SC_TOTEM_PUZZLE_FLAG_PULSE_ACTIVE;
-        }
+        state->pulseTimer = state->pulseTimerReset / state->peerPhaseOffset;
+        state->flags |= SC_TOTEM_PUZZLE_FLAG_PULSE_ACTIVE;
     }
 
     obj->anim.rotX = (s16)(s32)state->angle;

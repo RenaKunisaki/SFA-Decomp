@@ -249,7 +249,7 @@ void Rcp_UpdateDistortionTextures(void)
     u8 group;
     int k;
     GameObject* model[1];
-    u8* tex;
+    Texture* tex;
 
     Rcp_SetupDistortionRenderState();
     PSMTXScale(mtx, 0.5f, -0.5f, 0.5f);
@@ -264,8 +264,8 @@ void Rcp_UpdateDistortionTextures(void)
     slots[0] = (u8*)gRcpDistortSlots;
     for (; i < 6; i++)
     {
-        tex = ((RcpDistortSlot*)slots[0])[i].texture;
-        if (((Texture*)tex)->refCount != 0 && ((RcpDistortSlot*)slots[0])[i].mode == 1 &&
+        tex = (Texture*)((RcpDistortSlot*)slots[0])[i].texture;
+        if (tex->refCount != 0 && ((RcpDistortSlot*)slots[0])[i].mode == 1 &&
             gRcpDistortGroup == ((RcpDistortSlot*)slots[0])[i].group)
         {
             matColor.r = (((RcpDistortSlot*)slots[0])[i].colR * ((RcpDistortSlot*)slots[0])[i].scaleR) >> 8;
@@ -280,8 +280,8 @@ void Rcp_UpdateDistortionTextures(void)
             Rcp_ApplyTextureStageCounts();
             Rcp_DrawWarpDistortionMesh((f32)(i * 0x20), 0.0f);
             GXCopyTex(((RcpDistortSlot*)slots[0])[i].texture + 0x60, 0);
-            tex = ((RcpDistortSlot*)slots[0])[i].texture;
-            if (((Texture*)tex)->preloaded != 0)
+            tex = (Texture*)((RcpDistortSlot*)slots[0])[i].texture;
+            if (tex->preloaded != 0)
             {
                 GXPreLoadEntireTexture(textureGetGXTexObj((Texture*)tex),
                                        textureGetGXTexRegion((Texture*)tex));
@@ -319,8 +319,8 @@ void Rcp_UpdateDistortionTextures(void)
             Rcp_DrawWarpDistortionMesh((f32)(i * 0x20), 0.0f);
             GXCopyTex(((RcpDistortSlot*)slots[0])[i].texture + 0x60,
                       (i == clearSlot) ? GX_TRUE : GX_FALSE);
-            tex = ((RcpDistortSlot*)slots[0])[i].texture;
-            if (((Texture*)tex)->preloaded != 0)
+            tex = (Texture*)((RcpDistortSlot*)slots[0])[i].texture;
+            if (tex->preloaded != 0)
             {
                 GXPreLoadEntireTexture(textureGetGXTexObj((Texture*)tex),
                                        textureGetGXTexRegion((Texture*)tex));
@@ -338,7 +338,7 @@ void Rcp_UpdateDistortionTextures(void)
 }
 void ShaderDef_free(int* def)
 {
-    void* s;
+    Texture* s;
     void* p1 = (void*)def[0];
     int i;
     void* p2;
@@ -348,8 +348,8 @@ void ShaderDef_free(int* def)
     {
         for (i = 0; i < 6; i++)
         {
-            s = gRcpDistortSlots[i].texture;
-            if (((Texture*)s)->refCount != 0 && s == p1)
+            s = (Texture*)gRcpDistortSlots[i].texture;
+            if (s->refCount != 0 && s == p1)
             {
                 (((Texture*)gRcpDistortSlots[i].texture)->refCount)--;
                 break;
@@ -369,29 +369,29 @@ void ShaderDef_free(int* def)
     }
 }
 
-void shaderInit(u8* def, ModelRenderOpTextureRefs* textures, GameObject* obj, int unused)
+void shaderInit(u8* def, ModelRenderOpTextureRefs* textures, GameObject* obj, int shaderFlags)
 {
     RcpDistortSlot* slot;
-    void* s;
+    Texture* s;
 
-    if (*(void**)(def + 0x8) != NULL)
+    if (((Shader*)def)->reg1Texture != NULL)
     {
         if (obj != NULL)
             slot = &gRcpDistortSlots[6 - (obj->lightColorSlot + 1)];
         else
             slot = &gRcpDistortSlots[5];
-        s = slot->texture;
-        (((Texture*)s)->refCount)++;
+        s = (Texture*)slot->texture;
+        (s->refCount)++;
         textures->texture0 = slot->texture;
     }
-    if (*(void**)(def + 0x14) == NULL)
+    if (((Shader*)def)->reg2Texture == NULL)
         return;
-    if (def[0x20] >= 6)
+    if (((Shader*)def)->reg2TexSlot >= 6)
         slot = gRcpDistortSlots;
     else
-        slot = &gRcpDistortSlots[def[0x20] >> 1];
-    s = slot->texture;
-    (((Texture*)s)->refCount)++;
+        slot = &gRcpDistortSlots[((Shader*)def)->reg2TexSlot >> 1];
+    s = (Texture*)slot->texture;
+    (s->refCount)++;
     textures->texture1 = slot->texture;
 }
 

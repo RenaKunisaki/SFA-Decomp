@@ -27,6 +27,7 @@
 #include "main/player_control_interface.h"
 #include "main/vecmath.h"
 #include "main/voxmaps.h"
+#include "string.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 #include "main/dll/baddie_state.h"
@@ -836,7 +837,7 @@ void iceBaddie_spawnIceBall(GameObject* obj, IceBaddieControl* control) {
 }
 
 void iceBaddie_updateControlEffects(GameObject* obj, GroundBaddieState* state) {
-    int controlAddress = (int)state->control;
+    IceBaddieControl* controlAddress = state->control;
     int paletteIndex;
     u8* particleArgs;
     int i;
@@ -844,11 +845,11 @@ void iceBaddie_updateControlEffects(GameObject* obj, GroundBaddieState* state) {
     f32 contactScale;
 
     if (obj->anim.romDefNo == 99) {
-        ((IceBaddieControl*)controlAddress)->fxScale = 1.7f;
+        controlAddress->fxScale = 1.7f;
         shakeScale = 2.0f;
     } else {
         contactScale = 1.0f;
-        ((IceBaddieControl*)controlAddress)->fxScale = contactScale;
+        controlAddress->fxScale = contactScale;
         shakeScale = contactScale;
     }
     paletteIndex = 0;
@@ -859,48 +860,48 @@ void iceBaddie_updateControlEffects(GameObject* obj, GroundBaddieState* state) {
         }
     }
     particleArgs = &gIceBaddieParticleArgsTable[paletteIndex * 3];
-    if ((((IceBaddieControl*)controlAddress)->effectFlags & ICEBADDIE_FX_SPAWN_ICEBALL) != 0) {
-        iceBaddie_spawnIceBall(obj, (IceBaddieControl*)controlAddress);
-        ((IceBaddieControl*)controlAddress)->effectFlags &= ~ICEBADDIE_FX_SPAWN_ICEBALL;
+    if ((controlAddress->effectFlags & ICEBADDIE_FX_SPAWN_ICEBALL) != 0) {
+        iceBaddie_spawnIceBall(obj, controlAddress);
+        controlAddress->effectFlags &= ~ICEBADDIE_FX_SPAWN_ICEBALL;
     }
-    if ((((IceBaddieControl*)controlAddress)->effectFlags & ICEBADDIE_FX_BURST) != 0 &&
+    if ((controlAddress->effectFlags & ICEBADDIE_FX_BURST) != 0 &&
         (state->configFlags & 0x40) == 0) {
         for (i = 0; i < 4; i++) {
             (*gPartfxInterface)
-                ->spawnObject((void*)obj, ICEBADDIE_PARTICLE_CONTACT, (void*)(controlAddress + 0x20), 0x200001, -1,
+                ->spawnObject((void*)obj, ICEBADDIE_PARTICLE_CONTACT, &controlAddress->particlePositionX, 0x200001, -1,
                               particleArgs);
         }
     }
-    if ((((IceBaddieControl*)controlAddress)->effectFlags & ICEBADDIE_FX_PUFF) != 0 &&
+    if ((controlAddress->effectFlags & ICEBADDIE_FX_PUFF) != 0 &&
         (state->configFlags & 0x40) == 0) {
         (*gPartfxInterface)
-            ->spawnObject((void*)obj, ICEBADDIE_PARTICLE_PUFF, (void*)(controlAddress + 0x20), 0x200001, -1,
+            ->spawnObject((void*)obj, ICEBADDIE_PARTICLE_PUFF, &controlAddress->particlePositionX, 0x200001, -1,
                           particleArgs);
     }
-    if ((((IceBaddieControl*)controlAddress)->effectFlags & ICEBADDIE_FX_IMPACT) != 0) {
+    if ((controlAddress->effectFlags & ICEBADDIE_FX_IMPACT) != 0) {
         CameraShake_Enable();
         CameraShake_SetOffset(2.0f * shakeScale);
         for (i = 0; i < 0x28; i++) {
             (*gPartfxInterface)
-                ->spawnObject((void*)obj, ICEBADDIE_PARTICLE_PUFF, (void*)(controlAddress + 0x20), 0x200001, -1,
+                ->spawnObject((void*)obj, ICEBADDIE_PARTICLE_PUFF, &controlAddress->particlePositionX, 0x200001, -1,
                               particleArgs);
         }
     }
-    if ((((IceBaddieControl*)controlAddress)->effectFlags & ICEBADDIE_FX_LANDING) != 0) {
+    if ((controlAddress->effectFlags & ICEBADDIE_FX_LANDING) != 0) {
         CameraShake_Enable();
         CameraShake_SetOffset(3.0f * shakeScale);
         for (i = 0; i < 0x28; i++) {
             (*gPartfxInterface)
-                ->spawnObject((void*)obj, ICEBADDIE_PARTICLE_PUFF, (void*)(controlAddress + 0x20), 0x200001, -1,
+                ->spawnObject((void*)obj, ICEBADDIE_PARTICLE_PUFF, &controlAddress->particlePositionX, 0x200001, -1,
                               particleArgs);
         }
         for (i = 0; i < 10; i++) {
             (*gPartfxInterface)
-                ->spawnObject((void*)obj, ICEBADDIE_PARTICLE_DEBRIS, (void*)(controlAddress + 0x20), 0x200001, -1,
+                ->spawnObject((void*)obj, ICEBADDIE_PARTICLE_DEBRIS, &controlAddress->particlePositionX, 0x200001, -1,
                               particleArgs);
         }
     }
-    ((IceBaddieControl*)controlAddress)->effectFlags = 0;
+    controlAddress->effectFlags = 0;
 }
 
 void iceBaddie_updateEffectAnchors(GameObject* obj, GroundBaddieState* state) {
@@ -1008,7 +1009,7 @@ void iceBaddie_updateTargetMotion(GameObject* obj, GroundBaddieState* objectStat
 }
 
 void iceBaddie_updateTargetCollision(GameObject* obj, int stateAddress, GroundBaddieState* state) {
-    int controlAddress = (int)((GroundBaddieState*)stateAddress)->control;
+    IceBaddieControl* controlAddress = ((GroundBaddieState*)stateAddress)->control;
     GameObject* target;
     int hitInfo[7];
     f32 targetDelta[3];
@@ -1031,21 +1032,21 @@ void iceBaddie_updateTargetCollision(GameObject* obj, int stateAddress, GroundBa
     (*gBaddieControlInterface)
         ->processMessages(obj, state, (void*)(stateAddress + 0x35c), ((GroundBaddieState*)stateAddress)->gameBitB, NULL,
                           0, 0, 8);
-    ((IceBaddieControl*)controlAddress)->hitTimer += timeDelta;
+    controlAddress->hitTimer += timeDelta;
     if (state->baddie.controlMode != 3 &&
         (*gBaddieControlInterface)
                 ->updateHitReaction(obj, state, &((GroundBaddieState*)stateAddress)->routeNav,
                                     ((GroundBaddieState*)stateAddress)->gameBitB, gIceBaddieHitReactionMoves,
                                     gIceBaddieHitReactionDamage, 1, hitInfo) != 0) {
-        if (((IceBaddieControl*)controlAddress)->hitTimer < 240.0f) {
-            ((IceBaddieControl*)controlAddress)->consecutiveHitCount += 1;
+        if (controlAddress->hitTimer < 240.0f) {
+            controlAddress->consecutiveHitCount += 1;
         } else {
-            ((IceBaddieControl*)controlAddress)->consecutiveHitCount = 0;
+            controlAddress->consecutiveHitCount = 0;
         }
-        ((IceBaddieControl*)controlAddress)->hitTimer = 0.0f;
-        if (state->baddie.hitPoints > 0 && ((IceBaddieControl*)controlAddress)->consecutiveHitCount >= 2) {
+        controlAddress->hitTimer = 0.0f;
+        if (state->baddie.hitPoints > 0 && controlAddress->consecutiveHitCount >= 2) {
             (*gPlayerInterface)->setState(obj, state, 3);
-            ((IceBaddieControl*)controlAddress)->consecutiveHitCount = 0;
+            controlAddress->consecutiveHitCount = 0;
             state->baddie.substate = 5;
         }
     }

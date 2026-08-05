@@ -15,6 +15,7 @@
 #include "dolphin/mtx.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
+#include "main/objhits.h"
 #include "main/objtexture.h"
 #include "main/model.h"
 #include "sys/objects.h"

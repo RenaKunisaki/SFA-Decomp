@@ -10,7 +10,7 @@
 void* gameTextGetPhrase(int textId, int phraseIndex)
 {
     char* strings;
-    u16* entry;
+    GameTextDef* entry;
 
     strings = gGameTextFontData;
     if (gameTextFonts->status != 2)
@@ -43,7 +43,7 @@ void* gameTextGetPhrase(int textId, int phraseIndex)
     }
 
     entry = gameTextGet(textId);
-    if (*entry == 0xffff)
+    if (entry->identifier == 0xffff)
     {
         gGameTextBufferIndex = gGameTextBufferIndex + 1;
         if (gGameTextBufferIndex >= 8)
@@ -59,7 +59,7 @@ void* gameTextGetPhrase(int textId, int phraseIndex)
         return gGameTextLastEntry;
     }
 
-    if (phraseIndex >= entry[1])
+    if (phraseIndex >= entry->count)
     {
         gGameTextBufferIndex = gGameTextBufferIndex + 1;
         if (gGameTextBufferIndex >= 8)
@@ -74,13 +74,13 @@ void* gameTextGetPhrase(int textId, int phraseIndex)
         return gGameTextLastEntry;
     }
 
-    return *(void**)(*(int*)((u8*)entry + 8) + phraseIndex * 4);
+    return entry->strings[phraseIndex];
 }
 
 void* gameTextGetStr(int textId)
 {
     char* strings;
-    void* textEntry;
+    GameTextDef* textEntry;
 
     strings = gGameTextFontData;
     if (gameTextFonts->status != 2)
@@ -112,7 +112,7 @@ void* gameTextGetStr(int textId)
         return gGameTextLastEntry;
     }
     textEntry = gameTextGet(textId);
-    return *(void**)*(u8**)((u8*)textEntry + 8);
+    return *textEntry->strings;
 }
 
 void* gameTextGet(int textId)
@@ -120,10 +120,10 @@ void* gameTextGet(int textId)
     u8* gameTextBase;
     char* strings;
     TextFont* fonts;
-    u16* entry;
+    GameTextDef* entry;
     int count;
     int slotIndex;
-    u16* cachedEntry;
+    GameTextDef* cachedEntry;
     f32 zero;
     f32* cachedAlpha;
     u8* p;
@@ -164,23 +164,23 @@ void* gameTextGet(int textId)
         return gGameTextLastEntry;
     }
 
-    entry = (u16*)fonts->entries;
+    entry = fonts->entries;
     count = fonts->entryCount;
     while (count != 0)
     {
-        if (*entry == textId)
+        if (entry->identifier == textId)
         {
             return entry;
         }
-        entry += 6;
+        entry++;
         count--;
     }
 
     slotIndex = 8;
-    cachedEntry = (u16*)(gameTextBase + 0xa0);
-    while (cachedEntry -= 6, slotIndex-- != 0)
+    cachedEntry = (GameTextDef*)(gameTextBase + 0xa0);
+    while (cachedEntry--, slotIndex-- != 0)
     {
-        if (*cachedEntry == textId)
+        if (cachedEntry->identifier == textId)
         {
             zero = lbl_803DE704;
             *(f32*)(gameTextBase + slotIndex * 4) = zero;
@@ -191,7 +191,7 @@ void* gameTextGet(int textId)
                 *cachedAlpha = av;
                 if (av >= gGameTextFadeLimit)
                 {
-                    sprintf((char*)*(int*)*(int**)((u8*)cachedEntry + 8), strings + 0xefc, textId,
+                    sprintf((char*)*(int*)cachedEntry->strings, strings + 0xefc, textId,
                             sMapDirectoryNameTable[curGameTextDir]);
                 }
             }
@@ -244,8 +244,8 @@ void gameTextSetCursor(u16 x, u16 y, int flags)
         gGameTextCommandCount = i + 1;
         cmd = &gGameTextCommandSlots[i];
         cmd->opcode = 0xa;
-        cmd->arg0 = (u16)x;
-        cmd->arg1 = (u16)y;
+        cmd->arg0 = x;
+        cmd->arg1 = y;
     }
 }
 

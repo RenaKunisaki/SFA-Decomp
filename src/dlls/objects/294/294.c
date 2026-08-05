@@ -634,7 +634,7 @@ void objInterpretSeq(GameObject* obj, GameObject* seqObj, s8 legCode, int range)
             objects = ObjList_GetObjects(&first, &count);
             for (; first < count; first++) {
                 t2 = (int)objects[first];
-                tbl = *(int**)(t2 + 0x4c);
+                tbl = (int*)((GameObject*)t2)->anim.placementData;
                 if (tbl == NULL) {
                     continue;
                 }

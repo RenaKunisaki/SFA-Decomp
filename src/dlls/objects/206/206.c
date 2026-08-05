@@ -128,7 +128,7 @@ int dll_CE_checkChooseAttackState(GameObject* obj, GroundBaddieState* state) {
     DllCEControl* control;
     int maxSiblingState;
     int attackingSiblingCount;
-    int* objects;
+    GameObject** objects;
     int shouldDropTarget;
     int attackRoll;
 
@@ -145,10 +145,10 @@ int dll_CE_checkChooseAttackState(GameObject* obj, GroundBaddieState* state) {
         maxSiblingState = 0;
         objects = ObjList_GetObjects(&objectIndex, &objectCount);
         for (; objectIndex < objectCount; objectIndex++) {
-            void* sibling = (void*)objects[objectIndex];
-            if (sibling != (void*)obj && ((GameObject*)sibling)->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
+            GameObject* sibling = objects[objectIndex];
+            if (sibling != obj && sibling->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
                 int siblingState =
-                    (*(DllCESiblingInterface**)((GameObject*)sibling)->anim.dll)->getControlMode(sibling, 0);
+                    (*(DllCESiblingInterface**)sibling->anim.dll)->getControlMode(sibling, 0);
                 if (siblingState > maxSiblingState) {
                     maxSiblingState = siblingState;
                 }
@@ -300,10 +300,10 @@ int dll_CE_updateWindupState(GameObject* obj, GroundBaddieState* state) {
 }
 
 int dll_CE_updateAlertState(GameObject* obj, GroundBaddieState* state) {
-    int* objects;
+    GameObject** objects;
     int objectCount;
     int objectIndex;
-    int* playerChild;
+    GameObject* playerChild;
     GameObject* player;
     int childState;
 
@@ -314,16 +314,16 @@ int dll_CE_updateAlertState(GameObject* obj, GroundBaddieState* state) {
     if (state->baddie.moveJustStartedA != '\0') {
         objects = ObjList_GetObjects(&objectIndex, &objectCount);
         for (; objectIndex < objectCount; objectIndex++) {
-            void* sibling = (void*)objects[objectIndex];
+            GameObject* sibling = objects[objectIndex];
 
-            if (sibling != obj && ((GameObject*)sibling)->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
-                (*(DllCESiblingInterface**)((GameObject*)sibling)->anim.dll)
+            if (sibling != obj && sibling->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
+                (*(DllCESiblingInterface**)sibling->anim.dll)
                     ->handleMessage(sibling, DLL_CE_MESSAGE_RELEASE, 0);
             }
         }
-        playerChild = (int*)((GameObject*)Obj_GetPlayerObject())->childObjs[0];
+        playerChild = ((GameObject*)Obj_GetPlayerObject())->childObjs[0];
         player = Obj_GetPlayerObject();
-        childState = (*(DllCEStaffInterface**)((GameObject*)playerChild)->anim.dll)
+        childState = (*(DllCEStaffInterface**)playerChild->anim.dll)
                          ->getHitReactValue((GameObject*)playerChild);
         if (childState != 0) {
             if (player->anim.romDefNo != 0) {
@@ -331,12 +331,10 @@ int dll_CE_updateAlertState(GameObject* obj, GroundBaddieState* state) {
             } else {
                 Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_95);
             }
+        } else if (player->anim.romDefNo != 0) {
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_stftest122_1f2);
         } else {
-            if (player->anim.romDefNo != 0) {
-                Sfx_PlayFromObject(obj, SFXTRIG_wp_stftest122_1f2);
-            } else {
-                Sfx_PlayFromObject(obj, SFXTRIG_swd);
-            }
+            Sfx_PlayFromObject(obj, SFXTRIG_swd);
         }
         Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_267);
     }
@@ -360,14 +358,14 @@ int dll_CE_updateSpitState(GameObject* obj, GroundBaddieState* state) {
     ObjHits_RegisterActiveHitVolumeObject(obj);
 
     if ((s32)state->baddie.moveJustStartedA != 0) {
-        int* objects = ObjList_GetObjects(&objectIndex, &objectCount);
+        GameObject** objects = ObjList_GetObjects(&objectIndex, &objectCount);
 
         while (objectIndex < objectCount) {
-            int siblingAddress = objects[objectIndex];
+            GameObject* siblingAddress = objects[objectIndex];
 
             if ((void*)siblingAddress != (void*)obj &&
-                ((GameObject*)siblingAddress)->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
-                (*(DllCESiblingInterface**)((GameObject*)siblingAddress)->anim.dll)
+                siblingAddress->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
+                (*(DllCESiblingInterface**)siblingAddress->anim.dll)
                     ->handleMessage((GameObject*)siblingAddress, DLL_CE_MESSAGE_RELEASE, 0);
             }
             objectIndex++;
@@ -413,7 +411,7 @@ int dll_CE_updateAttackState(GameObject* obj, GroundBaddieState* state) {
     int objectCount;
     int objectIndex;
     GroundBaddieState* objectState;
-    int* objects;
+    GameObject** objects;
 
     objectState = obj->extra;
     if (state->baddie.moveJustStartedA != '\0') {
@@ -426,10 +424,10 @@ int dll_CE_updateAttackState(GameObject* obj, GroundBaddieState* state) {
     if (state->baddie.moveJustStartedA != '\0') {
         objects = ObjList_GetObjects(&objectIndex, &objectCount);
         for (; objectIndex < objectCount; objectIndex++) {
-            void* sibling = (void*)objects[objectIndex];
+            GameObject* sibling = objects[objectIndex];
 
-            if (sibling != obj && ((GameObject*)sibling)->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
-                (*(DllCESiblingInterface**)((GameObject*)sibling)->anim.dll)
+            if (sibling != obj && sibling->anim.romDefNo == DLL_CE_SIBLING_SEQ_ID) {
+                (*(DllCESiblingInterface**)sibling->anim.dll)
                     ->handleMessage(sibling, DLL_CE_MESSAGE_RELEASE, 0);
             }
         }
@@ -438,11 +436,9 @@ int dll_CE_updateAttackState(GameObject* obj, GroundBaddieState* state) {
                 ObjAnim_SetCurrentMove((int)obj, 6, 0.0f, 0);
                 state->baddie.moveDone = 0;
             }
-        } else {
-            if (state->baddie.moveJustStartedA != '\0') {
-                ObjAnim_SetCurrentMove((int)obj, 7, 0.0f, 0);
-                state->baddie.moveDone = 0;
-            }
+        } else if (state->baddie.moveJustStartedA != '\0') {
+            ObjAnim_SetCurrentMove((int)obj, 7, 0.0f, 0);
+            state->baddie.moveDone = 0;
         }
         state->baddie.stateTag = 1;
         state->baddie.moveSpeed = 0.005f + (f32)(u32)objectState->aggression / 20000.0f;
@@ -564,7 +560,7 @@ void dll_CE_acquireTarget(GameObject* obj, GroundBaddieState* objectState, Groun
         int disabledSoundId = -1;
 
         (*gBaddieControlInterface)
-            ->startHitReaction(obj, state, &((GroundBaddieState*)objectState)->routeNav, objectState->gameBitB, NULL, 0, 0, 8,
+            ->startHitReaction(obj, state, &objectState->routeNav, objectState->gameBitB, NULL, 0, 0, 8,
                                disabledSoundId);
         state->baddie.targetObj = (void*)target;
         state->baddie.hasTarget = 0;
@@ -598,7 +594,7 @@ void dll_CE_acquireTarget(GameObject* obj, GroundBaddieState* objectState, Groun
 
 void dll_CE_updateTargeting(GameObject* obj, GroundBaddieState* objectStateAddress, GroundBaddieState* stateAddress) {
     GameObject* player;
-    char* target;
+    GameObject* target;
     int hitReactionUpdated;
     struct {
         f32 x, y, z;
@@ -607,11 +603,11 @@ void dll_CE_updateTargeting(GameObject* obj, GroundBaddieState* objectStateAddre
 
     (void)deltaAddress;
     player = Obj_GetPlayerObject();
-    target = (char*)stateAddress->baddie.targetObj;
+    target = stateAddress->baddie.targetObj;
     if (target != NULL) {
-        delta.x = ((GameObject*)target)->anim.worldPosX - obj->anim.worldPosX;
-        delta.y = ((GameObject*)target)->anim.worldPosY - obj->anim.worldPosY;
-        delta.z = ((GameObject*)target)->anim.worldPosZ - obj->anim.worldPosZ;
+        delta.x = target->anim.worldPosX - obj->anim.worldPosX;
+        delta.y = target->anim.worldPosY - obj->anim.worldPosY;
+        delta.z = target->anim.worldPosZ - obj->anim.worldPosZ;
         stateAddress->baddie.targetDistance =
             sqrtf(delta.z * delta.z + (delta.x * delta.x + delta.y * delta.y));
     }
@@ -634,9 +630,9 @@ void dll_CE_updateTargeting(GameObject* obj, GroundBaddieState* objectStateAddre
                                 gDllCEHitReactionDamage, 1, &gDllCEHitReactionScratch);
 
     if (hitReactionUpdated != 0) {
-        void* playerChild = player->childObjs[0];
+        GameObject* playerChild = player->childObjs[0];
 
-        (*(DllCEStaffInterface**)((GameObject*)playerChild)->anim.dll)->getSwipeTextureIndex(playerChild);
+        (*(DllCEStaffInterface**)playerChild->anim.dll)->getSwipeTextureIndex(playerChild);
     }
 }
 
@@ -733,41 +729,39 @@ void dll_CE_update(GameObject* obj, int unusedA, int unusedB) {
         obj->anim.localPosZ = placement->base.posZ;
         (*gObjectTriggerInterface)->runSequence(placement->sequenceId, obj, -1);
         obj->userData2 = 1;
+    } else if ((*gBaddieControlInterface)->isObjectValid(obj, state, 0) == 0) {
+        state->targetState = 0;
+    } else if ((state->configFlags & 0x10) != 0 && (*gSkyInterface)->getSunPosition(&sunTime) == 0) {
+        state->targetState = 0;
     } else {
-        if ((*gBaddieControlInterface)->isObjectValid(obj, state, 0) == 0) {
-            state->targetState = 0;
-        } else if ((state->configFlags & 0x10) != 0 && (*gSkyInterface)->getSunPosition(&sunTime) == 0) {
-            state->targetState = 0;
+        dll_CE_updateTargeting(obj, state, state);
+        if (state->targetState == 0) {
+            dll_CE_acquireTarget(obj, state, state);
         } else {
-            dll_CE_updateTargeting(obj, state, state);
-            if (state->targetState == 0) {
-                dll_CE_acquireTarget(obj, state, state);
-            } else {
-                control = state->control;
-                if ((control->effectFlags & DLL_CE_EFFECT_PROJECTILE) != 0) {
-                    dll_CE_spawnIceBall(obj, state);
-                }
-                if ((control->effectFlags & DLL_CE_EFFECT_DUST) != 0) {
-                    (*gPartfxInterface)->spawnObject((void*)obj, DLL_CE_PARTFX_DUST, NULL, 1, -1, NULL);
-                }
-                if ((control->effectFlags & DLL_CE_EFFECT_SPRAY) != 0) {
-                    spawnCount = 0;
-                    do {
-                        (*gPartfxInterface)->spawnObject((void*)obj, DLL_CE_PARTFX_SPRAY, NULL, 1, -1, NULL);
-                        spawnCount++;
-                    } while (spawnCount < 10);
-                }
-                control->effectFlags = 0;
-                (*gBaddieControlInterface)->updateGravity(obj, state, 0.0f, -1);
-                (*gPlayerInterface)->rotateTowardTarget(obj, state, timeDelta, 4);
-                state->savedPendingParentObj = obj->pendingParentObj;
-                obj->pendingParentObj = 0;
-                (*gPlayerInterface)
-                    ->update(obj, state, timeDelta, timeDelta, gDllCEMoveHandlers, gDllCECheckHandlers);
-                obj->pendingParentObj = state->savedPendingParentObj;
+            control = state->control;
+            if ((control->effectFlags & DLL_CE_EFFECT_PROJECTILE) != 0) {
+                dll_CE_spawnIceBall(obj, state);
             }
-            obj->anim.localPosY = placement->base.posY - 2.0f;
+            if ((control->effectFlags & DLL_CE_EFFECT_DUST) != 0) {
+                (*gPartfxInterface)->spawnObject((void*)obj, DLL_CE_PARTFX_DUST, NULL, 1, -1, NULL);
+            }
+            if ((control->effectFlags & DLL_CE_EFFECT_SPRAY) != 0) {
+                spawnCount = 0;
+                do {
+                    (*gPartfxInterface)->spawnObject((void*)obj, DLL_CE_PARTFX_SPRAY, NULL, 1, -1, NULL);
+                    spawnCount++;
+                } while (spawnCount < 10);
+            }
+            control->effectFlags = 0;
+            (*gBaddieControlInterface)->updateGravity(obj, state, 0.0f, -1);
+            (*gPlayerInterface)->rotateTowardTarget(obj, state, timeDelta, 4);
+            state->savedPendingParentObj = obj->pendingParentObj;
+            obj->pendingParentObj = 0;
+            (*gPlayerInterface)
+                ->update(obj, state, timeDelta, timeDelta, gDllCEMoveHandlers, gDllCECheckHandlers);
+            obj->pendingParentObj = state->savedPendingParentObj;
         }
+        obj->anim.localPosY = placement->base.posY - 2.0f;
     }
 }
 

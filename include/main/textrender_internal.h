@@ -11,16 +11,8 @@
 STATIC_ASSERT(offsetof(GameTextBox, style) == 0x13);
 STATIC_ASSERT(offsetof(GameTextBox, alpha) == 0x1E);
 STATIC_ASSERT(sizeof(TextFont) == 0x28);
+STATIC_ASSERT(sizeof(GameTextDef) == 0xc);
 STATIC_ASSERT(offsetof(TextFont, status) == 0x1c);
-
-typedef struct
-{
-    int state;
-    u8 pad04[4];
-    u8 dirId;
-    u8 languageId;
-    u8 pad0a[0x1e];
-} GameTextLoadRequest;
 
 typedef struct
 {
@@ -42,22 +34,21 @@ STATIC_ASSERT(offsetof(GameTextLoadSlot, sourceId) == 0x4b);
 
 typedef struct
 {
-    u8 pad00[8];
-    char** text;
-} GameTextFadeEntry;
-
-typedef struct
-{
     f32 fadeElapsed[8];
     f32 fadeTimers[8];
-    GameTextFadeEntry fadeEntries[8];
-    u8 pad00a0[0x2e0];
+    GameTextDef fallbackDefs[8];
+    char* fallbackBufPtrs[8];
+    char fallbackBufs[8][0x40];
+    u8 pad02c0[0xc0];
     char path[0x40];
     char commandStringBuffer[0x800];
     GameTextSlot commands[0x80];
     TextFont fonts[4];
     GameTextLoadSlot loadSlots[8];
 } GameTextRuntime;
+STATIC_ASSERT(offsetof(GameTextRuntime, fallbackDefs) == 0x40);
+STATIC_ASSERT(offsetof(GameTextRuntime, fallbackBufPtrs) == 0xa0);
+STATIC_ASSERT(offsetof(GameTextRuntime, fallbackBufs) == 0xc0);
 STATIC_ASSERT(offsetof(GameTextRuntime, path) == 0x380);
 STATIC_ASSERT(offsetof(GameTextRuntime, commandStringBuffer) == 0x3c0);
 STATIC_ASSERT(offsetof(GameTextRuntime, commands) == 0xbc0);
@@ -108,11 +99,8 @@ typedef struct
 
 #define GAMETEXT_PATH_BUFFER_OFFSET           0x380
 #define GAMETEXT_COMMAND_STRING_BUFFER_OFFSET 0x3c0
-#define GAMETEXT_LOAD_REQUESTS_OFFSET         0x15dc
-#define GAMETEXT_SEQUENCE_LOAD_STATE_OFFSET   0x1604
 #define GAMETEXT_FONT_SLOT_OFFSET             0x1610
 #define GAMETEXT_LOAD_SLOTS_OFFSET            0x1660
-#define GAMETEXT_PENDING_REQUEST_SCAN_OFFSET  (GAMETEXT_LOAD_REQUESTS_OFFSET - 0x1c)
 #define GAMETEXT_LOAD_SLOT_COUNT              8
 #define GAMETEXT_PENDING_SOURCE_COUNT         4
 #define GAMETEXT_INVALID_DIR                  0xff
@@ -120,12 +108,6 @@ typedef struct
 #define GAMETEXT_MAP_DIR_COUNT                0x49
 #define GAMETEXT_LANGUAGE_COUNT               6
 #define GAMETEXT_SEQUENCE_SOURCE_ID           1
-
-typedef struct
-{
-    u8 pad[GAMETEXT_LOAD_REQUESTS_OFFSET];
-    GameTextLoadRequest requests[GAMETEXT_PENDING_SOURCE_COUNT];
-} GameTextLoadState;
 
 extern s16 gGameTextBoxTexAssets;
 extern u16 gGameTextBoxCornerTexSrc[256];

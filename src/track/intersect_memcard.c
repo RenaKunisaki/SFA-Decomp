@@ -1,6 +1,7 @@
 #include "global.h"
 #include "dolphin/card.h"
 #include "dolphin/mtx.h"
+#include "string.h"
 #include "track/intersect_card_api.h"
 #include "track/intersect_hud_color_api.h"
 #include "main/texture.h"

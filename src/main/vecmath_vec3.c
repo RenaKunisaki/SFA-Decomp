@@ -40,7 +40,7 @@ f32 Vec3_Normalize(f32* vector)
     f32 inverseLength;
 
     length = sqrtf(vector[0] * vector[0] + vector[1] * vector[1] + vector[2] * vector[2]);
-    if (0.0f != length)
+    if (length != 0.0f)
     {
         inverseLength = 1.0f / length;
         vector[0] *= inverseLength;

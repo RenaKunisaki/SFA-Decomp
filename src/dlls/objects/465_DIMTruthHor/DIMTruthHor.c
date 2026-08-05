@@ -6,10 +6,14 @@
  */
 #include "dlls/objects/465_DIMTruthHor.h"
 
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_00C4_tricky.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
+#include "main/gamebits_api.h"
+#include "main/objhits.h"
+#include "main/vecmath.h"
 #include "sys/objects/lifecycle.h"
 
 #define DIM_TRUTH_HORN_ICE_SHATTER_DELAY         20.0f
@@ -73,7 +77,7 @@ void dimtruthhornice_update(GameObject* obj) {
 
             state->phase = DIM_TRUTH_HORN_ICE_PHASE_SHATTERED;
             Sfx_PlayFromObject(0, SFXTRIG_menuups16k);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_barrel_bounce1);
+            Sfx_PlayFromObject(obj, SFXTRIG_barrel_bounce1);
             for (particleCount = DIM_TRUTH_HORN_ICE_BURST_PARTICLE_COUNT; particleCount != 0; particleCount--) {
                 spawnParams.posX =
                     DIM_TRUTH_HORN_ICE_PARTICLE_OFFSET_SCALE *

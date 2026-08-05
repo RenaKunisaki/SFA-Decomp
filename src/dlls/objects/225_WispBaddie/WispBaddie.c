@@ -11,6 +11,7 @@
 #include "main/dll/rom_curve_interface.h"
 #include "main/frame_timing.h"
 #include "main/mm.h"
+#include "string.h"
 #include "sys/objects.h"
 #include "main/curve.h"
 #include "main/audio/sfx_position_api.h"
@@ -236,7 +237,7 @@ void WispBaddie_init(GameObject* obj, WispBaddiePlacement* placement, int skipAl
     if (skipAlloc == 0) {
         state->curve = mmAlloc(sizeof(RomCurveWalker), 0x1A, 0);
         if (state->curve != NULL) {
-            (void)memset(state->curve, 0, sizeof(RomCurveWalker));
+            memset(state->curve, 0, sizeof(RomCurveWalker));
         }
         if ((*gRomCurveInterface)
                 ->initCurve((void*)state->curve, (void*)obj, state->triggerDistance, gWispBaddieCurveInitData, -1) ==

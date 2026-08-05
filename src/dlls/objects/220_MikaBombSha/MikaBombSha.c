@@ -6,6 +6,7 @@
  */
 #include "dlls/objects/220_MikaBombShadow.h"
 #include "main/frame_timing.h"
+#include "main/objhits.h"
 #include "main/track_dolphin_api.h"
 
 const f32 gMikaBombRenderScale = 1.0f;

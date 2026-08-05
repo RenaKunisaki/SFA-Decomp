@@ -46,7 +46,7 @@ typedef struct FireFlyState
     u8 pathAge; /* 0x68: spline segments consumed; 4+ stops re-targeting */
     u8 pad69[0x6B - 0x69];
     u8 firstFrame; /* 0x6B: first target takes the full ampMax rise, then clears */
-    u8 activeFlags; /* 0x6C: FireFlyActiveBits */
+    FireFlyActiveBits activeFlags;
     u8 pad6D[0x70 - 0x6D];
     f32 despawnTimer; /* 0x70: post-collect frames; sparkles above 170, frees at 0 */
     f32 lifeTimer;    /* 0x74: expiry despawns the timed placement variant */

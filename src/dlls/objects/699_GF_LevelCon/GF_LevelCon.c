@@ -9,8 +9,14 @@
  * placement def ids 0x477E3 / 0x4A946 / 0x4A947) and toggles / scrolls
  * them per frame.
  */
+#include "main/dll/dll_02C0_front.h"
 #include "main/frame_timing.h"
+#include "main/lightmap_api.h"
+#include "main/map_load.h"
+#include "main/model_engine.h"
 #include "main/obj_list.h"
+#include "main/pi_dolphin_api.h"
+#include "main/rcp_dolphin_api.h"
 #include "main/screen_transition.h"
 #include "main/sky_api.h"
 #include "main/render_envfx_api.h"
@@ -76,10 +82,10 @@ ObjectDescriptor gGF_LevelConObjDescriptor = {
 void gf_levelcon_findLinkedObjects(GameObject* obj)
 {
     GfLevelconFindLinkedObjectsState* state = obj->extra;
-    int* objects;
+    GameObject** objects;
     int objectIndex;
     int objectCount;
-    int linkedObj;
+    GameObject* linkedObj;
 
     state->light = 0;
     state->scrollA = 0;
@@ -87,19 +93,19 @@ void gf_levelcon_findLinkedObjects(GameObject* obj)
     objects = ObjList_GetObjects(&objectIndex, &objectCount);
     for (; objectIndex < objectCount; objectIndex++)
     {
-        linkedObj = objects[objectIndex];
-        if ((GameObject*)linkedObj != obj && ((GameObject*)linkedObj)->anim.placementData != NULL)
+        linkedObj = (GameObject*)objects[objectIndex];
+        if ((GameObject*)linkedObj != obj && linkedObj->anim.placementData != NULL)
         {
-            switch (((GameObject*)linkedObj)->anim.placement->ident)
+            switch (linkedObj->anim.placement->ident)
             {
             case GFLEVELCON_LINK_LIGHT:
-                state->light = linkedObj;
+                state->light = (int)linkedObj;
                 break;
             case GFLEVELCON_LINK_SCROLL_A:
-                state->scrollA = linkedObj;
+                state->scrollA = (int)linkedObj;
                 break;
             case GFLEVELCON_LINK_SCROLL_B:
-                state->scrollB = linkedObj;
+                state->scrollB = (int)linkedObj;
                 break;
             }
         }

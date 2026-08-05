@@ -98,7 +98,7 @@ void dll_86_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* s
     packet.initialStateByte = 0;
     packet.byte5A = 0;
     packet.textureFrameTimer = 0;
-    packet.commandCount = (GfxCmd*)((u8*)commands + 0x78) - commands;
+    packet.commandCount = (GfxCmd*)((u8*)commands + sizeof(GfxCmd) * 5) - commands;
     sequenceParams = gDll86SequenceResource.sequenceParams;
     packet.sequenceParams[0] = sequenceParams[0];
     packet.sequenceParams[1] = sequenceParams[1];

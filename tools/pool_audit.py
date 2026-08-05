@@ -273,7 +273,7 @@ def run_all(json_out=None):
     print(f"multi-unit .sdata2 addresses: {len(multi)}  neighborhoods: {len(groups)}")
     def unmatched(u):
         m = measures.get(u)
-        return (m['total_code'] - m['matched_code']) if m else 0
+        return ((m.get('total_code') or 0) - (m.get('matched_code') or 0)) if m else 0
     ranked = sorted(groups.values(), key=lambda g: -sum(unmatched(u) for u in g))
     for g in ranked:
         g = sorted(g)

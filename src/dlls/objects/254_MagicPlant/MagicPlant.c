@@ -179,14 +179,12 @@ void MagicPlant_updateActive(GameObject* obj, MagicPlantPlacement* unusedPlaceme
             } else {
                 state->animStepScale = MAGICPLANT_RANDOM_PROGRESS_SCALE;
             }
-        } else {
-            if ((state->idleTimer -= framesThisStep) <= 0) {
-                state->idleTimer = randomGetRange(MAGICPLANT_IDLE_TIMER_MIN, MAGICPLANT_IDLE_TIMER_MAX);
-            } else if (obj->anim.currentMove != MAGICPLANT_MOVE_IDLE) {
-                state->animStepScale = gMagicPlantIdleAnimStep;
-                ObjAnim_SetCurrentMove((int)obj, MAGICPLANT_MOVE_IDLE,
-                                       MAGICPLANT_RANDOM_PROGRESS_SCALE * (f32)randomGetRange(0, 99), 0);
-            }
+        } else if ((state->idleTimer -= framesThisStep) <= 0) {
+            state->idleTimer = randomGetRange(MAGICPLANT_IDLE_TIMER_MIN, MAGICPLANT_IDLE_TIMER_MAX);
+        } else if (obj->anim.currentMove != MAGICPLANT_MOVE_IDLE) {
+            state->animStepScale = gMagicPlantIdleAnimStep;
+            ObjAnim_SetCurrentMove((int)obj, MAGICPLANT_MOVE_IDLE,
+                                   MAGICPLANT_RANDOM_PROGRESS_SCALE * (f32)randomGetRange(0, 99), 0);
         }
     }
 
@@ -302,7 +300,7 @@ void MagicPlant_update(GameObject* obj) {
     }
 
     obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
-    if (objIsFrozen((u8*)obj) != 0) {
+    if (objIsFrozen(obj) != 0) {
         hitKind = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitSphereIndex, &hitVolume, &lightParams.posX,
                                                      &lightParams.posY, &lightParams.posZ);
         if ((hitKind != 0) && (hitKind != MAGICPLANT_HIT_KIND_FADE_IN)) {

@@ -165,7 +165,7 @@ void arwingandrossstuff_hitDetect(GameObject* obj)
 
     if (objAnim->romDefNo == ARW_SEQID_ANDROSS_ASTEROID)
     {
-        int hit;
+        GameObject* hit;
         u32 vol;
 
         if (ObjHits_GetPriorityHit(obj, &hit, 0, &vol) != 0)
@@ -230,7 +230,7 @@ void arwingandrossstuff_update(GameObject* obj)
 
     if (arwing != NULL && (arwing->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0)
     {
-        Obj_FreeObject((GameObject*)object);
+        Obj_FreeObject(object);
         return;
     }
     {
@@ -241,7 +241,7 @@ void arwingandrossstuff_update(GameObject* obj)
             state->despawnTimer = dt - timeDelta;
             if (state->despawnTimer <= zero)
             {
-                Obj_FreeObject((GameObject*)object);
+                Obj_FreeObject(object);
             }
             return;
         }
@@ -257,7 +257,7 @@ void arwingandrossstuff_update(GameObject* obj)
             if (state->lifetime <= zero)
             {
                 state->lifetime = zero;
-                Obj_FreeObject((GameObject*)object);
+                Obj_FreeObject(object);
                 return;
             }
         }

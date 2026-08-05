@@ -10,6 +10,11 @@
 #define LANTERN_FIREFLY_STATE_SIZE     0x74
 
 /* FireFlyLant allocates this complete setup before spawning each child. */
+typedef struct LanternFireFlyControlBits {
+    u8 motionMode : 2;
+    u8 unused : 6;
+} LanternFireFlyControlBits;
+
 typedef struct LanternFireFlyPlacement {
     ObjPlacement base; /* 0x00 */
     s8 wanderRange;    /* 0x18 */
@@ -45,7 +50,7 @@ typedef struct LanternFireFlyState {
     u8 pad6D;                /* 0x6D */
     u8 lightSpawned;         /* 0x6E */
     u8 unk6F;                /* 0x6F */
-    u8 modeFlags;            /* 0x70: bits 0..1 = motion mode; bits 6..7 = object mode */
+    LanternFireFlyControlBits modeFlags;
     u8 pad71[3];             /* 0x71 */
 } LanternFireFlyState;
 

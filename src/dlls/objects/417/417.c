@@ -276,7 +276,7 @@ int NW_mammoth_updateSleepCycle(GameObject* obj, NwMammothState* state) {
 void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammothPlacement* placement) {
     GameObject* tw2;
     GameObject* tw;
-    GameObject* nearestObj = objGetNearestTypeTo(NW_MAMMOTH_TARGET_OBJECT_GROUP, (GameObject*)obj, 0);
+    GameObject* nearestObj = objGetNearestTypeTo(NW_MAMMOTH_TARGET_OBJECT_GROUP, obj, 0);
 
     switch (state->stateIndex) {
     case 9:
@@ -341,7 +341,7 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
                                 enemy_setTrackedObj((GameObject*)o2, state->playerObject);
                             }
                         } else {
-                            enemy_setTrackedObj((GameObject*)o2, (GameObject*)tw);
+                            enemy_setTrackedObj((GameObject*)o2, tw);
                         }
                     }
                 }
@@ -517,18 +517,16 @@ void NW_mammoth_updatePatrol(GameObject* obj, NwMammothState* state, NwMammothPl
         } else {
             state->triggerList = gNwMammothMode1DefaultTriggerList;
         }
+    } else if (mainGetBit(GAMEBIT_SnowHornArtifact19D) != 0) {
+        state->triggerList = gNwMammothPatrolArtifactCompleteTriggerList;
+    } else if (mainGetBit(GAMEBIT_ITEM_NWSnowHornArtifact_Got) != 0) {
+        state->triggerList = gNwMammothPatrolArtifactObtainedTriggerList;
+    } else if (mainGetBit(GAMEBIT_NW_RescuedSnowHornGateKeeper) != 0) {
+        state->triggerList = gNwMammothPatrolRescuedTriggerList;
+    } else if (mainGetBit(0x9e) != 0) {
+        state->triggerList = gNwMammothPatrolBit9ETriggerList;
     } else {
-        if (mainGetBit(GAMEBIT_SnowHornArtifact19D) != 0) {
-            state->triggerList = gNwMammothPatrolArtifactCompleteTriggerList;
-        } else if (mainGetBit(GAMEBIT_ITEM_NWSnowHornArtifact_Got) != 0) {
-            state->triggerList = gNwMammothPatrolArtifactObtainedTriggerList;
-        } else if (mainGetBit(GAMEBIT_NW_RescuedSnowHornGateKeeper) != 0) {
-            state->triggerList = gNwMammothPatrolRescuedTriggerList;
-        } else if (mainGetBit(0x9e) != 0) {
-            state->triggerList = gNwMammothPatrolBit9ETriggerList;
-        } else {
-            state->triggerList = gNwMammothPatrolDefaultTriggerList;
-        }
+        state->triggerList = gNwMammothPatrolDefaultTriggerList;
     }
 }
 
@@ -713,9 +711,9 @@ void NW_mammoth_update(GameObject* obj, int unusedArg) {
         obj->anim.resetHitboxFlags = obj->anim.resetHitboxFlags & ~INTERACT_FLAG_PROMPT_SUPPRESSED;
         if (((tables[0]->stateFlags[state->stateIndex] & NW_MAMMOTH_STATE_FLAG_MENU_ACTION) != 0) &&
             (cMenuGetSelectedItem() != -1)) {
-            Obj_SetActiveHitVolumeBounds((GameObject*)obj, 0, 0, 0, 0, 4);
+            Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 4);
         } else {
-            Obj_SetActiveHitVolumeBounds((GameObject*)obj, 0, 0, 0, 0, 2);
+            Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 2);
         }
     }
     stateIndex = state->stateIndex;
@@ -733,7 +731,7 @@ void NW_mammoth_update(GameObject* obj, int unusedArg) {
     } else {
         state->runtimeFlags = state->runtimeFlags & ~NW_MAMMOTH_RUNTIME_ANIM_ENDED;
     }
-    objAudioDispatchAnimEvents((GameObject*)obj, &state->animEvents, 8, state->pathPoints, state->pathState, 1.0f,
+    objAudioDispatchAnimEvents(obj, &state->animEvents, 8, state->pathPoints, state->pathState, 1.0f,
                                1.0f);
     NW_mammoth_updateEyeTracking(obj, state,
                                  tables[0]->stateFlags[state->stateIndex] & NW_MAMMOTH_STATE_FLAG_TRIGGER_REFRESH);

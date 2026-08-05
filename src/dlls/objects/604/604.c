@@ -344,7 +344,7 @@ void snowclaw_syncMountTransform(GameObject* obj, GameObject* mount, int p2, int
 
 int snowclaw_animEventCallback(GameObject* obj, int a2, ObjSeqState* seq)
 {
-    int* sub;
+    GameObject* sub;
     int* inner;
     SnowclawState* s;
     int i;
@@ -358,7 +358,7 @@ int snowclaw_animEventCallback(GameObject* obj, int a2, ObjSeqState* seq)
     ObjHits_DisableObject(obj);
     if (*(int**)inner != 0)
     {
-        ObjHits_DisableObject((GameObject*)*(int*)inner);
+        ObjHits_DisableObject((GameObject*)*inner);
     }
     if (obj->seqIndex != -1 && (obj->anim.romDefNo == SNOWCLAW_SEQID_IM_SNOWCLAW || obj->anim.romDefNo == SNOWCLAW_SEQID_IM_SNOWCLAW2) &&
         mainGetBit(GAMEBIT_IM_BikeRelated03A3) != 0)
@@ -368,14 +368,14 @@ int snowclaw_animEventCallback(GameObject* obj, int a2, ObjSeqState* seq)
         return 4;
     }
     obj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
-    sub = *(int**)inner;
+    sub = (GameObject*)*(int**)inner;
     s->mountAlpha = 0xff;
     if (sub != 0)
     {
-        s16 animFlags = ((GameObject*)sub)->anim.flags;
+        s16 animFlags = sub->anim.flags;
         if (animFlags & OBJANIM_FLAG_HIDDEN)
         {
-            ((GameObject*)sub)->anim.flags = animFlags & ~OBJANIM_FLAG_HIDDEN;
+            sub->anim.flags = animFlags & ~OBJANIM_FLAG_HIDDEN;
             SNOWCLAW_MOUNT_INTERFACE(sub)->setRiderMode((GameObject*)sub, 2);
         }
     }
@@ -423,7 +423,7 @@ int snowclaw_animEventCallback(GameObject* obj, int a2, ObjSeqState* seq)
             }
             break;
         case 1:
-            sub = *(int**)inner;
+            sub = (GameObject*)*(int**)inner;
             if (sub != 0)
             {
                 SNOWCLAW_MOUNT_INTERFACE(sub)->setRiderMode((GameObject*)sub, 0);
@@ -534,7 +534,7 @@ void snowclaw_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vis)
     {
         (obj)->anim.flags &= ~8;
     }
-    if ((s8)vis != 0 && s->mountAlpha != 0)
+    if (vis != 0 && s->mountAlpha != 0)
     {
         oldFlag = obj->anim.renderAlpha;
         if (found != 0)
@@ -579,20 +579,20 @@ void snowclaw_hitDetect(GameObject* obj)
     GameObject* near;
     GameObject* player;
     f32 dist;
-    int hit;
+    GameObject* hit;
     s8 hitCooldown;
 
     inner = obj->extra;
     s = (SnowclawState*)inner;
     dist = 500.0f;
-    sub = *(int*)inner;
+    sub = *inner;
     if ((u32)sub == 0)
     {
         return;
     }
     if (ObjHits_GetPriorityHit((GameObject*)(sub), &hit, 0, 0) == 0x15 && s->health >= 0)
     {
-        ObjHits_RecordObjectHit((GameObject*)sub, (GameObject*)hit, 0x15, 1, 0);
+        ObjHits_RecordObjectHit((GameObject*)sub, hit, 0x15, 1, 0);
         if (s->hitCooldown < 0)
         {
             s->health -= 1;

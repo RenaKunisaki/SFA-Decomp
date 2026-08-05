@@ -16,6 +16,7 @@
 #include "dlls/object_descriptor.h"
 
 #include "main/dll/DR/dll_0280_drcloudper.h"
+#include "main/objtype.h"
 
 
 #define DRCLOUDPER_GROUP_TRIGGER        0x13

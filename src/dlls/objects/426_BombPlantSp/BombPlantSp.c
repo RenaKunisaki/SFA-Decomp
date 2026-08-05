@@ -7,15 +7,21 @@
 #include "dlls/objects/426_BombPlantSp.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll/path_control_interface.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
+#include "main/gameloop_gamebit_api.h"
 #include "main/model_light.h"
+#include "main/obj_message.h"
 #include "main/objfx.h"
+#include "main/objhits.h"
+#include "main/vecmath.h"
 #include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 #define BOMB_PLANT_SPORE_MESSAGE_IN_RANGE 0x7000A
 #define BOMB_PLANT_SPORE_MESSAGE_DETONATE 0x7000B
@@ -36,15 +42,8 @@
 #define BOMB_PLANT_SPORE_BOMB_PLANT_ALIAS_ID   0x36D
 #define BOMB_PLANT_SPORE_GROUND_QUAKE_ALIAS_ID 0x63C
 
-typedef struct BombPlantSporeFlags {
-    u8 hitSurface : 1;
-    u8 waitingForDetonateAck : 1;
-    u8 unknown : 6;
-} BombPlantSporeFlags;
-
 STATIC_ASSERT(sizeof(BombPlantSporeFlags) == 1);
 
-#define BOMB_PLANT_SPORE_FLAGS(state) ((BombPlantSporeFlags*)&(state)->flags)
 
 u8 gBombPlantSporePathSetupData[8] = {0x40, 0xA0, 0, 0, 0, 0, 0, 0};
 f32 gBombPlantSporePathPointData[3] = {0.0f, 0.0f, 0.0f};
@@ -83,7 +82,7 @@ void BombPlantSpore_startDriftBurst(GameObject* obj, BombPlantSporeState* state)
 
     state->burstDriftAngle = (s16)(state->currentSpinAngle + randomGetRange(-2000, 2000));
     angleDelta = (s32)state->burstDriftAngle - (u16)baseAngle;
-    if (0x8000 < angleDelta) {
+    if (angleDelta > 0x8000) {
         angleDelta -= 0xFFFF;
     }
     if (angleDelta < -0x8000) {
@@ -171,18 +170,18 @@ void BombPlantSpore_update(GameObject* obj) {
     GameObject* contactObj;
     int poppedMessage;
     u32 poppedSender;
-    int hitObject;
+    GameObject* hitObject;
     GameObject* player;
     int i;
     int j;
 
     state = obj->extra;
-    if (BOMB_PLANT_SPORE_FLAGS(state)->waitingForDetonateAck != 0) {
+    if (state->flags.waitingForDetonateAck != 0) {
         while (ObjMsg_Pop(obj, (u32*)&poppedMessage, &poppedSender, NULL) != 0) {
             switch (poppedMessage) {
             case BOMB_PLANT_SPORE_MESSAGE_DETONATE:
                 gameBitIncrement(GAMEBIT_ITEM_BombSpore_Count);
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_sc_gemrun0122);
+                Sfx_PlayFromObject(obj, SFXTRIG_sc_gemrun0122);
                 (*gExpgfxInterface)->freeSource((u32)obj);
                 for (i = 0; i < BOMB_PLANT_SPORE_EXPLOSION_PARTICLE_COUNT; i++) {
                     objfx_spawnDirectionalBurst(obj, 5, 1.0f, 7, 1, 0x3C,
@@ -193,11 +192,11 @@ void BombPlantSpore_update(GameObject* obj) {
                 state->detonateTimer = 200.0f;
                 obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
                 ObjHits_DisableObject(obj);
-                BOMB_PLANT_SPORE_FLAGS(state)->waitingForDetonateAck = 0;
+                state->flags.waitingForDetonateAck = 0;
                 break;
             }
         }
-        if (BOMB_PLANT_SPORE_FLAGS(state)->waitingForDetonateAck != 0) {
+        if (state->flags.waitingForDetonateAck != 0) {
             return;
         }
     }
@@ -227,7 +226,7 @@ void BombPlantSpore_update(GameObject* obj) {
     }
     ObjHits_GetPriorityHit(obj, &hitObject, 0, 0);
     contactObj = *(GameObject**)obj->anim.hitReactState;
-    if (BOMB_PLANT_SPORE_FLAGS(state)->hitSurface == 0) {
+    if (state->flags.hitSurface == 0) {
         state->driftTimer -= timeDelta;
         if (state->driftTimer < 0.0f) {
             state->driftTimer = 0.0f;
@@ -273,14 +272,14 @@ void BombPlantSpore_update(GameObject* obj) {
         (*gPathControlInterface)->advance(obj, &state->path, timeDelta);
         if (contactObj != NULL && (hitId = contactObj->anim.romDefNo, hitId != BOMB_PLANT_SPORE_BOMB_PLANT_ALIAS_ID) &&
             hitId != BOMB_PLANT_SPORE_OBJECT_ID && hitId != BOMB_PLANT_SPORE_GROUND_QUAKE_ALIAS_ID) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_sc_eatthefood16);
-            BOMB_PLANT_SPORE_FLAGS(state)->hitSurface = 1;
+            Sfx_PlayFromObject(obj, SFXTRIG_sc_eatthefood16);
+            state->flags.hitSurface = 1;
             if (state->fuseTimer > 120.0f) {
                 state->fuseTimer = 120.0f;
             }
         }
         if ((state->path.contactFlags & BOMB_PLANT_SPORE_PATH_CONTACT_MASK) != 0) {
-            BOMB_PLANT_SPORE_FLAGS(state)->hitSurface = 1;
+            state->flags.hitSurface = 1;
             if (state->fuseTimer > 120.0f) {
                 state->fuseTimer = 120.0f;
             }
@@ -290,12 +289,12 @@ void BombPlantSpore_update(GameObject* obj) {
     if (contactObj == player) {
         state->pickupMsgBitId = GAMEBIT_SawBombSpore;
         ObjMsg_SendToObject(contactObj, BOMB_PLANT_SPORE_MESSAGE_IN_RANGE, obj, (u32)state);
-        BOMB_PLANT_SPORE_FLAGS(state)->waitingForDetonateAck = 1;
+        state->flags.waitingForDetonateAck = 1;
     } else {
         f32 fuse = state->fuseTimer - timeDelta;
         state->fuseTimer = fuse;
         if (fuse <= 0.0f) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_en_majring2);
+            Sfx_PlayFromObject(obj, SFXTRIG_en_majring2);
             (*gExpgfxInterface)->freeSource((u32)obj);
             for (j = 0; j < BOMB_PLANT_SPORE_EXPLOSION_PARTICLE_COUNT; j++) {
                 objfx_spawnDirectionalBurst(obj, 5, 1.0f, 7, 1, 0x3C,

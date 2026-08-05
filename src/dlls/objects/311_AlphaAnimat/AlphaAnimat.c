@@ -4,6 +4,7 @@
  */
 #include "dlls/objects/311_AlphaAnimat.h"
 
+#include "main/audio/sfx_play_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/lightmap_api.h"
@@ -95,7 +96,7 @@ void AlphaAnimator_update(GameObject* obj) {
         state->gameBitValue = mainGetBit(placement->triggerGameBit);
         if (state->completedCycles > 2 && state->gameBitValue != state->previousGameBitValue) {
             if ((placement->modeFlags >> ALPHA_ANIMATOR_SFX_ENABLE_SHIFT) != 0) {
-                Sfx_PlayFromObject((u32)obj, placement->sfxId);
+                Sfx_PlayFromObject(obj, placement->sfxId);
             }
             state->completedCycles = 0;
             state->previousGameBitValue = state->gameBitValue;
@@ -113,7 +114,7 @@ void AlphaAnimator_update(GameObject* obj) {
                 return;
             }
             if ((placement->modeFlags >> ALPHA_ANIMATOR_SFX_ENABLE_SHIFT) != 0) {
-                Sfx_PlayFromObject((u32)obj, placement->sfxId);
+                Sfx_PlayFromObject(obj, placement->sfxId);
             }
         }
     }

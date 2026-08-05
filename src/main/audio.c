@@ -1308,14 +1308,14 @@ void Music_LoadChannelForTrigger(MusicTrigger* trigger)
     int counter;
     int track;
 
-    if (((u32)trigger->flags >> 5) & 1)
+    if (trigger->priorityGroup)
     {
         if ((int)audioIsChannelUnavailable(2) != 0)
         {
             return;
         }
     }
-    if (!(((u32)trigger->flags >> 5) & 1))
+    if (!(trigger->priorityGroup))
     {
         if ((int)audioIsChannelUnavailable(1) != 0)
         {
@@ -1335,7 +1335,7 @@ void Music_LoadChannelForTrigger(MusicTrigger* trigger)
     }
     channel->trackId = trigger->track;
     channel->volume = trigger->volume;
-    channel->priorityGroup = (trigger->flags >> 5) & 1;
+    channel->priorityGroup = trigger->priorityGroup;
     channel->status = 4;
     channel->priority = trigger->priority;
     if (channel->priorityGroup)

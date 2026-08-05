@@ -109,7 +109,7 @@ void dll_184_update(GameObject* obj) {
         if (i != 0 && obj->seqIndex == -2) {
             slot = state->sequence.slot;
             sequenceObject = NULL;
-            objectList = (GameObject**)ObjList_GetObjects(&i, &objectCount);
+            objectList = ObjList_GetObjects(&i, &objectCount);
             participantCount = 0;
             for (i = 0, sequenceSlotExt = (int)(s8)slot; i < objectCount; i++) {
                 GameObject* otherObject = *objectList;

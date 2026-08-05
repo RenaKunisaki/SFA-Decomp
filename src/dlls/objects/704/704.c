@@ -386,9 +386,9 @@ void titleScreenDrawMenuFrame(int alpha, int hideHighlight, u32 showArrows)
         int yb = (int)mtx[7];
         f32 cy = gTitleScreenCursorY;
         int a = (cy > 0.0f) ? 0xff : gTitleScreenPulseAlpha;
-        drawTexture(gTitleScreenTextures[2], (f32)(int)(xb - 0x18), -6.0f + (268.0f * cy + (f32)(int)yb),
+        drawTexture(gTitleScreenTextures[2], (f32)(int)(xb - 0x18), -6.0f + (268.0f * cy + (f32)yb),
                     0xff, 0xff);
-        drawTexture(texs2[7], (f32)(int)(xb + 0xa1), 16.0f + (268.0f * gTitleScreenCursorY + (f32)(int)yb),
+        drawTexture(texs2[7], (f32)(int)(xb + 0xa1), 16.0f + (268.0f * gTitleScreenCursorY + (f32)yb),
                     a, 0xff);
     }
     gameTextSetColor(0xff, 0xff, 0xff, (int)((f64)gTitleScreenPulseAlpha * (1.0 - gTitleScreenCursorY)));
@@ -490,8 +490,8 @@ void nameEntryTextDrawFunc(int x0, int y0, int x1, int y1, f32 u0, f32 v0, f32 u
     GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
     GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
     GXSetCullMode(GX_CULL_NONE);
-    GXSetScissor((int)((u32) * (f32*)(gTitleScreenMtx + 0xc) + 0x39),
-                 (int)((u32) * (f32*)(gTitleScreenMtx + 0x1c) + 0x4e), 0x104, 0x16);
+    GXSetScissor((int)((u32) ((MtxPtr)gTitleScreenMtx)[0][3] + 0x39),
+                 (int)((u32) ((MtxPtr)gTitleScreenMtx)[1][3] + 0x4e), 0x104, 0x16);
     GXBegin(GX_QUADS, GX_VTXFMT1, 4);
     GXWGFifo.s16 = (s16)(x0 - *(u32*)&gNameEntryScrollX * 4 + 0x208);
     GXWGFifo.s16 = y0;

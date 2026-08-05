@@ -141,16 +141,14 @@ void LaserBeam_update(GameObject* obj) {
                             (*gLaserBeamObjModgfxResource)
                                 ->spawn(obj, 1, NULL, LASERBEAM_EFFECT_SPAWN_FLAGS, -1, 0);
                         }
-                    } else {
-                        if (gLaserBeamObjModgfxResource != NULL && state->effectHandle == -1) {
-                            if (state->effectHandle != -1) {
-                                (*gModgfxInterface)->releaseHandle(&state->effectHandle);
-                            }
-                            if (gLaserBeamObjModgfxResource != NULL) {
-                                state->effectHandle =
-                                    (*gLaserBeamObjModgfxResource)
-                                        ->spawn(obj, 0, NULL, LASERBEAM_EFFECT_SPAWN_FLAGS, -1, 0);
-                            }
+                    } else if (gLaserBeamObjModgfxResource != NULL && state->effectHandle == -1) {
+                        if (state->effectHandle != -1) {
+                            (*gModgfxInterface)->releaseHandle(&state->effectHandle);
+                        }
+                        if (gLaserBeamObjModgfxResource != NULL) {
+                            state->effectHandle =
+                                (*gLaserBeamObjModgfxResource)
+                                    ->spawn(obj, 0, NULL, LASERBEAM_EFFECT_SPAWN_FLAGS, -1, 0);
                         }
                     }
                 }

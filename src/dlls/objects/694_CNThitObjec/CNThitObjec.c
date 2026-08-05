@@ -17,12 +17,16 @@
  * mcupgrade_SeqFn is part of this DOL-confirmed TU and is installed as an
  * anim-event callback by the following MCUpgrade DLL.
  */
+#include "main/audio/sfx_play_api.h"
 #include "main/game_ui_interface.h"
 #include "main/gamebits.h"
+#include "main/maketex_api.h"
 #include "main/objfx.h"
 #include "main/dll/dll_02B6_cnthitobjec.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
+#include "main/objhits.h"
+#include "sys/objects.h"
 
 static int sCntHitSourcesProfile0[2] = {0xf, 0xe};
 static int sCntHitSourceProfile1 = 5;
@@ -98,7 +102,7 @@ void cnthitobjec_hitDetect(GameObject* obj)
     if (setup->mode == CNTHIT_MODE_VISIBLE_OBJECT)
     {
         Obj_SetModelColorFadeRecursive(obj, 30, 200, 0, 0, 1);
-        Sfx_PlayFromObject((int)obj, SFXTRIG_wmap_nameoff_496); /* hit */
+        Sfx_PlayFromObject(obj, SFXTRIG_wmap_nameoff_496); /* hit */
     }
     if (state->remainingHealth <= 0)
     {
@@ -123,13 +127,13 @@ void cnthitobjec_hitDetect(GameObject* obj)
             }
             if (setup->mode == CNTHIT_MODE_VISIBLE_OBJECT)
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_wp_sexpl2_c); /* destroy */
+                Sfx_PlayFromObject(obj, SFXTRIG_wp_sexpl2_c); /* destroy */
             }
         }
     }
     else
     {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_sc_snort03);
+        Sfx_PlayFromObject(obj, SFXTRIG_sc_snort03);
     }
 }
 

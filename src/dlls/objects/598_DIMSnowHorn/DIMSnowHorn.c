@@ -8,6 +8,7 @@
  */
 #include "dlls/objects/457_DIMDismount.h"
 #include "main/dll/partfx_interface.h"
+#include "main/obj_path.h"
 #include "main/texture.h"
 #include "main/objHitReact.h"
 #include "main/vecmath.h"
@@ -41,7 +42,7 @@
 #include "dolphin/pad.h"
 
 f32 gDIMSnowHorn1ModelMtx[16];
-int gDIMSnowHorn1StateHandlers[12];
+void* gDIMSnowHorn1StateHandlers[12];
 void* gDIMSnowHorn1DefaultStateHandler;
 void* gDIMSnowHorn1Texture;
 
@@ -347,7 +348,7 @@ int DIMSnowHorn1_stateHandler08(GameObject* obj, DIMSnowHorn1State* state)
         if (inner->airMeterValue != 0 && state->baddie.moveSpeed > 0.0f)
         {
             if (state->baddie.pressedButtons != 0 ||
-                0.0f != state->baddie.moveInputX ||
+                state->baddie.moveInputX != 0.0f ||
                 0.0f != state->baddie.moveInputZ)
             {
                 state->baddie.moveSpeed = -state->baddie.moveSpeed;
@@ -358,7 +359,7 @@ int DIMSnowHorn1_stateHandler08(GameObject* obj, DIMSnowHorn1State* state)
         if (inner->airMeterValue != 0)
         {
             if (state->baddie.pressedButtons != 0 ||
-                0.0f != state->baddie.moveInputX ||
+                state->baddie.moveInputX != 0.0f ||
                 0.0f != state->baddie.moveInputZ)
             {
                 ObjAnim_SetCurrentMove((int)obj, 0x207, 0.0f, 0);
@@ -622,11 +623,11 @@ int DIMSnowHorn1_stateHandler05(GameObject* obj, DIMSnowHorn1State* state)
                 o1 = ObjList_FindObjectById(id_a);
                 o2 = (int*)ObjList_FindObjectById(id_c);
                 if (o1 != NULL && o2 != NULL)
-                    enemy_setTrackedObj((GameObject*)o1, (GameObject*)o2);
+                    enemy_setTrackedObj(o1, (GameObject*)o2);
                 o1 = ObjList_FindObjectById(id_b);
                 o2 = (int*)ObjList_FindObjectById(id_d);
                 if (o1 != NULL && o2 != NULL)
-                    enemy_setTrackedObj((GameObject*)o1, (GameObject*)o2);
+                    enemy_setTrackedObj(o1, (GameObject*)o2);
                 inner->proximityPhase = 1;
             }
             else
@@ -1244,7 +1245,7 @@ void DIMSnowHorn1_update(GameObject* obj)
     f32 nearDist;
     u8* base = (u8*)(int)gDIMSnowHorn1ConfigTable;
     GameObject* player = Obj_GetPlayerObject();
-    int data;
+    DIMSnowHorn1State* data;
     s8 modeIndex = -1;
     s16 angleDelta;
     GameObject* found;
@@ -1253,13 +1254,13 @@ void DIMSnowHorn1_update(GameObject* obj)
     u32 flip;
     int flags;
 
-    data = (int)obj->extra;
-    ((DIMSnowHorn1State*)data)->advanceCountThreshold = 5;
+    data = obj->extra;
+    data->advanceCountThreshold = 5;
     (obj)->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
     ((ObjHitsPriorityState*)(obj)->anim.hitReactState)->trackContactMask = 9;
     {
         u8* fp = base + 0x94;
-        flags = fp[((DIMSnowHorn1State*)data)->baddie.controlMode];
+        flags = fp[data->baddie.controlMode];
     }
     if (!(flags & 8))
     {
@@ -1272,35 +1273,35 @@ void DIMSnowHorn1_update(GameObject* obj)
         {
             arm = (ObjHitReactEntry*)(base + 0x6c);
         }
-        ((DIMSnowHorn1State*)data)->hitReactState = ObjHitReact_Update(
-            obj, arm, 1, ((DIMSnowHorn1State*)data)->hitReactState, &((DIMSnowHorn1State*)data)->hitReactStepScale);
-        if (((DIMSnowHorn1State*)data)->hitReactState != 0)
+        data->hitReactState = ObjHitReact_Update(
+            obj, arm, 1, data->hitReactState, &data->hitReactStepScale);
+        if (data->hitReactState != 0)
         {
-            characterHeadLookRelax(obj, (void*)(data + 0x980));
-            characterDoEyeAnims(obj, &((DIMSnowHorn1State*)data)->eyeAnimState);
+            characterHeadLookRelax(obj, &data->eyeAnimState);
+            characterDoEyeAnims(obj, &data->eyeAnimState);
             return;
         }
     }
-    if (((DIMSnowHorn1State*)data)->mountMode == 2)
+    if (data->mountMode == 2)
     {
-        ((DIMSnowHorn1State*)data)->baddie.physicsActive = 1;
+        data->baddie.physicsActive = 1;
         DIMSnowHorn1_ridingUpdate(obj, framesThisStep, -1);
     }
     else
     {
         f32 fz;
-        ((DIMSnowHorn1State*)data)->baddie.physicsActive = 0;
+        data->baddie.physicsActive = 0;
         fz = 0.0f;
-        ((DIMSnowHorn1State*)data)->baddie.animSpeedC = fz;
-        ((DIMSnowHorn1State*)data)->baddie.animSpeedB = fz;
-        ((DIMSnowHorn1State*)data)->baddie.animSpeedA = fz;
+        data->baddie.animSpeedC = fz;
+        data->baddie.animSpeedB = fz;
+        data->baddie.animSpeedA = fz;
         (obj)->anim.velocityX = fz;
         (obj)->anim.velocityY = fz;
         (obj)->anim.velocityZ = fz;
-        (*gPathControlInterface)->attachObject((void*)obj, (u8*)&((DIMSnowHorn1State*)data)->baddie + 4);
+        (*gPathControlInterface)->attachObject((void*)obj, (u8*)&data->baddie + 4);
         DIMSnowHorn1_ridingUpdate(obj, framesThisStep, -1);
     }
-    if (((DIMSnowHorn1State*)data)->mountMode == 0)
+    if (data->mountMode == 0)
     {
         (*gNewCloudsInterface)->func0ANop(0);
     }
@@ -1308,7 +1309,7 @@ void DIMSnowHorn1_update(GameObject* obj)
     {
         (*gNewCloudsInterface)->func0ANop(1);
     }
-    switch (((DIMSnowHorn1State*)data)->mode)
+    switch (data->mode)
     {
     case 0:
     case 5:
@@ -1327,17 +1328,17 @@ void DIMSnowHorn1_update(GameObject* obj)
         {
             statePtr->eyeAnimState.lookAtActive = 0;
         }
-        characterHeadLookCalm(obj, (s16*)&((DIMSnowHorn1State*)data)->eyeAnimState, 0.0f);
+        characterHeadLookCalm(obj, (s16*)&data->eyeAnimState, 0.0f);
         break;
     }
-    switch (((DIMSnowHorn1State*)data)->mode)
+    switch (data->mode)
     {
     case 1:
     case 3:
     case 4:
         nearDist = 300.0f;
         found = objGetNearestTypeTo(DIM_DISMOUNT_POINT_OBJECT_GROUP, obj, &nearDist);
-        if (((DIMSnowHorn1State*)data)->mountMode == 0 && ((DIMSnowHorn1State*)data)->baddie.controlMode == 7 &&
+        if (data->mountMode == 0 && data->baddie.controlMode == 7 &&
             getXZDistanceSquared(&player->anim.worldPosX, &(obj)->anim.worldPosX) < 10000.0f)
         {
             if (found != NULL && ((found)->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE))
@@ -1358,15 +1359,15 @@ void DIMSnowHorn1_update(GameObject* obj)
                     {
                         mainSetBits(GAMEBIT_NW_SnowHown05BA, 1);
                     }
-                    if (((DIMSnowHorn1State*)data)->mode == 3)
+                    if (data->mode == 3)
                     {
-                        ((DIMSnowHorn1State*)data)->airMeterValue = 1000;
+                        data->airMeterValue = 1000;
                         (*gGameUIInterface)->initAirMeter(1000, DIMSNOWHORN1_AIRMETER_BGTEXTURE);
                     }
                 }
             }
         }
-        else if (((DIMSnowHorn1State*)data)->mountMode == 2)
+        else if (data->mountMode == 2)
         {
             if (found != NULL && ((found)->anim.resetHitboxFlags & INTERACT_FLAG_IN_RANGE))
             {
@@ -1375,7 +1376,7 @@ void DIMSnowHorn1_update(GameObject* obj)
                 {
                     buttonDisable(0, PAD_BUTTON_A);
                     mainSetBits(GAMEBIT_SNOWHORN_RIDING, 0);
-                    switch (((DIMSnowHorn1State*)data)->mode)
+                    switch (data->mode)
                     {
                     case 1:
                         modeIndex = 0;
@@ -1411,7 +1412,7 @@ void DIMSnowHorn1_update(GameObject* obj)
                     {
                         mainSetBits(GAMEBIT_NW_SnowHown05BB, 1);
                     }
-                    ((DIMSnowHorn1State*)data)->baddie.pressedButtons = 0;
+                    data->baddie.pressedButtons = 0;
                     (*gGameUIInterface)->airMeterShutdown();
                     (*gMapEventInterface)->clearRestartPoint();
                 }
@@ -1423,7 +1424,7 @@ void DIMSnowHorn1_update(GameObject* obj)
         }
         break;
     }
-    characterDoEyeAnims(obj, &((DIMSnowHorn1State*)data)->eyeAnimState);
+    characterDoEyeAnims(obj, &data->eyeAnimState);
     {
         MatrixTransform v;
         f32 matrix[16];
@@ -1551,18 +1552,18 @@ void DIMSnowHorn1_initialise(void)
     s16* src;
     void** dst;
     int i;
-    ((void**)gDIMSnowHorn1StateHandlers)[0] = (void*)DIMSnowHorn1_stateHandler00;
-    ((void**)gDIMSnowHorn1StateHandlers)[1] = (void*)DIMSnowHorn1_stateHandler01;
-    ((void**)gDIMSnowHorn1StateHandlers)[2] = (void*)DIMSnowHorn1_stateHandler02;
-    ((void**)gDIMSnowHorn1StateHandlers)[3] = (void*)DIMSnowHorn1_stateHandler03;
-    ((void**)gDIMSnowHorn1StateHandlers)[4] = (void*)DIMSnowHorn1_stateHandler04;
-    ((void**)gDIMSnowHorn1StateHandlers)[5] = (void*)DIMSnowHorn1_stateHandler05;
-    ((void**)gDIMSnowHorn1StateHandlers)[6] = (void*)DIMSnowHorn1_stateHandler06;
-    ((void**)gDIMSnowHorn1StateHandlers)[7] = (void*)DIMSnowHorn1_stateHandler07;
-    ((void**)gDIMSnowHorn1StateHandlers)[8] = (void*)DIMSnowHorn1_stateHandler08;
-    ((void**)gDIMSnowHorn1StateHandlers)[9] = (void*)DIMSnowHorn1_stateHandler09;
-    ((void**)gDIMSnowHorn1StateHandlers)[10] = (void*)DIMSnowHorn1_stateHandler0A;
-    ((void**)gDIMSnowHorn1StateHandlers)[11] = (void*)DIMSnowHorn1_stateHandler0B;
+    gDIMSnowHorn1StateHandlers[0] = DIMSnowHorn1_stateHandler00;
+    gDIMSnowHorn1StateHandlers[1] = DIMSnowHorn1_stateHandler01;
+    gDIMSnowHorn1StateHandlers[2] = DIMSnowHorn1_stateHandler02;
+    gDIMSnowHorn1StateHandlers[3] = DIMSnowHorn1_stateHandler03;
+    gDIMSnowHorn1StateHandlers[4] = DIMSnowHorn1_stateHandler04;
+    gDIMSnowHorn1StateHandlers[5] = DIMSnowHorn1_stateHandler05;
+    gDIMSnowHorn1StateHandlers[6] = DIMSnowHorn1_stateHandler06;
+    gDIMSnowHorn1StateHandlers[7] = DIMSnowHorn1_stateHandler07;
+    gDIMSnowHorn1StateHandlers[8] = DIMSnowHorn1_stateHandler08;
+    gDIMSnowHorn1StateHandlers[9] = DIMSnowHorn1_stateHandler09;
+    gDIMSnowHorn1StateHandlers[10] = DIMSnowHorn1_stateHandler0A;
+    gDIMSnowHorn1StateHandlers[11] = DIMSnowHorn1_stateHandler0B;
     gDIMSnowHorn1DefaultStateHandler = (void*)DIMSnowHorn1_defaultStateHandler;
     src = &gDIMSnowHorn1TextureId;
     dst = &gDIMSnowHorn1Texture;

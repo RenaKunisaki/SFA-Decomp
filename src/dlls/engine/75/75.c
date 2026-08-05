@@ -10,6 +10,7 @@
 #include "main/mm.h"
 #include "main/object_transform.h"
 #include "main/vecmath.h"
+#include "string.h"
 
 extern f32 lbl_803E19A0;
 extern f32 gCamClimbDistanceSmoothRate;
@@ -108,7 +109,7 @@ void CameraModeClimb_update(CameraObject* camera) {
         int targetYaw = 0x8000 - (u16)getAngle(relX, relZ);
         angleDelta = targetYaw - (u16)camera->anim.rotX;
     }
-    if (0x8000 < angleDelta) {
+    if (angleDelta > 0x8000) {
         angleDelta = angleDelta - 0xffff;
     }
     if (angleDelta < -0x8000) {
@@ -119,7 +120,7 @@ void CameraModeClimb_update(CameraObject* camera) {
     angle = getAngle(value, distance);
     angleDelta = angle & 0xffff;
     angleDelta -= (u16)camera->anim.rotY;
-    if (0x8000 < angleDelta) {
+    if (angleDelta > 0x8000) {
         angleDelta = angleDelta - 0xffff;
     }
     if (angleDelta < -0x8000) {

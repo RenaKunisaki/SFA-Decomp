@@ -125,7 +125,7 @@ void playerUpdateBlinkAnimation(int obj, int blinkState, u16 flags) {
     case OBJLIB_BLINK_MODE_OPEN:
         bs->timer = (u8)((f32)bs->timer + timeDelta);
         bs->amount = 0;
-        if (((u16)flags & 1) != 0) {
+        if ((flags & 1) != 0) {
             if (randomGetRange(0, 100) == 1) {
                 switch (bs->mode) {
                 case OBJLIB_BLINK_MODE_OPEN:
@@ -217,10 +217,10 @@ void playerUpdateBlinkAnimation(int obj, int blinkState, u16 flags) {
     wave = 0.25f * mathCosfHighPrecision(phase);
     wave = wave * bs->amount / 255.0f;
     rotation = (32768.0f * (leftScale * wave)) / 3.142f;
-    *(s16*)(playerEyeAnim_FindJoint(objAnim, OBJLIB_BLINK_LEFT_JOINT_TAG) + 2) = rotation;
+    ((ObjJointPose18*)playerEyeAnim_FindJoint(objAnim, OBJLIB_BLINK_LEFT_JOINT_TAG))->v[1] = rotation;
 
     rotation = (32768.0f * (rightScale * wave)) / 3.142f;
-    *(s16*)(playerEyeAnim_FindJoint(objAnim, OBJLIB_BLINK_RIGHT_JOINT_TAG) + 2) = -rotation;
+    ((ObjJointPose18*)playerEyeAnim_FindJoint(objAnim, OBJLIB_BLINK_RIGHT_JOINT_TAG))->v[1] = -rotation;
 }
 
 void objSetLookAtFlip(int mode, u8 enabled) {
@@ -314,13 +314,13 @@ void objKfAnimStop(ObjKfAnimState* state) {
     state->frame = -1;
 }
 
-void objSoundStart(u32 obj, void* p, u16 sfxId) {
+void objSoundStart(u32 obj, void* state, u16 sfxId) {
     if (Sfx_IsPlayingFromObjectChannel((GameObject*)obj, 0x10) == 0) {
         Sfx_PlayFromObjectChannel((GameObject*)obj, 0x10, sfxId);
-        ((ObjSoundState*)p)->timer = -1.0f;
-        ((ObjSoundState*)p)->pitch = -0x500;
-        ((ObjSoundState*)p)->active = 1;
-        ((ObjSoundState*)p)->blendWeight = 1.0f;
+        ((ObjSoundState*)state)->timer = -1.0f;
+        ((ObjSoundState*)state)->pitch = -0x500;
+        ((ObjSoundState*)state)->active = 1;
+        ((ObjSoundState*)state)->blendWeight = 1.0f;
     }
 }
 
@@ -396,28 +396,28 @@ ObjTextureRuntimeSlot* objFindTexture(GameObject* obj, int target, int unusedMat
 }
 
 void objGetJointWorldPosition(GameObject* obj, int key, f32* outPosition) {
-    int* table;
+    ObjDef* table;
     int i;
     int k;
     int n;
     int joint;
-    int model;
+    ObjModelJointMatrix* model;
 
     table = (void*)(obj)->anim.modelInstance;
     i = 0;
-    n = (s32)(u32)((ObjDef*)table)->jointCount;
+    n = (s32)(u32)table->jointCount;
     for (k = 0; k < n; k++) {
-        if (key == (int)(*(u8**)&((ObjDef*)table)->jointData)[i]) {
-            joint = (*(u8**)&((ObjDef*)table)->jointData + i + OBJPRINT_ACTIVE_BANK_INDEX(obj))[1];
+        if (key == (int)(*(u8**)&table->jointData)[i]) {
+            joint = (*(u8**)&table->jointData + i + OBJPRINT_ACTIVE_BANK_INDEX(obj))[1];
             break;
         }
-        i = i + ((ObjDef*)table)->modelCount + 1;
+        i = i + table->modelCount + 1;
     }
-    model = (int)Obj_GetActiveModel(obj);
-    model = (int)ObjModel_GetJointMatrix((u8*)model, joint);
-    outPosition[0] = ((ObjModelJointMatrix*)model)->translationX;
-    outPosition[1] = ((ObjModelJointMatrix*)model)->translationY;
-    outPosition[2] = ((ObjModelJointMatrix*)model)->translationZ;
+    model = (ObjModelJointMatrix*)Obj_GetActiveModel(obj);
+    model = ObjModel_GetJointMatrix((u8*)model, joint);
+    outPosition[0] = model->translationX;
+    outPosition[1] = model->translationY;
+    outPosition[2] = model->translationZ;
     outPosition[0] += playerMapOffsetX;
     outPosition[2] += playerMapOffsetZ;
 }
@@ -426,7 +426,7 @@ s16* objFindJointPoseVector(GameObject* obj, int key) {
     int vecOffset;
     int jointData;
     int entryIdx;
-    void* modelDef;
+    ObjDef* modelDef;
     s16* result;
     int count;
     int i;
@@ -438,7 +438,7 @@ s16* objFindJointPoseVector(GameObject* obj, int key) {
         vecOffset = 0;
         count = OBJPRINT_JOINT_COUNT(modelDef);
         for (i = 0; i < count; i++) {
-            jointData = (int)((ObjDef*)modelDef)->jointData;
+            jointData = (int)modelDef->jointData;
             if ((int)*(u8*)(jointData + OBJPRINT_ACTIVE_BANK_INDEX(obj) + entryIdx + 1) != 0xff &&
                 (s32) * (u8*)(jointData + entryIdx) == key) {
                 result = (s16*)((char*)(obj)->anim.jointPoseData + vecOffset);
@@ -764,7 +764,7 @@ void characterHeadLookRelax(GameObject* obj, void* state) {
     ((CharacterEyeAnimState*)state)->headTrackMode = 0;
 }
 
-void characterUpdateHeadLook(GameObject* obj, CharacterEyeAnimState* state, f32 val) {
+void characterUpdateHeadLook(GameObject* obj, CharacterEyeAnimState* state, f32 scale) {
     s16* found;
     int flag;
 
@@ -773,16 +773,16 @@ void characterUpdateHeadLook(GameObject* obj, CharacterEyeAnimState* state, f32 
         if (found[0] != 0) {
             found[0] = (s16)(found[0] * 3 / 4);
         }
-        if (val < 0.0f) {
-            val = -val;
+        if (scale < 0.0f) {
+            scale = -scale;
         }
-        if (val <= 0.1f) {
-            characterHeadLookIdle(obj, state, found, val);
+        if (scale <= 0.1f) {
+            characterHeadLookIdle(obj, state, found, scale);
         } else {
-            characterHeadLookAlert((int)obj, state, found, val);
+            characterHeadLookAlert((int)obj, state, found, scale);
         }
         state->headTrackMode = (s16)(u16)(u8)state->headTrackMode;
-        if (val > 0.1f) {
+        if (scale > 0.1f) {
             flag = 1;
         } else {
             flag = 0;
@@ -856,7 +856,7 @@ s16 objJointTracksAimAtTarget(GameObject* obj, GameObject* target, f32* pos, u8*
             }
         }
         if (found[0] == NULL) {
-            int t = (s16)ret;
+            int t = ret;
             t = (t >= 0) ? t : -t;
             return (s16)(t < 0x100);
         }
@@ -1041,7 +1041,7 @@ void objJointTracksCaptureCurrentAngles(GameObject* obj, int* keys, int count, u
     }
 }
 
-void characterAimHeadAtTarget(GameObject* obj, void* tgt, void* p3, int a, u8 inv, int b) {
+void characterAimHeadAtTarget(GameObject* obj, void* tgt, void* state, int limit, u8 inv, int mode) {
     s16 ang[2];
     s16* found[1];
     void* m[1];
@@ -1093,12 +1093,12 @@ void characterAimHeadAtTarget(GameObject* obj, void* tgt, void* p3, int a, u8 in
             }
             ang[1] = (s16)((s16)getAngle(dist, dy) - 0x3fff);
 
-            a = (s16)(182.04f * a);
-            channel = p3;
+            limit = (s16)(182.04f * limit);
+            channel = state;
             ap = ang;
-            prodB = 182.04f * b;
+            prodB = 182.04f * mode;
             minB = -(s16)(s32)prodB;
-            negA = -a;
+            negA = -limit;
             for (i = 0; i < 2; i++) {
                 int v;
                 int w;
@@ -1115,8 +1115,8 @@ void characterAimHeadAtTarget(GameObject* obj, void* tgt, void* p3, int a, u8 in
                 }
                 *ap = (s16)w;
                 channel->angle += *ap;
-                if (channel->angle > a) {
-                    channel->angle = a;
+                if (channel->angle > limit) {
+                    channel->angle = limit;
                 }
                 if (channel->angle < negA) {
                     channel->angle = negA;
@@ -1124,8 +1124,8 @@ void characterAimHeadAtTarget(GameObject* obj, void* tgt, void* p3, int a, u8 in
                 channel++;
                 ap++;
             }
-            found[0][1] = ((ObjJointTrackPair*)p3)->yaw.angle;
-            found[0][0] = ((ObjJointTrackPair*)p3)->pitch.angle;
+            found[0][1] = ((ObjJointTrackPair*)state)->yaw.angle;
+            found[0][0] = ((ObjJointTrackPair*)state)->pitch.angle;
         }
     }
 }
@@ -1260,10 +1260,10 @@ void objSetGlowColor(int red, int green, int blue, u8 alpha) {
     gObjGlowColorAlpha = alpha;
 }
 
-void objSetColorFilter(s16 a, s16 b, s16 c) {
-    gObjColorFilterRed = a;
-    gObjColorFilterGreen = b;
-    gObjColorFilterBlue = c;
+void objSetColorFilter(s16 red, s16 green, s16 blue) {
+    gObjColorFilterRed = red;
+    gObjColorFilterGreen = green;
+    gObjColorFilterBlue = blue;
     gObjColorFilterEnabled = 1;
 }
 
@@ -1278,17 +1278,17 @@ void staffUpdateSegmentTransforms(int staffArg, GameObject* objArg, int modelArg
     Vec* vp0;
     int i;
     char* base;
-    u8* model;
+    ObjModel* model;
     int obj;
-    char* staff;
+    GameObject* staff;
 
-    staff = (char*)staffArg;
+    staff = (GameObject*)staffArg;
     obj = (int)objArg;
-    model = (u8*)modelArg;
+    model = (ObjModel*)modelArg;
 
-    if (OBJPRINT_MODEL_INSTANCE(staff)->attachPointCount >= 2 && ((GameObject*)staff)->anim.classId == 0x2d) {
+    if (OBJPRINT_MODEL_INSTANCE(staff)->attachPointCount >= 2 && staff->anim.classId == 0x2d) {
         int off;
-        base = (char*)((GameObject*)staff)->extra;
+        base = (char*)staff->extra;
         i = 0;
         k = 1;
         off = 0x18;
@@ -1301,7 +1301,7 @@ void staffUpdateSegmentTransforms(int staffArg, GameObject* objArg, int modelArg
                 MtxPtr jm;
                 int joint;
                 joint = ((ObjAttachPoint*)(OBJPRINT_ATTACH_POINTS(staff) + off))[1].joints[OBJPRINT_ACTIVE_BANK_INDEX(staff)];
-                jm = (MtxPtr)ObjModel_GetJointMatrix(model, joint);
+                jm = (MtxPtr)ObjModel_GetJointMatrix((u8*)model, joint);
                 vp->x = ((ObjAttachPoint*)(OBJPRINT_ATTACH_POINTS(staff) + off))[1].pos[0];
                 va[1] = ((ObjAttachPoint*)(OBJPRINT_ATTACH_POINTS(staff) + off))[1].pos[1];
                 va[2] = ((ObjAttachPoint*)(OBJPRINT_ATTACH_POINTS(staff) + off))[1].pos[2];
@@ -1316,7 +1316,7 @@ void staffUpdateSegmentTransforms(int staffArg, GameObject* objArg, int modelArg
                 ObjAttachPoint* row = (ObjAttachPoint*)(OBJPRINT_ATTACH_POINTS(staff) + off);
                 int idx2 = row->joints[OBJPRINT_ACTIVE_BANK_INDEX(staff)];
                 MtxPtr mtx2 =
-                    (MtxPtr)(idx2 * 0x40 + *(int*)(model + ((((ObjModel*)model)->bufferFlags & 1) * 4) + 0xc));
+                    (MtxPtr)(idx2 * 0x40 + *(int*)((u8*)model + ((model->bufferFlags & 1) * 4) + 0xc));
                 vb.x = row->pos[0];
                 vb.y = ((ObjAttachPoint*)(OBJPRINT_ATTACH_POINTS(staff) + off))->pos[1];
                 vb.z = ((ObjAttachPoint*)(OBJPRINT_ATTACH_POINTS(staff) + off))->pos[2];
@@ -1339,17 +1339,17 @@ void staffUpdateSegmentTransforms(int staffArg, GameObject* objArg, int modelArg
             va[0] = *(f32*)(r + 0x6c);
             va[1] = *(f32*)(r + 0x74);
             va[2] = *(f32*)(r + 0x7c);
-            (*(void (**)(int, int, Vec*))(*(int*)((GameObject*)staff)->anim.dll + 0x28))((int)staff, obj, &vb);
+            (*(void (**)(int, int, Vec*))(*(int*)staff->anim.dll + 0x28))((int)staff, obj, &vb);
             va[0] = va[0] - vb.x;
             va[1] = va[1] - vb.y;
             va[2] = va[2] - vb.z;
-            ((GameObject*)staff)->anim.rotX = getAngle(va[0], va[2]);
+            staff->anim.rotX = getAngle(va[0], va[2]);
             {
                 f32 dx = va[0] * va[0];
                 f32 dz = va[2] * va[2];
-                ((GameObject*)staff)->anim.rotY = (s16)(-getAngle(va[1], sqrtf(dx + dz)) + 0x4000);
+                staff->anim.rotY = (s16)(-getAngle(va[1], sqrtf(dx + dz)) + 0x4000);
             }
-            ((GameObject*)staff)->anim.rotZ = 0;
+            staff->anim.rotZ = 0;
         }
     }
 }
@@ -1439,6 +1439,6 @@ int objGetAlphaCompareThreshold(void) {
     return gObjAlphaCompareThreshold;
 }
 
-void objSetAlphaCompareThreshold(u8 x) {
-    gObjAlphaCompareThreshold = x;
+void objSetAlphaCompareThreshold(u8 alpha) {
+    gObjAlphaCompareThreshold = alpha;
 }

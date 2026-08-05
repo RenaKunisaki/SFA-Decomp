@@ -133,17 +133,17 @@ STATIC_ASSERT(offsetof(LargeCratePickupPlacement, unk20) == 0x20);
 STATIC_ASSERT(sizeof(LargeCratePickupPlacement) == LARGECRATE_PICKUP_PLACEMENT_SIZE);
 
 static void LargeCrate_spawnPickup(GameObject* obj) {
-    char* childPlacement;
+    LargeCratePickupPlacement* childPlacement;
 
     if (Obj_IsLoadingLocked() != 0) {
-        childPlacement = (char*)Obj_AllocObjectSetup(LARGECRATE_PICKUP_PLACEMENT_SIZE, LARGECRATE_CHILD_OBJECT_PICKUP);
-        ((LargeCratePickupPlacement*)childPlacement)->base.posX = obj->anim.localPosX;
-        ((LargeCratePickupPlacement*)childPlacement)->base.posY = 2.0f + obj->anim.localPosY;
-        ((LargeCratePickupPlacement*)childPlacement)->base.posZ = obj->anim.localPosZ;
-        ((LargeCratePickupPlacement*)childPlacement)->base.color[0] = 4;
-        ((LargeCratePickupPlacement*)childPlacement)->base.color[2] = 200;
-        ((LargeCratePickupPlacement*)childPlacement)->unk20 = -1;
-        ((LargeCratePickupPlacement*)childPlacement)->unk1A = 0x7F;
+        childPlacement = (LargeCratePickupPlacement*)Obj_AllocObjectSetup(LARGECRATE_PICKUP_PLACEMENT_SIZE, LARGECRATE_CHILD_OBJECT_PICKUP);
+        childPlacement->base.posX = obj->anim.localPosX;
+        childPlacement->base.posY = 2.0f + obj->anim.localPosY;
+        childPlacement->base.posZ = obj->anim.localPosZ;
+        childPlacement->base.color[0] = 4;
+        childPlacement->base.color[2] = 200;
+        childPlacement->unk20 = -1;
+        childPlacement->unk1A = 0x7F;
         objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1, (void*)obj->anim.parentAddress);
     }
 }
@@ -209,7 +209,7 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
     GameObject* playerRef;
     PartFxSpawnParams rotation;
     char* childPlacement;
-    char* child;
+    GameObject* child;
     f32 horizontalMagnitude;
     f32 zero;
     int angleDelta;
@@ -227,24 +227,24 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
         ((ScarabPlacement*)childPlacement)->base.posY = obj->anim.localPosY;
         ((ScarabPlacement*)childPlacement)->base.posZ = obj->anim.localPosZ;
         ((ScarabPlacement*)childPlacement)->activeTimer = 400;
-        child = (char*)objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
+        child = objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
                                        (void*)obj->anim.parentAddress);
-        ((GameObject*)child)->anim.velocityX = obj->anim.localPosX - playerRef->anim.localPosX;
-        ((GameObject*)child)->anim.velocityZ = obj->anim.localPosZ - playerRef->anim.localPosZ;
-        horizontalMagnitude = ((GameObject*)child)->anim.velocityX * ((GameObject*)child)->anim.velocityX +
-                              ((GameObject*)child)->anim.velocityZ * ((GameObject*)child)->anim.velocityZ;
+        child->anim.velocityX = obj->anim.localPosX - playerRef->anim.localPosX;
+        child->anim.velocityZ = obj->anim.localPosZ - playerRef->anim.localPosZ;
+        horizontalMagnitude = child->anim.velocityX * child->anim.velocityX +
+                              child->anim.velocityZ * child->anim.velocityZ;
         if (horizontalMagnitude != zero) {
             horizontalMagnitude = sqrtf(horizontalMagnitude);
-            ((GameObject*)child)->anim.velocityX = ((GameObject*)child)->anim.velocityX / horizontalMagnitude;
-            ((GameObject*)child)->anim.velocityZ = ((GameObject*)child)->anim.velocityZ / horizontalMagnitude;
+            child->anim.velocityX = child->anim.velocityX / horizontalMagnitude;
+            child->anim.velocityZ = child->anim.velocityZ / horizontalMagnitude;
         }
-        ((GameObject*)child)->anim.velocityX =
-            ((GameObject*)child)->anim.velocityX *
+        child->anim.velocityX =
+            child->anim.velocityX *
             -(0.01f * (f32)randomGetRange(0, LARGECRATE_CHILD_RANDOM_VELOCITY_MAX) - 1.0f);
-        ((GameObject*)child)->anim.velocityZ =
-            ((GameObject*)child)->anim.velocityZ *
+        child->anim.velocityZ =
+            child->anim.velocityZ *
             (1.0f - 0.01f * (f32)randomGetRange(0, LARGECRATE_CHILD_RANDOM_VELOCITY_MAX));
-        ((GameObject*)child)->anim.velocityY = 2.2f;
+        child->anim.velocityY = 2.2f;
         rotation.posX = 0.0f;
         rotation.posY = 0.0f;
         rotation.posZ = 0.0f;
@@ -252,17 +252,17 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
         rotation.rotZ = 0;
         rotation.rotY = 0;
         rotation.rotX = randomGetRange(-10000, 10000);
-        vecRotateZXY(&rotation.rotX, (f32*)(child + 0x24));
+        vecRotateZXY(&rotation.rotX, &child->anim.velocityX);
         angleDelta =
-            *(s16*)child -
-            ((int)(s16)getAngle(((GameObject*)child)->anim.velocityX, -((GameObject*)child)->anim.velocityZ) & 0xFFFF);
+            child->anim.rotX -
+            ((int)(s16)getAngle(child->anim.velocityX, -child->anim.velocityZ) & 0xFFFF);
         if (angleDelta > LARGECRATE_YAW_HALF_TURN) {
             angleDelta = angleDelta - LARGECRATE_YAW_WRAP;
         }
         if (angleDelta < -LARGECRATE_YAW_HALF_TURN) {
             angleDelta = angleDelta + LARGECRATE_YAW_WRAP;
         }
-        *(s16*)child = angleDelta;
+        child->anim.rotX = angleDelta;
         break;
     case LARGECRATE_DROPTYPE_RED_SCARAB:
         childPlacement = (char*)Obj_AllocObjectSetup(SCARAB_PLACEMENT_SIZE, SCARAB_OBJECT_RED);
@@ -271,24 +271,24 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
         ((ScarabPlacement*)childPlacement)->base.posY = obj->anim.localPosY;
         ((ScarabPlacement*)childPlacement)->base.posZ = obj->anim.localPosZ;
         ((ScarabPlacement*)childPlacement)->activeTimer = 400;
-        child = (char*)objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
+        child = objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
                                        (void*)obj->anim.parentAddress);
-        ((GameObject*)child)->anim.velocityX = obj->anim.localPosX - playerRef->anim.localPosX;
-        ((GameObject*)child)->anim.velocityZ = obj->anim.localPosZ - playerRef->anim.localPosZ;
-        horizontalMagnitude = ((GameObject*)child)->anim.velocityX * ((GameObject*)child)->anim.velocityX +
-                              ((GameObject*)child)->anim.velocityZ * ((GameObject*)child)->anim.velocityZ;
+        child->anim.velocityX = obj->anim.localPosX - playerRef->anim.localPosX;
+        child->anim.velocityZ = obj->anim.localPosZ - playerRef->anim.localPosZ;
+        horizontalMagnitude = child->anim.velocityX * child->anim.velocityX +
+                              child->anim.velocityZ * child->anim.velocityZ;
         if (horizontalMagnitude != zero) {
             horizontalMagnitude = sqrtf(horizontalMagnitude);
-            ((GameObject*)child)->anim.velocityX = ((GameObject*)child)->anim.velocityX / horizontalMagnitude;
-            ((GameObject*)child)->anim.velocityZ = ((GameObject*)child)->anim.velocityZ / horizontalMagnitude;
+            child->anim.velocityX = child->anim.velocityX / horizontalMagnitude;
+            child->anim.velocityZ = child->anim.velocityZ / horizontalMagnitude;
         }
-        ((GameObject*)child)->anim.velocityX =
-            ((GameObject*)child)->anim.velocityX *
+        child->anim.velocityX =
+            child->anim.velocityX *
             -(0.01f * (f32)randomGetRange(0, LARGECRATE_CHILD_RANDOM_VELOCITY_MAX) - 1.0f);
-        ((GameObject*)child)->anim.velocityZ =
-            ((GameObject*)child)->anim.velocityZ *
+        child->anim.velocityZ =
+            child->anim.velocityZ *
             (1.0f - 0.01f * (f32)randomGetRange(0, LARGECRATE_CHILD_RANDOM_VELOCITY_MAX));
-        ((GameObject*)child)->anim.velocityY = 2.2f;
+        child->anim.velocityY = 2.2f;
         rotation.posX = 0.0f;
         rotation.posY = 0.0f;
         rotation.posZ = 0.0f;
@@ -296,17 +296,17 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
         rotation.rotZ = 0;
         rotation.rotY = 0;
         rotation.rotX = randomGetRange(-10000, 10000);
-        vecRotateZXY(&rotation.rotX, (f32*)(child + 0x24));
+        vecRotateZXY(&rotation.rotX, &child->anim.velocityX);
         angleDelta =
-            *(s16*)child -
-            ((int)(s16)getAngle(((GameObject*)child)->anim.velocityX, -((GameObject*)child)->anim.velocityZ) & 0xFFFF);
+            child->anim.rotX -
+            ((int)(s16)getAngle(child->anim.velocityX, -child->anim.velocityZ) & 0xFFFF);
         if (angleDelta > LARGECRATE_YAW_HALF_TURN) {
             angleDelta = angleDelta - LARGECRATE_YAW_WRAP;
         }
         if (angleDelta < -LARGECRATE_YAW_HALF_TURN) {
             angleDelta = angleDelta + LARGECRATE_YAW_WRAP;
         }
-        *(s16*)child = angleDelta;
+        child->anim.rotX = angleDelta;
         break;
     case LARGECRATE_DROPTYPE_GOLD_SCARAB:
         childPlacement = (char*)Obj_AllocObjectSetup(SCARAB_PLACEMENT_SIZE, SCARAB_OBJECT_GOLD);
@@ -315,24 +315,24 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
         ((ScarabPlacement*)childPlacement)->base.posY = obj->anim.localPosY;
         ((ScarabPlacement*)childPlacement)->base.posZ = obj->anim.localPosZ;
         ((ScarabPlacement*)childPlacement)->activeTimer = 2000;
-        child = (char*)objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
+        child = objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
                                        (void*)obj->anim.parentAddress);
-        ((GameObject*)child)->anim.velocityX = obj->anim.localPosX - playerRef->anim.localPosX;
-        ((GameObject*)child)->anim.velocityZ = obj->anim.localPosZ - playerRef->anim.localPosZ;
-        horizontalMagnitude = ((GameObject*)child)->anim.velocityX * ((GameObject*)child)->anim.velocityX +
-                              ((GameObject*)child)->anim.velocityZ * ((GameObject*)child)->anim.velocityZ;
+        child->anim.velocityX = obj->anim.localPosX - playerRef->anim.localPosX;
+        child->anim.velocityZ = obj->anim.localPosZ - playerRef->anim.localPosZ;
+        horizontalMagnitude = child->anim.velocityX * child->anim.velocityX +
+                              child->anim.velocityZ * child->anim.velocityZ;
         if (horizontalMagnitude != zero) {
             horizontalMagnitude = sqrtf(horizontalMagnitude);
-            ((GameObject*)child)->anim.velocityX = ((GameObject*)child)->anim.velocityX / horizontalMagnitude;
-            ((GameObject*)child)->anim.velocityZ = ((GameObject*)child)->anim.velocityZ / horizontalMagnitude;
+            child->anim.velocityX = child->anim.velocityX / horizontalMagnitude;
+            child->anim.velocityZ = child->anim.velocityZ / horizontalMagnitude;
         }
-        ((GameObject*)child)->anim.velocityX =
-            ((GameObject*)child)->anim.velocityX *
+        child->anim.velocityX =
+            child->anim.velocityX *
             -(0.01f * (f32)randomGetRange(0, LARGECRATE_CHILD_RANDOM_VELOCITY_MAX) - 1.0f);
-        ((GameObject*)child)->anim.velocityZ =
-            ((GameObject*)child)->anim.velocityZ *
+        child->anim.velocityZ =
+            child->anim.velocityZ *
             (1.0f - 0.01f * (f32)randomGetRange(0, LARGECRATE_CHILD_RANDOM_VELOCITY_MAX));
-        ((GameObject*)child)->anim.velocityY = 2.2f;
+        child->anim.velocityY = 2.2f;
         rotation.posX = 0.0f;
         rotation.posY = 0.0f;
         rotation.posZ = 0.0f;
@@ -340,17 +340,17 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
         rotation.rotZ = 0;
         rotation.rotY = 0;
         rotation.rotX = randomGetRange(-10000, 10000);
-        vecRotateZXY(&rotation.rotX, (f32*)(child + 0x24));
+        vecRotateZXY(&rotation.rotX, &child->anim.velocityX);
         angleDelta =
-            *(s16*)child -
-            ((int)(s16)getAngle(((GameObject*)child)->anim.velocityX, -((GameObject*)child)->anim.velocityZ) & 0xFFFF);
+            child->anim.rotX -
+            ((int)(s16)getAngle(child->anim.velocityX, -child->anim.velocityZ) & 0xFFFF);
         if (angleDelta > LARGECRATE_YAW_HALF_TURN) {
             angleDelta = angleDelta - LARGECRATE_YAW_WRAP;
         }
         if (angleDelta < -LARGECRATE_YAW_HALF_TURN) {
             angleDelta = angleDelta + LARGECRATE_YAW_WRAP;
         }
-        *(s16*)child = angleDelta;
+        child->anim.rotX = angleDelta;
         break;
     case LARGECRATE_DROPTYPE_ENERGY_EGG:
     case LARGECRATE_DROPTYPE_APPLE:
@@ -366,10 +366,10 @@ int LargeCrate_spawnDropContents(GameObject* obj, GameObject* player, LargeCrate
         ((CollectibleSetup*)childPlacement)->base.posY = 5.0f + obj->anim.localPosY;
         ((CollectibleSetup*)childPlacement)->base.posZ = obj->anim.localPosZ;
         ((CollectibleSetup*)childPlacement)->visibilityGameBit = -1;
-        child = (char*)objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
+        child = objSetupObject((ObjPlacement*)childPlacement, 5, obj->anim.mapEventSlot, -1,
                                        (void*)obj->anim.parentAddress);
-        (*(CollectibleInterface**)((GameObject*)child)->anim.dll)
-            ->startBounceMotion((GameObject*)child, 0.0f, 1.0f, 0.0f);
+        (*(CollectibleInterface**)child->anim.dll)
+            ->startBounceMotion(child, 0.0f, 1.0f, 0.0f);
         break;
     case LARGECRATE_DROPTYPE_NONE_A:
     case LARGECRATE_DROPTYPE_NONE_B:
@@ -454,97 +454,95 @@ void LargeCrate_update(GameObject* obj) {
     }
     if ((*gMapEventInterface)->shouldNotSaveTime(placement->base.ident) == 0) {
         ObjHits_DisableObject(obj);
-    } else {
-        if (state->hiddenTimer > (zero = 0.0f)) {
-            obj->anim.alpha = 0;
-            if (state->respawnDelay != -1) {
-                state->hiddenTimer = -(timeDelta * clockScale - state->hiddenTimer);
-                if (state->hiddenTimer <= zero) {
-                    if (!LargeCrate_isPlayerFar(obj)) {
-                        state->hiddenTimer = 1.0f;
-                    } else {
-                        state->hiddenTimer = 0.0f;
-                        state->breakTimer = 0;
-                        ObjHits_EnableObject(obj);
-                        obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
-                        obj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
-                    }
-                }
-            }
-        } else {
-            alpha = (int)(LARGECRATE_FADE_STEP * timeDelta + (f32)(u32)obj->anim.alpha);
-            if (alpha > LARGECRATE_ALPHA_MAX) {
-                alpha = LARGECRATE_ALPHA_MAX;
-            }
-            obj->anim.alpha = alpha;
-            if (state->breakTimer != 0) {
-                ObjHits_DisableObject(obj);
-                if ((state->breakTimer -= framesThisStep) <= 0) {
-                    if (state->respawnDelay > 0) {
-                        state->hiddenTimer = 1.0f;
-                        (*gMapEventInterface)->addTime(placement->base.ident, (f32)state->respawnDelay);
-                    } else {
-                        state->hiddenTimer = 1.0f;
-                    }
-                    obj->anim.localPosX = placement->base.posX;
-                    obj->anim.localPosY = placement->base.posY;
-                    obj->anim.localPosZ = placement->base.posZ;
-                    obj->anim.previousLocalPosX = placement->base.posX;
-                    obj->anim.previousLocalPosY = placement->base.posY;
-                    obj->anim.previousLocalPosZ = placement->base.posZ;
-                    zero = 0.0f;
-                    obj->anim.velocityX = zero;
-                    obj->anim.velocityY = zero;
-                    obj->anim.velocityZ = zero;
-                }
-                if (state->breakTimer <= LARGECRATE_BREAK_FRAMES) {
-                    return;
-                }
-            }
-            obj->anim.rotY = state->spinSpeed;
-            state->spinSpeed *= -0.5f;
-            if ((obj->anim.rotY < 10) && (-10 < obj->anim.rotY)) {
-                obj->anim.rotY = 0;
-            }
-            hitKind = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitType, (u32*)&hitDamage,
-                                                         &effectParams.posX, &effectParams.posY, &effectParams.posZ);
-            if (hitKind == 0x10) {
-                Obj_StartModelFadeIn(obj, LARGECRATE_MODEL_FADE_FRAMES);
-                hitKind = 0;
-            }
-            if ((hitKind != 0) && (obj->anim.parent == NULL)) {
-                state->damageTaken = state->damageTaken + hitDamage;
-                Obj_SetModelColorFadeRecursive(obj, 0xF, 200, 0, 0, 1);
-                effectParams.posX = effectParams.posX + playerMapOffsetX;
-                effectParams.posZ = effectParams.posZ + playerMapOffsetZ;
-                objDoHitParticleFx((void*)obj, LARGECRATE_EFFECT_SCALE, &effectParams, 1, 0);
-                if (state->damageTaken < state->damageThreshold) {
-                    if (Sfx_IsPlayingFromObject(0, (u16)state->hitSfxId) == 0) {
-                        Sfx_PlayFromObject(obj, (u16)state->hitSfxId);
-                    }
-                    if (obj->anim.romDefNo == LARGECRATE_SEQUENCE_VARIANT_A) {
-                        state->spinSpeed = randomGetRange(LARGECRATE_SPIN_SPEED_MIN, LARGECRATE_SPIN_SPEED_MAX);
-                    }
+    } else if (state->hiddenTimer > (zero = 0.0f)) {
+        obj->anim.alpha = 0;
+        if (state->respawnDelay != -1) {
+            state->hiddenTimer = -(timeDelta * clockScale - state->hiddenTimer);
+            if (state->hiddenTimer <= zero) {
+                if (!LargeCrate_isPlayerFar(obj)) {
+                    state->hiddenTimer = 1.0f;
                 } else {
-                    Sfx_StopObjectChannel(obj, 0x7F);
-                    (*gLargeCrateResource)->spawnBreakEffect(obj, 1, 0, 2, -1, 0);
-                    if (Sfx_IsPlayingFromObject(0, (u16)state->breakSfxId) == 0) {
-                        Sfx_PlayFromObject(obj, (u16)state->breakSfxId);
-                    }
-                    state->breakTimer = LARGECRATE_BREAK_FRAMES;
-                    state->damageTaken = 0;
-                    LargeCrate_spawnDropContents(obj, player, state);
-                    obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
+                    state->hiddenTimer = 0.0f;
+                    state->breakTimer = 0;
+                    ObjHits_EnableObject(obj);
+                    obj->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
+                    obj->anim.flags &= ~OBJANIM_FLAG_HIDDEN;
                 }
             }
-            vec3f_distanceSquared(&Obj_GetPlayerObject()->anim.worldPosX, &obj->anim.worldPosX);
-            if ((state->idleTimer -= framesThisStep) <= 0) {
-                state->idleTimer = (s16)(randomGetRange(LARGECRATE_RANDOM_DELAY_MIN, LARGECRATE_RANDOM_DELAY_MAX) +
-                                         LARGECRATE_RANDOM_DELAY_BASE);
+        }
+    } else {
+        alpha = (int)(LARGECRATE_FADE_STEP * timeDelta + (f32)(u32)obj->anim.alpha);
+        if (alpha > LARGECRATE_ALPHA_MAX) {
+            alpha = LARGECRATE_ALPHA_MAX;
+        }
+        obj->anim.alpha = alpha;
+        if (state->breakTimer != 0) {
+            ObjHits_DisableObject(obj);
+            if ((state->breakTimer -= framesThisStep) <= 0) {
+                if (state->respawnDelay > 0) {
+                    state->hiddenTimer = 1.0f;
+                    (*gMapEventInterface)->addTime(placement->base.ident, (f32)state->respawnDelay);
+                } else {
+                    state->hiddenTimer = 1.0f;
+                }
+                obj->anim.localPosX = placement->base.posX;
+                obj->anim.localPosY = placement->base.posY;
+                obj->anim.localPosZ = placement->base.posZ;
+                obj->anim.previousLocalPosX = placement->base.posX;
+                obj->anim.previousLocalPosY = placement->base.posY;
+                obj->anim.previousLocalPosZ = placement->base.posZ;
+                zero = 0.0f;
+                obj->anim.velocityX = zero;
+                obj->anim.velocityY = zero;
+                obj->anim.velocityZ = zero;
             }
-            if (obj->anim.parent != NULL) {
-                LargeCrate_updateConveyorSlide(obj, state);
+            if (state->breakTimer <= LARGECRATE_BREAK_FRAMES) {
+                return;
             }
+        }
+        obj->anim.rotY = state->spinSpeed;
+        state->spinSpeed *= -0.5f;
+        if ((obj->anim.rotY < 10) && (obj->anim.rotY > -10)) {
+            obj->anim.rotY = 0;
+        }
+        hitKind = ObjHits_GetPriorityHitWithPosition(obj, &hitObject, &hitType, (u32*)&hitDamage,
+                                                     &effectParams.posX, &effectParams.posY, &effectParams.posZ);
+        if (hitKind == 0x10) {
+            Obj_StartModelFadeIn(obj, LARGECRATE_MODEL_FADE_FRAMES);
+            hitKind = 0;
+        }
+        if ((hitKind != 0) && (obj->anim.parent == NULL)) {
+            state->damageTaken = state->damageTaken + hitDamage;
+            Obj_SetModelColorFadeRecursive(obj, 0xF, 200, 0, 0, 1);
+            effectParams.posX = effectParams.posX + playerMapOffsetX;
+            effectParams.posZ = effectParams.posZ + playerMapOffsetZ;
+            objDoHitParticleFx((void*)obj, LARGECRATE_EFFECT_SCALE, &effectParams, 1, 0);
+            if (state->damageTaken < state->damageThreshold) {
+                if (Sfx_IsPlayingFromObject(0, (u16)state->hitSfxId) == 0) {
+                    Sfx_PlayFromObject(obj, (u16)state->hitSfxId);
+                }
+                if (obj->anim.romDefNo == LARGECRATE_SEQUENCE_VARIANT_A) {
+                    state->spinSpeed = randomGetRange(LARGECRATE_SPIN_SPEED_MIN, LARGECRATE_SPIN_SPEED_MAX);
+                }
+            } else {
+                Sfx_StopObjectChannel(obj, 0x7F);
+                (*gLargeCrateResource)->spawnBreakEffect(obj, 1, 0, 2, -1, 0);
+                if (Sfx_IsPlayingFromObject(0, (u16)state->breakSfxId) == 0) {
+                    Sfx_PlayFromObject(obj, (u16)state->breakSfxId);
+                }
+                state->breakTimer = LARGECRATE_BREAK_FRAMES;
+                state->damageTaken = 0;
+                LargeCrate_spawnDropContents(obj, player, state);
+                obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
+            }
+        }
+        vec3f_distanceSquared(&Obj_GetPlayerObject()->anim.worldPosX, &obj->anim.worldPosX);
+        if ((state->idleTimer -= framesThisStep) <= 0) {
+            state->idleTimer = (s16)(randomGetRange(LARGECRATE_RANDOM_DELAY_MIN, LARGECRATE_RANDOM_DELAY_MAX) +
+                                     LARGECRATE_RANDOM_DELAY_BASE);
+        }
+        if (obj->anim.parent != NULL) {
+            LargeCrate_updateConveyorSlide(obj, state);
         }
     }
 }

@@ -1,7 +1,10 @@
 /* DR_EarthCal (DLL 641) */
 #include "main/dll/player_api.h"
 #include "main/dll/DR/dll_0281_drearthcal.h"
+#include "main/dll/tricky_api.h"
+#include "main/obj_trigger.h"
 #include "main/objfx.h"
+#include "main/objtype.h"
 #include "sys/objects.h"
 #include "main/objseq.h"
 
@@ -63,7 +66,7 @@ void drearthcal_update(GameObject* obj)
     else
     {
         obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
-        if (0 < obj->anim.hitboxTransformState->contactObjectCount)
+        if (obj->anim.hitboxTransformState->contactObjectCount > 0)
             for (i = 0; i < obj->anim.hitboxTransformState->contactObjectCount; i++)
             {
                 {

@@ -7,6 +7,8 @@
 #include "dlls/objects/471_DIM2SnowBal.h"
 #include "dlls/objects/472_DIM2PathGen.h"
 
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/curve.h"
 #include "main/dll/partfx_interface.h"
@@ -16,7 +18,9 @@
 #include "main/object_render.h"
 #include "main/track_bbox_api.h"
 #include "main/track_dolphin_api.h"
+#include "main/vecmath.h"
 #include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 #define DIM2_SNOWBALL_SHARPCLAW_SEQUENCE_ID 214
 #define DIM2_SNOWBALL_IMPACT_PARTFX_ID      518
@@ -119,7 +123,7 @@ void dim2snowball_update(GameObject* obj) {
                 if (sharpClaw != NULL) {
                     (*(void (**)(GameObject*))(*(int*)sharpClaw->anim.dll + 0x20))(sharpClaw);
                 }
-                Sfx_PlayFromObject((int)obj, SFXTRIG_en_nlite1_c);
+                Sfx_PlayFromObject(obj, SFXTRIG_en_nlite1_c);
             }
 
             particleParams.posX = obj->anim.localPosX;
@@ -194,14 +198,14 @@ void dim2snowball_update(GameObject* obj) {
     }
 
     if (obj->anim.alpha == 255) {
-        int* hitState = (int*)obj->anim.hitReactState;
+        ObjHitsPriorityState* hitState = (ObjHitsPriorityState*)obj->anim.hitReactState;
 
         if (hitState != NULL) {
-            ((ObjHitsPriorityState*)hitState)->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
-            ((ObjHitsPriorityState*)hitState)->hitVolumePriority = 4;
-            ((ObjHitsPriorityState*)hitState)->hitVolumeId = 2;
-            ((ObjHitsPriorityState*)hitState)->objectHitMask = 16;
-            ((ObjHitsPriorityState*)hitState)->skeletonHitMask = 16;
+            hitState->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
+            hitState->hitVolumePriority = 4;
+            hitState->hitVolumeId = 2;
+            hitState->objectHitMask = 16;
+            hitState->skeletonHitMask = 16;
         }
     }
     Sfx_KeepAliveLoopedObjectSound((int)obj, SFXTRIG_firlp6);

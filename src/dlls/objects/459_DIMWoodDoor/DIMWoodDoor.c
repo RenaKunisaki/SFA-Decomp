@@ -10,6 +10,7 @@
 #include "dlls/objects/459_DIMWoodDoor.h"
 
 #include "dlls/objects/454_DIMCannon.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
@@ -94,7 +95,7 @@ void dimwooddoor2_update(GameObject* obj) {
             state->riseSpeed = DIM_WOOD_DOOR_OPEN_RISE_SPEED;
             state->doorState = DIM_WOOD_DOOR_STATE_OPEN;
             mainSetBits(placement->openedGameBit, 1);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_wp_dsmk2_c);
+            Sfx_PlayFromObject(obj, SFXTRIG_wp_dsmk2_c);
         }
     }
 }

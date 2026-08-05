@@ -3,6 +3,7 @@
  * GameBits from sequence events, while the object update keeps the statue's
  * looped sound alive and stops it once the sequence has completed.
  */
+#include "main/audio/sfx_keep_alive_api.h"
 #include "main/dll/DF/dll_0233_dfpstatue1.h"
 #include "main/gamebits.h"
 #include "main/audio/sfx_trigger_ids.h"

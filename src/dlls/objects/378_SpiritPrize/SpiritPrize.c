@@ -1,11 +1,15 @@
 #include "dlls/objects/378_SpiritPrize.h"
 
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/objfx_api.h"
 #include "main/frame_timing.h"
+#include "main/lightmap_api.h"
 #include "main/obj_list.h"
 #include "main/object_render.h"
+#include "main/vecmath.h"
 #include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 
 #define SPIRIT_PRIZE_DISABLED_MAP_ID       0x4CA62
@@ -138,7 +142,7 @@ void spiritPrize_update(GameObject* obj) {
         if (obj->anim.mapEventSlot == -1 &&
             (player == NULL ||
              coordsToMapCell(player->anim.localPosX, player->anim.localPosZ) == SPIRIT_PRIZE_AMBIENT_SFX_MAP_CELL)) {
-            Sfx_PlayFromObject((u32)obj, SFXTRIG_pda);
+            Sfx_PlayFromObject(obj, SFXTRIG_pda);
         }
     }
 }

@@ -44,7 +44,7 @@ int Obj_UpdateLightningCluster(GameObject* obj, LightningEffect** entries, int c
     f32 pos[3];
 
     spawned = 0;
-    if (0.0f == intensity)
+    if (intensity == 0.0f)
     {
         spawned = 0;
         for (i = 0; i < count; i++)
@@ -111,7 +111,7 @@ int Obj_PredictInterceptPoint(GameObject* obj, f32 dt, const Vec3f* targetPos, V
     int gridA[2];
     int i;
 
-    if ((GameObject*)obj != Obj_GetPlayerObject())
+    if (obj != Obj_GetPlayerObject())
     {
         PSVECSubtract((const Vec*)&(obj)->anim.localPosX, (const Vec*)&(obj)->anim.previousLocalPosX, (Vec*)vel);
     }
@@ -399,7 +399,7 @@ void Obj_SmoothTurnAnglesTowardVelocity(GameObject* obj, const Vec3f* velocity, 
         anim->rotZ = rotZ;
     }
 
-    if (0.0f != pitchFactor)
+    if (pitchFactor != 0.0f)
     {
         {
             f32 xx = velocity->x * velocity->x;

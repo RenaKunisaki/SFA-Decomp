@@ -74,7 +74,7 @@ void playerShadow_scatterFootfallEffects(PlayerShadowTriHit* hits, int count, f3
                 len = sqrtf(dydy + dx * dx + dz * dz);
             }
             sc = 0.1f * len;
-            if (0.0f != len)
+            if (len != 0.0f)
             {
                 dx = dx / len;
                 dy = dy / len;

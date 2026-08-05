@@ -20,35 +20,13 @@ s8 gTitleScreenInitFrameStartPending;
 u32 gTitleScreenInitLoadingFrameCounter;
 u8 gTitleScreenInitDvdErrorLatched;
 
-typedef struct LoadingScreenTexture
-{
-    u8 _00[0xa];
-    u16 width;
-    u16 height;
-    u16 refCount;
-    u16 unk10;
-    u8 _12[4];
-    u8 format;
-    u8 wrapS;
-    u8 wrapT;
-    u8 minFilter;
-    u8 magFilter;
-    u8 _1b[5];
-    u32 texObj[8];
-    int tmemAddr;
-    u32 bufferSize;
-    u8 preloaded;
-    u8 _49[0x17];
-    u8 imageData[1];
-} LoadingScreenTexture;
-
 #define TITLESCREENINIT_MAP_PRIOR 0x3d
 #define TITLESCREENINIT_MAP_TITLE 0x3f
 #define TITLESCREENINIT_MAP_WARP  0x12
 
 #define TITLESCREENINIT_TEXT_DVD_ERROR 0x565
 
-int gTitleScreenInitLoadingTextures[4];
+Texture* gTitleScreenInitLoadingTextures[4];
 extern f32 lbl_803E1CF0;
 extern f32 gTitleScreenInitAlphaMax;
 extern f32 gTitleScreenInitFadeFrames;
@@ -82,7 +60,7 @@ void runLoadingScreens(void)
                      gTitleScreenInitFadeFrames);
         }
 
-        textureSlot = gTitleScreenInitLoadingTextures[0];
+        textureSlot = (int)gTitleScreenInitLoadingTextures[0];
         if (gGameTextFontIsSjis != 0)
         {
             colorBuf.bytes[0] = 0;
@@ -116,9 +94,9 @@ void runLoadingScreens(void)
             alpha = (int)((gTitleScreenInitAlphaMax * (f32)(0x1e0 - gTitleScreenInitLoadingFrameCounter)) /
                           gTitleScreenInitFadeFrames);
         }
-        drawTexture((void*)gTitleScreenInitLoadingTextures[1],
-                    (f32)(u32)((int)(0x280 - (u32)((Texture*)gTitleScreenInitLoadingTextures[1])->width) >> 1),
-                    (f32)(u32)((int)(0x1e0 - (u32)((Texture*)gTitleScreenInitLoadingTextures[1])->height) >> 1), alpha,
+        drawTexture(gTitleScreenInitLoadingTextures[1],
+                    (f32)(u32)((int)(0x280 - (u32)(gTitleScreenInitLoadingTextures[1])->width) >> 1),
+                    (f32)(u32)((int)(0x1e0 - (u32)(gTitleScreenInitLoadingTextures[1])->height) >> 1), alpha,
                     0x119);
     }
     else if (gTitleScreenInitLoadingFrameCounter < 0x258)
@@ -138,9 +116,9 @@ void runLoadingScreens(void)
             alpha = (int)((gTitleScreenInitAlphaMax * (f32)(0x258 - gTitleScreenInitLoadingFrameCounter)) /
                           gTitleScreenInitFadeFrames);
         }
-        drawTexture((void*)gTitleScreenInitLoadingTextures[2],
-                    (f32)(u32)((int)(0x280 - (u32)((Texture*)gTitleScreenInitLoadingTextures[2])->width) >> 1),
-                    (f32)(u32)((int)(0x1e0 - (u32)((Texture*)gTitleScreenInitLoadingTextures[2])->height) >> 1), alpha,
+        drawTexture(gTitleScreenInitLoadingTextures[2],
+                    (f32)(u32)((int)(0x280 - (u32)(gTitleScreenInitLoadingTextures[2])->width) >> 1),
+                    (f32)(u32)((int)(0x1e0 - (u32)(gTitleScreenInitLoadingTextures[2])->height) >> 1), alpha,
                     0x119);
     }
 
@@ -168,21 +146,21 @@ static inline void initLoadingScreenTexturesBody(void)
     u16 textureHeight;
     int i;
     int arenaHi;
-    LoadingScreenTexture** textureSlot;
-    LoadingScreenTexture* textureHeader;
+    Texture** textureSlot;
+    Texture* textureHeader;
     GXTexObj* texObj;
     u16 textureWidth;
     GXTexFmt textureFormat;
 
     arenaHi = (int)OSGetArenaHi() - 0x40000;
-    for (i = 0, textureSlot = (LoadingScreenTexture**)gTitleScreenInitLoadingTextures; i < 3; textureSlot++, i++)
+    for (i = 0, textureSlot = gTitleScreenInitLoadingTextures; i < 3; textureSlot++, i++)
     {
-        *textureSlot = (LoadingScreenTexture*)arenaHi;
+        *textureSlot = (Texture*)arenaHi;
         textureHeader = *textureSlot;
         textureHeader->tmemAddr = 0;
         textureHeader->preloaded = 0;
-        texObj = (GXTexObj*)textureHeader->texObj;
-        GXInitTexObj(texObj, textureHeader->imageData, textureHeader->width, textureHeader->height,
+        texObj = (GXTexObj*)textureHeader->gxTexObj;
+        GXInitTexObj(texObj, (u8*)textureHeader + sizeof(Texture), textureHeader->width, textureHeader->height,
                      textureHeader->format, textureHeader->wrapS, textureHeader->wrapT, 0);
         GXInitTexObjLOD(texObj, textureHeader->minFilter, textureHeader->magFilter, lbl_803E1CF0, lbl_803E1CF0,
                         lbl_803E1CF0, 0, 0, 0);
@@ -190,8 +168,8 @@ static inline void initLoadingScreenTexturesBody(void)
         textureFormat = GXGetTexObjFmt(texObj);
         textureWidth = GXGetTexObjWidth(texObj);
         textureHeight = GXGetTexObjHeight(texObj);
-        textureHeader->bufferSize = GXGetTexBufferSize(textureWidth, textureHeight, textureFormat, 0, 0);
-        textureSize = (*textureSlot)->bufferSize + 0x60;
+        textureHeader->dataSize = GXGetTexBufferSize(textureWidth, textureHeight, textureFormat, 0, 0);
+        textureSize = (*textureSlot)->dataSize + 0x60;
         arenaHi += textureSize;
     }
     gTitleScreenInitLoadingFrameCounter = 0;

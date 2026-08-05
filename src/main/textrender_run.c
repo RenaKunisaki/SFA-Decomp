@@ -337,11 +337,11 @@ void gameTextRun(void)
     i = GAMETEXT_LOAD_SLOT_COUNT;
     {
         f32* alpha;
-        GameTextFadeEntry* entry;
+        GameTextDef* entry;
         f32* timer;
         timer = runtime->fadeTimers + 8;
         alpha = runtime->fadeElapsed + 8;
-        entry = runtime->fadeEntries + 8;
+        entry = runtime->fallbackDefs + 8;
         zero = lbl_803DE704;
         fadeLimit = gGameTextFadeLimit;
         while (timer--, alpha--, entry--, i-- != 0)
@@ -353,7 +353,7 @@ void gameTextRun(void)
                 {
                     *timer = zero;
                     *alpha = zero;
-                    sprintf(*entry->text, sGameTextBlankFormat);
+                    sprintf(*entry->strings, sGameTextBlankFormat);
                 }
             }
         }
@@ -537,12 +537,12 @@ void gameTextInitRendererState(void)
     u8* clearPtr;
     u8* glyphPage;
     u8** glyphPagePtr;
-    u8* fontState;
+    GameTextDef* fallbackDef;
     u8* textWindow;
     u8* gameTextBase;
     int glyphPageCount;
-    u8* request;
-    u8* p;
+    TextFont* font;
+    GameTextBox* p;
     f32 zero;
     int i;
     int j;
@@ -550,51 +550,51 @@ void gameTextInitRendererState(void)
     gameTextBase = gGameTextBase;
 
     i = GAMETEXT_BOX_COUNT;
-    p = textWindow = (u8*)&gTextBoxes[GAMETEXT_BOX_COUNT];
-    while (p -= 0x20, i-- != 0)
+    p = (GameTextBox*)(textWindow = (u8*)&gTextBoxes[GAMETEXT_BOX_COUNT]);
+    while (p--, i-- != 0)
     {
-        *(u16*)(p + 8) = *(u16*)(p + 2);
-        *(u16*)(p + 0xa) = *(u16*)(p + 6);
+        p->width = p->maxWidth;
+        p->height = p->maxHeight;
     }
 
     glyphPageCount = GAMETEXT_LOAD_SLOT_COUNT;
     glyphPage = gameTextBase + 0x2c0;
     glyphPagePtr = (u8**)(gameTextBase + 0xc0);
-    fontState = gameTextBase + 0xa0;
-    while (glyphPage -= 0x40, glyphPagePtr--, fontState -= 0xc, glyphPageCount-- != 0)
+    fallbackDef = (GameTextDef*)(gameTextBase + 0xa0);
+    while (glyphPage -= 0x40, glyphPagePtr--, fallbackDef--, glyphPageCount-- != 0)
     {
         *glyphPagePtr = glyphPage;
-        *(u16*)fontState = 0xffff;
-        *(u16*)(fontState + 2) = 1;
-        fontState[4] = 0xff;
-        fontState[5] = 0;
-        fontState[6] = 0;
-        fontState[7] = 0;
-        *(u8***)(fontState + 8) = glyphPagePtr;
+        fallbackDef->identifier = 0xffff;
+        fallbackDef->count = 1;
+        fallbackDef->boxId = 0xff;
+        fallbackDef->alignH = 0;
+        fallbackDef->alignV = 0;
+        fallbackDef->language = 0;
+        fallbackDef->strings = (char**)glyphPagePtr;
     }
 
     i = GAMETEXT_BOX_COUNT;
     while (textWindow -= 0x20, i-- != 0)
     {
-        textWindow[0x1e] = 0xff;
+        ((GameTextBox*)textWindow)->alpha = 0xff;
     }
 
     j = 4;
-    request = gameTextBase + GAMETEXT_LOAD_SLOTS_OFFSET;
+    font = (TextFont*)(gameTextBase + GAMETEXT_LOAD_SLOTS_OFFSET);
     zero = lbl_803DE704;
-    while (request -= 0x28, j-- != 0)
+    while (font--, j-- != 0)
     {
-        *(int*)(request + 8) = 0;
-        *(int*)(request + 0xc) = 0;
-        *(int*)(request + 0) = 0;
-        *(int*)(request + 4) = 0;
-        *(int*)(request + 0x1c) = 0;
-        *(f32*)(request + 0x20) = zero;
-        request[0x24] = 0xff;
-        request[0x25] = 6;
+        font->glyphCount = 0;
+        font->entryCount = 0;
+        font->glyphs = NULL;
+        font->entries = NULL;
+        font->status = 0;
+        font->timer = zero;
+        font->dirId = GAMETEXT_INVALID_DIR;
+        font->languageId = GAMETEXT_INVALID_LANGUAGE;
 
         i = 3;
-        clearPtr = request + 0xc;
+        clearPtr = (u8*)font + 0xc;
         while (clearPtr -= 4, i-- != 0)
         {
             *(int*)(clearPtr + 0x10) = 0;
@@ -616,9 +616,9 @@ void gameTextInitRendererState(void)
     gGameTextCommandCount = 0;
     gGameTextCommandStringCursor = (char*)(gameTextBase + GAMETEXT_COMMAND_STRING_BUFFER_OFFSET);
     gGameTextBufferIndex = 0;
-    textWindow = gameTextBase + 0x40;
-    gGameTextLastEntry = textWindow;
-    gCurTextBuffer = *(int*)*(void**)(textWindow + 8);
+    fallbackDef = (GameTextDef*)(gameTextBase + 0x40);
+    gGameTextLastEntry = (u8*)fallbackDef;
+    gCurTextBuffer = *(int*)fallbackDef->strings;
     gGameTextShadowColorR = 0;
     gGameTextShadowColorG = 0;
     gGameTextShadowColorB = 0;
@@ -717,11 +717,11 @@ void gameTextLoadForCurMap(int sourceId)
     GameTextLoadSlot* slot;
     GameTextLoadSlot* freeSlot;
     u8* gameTextBase;
-    GameTextLoadState* loadState;
+    GameTextRuntime* runtime;
     int i;
 
     gameTextBase = gGameTextBase;
-    loadState = (GameTextLoadState*)gameTextBase;
+    runtime = (GameTextRuntime*)gameTextBase;
     oldHeap = testAndSet_onlyUseHeap3(0);
     if (getGameState() != 0 && getGameState() != 1)
     {
@@ -764,9 +764,9 @@ void gameTextLoadForCurMap(int sourceId)
         slot++;
     } while (i-- != 0);
 
-    loadState->requests[sourceId].state = 1;
-    *(dirPtr = &loadState->requests[sourceId].dirId) = (u8)curGameTextDir;
-    *(langPtr = &loadState->requests[sourceId].languageId) = curLanguage;
+    runtime->fonts[sourceId].status = 1;
+    *(dirPtr = &runtime->fonts[sourceId].dirId) = (u8)curGameTextDir;
+    *(langPtr = &runtime->fonts[sourceId].languageId) = curLanguage;
 
     slot = (GameTextLoadSlot*)(gameTextBase + GAMETEXT_LOAD_SLOTS_OFFSET);
     freeSlot = (slot->active == 0)       ? slot
@@ -1040,7 +1040,7 @@ void gameTextFinalizeLoad(GameTextLoadSlot* loadSlot)
     {
         cs->entries[i].strings = (char**)(strs + (int)cs->entries[i].strings);
     }
-    txt = (u8*)&stringTable->offsets[numStrings];
+    txt = (u8*)(numStrings * 4 + (u32)stringTable->offsets);
     {
         int j;
         for (j = 0; j < numStrings; j++)

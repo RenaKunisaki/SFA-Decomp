@@ -8,10 +8,14 @@
 #include "dlls/objects/437.h"
 #include "dlls/objects/440_SC_totempol.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
+#include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_interface.h"
 #include "main/dll/dll_0044_cameramodeviewfinder.h"
+#include "main/dll/player_api.h"
+#include "main/dll/tricky_api.h"
 #include "main/frame_timing.h"
 #include "main/game_ui_interface.h"
 #include "main/gamebits_api.h"
@@ -273,7 +277,7 @@ void sc_totembond_update(GameObject* obj) {
                     }
                     if (state->ringIndex != nextRing) {
                         state->ringIndex = nextRing;
-                        Sfx_PlayFromObject((u32)obj, SFXTRIG_mv_cagerat01);
+                        Sfx_PlayFromObject(obj, SFXTRIG_mv_cagerat01);
                     }
                     allOrbsCollected = 0;
                 }

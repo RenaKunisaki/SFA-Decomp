@@ -37,10 +37,10 @@ typedef void (*IceBallOwnerCallbackWithArg)(GameObject* owner, int message, int 
 static inline u8 iceBall_isOwnerActive(GameObject* owner) {
     int objectIndex;
     int objectCount;
-    int* objects = ObjList_GetObjects(&objectIndex, &objectCount);
+    GameObject** objects = ObjList_GetObjects(&objectIndex, &objectCount);
 
     while (objectIndex < objectCount) {
-        if (owner == (GameObject*)objects[objectIndex++]) {
+        if (owner == objects[objectIndex++]) {
             return 1;
         }
     }
@@ -137,43 +137,43 @@ void IceBall_hitDetect(GameObject* obj) {
 }
 
 void IceBall_update(GameObject* obj) {
-    int objAddress;
+    GameObject* objAddress;
 
-    objAddress = (int)obj;
-    ((GameObject*)objAddress)->userData1 = (s32)((f32)((GameObject*)objAddress)->userData1 - timeDelta);
-    if (((GameObject*)objAddress)->userData1 < 0) {
+    objAddress = obj;
+    objAddress->userData1 = (s32)((f32)objAddress->userData1 - timeDelta);
+    if (objAddress->userData1 < 0) {
         Obj_FreeObject((GameObject*)objAddress);
         return;
     }
-    if (((GameObject*)objAddress)->anim.alpha == 0) {
+    if (objAddress->anim.alpha == 0) {
         return;
     }
-    ((GameObject*)objAddress)->anim.velocityY -= ICEBALL_GRAVITY * timeDelta;
-    ((GameObject*)objAddress)->anim.velocityY *= ICEBALL_DRAG;
-    ((GameObject*)objAddress)->anim.rotX += ICEBALL_SPIN_STEP;
-    ((GameObject*)objAddress)->anim.rotZ += ICEBALL_SPIN_STEP;
-    ((GameObject*)objAddress)->anim.rotY += ICEBALL_SPIN_STEP;
-    objMove((GameObject*)objAddress, ((GameObject*)objAddress)->anim.velocityX * timeDelta,
-            ((GameObject*)objAddress)->anim.velocityY * timeDelta,
-            ((GameObject*)objAddress)->anim.velocityZ * timeDelta);
+    objAddress->anim.velocityY -= ICEBALL_GRAVITY * timeDelta;
+    objAddress->anim.velocityY *= ICEBALL_DRAG;
+    objAddress->anim.rotX += ICEBALL_SPIN_STEP;
+    objAddress->anim.rotZ += ICEBALL_SPIN_STEP;
+    objAddress->anim.rotY += ICEBALL_SPIN_STEP;
+    objMove((GameObject*)objAddress, objAddress->anim.velocityX * timeDelta,
+            objAddress->anim.velocityY * timeDelta,
+            objAddress->anim.velocityZ * timeDelta);
     ObjHits_SetHitVolumeSlot((ObjAnimComponent*)objAddress, ICEBALL_HIT_VOLUME_SLOT, 1, 0);
     ObjHitbox_SetSphereRadius((ObjAnimComponent*)objAddress, ICEBALL_HIT_RADIUS);
     ObjHits_EnableObject((GameObject*)objAddress);
-    if (((ObjHitsPriorityState*)((GameObject*)objAddress)->anim.hitReactState)->lastHitObject != 0 &&
-        (((ObjHitsPriorityState*)((GameObject*)objAddress)->anim.hitReactState)->lastHitObject ==
+    if (((ObjHitsPriorityState*)objAddress->anim.hitReactState)->lastHitObject != 0 &&
+        (((ObjHitsPriorityState*)objAddress->anim.hitReactState)->lastHitObject ==
              (u32)Obj_GetPlayerObject() ||
-         ((ObjHitsPriorityState*)((GameObject*)objAddress)->anim.hitReactState)->lastHitObject ==
+         ((ObjHitsPriorityState*)objAddress->anim.hitReactState)->lastHitObject ==
              (u32)getTrickyObject())) {
         iceBall_handleCharacterImpact((GameObject*)objAddress);
-        ((GameObject*)objAddress)->anim.alpha = 0;
-        ((GameObject*)objAddress)->userData1 = ICEBALL_IMPACT_FRAMES;
-        ((ObjHitsPriorityState*)((GameObject*)objAddress)->anim.hitReactState)->flags &=
+        objAddress->anim.alpha = 0;
+        objAddress->userData1 = ICEBALL_IMPACT_FRAMES;
+        ((ObjHitsPriorityState*)objAddress->anim.hitReactState)->flags &=
             ~OBJHITS_PRIORITY_STATE_ENABLED;
-    } else if (((ObjHitsPriorityState*)((GameObject*)objAddress)->anim.hitReactState)->contactFlags != 0) {
+    } else if (((ObjHitsPriorityState*)objAddress->anim.hitReactState)->contactFlags != 0) {
         iceBall_handleSurfaceImpact((GameObject*)objAddress);
-        ((GameObject*)objAddress)->anim.alpha = 0;
-        ((GameObject*)objAddress)->userData1 = ICEBALL_IMPACT_FRAMES;
-        ((ObjHitsPriorityState*)((GameObject*)objAddress)->anim.hitReactState)->flags &=
+        objAddress->anim.alpha = 0;
+        objAddress->userData1 = ICEBALL_IMPACT_FRAMES;
+        ((ObjHitsPriorityState*)objAddress->anim.hitReactState)->flags &=
             ~OBJHITS_PRIORITY_STATE_ENABLED;
     }
 }

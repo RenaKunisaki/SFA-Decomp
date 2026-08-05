@@ -27,7 +27,7 @@ static inline s16* GroundAnimator_getPackedVertex(MapBlockData* block, u16 verte
 }
 
 static inline MapTriIndex* GroundAnimator_getPolygon(MapBlockData* block, int polygonIndex) {
-    return mapBlockGetPolygon((int*)block, polygonIndex);
+    return mapBlockGetPolygon(block, polygonIndex);
 }
 
 u16 gGroundAnimatorSfxIds[4] = {SFXTRIG_menuups16k, SFXTRIG_mpick1_b, 0, 0};

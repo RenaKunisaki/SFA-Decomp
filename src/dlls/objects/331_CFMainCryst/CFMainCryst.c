@@ -4,13 +4,19 @@
 #include "dolphin/mtx/vec.h"
 
 #include "dlls/objects/330_CFPowerBase.h"
+#include "main/audio/sfx_channel_query_api.h"
+#include "main/audio/sfx_channel_volume_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/camera_shake_api.h"
 #include "main/dll/expgfx_interface.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
+#include "main/obj_message.h"
 #include "main/object_render.h"
 #include "main/render_envfx_api.h"
+#include "main/vecmath.h"
 #include "sys/objects.h"
 
 #define CFMAINCRYSTAL_PYLON_ACTIVE_FRAMES  0x78
@@ -250,8 +256,8 @@ void cfMainCrystal_updateBeams(GameObject* obj) {
         obj->anim.rotX += framesThisStep * (activePylonCount * CFMAINCRYSTAL_PYLON_ROTATION_SPEED);
     }
     if (activePylonCount != 0) {
-        if (Sfx_IsPlayingFromObjectChannel((int)obj, CFMAINCRYSTAL_HUM_CHANNEL) == 0) {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_dn_boar1_c_d5);
+        if (Sfx_IsPlayingFromObjectChannel(obj, CFMAINCRYSTAL_HUM_CHANNEL) == 0) {
+            Sfx_PlayFromObject(obj, SFXTRIG_dn_boar1_c_d5);
             state->humVolume = CFMAINCRYSTAL_HUM_INITIAL_VOLUME;
         } else {
             f32 targetVolume = CFMAINCRYSTAL_HUM_BASE_VOLUME + activePylonCount / CFMAINCRYSTAL_HUM_PYLON_DIVISOR;
@@ -263,7 +269,7 @@ void cfMainCrystal_updateBeams(GameObject* obj) {
             if (state->chargeTimer >= CFMAINCRYSTAL_CHARGE_FIRE_FRAMES) {
                 state->humVolume = targetVolume;
             }
-            Sfx_SetObjectChannelVolume((int)obj, CFMAINCRYSTAL_HUM_CHANNEL, CFMAINCRYSTAL_HUM_VOLUME, state->humVolume);
+            Sfx_SetObjectChannelVolume(obj, CFMAINCRYSTAL_HUM_CHANNEL, CFMAINCRYSTAL_HUM_VOLUME, state->humVolume);
         }
     }
     pylonIndex = 0;
@@ -272,11 +278,11 @@ void cfMainCrystal_updateBeams(GameObject* obj) {
         if (index != 0 && index < CFMAINCRYSTAL_PYLON_TIMER_LIMIT) {
             state->pylonTimers[pylonIndex] += framesThisStep;
             if (index == 1 && state->pylonTimers[pylonIndex] > 1) {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_en_icecrk16_d6);
+                Sfx_PlayFromObject(obj, SFXTRIG_en_icecrk16_d6);
             }
             if (index < CFMAINCRYSTAL_PYLON_CHIME_DELAY &&
                 state->pylonTimers[pylonIndex] >= CFMAINCRYSTAL_PYLON_CHIME_DELAY) {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_en_lflsh1_c);
+                Sfx_PlayFromObject(obj, SFXTRIG_en_lflsh1_c);
             }
         }
         pylonIndex++;

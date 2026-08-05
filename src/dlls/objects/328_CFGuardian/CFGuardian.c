@@ -581,10 +581,8 @@ int cfguardian_updateMain(GameObject* obj) {
                     obj->anim.velocityZ = damping * obj->anim.velocityZ;
                 }
             }
-        } else {
-            if (state->chatterState == CFGUARDIAN_CHATTER_PLAYING) {
-                state->chatterState = CFGUARDIAN_CHATTER_READY;
-            }
+        } else if (state->chatterState == CFGUARDIAN_CHATTER_PLAYING) {
+            state->chatterState = CFGUARDIAN_CHATTER_READY;
         }
         break;
     case CFGUARDIAN_STATE_FLY_TO_TALK: /* fly to the talk spot */
@@ -617,14 +615,12 @@ int cfguardian_updateMain(GameObject* obj) {
                 state->chatterState = CFGUARDIAN_CHATTER_READY;
                 state->chatterAlt = (state->chatterAlt + 1) % 2;
             }
-        } else {
-            if ((state->stateFlags & CFGUARDIAN_STATE_HOMING) == 0 &&
-                gCfGuardianIdleMoveTable[state->questState] != 0xe) {
-                state->chatterState = CFGUARDIAN_CHATTER_PLAYING;
-                state->stateFlags |= CFGUARDIAN_STATE_MOVE_LATCHED | CFGUARDIAN_STATE_HOMING;
-                dll_2E_getCurveActionTarget(0xe, &state->home);
-                gCfGuardianIdleMoveTable[state->questState] = 0xe;
-            }
+        } else if ((state->stateFlags & CFGUARDIAN_STATE_HOMING) == 0 &&
+                   gCfGuardianIdleMoveTable[state->questState] != 0xe) {
+            state->chatterState = CFGUARDIAN_CHATTER_PLAYING;
+            state->stateFlags |= CFGUARDIAN_STATE_MOVE_LATCHED | CFGUARDIAN_STATE_HOMING;
+            dll_2E_getCurveActionTarget(0xe, &state->home);
+            gCfGuardianIdleMoveTable[state->questState] = 0xe;
         }
         if ((state->stateFlags & CFGUARDIAN_STATE_HOMING) != 0 &&
             cfguardian_steerToward(obj, &state->home, 0.5f, &state->moveSpeed) != 0) {
@@ -654,14 +650,12 @@ int cfguardian_updateMain(GameObject* obj) {
                 state->chatterState = CFGUARDIAN_CHATTER_READY;
                 state->chatterAlt = (state->chatterAlt + 1) % 2;
             }
-        } else {
-            if ((state->stateFlags & CFGUARDIAN_STATE_HOMING) == 0 &&
-                gCfGuardianIdleMoveTable[state->questState] != 0xe) {
-                state->chatterState = CFGUARDIAN_CHATTER_PLAYING;
-                state->stateFlags |= CFGUARDIAN_STATE_MOVE_LATCHED | CFGUARDIAN_STATE_HOMING;
-                dll_2E_getCurveActionTarget(0xe, &state->home);
-                gCfGuardianIdleMoveTable[state->questState] = 0xe;
-            }
+        } else if ((state->stateFlags & CFGUARDIAN_STATE_HOMING) == 0 &&
+                   gCfGuardianIdleMoveTable[state->questState] != 0xe) {
+            state->chatterState = CFGUARDIAN_CHATTER_PLAYING;
+            state->stateFlags |= CFGUARDIAN_STATE_MOVE_LATCHED | CFGUARDIAN_STATE_HOMING;
+            dll_2E_getCurveActionTarget(0xe, &state->home);
+            gCfGuardianIdleMoveTable[state->questState] = 0xe;
         }
         if ((state->stateFlags & CFGUARDIAN_STATE_HOMING) != 0 &&
             cfguardian_steerToward(obj, &state->home, 0.5f, &state->moveSpeed) != 0) {
@@ -810,7 +804,7 @@ int cfguardian_sequenceCallback(GameObject* obj, int unused, ObjSeqState* animUp
         movePair = &sequenceMoves.idleMoveA;
     }
     if (animatedObjGetSeqId(animUpdate) != CFGUARDIAN_SEQUENCE_ID_MAGIC_GRANT) {
-        if (dll_2E_updateSequenceTurn(obj, (ObjSeqState*)animUpdate, &state->moveLib, movePair[0], movePair[1]) != 0) {
+        if (dll_2E_updateSequenceTurn(obj, animUpdate, &state->moveLib, movePair[0], movePair[1]) != 0) {
             return 1;
         }
     }
@@ -874,7 +868,7 @@ void cfguardian_init(GameObject* obj, CfGuardianPlacement* placement) {
     if (state == NULL) {
         return;
     }
-    ObjMsg_AllocQueue((void*)obj, CFGUARDIAN_MESSAGE_QUEUE_CAPACITY);
+    ObjMsg_AllocQueue(obj, CFGUARDIAN_MESSAGE_QUEUE_CAPACITY);
     state->questState = mainGetBit(GAMEBIT_CFGUARDIAN_QUEST_STATE);
     obj->userData1 = 1;
     obj->animEventCallback = cfguardian_sequenceCallback;

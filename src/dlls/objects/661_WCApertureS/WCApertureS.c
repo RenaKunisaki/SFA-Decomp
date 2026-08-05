@@ -14,6 +14,7 @@
 #include "main/dll/partfx_interface.h"
 #include "main/camera_interface.h"
 #include "main/camera.h"
+#include "main/dll/player_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/dll/WC/dll_0295_wcapertures.h"

@@ -52,7 +52,7 @@ s16 dll_8D_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* sp
         command->tex = &resourceData[offsetof(Dll8DEffectResourceView, nineVertexIndices)];
         command->mode = 0x80;
         if ((u32)spawnParams != 0) {
-            PartFxSpawnParams* anchorParams = (PartFxSpawnParams*)spawnParams;
+            PartFxSpawnParams* anchorParams = spawnParams;
             command->x = anchorParams->posX;
             command->y = anchorParams->posY;
             command->z = anchorParams->posZ;
@@ -111,7 +111,7 @@ s16 dll_8D_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* sp
         command->tex = &resourceData[offsetof(Dll8DEffectResourceView, nineVertexIndices)];
         command->mode = 0x80;
         if ((u32)spawnParams != 0) {
-            PartFxSpawnParams* anchorParams = (PartFxSpawnParams*)spawnParams;
+            PartFxSpawnParams* anchorParams = spawnParams;
             command->x = anchorParams->posX;
             command->y = anchorParams->posY;
             command->z = anchorParams->posZ;
@@ -154,7 +154,7 @@ s16 dll_8D_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* sp
         command->tex = &resourceData[offsetof(Dll8DEffectResourceView, nineVertexIndices)];
         command->mode = 0x80;
         if ((u32)spawnParams != 0) {
-            PartFxSpawnParams* anchorParams = (PartFxSpawnParams*)spawnParams;
+            PartFxSpawnParams* anchorParams = spawnParams;
             command->x = anchorParams->posX;
             command->y = anchorParams->posY;
             command->z = anchorParams->posZ;
@@ -352,7 +352,7 @@ s16 dll_8D_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* sp
             packet.position[1] += anchorObj->anim.worldPosY;
             packet.position[2] += anchorObj->anim.worldPosZ;
         } else {
-            PartFxSpawnParams* anchorParams = (PartFxSpawnParams*)spawnParams;
+            PartFxSpawnParams* anchorParams = spawnParams;
             packet.position[0] += anchorParams->posX;
             packet.position[1] += anchorParams->posY;
             packet.position[2] += anchorParams->posZ;

@@ -13,9 +13,13 @@
 #include "dlls/objects/344.h"
 
 #include "dolphin/mtx.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
+#include "main/maketex_timer_api.h"
+#include "main/obj_query.h"
 #include "main/objseq.h"
+#include "main/objtype.h"
 #include "main/vecmath.h"
 #include "main/dll/dll_0282_barrelgener.h"
 #include "main/dll/barrelgener_state.h"
@@ -92,7 +96,7 @@ void barrelgener_update(GameObject* obj)
         {
             state->releaseAnimPlaying = 1;
             ObjAnim_SetCurrentMove((int)obj, 0, 0.0f, 0);
-            Sfx_PlayFromObject((int)obj, SFXTRIG_barrelgen_slide);
+            Sfx_PlayFromObject(obj, SFXTRIG_barrelgen_slide);
             state->releaseBeepPlayed = 0;
         }
         if (timerCountDown((void*)&state->releaseTimer) != 0)
@@ -125,7 +129,7 @@ void barrelgener_update(GameObject* obj)
         {
             if (state->releaseBeepPlayed == 0)
             {
-                Sfx_PlayFromObject((int)obj, SFXTRIG_wp_mzap2_c);
+                Sfx_PlayFromObject(obj, SFXTRIG_wp_mzap2_c);
                 state->releaseBeepPlayed = 1;
             }
         }

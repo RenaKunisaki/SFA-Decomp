@@ -5,6 +5,7 @@
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/pad.h"
+#include "string.h"
 #include "types.h"
 #include "main/audio/sfx_play_legacy_api.h"
 #include "main/audio/sfx_trigger_ids.h"
@@ -52,7 +53,7 @@ u8 CameraModeStaffAnim_samplePath(f32* outX, f32* height, f32* outZ, GameObject*
         gCameraModeStaffAnimState->pointsX[i] = work.localX;
         gCameraModeStaffAnimState->pointsZ[i] = work.localZ;
     }
-    if (0.0f != gCameraModeStaffAnimState->pathCurve.pathLength) {
+    if (gCameraModeStaffAnimState->pathCurve.pathLength != 0.0f) {
         pathT = gCameraModeStaffAnimState->pathCurve.pathDistance / gCameraModeStaffAnimState->pathCurve.pathLength;
     } else {
         pathT = 0.0f;
@@ -253,7 +254,7 @@ void CameraModeStaffAnim_update(CameraObject* camera) {
         angle = getAngle((double)relX, (double)relZ);
         yawDelta = 0x8000 - (angle & 0xffff);
         yawDelta = yawDelta - (u32)(u16)camera->anim.rotX;
-        if (0x8000 < yawDelta) {
+        if (yawDelta > 0x8000) {
             yawDelta = yawDelta + -0xffff;
         }
         if (yawDelta < -0x8000) {

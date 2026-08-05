@@ -948,11 +948,11 @@ void gameTextMeasureString(u8* str, f32 scale, f32* outW, f32* outZero, f32* out
     {
         if (outMaxAdv != NULL)
         {
-            *outMaxAdv = (f32)(u32) * (u16*)(tbl + 8) * scale;
+            *outMaxAdv = (f32)(u32)((FontMetrics*)tbl)->maxWidth * scale;
         }
         if (outMaxH != NULL)
         {
-            *outMaxH = (f32)(u32) * (u16*)(tbl + 0xa) * scale;
+            *outMaxH = (f32)(u32)((FontMetrics*)tbl)->lineHeight * scale;
         }
     }
 
@@ -978,12 +978,12 @@ void gameTextMeasureString(u8* str, f32 scale, f32* outW, f32* outZero, f32* out
                 tbl = (u8*)gGameTextFontMetrics + glyphLang * 16;
                 if (glyphLang != GAMETEXT_FONT_FACE)
                 {
-                    mAdv = (f32)(u32) * (u16*)(tbl + 8) * scale;
+                    mAdv = (f32)(u32)((FontMetrics*)tbl)->maxWidth * scale;
                     if (outMaxAdv != NULL && mAdv > *outMaxAdv)
                     {
                         *outMaxAdv = mAdv;
                     }
-                    mH = (f32)(u32) * (u16*)(tbl + 0xa) * scale;
+                    mH = (f32)(u32)((FontMetrics*)tbl)->lineHeight * scale;
                     if (outMaxH != NULL && mH > *outMaxH)
                     {
                         *outMaxH = mH;

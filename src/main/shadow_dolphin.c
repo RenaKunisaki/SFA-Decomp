@@ -100,14 +100,6 @@ s8 gShadowVolumesDirty = 10;
 s16 gSunMagnitude = 100;
 int gSunDirChanged = 1;
 
-typedef struct TrackShadowTriangle
-{
-    Vec3f normal;
-    f32 planeDistance;
-    s8 flags;
-    u8 pad11[3];
-} TrackShadowTriangle;
-
 #include "main/dll/ppcwgpipe_struct.h"
 
 extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
@@ -573,7 +565,7 @@ void objDrawShadowCasterMesh(Vec3f* vertices, ObjModelState* modelState, GameObj
     GXLoadPosMtxImm((const f32 (*)[4])viewWorldMtx, GX_PNMTX0);
     if (obj->anim.modelInstance->renderFlags & OBJDEF_RENDERFLAG_PROJECTED_SHADOW)
     {
-        u32 color = *(u32*)shadowColor;
+        GXColor color = *(GXColor*)shadowColor;
         objectShadow_setupSwappedProjectedTexture(modelState->shadowCastSlot, &color, worldMtx);
     }
     else
@@ -586,17 +578,17 @@ void objDrawShadowCasterMesh(Vec3f* vertices, ObjModelState* modelState, GameObj
             (diskTexture = getNewShadowSmallDiskTexture(),
              (u32)modelState->shadowCastSlot->texture == diskTexture))
         {
-            u32 color = *(u32*)shadowColor;
+            GXColor color = *(GXColor*)shadowColor;
             objectShadow_setupProjectedTexture(modelState->shadowCastSlot, &color, worldMtx);
         }
         else if (modelState->shadowCastSlot->mode == 0xff)
         {
-            u32 color = *(u32*)shadowColor;
+            GXColor color = *(GXColor*)shadowColor;
             objectShadow_setupProjectedTextureDepthFade(modelState->shadowCastSlot, &color, worldMtx, projectionScale);
         }
         else
         {
-            u32 color = *(u32*)shadowColor;
+            GXColor color = *(GXColor*)shadowColor;
             objectShadow_setupProjectedTextureChannel(modelState->shadowCastSlot, &color, worldMtx, projectionScale);
         }
     }
@@ -745,7 +737,7 @@ int objShadowRender(GameObject* obj, int renderMode, int unused, int frameCount)
         trackGetTriangleBuffer(&idxOut, &triangleTable);
 
         triangleBuffer = triangleTable;
-        idxOut = collectShadowTrackTriangles((int*)obj, triangleBuffer, gShadowDrawScratch, gShadowVolumeBuffer, idxOut, (f32)(int)vtx[0],
+        idxOut = collectShadowTrackTriangles(obj, triangleBuffer, gShadowDrawScratch, gShadowVolumeBuffer, idxOut, (f32)(int)vtx[0],
                              (f32)(int)vtx[2], renderMode, modelState->flags & 0x40000);
         gShadowTrackTriangleBuffer = triangleBuffer;
         gShadowTrackTriangleCount = idxOut;

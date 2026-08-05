@@ -83,7 +83,13 @@ extern u8 gMapBlockCount;
 extern int gMapBlockIndexCount;
 extern int* gMapBlockIndexList;
 extern f32 gSunFlareFade;
-extern int gSunOcclusionSampleOffsets[];
+typedef struct SunOcclusionSample
+{
+    int x;
+    int y;
+} SunOcclusionSample;
+
+extern SunOcclusionSample gSunOcclusionSampleOffsets[];
 extern u16 lbl_803DCEAC;
 extern s32 heatEffectIntensity;
 extern u8 gLightmapScreenImageEnabled;

@@ -24,6 +24,7 @@
 #include "main/vecmath.h"
 #include "main/objseq_api.h"
 #include "main/pad.h"
+#include "string.h"
 
 typedef struct CameraModeNormalSlideTransform {
     s16 angles[3];
@@ -134,7 +135,7 @@ u8 camcontrol_getTargetPosition(CameraObject* camera, ObjAnimComponent* targetAn
     ang = getAngle(b, d2);
     angleDelta = ang & 0xffff;
     angleDelta -= (u16)camera->anim.rotY;
-    if (0x8000 < angleDelta) {
+    if (angleDelta > 0x8000) {
         angleDelta = angleDelta - 0xffff;
     }
     if (angleDelta < -0x8000) {
@@ -163,7 +164,7 @@ void CameraModeNormal_updateTargetAction(CameraObject* camera, GameObject* targe
             Camera_setBlendCurveMode(1);
             (*gCameraInterface)->setMode(CAMERA_MODE_COMBAT_RESOURCE_ID, 1, 0, 4, &camera->currentTarget, 0x3c, 0xff);
         } else if ((((buttons & PAD_TRIGGER_Z) != 0) && (target->anim.classId == 1)) &&
-                   (cond = playerIsInNormalControl((GameObject*)target), cond != 0)) {
+                   (cond = playerIsInNormalControl(target), cond != 0)) {
             viewfinderSettings.radius = gCameraModeNormalState->minDistance;
             viewfinderSettings.yOffset = gCameraModeNormalState->lowerHeightOffset;
             viewfinderSettings.height = gCameraModeNormalState->targetHeight;
@@ -187,7 +188,7 @@ void CameraModeNormal_updateTargetAction(CameraObject* camera, GameObject* targe
 }
 
 int CameraModeNormal_chooseWallAvoidanceDirection(CameraObject* cam, f32* outA, f32* outB, int angle) {
-    int tgt0;
+    GameObject* tgt0;
     float probe[75];
     u8 box[136];
     float pathA[21];
@@ -223,8 +224,8 @@ int CameraModeNormal_chooseWallAvoidanceDirection(CameraObject* cam, f32* outA, 
     result = 0;
     (*gCameraInterface)
         ->getRelativePosition(cam, &spinB, &spinC, &spinD, &spinA, gCameraModeNormalState->targetHeight, 0);
-    tgt0 = (int)cam->anim.targetObj;
-    *(int*)&probe[35] = tgt0;
+    tgt0 = cam->anim.targetObj;
+    *(int*)&probe[35] = (int)tgt0;
     probe[1] = cam->anim.worldPosY;
     pathA[0] = cam->anim.worldPosX;
     pathA[1] = cam->anim.worldPosY;
@@ -232,12 +233,12 @@ int CameraModeNormal_chooseWallAvoidanceDirection(CameraObject* cam, f32* outA, 
     pathB[0] = pathA[0];
     pathB[1] = pathA[1];
     pathB[2] = pathA[2];
-    if (((GameObject*)tgt0)->anim.classId == 1) {
+    if (tgt0->anim.classId == 1) {
         cameraGetPrevPos2((GameObject*)tgt0, &prev[0], &prev[1], &prev[2]);
     } else {
-        prev[0] = ((GameObject*)tgt0)->anim.worldPosX;
-        prev[1] = ((GameObject*)tgt0)->anim.worldPosY + gCameraModeNormalState->targetHeight;
-        prev[2] = ((GameObject*)tgt0)->anim.worldPosZ;
+        prev[0] = tgt0->anim.worldPosX;
+        prev[1] = tgt0->anim.worldPosY + gCameraModeNormalState->targetHeight;
+        prev[2] = tgt0->anim.worldPosZ;
     }
     s = 0xf;
     i = 0;
@@ -330,7 +331,7 @@ int CameraModeNormal_chooseWallAvoidanceDirection(CameraObject* cam, f32* outA, 
         f32 f;
         f32 g;
         d = (0x8000 - cam->anim.rotX) - (angle & 0xffff);
-        if (0x8000 < d) {
+        if (d > 0x8000) {
             d = d - 0xffff;
         }
         if (d < -0x8000) {
@@ -455,9 +456,9 @@ void CameraModeNormal_updateWallAvoidance(CameraObject* camera, GameObject* targ
             gCameraModeNormalState->avoidanceYawOffset = 0.0f;
         }
     }
-    if (0.0f != gCameraModeNormalState->avoidanceYawOffset) {
+    if (gCameraModeNormalState->avoidanceYawOffset != 0.0f) {
         spin = (s16)(int)gCameraModeNormalState->avoidanceYawOffset;
-        if ((spin < -0x1e) || (0x1e < spin)) {
+        if ((spin < -0x1e) || (spin > 0x1e)) {
             f32 rad;
 
             rad = (3.1415927f * spin) / 32768.0f;
@@ -1085,7 +1086,7 @@ void CameraModeNormal_update(CameraObject* camera) {
         } else {
             gCameraModeNormalState->wallAvoidanceTimer = 0;
         }
-        if (10 < gCameraModeNormalState->wallAvoidanceTimer) {
+        if (gCameraModeNormalState->wallAvoidanceTimer > 10) {
             if (target[0]->anim.classId == 1) {
                 cameraGetPrevPos2(target[0], &aimX2, &aimY2, &aimZ2);
             } else {
@@ -1107,7 +1108,7 @@ void CameraModeNormal_update(CameraObject* camera) {
         } else {
             gCameraModeNormalState->collisionProbeTimer = 0;
         }
-        if (5 < gCameraModeNormalState->collisionProbeTimer) {
+        if (gCameraModeNormalState->collisionProbeTimer > 5) {
             if (target[0]->anim.classId == 1) {
                 cameraGetPrevPos2(target[0], &aimX, &aimY, &aimZ);
             } else {
@@ -1148,7 +1149,7 @@ void CameraModeNormal_update(CameraObject* camera) {
                                    camera->anim.parent);
 }
 
-void CameraModeNormal_init(CameraObject* cam, int mode, CameraModeNormalInitSettings* data) {
+void CameraModeNormal_init(CameraObject* cam, int mode, CameraModeNormalInitSettings* settings) {
     GameObject* target;
     f32 vOutA;
     f32 vOutB;
@@ -1156,7 +1157,7 @@ void CameraModeNormal_init(CameraObject* cam, int mode, CameraModeNormalInitSett
     f32 vOutD;
     f32 fVal;
     u32 uVal;
-    CameraModeNormalInitSettings* p = data;
+    CameraModeNormalInitSettings* p = settings;
 
     gCameraModeNormalState->wallAvoidanceFlags.active = 0;
     gCameraModeNormalState->collisionState = 0;
@@ -1168,7 +1169,7 @@ void CameraModeNormal_init(CameraObject* cam, int mode, CameraModeNormalInitSett
     switch (mode) {
     case 0:
         memset(gCameraModeNormalState, 0, sizeof(CameraModeNormalState));
-        if (data != NULL) {
+        if (settings != NULL) {
             fVal = (f32)(u32)p->minDistanceWide;
             gCameraModeNormalState->minDistance = fVal;
             gCameraModeNormalState->targetMinDistance = fVal;
@@ -1219,7 +1220,7 @@ void CameraModeNormal_init(CameraObject* cam, int mode, CameraModeNormalInitSett
         cam->savedLocalPos.z = fVal;
         cam->anim.rotX = 0;
         cam->anim.rotZ = 0;
-        if (data != NULL) {
+        if (settings != NULL) {
             cam->fov = (f32)(u32)p->fovWide;
         }
         break;
@@ -1243,7 +1244,7 @@ void CameraModeNormal_init(CameraObject* cam, int mode, CameraModeNormalInitSett
         gCameraModeNormalState->transitionTimer = 0;
         break;
     case 2:
-        if (data != NULL) {
+        if (settings != NULL) {
             gCameraModeNormalState->targetTargetHeight = 35.0f;
             fVal = (f32)(u32)p->lowerHeightOffset;
             gCameraModeNormalState->baseLowerHeightOffset = fVal;
@@ -1299,7 +1300,7 @@ void CameraModeNormal_init(CameraObject* cam, int mode, CameraModeNormalInitSett
         gCameraModeNormalState->savedSlideLeftAmount = gCameraModeNormalState->slideLeftAmount;
         gCameraModeNormalState->savedDistanceAdjustRate = gCameraModeNormalState->distanceAdjustRate;
         gCameraModeNormalState->savedHeightAdjustRate = gCameraModeNormalState->heightAdjustRate;
-        if ((data != NULL) && (p->snapToTarget != 0)) {
+        if ((settings != NULL) && (p->snapToTarget != 0)) {
             camcontrol_getTargetPosition(cam, &target->anim, &cam->anim.worldPosX, &cam->anim.rotY);
             Obj_TransformWorldPointToLocal(cam->anim.worldPosX, cam->anim.worldPosY, cam->anim.worldPosZ,
                                            &cam->anim.localPosX, &cam->anim.localPosY, &cam->anim.localPosZ,

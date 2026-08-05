@@ -150,7 +150,7 @@ void hoodedZyck_updateIdle(GameObject* obj, int state)
     float hitOut[22];
 
     hoodedZyck_tickPhaseTimer((EnemyState*)state);
-    if (0.0f != ((EnemyState*)state)->duster.decoyTimer)
+    if (((EnemyState*)state)->duster.decoyTimer != 0.0f)
     {
         ObjHits_DisableObject(obj);
         if ((obj)->anim.currentMove != 5)
@@ -181,7 +181,7 @@ void hoodedZyck_updateIdle(GameObject* obj, int state)
         toPos[2] = (obj)->anim.localPosZ - 10.0f * cosYaw;
         groundHit = trackGetLineIntersect(fromPos, toPos, 0.0f, 3, (TrackBBoxHit*)hitOut,
                                        obj,
-                                       (u32) * (u8*)(state + 0x261),
+                                       (u32)((EnemyState*)state)->bboxTraceFlags,
                                        0xffffffff, 0xff, 0);
         noHit = !(groundHit & 0xff);
         if (!noHit || ((((EnemyState*)state)->controlFlags & BADDIE_CONTROL_SEQUENCE_DRIVEN) != 0))
@@ -231,7 +231,7 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
     {
         u8 n = ((GroundBaddiePlacement*)obj->anim.placementData)->aggression;
         scale = n;
-        if (0.0f == n)
+        if (n == 0.0f)
         {
             scale = 10.0f;
         }
@@ -240,7 +240,7 @@ void hoodedZyck_updateB(GameObject* obj, u8* state)
 
     hoodedZyck_tickPhaseTimer((EnemyState*)state);
 
-    if (0.0f != ((EnemyState*)state)->crawler.emergeTimer)
+    if (((EnemyState*)state)->crawler.emergeTimer != 0.0f)
     {
         ObjHits_DisableObject(obj);
         if (obj->anim.currentMove != 5)
@@ -389,7 +389,7 @@ void hoodedZyck_update(GameObject* obj, u8* state)
 
     hoodedZyck_tickPhaseTimer((EnemyState*)state);
 
-    if (0.0f != ((EnemyState*)state)->crawler.emergeTimer)
+    if (((EnemyState*)state)->crawler.emergeTimer != 0.0f)
     {
         ObjHits_DisableObject(obj);
         if (obj->anim.currentMove != 5)
@@ -474,7 +474,7 @@ void hoodedZyck_init(GameObject* obj, EnemyState* st)
     u32 amt;
     amt = ((GroundBaddiePlacement*)obj->anim.placementData)->aggression;
     ratio = amt;
-    if (0.0f == amt)
+    if (amt == 0.0f)
     {
         ratio = 10.0f;
     }
@@ -496,9 +496,9 @@ void hoodedZyck_init(GameObject* obj, EnemyState* st)
         *((u8*)st + 0x322) = 5;
         st->moveSpeedScale2 = d2;
     }
-    ((EnemyState*)st)->phaseAngle = 0;
-    ((EnemyState*)st)->crawler.engineTimer = 60.0f;
-    ((EnemyState*)st)->crawler.emergeTimer = base_v;
+    st->phaseAngle = 0;
+    st->crawler.engineTimer = 60.0f;
+    st->crawler.emergeTimer = base_v;
     obj->anim.alpha = 0;
     st->pathStep = 0.5f * ratio;
     st->flags2E8 = 0;

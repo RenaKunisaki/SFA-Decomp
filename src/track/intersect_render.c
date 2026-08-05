@@ -1,6 +1,7 @@
 #include "global.h"
 #include "dolphin/card.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "main/gamebits_api.h"
 #include "main/rcp_dolphin_api.h"
 #include "dolphin/mtx.h"
 #include "track/intersect.h"
@@ -192,9 +193,9 @@ void setFogColorRgb(u8 red, u8 green, u8 blue)
 int renderWhirlpool(void* obj_a, void** obj_b, int slot)
 {
 
-    void* renderOp;
-    void* tex2;
-    void* model;
+    Shader* renderOp;
+    Texture* tex2;
+    ModelFileHeader* model;
     int handle1;
     u8 ignoredLightColor;
     Mtx scaleMtx;
@@ -207,10 +208,10 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
     handle1 = *(int*)Shader_getLayer(renderOp, 0);
     selectTexture((Texture*)textureIdxToPtr(handle1), 0);
     selectReflectionTexture(1);
-    tex2 = textureIdxToPtr(((Shader*)renderOp)->auxTextureIndex);
-    wrapBit = (((Texture*)tex2)->maxLod - ((Texture*)tex2)->minLod > 0) ? GX_TRUE : GX_FALSE;
-    GXInitTexObj((void*)((Texture*)tex2)->gxTexObj, (u8*)tex2 + 0x60, ((Texture*)tex2)->width, ((Texture*)tex2)->height,
-                 ((Texture*)tex2)->format, GX_REPEAT, GX_REPEAT, wrapBit);
+    tex2 = textureIdxToPtr(renderOp->auxTextureIndex);
+    wrapBit = (tex2->maxLod - tex2->minLod > 0) ? GX_TRUE : GX_FALSE;
+    GXInitTexObj((void*)tex2->gxTexObj, (u8*)tex2 + 0x60, tex2->width, tex2->height,
+                 tex2->format, GX_REPEAT, GX_REPEAT, wrapBit);
     selectTexture((Texture*)tex2, 2);
     GXLoadTexMtxImm(gCameraLightPerspectiveScaledMatrix, GX_PTTEXMTX6, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX3x4, GX_TG_POS, 0, GX_FALSE, GX_PTTEXMTX6);
@@ -292,11 +293,11 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
     else
     {
         u8 zCompLoc = 1;
-        if (((u8*)obj_a)[0x37] < 0xFF || (((Shader*)renderOp)->flags & 0x40000000) != 0 ||
-            ((Shader*)renderOp)->alpha < 0xFF)
+        if (((u8*)obj_a)[0x37] < 0xFF || (renderOp->flags & 0x40000000) != 0 ||
+            renderOp->alpha < 0xFF)
         {
             GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
-            if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
+            if ((model->flags & 0x400) != 0)
             {
                 if ((u32)gGxZModeCompareEnable != 0 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 0 ||
                     gGxZModeValid == 0)
@@ -309,7 +310,7 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
                 }
                 ((GXSetAlphaCompareIntFn)GXSetAlphaCompare)(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
             }
-            else if ((((ModelFileHeader*)model)->flags & 0x2000) != 0)
+            else if ((model->flags & 0x2000) != 0)
             {
                 zCompLoc = 0;
                 if ((u32)gGxZModeCompareEnable != 1 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 1 ||
@@ -339,10 +340,10 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
         }
         else
         {
-            if ((((Shader*)renderOp)->flags & 0x400) != 0)
+            if ((renderOp->flags & 0x400) != 0)
             {
                 GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
-                if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
+                if ((model->flags & 0x400) != 0)
                 {
                     if ((u32)gGxZModeCompareEnable != 0 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 0 ||
                         gGxZModeValid == 0)
@@ -371,7 +372,7 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
             else
             {
                 GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
-                if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
+                if ((model->flags & 0x400) != 0)
                 {
                     if ((u32)gGxZModeCompareEnable != 0 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 0 ||
                         gGxZModeValid == 0)
@@ -398,7 +399,7 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
                 ((GXSetAlphaCompareIntFn)GXSetAlphaCompare)(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
             }
         }
-        if ((((Shader*)renderOp)->flags & 0x400) != 0)
+        if ((renderOp->flags & 0x400) != 0)
         {
             zCompLoc = 0;
         }
@@ -409,7 +410,7 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
             gGxZCompLocValid = 1;
         }
     }
-    if ((((Shader*)renderOp)->flags & 0x8) != 0)
+    if ((renderOp->flags & 0x8) != 0)
     {
         GXSetCullMode(GX_CULL_BACK);
     }
@@ -1077,9 +1078,9 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
 {
     Mtx mtx_54;
     Mtx mtx_24;
-    void* renderOp;
+    Shader* renderOp;
     void* tex;
-    void* model;
+    ModelFileHeader* model;
     GXColor temp;
     void (*pcb)(void*, void**, int);
     int alpha_byte;
@@ -1095,7 +1096,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
     GXLoadTexMtxImm(gCameraLightPerspectiveFlipYMatrix, GX_PTTEXMTX7, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_POS, 0, GX_FALSE, GX_PTTEXMTX7);
 
-    if (model == 0 || ((ModelFileHeader*)model)->normalCount != 0)
+    if (model == 0 || model->normalCount != 0)
     {
         PSMTXScale(mtx_54, gFrozenReflectionNormalScale, gFrozenReflectionNormalScale, 0.0f);
         mtx_54[2][3] = 1.0f;
@@ -1143,7 +1144,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
     GXSetNumTexGens(3);
     GXSetNumTevStages(2);
 
-    alpha_byte = (((Shader*)renderOp)->alpha * ((u8*)obj_a)[0x37]) >> 8;
+    alpha_byte = (renderOp->alpha * ((u8*)obj_a)[0x37]) >> 8;
     temp.a = alpha_byte;
     GXSetTevKColor(GX_KCOLOR0, temp);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
@@ -1159,11 +1160,11 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
     {
         u8 zCompLoc = 1;
         int ref1;
-        if (((u8*)obj_a)[0x37] < 0xff || (((Shader*)renderOp)->flags & 0x40000000) != 0 ||
-            ((Shader*)renderOp)->alpha < 0xff)
+        if (((u8*)obj_a)[0x37] < 0xff || (renderOp->flags & 0x40000000) != 0 ||
+            renderOp->alpha < 0xff)
         {
             GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
-            if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
+            if ((model->flags & 0x400) != 0)
             {
                 if ((u32)gGxZModeCompareEnable != 0 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 0 ||
                     gGxZModeValid == 0)
@@ -1176,7 +1177,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
                 }
                 ((GXSetAlphaCompareIntFn)GXSetAlphaCompare)(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
             }
-            else if ((((ModelFileHeader*)model)->flags & 0x2000) != 0)
+            else if ((model->flags & 0x2000) != 0)
             {
                 zCompLoc = 0;
                 if ((u32)gGxZModeCompareEnable != 1 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 1 ||
@@ -1208,10 +1209,10 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
         }
         else
         {
-            if ((((Shader*)renderOp)->flags & 0x400) != 0)
+            if ((renderOp->flags & 0x400) != 0)
             {
                 GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
-                if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
+                if ((model->flags & 0x400) != 0)
                 {
                     if ((u32)gGxZModeCompareEnable != 0 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 0 ||
                         gGxZModeValid == 0)
@@ -1240,7 +1241,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
             else
             {
                 GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
-                if ((((ModelFileHeader*)model)->flags & 0x400) != 0)
+                if ((model->flags & 0x400) != 0)
                 {
                     if ((u32)gGxZModeCompareEnable != 0 || gGxZModeCompareFunc != 3 || gGxZModeUpdateEnable != 0 ||
                         gGxZModeValid == 0)
@@ -1267,7 +1268,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
                 ((GXSetAlphaCompareIntFn)GXSetAlphaCompare)(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
             }
         }
-        if ((((Shader*)renderOp)->flags & 0x400) != 0)
+        if ((renderOp->flags & 0x400) != 0)
         {
             zCompLoc = 0;
         }
@@ -1279,7 +1280,7 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
         }
     }
     GXSetCullMode(GX_CULL_NONE);
-    if ((((ModelFileHeader*)model)->flags & 0x100) != 0)
+    if ((model->flags & 0x100) != 0)
     {
         fogColor = temp;
         GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, fogColor);
@@ -1521,11 +1522,11 @@ int moonFxRenderCallback(u8* obj, int* objB, int slot)
     GXColor colorK;
     GXColor colorFog;
     Mtx mtx;
-    int op;
+    Shader* op;
     Texture* tex;
     f32 tx;
 
-    op = (int)ObjModel_GetRenderOp((ModelFileHeader*)objB[0], slot);
+    op = ObjModel_GetRenderOp((ModelFileHeader*)objB[0], slot);
     tex = (Texture*)textureIdxToPtr(*(int*)Shader_getLayer((void*)op, 0));
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     gMoonFxDayNo = mainGetBit(0x2ba);
@@ -1537,7 +1538,7 @@ int moonFxRenderCallback(u8* obj, int* objB, int slot)
     GXSetNumTevStages(3);
     GXSetNumIndStages(0);
     selectTexture(tex, 0);
-    colorK.a = (((Shader*)op)->alpha * obj[0x37]) >> 8;
+    colorK.a = (op->alpha * obj[0x37]) >> 8;
     GXSetTevKColor(GX_KCOLOR0, colorK);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
     GXSetTevDirect(GX_TEVSTAGE0);
@@ -1911,7 +1912,7 @@ u32 objCausticReflectionRenderCb(int handle, void* model)
     GXSetTevColorOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE1, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
 
-    temp.a = ((u8*)(int)handle)[0x37];
+    temp.a = ((u8*)handle)[0x37];
     GXSetTevKColor(GX_KCOLOR0, temp);
     GXSetTevKAlphaSel(GX_TEVSTAGE2, GX_TEV_KASEL_K0_A);
     GXSetTevDirect(GX_TEVSTAGE2);
@@ -2273,7 +2274,7 @@ void drawPartialTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale, int
     GXSetTevSwapMode(GX_TEVSTAGE0, GX_TEV_SWAP0, GX_TEV_SWAP0);
     GXSetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    if (((u32*)obj)[0x14] != 0)
+    if ((u32)((Texture*)obj)->imageOffset != 0)
     {
         GXSetTevKAlphaSel(GX_TEVSTAGE1, GX_TEV_KASEL_K0_A);
         GXSetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD0, GX_TEXMAP1, GX_COLOR_NULL);
@@ -2445,7 +2446,7 @@ void drawScaledTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale, int 
     GXSetTevSwapMode(GX_TEVSTAGE0, GX_TEV_SWAP0, GX_TEV_SWAP0);
     GXSetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    if (((u32*)obj)[0x14] != 0)
+    if ((u32)((Texture*)obj)->imageOffset != 0)
     {
         GXSetTevKAlphaSel(GX_TEVSTAGE1, GX_TEV_KASEL_K0_A);
         GXSetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD0, GX_TEXMAP1, GX_COLOR_NULL);
@@ -2696,7 +2697,7 @@ void drawTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale)
     GXSetTevSwapMode(GX_TEVSTAGE0, GX_TEV_SWAP0, GX_TEV_SWAP0);
     GXSetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    if (((u32*)obj)[0x14] != 0)
+    if ((u32)((Texture*)obj)->imageOffset != 0)
     {
         GXSetTevKAlphaSel(GX_TEVSTAGE1, GX_TEV_KASEL_K0_A);
         GXSetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD0, GX_TEXMAP1, GX_COLOR_NULL);
@@ -2767,7 +2768,7 @@ void drawTexture(void* obj, f32 sx, f32 sy, int alpha_mod, int scale)
     Camera_RebuildProjectionMatrix();
 }
 
-void objectShadow_setupSwappedProjectedTexture(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx)
+void objectShadow_setupSwappedProjectedTexture(ProjectedShadowTexture* shadow, GXColor* colorPtr, Mtx mtx)
 {
     Mtx tmp;
 
@@ -2776,7 +2777,7 @@ void objectShadow_setupSwappedProjectedTexture(ProjectedShadowTexture* shadow, u
     GXLoadTexMtxImm(tmp, GX_TEXMTX0, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_POS, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
     selectTexture(shadow->texture, 0);
-    GXSetTevKColor(GX_KCOLOR0, *(GXColor*)colorPtr);
+    GXSetTevKColor(GX_KCOLOR0, *colorPtr);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
     GXSetTevKColorSel(GX_TEVSTAGE0, GX_TEV_KCSEL_K0);
     GXSetTevColor(GX_TEVREG1, *(GXColor*)&gObjectShadowTevColor);
@@ -2811,7 +2812,7 @@ void objectShadow_setupSwappedProjectedTexture(ProjectedShadowTexture* shadow, u
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void objectShadow_setupProjectedTexture(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx)
+void objectShadow_setupProjectedTexture(ProjectedShadowTexture* shadow, GXColor* colorPtr, Mtx mtx)
 {
     Mtx tmp;
 
@@ -2819,7 +2820,7 @@ void objectShadow_setupProjectedTexture(ProjectedShadowTexture* shadow, u32* col
     GXLoadTexMtxImm(tmp, GX_TEXMTX0, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_POS, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
     selectTexture(shadow->texture, 0);
-    GXSetTevKColor(GX_KCOLOR0, *(GXColor*)colorPtr);
+    GXSetTevKColor(GX_KCOLOR0, *colorPtr);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
     GXSetTevKColorSel(GX_TEVSTAGE0, GX_TEV_KCSEL_K0);
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
@@ -2853,7 +2854,7 @@ void objectShadow_setupProjectedTexture(ProjectedShadowTexture* shadow, u32* col
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void objectShadow_setupProjectedTextureDepthFade(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 depth)
+void objectShadow_setupProjectedTextureDepthFade(ProjectedShadowTexture* shadow, GXColor* colorPtr, Mtx mtx, f32 depth)
 {
     Mtx m58;
     Mtx m28;
@@ -2871,11 +2872,11 @@ void objectShadow_setupProjectedTextureDepthFade(ProjectedShadowTexture* shadow,
     GXLoadTexMtxImm(m58, GX_TEXMTX0, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_POS, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
     selectTexture(shadow->texture, 0);
-    t = ((u8*)colorPtr)[3];
-    ((u8*)colorPtr)[3] = (t >> 1) + (t >> 2);
-    c.r = ((u8*)colorPtr)[3];
-    c.g = ((u8*)colorPtr)[3];
-    c.b = ((u8*)colorPtr)[3];
+    t = colorPtr->a;
+    colorPtr->a = (t >> 1) + (t >> 2);
+    c.r = colorPtr->a;
+    c.g = colorPtr->a;
+    c.b = colorPtr->a;
     GXSetTevKColor(GX_KCOLOR0, c);
     GXSetTevKColorSel(GX_TEVSTAGE0, GX_TEV_KCSEL_K0);
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
@@ -2937,7 +2938,7 @@ void objectShadow_setupProjectedTextureDepthFade(ProjectedShadowTexture* shadow,
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
 }
 
-void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u32* colorPtr, Mtx mtx, f32 scale)
+void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, GXColor* colorPtr, Mtx mtx, f32 scale)
 {
     typedef struct
     {
@@ -2995,10 +2996,10 @@ void objectShadow_setupProjectedTextureChannel(ProjectedShadowTexture* shadow, u
     color2.b = 0x7F;
     GXSetTevColor(GX_TEVREG0, color2);
 
-    ((u8*)colorPtr)[3] = (u8)((((u8*)colorPtr)[3] >> 1) + (((u8*)colorPtr)[3] >> 2));
-    temp.r = ((u8*)colorPtr)[3];
-    temp.g = ((u8*)colorPtr)[3];
-    temp.b = ((u8*)colorPtr)[3];
+    colorPtr->a = (u8)((colorPtr->a >> 1) + (colorPtr->a >> 2));
+    temp.r = colorPtr->a;
+    temp.g = colorPtr->a;
+    temp.b = colorPtr->a;
     GXSetTevKColor(GX_KCOLOR0, temp);
 
     stage_base = 0;
@@ -3662,8 +3663,8 @@ void drawSnowFlashOverlay(f32 s1, u8 flashAlpha, void* vec, f32 s2, u8 alpha0, u
 
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
 
-    PSMTXScale(mtx_58, 6.0f * (f32)s2, 6.0f * (f32)s2, 0.0f);
-    PSMTXTrans(mtx_28, ratio1 * s3, ratio2 * s3 + (f32)s1, 0.0f);
+    PSMTXScale(mtx_58, 6.0f * s2, 6.0f * s2, 0.0f);
+    PSMTXTrans(mtx_28, ratio1 * s3, ratio2 * s3 + s1, 0.0f);
     PSMTXConcat(mtx_28, mtx_58, mtx_58);
     PSMTXRotRad(mtx_28, 'z', angle);
     PSMTXConcat(mtx_58, mtx_28, mtx_58);
@@ -3672,10 +3673,10 @@ void drawSnowFlashOverlay(f32 s1, u8 flashAlpha, void* vec, f32 s2, u8 alpha0, u
     GXLoadTexMtxImm(mtx_58, GX_TEXMTX0, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
 
-    PSMTXScale(mtx_58, 12.0f * (f32)s2, 12.0f * (f32)s2, 0.0f);
+    PSMTXScale(mtx_58, 12.0f * s2, 12.0f * s2, 0.0f);
     fade1 = 2.0f * ratio1;
     fade2 = 2.0f * ratio2;
-    PSMTXTrans(mtx_28, fade1 * s3, 0.75f * (f32)s1 + fade2 * s3, 0.0f);
+    PSMTXTrans(mtx_28, fade1 * s3, 0.75f * s1 + fade2 * s3, 0.0f);
     PSMTXConcat(mtx_28, mtx_58, mtx_58);
     PSMTXRotRad(mtx_28, 'z', 0.5f * angle);
     PSMTXConcat(mtx_58, mtx_28, mtx_58);

@@ -818,10 +818,7 @@ int voxmaps_updateRoutePath(RouteNav* nav, RouteState* state)
         switch (r)
         {
         case 0:
-            if (navState++ < nav->maxIters)
-            {
-            }
-            else
+            if (navState++ >= nav->maxIters)
             {
                 navState = 0;
                 if (voxmaps_buildRouteWaypoints(state, 1) != 0)

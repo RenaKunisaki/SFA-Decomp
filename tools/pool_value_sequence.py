@@ -75,12 +75,16 @@ def sequences(obj: Path, section: str) -> tuple[dict[str, list[str]], list[str]]
     return seqs, order
 
 
+class MissingObject(Exception):
+    """A row's object pair is absent -- the row is unscannable, not clean."""
+
+
 def compare(src_rel: str, section: str, quiet: bool = False) -> tuple[int, int]:
     stem = src_rel[:-2] if src_rel.endswith(".c") else src_rel
     ours = REPO / "build" / VERSION / (stem + ".o")
     retail = REPO / "build" / VERSION / ("obj" + stem[3:] + ".o")
     if not (ours.is_file() and retail.is_file()):
-        raise SystemExit(f"missing object for {src_rel}")
+        raise MissingObject(f"missing object for {src_rel}")
     ours_seqs, _ = sequences(ours, section)
     retail_seqs, retail_order = sequences(retail, section)
     same = diff = 0
@@ -110,7 +114,7 @@ def sub100_sections() -> list[tuple[str, str, float, int]]:
         for sec in unit.get("sections", []):
             if sec["name"] == ".text":
                 continue
-            score = sec.get("fuzzy_match_percent", 100.0)
+            score = sec.get("fuzzy_match_percent", 0.0)
             size = int(sec.get("size", 0))
             if score < 100.0 and size:
                 rows.append((src, sec["name"], score, size))
@@ -124,15 +128,27 @@ def main() -> int:
     if args[0] == "--all":
         section = args[1] if len(args) > 1 else None
         bad = 0
-        for src, sec, score, size in sub100_sections():
-            if section and sec != section:
+        scanned = 0
+        errors = []
+        rows = [row for row in sub100_sections() if not section or row[1] == section]
+        for src, sec, score, size in rows:
+            try:
+                same, diff = compare(src, sec, quiet=True)
+            except MissingObject as exc:
+                errors.append(str(exc))
+                print("%-50s %-11s %7.3f %6dB  UNSCANNED  %s" % (src, sec, score, size, exc))
                 continue
-            same, diff = compare(src, sec, quiet=True)
+            scanned += 1
             bad += 1 if diff else 0
             print("%-50s %-11s %7.3f %6dB  SAME %2d  DIFF %2d" % (src, sec, score, size, same, diff))
-        return 1 if bad else 0
+        print("population %d  scanned %d  differing %d  unscanned %d"
+              % (len(rows), scanned, bad, len(errors)))
+        return 1 if bad or errors else 0
     section = args[1] if len(args) > 1 else ".sdata2"
-    same, diff = compare(args[0], section)
+    try:
+        same, diff = compare(args[0], section)
+    except MissingObject as exc:
+        raise SystemExit(str(exc))
     print("value-sequence SAME %d  DIFF %d" % (same, diff))
     return 1 if diff else 0
 

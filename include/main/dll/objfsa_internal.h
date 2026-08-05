@@ -41,6 +41,9 @@ typedef struct ObjfsaWalkGroup
     u8 patchIndices[OBJFSA_PATCHGROUP_PATCH_COUNT];
 } ObjfsaWalkGroup;
 
+extern ObjfsaPatch gObjfsaPatches[256];
+extern ObjfsaWalkGroup gObjfsaWalkGroups[OBJFSA_WALKGROUP_COUNT];
+
 typedef struct ObjfsaStorage
 {
     ObjfsaPatch patches[256];

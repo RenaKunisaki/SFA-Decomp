@@ -202,4 +202,5 @@ def main():
         (cmd_diff if cmd == 'diff' else cmd_multiset)(rest[0], int(rest[1], 16), int(rest[2], 16))
 
 
-main()
+if __name__ == "__main__":
+    main()

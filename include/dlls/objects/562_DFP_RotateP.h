@@ -51,7 +51,7 @@ void DFP_RotateP_render(void);
 void DFP_RotateP_hitDetect(void);
 void DFP_RotateP_update(GameObject* obj);
 void DFP_RotateP_init(GameObject* obj, DFPRotatePPlacement* placement);
-void DFP_RotateP_free(u32 obj, int arg1);
+void DFP_RotateP_free(GameObject* obj, int arg1);
 void DFP_RotateP_release(void);
 void DFP_RotateP_initialise(void);
 void DFP_RotateP_updateEffectHandleRing(GameObject* obj);

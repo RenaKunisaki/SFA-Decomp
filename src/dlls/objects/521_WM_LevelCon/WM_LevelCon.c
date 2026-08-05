@@ -224,7 +224,7 @@ void WM_LevelControl_update(GameObject* obj) {
             GameBitLatch_UpdateInverted(&state->musicLatch, 0x10, -1, -1, 0xA7F, 0xA6);
             GameBitLatch_Update(&state->musicLatch, 2, -1, -1, 0xA7F, 0xA8);
         }
-        if (0x3C < state->frameCounter) {
+        if (state->frameCounter > 0x3C) {
             GameBitLatch_Update(&state->musicLatch, 1, -1, -1, 0xADA, 0xAC);
         }
         GameBitLatch_Update(&state->musicLatch, 0x20, -1, -1, 0xCBB, 0xC4);

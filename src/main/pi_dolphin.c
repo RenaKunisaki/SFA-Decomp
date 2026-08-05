@@ -212,6 +212,15 @@ struct MldfTables
     s16 owners[0x60];         /* mapId owning the slot, -1 = free */
 };
 
+STATIC_ASSERT(offsetof(struct MldfTables, mergeAnimCurv) == 0x2C0);
+STATIC_ASSERT(offsetof(struct MldfTables, mergeVoxMap) == 0x8200);
+STATIC_ASSERT(offsetof(struct MldfTables, mergeBlocks) == 0xA200);
+STATIC_ASSERT(offsetof(struct MldfTables, mergeTex1) == 0xC200);
+STATIC_ASSERT(offsetof(struct MldfTables, mergeTex0) == 0x10200);
+STATIC_ASSERT(offsetof(struct MldfTables, mergeAnim) == 0x14200);
+STATIC_ASSERT(offsetof(struct MldfTables, mergeModels) == 0x170E0);
+STATIC_ASSERT(offsetof(struct MldfTables, ids) == 0x19138);
+
 typedef u8 MldfArenaBlock[0x20000];
 enum
 {
@@ -1270,9 +1279,9 @@ void modelsTabReadCb(s32 result, DVDFileInfo* fileInfo)
 
 static inline s32 mapCheckCurBlocksImpl(int v)
 {
-    if (((s16*)((char*)gObjMapBlockInfo + 0x4a))[0] == v)
+    if (gObjMapBlockInfo[0x25] == v)
         return 0;
-    if (((s16*)((char*)gObjMapBlockInfo + 0x8e))[0] == v)
+    if (gObjMapBlockInfo[0x47] == v)
         return 1;
     return -1;
 }
@@ -1353,65 +1362,65 @@ int getLoadedFileFlags(int slot)
 
 u32 loadTableFiles(void)
 {
-    u8* base = gResourceFileTable;
+    struct MldfTables* tbl = (struct MldfTables*)gResourceFileTable;
     int s = OSDisableInterrupts();
     int flags = loadedFileFlags();
     int loadedFlags = gAssetLoadInFlightFlags;
-    if ((gObjTableFileRequestFlags & 0x4) && !(flags & 0x4) && *(s32*)(base + 0x191e4) == -1)
+    if ((gObjTableFileRequestFlags & 0x4) && !(flags & 0x4) && tbl->ids[0x2b] == -1)
     {
-        mergeTableFiles((u32*)(base + 0x170e0), 0x2a, 0x45, 0x800);
+        mergeTableFiles((u32*)tbl->mergeModels, 0x2a, 0x45, 0x800);
     }
-    if ((gObjTableFileRequestFlags & 0x8) && !(flags & 0x8) && *(s32*)(base + 0x19250) == -1)
+    if ((gObjTableFileRequestFlags & 0x8) && !(flags & 0x8) && tbl->ids[0x46] == -1)
     {
-        mergeTableFiles((u32*)(base + 0x170e0), 0x2a, 0x45, 0x800);
+        mergeTableFiles((u32*)tbl->mergeModels, 0x2a, 0x45, 0x800);
     }
-    if ((gObjTableFileRequestFlags & 0x40) && !(flags & 0x40) && *(s32*)(base + 0x191f8) == -1)
+    if ((gObjTableFileRequestFlags & 0x40) && !(flags & 0x40) && tbl->ids[0x30] == -1)
     {
-        mergeTableFiles((u32*)(base + 0x14200), 0x2f, 0x49, 0xbb8);
+        mergeTableFiles((u32*)tbl->mergeAnim, 0x2f, 0x49, 0xbb8);
     }
-    if ((gObjTableFileRequestFlags & 0x80) && !(flags & 0x80) && *(s32*)(base + 0x19260) == -1)
+    if ((gObjTableFileRequestFlags & 0x80) && !(flags & 0x80) && tbl->ids[0x4a] == -1)
     {
-        mergeTableFiles((u32*)(base + 0x14200), 0x2f, 0x49, 0xbb8);
+        mergeTableFiles((u32*)tbl->mergeAnim, 0x2f, 0x49, 0xbb8);
     }
-    if ((gObjTableFileRequestFlags & 0x400) && !(flags & 0x400) && *(s32*)(base + 0x191c4) == -1)
+    if ((gObjTableFileRequestFlags & 0x400) && !(flags & 0x400) && tbl->ids[0x23] == -1)
     {
-        mergeTableFiles((u32*)(base + 0x10200), 0x24, 0x4e, 0x1000);
+        mergeTableFiles((u32*)tbl->mergeTex0, 0x24, 0x4e, 0x1000);
     }
-    if ((gObjTableFileRequestFlags & 0x800) && !(flags & 0x800) && *(s32*)(base + 0x1926c) == -1)
+    if ((gObjTableFileRequestFlags & 0x800) && !(flags & 0x800) && tbl->ids[0x4d] == -1)
     {
-        mergeTableFiles((u32*)(base + 0x10200), 0x24, 0x4e, 0x1000);
+        mergeTableFiles((u32*)tbl->mergeTex0, 0x24, 0x4e, 0x1000);
     }
-    if ((gObjTableFileRequestFlags & 0x4000) && !(flags & 0x4000) && *(s32*)(base + 0x191b8) == -1)
+    if ((gObjTableFileRequestFlags & 0x4000) && !(flags & 0x4000) && tbl->ids[0x20] == -1)
     {
-        mergeTableFiles((u32*)(base + 0xc200), 0x21, 0x4c, 0x1000);
+        mergeTableFiles((u32*)tbl->mergeTex1, 0x21, 0x4c, 0x1000);
     }
-    if ((gObjTableFileRequestFlags & 0x8000) && !(flags & 0x8000) && *(s32*)(base + 0x19264) == -1)
+    if ((gObjTableFileRequestFlags & 0x8000) && !(flags & 0x8000) && tbl->ids[0x4b] == -1)
     {
-        mergeTableFiles((u32*)(base + 0xc200), 0x21, 0x4c, 0x1000);
+        mergeTableFiles((u32*)tbl->mergeTex1, 0x21, 0x4c, 0x1000);
     }
-    if ((gObjTableFileRequestFlags & 0x20000) && !(flags & 0x20000) && *(s32*)(base + 0x191cc) == -1)
+    if ((gObjTableFileRequestFlags & 0x20000) && !(flags & 0x20000) && tbl->ids[0x25] == -1)
     {
-        mergeTableFiles((u32*)(base + 0xa200), 0x26, 0x48, 0x800);
+        mergeTableFiles((u32*)tbl->mergeBlocks, 0x26, 0x48, 0x800);
     }
-    if ((gObjTableFileRequestFlags & 0x80000) && !(flags & 0x80000) && *(s32*)(base + 0x19254) == -1)
+    if ((gObjTableFileRequestFlags & 0x80000) && !(flags & 0x80000) && tbl->ids[0x47] == -1)
     {
-        mergeTableFiles((u32*)(base + 0xa200), 0x26, 0x48, 0x800);
+        mergeTableFiles((u32*)tbl->mergeBlocks, 0x26, 0x48, 0x800);
     }
-    if ((gObjTableFileRequestFlags & 0x2000000) && !(flags & 0x2000000) && *(s32*)(base + 0x191a4) == -1)
+    if ((gObjTableFileRequestFlags & 0x2000000) && !(flags & 0x2000000) && tbl->ids[0x1b] == -1)
     {
-        mergeTableFiles((u32*)(base + 0x8200), 0x1a, 0x53, 0x800);
+        mergeTableFiles((u32*)tbl->mergeVoxMap, 0x1a, 0x53, 0x800);
     }
-    if ((gObjTableFileRequestFlags & 0x8000000) && !(flags & 0x8000000) && *(s32*)(base + 0x19288) == -1)
+    if ((gObjTableFileRequestFlags & 0x8000000) && !(flags & 0x8000000) && tbl->ids[0x54] == -1)
     {
-        mergeTableFiles((u32*)(base + 0x8200), 0x1a, 0x53, 0x800);
+        mergeTableFiles((u32*)tbl->mergeVoxMap, 0x1a, 0x53, 0x800);
     }
-    if ((gObjTableFileRequestFlags & 0x20000000) && !(flags & 0x20000000) && *(s32*)(base + 0x1916c) == -1)
+    if ((gObjTableFileRequestFlags & 0x20000000) && !(flags & 0x20000000) && tbl->ids[0xd] == -1)
     {
-        mergeTableFiles((u32*)(base + 0x2c0), 0xe, 0x56, 0x1fd0);
+        mergeTableFiles((u32*)tbl->mergeAnimCurv, 0xe, 0x56, 0x1fd0);
     }
-    if ((gObjTableFileRequestFlags & 0x80000000) && !(flags & 0x80000000) && *(s32*)(base + 0x1928c) == -1)
+    if ((gObjTableFileRequestFlags & 0x80000000) && !(flags & 0x80000000) && tbl->ids[0x55] == -1)
     {
-        mergeTableFiles((u32*)(base + 0x2c0), 0xe, 0x56, 0x1fd0);
+        mergeTableFiles((u32*)tbl->mergeAnimCurv, 0xe, 0x56, 0x1fd0);
     }
     gObjTableFileRequestFlags = flags;
     gAssetLoadInFlightFlags = gAssetLoadInFlightFlags ^ gAssetLoadCompletedFlags;
@@ -4422,7 +4431,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
             {
                 return 0;
             }
-            memcpy((void*)destBuf, (void*)(qptr + offsetFlags), length);
+            memcpy(destBuf, (void*)(qptr + offsetFlags), length);
         }
         else if (fileId == 0x1b || fileId == 0x54)
         {
@@ -4436,7 +4445,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
                 decompSize = ZLB_HDR(fileBuf)->decompressedSize;
                 zlbDecompress((u8*)(MLDF_QPTR + offsetFlags + 0x10), ZLB_HDR(fileBuf)->compressedSize, (u8*)destBuf,
                               &decompSize);
-                DCStoreRange((void*)destBuf, decompSize);
+                DCStoreRange(destBuf, decompSize);
             }
             else
             {
@@ -4455,7 +4464,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
                 decompSize = ZLB_HDR(fileBuf)->decompressedSize;
                 zlbDecompress((u8*)(MLDF_QPTR + offsetFlags + 0x10), ZLB_HDR(fileBuf)->compressedSize, (u8*)destBuf,
                               &decompSize);
-                DCStoreRange((void*)destBuf, decompSize);
+                DCStoreRange(destBuf, decompSize);
             }
             else
             {
@@ -4467,14 +4476,14 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
             struct PackHeader* hdr = (struct PackHeader*)(qptr + offsetFlags);
             if (hdr->magic == 0xe0e0e0e0)
             {
-                memcpy((void*)destBuf, (void*)(qptr + ((hdr->auxSize + 0x18) + (int)hdr - (int)qptr)),
+                memcpy(destBuf, (void*)(qptr + ((hdr->auxSize + 0x18) + (int)hdr - (int)qptr)),
                        hdr->decompressedSize);
             }
             else if (hdr->magic == 0xfacefeed)
             {
                 zlbDecompress((u8*)(qptr + ((hdr->auxSize + 0x28) + (int)hdr - (int)qptr)), hdr->compressedSize - 0x10,
                               (u8*)destBuf, &hdr->decompressedSize);
-                DCStoreRange((void*)destBuf, hdr->decompressedSize);
+                DCStoreRange(destBuf, hdr->decompressedSize);
             }
         }
         else if (fileId == 0x23 || fileId == 0x4d)
@@ -4482,7 +4491,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
             fileBuf = qptr + (offsetFlags & 0xffffff);
             decompSize = ZLB_HDR(fileBuf)->decompressedSize;
             zlbDecompress((u8*)(fileBuf + 0x10), ZLB_HDR(fileBuf)->compressedSize, (u8*)destBuf, &decompSize);
-            DCStoreRange((void*)destBuf, decompSize);
+            DCStoreRange(destBuf, decompSize);
         }
         else if (fileId == 0x20 || fileId == 0x4b)
         {
@@ -4497,7 +4506,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
                 decompSize = ZLB_HDR(fileBuf)->decompressedSize;
                 zlbDecompress((u8*)(MLDF_QPTR + entryIndex + 0x10), ZLB_HDR(fileBuf)->compressedSize, (u8*)destBuf,
                               &decompSize);
-                DCStoreRange((void*)destBuf, decompSize);
+                DCStoreRange(destBuf, decompSize);
             }
         }
         else if (fileId == 0x4f)
@@ -4513,7 +4522,7 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
                 decompSize = ZLB_HDR(fileBuf)->decompressedSize;
                 zlbDecompress((u8*)(MLDF_QPTR + entryIndex + 0x10), ZLB_HDR(fileBuf)->compressedSize, (u8*)destBuf,
                               &decompSize);
-                DCStoreRange((void*)destBuf, decompSize);
+                DCStoreRange(destBuf, decompSize);
             }
         }
         else if (fileId == 0x30 || fileId == 0x51 || fileId == 0x4a)
@@ -4527,12 +4536,12 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
             }
             else
             {
-                memcpy((void*)destBuf, (void*)(MLDF_QPTR + offsetFlags), length);
+                memcpy(destBuf, (void*)(MLDF_QPTR + offsetFlags), length);
             }
         }
         else
         {
-            memcpy((void*)destBuf, (void*)(qptr + offsetFlags), length);
+            memcpy(destBuf, (void*)(qptr + offsetFlags), length);
         }
     }
     else if (fileId == 0x20 || fileId == 0x4b)
@@ -4569,14 +4578,14 @@ void* loadAndDecompressDataFile(int fileId, void* destBuf, int offsetFlags, u32 
             bounceSize = (length + 0x1f) & 0xffffffe0;
             bounceBuf = (int)mmAlloc(bounceSize, 0x7f7f7fff, 0);
             DVDRead(&buf, (void*)bounceBuf, bounceSize, offsetFlags);
-            memcpy((void*)destBuf, (void*)bounceBuf, length);
+            memcpy(destBuf, (void*)bounceBuf, length);
             mm_free((void*)bounceBuf);
         }
         else
         {
-            DVDRead(&buf, (void*)destBuf, length, offsetFlags);
+            DVDRead(&buf, destBuf, length, offsetFlags);
         }
-        DCStoreRange((void*)destBuf, length);
+        DCStoreRange(destBuf, length);
         DVDClose(&buf);
     }
     return 0;
@@ -4697,7 +4706,7 @@ void tex1GetFrame(int texId, int unused, int* outA, int* outB, int count, int* f
         {
             idx = 0x4b;
         }
-        else if (((int)texId & 0x40000000) != 0 && (flags & 0x1000) == 0)
+        else if ((texId & 0x40000000) != 0 && (flags & 0x1000) == 0)
         {
             idx = 0x20;
         }
@@ -4914,19 +4923,18 @@ void loadModelsBin(int offsetFlags, int* p1c, int* p20, int* p18, int* p4, int w
 }
 
 
-/* base+0x74 / base+0x78 are gResourceFileBuffers[0x1d]/[0x1e] (MldfTables.ptrs: maps info bin/tab) */
 void mapsBinGetRomlistSize(int idx, int* out1, int* out2, int* out3, int p5)
 {
-    char* base = (char*)gResourceFileBuffers;
     char* e;
-    if (*(void**)(base + 0x74) == NULL)
+    if ((void*)gResourceFileBuffers[0x1d] == NULL)
         return;
-    if (*(void**)(base + 0x78) == NULL)
+    if ((void*)gResourceFileBuffers[0x1e] == NULL)
         return;
-    e = *(char**)(base + 0x74) + idx;
+    e = (char*)gResourceFileBuffers[0x1d] + idx;
     *out1 = *(s16*)(e + 0x1c);
     *out2 = *(s16*)(e + 0x1e);
-    *out3 = *(int*)(*(char**)(base + 0x74) + *(int*)(*(char**)(base + 0x78) + p5 * 4 + 0x18) + 4);
+    *out3 = *(int*)((char*)gResourceFileBuffers[0x1d] +
+                    *(int*)((char*)gResourceFileBuffers[0x1e] + p5 * 4 + 0x18) + 4);
 }
 
 void checkLoadBlock(int a, int* pc, int* p8)

@@ -8,9 +8,15 @@
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "game/objects/object_setup.h"
+#include "main/audio/audio_control_api.h"
+#include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/objfx_api.h"
+#include "main/dll/player_api.h"
+#include "main/dll/player_staff_api.h"
 #include "main/frame_timing.h"
 #include "main/game_ui_interface.h"
 #include "main/gamebit_ids.h"
@@ -504,7 +510,7 @@ void ecshShrine_update(GameObject* obj) {
             timerValue = state->voiceTimer - timeDelta;
             state->voiceTimer = timerValue;
             if (timerValue <= zero) {
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_spirit_voice);
+                Sfx_PlayFromObject(obj, SFXTRIG_spirit_voice);
                 state->voiceTimer = (f32)randomGetRange(ECSH_SHRINE_VOICE_DELAY_MIN, ECSH_SHRINE_VOICE_DELAY_MAX);
             }
             if ((obj->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED) != 0) {
@@ -542,7 +548,7 @@ void ecshShrine_update(GameObject* obj) {
                 state->testPhase = ECSH_SHRINE_PHASE_PREPARE_ROUND_ONE;
                 state->cooldownTimer = ECSH_SHRINE_INTRO_COOLDOWN;
                 state->animState = 6;
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_iceywindlp16);
+                Sfx_PlayFromObject(obj, SFXTRIG_iceywindlp16);
                 state->animTimer = 0.0f;
                 mainSetBits(GAMEBIT_ECSH_TestObservRunning, 1);
                 (*gScreenTransitionInterface)->step(ECSH_SHRINE_INTRO_TRANSITION_FRAMES, SCREEN_TRANSITION_BLACK);
@@ -567,7 +573,7 @@ void ecshShrine_update(GameObject* obj) {
                     state->animTimer < state->shuffleSfxThreshold) {
                     if (randomGetRange(0, ECSH_SHRINE_SHUFFLE_SFX_ROLL_MAX) >
                         ECSH_SHRINE_SHUFFLE_SFX_ROLL_THRESHOLD) {
-                        Sfx_PlayFromObject((u32)obj, SFXTRIG_spirit_voice_var);
+                        Sfx_PlayFromObject(obj, SFXTRIG_spirit_voice_var);
                     }
                     state->shuffleSfxPlayed = 1;
                 }
@@ -608,7 +614,7 @@ void ecshShrine_update(GameObject* obj) {
                         state->shuffleSfxPlayed = 0;
                         state->shuffleSfxThreshold = (f32)randomGetRange(ECSH_SHRINE_SHUFFLE_SFX_DELAY_MIN,
                                                                               ECSH_SHRINE_SHUFFLE_SFX_DELAY_MAX);
-                        Sfx_PlayFromObject((u32)obj, SFXTRIG_spirit_basketspin);
+                        Sfx_PlayFromObject(obj, SFXTRIG_spirit_basketspin);
                         state->animState = 0;
                         state->animTimer = ECSH_SHRINE_SHUFFLE_START_TIMER;
                         if (state->testPhase == ECSH_SHRINE_PHASE_ROUND_ONE) {
@@ -696,7 +702,7 @@ void ecshShrine_update(GameObject* obj) {
                             ->start(ECSH_SHRINE_RESULT_TRANSITION_FRAMES, SCREEN_TRANSITION_BLACK);
                         state->cooldownTimer = ECSH_SHRINE_RESULT_COOLDOWN;
                         state->animState = 7;
-                        Sfx_PlayFromObject((u32)obj, SFXTRIG_iceywindlp16);
+                        Sfx_PlayFromObject(obj, SFXTRIG_iceywindlp16);
                         state->testPhase = ECSH_SHRINE_PHASE_FAIL;
                     } else if (state->matchFlag == 1) {
                         if (state->testPhase == ECSH_SHRINE_PHASE_ROUND_ONE) {
@@ -708,7 +714,7 @@ void ecshShrine_update(GameObject* obj) {
                             state->animTimer = ECSH_SHRINE_NEXT_ROUND_ANIM_TIMER;
                             state->shuffleCount = ECSH_SHRINE_ROUND_TWO_SHUFFLES;
                             state->matchFlag = -1;
-                            Sfx_PlayFromObject((u32)obj, SFXTRIG_sc_menuups16k);
+                            Sfx_PlayFromObject(obj, SFXTRIG_sc_menuups16k);
                             (*gObjectTriggerInterface)
                                 ->runSequence(ECSH_SHRINE_SEQUENCE_ROUND, obj, ECSH_SHRINE_SEQUENCE_FLAGS);
                         } else if (state->testPhase == ECSH_SHRINE_PHASE_ROUND_TWO) {
@@ -720,7 +726,7 @@ void ecshShrine_update(GameObject* obj) {
                             state->animTimer = ECSH_SHRINE_NEXT_ROUND_ANIM_TIMER;
                             state->shuffleCount = ECSH_SHRINE_ROUND_THREE_SHUFFLES;
                             state->matchFlag = -1;
-                            Sfx_PlayFromObject((u32)obj, SFXTRIG_sc_menuups16k);
+                            Sfx_PlayFromObject(obj, SFXTRIG_sc_menuups16k);
                             (*gObjectTriggerInterface)
                                 ->runSequence(ECSH_SHRINE_SEQUENCE_ROUND, obj, ECSH_SHRINE_SEQUENCE_FLAGS);
                         } else {
@@ -731,8 +737,8 @@ void ecshShrine_update(GameObject* obj) {
                             state->animState = 3;
                             state->matchFlag = 0;
                             state->animState = 7;
-                            Sfx_PlayFromObject((u32)obj, SFXTRIG_mpick1_b);
-                            Sfx_PlayFromObject((u32)obj, SFXTRIG_iceywindlp16);
+                            Sfx_PlayFromObject(obj, SFXTRIG_mpick1_b);
+                            Sfx_PlayFromObject(obj, SFXTRIG_iceywindlp16);
                         }
                     } else {
                         state->guessTimer = state->guessTimer - timeDelta;
@@ -742,7 +748,7 @@ void ecshShrine_update(GameObject* obj) {
                                 ->start(ECSH_SHRINE_RESULT_TRANSITION_FRAMES, SCREEN_TRANSITION_BLACK);
                             state->cooldownTimer = ECSH_SHRINE_RESULT_COOLDOWN;
                             state->animState = 7;
-                            Sfx_PlayFromObject((u32)obj, SFXTRIG_iceywindlp16);
+                            Sfx_PlayFromObject(obj, SFXTRIG_iceywindlp16);
                         }
                     }
                     break;
@@ -756,7 +762,7 @@ void ecshShrine_update(GameObject* obj) {
         case ECSH_SHRINE_PHASE_SUCCESS:
             mainSetBits(GAMEBIT_ECSH_TestObservRunning, 0);
             audioStopByMask(ECSH_SHRINE_AUDIO_STOP_MASK);
-            if (objGetAnimStateFlags((GameObject*)player, ECSH_SHRINE_PLAYER_ANIM_STATE_FLAG) != 0) {
+            if (objGetAnimStateFlags(player, ECSH_SHRINE_PLAYER_ANIM_STATE_FLAG) != 0) {
                 mainSetBits(GAMEBIT_WM_EnteredKrazoaTest1_0129, 1);
                 state->testPhase = ECSH_SHRINE_PHASE_POST_SUCCESS;
             } else {

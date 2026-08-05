@@ -14,9 +14,13 @@
 #include "dlls/objects/430_SH_LevelCon.h"
 
 #include "dolphin/pad.h"
+#include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/debug.h"
+#include "main/dll/player_api.h"
+#include "main/dll/savegame_load_api.h"
 #include "main/frame_timing.h"
 #include "main/game_ui_interface.h"
 #include "main/gamebit_ids.h"
@@ -263,7 +267,7 @@ void SH_LevelControl_setMusic(short* obj) {
 }
 
 void SH_LevelControl_runBloopEvent(GameObject* obj, ShLevelControlState* state) {
-    int player;
+    GameObject* player;
     u8 i;
     u8 bloopsRemaining;
     u8 j;
@@ -277,7 +281,7 @@ void SH_LevelControl_runBloopEvent(GameObject* obj, ShLevelControlState* state) 
         }
     }
 
-    player = (int)Obj_GetPlayerObject();
+    player = Obj_GetPlayerObject();
     switch (state->bloopEventState) {
     case 0:
         if (mainGetBit(GAMEBIT_ITEM_BigScarabBag_Got) != 0) {
@@ -288,7 +292,7 @@ void SH_LevelControl_runBloopEvent(GameObject* obj, ShLevelControlState* state) 
         break;
     case 1:
         if (mainGetBit(0x124) != 0) {
-            (*gMapEventInterface)->savePoint(player + 0xc, ((GameObject*)player)->anim.rotX, 1, 0);
+            (*gMapEventInterface)->savePoint((int)player + 0xc, player->anim.rotX, 1, 0);
             state->airMeterTimer = 100000.0f;
             (*gGameUIInterface)->initAirMeter(100000, SHLEVELCONTROL_AIRMETER_BGTEXTURE);
             state->bloopEventState = 2;
@@ -488,14 +492,14 @@ void SH_LevelControl_doEarlyScenes(GameObject* obj, ShLevelControlState* state) 
 
     if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.mapEventSlot, 6) == 0) {
         playerObj = (GameObject*)Obj_GetPlayerObject();
-        if (playerHasSpell((GameObject*)playerObj, 0) != 0) {
+        if (playerHasSpell(playerObj, 0) != 0) {
             (*gMapEventInterface)->setObjGroupStatus(obj->anim.mapEventSlot, 6, 1);
         }
     }
 }
 
 void SH_LevelControl_update(GameObject* obj) {
-    u32* state;
+    ShLevelControlState* state;
     u32 val;
     u32 val2;
     u32 val3;
@@ -504,11 +508,11 @@ void SH_LevelControl_update(GameObject* obj) {
     u8* base = (u8*)&gShLevelControlTables;
 
     state = (obj)->extra;
-    if (((ShLevelControlState*)state)->hudTextTimer > 0.0f) {
+    if (state->hudTextTimer > 0.0f) {
         gameTextShow(0x3f6);
-        ((ShLevelControlState*)state)->hudTextTimer = ((ShLevelControlState*)state)->hudTextTimer - timeDelta;
-        if (((ShLevelControlState*)state)->hudTextTimer < 0.0f) {
-            ((ShLevelControlState*)state)->hudTextTimer = 0.0f;
+        state->hudTextTimer = state->hudTextTimer - timeDelta;
+        if (state->hudTextTimer < 0.0f) {
+            state->hudTextTimer = 0.0f;
         }
     }
     SH_LevelControl_setMusic((short*)state);
@@ -555,43 +559,43 @@ void SH_LevelControl_update(GameObject* obj) {
             (*gMapEventInterface)->setObjGroupStatus((int)(obj)->anim.mapEventSlot, 0x1a, 0);
         }
     }
-    switch (((ShLevelControlState*)state)->mapAct) {
+    switch (state->mapAct) {
     case 1:
-        SH_LevelControl_doEarlyScenes(obj, (ShLevelControlState*)state);
+        SH_LevelControl_doEarlyScenes(obj, state);
         break;
     case 2:
         val = mainGetBit(GAMEBIT_SH_ReturnedToQueen);
         if ((val != 0) && (val3 = mainGetBit(GAMEBIT_ITEM_WhiteGrubTub_Used), val3 < 6)) {
-            if (((ShLevelControlState*)state)->musicLatch != 0xdb) {
-                ((ShLevelControlState*)state)->musicLatch = 0xdb;
+            if (state->musicLatch != 0xdb) {
+                state->musicLatch = 0xdb;
                 mainSetBits(GAMEBIT_SH_Entered00C0, 1);
-                ((ShLevelControlState*)state)->flags &= ~SH_LEVELCONTROL_FLAG_REFRESH_MAP;
+                state->flags &= ~SH_LEVELCONTROL_FLAG_REFRESH_MAP;
             }
         } else {
             val = mainGetBit(GAMEBIT_ITEM_WhiteGrubTub_Used);
-            if ((val == 6) && (((ShLevelControlState*)state)->musicLatch != 0xcc)) {
-                ((ShLevelControlState*)state)->musicLatch = 0xcc;
+            if ((val == 6) && (state->musicLatch != 0xcc)) {
+                state->musicLatch = 0xcc;
                 mainSetBits(GAMEBIT_SH_Entered00C0, 1);
-                ((ShLevelControlState*)state)->flags &= ~SH_LEVELCONTROL_FLAG_REFRESH_MAP;
+                state->flags &= ~SH_LEVELCONTROL_FLAG_REFRESH_MAP;
             }
         }
         val = mainGetBit(GAMEBIT_ITEM_WhiteGrubTub_Used);
         val2 = mainGetBit(GAMEBIT_ITEM_WhiteShroom_Count);
         if ((val2 + val == 6) && (val = mainGetBit(GAMEBIT_SH_Got6WhiteShrooms), val == 0)) {
-            Sfx_PlayFromObject((int)obj, SFXTRIG_mpick1_b);
+            Sfx_PlayFromObject(obj, SFXTRIG_mpick1_b);
             mainSetBits(GAMEBIT_SH_Got6WhiteShrooms, 1);
         }
         break;
     case 3:
-        SH_LevelControl_doThornTailEvents(obj, (ShLevelControlState*)state);
+        SH_LevelControl_doThornTailEvents(obj, state);
         break;
     case 4:
-        if (((ShLevelControlState*)state)->musicLatch != 0xcc) {
-            ((ShLevelControlState*)state)->musicLatch = 0xcc;
+        if (state->musicLatch != 0xcc) {
+            state->musicLatch = 0xcc;
             mainSetBits(GAMEBIT_SH_Entered00C0, 1);
-            ((ShLevelControlState*)state)->flags &= ~SH_LEVELCONTROL_FLAG_REFRESH_MAP;
+            state->flags &= ~SH_LEVELCONTROL_FLAG_REFRESH_MAP;
         }
-        if (((ShLevelControlState*)state)->waitCounter >= 2) {
+        if (state->waitCounter >= 2) {
             val = mainGetBit(GAMEBIT_SH_PushedSwitchInWell);
             if (val == 0) {
                 padClearAnalogInputX(0);
@@ -612,19 +616,19 @@ void SH_LevelControl_update(GameObject* obj) {
                 }
             }
         } else {
-            ((ShLevelControlState*)state)->waitCounter += 1;
+            state->waitCounter += 1;
         }
         break;
     case 5:
         val = mainGetBit(GAMEBIT_SH_Related023C);
         if (val != 0) {
-            if (((ShLevelControlState*)state)->musicLatch != 0xcc) {
-                ((ShLevelControlState*)state)->musicLatch = 0xcc;
+            if (state->musicLatch != 0xcc) {
+                state->musicLatch = 0xcc;
                 mainSetBits(GAMEBIT_SH_Entered00C0, 1);
-                ((ShLevelControlState*)state)->flags &= ~SH_LEVELCONTROL_FLAG_REFRESH_MAP;
+                state->flags &= ~SH_LEVELCONTROL_FLAG_REFRESH_MAP;
             }
-        } else if (((ShLevelControlState*)state)->musicLatch == 0xcc) {
-            ((ShLevelControlState*)state)->musicLatch = -1;
+        } else if (state->musicLatch == 0xcc) {
+            state->musicLatch = -1;
         }
         val = mainGetBit(GAMEBIT_SH_Related0090);
         if (((val != 0) && (val = mainGetBit(GAMEBIT_SH_Related0EB3), val == 0)) &&
@@ -633,20 +637,20 @@ void SH_LevelControl_update(GameObject* obj) {
         }
         break;
     case 6:
-        SH_LevelControl_runBloopEvent(obj, (ShLevelControlState*)state);
+        SH_LevelControl_runBloopEvent(obj, state);
         break;
     case 7:
         val = mainGetBit(GAMEBIT_SH_ThornTailRelated01A0);
         if (val != 0) {
-            if (((ShLevelControlState*)state)->musicLatch != 0xcc) {
-                ((ShLevelControlState*)state)->musicLatch = 0xcc;
+            if (state->musicLatch != 0xcc) {
+                state->musicLatch = 0xcc;
                 mainSetBits(GAMEBIT_SH_Entered00C0, 1);
-                ((ShLevelControlState*)state)->flags &= ~SH_LEVELCONTROL_FLAG_REFRESH_MAP;
+                state->flags &= ~SH_LEVELCONTROL_FLAG_REFRESH_MAP;
             }
-        } else if (((ShLevelControlState*)state)->musicLatch == 0xcc) {
-            ((ShLevelControlState*)state)->musicLatch = -1;
+        } else if (state->musicLatch == 0xcc) {
+            state->musicLatch = -1;
         }
-        if (((ShLevelControlState*)state)->waitCounter >= 2) {
+        if (state->waitCounter >= 2) {
             val = mainGetBit(GAMEBIT_SH_Related0177);
             if (val == 0) {
                 padClearAnalogInputX(0);
@@ -661,14 +665,14 @@ void SH_LevelControl_update(GameObject* obj) {
                 }
             }
         } else {
-            ((ShLevelControlState*)state)->waitCounter += 1;
+            state->waitCounter += 1;
         }
         break;
     case 8:
-        if (((ShLevelControlState*)state)->musicLatch != 0xcc) {
-            ((ShLevelControlState*)state)->musicLatch = 0xcc;
+        if (state->musicLatch != 0xcc) {
+            state->musicLatch = 0xcc;
             mainSetBits(GAMEBIT_SH_Entered00C0, 1);
-            ((ShLevelControlState*)state)->flags &= ~SH_LEVELCONTROL_FLAG_REFRESH_MAP;
+            state->flags &= ~SH_LEVELCONTROL_FLAG_REFRESH_MAP;
         }
         val = mainGetBit(GAMEBIT_SH_ReturnedAfter4thStone);
         if ((val != 0) && (val = mainGetBit(GAMEBIT_SH_ToldGetViewFinder), val == 0)) {
@@ -734,7 +738,7 @@ void SH_LevelControl_update(GameObject* obj) {
 }
 
 void SH_LevelControl_init(GameObject* obj) {
-    int* state = obj->extra;
+    ShLevelControlState* state = obj->extra;
     int i;
     u32 objectFlags;
 
@@ -749,16 +753,16 @@ void SH_LevelControl_init(GameObject* obj) {
         obj->userData1 = 1;
     }
 
-    ((ShLevelControlState*)state)->dayNightMusicLatch = -1;
-    ((ShLevelControlState*)state)->hudTextTimer = 300.0f;
+    state->dayNightMusicLatch = -1;
+    state->hudTextTimer = 300.0f;
 
     if (mainGetBit(GAMEBIT_ITEM_MMPKey_Got) != 0) {
-        ((ShLevelControlState*)state)->flags |= SH_LEVELCONTROL_FLAG_THORNTAIL_TRIGGERED;
+        state->flags |= SH_LEVELCONTROL_FLAG_THORNTAIL_TRIGGERED;
     }
 
-    ((ShLevelControlState*)state)->mapAct = (*gMapEventInterface)->getMapAct((int)obj->anim.mapEventSlot);
+    state->mapAct = (*gMapEventInterface)->getMapAct((int)obj->anim.mapEventSlot);
 
-    ((ShLevelControlState*)state)->musicLatch = -1;
+    state->musicLatch = -1;
     Music_Trigger(MUSICTRIG_fox_arwing, 0);
     Music_Trigger(MUSICTRIG_Barrels, 0);
     Music_Trigger(MUSICTRIG_PU3_Adventure_b2, 0);

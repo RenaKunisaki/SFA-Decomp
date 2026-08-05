@@ -13,6 +13,7 @@
 #include "main/vecmath.h"
 #include "game/objects/object.h"
 #include "main/objprint_api.h"
+#include "string.h"
 #include "sys/objects/lifecycle.h"
 #include "sys/objects.h"
 #include "main/obj_list.h"
@@ -149,7 +150,7 @@ int ObjSeq_StartPreparedStream(int slot)
     }
     streamTime = gObjSeqSlotStreamTimeTable[slot] - (f32)gObjSeqStreamResumeOffset;
     gObjSeqStreamRemainingTime = streamTime;
-    if (0.0f != gObjSeqStreamRemainingTime)
+    if (gObjSeqStreamRemainingTime != 0.0f)
     {
         gObjSeqTimedStreamSlot = slot;
     }
@@ -482,7 +483,7 @@ void endObjSequence(int seq)
     int nFree;
     GameObject** ret;
 
-    ret = (GameObject**)ObjList_GetObjects(&objIdx, &objCount);
+    ret = ObjList_GetObjects(&objIdx, &objCount);
     nFree = 0;
     i = 0;
     objs = ret;
@@ -558,6 +559,13 @@ char sSeqBAnimDataTag[] = "SEQB";
 int lbl_803DB744[1] = {0};
 GXColor gObjSeqDefaultColor = {0x20, 0x20, 0x20, 0xFF};
 int lbl_803DB74C[1] = {0};
+
+typedef struct ObjSeqBgRotationCmd
+{
+    s16 index;
+    s16 xrot;
+    s16 yrot;
+} ObjSeqBgRotationCmd;
 
 typedef struct ObjSeqBgCmd
 {
@@ -687,7 +695,7 @@ extern void ObjSeq_ApplyFrameCurves(GameObject* obj, GameObject* seqObj, u8* seq
 extern void ObjSeq_RebuildCurveStateToFrame(GameObject* obj, GameObject* seqObj, u8* seq, int mode);
 extern void ObjSeq_ApplyLinkedObjectTransform(GameObject* obj, GameObject* seqObj, u8* seq);
 extern void animatedObjFreeAndSavePlayerPos(GameObject* obj, GameObject* seqObj, u8* seq);
-extern s16 gObjSeqBgCmds[];
+extern ObjSeqBgRotationCmd gObjSeqBgCmds[];
 extern u8 objSeqXrotChanged[];
 extern s16 objSeqXrotValues[];
 extern s8 gObjSeqBoolFlags[];
@@ -698,7 +706,7 @@ extern u8 gObjSeqRuntimeBuffer[];
 void ObjSeq_setCamVars(int camA, int camB, int camC, int camD);
 int objSeqFindLabel(u8* seq, int label);
 int objSeqFindConditional(u8* seq, GameObject* seqState);
-void objCallSeqFn(GameObject* obj, GameObject* sourceObj, u8* seq, int action);
+void objCallSeqFn(GameObject* obj, GameObject* sourceObj, ObjSeqState* seq, int action);
 void objSeqDoBgCmds0D(u8* seq, GameObject* obj, int skipSpawns);
 void ObjSeq_SetupInitialPlaybackState(GameObject* obj, GameObject** seqObj, u8* seq, ObjSeqPlacement* placement, void** outAction);
 void ObjSeq_setXrot(int index, int xrot);
@@ -770,7 +778,7 @@ extern char sObjSequenceMissingObjectFormat[];
 extern s8 gObjSeqJumpLatch[];
 int objSeqExecCmd06(GameObject* obj, GameObject* sourceObj, u8* seq, int cmd, s8 flag);
 
-extern u8 lbl_8039944C[];
+extern ObjSeqBgCmd lbl_8039944C[];
 int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmd, s8 flags, void* out);
 void* ObjSeq_ToggleCommand3Target(GameObject* obj, u8* seq, ObjSeqPlacement* placement);
 
@@ -779,14 +787,6 @@ typedef struct CamMode
     int mode;
     u8 flag;
 } CamMode;
-
-typedef struct SeqByte136
-{
-    u8 modelSlot : 4;
-    u8 pad3 : 1;
-    u8 mapEvent : 1;
-    u8 rest : 2;
-} SeqByte136;
 
 int ObjSeq_update(GameObject* obj, f32 t);
 
@@ -1004,7 +1004,7 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
     GameObject* parent;
     u8* srcSeq;
     ObjSeqAnimPlacement* setup;
-    u8* seq;
+    ObjSeqState* seq;
     int size;
     s16 heading;
     int camArg;
@@ -1263,36 +1263,36 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
             newObj = objSetupObject(&setup->base, 5, -1, -1, parent);
             newObj->seqIndex = -2;
             seq = newObj->extra;
-            ((ObjSeqState*)seq)->heading = heading;
-            ((ObjSeqState*)seq)->flags = -1;
-            ((ObjSeqState*)seq)->flags = ((ObjSeqState*)seq)->flags & ~0x400;
-            ((ObjSeqState*)seq)->conditionOpcodes[0] = 0;
-            ((ObjSeqState*)seq)->conditionOpcodes[1] = 0;
-            ((ObjSeqState*)seq)->conditionOpcodes[2] = 0;
-            ((ObjSeqState*)seq)->conditionOpcodes[3] = 0;
+            seq->heading = heading;
+            seq->flags = -1;
+            seq->flags = seq->flags & ~0x400;
+            seq->conditionOpcodes[0] = 0;
+            seq->conditionOpcodes[1] = 0;
+            seq->conditionOpcodes[2] = 0;
+            seq->conditionOpcodes[3] = 0;
             if (walk2->flags & 1)
             {
-                ((ObjSeqState*)seq)->flags = ((ObjSeqState*)seq)->flags & ~1;
+                seq->flags = seq->flags & ~1;
             }
             if (walk2->flags & 2)
             {
-                ((ObjSeqState*)seq)->flags = ((ObjSeqState*)seq)->flags & ~2;
+                seq->flags = seq->flags & ~2;
             }
             if (walk2->flags & 4)
             {
-                ((ObjSeqState*)seq)->heading = 0;
+                seq->heading = 0;
             }
             if (walk2->flags & 8)
             {
-                ((ObjSeqState*)seq)->flags = ((ObjSeqState*)seq)->flags & ~0x100;
+                seq->flags = seq->flags & ~0x100;
             }
             if (walk2->flags & 0x80)
             {
-                ((ObjSeqState*)seq)->stateFlags = ((ObjSeqState*)seq)->stateFlags | 4;
+                seq->stateFlags = seq->stateFlags | 4;
             }
             if (walk2->flags & 0x40)
             {
-                ((ObjSeqState*)seq)->stateFlags = ((ObjSeqState*)seq)->stateFlags | 2;
+                seq->stateFlags = seq->stateFlags | 2;
             }
             if (walk2->flags & 0x2000)
             {
@@ -1305,7 +1305,7 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
                     gObjSeqCamOwnerSeqIndex = obj->seqIndex;
                     curSeqNo = slot;
                 }
-                ((ObjSeqState*)seq)->movementState = 4;
+                seq->movementState = 4;
                 if (camArg == 0)
                 {
                     camArg = walk2->flags & 0xf00;
@@ -1315,14 +1315,14 @@ int ObjSeq_start(int seqIdx, GameObject* obj, int flags)
             }
             else
             {
-                ((ObjSeqState*)seq)->movementState = -1;
+                seq->movementState = -1;
             }
-            if ((objId == OBJSEQ_KRYSTAL_OBJ || objId == OBJSEQ_SABRE_OBJ) && (((ObjSeqState*)seq)->flags & 1))
+            if ((objId == OBJSEQ_KRYSTAL_OBJ || objId == OBJSEQ_SABRE_OBJ) && (seq->flags & 1))
             {
                 playerSetInCutscene(player);
             }
-            ((ObjSeqState*)seq)->targetObjId = walk2->targetObjId;
-            ((ObjSeqState*)seq)->savedFlags = ((ObjSeqState*)seq)->flags;
+            seq->targetObjId = walk2->targetObjId;
+            seq->savedFlags = seq->flags;
             if (idx == 0)
             {
                 *(u8*)((u8*)&st->cmdFlags[0] + obj->seqIndex) = walk2->flags;
@@ -1609,7 +1609,7 @@ void* ObjSeq_FindTargetObject(GameObject* obj)
     return bestObj;
 }
 
-#define ObjSeq_GetObjects(unused, count) ((GameObject**)ObjList_GetObjects((unused), (count)))
+#define ObjSeq_GetObjects(unused, count) (ObjList_GetObjects((unused), (count)))
 
 void ObjSeq_runBgCmds(void)
 {
@@ -1818,7 +1818,7 @@ void ObjSeq_seqState_init(u8* seq)
     int track;
     int animCount;
     int commandIndex;
-    u8* command;
+    ObjSeqCommand* command;
 
     for (animCount = 0; animCount < 0x13; animCount++)
     {
@@ -1846,10 +1846,10 @@ void ObjSeq_seqState_init(u8* seq)
     commandIndex = 0;
     while (commandIndex < 2 && commandIndex < ((ObjSeqState*)seq)->cmdCount)
     {
-        command = ((ObjSeqState*)seq)->cmds + commandIndex * 4;
-        if ((s8)command[0] == -1)
+        command = (ObjSeqCommand*)(((ObjSeqState*)seq)->cmds + commandIndex * 4);
+        if ((s8)((u8*)command)[0] == -1)
         {
-            ((ObjSeqState*)seq)->endFrame = ((ObjSeqCommand*)command)->param + 1;
+            ((ObjSeqState*)seq)->endFrame = command->param + 1;
         }
         commandIndex++;
     }
@@ -2290,18 +2290,12 @@ void animatedObjFreeAndSavePlayerPos(GameObject* obj, GameObject* seqObj, u8* se
         }
     }
 
-    if ((((u32)((ObjSeqState*)seq)->flags136[0] >> 2) & 1U) != 0U)
+    if (((ObjSeqState*)seq)->flags136.mapEvent != 0U)
     {
         player = Obj_GetPlayerObject();
         (*gMapEventInterface)->savePoint((int)&player->anim.localPosX, player->anim.rotX, 0, getCurMapLayer());
         clearBit = 0;
-        {
-            struct SeqByte136
-            {
-                u8 b80 : 1, b40 : 1, b20 : 1, b10 : 1, b08 : 1, b04 : 1, b02 : 1, b01 : 1;
-            };
-            ((struct SeqByte136*)&((ObjSeqState*)seq)->flags136[0])->b04 = clearBit;
-        }
+        ((ObjSeqState*)seq)->flags136.mapEvent = clearBit;
     }
 
     ((ObjSeqState*)seq)->runState = 0;
@@ -2569,14 +2563,14 @@ int objSeqExecCmd06(GameObject* obj, GameObject* sourceObj, u8* seq, int cmd, s8
         break;
     case 33:
         ((ObjSeqState*)seq)->flags = ((ObjSeqState*)seq)->flags | 0x400;
-        ((SeqByte136*)&((ObjSeqState*)seq)->flags136[0])->modelSlot = cmdArg;
+        ((ObjSeqState*)seq)->flags136.modelSlot = cmdArg;
         break;
     case 34:
         ((ObjSeqState*)seq)->flags = ((ObjSeqState*)seq)->flags & ~0x400;
-        ((SeqByte136*)&((ObjSeqState*)seq)->flags136[0])->modelSlot = 0;
+        ((ObjSeqState*)seq)->flags136.modelSlot = 0;
         break;
     case 35:
-        ((SeqByte136*)&((ObjSeqState*)seq)->flags136[0])->mapEvent = 1;
+        ((ObjSeqState*)seq)->flags136.mapEvent = 1;
         break;
     case 36:
         (*gMapEventInterface)->savePoint(0, 0, 1, getCurMapLayer());
@@ -3426,31 +3420,31 @@ int objSeqFindLabel(u8* seq, int label)
     int commandIndex;
     u32 packed;
     int currentLabel;
-    u8* command;
+    ObjSeqCommand* command;
 
     currentLabel = 0;
     commandIndex = 0;
     commandCount = ((ObjSeqState*)seq)->cmdCount;
     while (commandIndex < commandCount)
     {
-        command = ((ObjSeqState*)seq)->cmds + commandIndex * 4;
-        if ((s8)command[0] == 0)
+        command = (ObjSeqCommand*)(((ObjSeqState*)seq)->cmds + commandIndex * 4);
+        if ((s8)((u8*)command)[0] == 0)
         {
-            currentLabel = ((ObjSeqCommand*)command)->param;
+            currentLabel = command->param;
         }
-        else if ((s8)command[0] == 0xb)
+        else if ((s8)((u8*)command)[0] == 0xb)
         {
-            if (((ObjSeqCommand*)command)->param > 0)
+            if (command->param > 0)
             {
-                packed = *(u32*)(command + 4);
+                packed = *(u32*)((u8*)command + 4);
                 if ((int)(packed & 0x3f) == 9 && (int)(packed >> 16) == label)
                 {
                     return currentLabel;
                 }
-                commandIndex += ((ObjSeqCommand*)command)->param;
+                commandIndex += command->param;
             }
         }
-        currentLabel += command[1];
+        currentLabel += ((u8*)command)[1];
         commandIndex++;
     }
     return -1;
@@ -3460,23 +3454,23 @@ int objSeqFindConditional(u8* seq, GameObject* seqState)
 {
     int currentLabel;
     int commandIndex;
-    u8* command;
+    ObjSeqCommand* command;
     u32 packed;
 
     currentLabel = -1;
     commandIndex = 0;
     while (commandIndex < ((ObjSeqState*)seq)->cmdCount)
     {
-        command = ((ObjSeqState*)seq)->cmds + commandIndex * 4;
-        if ((s8)command[0] == 0)
+        command = (ObjSeqCommand*)(((ObjSeqState*)seq)->cmds + commandIndex * 4);
+        if ((s8)((u8*)command)[0] == 0)
         {
-            currentLabel = ((ObjSeqCommand*)command)->param;
+            currentLabel = command->param;
         }
-        else if ((s8)command[0] == 0xb)
+        else if ((s8)((u8*)command)[0] == 0xb)
         {
-            if (((ObjSeqCommand*)command)->param > 0)
+            if (command->param > 0)
             {
-                packed = *(u32*)(command + 4);
+                packed = *(u32*)((u8*)command + 4);
                 if ((int)(packed & 0x3f) == 4 &&
                     ObjSeq_EvaluateCondition((packed >> 6) & 0x3ff, seq, seqState->anim.placementDataAddress) != 0)
                 {
@@ -3487,15 +3481,15 @@ int objSeqFindConditional(u8* seq, GameObject* seqState)
                     }
                     return currentLabel;
                 }
-                commandIndex += ((ObjSeqCommand*)command)->param;
+                commandIndex += command->param;
             }
         }
-        currentLabel += command[1];
+        currentLabel += ((u8*)command)[1];
         commandIndex++;
     }
     return -1;
 }
-void objCallSeqFn(GameObject* obj, GameObject* sourceObj, u8* seq, int action)
+void objCallSeqFn(GameObject* obj, GameObject* sourceObj, ObjSeqState* seq, int action)
 {
     int callbackResult;
     s8 actionSlot;
@@ -3515,36 +3509,36 @@ void objCallSeqFn(GameObject* obj, GameObject* sourceObj, u8* seq, int action)
 
     if (obj->animEventCallback != NULL)
     {
-        callbackResult = (*(int (**)(GameObject*, GameObject*, u8*, int))&obj->animEventCallback)(obj, sourceObj, seq, action);
+        callbackResult = (*(int (**)(GameObject*, GameObject*, ObjSeqState*, int))&obj->animEventCallback)(obj, sourceObj, seq, action);
         if (callbackResult == 4)
         {
             gObjSeqStop = 1;
         }
         else if (callbackResult != 0)
         {
-            actionSlot = ((ObjSeqState*)seq)->slot;
+            actionSlot = seq->slot;
             if (gObjSeqSlotResults[actionSlot] < 2)
             {
                 gObjSeqSlotResults[actionSlot] = callbackResult;
             }
         }
-        ((ObjSeqState*)seq)->eventCount = 0;
-        ((ObjSeqState*)seq)->curEventId = 0;
+        seq->eventCount = 0;
+        seq->curEventId = 0;
     }
     else
     {
-        if ((s8)((ObjSeqState*)seq)->isCameraSeq != 0)
+        if ((s8)seq->isCameraSeq != 0)
         {
-            ((ObjSeqState*)seq)->movementState = 0;
+            seq->movementState = 0;
             return;
         }
 
-        movementState = (s8)((ObjSeqState*)seq)->movementState;
+        movementState = (s8)seq->movementState;
         if (movementState >= 4)
         {
-            if (ObjSeq_TurnToFacePlayer(obj, (ObjSeqState*)seq, 6, 0x1e, 0x50, -1, -1) != 0)
+            if (ObjSeq_TurnToFacePlayer(obj, seq, 6, 0x1e, 0x50, -1, -1) != 0)
             {
-                actionSlot = ((ObjSeqState*)seq)->slot;
+                actionSlot = seq->slot;
                 if (gObjSeqSlotResults[actionSlot] < 2)
                 {
                     gObjSeqSlotResults[actionSlot] = 1;
@@ -3555,29 +3549,29 @@ void objCallSeqFn(GameObject* obj, GameObject* sourceObj, u8* seq, int action)
         {
             if (movementState != 2)
             {
-                ((ObjSeqState*)seq)->posOffsetScale = 1.0f;
-                ((ObjSeqState*)seq)->posOffsetX =
+                seq->posOffsetScale = 1.0f;
+                seq->posOffsetX =
                     obj->anim.localPosX - sourceObj->anim.localPosX;
-                ((ObjSeqState*)seq)->posOffsetY =
+                seq->posOffsetY =
                     obj->anim.localPosY - sourceObj->anim.localPosY;
-                ((ObjSeqState*)seq)->posOffsetZ =
+                seq->posOffsetZ =
                     obj->anim.localPosZ - sourceObj->anim.localPosZ;
-                ((ObjSeqState*)seq)->movementState = 2;
+                seq->movementState = 2;
             }
             if ((s8)sourceModel[0x20] == 1)
             {
-                ((ObjSeqState*)seq)->posOffsetDecay = 0.016666668f;
-                actionSlot = ((ObjSeqState*)seq)->slot;
+                seq->posOffsetDecay = 0.016666668f;
+                actionSlot = seq->slot;
                 if (gObjSeqSlotResults[actionSlot] < 2)
                 {
                     gObjSeqSlotResults[actionSlot] = 1;
                 }
             }
-            ((ObjSeqState*)seq)->posOffsetScale =
-                ((ObjSeqState*)seq)->posOffsetScale - ((ObjSeqState*)seq)->posOffsetDecay * timeDelta;
-            if (((ObjSeqState*)seq)->posOffsetScale <= 0.0f)
+            seq->posOffsetScale =
+                seq->posOffsetScale - seq->posOffsetDecay * timeDelta;
+            if (seq->posOffsetScale <= 0.0f)
             {
-                ((ObjSeqState*)seq)->movementState = 0;
+                seq->movementState = 0;
             }
         }
     }
@@ -3713,11 +3707,11 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
     s8 f;
     u8* seq;
     GameObject* activeObj;
-    u8* cmd;
+    ObjSeqCommand* cmd;
     ObjSeqPlacement* model;
-    u8* animState;
+    ObjAnimState* animState;
     u8* act2;
-    u8* st2;
+    ObjAnimState* st2;
     u8* entry;
     s16* sfxTimerEntry;
     ObjSeqState* sfxState;
@@ -3733,8 +3727,8 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
 
     (void)out;
 
-    cmd = *cmdPtr;
-    f = (s8)flags;
+    cmd = (ObjSeqCommand*)*cmdPtr;
+    f = flags;
     noExec = (s8)(f & 1);
     doUpdate = (s8)(f & 2);
     flag8 = (s8)(f & 8);
@@ -3750,7 +3744,7 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         activeObj = obj;
     }
 
-    opcode = (s8)cmd[0];
+    opcode = (s8)((u8*)cmd)[0];
     switch (opcode)
     {
     case SEQACT_ANIM:
@@ -3758,20 +3752,20 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         {
             break;
         }
-        ((ObjSeqState*)seq)->moveId = (s16)(((ObjSeqCommand*)cmd)->param & 0xfff);
+        ((ObjSeqState*)seq)->moveId = (s16)(cmd->param & 0xfff);
         if (activeObj->anim.classId == 1 && ((ObjSeqState*)seq)->moveId < 4)
         {
             ((ObjSeqState*)seq)->moveId += 0x531;
         }
-        ((ObjSeqState*)seq)->moveBlendParam = (((ObjSeqCommand*)cmd)->param >> 8) & 0xf0;
+        ((ObjSeqState*)seq)->moveBlendParam = (cmd->param >> 8) & 0xf0;
         if (action == NULL)
         {
             break;
         }
-        animState = (u8*)((ObjAnimBank*)action)->currentState;
+        animState = ((ObjAnimBank*)action)->currentState;
         if (activeObj->anim.currentMove == ((ObjSeqState*)seq)->moveId)
         {
-            if ((s8)((ObjAnimState*)animState)->frameType != 0)
+            if ((s8)animState->frameType != 0)
             {
                 restart = 0;
             }
@@ -3800,8 +3794,8 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         {
             break;
         }
-        ((ObjAnimState*)animState)->framePhase =
-            activeObj->anim.currentMoveProgress * ((ObjAnimState*)animState)->frameLength;
+        animState->framePhase =
+            activeObj->anim.currentMoveProgress * animState->frameLength;
         if (((ObjSeqState*)seq)->trackRunLength[10] != 0)
         {
             sub = ((ObjSeqState*)seq)->curFrame - 1;
@@ -3815,17 +3809,17 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         if (activeObj->anim.classId == 1)
         {
             act2 = ObjSeq_GetActiveModel(activeObj);
-            animState = (u8*)((ObjAnimBank*)act2)->currentState;
-            ((ObjAnimState*)animState)->lastBlendMoveIndex = -1;
-            ((ObjAnimState*)animState)->eventState = 0;
-            ((ObjAnimState*)animState)->prevEventState = 0;
-            st2 = (u8*)((ObjAnimBank*)act2)->activeState;
+            animState = ((ObjAnimBank*)act2)->currentState;
+            animState->lastBlendMoveIndex = -1;
+            animState->eventState = 0;
+            animState->prevEventState = 0;
+            st2 = ((ObjAnimBank*)act2)->activeState;
             if (st2 != NULL)
             {
-                ((ObjAnimState*)st2)->lastBlendMoveIndex = -1;
-                ((ObjAnimState*)st2)->eventCountdown = 0;
-                ((ObjAnimState*)st2)->eventState = 0;
-                ((ObjAnimState*)st2)->prevEventState = 0;
+                st2->lastBlendMoveIndex = -1;
+                st2->eventCountdown = 0;
+                st2->eventState = 0;
+                st2->prevEventState = 0;
             }
         }
         ((ObjSeqState*)seq)->fade = 1.0f;
@@ -3860,15 +3854,15 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         activeObj->anim.activeMove = -1;
         break;
     case SEQACT_CONDITION:
-        if (doUpdate != 0 && ((ObjSeqCommand*)cmd)->param > 0 && gObjSeqPendingCmd0BCount < 0x14)
+        if (doUpdate != 0 && cmd->param > 0 && gObjSeqPendingCmd0BCount < 0x14)
         {
-            *(u8**)((entry = base + gObjSeqPendingCmd0BCount * 8) + 0x2b34) = cmd + 4;
+            *(u8**)((entry = base + gObjSeqPendingCmd0BCount * 8) + 0x2b34) = (u8*)cmd + 4;
             *(s16*)(entry + 0x2b3a) = ((ObjSeqState*)seq)->curFrame;
-            reps = ((ObjSeqCommand*)cmd)->param;
+            reps = cmd->param;
             gObjSeqPendingCmd0BCount = gObjSeqPendingCmd0BCount + 1;
             *(s16*)(entry + 0x2b38) = reps;
         }
-        ((ObjSeqState*)seq)->cmdCursor += ((ObjSeqCommand*)cmd)->param;
+        ((ObjSeqState*)seq)->cmdCursor += cmd->param;
         break;
     case SEQACT_VTXANIM:
         if (flag8 != 0)
@@ -3887,8 +3881,8 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         {
             break;
         }
-        blend = (f32)(int)((((ObjSeqCommand*)cmd)->param >> 8) & 0xff);
-        if (0.0f != blend)
+        blend = (f32)(int)((cmd->param >> 8) & 0xff);
+        if (blend != 0.0f)
         {
             t = 1.0f / blend;
         }
@@ -3896,7 +3890,7 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         {
             t = 1.0f;
         }
-        sub = ((ObjSeqCommand*)cmd)->param & 0xff;
+        sub = cmd->param & 0xff;
         if (sub < 0xf)
         {
             ObjModel_SetBlendChannelTargets((ObjModel*)action, 2, ((ObjModel*)action)->blendChannels[2].morphTargetB, sub - 1,
@@ -3913,14 +3907,14 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         {
             break;
         }
-        (*gGameUIInterface)->showNpcDialogue(((ObjSeqCommand*)cmd)->param, 0x14, 0x8c, 0);
+        (*gGameUIInterface)->showNpcDialogue(cmd->param, 0x14, 0x8c, 0);
         break;
     case SEQACT_ENVFX:
         if (noExec != 0)
         {
             break;
         }
-        if (((((ObjSeqCommand*)cmd)->param >> 12) & 0xf) == 8)
+        if (((cmd->param >> 12) & 0xf) == 8)
         {
             break;
         }
@@ -3928,7 +3922,7 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         {
             entry = base + gObjSeqDeferredCmdCount * 8;
             *(GameObject**)(entry + 0x3ca4) = activeObj;
-            *(s8*)((int)entry + 0x3caa) = (s8)((((ObjSeqCommand*)cmd)->param >> 12) & 0xf);
+            *(s8*)((int)entry + 0x3caa) = (s8)((cmd->param >> 12) & 0xf);
             if (*(s8*)((int)entry + 0x3caa) == 0xb || *(s8*)((int)entry + 0x3caa) == 0xc)
             {
                 u8* entry2;
@@ -3938,7 +3932,7 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
             }
             else
             {
-                val = (s16)(((ObjSeqCommand*)cmd)->param & 0xfff);
+                val = (s16)(cmd->param & 0xfff);
                 gObjSeqDeferredCmdCount++;
                 *(s16*)(entry + 0x3ca8) = val;
             }
@@ -3955,15 +3949,15 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
 
     if ((s8)gObjSeqSkippingToEnd != 0 || (s8)lbl_803DD111 != 0)
     {
-        if ((s8)cmd[0] == 0xd)
+        if ((s8)((u8*)cmd)[0] == 0xd)
         {
-            switch ((((ObjSeqCommand*)cmd)->param >> 12) & 0xf)
+            switch ((cmd->param >> 12) & 0xf)
             {
             case 2:
-                getEnvfxActVoid(activeObj, activeObj, ((ObjSeqCommand*)cmd)->param & 0xfff, 0);
+                getEnvfxActVoid(activeObj, activeObj, cmd->param & 0xfff, 0);
                 break;
             case 6:
-                warpToMap(((ObjSeqCommand*)cmd)->param & 0xfff, 0);
+                warpToMap(cmd->param & 0xfff, 0);
                 break;
             case 5:
                 break;
@@ -3972,7 +3966,7 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         return 0;
     }
 
-    switch ((s8)cmd[0])
+    switch ((s8)((u8*)cmd)[0])
     {
     case SEQACT_SFX:
         if (flag8 != 0)
@@ -3987,24 +3981,24 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         {
             break;
         }
-        if (((((ObjSeqCommand*)cmd)->param >> 12) & 0xf) != 0xf)
+        if (((cmd->param >> 12) & 0xf) != 0xf)
         {
-            Sfx_PlayFromObject(obj, (u16)(((ObjSeqCommand*)cmd)->param & 0xfff));
+            Sfx_PlayFromObject(obj, (u16)(cmd->param & 0xfff));
         }
         else
         {
-            Sfx_PlayFromObject(obj, (u16)(((ObjSeqCommand*)cmd)->param & 0xfff));
+            Sfx_PlayFromObject(obj, (u16)(cmd->param & 0xfff));
             ((ObjSeqState*)seq)->sfxTimer[3] = -1;
-            ((ObjSeqState*)seq)->sfxId[3] = (s16)(((ObjSeqCommand*)cmd)->param & 0xfff);
+            ((ObjSeqState*)seq)->sfxId[3] = (s16)(cmd->param & 0xfff);
         }
         break;
     case SEQACT_ENVFX:
-        switch ((((ObjSeqCommand*)cmd)->param >> 12) & 0xf)
+        switch ((cmd->param >> 12) & 0xf)
         {
         case 0:
             if (((base + (s8)((ObjSeqState*)seq)->slot)[0x3538] & 0x20) != 0)
             {
-                val = (((ObjSeqCommand*)cmd)->param & 0xfff) + 1;
+                val = (cmd->param & 0xfff) + 1;
                 if (val == 0xd9 || val == 0x92)
                 {
                     Music_Trigger(val, 1);
@@ -4012,14 +4006,14 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
             }
             break;
         case 2:
-            getEnvfxActVoid(activeObj, activeObj, ((ObjSeqCommand*)cmd)->param & 0xfff, 0);
+            getEnvfxActVoid(activeObj, activeObj, cmd->param & 0xfff, 0);
             break;
         case 6:
             if (flag8 != 0)
             {
                 break;
             }
-            warpToMap(((ObjSeqCommand*)cmd)->param & 0xfff, 0);
+            warpToMap(cmd->param & 0xfff, 0);
             break;
         case 7:
             if (flag8 != 0)
@@ -4032,7 +4026,7 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
             {
                 break;
             }
-            ((ObjSeqState*)seq)->texId5 = (u8)(((ObjSeqCommand*)cmd)->param & 0xfff);
+            ((ObjSeqState*)seq)->texId5 = (u8)(cmd->param & 0xfff);
             ((ObjSeqState*)seq)->texId4 = ((ObjSeqState*)seq)->texId5;
             break;
         case 0xe:
@@ -4040,14 +4034,14 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
             {
                 break;
             }
-            ((ObjSeqState*)seq)->texId5 = (u8)(((ObjSeqCommand*)cmd)->param & 0xfff);
+            ((ObjSeqState*)seq)->texId5 = (u8)(cmd->param & 0xfff);
             break;
         case 0xf:
             if (flag8 != 0)
             {
                 break;
             }
-            ((ObjSeqState*)seq)->texId4 = (u8)(((ObjSeqCommand*)cmd)->param & 0xfff);
+            ((ObjSeqState*)seq)->texId4 = (u8)(cmd->param & 0xfff);
             break;
         }
         break;
@@ -4064,7 +4058,7 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         {
             break;
         }
-        if (((((ObjSeqCommand*)cmd)->param >> 12) & 0xf) != 0xf)
+        if (((cmd->param >> 12) & 0xf) != 0xf)
         {
             minRot = 0x7fff;
             slot = 0;
@@ -4086,11 +4080,11 @@ int ObjSeq_ExecuteActionCommand(GameObject* obj, u8* action, u8** cmdPtr, s8 fla
         {
             Sfx_RemoveLoopedObjectSound((u32)obj, (u16)((ObjSeqState*)seq)->sfxId[slot]);
         }
-        cmd[1] = cmd[5];
-        cmd[4] = 0x63;
+        ((u8*)cmd)[1] = ((u8*)cmd)[5];
+        ((u8*)cmd)[4] = 0x63;
         *sfxTimerEntry = ((ObjSeqCommand*)cmd)[1].param;
         sfxState = (ObjSeqState*)seq;
-        sfxState->sfxId[slot] = (s16)(((ObjSeqCommand*)cmd)->param & 0xfff);
+        sfxState->sfxId[slot] = (s16)(cmd->param & 0xfff);
         Sfx_AddLoopedObjectSound((u32)obj, (u16)sfxState->sfxId[slot]);
         break;
     }
@@ -4140,7 +4134,7 @@ void ObjSeq_SetupInitialPlaybackState(GameObject* obj, GameObject** seqObj, u8* 
     obj->anim.rotX += ((ObjSeqState*)seq)->heading;
     if (*seqObj != obj && (s8)gObjSeqFnDispatched == 0)
     {
-        objCallSeqFn(*seqObj, obj, seq, ((u8*)(historyBase + 0x3c4c))[(s8)((ObjSeqState*)seq)->slot]);
+        objCallSeqFn(*seqObj, obj, (ObjSeqState*)seq, ((u8*)(historyBase + 0x3c4c))[(s8)((ObjSeqState*)seq)->slot]);
     }
 
     ObjSeq_ApplyLinkedObjectTransform(obj, *seqObj, seq);
@@ -4252,7 +4246,7 @@ void* ObjSeq_ToggleCommand3Target(GameObject* obj, u8* seq, ObjSeqPlacement* pla
 void ObjSeq_RefreshActionCursor(void* obj, void* seqFile, u8* seq)
 {
     int actionIndex;
-    u8* command;
+    ObjSeqCommand* command;
     u8 opcode;
     int stop;
 
@@ -4268,13 +4262,13 @@ void ObjSeq_RefreshActionCursor(void* obj, void* seqFile, u8* seq)
     while (stop == 0 && ((ObjSeqState*)seq)->cmdCursor < ((ObjSeqState*)seq)->cmdCount)
     {
         actionIndex = ((ObjSeqState*)seq)->cmdCursor;
-        command = ((ObjSeqState*)seq)->cmds + actionIndex * 4;
-        opcode = command[0];
+        command = (ObjSeqCommand*)(((ObjSeqState*)seq)->cmds + actionIndex * 4);
+        opcode = ((u8*)command)[0];
         if ((s8)opcode == 0)
         {
-            if (((ObjSeqState*)seq)->curFrame >= ((ObjSeqCommand*)command)->param)
+            if (((ObjSeqState*)seq)->curFrame >= command->param)
             {
-                ((ObjSeqState*)seq)->retriggerFrame = ((ObjSeqCommand*)command)->param;
+                ((ObjSeqState*)seq)->retriggerFrame = command->param;
                 ((ObjSeqState*)seq)->cmdCursor++;
             }
             else
@@ -4282,12 +4276,12 @@ void ObjSeq_RefreshActionCursor(void* obj, void* seqFile, u8* seq)
                 stop = 1;
             }
         }
-        else if ((s8)opcode == 0xb && ((ObjSeqCommand*)command)->param > 0)
+        else if ((s8)opcode == 0xb && command->param > 0)
         {
             if (((ObjSeqState*)seq)->curFrame >= ((ObjSeqState*)seq)->retriggerFrame)
             {
-                ((ObjSeqState*)seq)->retriggerFrame += command[1];
-                ((ObjSeqState*)seq)->cmdCursor = (s16)(((ObjSeqState*)seq)->cmdCursor + (((ObjSeqCommand*)command)->param + 1));
+                ((ObjSeqState*)seq)->retriggerFrame += ((u8*)command)[1];
+                ((ObjSeqState*)seq)->cmdCursor = (s16)(((ObjSeqState*)seq)->cmdCursor + (command->param + 1));
             }
             else
             {
@@ -4296,9 +4290,9 @@ void ObjSeq_RefreshActionCursor(void* obj, void* seqFile, u8* seq)
         }
         else if (((ObjSeqState*)seq)->curFrame >= ((ObjSeqState*)seq)->retriggerFrame)
         {
-            if ((s8)command[0] != 0xf)
+            if ((s8)((u8*)command)[0] != 0xf)
             {
-                ((ObjSeqState*)seq)->retriggerFrame += command[1];
+                ((ObjSeqState*)seq)->retriggerFrame += ((u8*)command)[1];
             }
             ((ObjSeqState*)seq)->cmdCursor++;
         }
@@ -4318,7 +4312,7 @@ void ObjSeq_RebuildCurveStateToFrame(GameObject* obj, GameObject* seqObj, u8* se
     } pos;
     f32* posp;
     int out[3];
-    u8* cmd;
+    ObjSeqCommand* cmd;
     f32 speed;
     ObjSeqPlacement* model;
     u8* action;
@@ -4366,8 +4360,8 @@ void ObjSeq_RebuildCurveStateToFrame(GameObject* obj, GameObject* seqObj, u8* se
     i = 0;
     while (i < state->cmdCount && state->curFrame <= targetFrame)
     {
-        cmd = state->cmds + i * 4;
-        opcode = cmd[0];
+        cmd = (ObjSeqCommand*)(state->cmds + i * 4);
+        opcode = ((u8*)cmd)[0];
         switch ((s8)opcode)
         {
         case 3:
@@ -4376,21 +4370,21 @@ void ObjSeq_RebuildCurveStateToFrame(GameObject* obj, GameObject* seqObj, u8* se
             seqObj->anim.activeMove = -1;
             break;
         case 0:
-            state->curFrame = ((ObjSeqCommand*)cmd)->param;
+            state->curFrame = cmd->param;
             break;
         case 9:
             found = state->curFrame;
             break;
         case 11:
-            if (((ObjSeqCommand*)cmd)->param > 0)
+            if (cmd->param > 0)
             {
-                i += ((ObjSeqCommand*)cmd)->param;
+                i += cmd->param;
             }
             break;
         default:
             if ((s8)opcode != 0xf)
             {
-                state->curFrame += cmd[1];
+                state->curFrame += ((u8*)cmd)[1];
             }
             break;
         }
@@ -4408,7 +4402,7 @@ void ObjSeq_RebuildCurveStateToFrame(GameObject* obj, GameObject* seqObj, u8* se
     }
 
     posp = &pos.x;
-    entry = (ObjSeqBgCmd*)lbl_8039944C;
+    entry = lbl_8039944C;
     while (state->curFrame < targetFrame)
     {
         state->curFrame += 1;
@@ -4497,13 +4491,13 @@ void ObjSeq_RebuildCurveStateToFrame(GameObject* obj, GameObject* seqObj, u8* se
         gObjSeqPendingCmd0BCount = 0;
         while (stop == 0 && state->cmdCursor < state->cmdCount)
         {
-            cmd = state->cmds + state->cmdCursor * 4;
-            opcode = (s8)cmd[0];
+            cmd = (ObjSeqCommand*)(state->cmds + state->cmdCursor * 4);
+            opcode = (s8)((u8*)cmd)[0];
             if (opcode == 0)
             {
-                if (state->curFrame >= ((ObjSeqCommand*)cmd)->param)
+                if (state->curFrame >= cmd->param)
                 {
-                    state->retriggerFrame = ((ObjSeqCommand*)cmd)->param;
+                    state->retriggerFrame = cmd->param;
                     state->cmdCursor += 1;
                 }
                 else
@@ -4517,10 +4511,10 @@ void ObjSeq_RebuildCurveStateToFrame(GameObject* obj, GameObject* seqObj, u8* se
                 {
                     if (opcode != 0xf)
                     {
-                        state->retriggerFrame += cmd[1];
+                        state->retriggerFrame += ((u8*)cmd)[1];
                     }
                     state->cmdCursor += 1;
-                    if (ObjSeq_ExecuteActionCommand(obj, action, &cmd, flags, out) != 0)
+                    if (ObjSeq_ExecuteActionCommand(obj, (u8*)action, (u8**)&cmd, flags, out) != 0)
                     {
                         return;
                     }
@@ -4894,7 +4888,7 @@ void ObjSeq_ApplyFrameCurves(GameObject* obj, GameObject* seqObj, u8* seq, int f
 
                 if ((((ObjSeqState*)seq)->flags & 0x400) != 0)
                 {
-                    slots = ((SeqByte136*)&((ObjSeqState*)seq)->flags136[0])->modelSlot;
+                    slots = ((ObjSeqState*)seq)->flags136.modelSlot;
                     modelIds = objGetLookAtJointKeys();
                     if (slots == 0)
                     {
@@ -5152,12 +5146,12 @@ int ObjSeq_update(GameObject* obj, f32 t)
 {
     u8* base = gObjSeqRuntimeBuffer;
     GameObject* activeObj;
-    u8* action;
-    u8* cmd;
+    ObjAnimBank* action;
+    ObjSeqCommand* cmd;
     f32 moveProgress;
     f32 groundY;
     ObjSeqPlacement* placement;
-    u8* seq;
+    ObjSeqState* seq;
     ObjSeqState* state;
     u8* p;
     ObjSeqBgCmd* entry;
@@ -5220,7 +5214,7 @@ int ObjSeq_update(GameObject* obj, f32 t)
     {
         state->curFrame = ((s16*)(base + 0x3694))[slot];
         state->prevFrame = state->curFrame;
-        ObjSeq_RefreshActionCursor(obj, activeObj, seq);
+        ObjSeq_RefreshActionCursor(obj, activeObj, (u8*)seq);
     }
     else
     {
@@ -5228,7 +5222,7 @@ int ObjSeq_update(GameObject* obj, f32 t)
     }
 
     i = 3;
-    p = seq + 6;
+    p = (u8*)seq + 6;
     while (p -= 2, i-- != 0)
     {
         if (*(s16*)(p + 0x30) > 0)
@@ -5273,7 +5267,7 @@ int ObjSeq_update(GameObject* obj, f32 t)
                 state->curFrame = 0;
             }
             state->prevFrame = (s16)(state->curFrame - 1);
-            ObjSeq_RebuildCurveStateToFrame(obj, activeObj, seq, 1);
+            ObjSeq_RebuildCurveStateToFrame(obj, activeObj, (u8*)seq, 1);
         }
 
         gObjSeqFnDispatched = 0;
@@ -5310,7 +5304,7 @@ int ObjSeq_update(GameObject* obj, f32 t)
 
         if (state->runState == 2)
         {
-            ObjSeq_SetupInitialPlaybackState(obj, &activeObj, seq, placement, (void**)&action);
+            ObjSeq_SetupInitialPlaybackState(obj, &activeObj, (u8*)seq, placement, (void**)&action);
             return 0;
         }
 
@@ -5325,7 +5319,7 @@ int ObjSeq_update(GameObject* obj, f32 t)
         }
         else if ((s8)((u8*)(base + 0x3c4c))[state->slot] == 3)
         {
-            found = objSeqFindConditional(seq, obj);
+            found = objSeqFindConditional((u8*)seq, obj);
             if (found > -1)
             {
                 ((u8*)(base + 0x3cf4))[state->slot] = 1;
@@ -5348,7 +5342,7 @@ int ObjSeq_update(GameObject* obj, f32 t)
 
         if (state->pendingConditionId != 0)
         {
-            if (ObjSeq_EvaluateCondition(state->pendingConditionId - 1, seq, (int)placement) == 0)
+            if (ObjSeq_EvaluateCondition(state->pendingConditionId - 1, (u8*)seq, (int)placement) == 0)
             {
                 state->pendingConditionId = 0;
             }
@@ -5365,7 +5359,7 @@ int ObjSeq_update(GameObject* obj, f32 t)
             state->curFrame = state->endFrame;
         }
         targetFrame = state->curFrame;
-        ObjSeq_ApplyFrameCurves(obj, activeObj, seq, targetFrame);
+        ObjSeq_ApplyFrameCurves(obj, activeObj, (u8*)seq, targetFrame);
         obj->anim.localPosX = obj->anim.localPosX + state->posStepX;
         obj->anim.localPosY = obj->anim.localPosY + state->posStepY;
         obj->anim.localPosZ = obj->anim.localPosZ + state->posStepZ;
@@ -5373,13 +5367,13 @@ int ObjSeq_update(GameObject* obj, f32 t)
         obj->anim.rotY += state->rotStepY;
         obj->anim.rotX += state->rotStepX;
 
-        action = ObjSeq_GetActiveModel(activeObj);
+        action = (ObjAnimBank*)ObjSeq_GetActiveModel(activeObj);
         gObjSeqPendingCmd0BCount = 0;
         if (action != NULL)
         {
-            val = ObjSeq_SampleTrackCurve(seq, 13, state->prevFrame);
+            val = ObjSeq_SampleTrackCurve((u8*)seq, 13, state->prevFrame);
             prevX = placement->baseX + val;
-            val = ObjSeq_SampleTrackCurve(seq, 11, state->prevFrame);
+            val = ObjSeq_SampleTrackCurve((u8*)seq, 11, state->prevFrame);
             prevZ = placement->baseZ + val;
         }
         state->curFrame = state->prevFrame;
@@ -5387,9 +5381,9 @@ int ObjSeq_update(GameObject* obj, f32 t)
         while (state->curFrame < targetFrame)
         {
             state->curFrame += 1;
-            val = ObjSeq_SampleTrackCurve(seq, 13, state->curFrame);
+            val = ObjSeq_SampleTrackCurve((u8*)seq, 13, state->curFrame);
             px = placement->baseX + val;
-            val = ObjSeq_SampleTrackCurve(seq, 11, state->curFrame);
+            val = ObjSeq_SampleTrackCurve((u8*)seq, 11, state->curFrame);
             pz = placement->baseZ + val;
 
             if (state->curFrame > 0 && (state->flags & 4) != 0)
@@ -5403,14 +5397,14 @@ int ObjSeq_update(GameObject* obj, f32 t)
                                                      &moveProgress) == 0)
                     {
                         i = state->curFrame - 1;
-                        val = ObjSeq_SampleTrackCurve(seq, 9, i);
+                        val = ObjSeq_SampleTrackCurve((u8*)seq, 9, i);
                         moveProgress = 0.0004f * val;
                     }
                 }
                 else
                 {
                     i = state->curFrame - 1;
-                    val = ObjSeq_SampleTrackCurve(seq, 9, i);
+                    val = ObjSeq_SampleTrackCurve((u8*)seq, 9, i);
                     moveProgress = 0.0004f * val;
                 }
 
@@ -5423,7 +5417,7 @@ int ObjSeq_update(GameObject* obj, f32 t)
                         if (state->trackRunLength[10] != 0)
                         {
                             i = state->curFrame - 1;
-                            rate = ObjSeq_SampleTrackCurve(seq, 10, i);
+                            rate = ObjSeq_SampleTrackCurve((u8*)seq, 10, i);
                         }
                         else
                         {
@@ -5465,13 +5459,13 @@ int ObjSeq_update(GameObject* obj, f32 t)
             stop = 0;
             while (stop == 0 && state->cmdCursor < state->cmdCount)
             {
-                cmd = state->cmds + state->cmdCursor * 4;
-                opcode = (s8)cmd[0];
+                cmd = (ObjSeqCommand*)(state->cmds + state->cmdCursor * 4);
+                opcode = (s8)((u8*)cmd)[0];
                 if (opcode == 0)
                 {
-                    if (state->curFrame >= ((ObjSeqCommand*)cmd)->param)
+                    if (state->curFrame >= cmd->param)
                     {
-                        state->retriggerFrame = ((ObjSeqCommand*)cmd)->param;
+                        state->retriggerFrame = cmd->param;
                         state->cmdCursor += 1;
                     }
                     else
@@ -5485,10 +5479,10 @@ int ObjSeq_update(GameObject* obj, f32 t)
                     {
                         if (opcode != 0xf)
                         {
-                            state->retriggerFrame += cmd[1];
+                            state->retriggerFrame += ((u8*)cmd)[1];
                         }
                         state->cmdCursor += 1;
-                        if (ObjSeq_ExecuteActionCommand(obj, action, &cmd, 0, 0) != 0)
+                        if (ObjSeq_ExecuteActionCommand(obj, (u8*)action, (u8**)&cmd, 0, 0) != 0)
                         {
                             targetFrame = state->curFrame;
                         }
@@ -5498,7 +5492,7 @@ int ObjSeq_update(GameObject* obj, f32 t)
                             {
                                 t = obj;
                             }
-                            action = ObjSeq_GetActiveModel(t);
+                            action = (ObjAnimBank*)ObjSeq_GetActiveModel(t);
                             activeObj = t;
                         }
                     }
@@ -5521,7 +5515,7 @@ int ObjSeq_update(GameObject* obj, f32 t)
             if (pressed != 0)
             {
                 ((u8*)(base + 0x3cf4))[state->slot] = 1;
-                state->curFrame = ((ObjSeqState*)seq)->conditionFrames[k];
+                state->curFrame = seq->conditionFrames[k];
                 state->prevFrame = state->curFrame;
                 state->conditionOpcodes[0] = 0;
                 state->conditionOpcodes[1] = 0;
@@ -5561,9 +5555,9 @@ int ObjSeq_update(GameObject* obj, f32 t)
         state->curEventId = 0;
         if (action != NULL && (state->flags & 4) != 0)
         {
-            ((ObjAnimBank*)action)->currentState->eventCountdown = (u16)(int)(16384.0f * state->fade);
+            action->currentState->eventCountdown = (u16)(int)(16384.0f * state->fade);
         }
-        ObjSeq_UpdateCurvePosition(obj, seq);
+        ObjSeq_UpdateCurvePosition(obj, (u8*)seq);
         if ((s8)state->groundSnapEnabled == 1 &&
             trackGetNearestGroundOffset(obj, obj->anim.localPosX, obj->anim.localPosY,
                                  obj->anim.localPosZ, &groundY, 0) == 0)
@@ -5573,14 +5567,14 @@ int ObjSeq_update(GameObject* obj, f32 t)
                 ((obj->anim.localPosY - groundY) - placement->groundOffset);
         }
         obj->anim.rotX += state->heading;
-        ObjSeq_ApplyLinkedObjectTransform(obj, activeObj, seq);
-        objSeqDoBgCmds0D(seq, activeObj, 0);
+        ObjSeq_ApplyLinkedObjectTransform(obj, activeObj, (u8*)seq);
+        objSeqDoBgCmds0D((u8*)seq, activeObj, 0);
 
         for (k = 0; k < gObjSeqPendingCmd0BCount; k++)
         {
             entry = (ObjSeqBgCmd*)(base + k * 8);
             entry = (ObjSeqBgCmd*)((int)entry + 0x2b34);
-            if (seqDoSubCmd0B(obj, activeObj, seq, (u8*)entry->object, entry->flags, entry->param, 0, 0) != 0)
+            if (seqDoSubCmd0B(obj, activeObj, (u8*)seq, (u8*)entry->object, entry->flags, entry->param, 0, 0) != 0)
             {
                 k = gObjSeqPendingCmd0BCount;
             }
@@ -5590,7 +5584,7 @@ int ObjSeq_update(GameObject* obj, f32 t)
                 {
                     t = obj;
                 }
-                action = ObjSeq_GetActiveModel(t);
+                action = (ObjAnimBank*)ObjSeq_GetActiveModel(t);
                 activeObj = t;
             }
         }
@@ -5609,9 +5603,9 @@ int ObjSeq_update(GameObject* obj, f32 t)
                 {
                     t = obj;
                 }
-                action = ObjSeq_GetActiveModel(t);
+                action = (ObjAnimBank*)ObjSeq_GetActiveModel(t);
                 activeObj = t;
-                animatedObjFreeAndSavePlayerPos(obj, t, seq);
+                animatedObjFreeAndSavePlayerPos(obj, t, (u8*)seq);
             }
         }
         else
@@ -5718,9 +5712,9 @@ void ObjSeq_addBgCmd(int index, int xrot, int yrot)
     shortIndex = index;
     shortYrot = yrot;
     shortXrot = xrot;
-    gObjSeqBgCmds[count * 3] = shortIndex;
-    gObjSeqBgCmds[count * 3 + 2] = shortYrot;
-    gObjSeqBgCmds[gObjSeqBgCmdCount++ * 3 + 1] = shortXrot;
+    gObjSeqBgCmds[count].index = shortIndex;
+    gObjSeqBgCmds[count].yrot = shortYrot;
+    gObjSeqBgCmds[gObjSeqBgCmdCount++].xrot = shortXrot;
 }
 u8 gObjSeqRuntimeBuffer[0x2A80];
 int gObjSeqPreemptList[40][2];
@@ -5735,8 +5729,8 @@ s16 objSeqXrotValues[0x156];
 u8 objSeqXrotChanged[0x58];
 u8 lbl_80399E50[0x58];
 f32 objSeqOverridePos[0x259];
-u8 lbl_8039944C[0xA0];
-s16 gObjSeqBgCmds[0x5A];
+ObjSeqBgCmd lbl_8039944C[0xA0 / sizeof(ObjSeqBgCmd)];
+ObjSeqBgRotationCmd gObjSeqBgCmds[0x1E];
 
 
 #define OBJSEQ_SLOT_COUNT 85

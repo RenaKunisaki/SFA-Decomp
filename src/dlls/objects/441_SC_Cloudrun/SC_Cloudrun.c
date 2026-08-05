@@ -5,9 +5,11 @@
 
 #include "dlls/objects/441_SC_Cloudrun.h"
 
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/dll_0004_dummy04.h"
 #include "main/dll/dll_02B1_cmbsrc.h"
+#include "main/obj_link.h"
 #include "main/obj_list.h"
 #include "main/object_render.h"
 #include "sys/objects.h"
@@ -77,9 +79,9 @@ void sc_cloudrunnera_update(GameObject* obj) {
     }
     objectIndex = (*gObjectTriggerInterface)->update((u8*)obj, (f32)(u32)framesThisStepUnclamped);
     if (objectIndex != 0 && obj->seqIndex == SC_CLOUDRUNNER_A_SEQUENCE_PENDING) {
-        int sequenceOwner;
+        GameObject* sequenceOwner;
         register s32 slot = sequence->slot;
-        int* objects;
+        GameObject** objects;
         int participantLimit;
         int sequenceSlotCopy;
         int participantCount;
@@ -91,24 +93,24 @@ void sc_cloudrunnera_update(GameObject* obj) {
         sequenceSlotCopy = slot;
         participantLimit = objectCount;
         for (; objectIndex < participantLimit; objectIndex++) {
-            int otherObject = *objects;
-            s16 sequenceIndex = ((GameObject*)otherObject)->seqIndex;
+            GameObject* otherObject = (GameObject*)*objects;
+            s16 sequenceIndex = otherObject->seqIndex;
 
             if (sequenceIndex == slot) {
                 sequenceOwner = otherObject;
             }
             if (sequenceIndex == SC_CLOUDRUNNER_A_SEQUENCE_PENDING &&
-                ((GameObject*)otherObject)->anim.classId == SC_CLOUDRUNNER_A_SEQUENCE_CLASS_ID) {
-                sequence = *(ObjSeqState**)&((GameObject*)otherObject)->extra;
+                otherObject->anim.classId == SC_CLOUDRUNNER_A_SEQUENCE_CLASS_ID) {
+                sequence = *(ObjSeqState**)&otherObject->extra;
                 if (sequenceSlotCopy == sequence->slot) {
                     participantCount++;
                 }
             }
             objects++;
         }
-        if (participantCount <= 1 && (u32)sequenceOwner != 0 &&
-            ((GameObject*)sequenceOwner)->seqIndex != SC_CLOUDRUNNER_A_SEQUENCE_NONE) {
-            ((GameObject*)sequenceOwner)->seqIndex = SC_CLOUDRUNNER_A_SEQUENCE_NONE;
+        if (participantCount <= 1 && sequenceOwner != NULL &&
+            sequenceOwner->seqIndex != SC_CLOUDRUNNER_A_SEQUENCE_NONE) {
+            sequenceOwner->seqIndex = SC_CLOUDRUNNER_A_SEQUENCE_NONE;
             (*gObjectTriggerInterface)->endSequence(sequenceSlotCopy);
         }
         obj->seqIndex = SC_CLOUDRUNNER_A_SEQUENCE_NONE;

@@ -9,11 +9,15 @@
 #include "dlls/objects/440_SC_totempol.h"
 #include "dlls/objects/443_SC_totembon.h"
 #include "dolphin/pad.h"
+#include "main/audio/sfx_keep_alive_api.h"
 #include "main/audio/sfx_object_volume_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/camera_interface.h"
+#include "main/dll/tricky_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
+#include "main/gamebits_api.h"
 #include "main/mapEventTypes.h"
 #include "main/model_engine.h"
 #include "main/obj_list.h"
@@ -262,7 +266,7 @@ int sc_totemstrength_animEventCallback(GameObject* obj, int unused, ObjSeqState*
             } else {
                 state->playerSfxTimer = (f32)randomGetRange(0x78, 0xf0);
             }
-            Sfx_PlayFromObject(player, SFXTRIG_literun116_var);
+            Sfx_PlayFromObject(playerObject, SFXTRIG_literun116_var);
         }
         state->platformSfxTimer = state->platformSfxTimer - timeDelta;
         if (state->platformSfxTimer < 0.0f) {

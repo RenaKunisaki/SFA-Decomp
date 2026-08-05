@@ -11,10 +11,14 @@
  * decrements it and runs object sequence 0. render tints the model per phase;
  * MoonSeedPlantingSpot_cutOrHarvest is the trigger-volume callback that cuts/harvests.
  */
+#include "main/audio/sfx_play_api.h"
 #include "main/dll/dll_00C4_tricky.h"
 #include "main/dll/partfx_interface.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
 #include "main/object_render.h"
+#include "main/objhits.h"
+#include "main/objprint_api.h"
+#include "main/objtype.h"
 #include "sys/objects/lifecycle.h"
 #include "main/vecmath.h"
 #include "main/game_ui_interface.h"
@@ -247,7 +251,7 @@ void MoonSeedPlantingSpot_update(GameObject* obj)
                 {
                     ex->burstTimer = 45.0f;
                     ex->flags |= MSPLANTING_FLAG_BURST;
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_pk_moonseed_rattle);
+                    Sfx_PlayFromObject(obj, SFXTRIG_pk_moonseed_rattle);
                 }
                 else
                 {

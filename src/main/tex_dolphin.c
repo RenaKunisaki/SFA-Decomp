@@ -68,6 +68,7 @@
 #include "main/objseq_api.h"
 #include "main/dll/FRONT/n_options.h"
 #include "main/lightmap_render_queue_api.h"
+#include "main/objprint_dolphin_internal.h"
 
 u8 gCloudLayerOverlayColor[4] = {0x20, 0x20, 0x20, 0};
 int gTexShaderAmbColor = -1;
@@ -79,10 +80,9 @@ extern const f32 lbl_803DEBFC;
 extern const f32 gTexIndMtxScale;
 extern f32 lbl_803DEC28;
 extern int lbl_803DEBB0;
-extern int gTexIndMtxTable[];
-extern u8 gLightmapDrawQueue[];
+extern IndTexMtx23 gTexIndMtxTable;
 #define FRUSTUM_PLANE_COUNT 5
-u8 gRcpPendingWarpDest[0x10];
+WarpDestination gRcpPendingWarpDest;
 extern GXColor gTexShaderFogColor;
 extern GXColor gTexLightmapFogColor;
 
@@ -99,6 +99,8 @@ typedef struct TexShadowRow
     int unk8;
     int type;
 } TexShadowRow;
+
+extern TexShadowRow gLightmapDrawQueue[];
 
 static u8 mapBlockBounds_HasCornerPastDepthThreshold(MapBlockBoundsRec* bounds, float* xform)
 {
@@ -174,18 +176,13 @@ static u8 mapBlockBounds_HasCornerPastDepthThreshold(MapBlockBoundsRec* bounds, 
     }
 }
 
-typedef struct IndMtxCopy
-{
-    int w[6];
-} IndMtxCopy;
-
 #define SHADER_FLAGS(s) ((s)->flags)
 
 void mapBlockRender_drawLightmapIndirectPasses(struct MapBlockData* blockData, Shader* shader,
                                                ModelRenderInstrsState* state, f32 (*viewMtx)[4])
 {
     f32 passMtx[3][4];
-    float indMtx[2][3];
+    IndTexMtx23 indMtx;
     int noiseFrameCount;
     Texture** noiseTextures;
     MapBlockBoundsRec* bounds[1];
@@ -194,7 +191,6 @@ void mapBlockRender_drawLightmapIndirectPasses(struct MapBlockData* blockData, S
     u32 bits;
     int bitPos;
     u32 flags;
-    IndMtxCopy* mtxSrc;
     int i;
 
     bitPos = state->bit;
@@ -233,16 +229,15 @@ void mapBlockRender_drawLightmapIndirectPasses(struct MapBlockData* blockData, S
         PSMTXTrans(passMtx, 0.0f, 0.4f * (f32)(i + 1), 0.0f);
         PSMTXConcat(viewMtx, passMtx, passMtx);
         GXLoadPosMtxImm(passMtx, GX_PNMTX0);
-        mtxSrc = (IndMtxCopy*)((u8*)gTexIndMtxTable);
-        *(IndMtxCopy*)indMtx = *mtxSrc;
+        indMtx = gTexIndMtxTable;
         getNewShadowNoiseTextureFrames(&noiseTextures, &noiseFrameCount);
         selectTexture(noiseTextures[(u8)i], 1);
         {
             f32 s = (f32)((i & 0xff) + 1) * gTexIndMtxScale;
-            indMtx[0][0] = s * lbl_803DEBFC;
+            indMtx.m[0][0] = s * lbl_803DEBFC;
         }
-        indMtx[1][1] = indMtx[0][0];
-        GXSetIndTexMtx(GX_ITM_0, (const float (*)[3])indMtx, gTexIndMtxScaleExp);
+        indMtx.m[1][1] = indMtx.m[0][0];
+        GXSetIndTexMtx(GX_ITM_0, indMtx.m, gTexIndMtxScaleExp);
         GXCallDisplayList(bounds[0]->dlist, bounds[0]->dlistSize);
     }
 }
@@ -506,7 +501,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Sha
     int byteBase;
 
     {
-        u8* texGlobals;
+        TexShadowRow* texGlobals;
         MapBlockBoundsRec* bounds[1];
 
         texGlobals = gLightmapDrawQueue;
@@ -525,7 +520,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Sha
         {
             return;
         }
-        if (mapBlockBounds_ComputeAndTestPlanes(bounds[0], block, (FrustumPlane*)(texGlobals + 0x987c),
+        if (mapBlockBounds_ComputeAndTestPlanes(bounds[0], block, (FrustumPlane*)((u8*)texGlobals + 0x987c),
                                                 FRUSTUM_PLANE_COUNT, &minX, &minY, &minZ, &maxX, &maxY, &maxZ) == 0)
         {
             return;
@@ -539,8 +534,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Sha
 
                 lightmapQueueShadowRow(bounds[0], block, bounds[0]->selector);
                 shadowType = 5;
-                *(int*)((u8*)&((TexShadowRow*)texGlobals)->type +
-                         gLightmapDrawQueueCount * sizeof(TexShadowRow)) = shadowType;
+                texGlobals[gLightmapDrawQueueCount].type = shadowType;
                 gLightmapDrawQueueCount = gLightmapDrawQueueCount + 1;
             }
             else if (((flags & 0x40000000) != 0) || ((flags & 0x2000) != 0))
@@ -549,8 +543,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Sha
 
                 lightmapQueueShadowRow(bounds[0], block, bounds[0]->selector);
                 shadowType = 4;
-                *(int*)((u8*)&((TexShadowRow*)texGlobals)->type +
-                         gLightmapDrawQueueCount * sizeof(TexShadowRow)) = shadowType;
+                texGlobals[gLightmapDrawQueueCount].type = shadowType;
                 gLightmapDrawQueueCount = gLightmapDrawQueueCount + 1;
             }
         }
@@ -638,7 +631,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Sha
                         else
                         {
                             u8 mirrorVisible = mapBlockBounds_ComputeAndTestPlanes(
-                                bounds[0], block, (FrustumPlane*)(texGlobals + 0x9818), FRUSTUM_PLANE_COUNT, &minX, &minY,
+                                bounds[0], block, (FrustumPlane*)((u8*)texGlobals + 0x9818), FRUSTUM_PLANE_COUNT, &minX, &minY,
                                 &minZ, &maxX, &maxY, &maxZ);
                             if ((mirrorVisible != 0 && (u8)visArg != 0) || (mirrorVisible == 0 && (u8)visArg == 0))
                             {
@@ -674,8 +667,7 @@ void mapBlockRender_callList(u8 passSelect, u32 visArg, MapBlockData* block, Sha
 
                 lightmapQueueShadowRow(bounds[0], block, 0x17);
                 shadowType = 6;
-                *(int*)((u8*)&((TexShadowRow*)texGlobals)->type +
-                         gLightmapDrawQueueCount * sizeof(TexShadowRow)) = shadowType;
+                texGlobals[gLightmapDrawQueueCount].type = shadowType;
                 gLightmapDrawQueueCount = gLightmapDrawQueueCount + 1;
             }
         }
@@ -713,7 +705,7 @@ static void mapBlockRender_setupShaderTextures(Shader* shader, int mode)
                 overrideEntry = overrides;
                 for (remain = 0x50; remain != 0 || (texture = layerTextureId, 0); remain--)
                 {
-                    if (((0 < overrideEntry->refCount) &&
+                    if (((overrideEntry->refCount > 0) &&
                          ((u32)overrideEntry->textureId == layerTextureId)) &&
                         ((int)overrideType == overrideEntry->type))
                     {
@@ -760,7 +752,7 @@ static void mapBlockRender_setupShaderTextures(Shader* shader, int mode)
                 overrideEntry = overrides;
                 for (remain = 0x50; remain != 0 || (texture = layerTextureId, 0); remain--)
                 {
-                    if (((0 < overrideEntry->refCount) &&
+                    if (((overrideEntry->refCount > 0) &&
                          ((u32)overrideEntry->textureId == layerTextureId)) &&
                         ((int)overrideType == overrideEntry->type))
                     {
@@ -812,7 +804,7 @@ static void mapBlockRender_setupShaderTextures(Shader* shader, int mode)
                         overrideEntry = overrides;
                         for (remain = 0x50; remain != 0 || (texture = layerTextureId, 0); remain--)
                         {
-                            if (((0 < overrideEntry->refCount) &&
+                            if (((overrideEntry->refCount > 0) &&
                                  ((u32)overrideEntry->textureId == layerTextureId)) &&
                                 ((int)overrideType == overrideEntry->type))
                             {
@@ -831,9 +823,9 @@ static void mapBlockRender_setupShaderTextures(Shader* shader, int mode)
                     if (layer->scrollMtx != 0xff)
                     {
                         int scrollOffset = (u32)layer->scrollMtx * 0x10;
-                        tx = *(float*)((u8*)gMapTextureScrolls + scrollOffset) / 1048576.0f;
+                        tx = ((MapTextureScroll*)((u8*)gMapTextureScrolls + scrollOffset))->offsetX / 1048576.0f;
                         PSMTXTrans(texMatrix, tx,
-                                   *(float*)((u8*)gMapTextureScrolls + scrollOffset + 4) / 1048576.0f,
+                                   ((MapTextureScroll*)((u8*)gMapTextureScrolls + scrollOffset))->offsetY / 1048576.0f,
                                    0.0f);
                         texMtx = texMatrix;
                     }
@@ -1271,8 +1263,8 @@ void renderGlows(void)
             occ = 0;
             for (i = 0; i < 5; i++)
             {
-                int d = depthReadRequestPoll(sx + gSunOcclusionSampleOffsets[i * 2],
-                                             sy + gSunOcclusionSampleOffsets[i * 2 + 1], (void*)i);
+                int d = depthReadRequestPoll(sx + gSunOcclusionSampleOffsets[i].x,
+                                             sy + gSunOcclusionSampleOffsets[i].y, (void*)i);
                 if (sz <= d && pauseMenuGetState() == 0)
                     occ++;
             }
@@ -1285,7 +1277,7 @@ void renderGlows(void)
             sunDot = sunDot * gSunFlareFade;
             if (sunDot > 0.0f)
             {
-                PSMTXConcat((MtxPtr)viewMtx, sunMtx, sunMtx);
+                PSMTXConcat(viewMtx, sunMtx, sunMtx);
                 GXLoadPosMtxImm((const f32 (*)[4])sunMtx, GX_PNMTX0);
                 GXSetCurrentMtx(GX_PNMTX0);
                 selectTexture((Texture*)((int)skyGetSkyTexture()), 0);
@@ -1464,14 +1456,14 @@ int mapBlockCountTrianglesByType(MapBlockData* block, int type)
     return total;
 }
 
-void* mapBlockGetPolygon(int* obj, int idx)
+void* mapBlockGetPolygon(MapBlockData* obj, int idx)
 {
-    return (char*)((int**)obj)[0x4c / 4] + idx * 8;
+    return (char*)obj->gcPolygons + idx * 8;
 }
 
-void* mapBlockGetPolygonGroup(void* obj, int idx)
+MapTriGroup* mapBlockGetPolygonGroup(MapBlockData* obj, int idx)
 {
-    return (char*)((int**)obj)[0x50 / 4] + idx * 0x14;
+    return (MapTriGroup*)obj->polygonGroups + idx;
 }
 
 MapBlockBoundsRec* mapBlockGetDisplayListBounds(MapBlockData* obj, int idx)
@@ -1683,7 +1675,7 @@ void mapClearBlockEdgeFlags(void)
     }
 }
 
-int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int vertsOut, int unusedTriangleCount,
+int collectShadowTrackTriangles(GameObject* obj, int triBuf, void* planesOut, int vertsOut, int unusedTriangleCount,
                                 f32 offX, f32 offZ, int unusedRenderMode, int kindSelector)
 {
     int j;
@@ -1702,11 +1694,11 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
     for (; descBytes < end; descBytes += 0x18)
     {
         u32 id = *(u32*)descBytes;
-        if (id == 0 || id == *(u32*)&((GameObject*)obj)->anim.parent)
+        if (id == 0 || id == *(u32*)&obj->anim.parent)
         {
-            f32 fx = ((GameObject*)obj)->anim.localPosX;
-            f32 fz = ((GameObject*)obj)->anim.localPosZ;
-            f32* outA;
+            f32 fx = obj->anim.localPosX;
+            f32 fz = obj->anim.localPosZ;
+            TrackShadowTriangle* outA;
 
             if (id == 0)
             {
@@ -1714,30 +1706,30 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
                 fz -= offZ;
             }
             j = (s16)((TrackBlockDescriptor*)descBytes)->firstTriangle;
-            outA = (f32*)((char*)planesOut + outOff);
+            outA = (TrackShadowTriangle*)((char*)planesOut + outOff);
             while (j < (s16)((TrackBlockDescriptor*)descBytes)[1].firstTriangle && grp < 0x4b0 && total < 0xe10)
             {
                 if (triangleFlag & ((TrackTriangle*)triBuf + j)->flags)
                 {
                     ((TrackP6Entry*)vertsOut)->relX0 = __OSs16tof32(&((TrackTriangle*)triBuf + j)->vx[0]) - fx;
                     ((TrackP6Entry*)vertsOut)->relY0 =
-                        __OSs16tof32(&((TrackTriangle*)triBuf + j)->vy[0]) - ((GameObject*)obj)->anim.localPosY;
+                        __OSs16tof32(&((TrackTriangle*)triBuf + j)->vy[0]) - obj->anim.localPosY;
                     ((TrackP6Entry*)vertsOut)->relZ0 = __OSs16tof32(&((TrackTriangle*)triBuf + j)->vz[0]) - fz;
                     ((TrackP6Entry*)vertsOut)->relX1 = __OSs16tof32(&((TrackTriangle*)triBuf + j)->vx[1]) - fx;
                     ((TrackP6Entry*)vertsOut)->relY1 =
-                        __OSs16tof32(&((TrackTriangle*)triBuf + j)->vy[1]) - ((GameObject*)obj)->anim.localPosY;
+                        __OSs16tof32(&((TrackTriangle*)triBuf + j)->vy[1]) - obj->anim.localPosY;
                     ((TrackP6Entry*)vertsOut)->relZ1 = __OSs16tof32(&((TrackTriangle*)triBuf + j)->vz[1]) - fz;
                     ((TrackP6Entry*)vertsOut)->relX2 = __OSs16tof32(&((TrackTriangle*)triBuf + j)->vx[2]) - fx;
                     ((TrackP6Entry*)vertsOut)->relY2 =
-                        __OSs16tof32(&((TrackTriangle*)triBuf + j)->vy[2]) - ((GameObject*)obj)->anim.localPosY;
+                        __OSs16tof32(&((TrackTriangle*)triBuf + j)->vy[2]) - obj->anim.localPosY;
                     ((TrackP6Entry*)vertsOut)->relZ2 = __OSs16tof32(&((TrackTriangle*)triBuf + j)->vz[2]) - fz;
-                    outA[0] = ((TrackTriangle*)triBuf + j)->planeN[0];
-                    outA[1] = ((TrackTriangle*)triBuf + j)->planeN[1];
-                    outA[2] = ((TrackTriangle*)triBuf + j)->planeN[2];
-                    *(u8*)((char*)outA + 0x10) = ((TrackTriangle*)triBuf + j)->flags;
+                    outA->normal.x = ((TrackTriangle*)triBuf + j)->planeN[0];
+                    outA->normal.y = ((TrackTriangle*)triBuf + j)->planeN[1];
+                    outA->normal.z = ((TrackTriangle*)triBuf + j)->planeN[2];
+                    outA->flags = ((TrackTriangle*)triBuf + j)->flags;
                     vertsOut += 0x24;
                     total += 3;
-                    outA = (f32*)((char*)outA + 0x14);
+                    outA++;
                     grp += 1;
                     outOff += 0x14;
                 }
@@ -1749,24 +1741,24 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
             f32* m = *(f32**)((char*)descBytes + 0xc);
             f32* p6start;
             int totalStart;
-            f32* outA;
+            TrackShadowTriangle* outA;
 
             lm[0] = m[0];
             lm[1] = m[4];
             lm[2] = m[8];
-            lm[3] = m[12] - ((GameObject*)obj)->anim.localPosX;
+            lm[3] = m[12] - obj->anim.localPosX;
             lm[4] = m[1];
             lm[5] = m[5];
             lm[6] = m[9];
-            lm[7] = m[13] - ((GameObject*)obj)->anim.localPosY;
+            lm[7] = m[13] - obj->anim.localPosY;
             lm[8] = m[2];
             lm[9] = m[6];
             lm[10] = m[10];
-            lm[11] = m[14] - ((GameObject*)obj)->anim.localPosZ;
+            lm[11] = m[14] - obj->anim.localPosZ;
             p6start = (f32*)vertsOut;
             totalStart = total;
             j = (s16)((TrackBlockDescriptor*)descBytes)->firstTriangle;
-            outA = (f32*)((char*)planesOut + outOff);
+            outA = (TrackShadowTriangle*)((char*)planesOut + outOff);
             while (j < (s16)((TrackBlockDescriptor*)descBytes)[1].firstTriangle && grp < 0x4b0 && total < 0xe10)
             {
                 if (triangleFlag & ((TrackTriangle*)triBuf + j)->flags)
@@ -1780,13 +1772,13 @@ int collectShadowTrackTriangles(int* obj, int triBuf, void* planesOut, int verts
                     ((TrackP6Entry*)vertsOut)->relX2 = __OSs16tof32(&((TrackTriangle*)triBuf + j)->vx[2]);
                     ((TrackP6Entry*)vertsOut)->relY2 = __OSs16tof32(&((TrackTriangle*)triBuf + j)->vy[2]);
                     ((TrackP6Entry*)vertsOut)->relZ2 = __OSs16tof32(&((TrackTriangle*)triBuf + j)->vz[2]);
-                    outA[0] = ((TrackTriangle*)triBuf + j)->planeN[0];
-                    outA[1] = ((TrackTriangle*)triBuf + j)->planeN[1];
-                    outA[2] = ((TrackTriangle*)triBuf + j)->planeN[2];
-                    *(u8*)((char*)outA + 0x10) = ((TrackTriangle*)triBuf + j)->flags;
+                    outA->normal.x = ((TrackTriangle*)triBuf + j)->planeN[0];
+                    outA->normal.y = ((TrackTriangle*)triBuf + j)->planeN[1];
+                    outA->normal.z = ((TrackTriangle*)triBuf + j)->planeN[2];
+                    outA->flags = ((TrackTriangle*)triBuf + j)->flags;
                     vertsOut += 0x24;
                     total += 3;
-                    outA = (f32*)((char*)outA + 0x14);
+                    outA++;
                     grp += 1;
                     outOff += 0x14;
                 }

@@ -11,7 +11,9 @@
 #include "main/dll/rom_curve_def.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
+#include "main/objtype.h"
 #include "sys/objects.h"
+#include "sys/objects/lifecycle.h"
 
 #define DIM2_PATH_GENERATOR_FLAG_SPAWN_TOGGLE 0x01
 #define DIM2_PATH_GENERATOR_FLAG_CURVE_BUILT  0x02
@@ -104,13 +106,13 @@ void DIM2PathGenerator_update(GameObject* obj) {
     objects = (int**)objGetAllOfType(DIM2_PATH_GENERATOR_SNOWBALL_GROUP, &count);
     for (objectIndex = 0; objectIndex < count; objectIndex++) {
         if (state->spawnTypes[toggle] == ((GameObject*)objects[objectIndex])->anim.romDefNo) {
-            int* childPlacementData = *(int**)((char*)objects[objectIndex] + 0x4c);
+            Dim2SnowBallPlacement* childPlacementData = *(Dim2SnowBallPlacement**)((char*)objects[objectIndex] + 0x4c);
             int poolIndex;
 
-            ((Dim2SnowBallPlacement*)childPlacementData)->base.posX = state->originX;
-            ((Dim2SnowBallPlacement*)childPlacementData)->base.posY = state->originY;
-            ((Dim2SnowBallPlacement*)childPlacementData)->base.posZ = state->originZ;
-            ((Dim2SnowBallPlacement*)childPlacementData)->base.ident = placement->base.ident;
+            childPlacementData->base.posX = state->originX;
+            childPlacementData->base.posY = state->originY;
+            childPlacementData->base.posZ = state->originZ;
+            childPlacementData->base.ident = placement->base.ident;
             DIM2_SNOW_BALL_INTERFACE(objects[objectIndex])
                 ->init((GameObject*)objects[objectIndex], (Dim2SnowBallPlacement*)childPlacementData, 1);
             objFreeObjectType((int)objects[objectIndex], DIM2_PATH_GENERATOR_SNOWBALL_GROUP);

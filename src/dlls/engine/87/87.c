@@ -37,7 +37,7 @@ void CameraModeTitle_moveCam(u8 newPose) {
         return;
     }
     if (gCameraModeTitlePreviousPose == CAMERA_MODE_TITLE_REST_POSE) {
-        if (1.0f != gCameraModeTitleProgress) {
+        if (gCameraModeTitleProgress != 1.0f) {
             SaveData* save = getSaveFileStruct();
             Movie_SetVolumeFade(0, 1000);
             audioSetVolumes(save->musicVolume, 1000, 1, 0, 0);

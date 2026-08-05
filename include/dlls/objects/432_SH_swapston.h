@@ -15,6 +15,14 @@ typedef struct WarpStonePlacement {
     u8 rotXByte;
 } WarpStonePlacement;
 
+typedef struct WarpStoneFlags {
+    u8 b7 : 1;
+    u8 lookAtPlayer : 1;
+    u8 b5 : 1;
+    u8 sfxFired : 1;
+    u8 lo : 4;
+} WarpStoneFlags;
+
 typedef struct WarpStoneState {
     GameObject* child;
     f32 dustEffectTimer;
@@ -32,7 +40,7 @@ typedef struct WarpStoneState {
     u8 pad6C[0x8];
     u8 headAimState[0xD4 - 0x74];
     u8 dustEffectFlags;
-    u8 behaviorFlags;
+    WarpStoneFlags behaviorFlags;
     u8 unknownD6[0xD8 - 0xD6];
 } WarpStoneState;
 

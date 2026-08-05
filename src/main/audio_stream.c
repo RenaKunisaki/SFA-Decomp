@@ -324,18 +324,18 @@ int AudioStream_Play(int id, void (*preparedCallback)(void))
         }
 
         gAudioStreamEndPos = (f32)(u32)s->lengthRaw / 100.0f;
-        if (0.0f == gAudioStreamEndPos)
+        if (gAudioStreamEndPos == 0.0f)
         {
             gAudioStreamEndPos = gAudioStreamEndPosInfinite;
         }
 
-        gAudioStreamMusicFadeFlagA = fadeTbl[(s->fadeBits >> 6) & 3] == 0 ? 0 : 1;
-        gAudioStreamMusicFadeFlagB = fadeTbl[(s->fadeBits >> 4) & 3] == 0 ? 0 : 1;
-        if (((u32)s->fadeBits >> 2) & 3)
+        gAudioStreamMusicFadeFlagA = fadeTbl[s->fadeModeA] == 0 ? 0 : 1;
+        gAudioStreamMusicFadeFlagB = fadeTbl[s->fadeModeB] == 0 ? 0 : 1;
+        if (s->stopObjectSounds)
         {
             Sfx_StopAllObjectSounds();
         }
-        gAudioActiveChannelMask = (((u32)s->volBits >> 7) & 1) ? 4 : 0;
+        gAudioActiveChannelMask = s->fullVolume ? 4 : 0;
 
         stopped = 0;
         while (gAudioStreamPlaying != 0)
@@ -360,7 +360,7 @@ int AudioStream_Play(int id, void (*preparedCallback)(void))
             }
         }
 
-        vol = (((s->volBits & 0x7F) + 1) * gAudioStreamDefaultVolume) >> 7;
+        vol = ((s->volume + 1) * gAudioStreamDefaultVolume) >> 7;
         gAudioStreamVolumeLeft = vol;
         gAudioStreamVolumeRight = vol;
         AISetStreamVolLeft(vol);
@@ -472,7 +472,7 @@ void Sfx_UpdateLoopedObjectSounds(void)
     u16 index;
     s16 i;
     int index2;
-    u32 obj;
+    GameObject* obj;
     int removeSound;
     u16 sz;
 
@@ -487,8 +487,8 @@ void Sfx_UpdateLoopedObjectSounds(void)
         {
             removeSound = 1;
         }
-        obj = *op;
-        if (((obj != 0) && ((((GameObject*)obj)->objectFlags & SFX_LOOPED_OBJECT_STOP_FLAG) != 0)) || removeSound)
+        obj = (GameObject*)*op;
+        if (((obj != 0) && ((obj->objectFlags & SFX_LOOPED_OBJECT_STOP_FLAG) != 0)) || removeSound)
         {
             Sfx_StopFromObject((GameObject*)obj, *ip);
             gSfxLoopedObjectSoundCount--;

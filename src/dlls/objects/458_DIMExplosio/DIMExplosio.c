@@ -80,7 +80,7 @@ f32 gExplosionFalloffScaleRed;
 f32 gExplosionFalloffScaleGreen;
 f32 gExplosionFalloffScaleBlue;
 u8 gExplosionUpdateTick;
-extern f32 gExplosionSpreadDirs[];
+extern Vec gExplosionSpreadDirs[];
 const DimExplosionTextureTable gExplosionTexTable = {{0x5e1, 0x5f7, 0x5f8, 0x5f9}};
 
 volatile PPCWGPipe GXWGFifo : (0xCC008000);
@@ -94,7 +94,7 @@ static const f32 sExplosionFadeOutExponent[1] = {25.0f};
 static const f32 sExplosionSpawnDelay[1] = {8.0f};
 
 void explosion_spawnFlame(GameObject* obj, u8 generation, f32 speed, f32 x, f32 y, f32 z) {
-    s16* placement = (obj)->anim.placementData;
+    DimExplosionPlacement* placement = (DimExplosionPlacement*)(obj)->anim.placementData;
     DimExplosionState* state = (obj)->extra;
     DimExplosionFlame* flames = (DimExplosionFlame*)state->flames;
     int flameIndex = state->flameCount++;
@@ -117,7 +117,7 @@ void explosion_spawnFlame(GameObject* obj, u8 generation, f32 speed, f32 x, f32 
         flames[flameIndex].lifetime = clampedLifetime;
     }
     if (flames[flameIndex].generation < 1) {
-        s8 sfxKind = ((DimExplosionPlacement*)placement)->sfxKind;
+        s8 sfxKind = placement->sfxKind;
         if (sfxKind != 0) {
             if (sfxKind == 2) {
                 Sfx_PlayFromObject((int)obj, SFXTRIG_wp_sexpl2_c_4bf);
@@ -239,21 +239,21 @@ void explosion_render(GameObject* obj, int renderArg2, int renderArg3, int rende
     Mtx m3;
     Mtx m2;
     Mtx m1;
-    int state;
-    int model;
+    DimExplosionState* state;
+    ObjModel* model;
     int i;
     int cursor;
     colA = sExplosionQuadColorA[0];
     colB = lbl_803E8468;
-    state = (int)obj->extra;
-    model = (int)Obj_GetActiveModel(obj);
-    cursor = state;
+    state = obj->extra;
+    model = Obj_GetActiveModel(obj);
+    cursor = (int)state;
     if (visible != 0) {
         GXClearVtxDesc();
         GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
         GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
         GXSetCurrentMtx(GX_PNMTX0);
-        for (i = 0, cursor = state; i < ((DimExplosionState*)state)->flameCount; i++) {
+        for (i = 0, cursor = (int)state; i < state->flameCount; i++) {
             if (((DimExplosionFlame*)cursor)->active != 0) {
                 void** tex;
                 int k;
@@ -286,8 +286,8 @@ void explosion_render(GameObject* obj, int renderArg2, int renderArg3, int rende
                 ((u8*)&colB)[3] = cv;
                 explosion_computeColor((f32)((DimExplosionFlame*)cursor)->age,
                                        (f32)((DimExplosionFlame*)cursor)->lifetime,
-                                       ((DimExplosionState*)state)->modelKind, (u8*)&colA);
-                tex = (void**)((int*)gExplosionTextures)[((DimExplosionState*)state)->modelKind];
+                                       state->modelKind, (u8*)&colA);
+                tex = (void**)((int*)gExplosionTextures)[state->modelKind];
                 for (k = 0; k < ((DimExplosionFlame*)cursor)->textureVariant; k++) {
                     tex = (void**)*tex;
                 }
@@ -321,14 +321,14 @@ void explosion_render(GameObject* obj, int renderArg2, int renderArg3, int rende
             }
             cursor += sizeof(DimExplosionFlame);
         }
-        if (((DimExplosionState*)state)->frameCounter < ((DimExplosionState*)state)->lifeFrames &&
-            ((DimExplosionState*)state)->rayCount != 0) {
-            for (i = 0; i < ((DimExplosionState*)state)->rayCount; i++) {
-                obj->anim.rotY = (s16)((DimExplosionState*)state)->rays[i].yaw;
-                obj->anim.rotX = (s16)((DimExplosionState*)state)->rays[i].pitch;
+        if (state->frameCounter < state->lifeFrames &&
+            state->rayCount != 0) {
+            for (i = 0; i < state->rayCount; i++) {
+                obj->anim.rotY = (s16)state->rays[i].yaw;
+                obj->anim.rotX = (s16)state->rays[i].pitch;
                 objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, visible);
-                if (i < ((DimExplosionState*)state)->rayCount - 1) {
-                    ((ObjModel*)model)->bufferFlags &= ~8;
+                if (i < state->rayCount - 1) {
+                    model->bufferFlags &= ~8;
                 }
             }
         }
@@ -377,13 +377,13 @@ void explosion_update(GameObject* obj) {
                     if ((f32)((DimExplosionFlame*)cursor)->age / (f32)((DimExplosionFlame*)cursor)->lifetime < 0.2f) {
                         ((DimExplosionFlame*)cursor)->spawnTimer -= framesThisStep;
                         if (((DimExplosionFlame*)cursor)->spawnTimer <= 0) {
-                            int spawnState;
+                            DimExplosionState* spawnState;
                             u8 parentGeneration;
                             f32 parentSpeed;
                             f32 childSpeed;
                             parentGeneration = ((DimExplosionFlame*)cursor)->generation;
                             parentSpeed = ((DimExplosionFlame*)cursor)->speed;
-                            spawnState = (int)obj->extra;
+                            spawnState = obj->extra;
                             vpos.x = ((DimExplosionFlame*)cursor)->scale *
                                       (sExplosionChildOffsetStep[0] * (f32)randomGetRange(-5, 3) +
                                        sExplosionBaseScale[0]);
@@ -399,7 +399,7 @@ void explosion_update(GameObject* obj) {
                             vpos.z += ((DimExplosionFlame*)cursor)->posZ;
                             childSpeed = parentSpeed * (f32)randomGetRange(0xc0, 0x100);
                             childSpeed = childSpeed * sExplosionSpeedScale[0];
-                            if (((DimExplosionState*)spawnState)->flameCount < DIM_EXPLOSION_FLAME_CAPACITY) {
+                            if (spawnState->flameCount < DIM_EXPLOSION_FLAME_CAPACITY) {
                                 explosion_spawnFlame(obj, (u8)(parentGeneration + 1), childSpeed, vpos.x, vpos.y,
                                                      vpos.z);
                             }
@@ -426,9 +426,9 @@ void explosion_update(GameObject* obj) {
             } else {
                 f32 gravity = ((DimExplosionState*)state)->gravity;
                 u32 elapsedFrames = framesThisStep;
-                f32 nextVelocityY = -(gravity * (f32)(u32)elapsedFrames - debris->velocityY);
+                f32 nextVelocityY = -(gravity * (f32)elapsedFrames - debris->velocityY);
                 debris->posY = -(0.5f * (gravity * (f32)(int)(elapsedFrames * elapsedFrames)) -
-                                 (debris->velocityY * (f32)(u32)elapsedFrames + debris->posY));
+                                 (debris->velocityY * (f32)elapsedFrames + debris->posY));
                 debris->velocityY = nextVelocityY;
                 debris->posX += debris->velocityX * (f32)(u32)framesThisStep;
                 debris->posZ += debris->velocityZ * (f32)(u32)framesThisStep;
@@ -549,11 +549,11 @@ void explosion_init(GameObject* obj, DimExplosionPlacement* placementAddress) {
     Mtx mB;
     Mtx mA;
     int cursor;
-    int state = (int)obj->extra;
+    DimExplosionState* state = obj->extra;
     f32 scale;
     int i;
     int debrisCount;
-    ((DimExplosionState*)state)->flameCount = 0;
+    state->flameCount = 0;
     if (placementAddress->scaleParam == 0) {
         scale = 100.0f;
     } else {
@@ -565,28 +565,28 @@ void explosion_init(GameObject* obj, DimExplosionPlacement* placementAddress) {
     ((ExplosionSpawnFlameSpeedFirstFn)explosion_spawnFlame)((int)obj, 0.4f * scale, 0, obj->anim.localPosX,
                                                             obj->anim.localPosY, obj->anim.localPosZ);
     obj->objectFlags |= OBJECT_OBJFLAG_HITDETECT_DISABLED;
-    ((DimExplosionState*)state)->modelKind =
+    state->modelKind =
         placementAddress->configFlags & DIM_EXPLOSION_MODEL_KIND_MASK;
-    Obj_SetActiveModelIndex(obj, ((DimExplosionState*)state)->modelKind);
+    Obj_SetActiveModelIndex(obj, state->modelKind);
     if (placementAddress->configFlags & DIM_EXPLOSION_CONFIG_HAS_GRAVITY) {
-        ((DimExplosionState*)state)->gravity = 0.1f;
+        state->gravity = 0.1f;
     } else {
-        ((DimExplosionState*)state)->gravity = sExplosionZero[0];
+        state->gravity = sExplosionZero[0];
     }
-    ((DimExplosionState*)state)->nearGround = 0;
+    state->nearGround = 0;
     if (trackGetNearestGroundOffset(obj, obj->anim.localPosX, 5.0f + obj->anim.localPosY, obj->anim.localPosZ,
-                             (f32*)(state + offsetof(DimExplosionState, groundY)), 0) == 0) {
-        if (((DimExplosionState*)state)->groundY < 20.0f) {
-            ((DimExplosionState*)state)->nearGround = 1;
+                             (f32*)((u8*)state + offsetof(DimExplosionState, groundY)), 0) == 0) {
+        if (state->groundY < 20.0f) {
+            state->nearGround = 1;
         }
-        ((DimExplosionState*)state)->groundY = obj->anim.localPosY - ((DimExplosionState*)state)->groundY;
+        state->groundY = obj->anim.localPosY - state->groundY;
     } else {
-        ((DimExplosionState*)state)->groundY = obj->anim.localPosY;
+        state->groundY = obj->anim.localPosY;
     }
     if (placementAddress->configFlags & DIM_EXPLOSION_CONFIG_SPAWNS_DEBRIS) {
         debrisCount = (int)((f32)(6.0f * scale) / 100.0f);
-        for (i = 0, cursor = state; i < debrisCount; i++) {
-            if (((DimExplosionState*)state)->nearGround != 0) {
+        for (i = 0, cursor = (int)state; i < debrisCount; i++) {
+            if (state->nearGround != 0) {
                 f32 mag = 2.0f * ((f32)randomGetRange(0x14, 0x28) * 0.01f) + 2.0f;
                 vsp.x = mag;
                 vsp.y = sExplosionZero[0];
@@ -602,9 +602,9 @@ void explosion_init(GameObject* obj, DimExplosionPlacement* placementAddress) {
                 f32 mag = 2.0f * ((f32)randomGetRange(0x14, 0x28) * 0.01f) + 2.0f;
                 u8 spreadDirectionIndex;
                 spreadDirectionIndex = i % 4;
-                vsp.x = mag * gExplosionSpreadDirs[spreadDirectionIndex * 3];
-                vsp.y = mag * gExplosionSpreadDirs[spreadDirectionIndex * 3 + 1];
-                vsp.z = mag * gExplosionSpreadDirs[spreadDirectionIndex * 3 + 2];
+                vsp.x = mag * gExplosionSpreadDirs[spreadDirectionIndex].x;
+                vsp.y = mag * gExplosionSpreadDirs[spreadDirectionIndex].y;
+                vsp.z = mag * gExplosionSpreadDirs[spreadDirectionIndex].z;
                 PSMTXRotRad(
                     mB, 0x7a,
                     (f32)(sExplosionPi[0] * (f64)(((f32)randomGetRange(0, 0x8000) - 16384.0f) / 65535.0f)));
@@ -629,53 +629,53 @@ void explosion_init(GameObject* obj, DimExplosionPlacement* placementAddress) {
             }
             cursor += sizeof(DimExplosionGravityDebris);
         }
-        ((DimExplosionState*)state)->debrisCount = i;
+        state->debrisCount = i;
     } else {
-        ((DimExplosionState*)state)->debrisCount = 0;
+        state->debrisCount = 0;
     }
-    ((DimExplosionState*)state)->light = 0;
+    state->light = 0;
     if (placementAddress->configFlags & DIM_EXPLOSION_CONFIG_HAS_LIGHT) {
-        ((DimExplosionState*)state)->light = objCreateLight(0, 1);
-        if ((void*)((DimExplosionState*)state)->light != NULL) {
-            modelLightStruct_setLightKind(((DimExplosionState*)state)->light, MODEL_LIGHT_KIND_POINT);
-            modelLightStruct_setPosition(((DimExplosionState*)state)->light, obj->anim.worldPosX, obj->anim.worldPosY,
+        state->light = objCreateLight(0, 1);
+        if ((void*)state->light != NULL) {
+            modelLightStruct_setLightKind(state->light, MODEL_LIGHT_KIND_POINT);
+            modelLightStruct_setPosition(state->light, obj->anim.worldPosX, obj->anim.worldPosY,
                                          obj->anim.worldPosZ);
-            modelLightStruct_setAffectsAabbLightSelection((ModelLightStruct*)((DimExplosionState*)state)->light, 1);
-            modelLightStruct_setEnabled(((DimExplosionState*)state)->light, 1, sExplosionZero[0]);
-            modelLightStruct_setDistanceAttenuation(((DimExplosionState*)state)->light, (f32)(1.5f * scale),
+            modelLightStruct_setAffectsAabbLightSelection((ModelLightStruct*)state->light, 1);
+            modelLightStruct_setEnabled(state->light, 1, sExplosionZero[0]);
+            modelLightStruct_setDistanceAttenuation(state->light, (f32)(1.5f * scale),
                                                     (f32)(sExplosionFlickerExponent[0] * scale));
-            modelLightStruct_setDiffuseColor(((DimExplosionState*)state)->light, 0xff, 0xeb, 0xa0, 0xff);
+            modelLightStruct_setDiffuseColor(state->light, 0xff, 0xeb, 0xa0, 0xff);
         }
     }
     obj->anim.alpha = 0xff;
     if (placementAddress->configFlags & DIM_EXPLOSION_CONFIG_HAS_RAYS) {
-        if (((DimExplosionState*)state)->nearGround == 0) {
-            ((DimExplosionState*)state)->rayCount = 2;
-            ((DimExplosionState*)state)->rays[0].yaw = randomGetRange(0, 0x4000);
-            ((DimExplosionState*)state)->rays[0].pitch = randomGetRange(0, 0x8000);
-            ((DimExplosionState*)state)->rays[1].yaw = ((DimExplosionState*)state)->rays[0].yaw + 0x4000;
-            ((DimExplosionState*)state)->rays[1].pitch = ((DimExplosionState*)state)->rays[0].pitch;
+        if (state->nearGround == 0) {
+            state->rayCount = 2;
+            state->rays[0].yaw = randomGetRange(0, 0x4000);
+            state->rays[0].pitch = randomGetRange(0, 0x8000);
+            state->rays[1].yaw = state->rays[0].yaw + 0x4000;
+            state->rays[1].pitch = state->rays[0].pitch;
         } else {
-            ((DimExplosionState*)state)->rayCount = 1;
-            ((DimExplosionState*)state)->rays[0].yaw = 0;
-            ((DimExplosionState*)state)->rays[0].pitch = 0;
+            state->rayCount = 1;
+            state->rays[0].yaw = 0;
+            state->rays[0].pitch = 0;
         }
     } else {
-        ((DimExplosionState*)state)->rayCount = 0;
+        state->rayCount = 0;
     }
-    ((DimExplosionState*)state)->halfLifeFired = 0;
-    ((DimExplosionState*)state)->frameCounter = 0;
-    ((DimExplosionState*)state)->lifeFrames = (int)(sExplosionLifeScale[0] * sqrtf(scale));
+    state->halfLifeFired = 0;
+    state->frameCounter = 0;
+    state->lifeFrames = (int)(sExplosionLifeScale[0] * sqrtf(scale));
     {
-        int clampedLifeFrames = ((DimExplosionState*)state)->lifeFrames;
+        int clampedLifeFrames = state->lifeFrames;
         if (clampedLifeFrames < 0) {
             clampedLifeFrames = 0;
         } else if (clampedLifeFrames > 0x3c) {
             clampedLifeFrames = 0x3c;
         }
-        ((DimExplosionState*)state)->lifeFrames = clampedLifeFrames;
+        state->lifeFrames = clampedLifeFrames;
     }
-    ((DimExplosionState*)state)->scale = scale;
+    state->scale = scale;
     obj->anim.rootMotionScale = sExplosionZero[0];
 }
 
@@ -705,8 +705,8 @@ void explosion_initialise(void) {
     }
 }
 
-f32 gExplosionSpreadDirs[] = {
-    1.0f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, -1.0f, 0.0f, 0.0f, 0.0f, -1.0f, 0.0f,
+Vec gExplosionSpreadDirs[] = {
+    {1.0f, 0.0f, 0.0f}, {0.0f, 1.0f, 0.0f}, {-1.0f, 0.0f, 0.0f}, {0.0f, -1.0f, 0.0f},
 };
 
 ObjectDescriptor gExplosionObjDescriptor = {

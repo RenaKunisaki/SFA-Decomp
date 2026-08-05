@@ -2,6 +2,7 @@
 #define MAIN_DLL_DR_CLOUDRUNNER_STATE_H_
 
 #include "global.h"
+#include "main/byte_flags.h"
 #include "main/dll/baddie_state.h"
 #include "main/dll/curve_walker.h"
 #include "main/dll/dll_002E_moveLib.h"
@@ -40,8 +41,8 @@ typedef struct CloudRunnerState {
     s16 headingAngle; /* 0xbba: yaw; loaded from/stored to anim.rotX, turned toward target by moveInputX */
     s16 pitchAngle;
     s16 rollAngle;
-    u8 flagsBC0; /* ByteFlags */
-    u8 flagsBC1; /* ByteFlags */
+    ByteFlags flagsBC0;
+    ByteFlags flagsBC1;
     u8 padBC2;
     s8 cooldownTimer;
     s8 sequenceIndex;

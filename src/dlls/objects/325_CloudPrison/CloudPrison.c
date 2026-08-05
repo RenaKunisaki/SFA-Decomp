@@ -1,6 +1,7 @@
 #include "dlls/objects/325_CloudPrison.h"
 
 #include "main/dll/rom_curve_interface.h"
+#include "main/obj_message.h"
 #include "main/object_render.h"
 
 #define CLOUD_PRISON_CONTROL_CURVE_ACTION                 8
@@ -74,7 +75,7 @@ void CloudPrisonControl_hitDetect(void) {
 }
 
 void CloudPrisonControl_update(GameObject* obj) {
-    int sender;
+    GameObject* sender;
     int data;
     int message[2];
     int targetIndex;
@@ -97,9 +98,9 @@ void CloudPrisonControl_update(GameObject* obj) {
         messageId = message[0];
         switch (messageId) {
         case CLOUD_PRISON_CONTROL_MESSAGE_REGISTER:
-            if (((GameObject*)sender)->anim.mapEventSlot == obj->anim.mapEventSlot) {
+            if (sender->anim.mapEventSlot == obj->anim.mapEventSlot) {
                 targetFound = 0;
-                targetAddress = sender;
+                targetAddress = (int)sender;
                 targetEntry[0] = gCloudPrisonTargets;
                 targetValue = data;
                 targetCount = gCloudPrisonTargetCount;

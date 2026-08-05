@@ -15,6 +15,7 @@
 #include "main/mapEventTypes.h"
 #include "main/objtexture.h"
 #include "main/object_render.h"
+#include "main/vecmath.h"
 
 #define WCTREXSTATU_CALLBACK_TRIGGER 1
 
@@ -37,7 +38,7 @@ int wctrexstatu_interactCallback(GameObject* obj, int unused, ObjSeqState* animU
     {
         if (animUpdate->eventIds[i] == WCTREXSTATU_CALLBACK_TRIGGER)
         {
-            ObjTextureRuntimeSlot* texture = objFindTexture((GameObject*)obj, 0, 0);
+            ObjTextureRuntimeSlot* texture = objFindTexture(obj, 0, 0);
 
             if (texture != NULL)
             {
@@ -83,7 +84,7 @@ void wctrexstatu_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 visi
 void wctrexstatu_hitDetect(GameObject* obj)
 {
     ObjAnimComponent* objAnim = &obj->anim;
-    GameObject* gameObj = (GameObject*)obj;
+    GameObject* gameObj = obj;
 
     if (gameObj->userData1 != 0 && randomGetRange(0, WCTREXSTATU_PARTFX_CHANCE) == 0)
     {
@@ -127,7 +128,7 @@ void wctrexstatu_init(GameObject* obj, WCTrexStatueSetup* setup, int fromLoad)
 
     if (mainGetBit(setup->raisedBit) != 0)
     {
-        ObjTextureRuntimeSlot* texture = objFindTexture((GameObject*)obj, 0, 0);
+        ObjTextureRuntimeSlot* texture = objFindTexture(obj, 0, 0);
 
         if (texture != NULL)
         {

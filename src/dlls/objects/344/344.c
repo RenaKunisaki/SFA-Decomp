@@ -28,6 +28,7 @@
 #include "main/track_bbox_api.h"
 #include "main/track_dolphin_api.h"
 #include "main/vecmath.h"
+#include "string.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 #include "main/audio/sfx_play_api.h"
@@ -168,27 +169,27 @@ void gunpowderBarrel_launchAtTarget(GameObject* obj, u8 usePlayerStrength) {
 
 void gunpowderBarrel_setPlayerHeldState(GameObject* obj, u8 heldByPlayer) {
     GunpowderBarrelState* state;
-    int objectAddress = (int)obj;
+    GameObject* objectAddress = obj;
     ObjHitsPriorityState* hitState;
-    state = ((GameObject*)objectAddress)->extra;
-    hitState = (ObjHitsPriorityState*)((GameObject*)objectAddress)->anim.hitReactState;
+    state = objectAddress->extra;
+    hitState = (ObjHitsPriorityState*)objectAddress->anim.hitReactState;
     if (heldByPlayer != 0) {
         hitState->lateralResponseWeight = 1;
         hitState->axialResponseWeight = 1;
-        ((GameObject*)objectAddress)->anim.resetHitboxFlags =
-            (u8)(((GameObject*)objectAddress)->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
+        objectAddress->anim.resetHitboxFlags =
+            (u8)(objectAddress->anim.resetHitboxFlags | INTERACT_FLAG_DISABLED);
         state->heldFlags.playerHeld = 1;
         state->motionFlags = state->motionFlags & ~GUNPOWDER_BARREL_MOTION_FLAG_IN_FLIGHT;
         ObjHits_SetFlags((ObjAnimComponent*)objectAddress, OBJHITS_PRIORITY_STATE_IMMOVABLE | 0x80);
         ObjHits_ClearSourceMask((ObjAnimComponent*)objectAddress, 1);
-        ObjHits_EnableObject((GameObject*)objectAddress);
-        ObjHits_SyncObjectPositionIfDirty((GameObject*)objectAddress);
+        ObjHits_EnableObject(objectAddress);
+        ObjHits_SyncObjectPositionIfDirty(objectAddress);
     } else {
-        hitState->lateralResponseWeight = ((GameObject*)objectAddress)->anim.modelInstance->lateralResponseWeight;
-        hitState->axialResponseWeight = ((GameObject*)objectAddress)->anim.modelInstance->axialResponseWeight;
+        hitState->lateralResponseWeight = objectAddress->anim.modelInstance->lateralResponseWeight;
+        hitState->axialResponseWeight = objectAddress->anim.modelInstance->axialResponseWeight;
         state->heldFlags.playerHeld = 0;
-        ((GameObject*)objectAddress)->anim.resetHitboxFlags =
-            (u8)(((GameObject*)objectAddress)->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
+        objectAddress->anim.resetHitboxFlags =
+            (u8)(objectAddress->anim.resetHitboxFlags & ~INTERACT_FLAG_DISABLED);
         ObjHits_ClearFlags((ObjAnimComponent*)objectAddress, OBJHITS_PRIORITY_STATE_IMMOVABLE);
         state->motionFlags = state->motionFlags | GUNPOWDER_BARREL_MOTION_FLAG_SLEEPING;
     }
@@ -288,7 +289,7 @@ void gunpowderBarrel_homeOnTarget(GameObject* obj, s16 rotYModeArg, s16 rotZMode
 
 void gunpowderBarrel_triggerExplosion(GameObject* obj) {
     GunpowderBarrelState* state;
-    int hitObject;
+    GameObject* hitObject;
     int generatorCount;
     u8* tricky;
     int* timerObject;
@@ -509,7 +510,7 @@ void gunpowderBarrel_render(GameObject* obj, int renderArg2, int renderArg3, int
                             s8 visible) {
     GunpowderBarrelState* state;
     int renderResult;
-    int* linkedTimer;
+    GameObject* linkedTimer;
 
     state = obj->extra;
     if (state->fuseFrames != 0 || state->heldFlags.held) {
@@ -523,9 +524,9 @@ void gunpowderBarrel_render(GameObject* obj, int renderArg2, int renderArg3, int
     if (renderResult != 0 || visible == -1) {
         objRenderModelAndHitVolumes(obj, renderArg2, renderArg3, renderArg4, renderArg5, 1.0f);
     }
-    linkedTimer = (int*)state->linkedTimerObject;
+    linkedTimer = state->linkedTimerObject;
     if (linkedTimer != 0) {
-        (*(GunpowderBarrelTimerInterface**)((GameObject*)linkedTimer)->anim.dll)
+        (*(GunpowderBarrelTimerInterface**)linkedTimer->anim.dll)
             ->render((GameObject*)linkedTimer, renderArg2, renderArg3, renderArg4, renderArg5, visible);
     }
 }
@@ -678,18 +679,16 @@ void gunpowderBarrel_update(GameObject* obj) {
             timer_isEffectMode(state->linkedTimerObject) != 0 && state->linkedTimerObject->ownerObj == NULL) {
             ObjLink_AttachChild(obj, state->linkedTimerObject, 0);
         }
-    } else {
-        if (Obj_IsObjectAlive(state->linkedTimerObject) == 0 && state->linkedTimerObject != NULL) {
-            ObjLink_DetachChild(obj, state->linkedTimerObject);
-            state->linkedTimerObject = NULL;
-        }
+    } else if (Obj_IsObjectAlive(state->linkedTimerObject) == 0 && state->linkedTimerObject != NULL) {
+        ObjLink_DetachChild(obj, state->linkedTimerObject);
+        state->linkedTimerObject = NULL;
     }
     {
         u32 messageArgument;
         u32 message;
         message = 0;
         messageArgument = 0;
-        while (ObjMsg_Pop((void*)obj, &message, 0, &messageArgument) != 0) {
+        while (ObjMsg_Pop(obj, &message, 0, &messageArgument) != 0) {
             switch (message) {
             case GUNPOWDER_BARREL_MESSAGE_PLAYER_HELD:
                 gunpowderBarrel_setPlayerHeldState(obj, 1);
@@ -776,11 +775,9 @@ void gunpowderBarrel_update(GameObject* obj) {
         } else {
             setAButtonIcon(A_BUTTON_ICON_THROW_CARRYABLE);
         }
-    } else {
-        if (state->configFlags.returnHome != 0 && state->heldFlags.onGround != 0 &&
-            (state->motionFlags & GUNPOWDER_BARREL_MOTION_FLAG_IN_FLIGHT) == 0) {
-            saveGame_saveObjectPos(obj);
-        }
+    } else if (state->configFlags.returnHome != 0 && state->heldFlags.onGround != 0 &&
+               (state->motionFlags & GUNPOWDER_BARREL_MOTION_FLAG_IN_FLIGHT) == 0) {
+        saveGame_saveObjectPos(obj);
     }
     if ((state->motionFlags & GUNPOWDER_BARREL_MOTION_FLAG_IN_FLIGHT) != 0 || state->heldFlags.held != 0 ||
         (*gCarryableInterface)->updateHeld(obj, state) == 0 ||

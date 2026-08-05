@@ -133,16 +133,6 @@ typedef struct
     f32 spd;   /* 0x0 */
     u32 mask;  /* 0x4 */
     u8 moveId; /* 0x8 */
-    u8 next;   /* 0x9 */
-    u8 mode;   /* 0xa */
-    u8 pad;
-} CrawlerSeq12;
-
-typedef struct
-{
-    f32 spd;   /* 0x0 */
-    u32 mask;  /* 0x4 */
-    u8 moveId; /* 0x8 */
     u8 next9;  /* 0x9 */
     u8 nextA;  /* 0xa */
     u8 pad;
@@ -151,7 +141,7 @@ typedef struct
 
 typedef struct
 {
-    u8* tbl0;          // 0x0  anim move ids
+    CrawlerSeq12* tbl0; // 0x0  anim move ids
     CrawlerSeq12* tbl4;  // 0x4  chained move table
     CrawlerSeq12* tbl8;  // 0x8  random move table
     CrawlerSeq12* tblC;  // 0xc  octant move table
@@ -391,7 +381,7 @@ void crawler_checkNearbyActive(GameObject* obj, u8* state)
         u8 i;
         for (i = 0; i < count; i++)
         {
-            u32 objectIndex = (u8)i;
+            u32 objectIndex = i;
             GameObject* e = gCrawlerNearbyObjectBuffer[objectIndex].obj;
             if (e->anim.romDefNo == FIRECRAWLER_SEQID_REDEYE)
             {
@@ -447,27 +437,27 @@ void firecrawler_spawnProjectile(GameObject* obj, u8* state)
     if (locked != 0)
     {
         GameObject* child;
-        int setup = (int)Obj_AllocObjectSetup(0x24, FIRECRAWLER_PROJECTILE_OBJ);
-        ObjPath_GetPointWorldPosition(obj, 0, (f32*)(setup + 8), (f32*)(setup + 0xc), (f32*)(setup + 0x10),
+        ObjPlacement* setup = Obj_AllocObjectSetup(0x24, FIRECRAWLER_PROJECTILE_OBJ);
+        ObjPath_GetPointWorldPosition(obj, 0, (f32*)((u8*)setup + 8), (f32*)((u8*)setup + 0xc), (f32*)((u8*)setup + 0x10),
                                       0);
-        ((ObjPlacement*)setup)->color[0] = 1;
-        ((ObjPlacement*)setup)->color[1] = 4;
-        ((ObjPlacement*)setup)->color[2] = 0xff;
-        ((ObjPlacement*)setup)->color[3] = 0xff;
+        setup->color[0] = 1;
+        setup->color[1] = 4;
+        setup->color[2] = 0xff;
+        setup->color[3] = 0xff;
         child = (GameObject*)((int)objSetupObject((ObjPlacement*)setup, 5, -1, -1, 0));
         if ((u32)child != 0)
         {
             f32 dur = 60.0f * ((f32)((EnemyState*)state)->targetDist / ((EnemyState*)state)->aggroRange);
             child->anim.velocityX = (((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosX -
-                                                    ((ObjPlacement*)setup)->posX) /
+                                                    setup->posX) /
                                                    dur;
             child->anim.velocityY =
                 ((30.0f + ((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosY +
                   (f32)(int)randomGetRange(-10, 10)) -
-                 ((ObjPlacement*)setup)->posY) /
+                 setup->posY) /
                 dur;
             child->anim.velocityZ = (((GameObject*)((EnemyState*)state)->trackedObj)->anim.localPosZ -
-                                                    ((ObjPlacement*)setup)->posZ) /
+                                                    setup->posZ) /
                                                    dur;
         }
         Sfx_PlayFromObject(obj, SFXTRIG_en_cvdrip1c_4ae);
@@ -776,7 +766,7 @@ void crawler_updateC(GameObject* obj, u8* state)
 {
     CrawlerDescriptor* d = (CrawlerDescriptor*)gCrawlerDescriptorTable;
     CrawlerSeq12* t8 = d[((EnemyState*)state)->userData2].tbl8;
-    u8* t0 = d[((EnemyState*)state)->userData2].tbl0;
+    CrawlerSeq12* t0 = d[((EnemyState*)state)->userData2].tbl0;
     CrawlerSeq16* seq = d[((EnemyState*)state)->userData2].seq;
     CrawlerSeq12* tC = d[((EnemyState*)state)->userData2].tblC;
     RomCurveWalker* base = *(RomCurveWalker**)state;
@@ -955,23 +945,23 @@ void crawler_updateC(GameObject* obj, u8* state)
                             if (v > gCrawlerSpeedThresholds.speeds[j][0])
                             {
                                 ((EnemyState*)state)->rootMotionFlags = 1;
-                                ObjAnim_SetCurrentMove((u32)obj, *(u8*)(t0 + 0x2c), 0.0f, 0);
+                                ObjAnim_SetCurrentMove((u32)obj, t0[3].moveId, 0.0f, 0);
                             }
                             else if (v > gCrawlerSpeedThresholds.speeds[j][1])
                             {
                                 ((EnemyState*)state)->rootMotionFlags = 1;
-                                ObjAnim_SetCurrentMove((u32)obj, *(u8*)(t0 + 0x20), 0.0f, 0);
+                                ObjAnim_SetCurrentMove((u32)obj, t0[2].moveId, 0.0f, 0);
                             }
                             else if (v > gCrawlerSpeedThresholds.speeds[j][2])
                             {
                                 ((EnemyState*)state)->rootMotionFlags = 1;
-                                ObjAnim_SetCurrentMove((u32)obj, *(u8*)(t0 + 0x14), 0.0f, 0);
+                                ObjAnim_SetCurrentMove((u32)obj, t0[1].moveId, 0.0f, 0);
                             }
                             else
                             {
                                 ((EnemyState*)state)->rootMotionFlags = 1;
                                 *(f32*)(state + 0x308) = 0.01f;
-                                ObjAnim_SetCurrentMove((u32)obj, *(u8*)(t0 + 8), 0.0f, 0);
+                                ObjAnim_SetCurrentMove((u32)obj, t0[0].moveId, 0.0f, 0);
                                 ((EnemyState*)state)->pathSpeed = 0.0f;
                             }
                         }
@@ -1178,16 +1168,15 @@ void crawler_updateB(GameObject* obj, u8* state)
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId = 0;
     {
         int j = 1;
-        u8* p = (u8*)t18 + 0xc;
+        CrawlerSeq12* p = t18 + 1;
         int c;
         for (c = t18->moveId; c >= 1; c--)
         {
-            if (obj->anim.currentMove == *(u8*)(p + 8))
+            if (obj->anim.currentMove == p->moveId)
             {
-                p = (u8*)t18 + j * 0xc;
-                ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority =
-                    (s8) * (int*)(p + 4);
-                ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId = (s8) * (u8*)(p + 9);
+                p = t18 + j;
+                ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority = (s8)p->mask;
+                ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId = (s8)p->next;
                 if (((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority == 0x1f)
                 {
                     ((EnemyState*)state)->flags2E8 = ((EnemyState*)state)->flags2E8 | 0x40;
@@ -1198,7 +1187,7 @@ void crawler_updateB(GameObject* obj, u8* state)
                 }
                 break;
             }
-            p += 0xc;
+            p++;
             j += 1;
         }
     }
@@ -1230,7 +1219,7 @@ void crawler_update(GameObject* obj, u8* state)
     CrawlerSeq16* t6 = d[((EnemyState*)state)->userData2].t14;
     f32 cap;
     int i;
-    u8* p;
+    CrawlerSeq12* p;
     int j;
     int n;
 
@@ -1312,11 +1301,11 @@ void crawler_update(GameObject* obj, u8* state)
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority = 0;
     ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumeId = 0;
     j = 1;
-    p = (u8*)t8 + 0xc;
+    p = t8 + 1;
     n = t8->moveId;
     for (; j <= n; j++)
     {
-        if (obj->anim.currentMove == *(u8*)(p + 8))
+        if (obj->anim.currentMove == p->moveId)
         {
             ((ObjHitsPriorityState*)obj->anim.hitReactState)->hitVolumePriority =
                 (s8)t8[j].mask;
@@ -1332,7 +1321,7 @@ void crawler_update(GameObject* obj, u8* state)
             }
             break;
         }
-        p += 0xc;
+        p++;
     }
 
     if ((((EnemyState*)state)->rootMotionFlags & 8) == 0 && (((EnemyState*)state)->familyData.crawler.flagsD & 0x10) == 0)

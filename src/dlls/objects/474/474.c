@@ -40,7 +40,7 @@ void dll_1DA_hitDetect(GameObject* obj) {
     GameObject* hitObject;
     GameObject* player;
     f32 scale;
-    int hitType = ObjHits_GetPriorityHit(obj, (int*)&hitObject, NULL, NULL);
+    int hitType = ObjHits_GetPriorityHit(obj, &hitObject, NULL, NULL);
 
     if (hitType == 0xE) {
         player = Obj_GetPlayerObject();
@@ -89,7 +89,7 @@ void dll_1DA_update(GameObject* obj) {
         inverseVelocityZ = -obj->anim.velocityZ;
         collisionSpeed = sqrtf(inverseVelocityZ * inverseVelocityZ +
                                (inverseVelocityX * inverseVelocityX + inverseVelocityY * inverseVelocityY));
-        if (0.0f != collisionSpeed) {
+        if (collisionSpeed != 0.0f) {
             f32 inverseSpeed = 1.0f / collisionSpeed;
 
             inverseVelocityX = inverseVelocityX * inverseSpeed;

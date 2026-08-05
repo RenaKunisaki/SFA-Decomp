@@ -224,12 +224,12 @@ void drakormissile_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vi
     if (visible != 0 && state->state != DRAKORMISSILE_STATE_FADEOUT)
     {
         f32 savedScale;
-        int* model;
+        ObjModel* model;
         savedRotZ = (obj)->anim.rotZ;
         savedRotY = (obj)->anim.rotY;
         savedScale = (obj)->anim.rootMotionScale;
         objAnim->bankIndex = 1;
-        model = (int*)Obj_GetActiveModel(obj);
+        model = Obj_GetActiveModel(obj);
         i = 0;
         for (; i < DRAKORMISSILE_RENDER_TRAIL_COUNT; i++)
         {
@@ -237,7 +237,7 @@ void drakormissile_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 vi
             state->trailPitch[i] += state->trailPitchStep[i];
             (obj)->anim.rotZ = state->trailYaw[i];
             (obj)->anim.rotY = state->trailPitch[i];
-            ((ObjModel*)model)->bufferFlags &= ~8;
+            model->bufferFlags &= ~8;
             objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, one);
         }
         (obj)->anim.rotZ = savedRotZ;
@@ -338,7 +338,7 @@ void drakormissile_update(GameObject* o)
     {
         lastHit = (GameObject*)((ObjHitsPriorityState*)o->anim.hitReactState)->lastHitObject;
         hitObj = NULL;
-        hit = ObjHits_GetPriorityHit((GameObject*)(o), (int*)&hitObj, 0, 0);
+        hit = ObjHits_GetPriorityHit((GameObject*)(o), &hitObj, 0, 0);
         expired = 0;
         rem = state->timer - framesThisStep;
         state->timer = rem;

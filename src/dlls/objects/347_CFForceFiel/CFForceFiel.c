@@ -4,10 +4,13 @@
 #include "dolphin/mtx.h"
 
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_trig_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
+#include "main/maketex_timer_api.h"
+#include "main/vecmath.h"
 #include "sys/objects.h"
 
 #define CFFORCEFIELD_SILENT_COLLAPSE_MAP_ID   0x47F5E
@@ -117,9 +120,9 @@ void cfforcefield_update(GameObject* obj) {
                 }
             } else if (mainGetBit(placement->collapseGameBit) != 0) {
                 s16toFloat(&state->collapseTimer, CFFORCEFIELD_COLLAPSE_FRAMES);
-                Sfx_PlayFromObject((u32)obj, SFXTRIG_en_littletink22);
+                Sfx_PlayFromObject(obj, SFXTRIG_en_littletink22);
                 if (((CfForceFieldPlacement*)obj->anim.placement)->base.ident != CFFORCEFIELD_SILENT_COLLAPSE_MAP_ID) {
-                    Sfx_PlayFromObject((u32)obj, SFXTRIG_sc_menuups16k_409);
+                    Sfx_PlayFromObject(obj, SFXTRIG_sc_menuups16k_409);
                 }
             }
         } else {

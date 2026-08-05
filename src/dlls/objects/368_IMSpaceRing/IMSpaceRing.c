@@ -2,6 +2,8 @@
 
 #include "main/frame_timing.h"
 #include "main/object_render.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
 
 #define IM_SPACE_RING_SPIN_AXIS(obj) ((obj)->userData1)
 

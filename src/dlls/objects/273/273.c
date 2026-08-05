@@ -57,7 +57,7 @@ static int DoorLock_animEventCallback(GameObject* obj, int unused, ObjSeqState* 
         }
         if (animUpdate->curEventId == DOOR_LOCK_TRIGGER_COMMAND_YIELD_QUEUED &&
             placement->queuedSequenceId != DOOR_LOCK_QUEUED_SEQUENCE_ID_NONE) {
-            (*gObjectTriggerInterface)->yield((ObjSeqState*)animUpdate, placement->queuedSequenceId);
+            (*gObjectTriggerInterface)->yield(animUpdate, placement->queuedSequenceId);
         }
         animUpdate->curEventId = DOOR_LOCK_TRIGGER_COMMAND_NONE;
     }

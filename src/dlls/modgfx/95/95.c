@@ -38,7 +38,7 @@ u32 gDll5FEffectResourceData[sizeof(Dll5FEffectResourceView) / sizeof(u32)] = {
 void dll_5F_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* spawnParams, u32 spawnFlags) {
     ModgfxSpawnPacket packet;
     u8* resourceData = (u8*)(int)gDll5FEffectResourceData;
-    int sourceContext;
+    GameObject* sourceContext;
     f32 originOffset = 0.0f;
     packet.entries[0].layer = 0;
     packet.entries[0].flags = 0x32;
@@ -132,8 +132,8 @@ void dll_5F_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* s
     packet.entries[12].y = 90.0f;
     packet.entries[12].z = originOffset;
     packet.modeByte = 0;
-    sourceContext = (int)sourceObj;
-    packet.ctx = sourceContext;
+    sourceContext = sourceObj;
+    packet.ctx = (int)sourceContext;
     packet.sourceMode = variant;
     packet.position[0] = originOffset;
     packet.position[1] = originOffset;
@@ -160,9 +160,9 @@ void dll_5F_spawnEffect(GameObject* sourceObj, int variant, PartFxSpawnParams* s
     packet.flags |= spawnFlags;
     if ((packet.flags & 1) != 0) {
         if ((void*)sourceContext != NULL) {
-            packet.position[0] = originOffset + ((GameObject*)sourceContext)->anim.worldPosX;
-            packet.position[1] = originOffset + ((GameObject*)sourceContext)->anim.worldPosY;
-            packet.position[2] = originOffset + ((GameObject*)sourceContext)->anim.worldPosZ;
+            packet.position[0] = originOffset + sourceContext->anim.worldPosX;
+            packet.position[1] = originOffset + sourceContext->anim.worldPosY;
+            packet.position[2] = originOffset + sourceContext->anim.worldPosZ;
         } else {
             packet.position[0] = originOffset + spawnParams->posX;
             packet.position[1] = originOffset + spawnParams->posY;

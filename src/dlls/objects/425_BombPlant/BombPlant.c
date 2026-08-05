@@ -216,7 +216,7 @@ void BombPlant_update(GameObject* obj) {
     GameObject* hitObject;
 
     (void)Obj_GetPlayerObject();
-    if (objIsFrozen((u8*)obj) != 0) {
+    if (objIsFrozen(obj) != 0) {
         return;
     }
 

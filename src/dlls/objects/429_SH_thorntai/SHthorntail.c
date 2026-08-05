@@ -276,7 +276,7 @@ u32 SHthorntail_chooseNextState(GameObject* object, SHthorntailState* state, SHt
             value = (s16)getAngle(object->anim.localPosX - placement->homePosition.x,
                                   object->anim.localPosZ - placement->homePosition.z);
             angleDelta = value - (u16)object->anim.rotX;
-            if (0x8000 < angleDelta) {
+            if (angleDelta > 0x8000) {
                 angleDelta = angleDelta - 0xFFFF;
             }
             if (angleDelta < -0x8000) {
@@ -284,7 +284,7 @@ u32 SHthorntail_chooseNextState(GameObject* object, SHthorntailState* state, SHt
             }
             value = angleDelta;
             value = (value >= 0) ? value : -value;
-            if (0x20 < value) {
+            if (value > 0x20) {
                 OSReport(sSHthorntailAngleYawDebug,
                          (u16)getAngle(object->anim.localPosX - placement->homePosition.x,
                                        object->anim.localPosZ - placement->homePosition.z),
@@ -644,7 +644,7 @@ void SHthorntail_updateRootControlMode2(GameObject* obj, SHthorntailState* runti
             }
         } else {
             triggerIsSet = mainGetBit(SHTHORNTAIL_ROOT_MODE2_TRIGGER_SELECTOR_GAMEBIT);
-            if ((triggerIsSet == 0) && (objectTriggerIsSet = ObjTrigger_IsSet((GameObject*)obj), objectTriggerIsSet != 0)) {
+            if ((triggerIsSet == 0) && (objectTriggerIsSet = ObjTrigger_IsSet(obj), objectTriggerIsSet != 0)) {
                 runtime->behaviorFlags = runtime->behaviorFlags | SHTHORNTAIL_FLAG_TRIGGER_EVENT_PENDING;
                 runtime->behaviorState = SHTHORNTAIL_STATE_ROOT_MODE2_EVENT;
                 (*gMapEventInterface)
@@ -695,16 +695,16 @@ typedef struct SHthorntailTailSwingEffectScratch {
 #define SHTHORNTAIL_STATE_TRIGGER7_SFX(tables)     ((u8*)((tables) + SHTHORNTAIL_STATE_TRIGGER7_SFX_OFFSET))
 
 void SHthorntail_updateLevelControlMode1(GameObject* objectId, SHthorntailState* runtime, SHthorntailPlacement* placement) {
-    int playerObj;
+    GameObject* playerObj;
     int randomIdleWait;
     u8 closeToPlayer;
     u32 gameBit;
     int triggerIsSet;
 
     runtime->impactSfxTable = gSHthorntailLevelControlMode1ImpactSfxTable;
-    playerObj = (int)Obj_GetPlayerObject();
+    playerObj = Obj_GetPlayerObject();
     {
-        int cmp = getXZDistanceSquared(&objectId->anim.worldPosX, &((GameObject*)playerObj)->anim.worldPosX) <
+        int cmp = getXZDistanceSquared(&objectId->anim.worldPosX, &playerObj->anim.worldPosX) <
                   SHTHORNTAIL_CLOSE_ATTACK_DISTANCE;
         closeToPlayer = cmp;
     }
@@ -867,15 +867,15 @@ u32 SHthorntail_updateLevelControlState(GameObject* obj, int unused, ObjSeqState
     }
     impactPending = (int)(runtime->behaviorFlags & SHTHORNTAIL_FLAG_IMPACT_PENDING);
     if (impactPending != 0) {
-        impactHandled = dll_2E_updateSequenceTurn((GameObject*)obj, (ObjSeqState*)animUpdate, (MoveLibState*)runtime, 0, 0);
+        impactHandled = dll_2E_updateSequenceTurn(obj, animUpdate, (MoveLibState*)runtime, 0, 0);
         if (impactHandled != 0) {
             return 0;
         }
         animUpdate->flags &= ~SHTHORNTAIL_LEVELCONTROL_COLLISION_FLAG;
-        characterDoEyeAnims((GameObject*)obj, &runtime->eyeAnimState);
+        characterDoEyeAnims(obj, &runtime->eyeAnimState);
     }
     runtime->activeMoveValid = 0;
-    objAudioDispatchAnimEvents((GameObject*)obj, &animUpdate->animEvents, 8, runtime->renderPathPoints,
+    objAudioDispatchAnimEvents(obj, &animUpdate->animEvents, 8, runtime->renderPathPoints,
                                runtime->moveScratch, 1.0f, 1.0f);
     return 0;
 }
@@ -1129,7 +1129,7 @@ void SHthorntail_init(GameObject* obj, const SHthorntailPlacement* placement) {
         break;
     }
     obj->anim.rootMotionScale = obj->anim.modelInstance->rootMotionScaleBase * ((float)placement->scale / 1000.0f);
-    model = Obj_GetActiveModel((GameObject*)obj);
+    model = Obj_GetActiveModel(obj);
     modelInitBones(obj->anim.rootMotionScale, model);
     moveScratch = runtime->moveScratch;
     (*gPathControlInterface)->init(moveScratch, SHTHORNTAIL_PATH_CONTROL_MODE, SHTHORNTAIL_PATH_CONTROL_FLAGS, 0);
@@ -1137,7 +1137,7 @@ void SHthorntail_init(GameObject* obj, const SHthorntailPlacement* placement) {
         ->setup(moveScratch, SHTHORNTAIL_PATH_CHANNEL, gSHthorntailPathHeaders, gSHthorntailPathData, &pathParam);
     (*gPathControlInterface)->attachObject(obj, moveScratch);
     obj->animEventCallback = SHthorntail_updateLevelControlState;
-    dll_2E_initState((GameObject*)obj, (MoveLibState*)runtime, 0xffffdc72, 0x2aaa, 3);
+    dll_2E_initState(obj, (MoveLibState*)runtime, 0xffffdc72, 0x2aaa, 3);
     dll_2E_setReattackDelay((MoveLibState*)runtime, 400, 0x78);
     objAddObjectType((int)obj, SHTHORNTAIL_OBJECT_GROUP);
 }

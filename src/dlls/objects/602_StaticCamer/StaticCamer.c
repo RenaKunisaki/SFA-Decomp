@@ -12,6 +12,7 @@
  */
 #include "main/object_render.h"
 #include "main/dll/dll_025A_staticcamera.h"
+#include "main/objtype.h"
 
 int StaticCamera_getExtraSize(void)
 {

@@ -79,7 +79,7 @@ void dll_2A4_update(GameObject* obj)
     obj->anim.rotY = (s16)((f32)state->spinRateY * timeDelta + (f32)obj->anim.rotY);
     obj->anim.rotZ = (s16)((f32)state->spinRateZ * timeDelta + (f32)obj->anim.rotZ);
 
-    objMove((GameObject*)obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
+    objMove(obj, obj->anim.velocityX * timeDelta, obj->anim.velocityY * timeDelta,
             obj->anim.velocityZ * timeDelta);
 }
 

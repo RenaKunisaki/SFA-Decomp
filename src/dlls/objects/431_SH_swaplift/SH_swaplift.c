@@ -8,8 +8,12 @@
  */
 #include "dlls/objects/431_SH_swaplift.h"
 
+#include "main/dll/dll_0000_gameui_api.h"
+#include "main/dll/tricky_api.h"
 #include "main/gamebits.h"
+#include "main/obj_trigger.h"
 #include "main/object_render.h"
+#include "sys/objects.h"
 
 #define WARP_STONE_LIFT_PLAYER_CLASS_ID 1
 
@@ -95,17 +99,17 @@ void warpstonelift_update(GameObject* obj) {
 }
 
 void warpstonelift_init(GameObject* obj, const WarpStoneLiftPlacement* placement) {
-    int* stateStorage = obj->extra;
+    WarpStoneLiftState* stateStorage = obj->extra;
     int i;
 
     obj->anim.rotX = (s16)((s32)placement->rotXByte << 8);
     obj->userData1 = 0;
     for (i = 0; i < WARP_STONE_LIFT_STATE_GAMEBIT_COUNT; i++) {
         if (mainGetBit(gWarpStoneLiftStateGameBits[i]) != 0) {
-            ((WarpStoneLiftState*)stateStorage)->stateId = (u8)(i + 1);
+            stateStorage->stateId = (u8)(i + 1);
         }
     }
-    switch (((WarpStoneLiftState*)stateStorage)->stateId) {
+    switch (stateStorage->stateId) {
     case WARP_STONE_LIFT_STATE_WAITING_FOR_ROCK_CANDY:
     case WARP_STONE_LIFT_STATE_ROCK_CANDY_USED:
         Obj_SetActiveHitVolumeBounds(obj, 0, 0, 0, 0, 3);

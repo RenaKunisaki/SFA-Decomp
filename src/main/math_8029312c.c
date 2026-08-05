@@ -8,7 +8,7 @@ float sqrtfHighPrecision(float value) {
     float reciprocalSqrt;
     float halfValue;
 
-    if (0.0f != value) {
+    if (value != 0.0f) {
         reciprocalSqrt = (float)__frsqrte(value);
         halfValue = 0.5f * value;
         reciprocalSqrt = reciprocalSqrt * (1.5f - reciprocalSqrt * (halfValue * reciprocalSqrt));
@@ -24,7 +24,7 @@ float sqrtf(float value) {
     float reciprocalSqrt;
     float halfValue;
 
-    if (0.0f != value) {
+    if (value != 0.0f) {
         reciprocalSqrt = (float)__frsqrte(value);
         halfValue = 0.5f * value;
         reciprocalSqrt = reciprocalSqrt * (1.5f - reciprocalSqrt * (halfValue * reciprocalSqrt));

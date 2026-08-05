@@ -16,6 +16,7 @@
 #include "main/dll/objfx_api.h"
 #include "main/dll/player_api.h"
 #include "main/dll/player_state.h"
+#include "main/dll/savegame_object_api.h"
 #include "main/dll/tricky_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
@@ -83,7 +84,7 @@ static int mmpMoonRock_probeFloor(GameObject* obj, f32 x, f32 y, f32 z, f32 maxY
 
 void mmpMoonRock_handleImpact(GameObject* obj) {
     TrackBBoxHit hitScratch;
-    int priorityObjectOut;
+    GameObject* priorityObjectOut;
     MMPMoonRockState* state;
     int hit;
 
@@ -208,7 +209,7 @@ void mmpMoonRock_throwFromPlayer(GameObject* obj) {
 void mmpMoonRock_reconcilePlacement(GameObject* obj, u8 place, u8 mode) {
     int i;
     int count;
-    int* list;
+    GameObject** list;
     MMPMoonRockState* state;
     MMPGeyserVentPlacement* ventPlacement;
     MMPMoonRockPlacement* rockPlacement;
@@ -218,10 +219,10 @@ void mmpMoonRock_reconcilePlacement(GameObject* obj, u8 place, u8 mode) {
     state = obj->extra;
     list = ObjList_GetObjects(&i, &count);
     for (; i < count; i++) {
-        u32 otherObj = list[i];
-        if (otherObj != (u32)obj && ((GameObject*)otherObj)->anim.romDefNo == MMP_GEYSER_VENT_SEQUENCE_ID &&
-            Vec_distance(&obj->anim.worldPosX, (void*)(otherObj + 0x18)) < 40.0f) {
-            ventPlacement = (MMPGeyserVentPlacement*)((GameObject*)list[i])->anim.placementData;
+        GameObject* otherObj = list[i];
+        if ((u32)otherObj != (u32)obj && otherObj->anim.romDefNo == MMP_GEYSER_VENT_SEQUENCE_ID &&
+            Vec_distance(&obj->anim.worldPosX, &otherObj->anim.worldPosX) < 40.0f) {
+            ventPlacement = (MMPGeyserVentPlacement*)(list[i])->anim.placementData;
             rockPlacement = (MMPMoonRockPlacement*)obj->anim.placementData;
             pedestalCount = mainGetBit(MMP_MOON_ROCK_PEDESTAL_COUNT_GAMEBIT);
             inventoryCount = mainGetBit(MMP_MOON_ROCK_INVENTORY_COUNT_GAMEBIT);
@@ -255,9 +256,9 @@ void mmpMoonRock_reconcilePlacement(GameObject* obj, u8 place, u8 mode) {
                     mainSetBits(ventPlacement->disableGameBit, 1);
                 }
                 if (mode == 0) {
-                    obj->anim.localPosX = ((GameObject*)list[i])->anim.localPosX;
-                    obj->anim.localPosY = ((GameObject*)list[i])->anim.localPosY;
-                    obj->anim.localPosZ = ((GameObject*)list[i])->anim.localPosZ;
+                    obj->anim.localPosX = (list[i])->anim.localPosX;
+                    obj->anim.localPosY = (list[i])->anim.localPosY;
+                    obj->anim.localPosZ = (list[i])->anim.localPosZ;
                     saveGame_saveObjectPos(obj);
                 }
                 {

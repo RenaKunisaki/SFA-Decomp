@@ -28,6 +28,7 @@
 #include "main/track_bbox_api.h"
 #include "main/track_dolphin_api.h"
 #include "main/vecmath.h"
+#include "string.h"
 #include "sys/objects.h"
 #include "main/camera.h"
 #include "main/audio/sfx_play_api.h"
@@ -215,10 +216,10 @@ static void pushable_driftEyePos(f32* pos, f32 driftSpeed, f32 limit)
 }
 
 int pushable_updateCurtain(GameObject* obj, PushableState* state) {
-    int placement;
+    ObjPlacement* placement;
     GameObject* player;
 
-    placement = obj->anim.placementDataAddress;
+    placement = (ObjPlacement*)obj->anim.placementDataAddress;
     player = Obj_GetPlayerObject();
     if (((state->flags & PUSHABLE_FLAG_PUSH_LOCKED) != 0) || (playerGetStateValue(player, 10) != 0)) {
         Sfx_StopObjectChannel(obj, 8);
@@ -229,18 +230,18 @@ int pushable_updateCurtain(GameObject* obj, PushableState* state) {
     if ((state->flags & PUSHABLE_FLAG_AIRBORNE) == 0) {
         pushable_resolveCollisions(obj, state);
     }
-    if (obj->anim.localPosX <= PUSHABLE_CURTAIN_TRIGGER_X + ((ObjPlacement*)placement)->posX) {
+    if (obj->anim.localPosX <= PUSHABLE_CURTAIN_TRIGGER_X + placement->posX) {
         mainSetBits(state->gameBit, 1);
         state->flags |= PUSHABLE_FLAG_PUSH_LOCKED;
-        obj->anim.localPosX = (f32)(((ObjPlacement*)placement)->posX - PUSHABLE_CURTAIN_POSITION_X);
-        obj->anim.localPosY = ((ObjPlacement*)placement)->posY;
-        obj->anim.localPosZ = (f32)(PUSHABLE_CURTAIN_POSITION_Z + ((ObjPlacement*)placement)->posZ);
+        obj->anim.localPosX = (f32)(placement->posX - PUSHABLE_CURTAIN_POSITION_X);
+        obj->anim.localPosY = placement->posY;
+        obj->anim.localPosZ = (f32)(PUSHABLE_CURTAIN_POSITION_Z + placement->posZ);
         Sfx_PlayFromObject(obj, SFXTRIG_curtainopen16);
     }
     if (mainGetBit(GAMEBIT_PushableRelated0A1A) != 0) {
-        obj->anim.localPosX = ((ObjPlacement*)placement)->posX;
-        obj->anim.localPosY = ((ObjPlacement*)placement)->posY;
-        obj->anim.localPosZ = ((ObjPlacement*)placement)->posZ;
+        obj->anim.localPosX = placement->posX;
+        obj->anim.localPosY = placement->posY;
+        obj->anim.localPosZ = placement->posZ;
     }
     return 0;
 }
@@ -571,21 +572,21 @@ u32 pushable_SeqFn(GameObject* obj, MatrixTransform* referenceTransform, ObjSeqS
             animUpdate->posOffsetY = obj->anim.localPosY - referenceTransform->y;
             animUpdate->posOffsetZ = obj->anim.localPosZ - referenceTransform->z;
             animUpdate->rotOffsetX = obj->anim.rotX - (u16)referenceTransform->rotX;
-            if (0x8000 < animUpdate->rotOffsetX) {
+            if (animUpdate->rotOffsetX > 0x8000) {
                 animUpdate->rotOffsetX = animUpdate->rotOffsetX - 0xffff;
             }
             if (animUpdate->rotOffsetX < -0x8000) {
                 animUpdate->rotOffsetX = animUpdate->rotOffsetX + 0xffff;
             }
             animUpdate->rotOffsetY = obj->anim.rotY - (u16)referenceTransform->rotY;
-            if (0x8000 < animUpdate->rotOffsetY) {
+            if (animUpdate->rotOffsetY > 0x8000) {
                 animUpdate->rotOffsetY = animUpdate->rotOffsetY - 0xffff;
             }
             if (animUpdate->rotOffsetY < -0x8000) {
                 animUpdate->rotOffsetY = animUpdate->rotOffsetY + 0xffff;
             }
             animUpdate->rotOffsetZ = (u16)referenceTransform->rotZ - (u16)obj->anim.rotZ;
-            if (0x8000 < animUpdate->rotOffsetZ) {
+            if (animUpdate->rotOffsetZ > 0x8000) {
                 animUpdate->rotOffsetZ = animUpdate->rotOffsetZ - 0xffff;
             }
             if (animUpdate->rotOffsetZ < -0x8000) {
@@ -603,7 +604,7 @@ u32 pushable_SeqFn(GameObject* obj, MatrixTransform* referenceTransform, ObjSeqS
     }
     if ((obj->anim.romDefNo == PUSHABLE_SEQ_ID_MAGIC_GEM_21E) || (obj->anim.romDefNo == PUSHABLE_SEQ_ID_MAGIC_GEM_411)) {
         obj->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
-        if ((0 < obj->anim.hitboxTransformState->contactObjectCount) &&
+        if ((obj->anim.hitboxTransformState->contactObjectCount > 0) &&
             ((((GameObject*)obj->anim.hitboxTransformState->contactObjects[0])->anim.classId ==
                   PUSHABLE_SEQUENCE_TARGET_CLASS_ID &&
               (gameBitValue = mainGetBit(PUSHABLE_SEQUENCE_GAME_BIT), gameBitValue == 0)))) {
@@ -1188,10 +1189,8 @@ void pushable_update(GameObject* obj) {
     }
     if (state->savePosDelay != 0) {
         state->savePosDelay -= 1;
-    } else {
-        if (state->savePosEnabled != 0) {
-            pushable_savePos(obj);
-        }
+    } else if (state->savePosEnabled != 0) {
+        pushable_savePos(obj);
     }
     switch (obj->anim.romDefNo) {
     case PUSHABLE_SEQ_ID_MAGIC_GEM_21E:

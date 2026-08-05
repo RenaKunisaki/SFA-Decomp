@@ -3,6 +3,7 @@
 
 #include "game/objects/object.h"
 #include "global.h"
+#include "main/dll/DR/dr_types.h"
 #include "main/camera_interface.h"
 #include "main/objanim_internal.h"
 #include "main/resource.h"
@@ -82,7 +83,7 @@ typedef struct CamcontrolCameraState {
     u8 frameFlags;
     u8 targetFlags;
     u8 pad142;
-    u8 smoothingFlags;
+    BitFlags8 smoothingFlags;
 } CamcontrolCameraState;
 
 STATIC_ASSERT(sizeof(CamcontrolCameraState) == 0x144);

@@ -300,7 +300,7 @@ static inline int RomCurve_CollectUnblockedLinks(RomCurveDef* curve, int* ids)
     for (i = 0; i < ROMCURVE_LINK_COUNT; i++)
     {
         link = *lp++;
-        if ((-1 < link) && ((curve->blockedLinkMask & mask) == 0) && (link != 0))
+        if ((link > -1) && ((curve->blockedLinkMask & mask) == 0) && (link != 0))
         {
             ids[count++] = link;
         }
@@ -323,7 +323,7 @@ static inline int RomCurve_CollectBlockedLinks(RomCurveDef* curve, int* ids)
     for (i = 0; i < ROMCURVE_LINK_COUNT; i++)
     {
         link = *lp++;
-        if ((-1 < link) && ((curve->blockedLinkMask & mask) != 0) && (link != 0))
+        if ((link > -1) && ((curve->blockedLinkMask & mask) != 0) && (link != 0))
         {
             ids[count++] = link;
         }
@@ -881,7 +881,7 @@ int getPatchGroup(float* point, int patchGroupIndex)
         {
             continue;
         }
-        pidx = *(u8*)(wg + k + 0x24);
+        pidx = ((ObjfsaWalkGroup*)wg)->patchIndices[k];
         if (pidx == 0)
         {
             continue;

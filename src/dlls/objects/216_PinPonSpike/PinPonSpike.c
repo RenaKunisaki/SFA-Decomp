@@ -7,10 +7,14 @@
  */
 #include "dlls/objects/216_PinPonSpike.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/dll/partfx_interface.h"
 #include "main/dll_000A_expgfx.h"
 #include "main/frame_timing.h"
+#include "main/objhits.h"
+#include "main/vecmath.h"
+#include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 
 #define PINPONSPIKE_HIT_VOLUME_SLOT 10
@@ -139,7 +143,7 @@ void pinponspike_update(GameObject* obj) {
             for (particleIndex = 0; particleIndex < PINPONSPIKE_IMPACT_PARTICLE_COUNT; particleIndex++) {
                 (*gPartfxInterface)->spawnObject((void*)obj, PINPONSPIKE_PARTFX_IMPACT, NULL, 1, -1, &particleIndex);
             }
-            Sfx_PlayFromObject((int)obj, SFXTRIG_lummy311);
+            Sfx_PlayFromObject(obj, SFXTRIG_lummy311);
         } else if (((ObjHitsPriorityState*)obj->anim.hitReactState)->contactFlags != 0) {
             int particleIndex;
             obj->anim.alpha = 0;
@@ -148,7 +152,7 @@ void pinponspike_update(GameObject* obj) {
             for (particleIndex = 0; particleIndex < PINPONSPIKE_IMPACT_PARTICLE_COUNT; particleIndex++) {
                 (*gPartfxInterface)->spawnObject((void*)obj, PINPONSPIKE_PARTFX_IMPACT, NULL, 1, -1, &particleIndex);
             }
-            Sfx_PlayFromObject((int)obj, SFXTRIG_lummy311);
+            Sfx_PlayFromObject(obj, SFXTRIG_lummy311);
         } else if (obj->anim.localPosY < PINPONSPIKE_KILL_PLANE_Y) {
             Obj_FreeObject(obj);
         }
@@ -159,7 +163,7 @@ void pinponspike_init(GameObject* obj) {
     obj->userData1 = 0;
     ObjHits_DisableObject(obj);
     obj->anim.alpha = 0xff;
-    Sfx_PlayFromObject((int)obj, SFXTRIG_whiz3_c);
+    Sfx_PlayFromObject(obj, SFXTRIG_whiz3_c);
     obj->objectFlags |= (OBJECT_OBJFLAG_HIDDEN | OBJECT_OBJFLAG_HITDETECT_DISABLED);
 }
 

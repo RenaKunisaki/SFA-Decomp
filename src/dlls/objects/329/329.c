@@ -193,7 +193,7 @@ void windLift_updateRider(GameObject* obj, GameObject* rider, WindLiftSlot* slot
         if (slot->riseSpeed > 8.0f) {
             slot->riseSpeed = 8.0f;
         }
-        if (0.0f == slot->riseSpeed) {
+        if (slot->riseSpeed == 0.0f) {
             slot->riseSpeed = -0.001f;
         }
         if (heightOffset < 20.0f && riderGameBit != 0) {

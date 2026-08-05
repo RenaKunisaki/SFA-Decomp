@@ -1,4 +1,5 @@
 #include "main/camera_interface.h"
+#include "string.h"
 #include "sys/objects.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/objprint_api.h"
@@ -523,13 +524,12 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
     register int yawDelta;
     register int seqHandle;
     register u32 target;
-    void* targetObj;
+    GameObject* targetObj;
     int bit1;
     int ival;
     float dist;
     float blendA;
     float blendB;
-    float blendMax;
     float targetYaw;
     ProjNearSearch sv;
 
@@ -552,7 +552,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
             }
             else
             {
-                characterDecayJointVecs((GameObject*)obj, objGetLookAtJointKeys(), (u32)s->pointCount);
+                characterDecayJointVecs(obj, objGetLookAtJointKeys(), (u32)s->pointCount);
             }
         }
         else if (bit1 == 0 && s->phase == MOVELIB_PHASE_HELD)
@@ -572,42 +572,40 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
             }
             else
             {
-                characterDecayJointVecs((GameObject*)obj, objGetLookAtJointKeys(), (u32)s->pointCount);
+                characterDecayJointVecs(obj, objGetLookAtJointKeys(), (u32)s->pointCount);
             }
         }
         else
         {
             targetObj = s->lockTarget;
             target = (u32)(targetObj != NULL ? targetObj
-                                             : (targetObj = (void*)objGetNearestTypeTo(MOVELIB_TARGET_OBJGROUP,
+                                             : (targetObj = objGetNearestTypeTo(MOVELIB_TARGET_OBJGROUP,
                                                                                               obj, (f32*)&sv)));
             if (targetObj != NULL)
             {
                 if ((s->modeBits & 0x20) != 0)
                 {
-                    sv.dx = s->targetX - ((GameObject*)targetObj)->anim.localPosX;
-                    sv.dy = s->targetY - ((GameObject*)targetObj)->anim.localPosY;
-                    sv.dz = s->targetZ - ((GameObject*)targetObj)->anim.localPosZ;
+                    sv.dx = s->targetX - targetObj->anim.localPosX;
+                    sv.dy = s->targetY - targetObj->anim.localPosY;
+                    sv.dz = s->targetZ - targetObj->anim.localPosZ;
                     blendA = sv.dx * sv.dx;
                     blendB = sv.dz * sv.dz;
                     dist = sqrtf(blendA + blendB);
                     if (dist <= 40.0f)
                     {
                         blendA = (dist - 10.0f) / 30.0f;
-                        blendMax = 1.0f;
-                        blendB = 0.0f;
-                        blendB = (blendA < blendB) ? blendB : ((blendA > blendMax) ? blendMax : blendA);
+                        blendB = (blendA < 0.0f) ? 0.0f : ((blendA > 1.0f) ? 1.0f : blendA);
                         blendB = 1.0f - blendB;
                         s->targetX = s->targetX * (blendA = 1.0f - blendB) +
-                                     ((GameObject*)obj)->anim.localPosX * blendB;
-                        s->targetZ = s->targetZ * blendA + ((GameObject*)obj)->anim.localPosZ * blendB;
+                                     obj->anim.localPosX * blendB;
+                        s->targetZ = s->targetZ * blendA + obj->anim.localPosZ * blendB;
                     }
                 }
                 if ((s->reattackDelayBase != -1) && (target == (u32)s->lastTarget))
                 {
                     ival = -framesThisStep + s->reattackTimer;
                     s->reattackTimer = ival;
-                    if ((ival <= 0) && (0 < (int)(s->reattackTimer + framesThisStep)))
+                    if ((ival <= 0) && ((int)(s->reattackTimer + framesThisStep) > 0))
                     {
                         objJointTracksCaptureCurrentAngles(obj, (int*)seqHandle, (u32)s->pointCount, s->animChannels);
                         s->setupFlag = 0x50;
@@ -656,7 +654,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
                 }
                 if (target != 0)
                 {
-                    yawDelta = Obj_GetYawDeltaToObject((GameObject*)obj, (GameObject*)target, NULL);
+                    yawDelta = Obj_GetYawDeltaToObject(obj, (GameObject*)target, NULL);
                 }
                 if ((s->modeBits & 0x10) != 0)
                 {
@@ -665,7 +663,7 @@ void dll_2E_updateLookAt(GameObject* obj, MoveLibState* s)
                 }
                 ival = (short)yawDelta;
                 ival = (ival >= 0) ? ival : -ival;
-                if (((0x5555 < ival) || (target == 0)) ||
+                if (((ival > 0x5555) || (target == 0)) ||
                     (Vec_distance(&obj->anim.worldPosX, &((GameObject*)target)->anim.worldPosX) > s->lookAtMaxDistance))
                 {
                     if ((s->phase != MOVELIB_PHASE_IDLE) || ((target == 0 && ((u32)s->lastTarget != 0))))
@@ -779,7 +777,7 @@ int moveLibTurnToFaceTarget(GameObject* obj, GameObject* targetObj, int* turning
     }
     else if (*turning != 0)
     {
-        if ((0 < (s16)yawDelta) && (obj->anim.currentMove != moves[1]))
+        if (((s16)yawDelta > 0) && (obj->anim.currentMove != moves[1]))
         {
             ObjAnim_SetCurrentMove((int)obj, moves[1], 0.0f, 0);
             ObjAnim_SetCurrentEventStepFrames(&obj->anim, 0x1e);
@@ -818,7 +816,7 @@ int moveLibTurnToFaceTarget(GameObject* obj, GameObject* targetObj, int* turning
         }
 
         obj->anim.rotX += turnDelta;
-        ret = (u32)(s16)turnDelta;
+        ret = (u32)turnDelta;
         ret = ((int)ret >= 0) ? ret : -ret;
         *turnSpeed = (float)(s32)ret / 20922.25f;
     }

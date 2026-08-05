@@ -26,12 +26,15 @@ STATIC_ASSERT(offsetof(ShaderLayer, scrollMtx) == 0x06);
 
 typedef struct Shader
 {
-    u8 pad00[0x0C];
+    u8 pad00[0x08];
+    void* reg1Texture;
     u8 alpha;
-    u8 pad0D[0x18 - 0x0D];
+    u8 pad0D[0x14 - 0x0D];
+    void* reg2Texture;
     s32 textureId;
     u32 unk1C;
-    u8 pad20[0x22 - 0x20];
+    u8 reg2TexSlot;
+    u8 pad21;
     u8 reg2Alpha;
     u8 pad23;
     ShaderLayer layers[2];
@@ -39,7 +42,10 @@ typedef struct Shader
         u32 auxTextureIndex;
         Texture* auxTexture;
     };
-    s32 indTextureId;
+    union {
+        s32 indTextureId;
+        Texture* indTexture;
+    };
     u32 flags;
     u8 vtxAttrFlags;
     u8 layerCount;
@@ -48,9 +54,12 @@ typedef struct Shader
 } Shader;
 
 STATIC_ASSERT(sizeof(Shader) == 0x44);
+STATIC_ASSERT(offsetof(Shader, reg1Texture) == 0x08);
 STATIC_ASSERT(offsetof(Shader, alpha) == 0x0C);
+STATIC_ASSERT(offsetof(Shader, reg2Texture) == 0x14);
 STATIC_ASSERT(offsetof(Shader, textureId) == 0x18);
 STATIC_ASSERT(offsetof(Shader, unk1C) == 0x1C);
+STATIC_ASSERT(offsetof(Shader, reg2TexSlot) == 0x20);
 STATIC_ASSERT(offsetof(Shader, reg2Alpha) == 0x22);
 STATIC_ASSERT(offsetof(Shader, layers) == 0x24);
 STATIC_ASSERT(offsetof(Shader, auxTextureIndex) == 0x34);
@@ -109,11 +118,12 @@ typedef struct ModelFileHeader {
     Shader *renderOps;
     u8 *jointData;
     u8 *jointBlendData; /* 0x40: per-joint blend/pivot table (stride joff); [+0..8]=pivot XYZ (PSMTXTrans to/from origin for scale-fuzz), [+0xc]=scale divisor; passed to ObjModel_BlendVertexStream; offset->ptr relocated on load */
-    u8 unk44[0x10];
+    f32 vertexAnimPivot[3];
+    f32 vertexAnimScaleDivisor;
     u8 *extraJointDefs; /* 0x54: extraJointCount 3-byte records {jointA, jointB, weight*4}; modelCalcVtxGroupMtxs blends the two joint matrices into the extra joint at jointCount+i; offset->ptr relocated on load */
     u8 *hitVolumes; /* 0x58: 0x18-byte ModelHitSphereDef records, hitSphereCount entries */
     u8 *collisionTriangles; /* 0x5c: 8-byte triangle vertex-index records (hit-detect mesh) */
-    u8 *collisionBlocks;    /* 0x60: 0x14-byte spatial blocks (AABB + triangle range), count at +0xf0 */
+    u8 *collisionBlocks;    /* 0x60: 0x14-byte spatial blocks (AABB + triangle range), collisionBlockCount entries */
     u8 *animationModelPtrs;
     u8 *animationDataSection;
     u8 *animationHeaderBuffer; /* per-joint s16 table */
@@ -145,7 +155,8 @@ typedef struct ModelFileHeader {
     u16 normalCount;
     u8 unkE8[4];
     u16 animationCount; /* nonzero = per-joint matrix buffers */
-    u8 unkEE[4];
+    u8 unkEE[2];
+    u16 collisionBlockCount; /* 0xF0: number of 0x14-byte collisionBlocks entries */
     u8 textureCount;
     u8 jointCount;
     u8 extraJointCount;
@@ -181,9 +192,18 @@ STATIC_ASSERT(offsetof(ModelFileHeader, modelId) == 0x04);
 STATIC_ASSERT(offsetof(ModelFileHeader, jointData) == 0x3C);
 STATIC_ASSERT(offsetof(ModelFileHeader, textureIds) == 0x20);
 STATIC_ASSERT(offsetof(ModelFileHeader, blendAnimEntries) == 0xC8);
+STATIC_ASSERT(offsetof(ModelFileHeader, collisionBlockCount) == 0xF0);
 STATIC_ASSERT(offsetof(ModelFileHeader, textureCount) == 0xF2);
 STATIC_ASSERT(offsetof(ModelFileHeader, morphTargetCount) == 0xF9);
 STATIC_ASSERT(offsetof(ModelFileHeader, texMtxCount) == 0xFA);
+
+typedef struct ModelDisplayListEntry {
+    void* dlist;
+    u16 dlistSize;
+    u8 pad06[0x16];
+} ModelDisplayListEntry;
+
+STATIC_ASSERT(sizeof(ModelDisplayListEntry) == 0x1C);
 
 /* ModelFileHeader.hitVolumes entry: joint-space sphere transformed by the
  * joint matrix each update (objUpdateHitSpheres). */
@@ -340,6 +360,7 @@ Shader* ObjModel_GetRenderOp(ModelFileHeader* modelFile, int renderOpIndex);
 ModelRenderOpTextureRefs* ObjModel_GetRenderOpTextureRefs(ObjModel* model, int renderOpIndex);
 
 STATIC_ASSERT(offsetof(ObjModel, bufferFlags) == 0x18);
+STATIC_ASSERT(offsetof(ObjModel, textureRefs) == 0x34);
 STATIC_ASSERT(offsetof(ObjModel, renderCallback) == 0x38);
 STATIC_ASSERT(offsetof(ObjModel, vtxBufDirty) == 0x60);
 

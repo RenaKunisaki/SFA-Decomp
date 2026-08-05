@@ -2,6 +2,9 @@
 
 #include "main/crcloudrace.h"
 #include "main/audio/music_api.h"
+#include "main/maketex_timer_api.h"
+#include "main/map_load.h"
+#include "main/pi_dolphin_api.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/dll/player_api.h"
 #include "dlls/objects/430_SH_LevelCon.h"
@@ -55,7 +58,7 @@ void crcloudrace_updateCompletionState(GameObject* obj, CrCloudRaceState* state)
         if (mainGetBit(CRCLOUDRACE_GAMEBIT_RACE_CAN_FINISH) != 0 &&
             playerGetFocusObject(player) == NULL)
         {
-            near = objGetNearestTypeTo(CRCLOUDRACE_NEARBY_TOTEM_GROUP, (GameObject*)obj, &dist);
+            near = objGetNearestTypeTo(CRCLOUDRACE_NEARBY_TOTEM_GROUP, obj, &dist);
             if (near != NULL)
             {
                 ((ScTotemPoleInterfaceVTable*)*near->anim.dll)->handleEvent(near, 1);

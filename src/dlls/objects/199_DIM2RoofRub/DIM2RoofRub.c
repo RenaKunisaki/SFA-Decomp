@@ -7,6 +7,7 @@
  */
 #include "dlls/objects/199_DIM2RoofRub.h"
 #include "dolphin/mtx.h"
+#include "main/audio/sfx_stop_channel_api.h"
 #include "main/camera_interface.h"
 #include "main/dll/dll_0004_dummy04.h"
 #include "main/dll/partfx_interface.h"
@@ -15,6 +16,7 @@
 #include "main/obj_list.h"
 #include "main/objfx.h"
 #include "main/object_render.h"
+#include "main/objprint_render_api.h"
 #include "main/shader_api.h"
 #include "sys/objects.h"
 
@@ -129,7 +131,7 @@ int dim2roofrub_getExtraSize(void) {
 void dim2roofrub_free(GameObject* obj) {
     (*gObjectTriggerInterface)->freeState(obj->extra);
     gTitleMenuControlInterfaceCopy->vtable->func05(obj, 0xffff, 0, 0, 0);
-    Sfx_StopObjectChannel((int)obj, 0x7f);
+    Sfx_StopObjectChannel(obj, 0x7f);
 }
 
 void dim2roofrub_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, int fwdArg5) {
@@ -174,7 +176,7 @@ void dim2roofrub_render(GameObject* obj, int fwdArg2, int fwdArg3, int fwdArg4, 
         PSMTXConcat(flipZ, cameraFlippedY, cameraFlippedYZ);
         PSMTXConcat(cameraTranslation, cameraFlippedYZ, mirroredCamera);
         PSMTXConcat(mirroredCamera, translatedWorld, renderMatrix);
-        objSetCurrentMatrix((u32)renderMatrix);
+        objSetCurrentMatrix(renderMatrix);
         objRenderModel(obj);
     } else {
         objRenderModelAndHitVolumes(obj, fwdArg2, fwdArg3, fwdArg4, fwdArg5, 1.0f);

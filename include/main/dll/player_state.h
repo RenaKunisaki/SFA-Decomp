@@ -59,6 +59,12 @@ typedef enum SurfaceType {
     SURFACE_METAL         = 0x22
 } SurfaceType;
 
+typedef struct KnockBits
+{
+    u8 knock : 3;
+    u8 low : 5;
+} KnockBits;
+
 typedef struct PlayerState {
     union {
         BaddieState baddie;
@@ -70,12 +76,7 @@ typedef struct PlayerState {
     int playerStatus; /* PlayerStatus*; kept integer while raw decomp arithmetic remains */
     u32 flags360; /* player state flag word; bits 2/0x2000/0x800000/0x2000000... */
     u8 pad364[0x3C4 - 0x364];
-    f32 fxOffsetX;
-    f32 fxOffsetY;
-    f32 fxOffsetZ;
-    f32 fxOffset2X;
-    f32 fxOffset2Y;
-    f32 fxOffset2Z;
+    f32 footPoints[2][3];
     int moveSlots; /* MoveSlot/HitDesc array base; indexed by moveSlotIndex, stride 0xB0 */
     int pendingParentObj;
     u8 pad3E4[0x3E8 - 0x3E4];
@@ -191,14 +192,14 @@ typedef struct PlayerState {
     u8 pad510[0x514 - 0x510];
     f32 moveDirY;       /* move direction vector Y */
     f32 moveDirZ;       /* move direction vector Z */
-    u8 pad51C[0x52C - 0x51C];
+    f32 blendPlane[4];
     f32 moveStartPosX;  /* localPosX assigned at the vertical-move start */
     u8 pad530[0x534 - 0x530];
     f32 moveStartPosZ;  /* localPosZ assigned at the vertical-move start */
     f32 blendAnchor[3]; /* planar anchor vector (X at +0, Z at +8) fed to playerSetMoveBlendFromPlane; dotted with the blend plane to form the interpolation factor; written in another TU */
     s16 eventCountdown; /* move-blend/event countdown from playerSetMoveBlendFromPlane; written each frame then pushed as the ObjAnim EVENT_COUNTDOWN state word (ObjAnim_WriteStateWord) */
     s8 footstepSurface; /* footstep surface/material selector; switched to pick the footstep sfx variant (case 4 -> foot_33a, default -> foot_var) on anim foot events */
-    u8 unk547;
+    ByteFlags flags547;
     u8 pad548[0x549 - 0x548];
     s8 climbMoveVariant; /* 0x549: climb-move variant flag (set in another TU); when nonzero selects the alternate climb move table (lbl_803DC69C vs 698), the faster baddie.moveSpeed (lbl_803E7EF8 vs 8008) and the 0x40 blend flag */
     u8 pad54A[0x54C - 0x54A];
@@ -323,7 +324,7 @@ typedef struct PlayerState {
     f32 knockbackTimer; /* knockback/stagger countdown (-= timeDelta*knockbackDrainRate); set on knock moves, gates knock FX/sfx (0x394/0x395) while >0, reset to 0 on expiry */
     f32 knockbackHitTimer; /* periodic countdown during knockback drag (-= timeDelta); on expiry fires an ObjHits position-hit and reloads */
     f32 knockbackDrainRate; /* drain multiplier for knockbackTimer (-= timeDelta*this); tracks velocity magnitude, clamped to a range */
-    u8 knockKindBits; /* KnockBits bitfield byte at 0x7a8 (knock:3 top / low:5): .knock set from knockKind; read as (>>5 & 7)-1 to index the knockback particle table */
+    KnockBits knockKindBits; /* 0x7A8: .knock is set from knockKind and read back as knock-1 to index the knockback particle table */
     u8 pad7A9[0x7B8 - 0x7A9];
     f32 aimInputX; /* smoothed aim-stick X (eased from baddie.moveInputX, clamped); drives aimScreenX and the world aim direction */
     f32 aimInputZ; /* smoothed aim-stick Z (eased from baddie.moveInputZ, clamped); drives aimScreenY and the world aim direction */
@@ -448,6 +449,9 @@ STATIC_ASSERT(offsetof(PlayerStatus, money) == 0x8);
 STATIC_ASSERT(offsetof(PlayerState, playerStatus) == 0x35C);
 STATIC_ASSERT(offsetof(PlayerState, targetYaw) == 0x478);
 STATIC_ASSERT(offsetof(PlayerState, heldObj) == 0x7F8);
+STATIC_ASSERT(offsetof(PlayerState, footPoints) == 0x3C4);
 STATIC_ASSERT(offsetof(PlayerState, pendingFxFlags) == 0x8D8);
+STATIC_ASSERT(offsetof(PlayerState, blendPlane) == 0x51C);
+STATIC_ASSERT(offsetof(PlayerState, groundNormalX) == 0x56C);
 
 #endif /* MAIN_DLL_PLAYER_STATE_H_ */

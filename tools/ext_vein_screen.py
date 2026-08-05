@@ -63,7 +63,7 @@ def main():
             continue
         subs = [
             f for f in u.get("functions", [])
-            if f.get("fuzzy_match_percent", 100.0) < 100.0
+            if f.get("fuzzy_match_percent", 0.0) < 100.0
         ]
         if not subs:
             continue
@@ -89,7 +89,7 @@ def main():
                 continue
             et, ec = deltas(mnem_counts(tgt), mnem_counts(cur))
             label, promising = classify(et, ec)
-            rows.append((label, promising, f["fuzzy_match_percent"],
+            rows.append((label, promising, f.get("fuzzy_match_percent", 0.0),
                          unit["name"], sym, et, ec))
 
     rows.sort(key=lambda r: (RANK.get(r[0], 9), -r[2]))

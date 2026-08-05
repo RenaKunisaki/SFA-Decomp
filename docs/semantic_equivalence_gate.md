@@ -88,8 +88,34 @@ float model that says so.
   moves whole statements verbatim and proves its own reorderings against the
   RAW/WAR/WAW dependence relation over non-address-taken locals. It never splices
   inside an expression, which is the failure this gate exists to prevent.
-- Declaration sweeps (`tools/brute_match.py`, `tools/perm_solve.py`,
-  `tools/slot_oracle.py`) reorder declarations only, which cannot change meaning.
+- Declaration sweeps (`tools/brute_match.py`, `tools/decl_split_sweep.py`,
+  `tools/perm_solve.py`, `tools/slot_oracle.py`) reorder declarations only — which
+  **can** change meaning, and this line used to say it could not. A declaration
+  whose INITIALISER calls something is a declaration by every test the parser
+  applies, and its evaluation moves with it:
+
+  ```c
+  s32 rnd1 = randomGetRange(0, 0x1e) * 2;
+  s32 rnd2 = randomGetRange(0, 0x1e) * 2;
+  ```
+
+  is two draws from a PRNG that the call site consumes in *different* argument
+  positions, so swapping the two declarations swaps which draw lands where. The
+  sweeps do not route through this gate; they carry `brute_match.side_effect_reorders`,
+  which FLAGS any permutation that changes the relative order of a pair where at
+  least one initialiser calls something, and refuses to auto-apply it without
+  `--allow-side-effect-reorder`. Flagging rather than refusing keeps every prior
+  "N orderings, 0 hits" count comparable.
+
+  `initialiser_calls` counts an INDIRECT call — `p->fn(x)`, `s.fn(x)`,
+  `tbl[i].fn(x)` — as a call. Only the `(` distinguishes a member call from a
+  member read, and this tree dispatches its DLL interfaces
+  (`(*gCameraInterface)->getCamera()`) exactly that way; those are the calls whose
+  purity cannot be established from the source at all, so they are the last ones a
+  conservative detector may miss.
+
+  The per-block adjudication of every call-carrying block in the sub-100
+  population is in `docs/declaration_order_side_effects.md`.
 
 ## Limits, stated honestly
 

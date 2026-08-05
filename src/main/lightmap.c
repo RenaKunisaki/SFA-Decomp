@@ -3,6 +3,7 @@
 #include "main/frame_timing.h"
 #include "main/hud_visibility_api.h"
 #include "sys/objects.h"
+#include "main/render_flags.h"
 #include "main/shader_api.h"
 #include "main/shader_map_api.h"
 #include "main/sky_api.h"
@@ -62,24 +63,13 @@ void sceneDrawTransparentPolys(void);
 #include "main/lightmap_internal.h"
 
 
-extern u32 renderFlags;
-/* Global renderFlags bits (decoded by the accessor fns below: shouldDrawShadows,
- * shouldDrawClouds, getDrawDistanceFlag, isOvercast, setPendingMapLoad,
- * setStarsHidden). */
-#define RENDERFLAG_WIDESCREEN      0x8
-#define RENDERFLAG_DRAW_CLOUDS     0x10
-#define RENDERFLAG_DRAW_DISTANCE   0x10000
-#define RENDERFLAG_OVERCAST        0x40000
-#define RENDERFLAG_HIDE_STARS      0x80000
-
 extern f32 gLightmapDegToBamScale;
 
-extern u8 gMapBlockCount; /* count of allocated blocks */
 
 
 volatile PPCWGPipe GXWGFifo : (0xCC008000);
 
-void renderShadowType3(u8* obj, u32 b, s32 offset);
+void renderShadowType3(GameObject* obj, u32 b, s32 offset);
 static inline void GXPosition3s16(const s16 x, const s16 y, const s16 z)
 {
     GXWGFifo.s16 = x;
@@ -183,7 +173,7 @@ MapBlockData* mapGetBlock(int i)
     return gMapBlocks[i];
 }
 
-extern u32 gLightmapDrawQueue[];
+extern LightmapQEnt gLightmapDrawQueue[];
 
 s8* mapGetBlockIdx(int layer)
 {
@@ -358,9 +348,9 @@ void sortVisibleObjectKeysDescending(u32* arr, int n)
 void getVisibleObjects(s8* opacity)
 {
     int part;
-    int* objects;
-    int* p;
-    u8* o;
+    GameObject** objects;
+    GameObject** p;
+    GameObject* o;
     int i;
     u32 key;
     int depthInt;
@@ -369,7 +359,7 @@ void getVisibleObjects(s8* opacity)
     GameObject* att;
     int j;
     u8* interactState;
-    int* model;
+    ObjModel* model;
     u32 tf;
     u32 mode;
     s16 t;
@@ -386,14 +376,14 @@ void getVisibleObjects(s8* opacity)
     cur = opacity;
     for (; i < count; i++, cur++)
     {
-        o = (u8*)*p;
+        o = (GameObject*)*p;
 
-        ((GameObject*)o)->objectFlags &= ~OBJECT_OBJFLAG_RENDERED;
+        o->objectFlags &= ~OBJECT_OBJFLAG_RENDERED;
         j = 0;
-        sub = o;
-        for (; j < ((GameObject*)o)->childCount; j++)
+        sub = (u8*)o;
+        for (; j < o->childCount; j++)
         {
-            att = (GameObject*)(*(u8**)(sub + 0xc8));
+            att = ((GameObject*)sub)->childObjs[0];
             if (att != NULL)
             {
                 att->objectFlags &= ~OBJECT_OBJFLAG_RENDERED;
@@ -402,77 +392,77 @@ void getVisibleObjects(s8* opacity)
         }
         if (i >= part)
         {
-            *cur = objUpdateOpacity((GameObject*)o);
-            if (*cur != 0 || (((ObjAnimComponent*)o)->modelInstance->flags & 0x200000) != 0)
+            *cur = objUpdateOpacity(o);
+            if (*cur != 0 || (o->anim.modelInstance->flags & 0x200000) != 0)
             {
-                if ((((ObjAnimComponent*)o)->modelInstance->flags & 0x80000) != 0)
+                if ((o->anim.modelInstance->flags & 0x80000) != 0)
                 {
-                    *(f32*)&((GameObject*)o)->anim.targetObj =
-                        (f32)(((GameObject*)o)->anim.modelInstance->fixedSortDepth * 100);
-                    depthInt = (int)*(f32*)&((GameObject*)o)->anim.targetObj;
+                    *(f32*)&o->anim.targetObj =
+                        (f32)(o->anim.modelInstance->fixedSortDepth * 100);
+                    depthInt = (int)*(f32*)&o->anim.targetObj;
                 }
                 else
                 {
-                    if (((GameObject*)o)->anim.parent != NULL)
+                    if (o->anim.parent != NULL)
                     {
-                        Camera_ProjectWorldPoint(((GameObject*)o)->anim.worldPosX, ((GameObject*)o)->anim.worldPosY,
-                                                 ((GameObject*)o)->anim.worldPosZ, &a, &b, &depth,
-                                                 (f32*)&((GameObject*)o)->anim.targetObj);
+                        Camera_ProjectWorldPoint(o->anim.worldPosX, o->anim.worldPosY,
+                                                 o->anim.worldPosZ, &a, &b, &depth,
+                                                 (f32*)&o->anim.targetObj);
                     }
                     else
                     {
-                        Camera_ProjectWorldPoint(((GameObject*)o)->anim.localPosX - playerMapOffsetX,
-                                                 ((GameObject*)o)->anim.localPosY,
-                                                 ((GameObject*)o)->anim.localPosZ - playerMapOffsetZ, &a, &b,
-                                                 &depth, (f32*)&((GameObject*)o)->anim.targetObj);
+                        Camera_ProjectWorldPoint(o->anim.localPosX - playerMapOffsetX,
+                                                 o->anim.localPosY,
+                                                 o->anim.localPosZ - playerMapOffsetZ, &a, &b,
+                                                 &depth, (f32*)&o->anim.targetObj);
                     }
                     depthInt = (int)(1e+03f * (1.0f + depth));
                 }
-                if ((((GameObject*)o)->anim.flags & OBJANIM_FLAG_HIDDEN) == 0 &&
-                    ((GameObject*)o)->anim.modelState != NULL &&
-                    (((GameObject*)o)->anim.modelState->flags & OBJ_MODEL_STATE_SHADOW_VISIBLE) != 0)
+                if ((o->anim.flags & OBJANIM_FLAG_HIDDEN) == 0 &&
+                    o->anim.modelState != NULL &&
+                    (o->anim.modelState->flags & OBJ_MODEL_STATE_SHADOW_VISIBLE) != 0)
                 {
-                    t = ((ObjAnimComponent*)o)->modelInstance->shadowType;
+                    t = o->anim.modelInstance->shadowType;
                     if (t == 2 || t == 1)
                     {
-                        queueObjectShadow((GameObject*)o);
+                        queueObjectShadow(o);
                     }
                     else if (t == 4)
                     {
-                        renderObjectShadowTexture((GameObject*)o);
+                        renderObjectShadowTexture(o);
                     }
                 }
                 if (gVisibleObjectSortKeyCount < 1000)
                 {
                     key = 0;
-                    model = (int*)Obj_GetActiveModel((GameObject*)o);
-                    if (((GameObject*)o)->anim.renderAlpha == 0xff && (((GameObject*)o)->anim.flags & 0x80) == 0 &&
-                        ((tf = ((ObjAnimComponent*)o)->modelInstance->flags) & 0x40000) == 0 &&
-                        *(void**)(model + 0x16) == NULL)
+                    model = Obj_GetActiveModel(o);
+                    if (o->anim.renderAlpha == 0xff && (o->anim.flags & 0x80) == 0 &&
+                        ((tf = o->anim.modelInstance->flags) & 0x40000) == 0 &&
+                        model->renderAttachment == NULL)
                     {
                         key |= 0x80000000;
                         sortDepth = 1000 - (depthInt & 0xffff);
-                        if ((tf & 0x800000) != 0 && (((GameObject*)o)->colorFadeFlags & OBJ_COLOR_FADE_FLAG_ACTIVE) == 0)
+                        if ((tf & 0x800000) != 0 && (o->colorFadeFlags & OBJ_COLOR_FADE_FLAG_ACTIVE) == 0)
                         {
                             key |= 0x40000000LL;
-                            key |= (((GameObject*)o)->anim.romDefNo & 0x3ff) << 20;
+                            key |= (o->anim.romDefNo & 0x3ff) << 20;
                         }
                         gVisibleObjectSortKeys[gVisibleObjectSortKeyCount] =
                             (i & 0x3ff) | (((sortDepth & 0x3ff) << 10) | key);
                         gVisibleObjectSortKeyCount++;
-                        if ((((ObjAnimComponent*)o)->modelInstance->renderFlags & 0x20) != 0 &&
-                            (((GameObject*)o)->objectFlags & OBJECT_OBJFLAG_SHADOW_DISABLED) == 0 &&
-                            (((GameObject*)o)->anim.flags & OBJANIM_FLAG_HIDDEN) == 0)
+                        if ((o->anim.modelInstance->renderFlags & 0x20) != 0 &&
+                            (o->objectFlags & OBJECT_OBJFLAG_SHADOW_DISABLED) == 0 &&
+                            (o->anim.flags & OBJANIM_FLAG_HIDDEN) == 0)
                         {
                             renderShadowType3(o, 7, 0x50);
-                            gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 3] = 1;
+                            gLightmapDrawQueue[gLightmapDrawQueueCount].d = 1;
                             gLightmapDrawQueueCount++;
                         }
                     }
                     else
                     {
-                        if ((((ObjAnimComponent*)o)->modelInstance->flags & OBJDEF_FLAG_DEFERRED_RENDER) != 0 ||
-                            (((ObjAnimComponent*)o)->modelInstance->renderFlags & OBJDEF_RENDERFLAG_DEFERRED_RENDER) != 0)
+                        if ((o->anim.modelInstance->flags & OBJDEF_FLAG_DEFERRED_RENDER) != 0 ||
+                            (o->anim.modelInstance->renderFlags & OBJDEF_RENDERFLAG_DEFERRED_RENDER) != 0)
                         {
                             mode = 0x1f;
                         }
@@ -481,13 +471,13 @@ void getVisibleObjects(s8* opacity)
                             mode = 7;
                         }
                         renderShadowType3(o, mode, 0);
-                        gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 3] = 0;
+                        gLightmapDrawQueue[gLightmapDrawQueueCount].d = 0;
                         gLightmapDrawQueueCount++;
-                        if ((((ObjAnimComponent*)o)->modelInstance->renderFlags & 0x20) != 0 &&
-                            (((GameObject*)o)->anim.flags & OBJANIM_FLAG_HIDDEN) == 0)
+                        if ((o->anim.modelInstance->renderFlags & 0x20) != 0 &&
+                            (o->anim.flags & OBJANIM_FLAG_HIDDEN) == 0)
                         {
                             renderShadowType3(o, 7, 0x50);
-                            gLightmapDrawQueue[gLightmapDrawQueueCount * 4 + 3] = 1;
+                            gLightmapDrawQueue[gLightmapDrawQueueCount].d = 1;
                             gLightmapDrawQueueCount++;
                         }
                     }
@@ -495,7 +485,7 @@ void getVisibleObjects(s8* opacity)
             }
             else
             {
-                interactState = (void*)((GameObject*)o)->anim.hitReactState;
+                interactState = (void*)o->anim.hitReactState;
                 if (interactState != NULL && (interactState[0x62] & 0x30) != 0)
                 {
                     interactState[0xaf] = 2;
@@ -516,23 +506,23 @@ static void renderObjects(s8* opacity) {
     int i;
     u32 flags;
     int idx;
-    u8* obj;
+    GameObject* obj;
     int* p;
     int slot;
-    int* objects;
+    GameObject** objects;
     LightmapDrawQueue* qbase;
     LightmapQEnt* q;
     LightmapDrawQueue* dq;
 
     qbase = (LightmapDrawQueue*)gLightmapDrawQueue;
-    q = (LightmapQEnt*)gLightmapDrawQueue;
+    q = gLightmapDrawQueue;
     objects = ObjList_GetObjects((int*)0, 0);
     for (i = 1, kp = (u32*)((u8*)qbase + 0x8818) + 1; i < gVisibleObjectSortKeyCount; kp++, i++) {
         idx = *kp & 0x3ff;
-        obj = (u8*)objects[idx];
-        flags = ((GameObject*)obj)->anim.modelInstance->flags;
+        obj = objects[idx];
+        flags = obj->anim.modelInstance->flags;
         if ((flags & OBJDEF_FLAG_DEFERRED_RENDER) != 0 ||
-            ((((GameObject*)obj)->anim.modelInstance->renderFlags & OBJDEF_RENDERFLAG_DEFERRED_RENDER) != 0)) {
+            ((obj->anim.modelInstance->renderFlags & OBJDEF_RENDERFLAG_DEFERRED_RENDER) != 0)) {
             if (opacity[idx] != 0 && gLightmapDeferredObjectCount < 0x14) {
                 slot = gLightmapDeferredObjectCount;
                 gLightmapDeferredObjectCount = slot + 1;
@@ -544,8 +534,8 @@ static void renderObjects(s8* opacity) {
                 (*gModgfxInterface)->renderEffects(NULL, 0, 0, 1, obj);
             }
             objRender(0, 0, 0, 0, (GameObject*)obj, 1);
-            p = (int*)((GameObject*)obj)->anim.modelState;
-            if (p != NULL && ((GameObject*)obj)->anim.modelState->shadowCastSlot != NULL) {
+            p = (int*)obj->anim.modelState;
+            if (p != NULL && obj->anim.modelState->shadowCastSlot != NULL) {
                 LightmapQEnt* qe;
                 int qi;
                 u32 shadowKind;
@@ -556,9 +546,9 @@ static void renderObjects(s8* opacity) {
                 qe = &q[qi];
                 qe->d = shadowKind;
                 gLightmapDrawQueueCount = qi + 1;
-            } else if (((GameObject*)obj)->anim.modelInstance->shadowType == OBJ_SHADOW_TYPE_CRASH &&
-                       (((GameObject*)obj)->anim.flags & OBJANIM_FLAG_HIDDEN) == 0 &&
-                       (((GameObject*)obj)->anim.modelState->flags & OBJ_MODEL_STATE_SHADOW_VISIBLE)) {
+            } else if (obj->anim.modelInstance->shadowType == OBJ_SHADOW_TYPE_CRASH &&
+                       (obj->anim.flags & OBJANIM_FLAG_HIDDEN) == 0 &&
+                       (obj->anim.modelState->flags & OBJ_MODEL_STATE_SHADOW_VISIBLE)) {
                 LightmapQEnt* qe;
                 int qi;
                 u32 shadowKind;
@@ -816,7 +806,7 @@ void sceneDraw(void)
         cursor = (u8*)player;
         for (; i < player->childCount; i++)
         {
-            GameObject* child = *(GameObject**)(cursor + 200);
+            GameObject* child = ((GameObject*)cursor)->childObjs[0];
             if (child->anim.classId == 45)
             {
                 ((void (*)(GameObject*))(*child->anim.dll)[11])(child);
@@ -960,7 +950,7 @@ void mapBlockRenderTransparent(MapBlockBoundsRec* bounds, MapBlockData* block, f
 void lightmap_sortTransparentDrawQueue(void);
 
 
-void renderShadowType3(u8* obj, u32 b, s32 offset);
+void renderShadowType3(GameObject* obj, u32 b, s32 offset);
 
 void lightmap_sortTransparentDrawQueue(void);
 

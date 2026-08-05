@@ -6,11 +6,14 @@
 #include "dlls/objects/473_DIM2PrisonM.h"
 
 #include "dolphin/pad.h"
+#include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/dll/savegame_object_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/model.h"
 #include "main/objHitReact.h"
+#include "main/objprint_api.h"
 #include "main/objseq.h"
 #include "main/object_render.h"
 #include "main/pad_api.h"
@@ -118,7 +121,7 @@ int dim2prisonmammoth_stateHandler01(GameObject* obj, Dim2PrisonMammothState* st
         buttonDisable(0, PAD_BUTTON_A);
     }
     if (RandomTimer_UpdateRangeTrigger(&objectState->callTimer, 4.0f, 8.0f) != 0) {
-        Sfx_PlayFromObject((int)obj, SFXTRIG_hightop_call1);
+        Sfx_PlayFromObject(obj, SFXTRIG_hightop_call1);
     }
 
     return 0;

@@ -25,6 +25,7 @@
 #include "main/pad.h"
 #include "main/rcp_dolphin.h"
 #include "main/vecmath.h"
+#include "string.h"
 #include "sys/objects.h"
 
 int lbl_803DD54C;
@@ -120,10 +121,8 @@ void firstPersonExit(CameraObject* camera) {
         ((gCameraModeViewfinderState->yawCurve.start - gCameraModeViewfinderState->yawCurve.end) < -32768.0f)) {
         if (gCameraModeViewfinderState->yawCurve.start < 0.0f) {
             gCameraModeViewfinderState->yawCurve.start += 65535.0f;
-        } else {
-            if (gCameraModeViewfinderState->yawCurve.end < 0.0f) {
-                gCameraModeViewfinderState->yawCurve.end += 65535.0f;
-            }
+        } else if (gCameraModeViewfinderState->yawCurve.end < 0.0f) {
+            gCameraModeViewfinderState->yawCurve.end += 65535.0f;
         }
     }
     gCameraModeViewfinderState->pitchCurve.start = (f32)(s32)self->anim.rotY;
@@ -135,10 +134,8 @@ void firstPersonExit(CameraObject* camera) {
         ((gCameraModeViewfinderState->pitchCurve.start - gCameraModeViewfinderState->pitchCurve.end) < -32768.0f)) {
         if (gCameraModeViewfinderState->pitchCurve.start < 0.0f) {
             gCameraModeViewfinderState->pitchCurve.start += 65535.0f;
-        } else {
-            if (gCameraModeViewfinderState->pitchCurve.end < 0.0f) {
-                gCameraModeViewfinderState->pitchCurve.end += 65535.0f;
-            }
+        } else if (gCameraModeViewfinderState->pitchCurve.end < 0.0f) {
+            gCameraModeViewfinderState->pitchCurve.end += 65535.0f;
         }
     }
     curvesMove(&gCameraModeViewfinderState->transitionCurve);
@@ -170,7 +167,7 @@ void firstPersonDoControls(CameraObject* camera) {
     camera->anim.rotX = gCameraModeViewfinderState->yawSpeed * timeDelta + (f32)camera->anim.rotX;
     spinI = spinI - (camera->anim.rotY & 0xffffU);
     pitchDelta = spinI;
-    if (0x8000 < pitchDelta) {
+    if (pitchDelta > 0x8000) {
         pitchDelta = pitchDelta - 0xffff;
     }
     if (pitchDelta < -0x8000) {
@@ -178,7 +175,7 @@ void firstPersonDoControls(CameraObject* camera) {
     }
     spin = interpolate((f32)pitchDelta, 1.0f / (32.0f * zoom + 16.0f), timeDelta);
     camera->anim.rotY = camera->anim.rotY + spin;
-    if (0x3c00 < camera->anim.rotY) {
+    if (camera->anim.rotY > 0x3c00) {
         camera->anim.rotY = 0x3c00;
     }
     if (camera->anim.rotY < -0x3c00) {
@@ -519,7 +516,7 @@ void CameraModeViewfinder_init(CameraObject* camera, int mode, CameraModeViewfin
     dx = camera->anim.worldPosX - focus->anim.worldPosX;
     dz = camera->anim.worldPosZ - focus->anim.worldPosZ;
     dist = sqrtf(dx * dx + dz * dz);
-    if (0.0f != dist) {
+    if (dist != 0.0f) {
         dx = dx / dist;
         dz = dz / dist;
     }

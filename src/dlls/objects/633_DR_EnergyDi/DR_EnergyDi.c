@@ -9,6 +9,7 @@
  * animation move 1.0f. init seeds the spawn rotation from the
  * placement and primes the activated/texture state from the active bit.
  */
+#include "main/audio/sfx_play_api.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
 #include "main/objtexture.h"
@@ -54,7 +55,7 @@ void DR_EnergyDisc_update(GameObject* obj)
         if (state->activated == 0)
         {
             state->activated = 1;
-            Sfx_PlayFromObject((int)obj, SFXTRIG_id_30c);
+            Sfx_PlayFromObject(obj, SFXTRIG_id_30c);
         }
 
         texture = objFindTexture(obj, 0, 0);
@@ -91,7 +92,7 @@ void DR_EnergyDisc_init(GameObject* obj, DrenergydiscPlacement* setup)
     if (mainGetBit(setup->activeGameBit) != 0)
     {
         state->activated = 1;
-        Sfx_PlayFromObject((int)obj, SFXTRIG_id_30c);
+        Sfx_PlayFromObject(obj, SFXTRIG_id_30c);
         texture = objFindTexture(obj, 0, 0);
         if (texture != NULL)
         {

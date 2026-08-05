@@ -110,7 +110,7 @@ int DoorF4_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
     placement = (DoorF4Placement*)obj->anim.placementData;
     state = obj->extra;
     signedDistance = 0.0f;
-    objects = (GameObject**)ObjList_GetObjects(&objectIndex, &objectCount);
+    objects = ObjList_GetObjects(&objectIndex, &objectCount);
     animUpdate->movementState = 0;
     playerObj = Obj_GetPlayerObject();
     deltaX = playerObj->anim.localPosX - placement->base.posX;
@@ -176,10 +176,8 @@ int DoorF4_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
                 if (signedDistance < 0.0f && signedDistance > -DOORF4_DIRECTIONAL_HALF_DEPTH) {
                     shouldOpen = 1;
                 }
-            } else {
-                if (signedDistance < DOORF4_DIRECTIONAL_HALF_DEPTH && signedDistance > -DOORF4_DIRECTIONAL_HALF_DEPTH) {
-                    shouldOpen = 1;
-                }
+            } else if (signedDistance < DOORF4_DIRECTIONAL_HALF_DEPTH && signedDistance > -DOORF4_DIRECTIONAL_HALF_DEPTH) {
+                shouldOpen = 1;
             }
         }
         break;
@@ -232,10 +230,8 @@ int DoorF4_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {
                 if (signedDistance < 0.0f && obj->userData2 == 0) {
                     animUpdate->sequenceControlFlags |= OBJSEQ_CONTROL_SET_LATCH_A | OBJSEQ_CONTROL_SET_STATE_LATCH;
                 }
-            } else {
-                if (obj->userData2 == 1) {
-                    animUpdate->sequenceControlFlags |= OBJSEQ_CONTROL_CLEAR_LATCH_A;
-                }
+            } else if (obj->userData2 == 1) {
+                animUpdate->sequenceControlFlags |= OBJSEQ_CONTROL_CLEAR_LATCH_A;
             }
         }
         break;

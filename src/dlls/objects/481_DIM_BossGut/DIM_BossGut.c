@@ -7,6 +7,7 @@
 
 #include "main/frame_timing.h"
 #include "main/object_render.h"
+#include "sys/objects.h"
 
 #define DIM_BOSS_GUT_OBJECT_SLOT    0x5A
 #define DIM_BOSS_GUT_ANIMATION_STEP 0.005f

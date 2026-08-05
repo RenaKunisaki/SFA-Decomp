@@ -255,7 +255,7 @@ void pathSearchExpandNode(PathSearch* search, PathSearchNode* node, int idx) {
     link = (char*)point;
     mask = t;
     for (; bit < 4; bit++) {
-        int linkId = *(int*)(link + 0x1c);
+        int linkId = ((RomCurveDef*)link)->linkIds[0];
         if (linkId > -1 && (mask & (1 << bit)) != 0) {
             linked = (RomCurveDef*)(*gRomCurveInterface)->getById(linkId);
             if (linked != NULL) {
@@ -271,7 +271,7 @@ void pathSearchExpandNode(PathSearch* search, PathSearchNode* node, int idx) {
                             if (!(linked->unk1A == 8 && point->unk1A == 9)) {
                                 f32 d = vec3f_distanceSquared(&point->x, &linked->x);
                                 pathSearchAddNeighbor(search, node, idx,
-                                                      (u32)((f32)node->routeDistance + d), (RomCurveDef*)linked);
+                                                      (u32)((f32)node->routeDistance + d), linked);
                             }
                         }
                     }

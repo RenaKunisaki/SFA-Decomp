@@ -4,13 +4,6 @@
 #include "game/objects/object.h"
 #include "global.h"
 
-typedef struct Vec3Blob
-{
-    int x;
-    int y;
-    int z;
-} Vec3Blob;
-
 typedef struct KtrexfloorswitchPlacement
 {
     u8 pad0[0x8 - 0x0];
@@ -67,8 +60,8 @@ void KT_RexFloorSwitch_init(GameObject* obj, const KtrexfloorswitchPlacement* pl
 void KT_RexFloorSwitch_update(GameObject* obj);
 
 extern int gKTrexFloorSwitchCurveFindResult;
-extern const f32 gKTrexFloorSwitchLocalEdgeZ[3];
-extern const f32 gKTrexFloorSwitchLocalEdgeX[3];
+extern const Vec gKTrexFloorSwitchLocalEdgeZ;
+extern const Vec gKTrexFloorSwitchLocalEdgeX;
 extern int gKTrexFloorSwitchPrevMoved;
 
 #endif /* MAIN_DLL_DR_DLL_0251_KTREXFLOORSWITCH_H_ */
