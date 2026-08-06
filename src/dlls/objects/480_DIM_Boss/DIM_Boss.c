@@ -569,7 +569,7 @@ int DIMbossHitDetect_blueWhiteCapture(GameObject* obj, BaddieState* runtime, f32
     } else if (progress > 0.25f) {
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_0040;
     }
-    if (runtime->eventFlags & 1) {
+    if (runtime->eventFlags & BADDIE_EVENT_FOOTSTEP) {
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_CAPTURE_BLUE_WHITE_VELOCITY;
     }
     (*gPlayerInterface)->playSoundOnEvent0F(obj, runtime, 0, 3, lbl_80325AA0);

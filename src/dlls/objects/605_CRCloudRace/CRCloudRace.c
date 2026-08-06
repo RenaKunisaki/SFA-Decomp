@@ -204,7 +204,7 @@ void crcloudrace_update(GameObject* obj)
         obj->userData1 = 1;
     }
     crcloudrace_updateRaceState(obj);
-    state->flags &= ~1;
+    state->flags &= ~CRCLOUDRACE_STATE_FLAG_COMPLETION_CALLBACK;
     GameBitLatch_Update((GameBitLatchState*)state->effect, 1, -1, -1, CRCLOUDRACE_GAMEBIT_START_LATCH_A,
                           CRCLOUDRACE_GAMEBIT_START_LATCH_B);
     GameBitLatch_Update((GameBitLatchState*)state->effect, 2, -1, -1, CRCLOUDRACE_GAMEBIT_START_LATCH_A,

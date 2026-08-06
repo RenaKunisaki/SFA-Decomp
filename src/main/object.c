@@ -1823,10 +1823,10 @@ void Obj_RegisterObject(GameObject* obj, int flags)
     {
         mapLoadForObject(id, obj);
     }
-    if (object->modelInstance->flags & 0x40)
+    if (object->modelInstance->flags & OBJMODEL_FLAG_SKIP_RESET_UPDATE)
     {
         objAddObjectType((u32)obj, OBJECT_OBJGROUP_HITBOX);
-        if (object->activeHitboxMode != 0x5a && (object->modelInstance->flags & 0x40))
+        if (object->activeHitboxMode != 0x5a && (object->modelInstance->flags & OBJMODEL_FLAG_SKIP_RESET_UPDATE))
         {
             object->activeHitboxMode = 0x5a;
         }

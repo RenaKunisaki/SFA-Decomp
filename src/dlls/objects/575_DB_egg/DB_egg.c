@@ -549,7 +549,7 @@ void dbegg_update(GameObject* obj)
         case DBEGG_MODE_FALLING:
             if ((obj)->userData2 == 0)
             {
-                hitState->flags |= 1;
+                hitState->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
             }
             if (dbegg_probeSurface(obj, &surfaceHeight, 0.0f, 0.0f, 1) == 0)
             {
@@ -597,7 +597,7 @@ void dbegg_update(GameObject* obj)
         case DBEGG_MODE_SETTLED:
             if ((obj)->userData2 == 0)
             {
-                hitState->flags |= 1;
+                hitState->flags |= OBJHITS_PRIORITY_STATE_ENABLED;
             }
             (obj)->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
             break;
@@ -708,7 +708,7 @@ void dbegg_update(GameObject* obj)
             }
             else
             {
-                hitState->flags &= ~1;
+                hitState->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;
                 ObjMsg_SendToObject(player, DBEGG_MSG_PLAYER_GRAB, obj, 0x38000);
                 (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
             }
@@ -879,7 +879,7 @@ void dbegg_update(GameObject* obj)
                         {
                             (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
                             egg->mode = DBEGG_MODE_PICKUP_PROMPT;
-                            hitState->flags &= ~1;
+                            hitState->flags &= ~OBJHITS_PRIORITY_STATE_ENABLED;
                         }
                     }
                 }
