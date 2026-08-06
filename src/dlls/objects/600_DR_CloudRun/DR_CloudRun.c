@@ -949,7 +949,7 @@ int DR_CloudRunner_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
     return 0;
 }
 
-void DR_CloudRunner_setGroundMarkerMatrix(GameObject* obj)
+void DR_CloudRunner_handleRiderScale(GameObject* obj)
 {
     objSetModelMatrixOverride((f32*)ObjPath_GetPointModelMtx(obj, 2));
 }
@@ -975,7 +975,7 @@ void DR_CloudRunner_getPlayerAnim(int obj, f32* a, int* b)
     *b = 0;
 }
 
-void DR_CloudRunner_setFlightState(GameObject* obj, int param)
+void DR_CloudRunner_setMountState(GameObject* obj, int param)
 {
     CloudRunnerState* inner = obj->extra;
     inner->flightState = param;
@@ -1369,12 +1369,12 @@ ObjectDescriptor24 gDR_CloudRunnerObjDescriptor = {
     (ObjectDescriptorCallback)DR_CloudRunner_getDismountSide,
     (ObjectDescriptorCallback)DR_CloudRunner_getCameraPosition,
     (ObjectDescriptorCallback)DR_CloudRunner_getMountState,
-    (ObjectDescriptorCallback)DR_CloudRunner_setFlightState,
+    (ObjectDescriptorCallback)DR_CloudRunner_setMountState,
     (ObjectDescriptorCallback)DR_CloudRunner_getPlayerAnim,
     (ObjectDescriptorCallback)DR_CloudRunner_func19,
     (ObjectDescriptorCallback)DR_CloudRunner_getRacePosition,
     (ObjectDescriptorCallback)DR_CloudRunner_func21,
-    (ObjectDescriptorCallback)DR_CloudRunner_setGroundMarkerMatrix,
+    (ObjectDescriptorCallback)DR_CloudRunner_handleRiderScale,
     (ObjectDescriptorCallback)DR_CloudRunner_func23,
 };
 

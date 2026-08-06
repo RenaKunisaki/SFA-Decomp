@@ -607,7 +607,7 @@ void SB_CloudRunner_func23(void)
 }
 
 
-void SB_CloudRunner_setGroundMarkerMatrix(void* obj)
+void SB_CloudRunner_handleRiderScale(void* obj)
 {
     objSetCurrentMatrix((MtxPtr)ObjPath_GetPointModelMtx(obj, 3));
 }
@@ -878,6 +878,6 @@ ObjectDescriptor24 gSB_CloudRunnerObjDescriptor = {
     (ObjectDescriptorCallback)SB_CloudRunner_func19,
     (ObjectDescriptorCallback)SB_CloudRunner_getRacePosition,
     (ObjectDescriptorCallback)SB_CloudRunner_func21,
-    (ObjectDescriptorCallback)SB_CloudRunner_setGroundMarkerMatrix,
+    (ObjectDescriptorCallback)SB_CloudRunner_handleRiderScale,
     (ObjectDescriptorCallback)SB_CloudRunner_func23,
 };

@@ -575,7 +575,7 @@ ObjectDescriptor24 gHighTopObjDescriptor = {
     (ObjectDescriptorCallback)hightop_func13,
     (ObjectDescriptorCallback)HighTop_getRacePosition,
     (ObjectDescriptorCallback)hightop_func15,
-    (ObjectDescriptorCallback)HighTop_renderGroundMarker,
+    (ObjectDescriptorCallback)HighTop_handleRiderScale,
     (ObjectDescriptorCallback)HighTop_getLookTargetYaw,
 };
 
@@ -889,7 +889,7 @@ void HighTop_getLookTargetYaw(GameObject* obj, int mode, int* out)
     }
 }
 
-void HighTop_renderGroundMarker(GameObject* obj, f32 scale)
+void HighTop_handleRiderScale(GameObject* obj, f32 scale)
 {
     f32* mtx;
     f32 lx, ly, lz;

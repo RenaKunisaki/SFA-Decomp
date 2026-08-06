@@ -77,7 +77,7 @@ void drakorhoverpad_func17(GameObject* obj, int sel, int* out)
     }
 }
 
-void drakorhoverpad_renderGroundMarker(GameObject* obj, f32 scale)
+void drakorhoverpad_handleRiderScale(GameObject* obj, f32 scale)
 {
     f32* mtx;
     MatrixTransform pos;
@@ -410,7 +410,7 @@ ObjectDescriptor24 gDrakorHoverPadObjDescriptor = {
     (ObjectDescriptorCallback)drakorhoverpad_func13,
     (ObjectDescriptorCallback)drakorhoverpad_getRacePosition,
     (ObjectDescriptorCallback)drakorhoverpad_func15,
-    (ObjectDescriptorCallback)drakorhoverpad_renderGroundMarker,
+    (ObjectDescriptorCallback)drakorhoverpad_handleRiderScale,
     (ObjectDescriptorCallback)drakorhoverpad_func17,
 };
 int drakorhoverpad_init(GameObject* obj)

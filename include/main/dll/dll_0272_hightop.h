@@ -136,7 +136,7 @@ int hightop_stateHandler05(GameObject* obj, HighTopRuntime* runtime);
 int HighTop_seqFn(GameObject* obj);
 void hightop_playMovementSfx(GameObject* obj, HighTopRuntime* state2, HighTopRuntime* state);
 void HighTop_getLookTargetYaw(GameObject* obj, int mode, int* out);
-void HighTop_renderGroundMarker(GameObject* obj, f32 scale);
+void HighTop_handleRiderScale(GameObject* obj, f32 scale);
 void HighTop_render(void* obj, int p2, int p3, int p4, int p5, char visible);
 void HighTop_init(GameObject* obj, HighTopPlacement* placement);
 int hightop_stateHandler08(GameObject* obj, HighTopRuntime* runtime);
