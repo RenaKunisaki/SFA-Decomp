@@ -3302,7 +3302,7 @@ void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
                 textObj = gameTextGet(0x2AD);
             }
             if (icon != 0 && textObj != NULL &&
-                textObj->count > *(aPhraseIndex = &gHudButtonIcons[icon * 2 + 1]))
+                textObj->count > *(aPhraseIndex = (u8*)(icon * 2 + ((u32)gHudButtonIcons + 1))))
             {
                 aTextPtr = textObj->strings[*aPhraseIndex];
                 aPrevCharset2 = gameTextGetCharset();
@@ -3364,7 +3364,7 @@ void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
             gameTextSetCharset(3, 3);
             textObj = gameTextGet(0x2AD);
             if (icon != 0 && textObj != NULL &&
-                textObj->count > *(bPhraseIndex = &gHudButtonIcons[icon * 2 + 1]))
+                textObj->count > *(bPhraseIndex = (u8*)(icon * 2 + ((u32)gHudButtonIcons + 1))))
             {
                 bTextPtr = textObj->strings[*bPhraseIndex];
                 bPrevCharset2 = gameTextGetCharset();
