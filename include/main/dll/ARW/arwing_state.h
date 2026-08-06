@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "global.h"
+#include "game/objects/object_fwd.h"
 
 typedef struct Arw339Flags
 {

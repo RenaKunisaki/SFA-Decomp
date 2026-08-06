@@ -2,6 +2,7 @@
 #define MAIN_DLL_SKEETLA_ROUTE_API_H_
 
 #include "global.h"
+#include "game/objects/object_fwd.h"
 
 typedef struct RomCurveWalker RomCurveWalker;
 

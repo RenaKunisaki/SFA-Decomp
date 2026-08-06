@@ -2,6 +2,7 @@
 #define MAIN_DLL_DUSTER_API_H_
 
 #include "types.h"
+#include "global.h"
 
 /* Shared wall-plane record produced by rachnopFindWallPlane and consumed by
  * the duster/firefly-lantern planar movement helpers. */

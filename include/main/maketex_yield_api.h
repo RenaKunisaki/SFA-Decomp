@@ -2,6 +2,7 @@
 #define MAIN_MAKETEX_YIELD_API_H_
 
 #include "types.h"
+#include "main/objseq.h"
 
 void ObjSeq_yield(ObjSeqState* seq, int value);
 

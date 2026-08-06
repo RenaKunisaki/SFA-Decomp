@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "main/dll/partfx_interface.h"
+#include "game/objects/object_fwd.h"
 
 typedef int (*PartFxSpawnCallback)(GameObject*, int, PartFxSpawnParams*, u32, u8, void*);
 

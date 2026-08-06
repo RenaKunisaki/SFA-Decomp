@@ -3,6 +3,7 @@
 
 #include "global.h"
 #include "game/objects/object.h"
+#include "main/dll/baddie_state.h"
 
 void playerUpdateMotionState(GameObject* obj, void* motionState, BaddieState* baddieState);
 void playerClampVelocityAndMove(GameObject* obj, f32 timeDelta);

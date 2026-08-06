@@ -1,8 +1,9 @@
 #ifndef _THP_THPAUDIODECODE_H
 #define _THP_THPAUDIODECODE_H
 
-#include "Dolphin/os.h"
-#include "THP/THPAudio.h"
+#include "dolphin/os.h"
+#include "dolphin/thp/THPAudio.h"
+#include "dolphin/thp/THPRead.h"
 
 static void* AudioDecoderForOnMemory(void* bufPtr);
 static void* AudioDecoder(void* _);

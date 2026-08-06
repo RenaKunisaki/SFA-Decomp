@@ -2,6 +2,7 @@
 #define MAIN_DLL_MMP_CRATERCRITTER_H_
 
 #include "global.h"
+#include "main/dll/tricky_state.h"
 
 void tricky_stateGoToWarpPoint(u8* self, TrickyState* state);
 
