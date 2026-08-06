@@ -586,7 +586,7 @@ u32 wispBaddieProcessAnimEvent(GameObject* obj, u8* state, u32 allowNewEvent)
         if (((EnemyState*)state)->sharpClaw.moveHoldTimer <= 0.0f)
         {
             ((EnemyState*)state)->sharpClaw.moveHoldTimer = 0.0f;
-            ((EnemyState*)state)->controlFlags = (s32)((EnemyState*)state)->controlFlags & ~0x40LL;
+            ((EnemyState*)state)->controlFlags = ((EnemyState*)state)->controlFlags & ~0x40LL;
             ((EnemyState*)state)->controlFlags =
                 ((EnemyState*)state)->controlFlags | (u64)BADDIE_CONTROL_SEQUENCE_DRIVEN;
             ((EnemyState*)state)->curveIndex = ((EnemyState*)state)->curveIndex & ~0x80;
