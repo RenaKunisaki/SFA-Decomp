@@ -51,7 +51,7 @@ typedef struct CurvesHitScratch
 #define CURVES_FALLBACK_TRACE_HEIGHT      35.0f
 #define CURVES_RADIUS_SCALE               2.0f
 
-RomCurvePoint sCurvesHitPoints[ROMCURVE_GETCURVES_MAX_POINTS];
+TrackGroundHit sCurvesHitPoints[ROMCURVE_GETCURVES_MAX_POINTS];
 
 
 static inline u32 RomCurve_GetId(RomCurveDef* curve)
@@ -217,8 +217,8 @@ void curves_countRandomPoints(GameObject* obj, CurvesCollisionState* collision)
 
 void curves_resolveSingleTrace(GameObject* obj, CurvesCollisionState* collision)
 {
-    RomCurvePoint* point;
-    RomCurvePoint* points;
+    TrackGroundHit* point;
+    TrackGroundHit* points;
     int hitCount;
     int count;
     int pointIndex;
@@ -482,7 +482,7 @@ void curves_snapToNearestSurface(GameObject* obj, CurvesCollisionState* collisio
     int hitIndex;
     f32 currentY;
     f32 window;
-    RomCurvePoint* point;
+    TrackGroundHit* point;
 
     point = curves_getCurves(obj, collision->points[0][0], collision->points[0][2], &hitCount, 0);
     hitIndex = hitCount - 1;
@@ -512,10 +512,10 @@ void curves_resolveWaterFloorCeiling(GameObject* obj, CurvesCollisionState* coll
 {
     int seg;
     int hitCount;
-    RomCurvePoint* point;
+    TrackGroundHit* point;
     int i;
     s8 foundBelow;
-    RomCurvePoint* points;
+    TrackGroundHit* points;
     f32 topSentinel;
     f32 one;
     f32 zero;
@@ -939,9 +939,9 @@ f32 curves_sampleHeight(GameObject* obj, f32 x, f32 baseY, f32 z, f32 height)
 {
     int hitCount;
     f32 maxY;
-    RomCurvePoint* point;
+    TrackGroundHit* point;
     int i;
-    RomCurvePoint* points;
+    TrackGroundHit* points;
 
     points = curves_getCurves(obj, x, z, (u32*)&hitCount, 1);
     i = 0;
@@ -958,7 +958,7 @@ f32 curves_sampleHeight(GameObject* obj, f32 x, f32 baseY, f32 z, f32 height)
     return baseY;
 }
 
-RomCurvePoint* curves_getCurves(GameObject* obj, f32 x, f32 z, u32* outCount, int queryAll)
+TrackGroundHit* curves_getCurves(GameObject* obj, f32 x, f32 z, u32* outCount, int queryAll)
 {
     int pairCount;
     TrackGroundHit** hitPoints;

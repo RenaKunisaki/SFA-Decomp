@@ -26,30 +26,12 @@
 #define DFPSEQPOINT_MODE_GATE_UNSET       4 /* gate clear, then set gate */
 #define DFPSEQPOINT_MODE_GATE_REPEAT      5 /* gate set, fire every frame (no latch) */
 
-typedef struct DfpseqpointPlacement
-{
-    ObjPlacement head;  /* 0x00..0x17 (posX 0x08, ident 0x14) */
-    s8 rotXByte;       /* 0x18 */
-    u8 triggerMode;    /* 0x19 */
-    s16 triggerRadius; /* 0x1A */
-    s16 sequenceId;    /* 0x1C */
-    s16 conditionGameBit; /* 0x1E */
-    s16 disableGameBit;   /* 0x20 */
-    u8 pad22[0x24 - 0x22];
-    s16 unk24;
-    u8 pad26[0x2B - 0x26];
-    u8 unk2B;
-    u8 pad2C[0x2E - 0x2C];
-    s8 unk2E;
-    u8 pad2F[0x30 - 0x2F];
-} DfpseqpointPlacement;
-
 STATIC_ASSERT(sizeof(DfpSeqPointState) == 0x10);
 
 int DFP_seqpoint_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
 {
     DfpSeqPointState* blob = obj->extra;
-    DfpseqpointPlacement* data = (DfpseqpointPlacement*)obj->anim.placementData;
+    DfpSeqPointPlacement* data = (DfpSeqPointPlacement*)obj->anim.placementData;
     int i;
 
     animUpdate->savedFlags = -1;
@@ -81,7 +63,7 @@ int DFP_seqpoint_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
             switch (animUpdate->eventIds[i])
             {
             case 0x14:
-                if (*(u32*)&data->head.ident == 0x49de8)
+                if (*(u32*)&data->base.ident == 0x49de8)
                 {
                     blob->flags0F.b80 = 1;
                 }

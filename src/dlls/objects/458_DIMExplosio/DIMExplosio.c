@@ -53,9 +53,10 @@ typedef struct DimExplosionPartfxSource {
     f32 velocityY;
     f32 velocityZ;
     void* parent;
-    u8 unknown34[2];
+    u8 hostedMapSlot;
+    s8 transformMatrixIndex;
     u8 alpha;
-    u8 unknown37;
+    u8 renderAlpha;
 } DimExplosionPartfxSource;
 
 typedef struct DimExplosionTextureTable {
