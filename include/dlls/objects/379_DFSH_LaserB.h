@@ -13,7 +13,7 @@ typedef struct DFSHLaserBeamPlacement {
     s8 initialYaw;
     u8 proximityMode;
     s16 beamRange;
-    u8 unknown1C[0x1E - 0x1C];
+    s16 cyclePeriod;
     s16 disableGameBit;
 } DFSHLaserBeamPlacement;
 
@@ -49,7 +49,7 @@ STATIC_ASSERT(offsetof(DFSHLaserBeamPlacement, base) == 0x00);
 STATIC_ASSERT(offsetof(DFSHLaserBeamPlacement, initialYaw) == 0x18);
 STATIC_ASSERT(offsetof(DFSHLaserBeamPlacement, proximityMode) == 0x19);
 STATIC_ASSERT(offsetof(DFSHLaserBeamPlacement, beamRange) == 0x1A);
-STATIC_ASSERT(offsetof(DFSHLaserBeamPlacement, unknown1C) == 0x1C);
+STATIC_ASSERT(offsetof(DFSHLaserBeamPlacement, cyclePeriod) == 0x1C);
 STATIC_ASSERT(offsetof(DFSHLaserBeamPlacement, disableGameBit) == 0x1E);
 
 STATIC_ASSERT(sizeof(DFSHLaserBeamState) == 0x4C);
