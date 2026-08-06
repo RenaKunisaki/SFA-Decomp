@@ -40,7 +40,7 @@ extern int gPlayerSfxTimerD;
 extern int gPlayerStepSfxTimer;
 extern s16 gPlayerSelectedItem;
 extern int gPlayerStateHandlers[];
-extern int gPlayerDefaultStateHandler;
+extern void* gPlayerDefaultStateHandler;
 extern void* gPlayerChildObject;
 extern PlayerModelChainEntry* gPlayerModelChainConfig;
 extern int gPlayerHeldObject;

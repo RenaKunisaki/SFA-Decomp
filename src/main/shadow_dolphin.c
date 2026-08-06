@@ -65,7 +65,7 @@
 #include "main/track_dolphin_sky_api.h"
 #include "main/dll/ppcwgpipe_struct.h"
 
-int gShadowVolumeBuffer;
+Vec3f* gShadowVolumeBuffer;
 void* gShadowVolumeBuffers[2];
 int lbl_803DCF20;
 int lbl_803DCF1C;
@@ -737,13 +737,13 @@ int objShadowRender(GameObject* obj, int renderMode, int unused, int frameCount)
         trackGetTriangleBuffer(&idxOut, &triangleTable);
 
         triangleBuffer = triangleTable;
-        idxOut = collectShadowTrackTriangles(obj, triangleBuffer, gShadowDrawScratch, gShadowVolumeBuffer, idxOut, (f32)(int)vtx[0],
+        idxOut = collectShadowTrackTriangles(obj, triangleBuffer, gShadowDrawScratch, (int)gShadowVolumeBuffer, idxOut, (f32)(int)vtx[0],
                              (f32)(int)vtx[2], renderMode, modelState->flags & 0x40000);
         gShadowTrackTriangleBuffer = triangleBuffer;
         gShadowTrackTriangleCount = idxOut;
         gShadowTrackGridOrigin = (int)vtx;
         trackDolphin_buildShadowVolumePlanes((int*)obj, buf48, bufA8);
-        cullVisibleShadowTriangles(obj, buf48, bufA8, idxOut, (Vec3f*)gShadowVolumeBuffer, cache,
+        cullVisibleShadowTriangles(obj, buf48, bufA8, idxOut, gShadowVolumeBuffer, cache,
                     (TrackShadowTriangle*)gShadowDrawScratch, 0x555);
     }
     objDrawShadowCasterMesh(cache, modelState, obj, gShadowVisibleCount, &drawScratch, buf48, yOff);
@@ -969,7 +969,7 @@ void initTextures(void)
     f32* b = gShadowVolumeBoxCorners;
 
     gShadowVolumesDirty = 10;
-    gShadowVolumeBuffer = (int)mmAlloc(0xa8c0, 0x18, 0);
+    gShadowVolumeBuffer = mmAlloc(0xa8c0, 0x18, 0);
     a[0] = -1.0f;
     b[0] = -1.0f;
     a[1] = -1.0f;

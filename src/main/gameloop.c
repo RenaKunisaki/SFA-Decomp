@@ -68,7 +68,7 @@ int gAskProgressiveScanYesX = 0xAA;
 int gAskProgressiveScanNoX = 0x16A;
 
 f32 gGameLoopResetFadeOutTimer;
-void* gAskProgressiveScanFlag;
+u8* gAskProgressiveScanFlag;
 int gGameLoopPendingMapId;
 int gGameLoopPendingMapDataFileId;
 u8 gGameLoopPendingMusicId;

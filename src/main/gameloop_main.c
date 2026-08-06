@@ -856,7 +856,7 @@ void init(void)
         runLoadingScreens();
         dvdCheckError();
         gameTextRun();
-        if (*(u8*)gAskProgressiveScanFlag == 0)
+        if (*gAskProgressiveScanFlag == 0)
         {
             dtv = 0;
             if (VIGetDTVStatus() != 0)
@@ -870,7 +870,7 @@ void init(void)
                     dtv = 1;
                 }
             }
-            *(u8*)gAskProgressiveScanFlag = dtv;
+            *gAskProgressiveScanFlag = dtv;
         }
         GXFlush_(1, 0);
     } while ((filesDone == 0 || (u8)audioDone == 0) && gameState == GAME_STATE_BOOTING);
@@ -944,7 +944,7 @@ void init(void)
     doNothing_beforeTitleScreen();
     doQueuedLoads();
     setDrawCloudsAndLights(0);
-    if (*(u8*)gAskProgressiveScanFlag != 0)
+    if (*gAskProgressiveScanFlag != 0)
     {
         OSSetSaveRegion(gAskProgressiveScanFlag, (u8*)gAskProgressiveScanFlag + 1);
         VISetBlack(0);

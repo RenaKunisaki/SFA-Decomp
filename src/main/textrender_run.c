@@ -61,7 +61,7 @@ int gGameTextShadowOffsetY;
 int gGameTextShadowEnabled;
 u8 lbl_803DC980;
 int gGameTextBufferIndex;
-int gCurTextBuffer;
+char* gCurTextBuffer;
 u8* gGameTextLastEntry;
 int gGameTextFallbackBuf;
 GameTextDrawFunc gameTextDrawFunc;
@@ -614,7 +614,7 @@ void gameTextInitRendererState(void)
     gGameTextBufferIndex = 0;
     fallbackDef = (GameTextDef*)(gameTextBase + 0x40);
     gGameTextLastEntry = (u8*)fallbackDef;
-    gCurTextBuffer = *(int*)fallbackDef->strings;
+    gCurTextBuffer = (char*)*(int*)fallbackDef->strings;
     gGameTextShadowColorR = 0;
     gGameTextShadowColorG = 0;
     gGameTextShadowColorB = 0;

@@ -5733,7 +5733,7 @@ f32 lbl_803DC6E0 = -0.3f;
 f32 lbl_803DC6E4 = 0.05f;
 
 int lbl_803DE4BC;
-int gPlayerDefaultStateHandler;
+void* gPlayerDefaultStateHandler;
 u16 gPlayerHeldButtonMask;
 s16 gPlayerSelectedItem;
 s16 lbl_803DE4B0;
@@ -18537,7 +18537,7 @@ void playerInitFuncPtrs(void)
     p[63] = (int)playerState3F;
     p[64] = (int)playerState40;
     p[65] = (int)playerState41;
-    gPlayerDefaultStateHandler = (int)playerStateNoOp;
+    gPlayerDefaultStateHandler = playerStateNoOp;
 }
 
 int gPlayerStateHandlers[66];

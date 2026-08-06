@@ -9,7 +9,7 @@ extern f32 gGameLoopMusicFadeTimer;
 extern u8 gGameLoopResetComboDebounce;
 extern char sGameLoopResetMessages[0x50];
 extern f32 gGameLoopResetFadeOutTimer;
-extern void* gAskProgressiveScanFlag;
+extern u8* gAskProgressiveScanFlag;
 extern int gGameLoopPendingMapId;
 extern int gGameLoopPendingMapDataFileId;
 extern u8 gGameLoopPendingMusicId;
