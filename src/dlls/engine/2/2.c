@@ -974,9 +974,9 @@ static inline int objSeqRemoveMonitoredObj(u8* base, ObjSeqPreemptEntry** monp, 
             flags = *(int*)(base + j * 8 + 0x3d50);
             gObjSeqPreemptCount -= 1;
             p = (ObjSeqPreemptEntry*)(base + j * 8 + 0x3d4c);
-            v = (int)p[1].obj;
             for (k = j; k < (s8)gObjSeqPreemptCount; k++)
             {
+                v = (int)p[1].obj;
                 p->obj = (GameObject*)v;
                 p->flags = v;
                 p++;
