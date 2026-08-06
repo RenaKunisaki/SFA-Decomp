@@ -22,7 +22,7 @@ typedef struct DIMbossEffectMarker {
     u16 rotX;
     u16 rotY;
     u16 rotZ;
-    u16 unknown06;
+    u16 effectParam;
     f32 scale;
     f32 x;
     f32 y;
