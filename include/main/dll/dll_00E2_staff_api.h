@@ -42,7 +42,7 @@ STATIC_ASSERT(offsetof(StaffInterface, getSwipeTextureIndex) == 0x50);
 STATIC_ASSERT(sizeof(StaffInterface) == 0x54);
 
 void objSetAnimField48to0(GameObject* obj);
-void playerRenderQuakeSpell(GameObject* obj);
+void staffUpdateWhileTimeStopped(GameObject* obj);
 void staffUpdateAttackEffects(GameObject* obj, GameObject* player);
 void staffDrawQuakeSpellRing(void);
 void staff_addHitReactValue(GameObject* obj, s32 delta);

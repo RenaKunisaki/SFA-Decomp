@@ -1343,7 +1343,7 @@ void Obj_UpdateObject(GameObject* obj)
             playerUpdateWhileTimeStopped((int)obj);
             break;
         case OBJECT_SEQID_STAFF:
-            playerRenderQuakeSpell(obj);
+            staffUpdateWhileTimeStopped(obj);
             break;
         case OBJECT_SEQID_DIE_DUSTER:
         case OBJECT_SEQID_DIE_FOX:

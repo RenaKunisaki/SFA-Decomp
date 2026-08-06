@@ -904,7 +904,7 @@ void staff_func0A(void) {
 
 StaffQuakeSpellState gStaffQuakeSpellState;
 
-void playerRenderQuakeSpell(GameObject* obj) {
+void staffUpdateWhileTimeStopped(GameObject* obj) {
     staffUpdateAttackEffects(obj, (GameObject*)obj->ownerObj);
 }
 
