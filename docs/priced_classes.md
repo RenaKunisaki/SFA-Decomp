@@ -3655,3 +3655,30 @@ this class is priced until a lane can land a whole-function colouring convergenc
 learns to score def-use structure above register identity). Census data:
 tools-side script left with the lane's topic file; classifications in
 `aug05-C114-web-structure-census` (memory topic).
+
+## 36. Two leads closed at mechanism level (2026-08-05)
+
+**Const-zero placement — `playerState19`/`1B`/`MountBike`/`ClimbWall` (player.c).** NOT a surplus
+instruction: counts are identical (349/349, 409/409, 677/677). `flags360 & ~2LL` promotes a `u32` to
+`long long`; the high word's zero-extension emits a dead `li rX,0`. Retail DCEs it and materialises a
+fresh zero at the later `physicsActive = 0` store; our build **value-numbers that later zero onto the
+dead one**, giving it a ~20-instruction live range and pushing the `lwz` chain one register up.
+Two proofs: setting the consumer to a NONZERO value gives STRUC 0 (the dead zero is fully DCE-able, so
+the CSE partner is the whole defect), and hoisting `physicsActive = 0;` above the clear reproduces
+retail's region byte-for-byte (but puts the store in the wrong place, STRUC 4). Block separation is
+independently refuted — in `ClimbWall` the store already sits after a `bne-` in another block and still
+CSEs. **The `LL` is load-bearing and correct**: any 32-bit mask collapses to one `rlwinm`, and retail's
+`li r0,-3; and` requires the 64-bit promotion. A repo-wide scan found four 100%-matched controls with
+`~…LL` masks (`dll_19_pollCameraTarget`, `crawler_updateC`, `spittingEbaUpdateIdle`, and five sibling
+player states) — every one either has no trailing zero store in the block or has the zero BEFORE the
+clear. No matched precedent exists for "LL flag-clear then trailing `= 0`". Wall, no cost.
+
+**`playerCacheMoveRootHeights` (−2 instructions).** Retail emits an unfolded `li r0,12; slwi r0,r0,2;
+add r29,r4,r0` where we fold to `addi r29,r4,48`; the rest of the function is byte-identical and both
+sides reach the base the same way, so base provenance is not the discriminator. 21 spellings all fold
+(index arithmetic in both directions, init order, `for`-comma, `do/while`, hoisted inits, explicit
+`*4`/`<<2`/`sizeof`, three base-cast forms in both operand orders, named base, `u32` and `f32*`
+cursors, separate seeded index, `(&arr[i])[0]`). A scan of every built object AND the GC/2.0 refcorpus
+finds the shape only under two mechanisms, neither of which can occur in a 4-iteration call-bearing
+loop: an unrolled-loop remainder preheader, and a PHI-of-constants index (MP4 `MGSeqInitDraw`).
+Route to the TU-profile / `mw_version` lane; further source sweeps are provably flat.
