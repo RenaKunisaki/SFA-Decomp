@@ -16173,7 +16173,7 @@ void playerUpdateSurfaceResponse(GameObject* obj, int state, int cfg, f32 dt)
     }
 }
 
-void playerItemGetAnimFn(int obj, int inner, int state)
+void playerProcessMessages(int obj, int inner, int state)
 {
     GameObject* p;
     int param = 0;
@@ -18107,7 +18107,7 @@ void playerUpdate(GameObject* obj)
                 }
                 ((PlayerState*)inner)->baddie.stateExitFn = (BaddieStateExitFn)playerStagedRestoreDefaultControl;
             }
-            playerItemGetAnimFn((int)obj, inner, inner);
+            playerProcessMessages((int)obj, inner, inner);
             playerUpdateTargetSelection(obj, inner, inner);
             playerStaffInit(obj, inner);
             if ((u32)gPlayerEggObject == 0 && Obj_IsLoadingLocked() != 0)
