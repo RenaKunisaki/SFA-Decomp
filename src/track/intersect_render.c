@@ -44,10 +44,10 @@
 #include "track/intersect_depth_state_api.h"
 #include "track/intersect_geom_api.h"
 #include "track/intersect_hud_api.h"
+#include "track/intersect_internal.h"
 
 typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, int ref1);
 
-#include "track/intersect_internal.h"
 
 typedef struct
 {

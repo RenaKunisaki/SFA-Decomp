@@ -15,6 +15,7 @@
 #include "main/mapEvent.h"
 #include "main/mapEventTypes.h"
 #include "main/map_load.h"
+#include "main/model_light.h"
 #include "main/obj_message.h"
 #include "main/object_render.h"
 #include "main/objseq.h"

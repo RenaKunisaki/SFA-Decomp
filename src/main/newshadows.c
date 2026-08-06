@@ -75,6 +75,7 @@
 #include "main/shader_dolphin.h"
 #include "main/dll/modgfx.h"
 #include "dolphin/gx/GXFrameBuffer.h"
+#include "main/newshadows_internal.h"
 extern Texture* gNewShadowHeavyFogTexture;
 extern u8 gNewShadowHeavyFogIntensity;
 
@@ -296,7 +297,6 @@ u8 gNewShadowCasterCount;
 u8 gShadowCastModeTable[8] = {0xFF, 7, 6, 5, 4, 3, 2, 1};
 f32 gStandardAspectRatio = 1.3333334f;
 
-#include "main/newshadows_internal.h"
 
 /* Linear search by pointer identity through the shadow entry table.
  * Clears the active flag when the entry matches the needle. */

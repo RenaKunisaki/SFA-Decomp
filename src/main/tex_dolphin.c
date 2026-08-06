@@ -41,6 +41,7 @@
 #include "main/track_dolphin_shadow_api.h"
 #include "main/newshadows_shadow_api.h"
 #include "main/pi_dolphin_api.h"
+#include "dolphin/mtx/vec.h"
 #define TRACK_BBOX_FLAGS_S8
 #define TRACK_BBOX_MASK_TYPE s8
 #define TRACK_BBOX_ARG10_TYPE s8
@@ -68,6 +69,7 @@
 #include "main/dll/FRONT/n_options.h"
 #include "main/lightmap_render_queue_api.h"
 #include "main/objprint_dolphin_internal.h"
+#include "main/dll/ppcwgpipe_struct.h"
 
 u8 gCloudLayerOverlayColor[4] = {0x20, 0x20, 0x20, 0};
 int gTexShaderAmbColor = -1;
@@ -989,7 +991,6 @@ typedef struct TrackTriangle
     u8 edgeOutBits; /* 0x4b per-edge outside bits from last query */
 } TrackTriangle;
 
-#include "main/dll/ppcwgpipe_struct.h"
 
 extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
 extern int sSynthFadeUnit;

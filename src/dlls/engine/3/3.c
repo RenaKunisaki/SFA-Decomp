@@ -3,6 +3,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/curve.h"
 #include "main/vecmath.h"
+#include "game/objects/object.h"
 
 CheckpointSlot gCheckpointRouteTable[0x640 / sizeof(CheckpointSlot)];
 
@@ -535,7 +536,6 @@ void Checkpoint_queueRouteRankItem(u32 v)
     ((u32*)gCheckpointRankItemsPending)[gCheckpointRankItemPendingCount++] = v;
 }
 
-#include "game/objects/object.h"
 
 int Checkpoint_getRouteHeading(GameObject* obj, CheckpointRouteState* state);
 void Checkpoint_findRouteForObject(GameObject* obj, CheckpointRouteState* state, int filter);

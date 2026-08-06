@@ -29,6 +29,7 @@
 #include "main/object_update_list.h"
 #include "main/objhits.h"
 #include "sys/objects/lifecycle.h"
+#include "main/model_light.h"
 
 int gThornBushLightningHitTable[2] = {15, 14};
 int gThornBushThornHitTable[2] = {5, 5};

@@ -10,6 +10,7 @@
 #include "main/dll/dll_00C4_tricky.h"
 #include "main/dll/dll_01D0_dimtricky.h"
 #include "main/gamebits.h"
+#include "main/gamebit_ids.h"
 
 enum
 {

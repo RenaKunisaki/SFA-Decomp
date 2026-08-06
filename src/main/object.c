@@ -51,6 +51,7 @@
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_stop_channel_api.h"
 #include "main/mapEventTypes.h"
+#include "dolphin/mtx/vec.h"
 
 s16 gObjPartitionPivot;
 void* lbl_803DCBC0;

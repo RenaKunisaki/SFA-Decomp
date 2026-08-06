@@ -37,19 +37,19 @@
 #include "dolphin/mtx.h"
 #include "dolphin/os/OSFastCast.h"
 #include "main/dll/ppcwgpipe_struct.h"
+#include "main/lightmap_internal.h"
+#include "main/render_flags.h"
+#include "main/dll/player_api.h"
+#include "main/dll_000A_expgfx.h"
+#include "main/lightmap.h"
 
 extern f32 widescreenAspect;
 
 void sceneDraw(void);
 void sceneDrawTransparentPolys(void);
 
-#include "main/lightmap_internal.h"
 
 
-#include "main/render_flags.h"
-#include "main/dll/player_api.h"
-#include "main/dll_000A_expgfx.h"
-#include "main/lightmap.h"
 
 
 

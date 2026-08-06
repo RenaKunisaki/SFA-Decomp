@@ -51,6 +51,7 @@
 #include "dolphin/mtx.h"
 #include "main/lightmap.h"
 #include "main/dll/ppcwgpipe_struct.h"
+#include "main/lightmap_internal.h"
 
 u8 colorFilterColor[4] = {0xFF, 0x70, 0x40, 0};
 u8 colorScale = 0xFF;
@@ -58,7 +59,6 @@ u8 colorScale = 0xFF;
 void sceneDraw(void);
 void sceneDrawTransparentPolys(void);
 
-#include "main/lightmap_internal.h"
 
 
 extern f32 gLightmapDegToBamScale;

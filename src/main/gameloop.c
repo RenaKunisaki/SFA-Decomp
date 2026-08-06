@@ -3,17 +3,6 @@
 #include "main/gametext_box_api.h"
 #include "dolphin/pad.h"
 #include "main/rcp_dolphin_api.h"
-
-u8 framesThisStep = 1;
-u8 framesThisStepUnclamped = 1;
-f32 timeDelta = 1.0f;
-f32 oneOverTimeDelta = 1.0f;
-int gGameLoopPendingUiDllId = -1;
-f32 gGameLoopMusicFadeTimer = -30.0f;
-u8 gSaveGameEnabled = 0xFF;
-u8 gGameLoopResetComboDebounce = 10;
-int gAskProgressiveScanYesX = 0xAA;
-int gAskProgressiveScanNoX = 0x16A;
 #include "dolphin/dvd.h"
 #include "dolphin/gx/GXFrameBuffer.h"
 #include "main/asset_load.h"
@@ -66,6 +55,17 @@ int gAskProgressiveScanNoX = 0x16A;
 #include "main/gametext_show_str_api.h"
 #include "main/pi_flush_api.h"
 #include "track/intersect_card_api.h"
+
+u8 framesThisStep = 1;
+u8 framesThisStepUnclamped = 1;
+f32 timeDelta = 1.0f;
+f32 oneOverTimeDelta = 1.0f;
+int gGameLoopPendingUiDllId = -1;
+f32 gGameLoopMusicFadeTimer = -30.0f;
+u8 gSaveGameEnabled = 0xFF;
+u8 gGameLoopResetComboDebounce = 10;
+int gAskProgressiveScanYesX = 0xAA;
+int gAskProgressiveScanNoX = 0x16A;
 
 f32 gGameLoopResetFadeOutTimer;
 void* gAskProgressiveScanFlag;

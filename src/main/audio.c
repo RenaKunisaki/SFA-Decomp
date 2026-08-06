@@ -1,20 +1,11 @@
 #include "main/audio/music_api.h"
 #include "musyx/hw_samplemem.h"
 #include "main/audio_internal.h"
-
-/* Local prototypes: this TU declares sndMasterVolume with int volume/time,
-   which disagrees with the musyx definition -- retail calls it directly with
-   both unnarrowed, which only that declaration produces. */
-void sndMasterVolume(int volume, int time, u8 musicFlag, u8 fxFlag);
-void sndSeqVolume(u8 volume, u16 time, u32 seqId, u8 mode);
-void sndVolume(u8 volume, u16 time, u8 group);
-void sndOutputMode(int mode);
 #include "musyx/snd_groups.h"
 #include "main/attract_movie_api.h"
 #include "main/fileio.h"
 #include "main/frame_timing.h"
 #include "main/mm.h"
-#define SYNTH_INTERNAL_USE_PROJECT_TYPES
 #include "main/audio/music_trigger_ids.h"
 #include "main/gamebit_ids.h"
 #include "dolphin/ai.h"
@@ -29,6 +20,15 @@ void sndOutputMode(int mode);
 #include "main/audio/stream_api.h"
 #include "musyx/snd3d.h"
 #include "musyx/snd_core.h"
+
+/* Local prototypes: this TU declares sndMasterVolume with int volume/time,
+   which disagrees with the musyx definition -- retail calls it directly with
+   both unnarrowed, which only that declaration produces. */
+void sndMasterVolume(int volume, int time, u8 musicFlag, u8 fxFlag);
+void sndSeqVolume(u8 volume, u16 time, u32 seqId, u8 mode);
+void sndVolume(u8 volume, u16 time, u8 group);
+void sndOutputMode(int mode);
+#define SYNTH_INTERNAL_USE_PROJECT_TYPES
 
 const MusicSeqStartParams gMusicSeqStartParamsDefault = {
     4, {0xFFFFFFFF, 0xFFFFFFFF}, 0x100, {0, 0x7F}, 0, NULL, 0, NULL};

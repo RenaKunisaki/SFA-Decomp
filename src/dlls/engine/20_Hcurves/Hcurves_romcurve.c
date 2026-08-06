@@ -14,13 +14,13 @@
 #include "main/vecmath.h"
 #include "main/shader_api.h"
 #include "string.h"
+#include "main/dll/objfsa_internal.h"
 
 int nRomCurves;
 RomCurveDef* gRomCurveLastFindStart;
 RomCurveDef* gRomCurveLastFindEnd;
 
 
-#include "main/dll/objfsa_internal.h"
 
 int RomCurve_initFromCurveId(RomCurveWalker* state, GameObject* unusedObj, int startCurveId,
                     RomCurveInterface* unusedInterface);

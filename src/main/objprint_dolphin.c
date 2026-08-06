@@ -66,6 +66,9 @@
 #include "track/intersect_hud_api.h"
 #include "track/intersect_texture_api.h"
 #include "dolphin/os.h"
+#include "dolphin/mtx/vec.h"
+#include "main/objprint_dolphin_internal.h"
+#include "main/dll/ppcwgpipe_struct.h"
 
 extern s32 gModelMtxCacheState;
 extern s32 gObjFuzzLayerIndex;
@@ -287,7 +290,6 @@ void modelInitMtxs(ModelFileHeader* def, ObjModel* model)
     }
 }
 
-#include "main/objprint_dolphin_internal.h"
 
 const IndTexMtx23 sObjFuzzIndMtxA = {{{0.5f, 0.0f, 0.0f}, {0.0f, 0.5f, 0.0f}}};
 const IndTexMtx23 sObjFuzzIndMtxB = {{{0.0f, 0.5f, 0.0f}, {0.0f, 0.0f, 0.5f}}};
@@ -836,7 +838,6 @@ void objFuzzSetupGxState(void* objArg)
 }
 
 
-#include "main/dll/ppcwgpipe_struct.h"
 
 extern PPCWGPipe GXWGFifo : (0xCC008000);
 

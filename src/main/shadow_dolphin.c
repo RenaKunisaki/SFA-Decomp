@@ -63,6 +63,7 @@
 #include "main/tex_dolphin.h"
 #include "string.h"
 #include "main/track_dolphin_sky_api.h"
+#include "main/dll/ppcwgpipe_struct.h"
 
 int gShadowVolumeBuffer;
 void* gShadowVolumeBuffers[2];
@@ -100,7 +101,6 @@ s8 gShadowVolumesDirty = 10;
 s16 gSunMagnitude = 100;
 int gSunDirChanged = 1;
 
-#include "main/dll/ppcwgpipe_struct.h"
 
 extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
 

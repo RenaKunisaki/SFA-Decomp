@@ -54,6 +54,7 @@
 #include "dolphin/mtx/vec.h"
 #include "dolphin/os/OSCache.h"
 #include "main/audio/sfx_play_legacy_api.h"
+#include "dolphin/gx/GXGeometry.h"
 
 typedef union ExpgfxWGPipe
 {
@@ -168,7 +169,6 @@ void viewFinderSetZoomTo50(void)
  * particle-effect resource ids; the float lbl_803DFxxx symbols are tuning
  * constants in the DLL's shared .sdata2 pool.
  */
-#include "dolphin/gx/GXGeometry.h"
 
 ExpgfxPlaneOffsets gExpgfxStaticData[EXPGFX_STATIC_PLANE_OFFSET_SET_COUNT] = {
     {{-5.0f, 50.0f, 50.0f, 50.0f, 50.0f, 50.0f}},

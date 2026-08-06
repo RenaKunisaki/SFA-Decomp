@@ -41,6 +41,7 @@
 #include "dolphin/mtx/vec.h"
 #include "main/newshadows_audio_api.h"
 #include "track/intersect_depth_state_api.h"
+#include "track/intersect_internal.h"
 
 typedef struct
 {
@@ -326,7 +327,6 @@ u32 gWhirlpoolReflectionKColor = 0xA0A0A080;
 static u32 sIntersectUnused1[1] = {0};
 
 
-#include "track/intersect_internal.h"
 
 /* Per-frame alpha decrement of the two water-effect pools. */
 void waterFxUpdate(f32 step) {

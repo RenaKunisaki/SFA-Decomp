@@ -60,6 +60,16 @@
 #include "dolphin/os/OSThread.h"
 #include "main/asset_load.h"
 #include "main/mapEventTypes.h"
+#include "main/objprint_load_api.h"
+#include "dolphin/os/OSAlloc.h"
+#include "main/objmodel.h"
+#include "main/voxmaps.h"
+#include "main/newshadows_texture_api.h"
+#include "main/rcp_dolphin_render_api.h"
+#include "dolphin/gx/GXBump.h"
+#include "main/mapEvent.h"
+#include "main/dll/dll_0017_savegame_api.h"
+#include "main/dll/ppcwgpipe_struct.h"
 
 u32 sPiUnused3;
 void* lbl_803DCD10;
@@ -161,15 +171,6 @@ int lbl_803DB5E4 = 0;
 extern u8 gResourceFileTable[]; /* resource file table -- see struct MldfTables */
 extern u32 gObjBlockStatus[];
 
-#include "main/objprint_load_api.h"
-#include "dolphin/os/OSAlloc.h"
-#include "main/objmodel.h"
-#include "main/voxmaps.h"
-#include "main/newshadows_texture_api.h"
-#include "main/rcp_dolphin_render_api.h"
-#include "dolphin/gx/GXBump.h"
-#include "main/mapEvent.h"
-#include "main/dll/dll_0017_savegame_api.h"
 
 struct MldfNames
 {
@@ -5266,7 +5267,6 @@ void tvInit(void)
     VIWaitForRetrace();
 }
 
-#include "main/dll/ppcwgpipe_struct.h"
 
 extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
 

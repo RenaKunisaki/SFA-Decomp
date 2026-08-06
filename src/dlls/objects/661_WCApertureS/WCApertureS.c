@@ -22,6 +22,7 @@
 #include "main/model.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
+#include "main/model_light.h"
 
 
 #define WCAPERTURES_EXTRA_SIZE        8

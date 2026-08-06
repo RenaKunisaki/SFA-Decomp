@@ -55,6 +55,7 @@
 #include "main/gamebit_ids.h"
 #include "main/pi_dolphin_api.h"
 #include "main/rcp_dolphin_api.h"
+#include "main/dll/dll_002E_moveLib.h"
 
 #define DIMBOSS_OBJECT_TYPE_ID 0x49
 
