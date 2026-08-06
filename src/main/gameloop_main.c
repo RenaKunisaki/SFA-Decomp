@@ -372,7 +372,7 @@ void checkReset(void)
         OSReport(msg + 0xd0);
         if (gGameLoopInitComplete != 0)
         {
-            (*gScreenTransitionInterface)->start(0x1e, 1);
+            (*gScreenTransitionInterface)->start(0x1e, SCREEN_TRANSITION_BLACK);
         }
         if (gameState == GAME_STATE_HARDRESETPRESSED)
         {

@@ -283,7 +283,7 @@ void dfshShrine_update(GameObject* obj) {
         break;
     case DFSH_SHRINE_MODE_BEGIN_TRANS:
         state->transitionTimer = 0x1F;
-        (*gScreenTransitionInterface)->step(0x1E, 1);
+        (*gScreenTransitionInterface)->step(0x1E, SCREEN_TRANSITION_BLACK);
         state->mode = DFSH_SHRINE_MODE_AWAIT_OPEN;
         obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
         break;
@@ -336,7 +336,7 @@ void dfshShrine_update(GameObject* obj) {
     case DFSH_SHRINE_MODE_FINISH:
         state->mode = DFSH_SHRINE_MODE_AFTER_FINISH;
         state->transitionTimer = 0x23;
-        (*gScreenTransitionInterface)->start(0x1E, 1);
+        (*gScreenTransitionInterface)->start(0x1E, SCREEN_TRANSITION_BLACK);
         break;
     case DFSH_SHRINE_MODE_AFTER_FINISH:
         state->mode = DFSH_SHRINE_MODE_POST_FINISH;

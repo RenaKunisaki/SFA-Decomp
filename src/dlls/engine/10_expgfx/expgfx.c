@@ -2536,7 +2536,7 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
                 {
                     continue;
                 }
-                if (slot->sequenceId == -1)
+                if (slot->sequenceId == EXPGFX_INVALID_SEQUENCE_ID)
                 {
                     continue;
                 }
@@ -3594,8 +3594,8 @@ void drawGlow(u32 slotPoolBase, int poolIndex)
     GXSetVtxDesc(GX_VA_CLR0, GX_DIRECT);
     GXSetVtxDesc(GX_VA_TEX0, GX_DIRECT);
     GXSetCurrentMtx(GX_PNMTX0);
-    GXSetChanCtrl(GX_COLOR0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
-    GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
+    GXSetChanCtrl(GX_COLOR0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
+    GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
     GXSetNumChans(1);
     GXSetCullMode(GX_CULL_NONE);
     viewMatrix = (MtxPtr)Camera_GetViewMatrix();
@@ -3603,7 +3603,7 @@ void drawGlow(u32 slotPoolBase, int poolIndex)
     PSMTXCopy(viewMatrix, gCameraModelViewMatrix);
     loadReflectionTexMtxs();
     _gxSetFogParams();
-    if ((short)renderModeSetOrGet(-1) == 1)
+    if ((short)renderModeSetOrGet(EXPGFX_INVALID_SLOT_TYPE) == 1)
     {
         return;
     }
@@ -3832,7 +3832,7 @@ void drawGlow(u32 slotPoolBase, int poolIndex)
                     if (blendMode != 0)
                     {
                         Camera_ApplyFullViewport();
-                        gxSetZMode_(1, 3, 1);
+                        gxSetZMode_(1, GX_LEQUAL, 1);
                         GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
                         gxSetPeControl_ZCompLoc_(0);
                         GXSetAlphaCompare(GX_GREATER, 0xfe, GX_AOP_AND, GX_GREATER, 0xfe);
@@ -3854,14 +3854,14 @@ void drawGlow(u32 slotPoolBase, int poolIndex)
                         if (zMode != 1)
                         {
                             Camera_ApplyEffectDepthViewport();
-                            gxSetZMode_(1, 3, 0);
+                            gxSetZMode_(1, GX_LEQUAL, 0);
                             zMode = 1;
                         }
                     }
                     else if (zMode != 2)
                     {
                         Camera_ApplyFullViewport();
-                        gxSetZMode_(1, 3, 0);
+                        gxSetZMode_(1, GX_LEQUAL, 0);
                         zMode = 2;
                     }
                     if ((slot->renderFlags & EXPGFX_RENDER_BLEND_ADDITIVE) != 0)

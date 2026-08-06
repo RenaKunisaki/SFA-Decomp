@@ -710,7 +710,7 @@ int ktrex_stateHandlerA01(GameObject* obj, GroundBaddieState* runtime)
         {
             if (obj->userData2 != 3)
             {
-                (*gScreenTransitionInterface)->start(30, 1);
+                (*gScreenTransitionInterface)->start(30, SCREEN_TRANSITION_BLACK);
                 obj->userData2 = 3;
             }
         }

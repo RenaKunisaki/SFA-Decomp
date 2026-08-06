@@ -468,7 +468,7 @@ int objFuzzShellRenderCb(GameObject* obj, int* model, int ropIdx)
     {
         GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, *(GXColor*)&lbl_803DB468);
     }
-    gxSetZMode_(1, 3, 0);
+    gxSetZMode_(1, GX_LEQUAL, 0);
     gxSetPeControl_ZCompLoc_(1);
     GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
     return 1;
@@ -733,7 +733,7 @@ int objFuzzRenderCb(GameObject* obj, ObjModel* model, int ropIdx)
     {
         _gxSetFogParams();
     }
-    gxSetZMode_(1, 3, 0);
+    gxSetZMode_(1, GX_LEQUAL, 0);
     gxSetPeControl_ZCompLoc_(1);
     GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
     return 1;
@@ -833,7 +833,7 @@ void objFuzzSetupGxState(void* objArg)
     GXSetNumTexGens(2);
     GXSetCullMode(GX_CULL_BACK);
     GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, *(GXColor*)&lbl_803DB468);
-    gxSetZMode_(1, 3, 0);
+    gxSetZMode_(1, GX_LEQUAL, 0);
     gxSetPeControl_ZCompLoc_(1);
     GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
     return;
@@ -972,14 +972,14 @@ static void objSetupLightChannels(u8* model, GameObject* obj)
         {
             gObjCurChanColor.a = 0;
             GXSetChanAmbColor((u8)chan, gObjCurChanColor);
-            GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
-            GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
+            GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
+            GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
             GXSetNumChans(1);
         }
         else
         {
-            GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
-            GXSetChanCtrl(GX_COLOR1A1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
+            GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
+            GXSetChanCtrl(GX_COLOR1A1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
             GXSetNumChans(0);
         }
     }
@@ -1955,18 +1955,18 @@ static u32 objSetupRenderOpGxState(GameObject* obj, u8* p2, int* am, MtxBitStrea
                 flags = ((ModelFileHeader*)p2)->flags;
                 if (flags & 0x400)
                 {
-                    gxSetZMode_(0, 3, 0);
+                    gxSetZMode_(0, GX_LEQUAL, 0);
                     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
                 }
                 else if (flags & 0x2000)
                 {
                     zon = 0;
-                    gxSetZMode_(1, 3, 1);
+                    gxSetZMode_(1, GX_LEQUAL, 1);
                     GXSetAlphaCompare(GX_GREATER, gObjAlphaCompareThreshold, GX_AOP_AND, GX_GREATER, gObjAlphaCompareThreshold);
                 }
                 else
                 {
-                    gxSetZMode_(1, 3, 0);
+                    gxSetZMode_(1, GX_LEQUAL, 0);
                     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
                 }
             }
@@ -1975,11 +1975,11 @@ static u32 objSetupRenderOpGxState(GameObject* obj, u8* p2, int* am, MtxBitStrea
                 GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
                 if (((ModelFileHeader*)p2)->flags & 0x400)
                 {
-                    gxSetZMode_(0, 3, 0);
+                    gxSetZMode_(0, GX_LEQUAL, 0);
                 }
                 else
                 {
-                    gxSetZMode_(1, 3, 1);
+                    gxSetZMode_(1, GX_LEQUAL, 1);
                 }
                 GXSetAlphaCompare(GX_GREATER, 0x40, GX_AOP_AND, GX_GREATER, 0x40);
             }
@@ -1988,11 +1988,11 @@ static u32 objSetupRenderOpGxState(GameObject* obj, u8* p2, int* am, MtxBitStrea
                 GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
                 if (((ModelFileHeader*)p2)->flags & 0x400)
                 {
-                    gxSetZMode_(0, 3, 0);
+                    gxSetZMode_(0, GX_LEQUAL, 0);
                 }
                 else
                 {
-                    gxSetZMode_(1, 3, 1);
+                    gxSetZMode_(1, GX_LEQUAL, 1);
                 }
                 GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
             }
@@ -2101,7 +2101,7 @@ static void shaderSetGxFlags(GameObject* obj, u8* m, u8* shader)
     }
     if (gObjGxZWriteCache != zwrite || gObjGxZCompareCache != zcmp)
     {
-        gxSetZMode_(zwrite, 3, zcmp);
+        gxSetZMode_(zwrite, GX_LEQUAL, zcmp);
         gObjGxZWriteCache = zwrite;
         gObjGxZCompareCache = zcmp;
     }
@@ -2231,8 +2231,8 @@ static void modelDoAltRenderInstrs(GameObject* obj, GameObject* obj2, u8* m, int
                 renderHeavyFog(c);
             }
             Rcp_ApplyTextureStageCounts();
-            GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
-            GXSetChanCtrl(GX_COLOR1A1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
+            GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
+            GXSetChanCtrl(GX_COLOR1A1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
             GXSetNumChans(0);
             gObjRenderSetupDone = 1;
             *(u32*)gObjGxKColorCache = *(u32*)color;
@@ -2463,16 +2463,16 @@ static void objRenderShadowModel(GameObject* obj, GameObject* obj2, u8* m, int p
     GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, *(GXColor*)&lbl_803DB468);
     gxSetPeControl_ZCompLoc_(1);
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
-    GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
+    GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
     GXSetNumChans(1);
     if (OBJPRINT_MODEL_DEF(obj)->renderFlags & OBJDEF_RENDERFLAG_PROJECTED_SHADOW)
     {
-        gxSetZMode_(1, 3, 1);
+        gxSetZMode_(1, GX_LEQUAL, 1);
         GXSetCullMode(GX_CULL_FRONT);
     }
     else
     {
-        gxSetZMode_(0, 3, 0);
+        gxSetZMode_(0, GX_LEQUAL, 0);
         GXSetCullMode(GX_CULL_NONE);
     }
     GXSetArray(GX_VA_POS,
@@ -2859,16 +2859,16 @@ static void modelDoRenderInstrs(GameObject* obj, GameObject* obj2, u8* m, u8 pas
         GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, *(GXColor*)&lbl_803DB468);
         gxSetPeControl_ZCompLoc_(1);
         GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
-        GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
+        GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
         GXSetNumChans(1);
         if (OBJPRINT_MODEL_DEF(obj)->renderFlags & OBJDEF_RENDERFLAG_PROJECTED_SHADOW)
         {
-            gxSetZMode_(1, 3, 1);
+            gxSetZMode_(1, GX_LEQUAL, 1);
             GXSetCullMode(GX_CULL_FRONT);
         }
         else
         {
-            gxSetZMode_(0, 3, 0);
+            gxSetZMode_(0, GX_LEQUAL, 0);
             GXSetCullMode(GX_CULL_NONE);
         }
     }

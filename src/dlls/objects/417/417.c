@@ -413,7 +413,7 @@ void NW_mammoth_updateGatekeeper(GameObject* obj, NwMammothState* state, NwMammo
         if (!(state->playerObject->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) &&
             state->airMeterValue >= NW_MAMMOTH_AIR_METER_MAX_VALUE) {
             Sfx_PlayFromObject(obj, SFXTRIG_menuups16k);
-            (*gScreenTransitionInterface)->start(0x14, 1);
+            (*gScreenTransitionInterface)->start(0x14, SCREEN_TRANSITION_BLACK);
             state->stateIndex = 0x12;
             mainSetBits(0xd32, 0);
             state->runtimeFlags = state->runtimeFlags & ~NW_MAMMOTH_RUNTIME_UI_MESSAGE;

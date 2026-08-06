@@ -259,7 +259,7 @@ void gf_levelcon_update(GameObject* obj)
 void gf_levelcon_init(GameObject* obj)
 {
     setIsOvercast(0);
-    (*gScreenTransitionInterface)->step(0x258, 1);
+    (*gScreenTransitionInterface)->step(0x258, SCREEN_TRANSITION_BLACK);
 }
 
 void gf_levelcon_release(void)

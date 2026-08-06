@@ -626,7 +626,7 @@ int ShopKeeper_handlePromptChoice(GameObject* obj, void* param2, int dispatch)
         if ((btn & SHOPKEEPER_BUTTON_CANCEL) != 0u)
         {
             state->flags9D4 = state->flags9D4 | SHOPKEEPER_FLAG_LEAVING;
-            (*gScreenTransitionInterface)->start(0x1e, 1);
+            (*gScreenTransitionInterface)->start(0x1e, SCREEN_TRANSITION_BLACK);
             return 1;
         }
     }
@@ -736,7 +736,7 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
     {
         if ((*gScreenTransitionInterface)->isFinished() != 0)
         {
-            (*gScreenTransitionInterface)->step(0x1E, 1);
+            (*gScreenTransitionInterface)->step(0x1E, SCREEN_TRANSITION_BLACK);
             (*gObjectTriggerInterface)->endSequence(seq->slot);
         }
         return 0;

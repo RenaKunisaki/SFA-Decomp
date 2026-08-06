@@ -605,8 +605,8 @@ void sceneDrawTransparentPolys(void)
             break;
         case 4:
             item.block = entries[i].arg1.block;
-            GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
-            GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
+            GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
+            GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
             lightmapSetObjAmbColor();
             PSMTXConcat((MtxPtr)Camera_GetViewMatrix(), item.block->transform, (MtxPtr)m);
             setupToRenderMapBlock(item.block, m);
@@ -614,8 +614,8 @@ void sceneDrawTransparentPolys(void)
             break;
         case 5:
             item.block = entries[i].arg1.block;
-            GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
-            GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
+            GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
+            GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
             lightmapSetObjAmbColor();
             PSMTXConcat((MtxPtr)Camera_GetViewMatrix(), item.block->transform, (MtxPtr)m);
             setupToRenderMapBlock(item.block, m);
@@ -623,8 +623,8 @@ void sceneDrawTransparentPolys(void)
             break;
         case 6:
             item.block = entries[i].arg1.block;
-            GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
-            GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
+            GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
+            GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
             lightmapSetObjAmbColor();
             PSMTXConcat((MtxPtr)Camera_GetViewMatrix(), item.block->transform, (MtxPtr)m);
             setupToRenderMapBlock(item.block, m);

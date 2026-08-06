@@ -499,7 +499,7 @@ void worldplanet_update(GameObject* obj) {
                     mapUnload(gWorldPlanetLoadedMapId, WORLDPLANET_MAP_SELECTED_FLAG);
                     gWorldPlanetInputLockTimer = WORLDPLANET_COUNTDOWN_FRAMES;
                 } else if ((buttons & WORLDPLANET_CONFIRM_BUTTON) != 0) {
-                    (*gScreenTransitionInterface)->start(WORLDPLANET_TRANSITION_ID, 1);
+                    (*gScreenTransitionInterface)->start(WORLDPLANET_TRANSITION_ID, SCREEN_TRANSITION_BLACK);
                     Music_StopChannelsByPriorityGroup(3, MUSIC_CHANNEL_STOP_DEFAULT, 0);
                     AudioStream_StopCurrent();
                     Sfx_PlayFromObject(0, SFXTRIG_wmap_swoosh);
@@ -664,7 +664,7 @@ void worldplanet_init(GameObject* obj) {
     mapUnload(WORLDPLANET_MAIN_MAP_ID, WORLDPLANET_MAP_PRELOAD_FLAG);
     layer = getCurMapLayer();
     (*gMapEventInterface)->savePoint((int)&obj->anim.localPosX, 0, 0, layer);
-    (*gScreenTransitionInterface)->step(WORLDPLANET_CANCEL_LOCKOUT_FRAMES, 1);
+    (*gScreenTransitionInterface)->step(WORLDPLANET_CANCEL_LOCKOUT_FRAMES, SCREEN_TRANSITION_BLACK);
     gWorldPlanetInputLockTimer = WORLDPLANET_COUNTDOWN_FRAMES;
     mainSetBits(gWorldPlanetGameBitTable[WORLDPLANET_SLOT_DINOSAUR_PLANET], 1);
     state->foxSpawnTimer = WORLDPLANET_FOX_SPAWN_INITIAL_FRAMES;

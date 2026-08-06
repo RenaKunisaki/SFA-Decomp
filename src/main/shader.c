@@ -362,7 +362,7 @@ void loadNextMap(void)
         {
             if (gArrivedWarpIndex > -1 && (s8)gRcpWarpTransitionType != 0)
             {
-                (*gScreenTransitionInterface)->step(3, 1);
+                (*gScreenTransitionInterface)->step(3, SCREEN_TRANSITION_BLACK);
             }
             gArrivedWarpIndex = -1;
             Pause_SetDisabled(0);
@@ -408,7 +408,7 @@ void warpToMap(int idx, s8 transType)
     *(s8*)&gRcpWarpTransitionType = transType;
     if (transType != 0)
     {
-        (*gScreenTransitionInterface)->start(2, 1);
+        (*gScreenTransitionInterface)->start(2, SCREEN_TRANSITION_BLACK);
     }
     Pause_SetDisabled(1);
 }

@@ -308,7 +308,7 @@ void SH_LevelControl_runBloopEvent(GameObject* obj, ShLevelControlState* state) 
         logPrintf(sShLevelControlNumBloopsFormat, bloopsRemaining);
         if (bloopsRemaining == 0) {
             (*gGameUIInterface)->airMeterSetShutdown();
-            (*gScreenTransitionInterface)->start(0x14, 1);
+            (*gScreenTransitionInterface)->start(0x14, SCREEN_TRANSITION_BLACK);
             state->bloopEventState = 3;
             Sfx_PlayFromObject(0, SFXTRIG_mpick1_b);
         } else {
@@ -317,7 +317,7 @@ void SH_LevelControl_runBloopEvent(GameObject* obj, ShLevelControlState* state) 
                 (*gGameUIInterface)->runAirMeter((int)state->airMeterTimer);
             } else if ((u8)(*gMapEventInterface)->getObjGroupStatus(obj->anim.mapEventSlot, 0) != 0) {
                 (*gGameUIInterface)->airMeterSetShutdown();
-                (*gScreenTransitionInterface)->start(0x14, 1);
+                (*gScreenTransitionInterface)->start(0x14, SCREEN_TRANSITION_BLACK);
                 state->bloopEventState = 5;
             } else {
                 state->airMeterTimer = 0.0f;
@@ -430,7 +430,7 @@ void SH_LevelControl_doThornTailEvents(void* obj, ShLevelControlState* state) {
                         state->storyFlags |= SH_LEVELCONTROL_FLAG_THORNTAIL_TRIGGERED;
                     } else {
                         mainSetBits(GAMEBIT_ITEM_MoonPassKey_Got, 1);
-                        (*gScreenTransitionInterface)->start(0x14, 1);
+                        (*gScreenTransitionInterface)->start(0x14, SCREEN_TRANSITION_BLACK);
                     }
                 }
             }

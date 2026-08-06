@@ -2498,7 +2498,7 @@ int objSeqExecCmd06(GameObject* obj, GameObject* sourceObj, u8* seq, int cmd, s8
         }
         if ((s8)(base + (s8)((ObjSeqState*)seq)->slot)[0x3a40] == 0)
         {
-            (*gScreenTransitionInterface)->start(cmdArg, 1);
+            (*gScreenTransitionInterface)->start(cmdArg, SCREEN_TRANSITION_BLACK);
         }
         break;
     case 15:
@@ -2508,7 +2508,7 @@ int objSeqExecCmd06(GameObject* obj, GameObject* sourceObj, u8* seq, int cmd, s8
         }
         if ((s8)(base + (s8)((ObjSeqState*)seq)->slot)[0x3a40] == 0)
         {
-            (*gScreenTransitionInterface)->step(cmdArg, 1);
+            (*gScreenTransitionInterface)->step(cmdArg, SCREEN_TRANSITION_BLACK);
         }
         break;
     case 20:
@@ -3648,27 +3648,27 @@ void objSeqDoBgCmds0D(u8* seq, GameObject* obj, int skipSpawns)
                 {
                 case 6:
                     transitionSlot = (cmdParam & 0xfc0) >> 4;
-                    (*gScreenTransitionInterface)->start(transitionSlot, 3);
+                    (*gScreenTransitionInterface)->start(transitionSlot, SCREEN_TRANSITION_WHITE_WIPE);
                     break;
                 case 7:
                     transitionSlot = (cmdParam & 0xfc0) >> 4;
-                    (*gScreenTransitionInterface)->step(transitionSlot, 3);
+                    (*gScreenTransitionInterface)->step(transitionSlot, SCREEN_TRANSITION_WHITE_WIPE);
                     break;
                 case 8:
                     transitionSlot = (cmdParam & 0xfc0) >> 4;
-                    (*gScreenTransitionInterface)->start(transitionSlot, 2);
+                    (*gScreenTransitionInterface)->start(transitionSlot, SCREEN_TRANSITION_WHITE);
                     break;
                 case 9:
                     transitionSlot = (cmdParam & 0xfc0) >> 4;
-                    (*gScreenTransitionInterface)->step(transitionSlot, 2);
+                    (*gScreenTransitionInterface)->step(transitionSlot, SCREEN_TRANSITION_WHITE);
                     break;
                 case 0xb:
                     transitionSlot = (cmdParam & 0xfc0) >> 4;
-                    (*gScreenTransitionInterface)->start(transitionSlot, 4);
+                    (*gScreenTransitionInterface)->start(transitionSlot, SCREEN_TRANSITION_RED);
                     break;
                 case 0xc:
                     transitionSlot = (cmdParam & 0xfc0) >> 4;
-                    (*gScreenTransitionInterface)->stepWithBlend(transitionSlot, 4, 0.2f);
+                    (*gScreenTransitionInterface)->stepWithBlend(transitionSlot, SCREEN_TRANSITION_RED, 0.2f);
                     break;
                 }
             }

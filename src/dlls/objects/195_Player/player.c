@@ -18265,7 +18265,7 @@ void playerUpdate(GameObject* obj)
                         0, (u16)(((PlayerState*)inner)->characterId == 0 ? SFXTRIG_jump2 : SFXTRIG_sa_climb02));
                 }
                 ((PlayerState*)inner)->flags3F3.b20 = 1;
-                (*gScreenTransitionInterface)->start(0x1e, 1);
+                (*gScreenTransitionInterface)->start(0x1e, SCREEN_TRANSITION_BLACK);
                 Pause_ResetMenuFrameCounter();
             }
             if (gPlayerPathObject != 0 && ((PlayerState*)inner)->flags3F4.b40 != 0)

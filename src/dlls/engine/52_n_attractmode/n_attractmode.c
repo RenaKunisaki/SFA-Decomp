@@ -737,12 +737,12 @@ void TitleMenu_initialise(void)
     if ((((mode == 0xd) || (mode = getPrevUiDll(), mode == 7)) || (mode = getPrevUiDll(), mode == 6)) ||
         (mode = getPrevUiDll(), mode == 5))
     {
-        (*gScreenTransitionInterface)->step(0x23, 5);
+        (*gScreenTransitionInterface)->step(0x23, SCREEN_TRANSITION_HUD);
     }
     else
     {
         audioStopByMask(0xf);
-        (*gScreenTransitionInterface)->step(0x3c, 1);
+        (*gScreenTransitionInterface)->step(0x3c, SCREEN_TRANSITION_BLACK);
     }
 
     setLinkIsRotated();

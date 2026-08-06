@@ -85,7 +85,7 @@ int n_rareware_frameStart(void)
     }
     if ((s8)gNrarewareTimeoutFlag != 0)
     {
-        (*gScreenTransitionInterface)->start(0x1e, 1);
+        (*gScreenTransitionInterface)->start(0x1e, SCREEN_TRANSITION_BLACK);
         gNrarewareExitDelay = 0x2d;
         gNrarewareTransitionStarted = 1;
     }
