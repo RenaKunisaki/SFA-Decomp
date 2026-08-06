@@ -384,11 +384,11 @@ int objFuzzShellRenderCb(GameObject* obj, int* model, int ropIdx)
     GXLoadTexMtxImm(mtxR, GX_PTTEXMTX2, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTTEXMTX2);
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD1, GX_TEXMAP4);
-    GXSetIndTexCoordScale(0, 0, 0);
+    GXSetIndTexCoordScale(GX_INDTEXSTAGE0, GX_ITS_1, GX_ITS_1);
     mtxA.m[0][0] = fz;
     mtxA.m[1][1] = fz;
     GXSetIndTexMtx(GX_ITM_0, mtxA.m, (s8)lbl_803DB498);
-    GXSetTevIndirect(2, 0, 0, 7, 1, 6, 6, 0, 0, 0);
+    GXSetTevIndirect(GX_TEVSTAGE2, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_0, GX_ITW_0, GX_ITW_0, 0, 0, GX_ITBA_OFF);
     GXSetTevOrder(GX_TEVSTAGE2, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
     GXSetTevSwapMode(GX_TEVSTAGE2, GX_TEV_SWAP0, GX_TEV_SWAP0);
     GXSetTevColorIn(GX_TEVSTAGE2, GX_CC_ZERO, GX_CC_CPREV, GX_CC_C1, GX_CC_ZERO);
@@ -398,11 +398,11 @@ int objFuzzShellRenderCb(GameObject* obj, int* model, int ropIdx)
     selectTexture((Texture*)(textureIdxToPtr(rop->indTextureId)), 2);
     GXSetTexCoordGen2(GX_TEXCOORD3, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
     GXSetIndTexOrder(GX_INDTEXSTAGE1, GX_TEXCOORD3, GX_TEXMAP2);
-    GXSetIndTexCoordScale(1, 0, 0);
+    GXSetIndTexCoordScale(GX_INDTEXSTAGE1, GX_ITS_1, GX_ITS_1);
     mtxB.m[0][1] = fz;
     mtxB.m[1][2] = fz;
     GXSetIndTexMtx(GX_ITM_1, mtxB.m, (s8)lbl_803DB49C);
-    GXSetTevIndirect(3, 1, 0, 7, 2, 0, 0, 1, 0, 1);
+    GXSetTevIndirect(GX_TEVSTAGE3, GX_INDTEXSTAGE1, GX_ITF_8, GX_ITB_STU, GX_ITM_1, GX_ITW_OFF, GX_ITW_OFF, 1, 0, GX_ITBA_S);
     selectTexture(noiseTextures[gObjFuzzLayerIndex], 3);
     PSMTXScale(mtx4, 37.5f, 37.5f, 1.0f);
     GXLoadTexMtxImm(mtx4, GX_PTTEXMTX0, GX_MTX3x4);
@@ -663,11 +663,11 @@ int objFuzzRenderCb(GameObject* obj, ObjModel* model, int ropIdx)
     GXLoadTexMtxImm(mtxR, GX_PTTEXMTX2, GX_MTX3x4);
     GXSetTexCoordGen2(coord, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTTEXMTX2);
     GXSetIndTexOrder(GX_INDTEXSTAGE0, coord, GX_TEXMAP4);
-    GXSetIndTexCoordScale(0, 0, 0);
+    GXSetIndTexCoordScale(GX_INDTEXSTAGE0, GX_ITS_1, GX_ITS_1);
     mtxA.m[0][0] = fz;
     mtxA.m[1][1] = fz;
     GXSetIndTexMtx(GX_ITM_0, mtxA.m, (s8)lbl_803DB48C);
-    GXSetTevIndirect(stage, 0, 0, 7, 1, 6, 6, 0, 0, 0);
+    GXSetTevIndirect(stage, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_0, GX_ITW_0, GX_ITW_0, 0, 0, GX_ITBA_OFF);
     GXSetTevOrder(stage, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR_NULL);
     GXSetTevSwapMode(stage, GX_TEV_SWAP0, GX_TEV_SWAP0);
     GXSetTevColorIn(stage, GX_CC_ZERO, GX_CC_CPREV, GX_CC_C1, GX_CC_ZERO);
@@ -679,20 +679,20 @@ int objFuzzRenderCb(GameObject* obj, ObjModel* model, int ropIdx)
         selectTexture((Texture*)(textureIdxToPtr(rop->indTextureId)), 2);
         GXSetTexCoordGen2(GX_TEXCOORD3, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTIDENTITY);
         GXSetIndTexOrder(GX_INDTEXSTAGE1, GX_TEXCOORD3, GX_TEXMAP2);
-        GXSetIndTexCoordScale(1, 0, 0);
+        GXSetIndTexCoordScale(GX_INDTEXSTAGE1, GX_ITS_1, GX_ITS_1);
         mtxB.m[0][1] = fz;
         mtxB.m[1][2] = fz;
         GXSetIndTexMtx(GX_ITM_1, mtxB.m, (s8)lbl_803DB490);
-        GXSetTevIndirect(stage + 1, 1, 0, 7, 2, 0, 0, 1, 0, 1);
+        GXSetTevIndirect(stage + 1, GX_INDTEXSTAGE1, GX_ITF_8, GX_ITB_STU, GX_ITM_1, GX_ITW_OFF, GX_ITW_OFF, 1, 0, GX_ITBA_S);
     }
     else
     {
         GXSetIndTexOrder(GX_INDTEXSTAGE1, GX_TEXCOORD3, GX_TEXMAP2);
-        GXSetIndTexCoordScale(1, 0, 0);
+        GXSetIndTexCoordScale(GX_INDTEXSTAGE1, GX_ITS_1, GX_ITS_1);
         mtxB.m[0][1] = 0.0f;
         mtxB.m[1][2] = 0.0f;
         GXSetIndTexMtx(GX_ITM_1, mtxB.m, -0xf);
-        GXSetTevIndirect(stage + 1, 1, 0, 7, 2, 0, 0, 1, 0, 0);
+        GXSetTevIndirect(stage + 1, GX_INDTEXSTAGE1, GX_ITF_8, GX_ITB_STU, GX_ITM_1, GX_ITW_OFF, GX_ITW_OFF, 1, 0, GX_ITBA_OFF);
     }
     selectTexture(noiseTextures[gObjFuzzLayerIndex], 3);
     PSMTXScale(mtx4, 37.5f, 37.5f, 1.0f);
@@ -802,7 +802,7 @@ void objFuzzSetupGxState(void* objArg)
     renderHandle = objCreateLight((void*)obj, '\0');
     if (renderHandle != 0x0)
     {
-        modelLightStruct_setLightKind(renderHandle, 4);
+        modelLightStruct_setLightKind(renderHandle, MODEL_LIGHT_KIND_DIRECTIONAL);
         modelLightStruct_setDirection(renderHandle, 0.0f, -0.707f, 0.0f);
         modelLightStruct_setDiffuseColor(renderHandle, 0xff, 0xff, 0xff, 0xff);
         modelLightChannels_reset(0);
@@ -819,7 +819,7 @@ void objFuzzSetupGxState(void* objArg)
     newshadows_getShadowTextureTable4x8(&shadowTable, &shadowStride, &shadowParam);
     selectTexture(shadowTable[(gObjFuzzLayerIndex >> 2) + gObjFuzzPhaseLatched * shadowStride], 0);
     PSMTXScale((MtxPtr)mtx, 20.0f, 20.0f, 1.0f);
-    GXLoadTexMtxImm((const f32 (*)[4])mtx, 0x40, 0);
+    GXLoadTexMtxImm((const f32 (*)[4])mtx, 0x40, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX2x4, GX_TG_TEX0, GX_IDENTITY, GX_TRUE, GX_PTTEXMTX0);
     GXSetTevDirect(GX_TEVSTAGE0);
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD1, GX_TEXMAP0, GX_COLOR0A0);
@@ -831,11 +831,11 @@ void objFuzzSetupGxState(void* objArg)
     GXSetNumTevStages(1);
     GXSetNumIndStages(0);
     GXSetNumTexGens(2);
-    GXSetCullMode(2);
-    GXSetFog(0, 0.0f, 0.0f, 0.0f, 0.0f, *(GXColor*)&lbl_803DB468);
+    GXSetCullMode(GX_CULL_BACK);
+    GXSetFog(GX_FOG_NONE, 0.0f, 0.0f, 0.0f, 0.0f, *(GXColor*)&lbl_803DB468);
     gxSetZMode_(1, 3, 0);
     gxSetPeControl_ZCompLoc_(1);
-    GXSetBlendMode(1, 4, 5, 5);
+    GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
     return;
 }
 
@@ -876,7 +876,7 @@ void objRenderAttachment(GameObject* obj, int* p2)
     cm[7] = 0.0f;
     cm[11] = 0.0f;
     PSMTXConcat((MtxPtr)cm, (MtxPtr)sm, (MtxPtr)cm);
-    GXLoadTexMtxImm((const f32 (*)[4])cm, 0x1e, 0);
+    GXLoadTexMtxImm((const f32 (*)[4])cm, 0x1e, GX_MTX3x4);
     objFrozenRenderCb(obj, (void**)mdl, 0);
     GXClearVtxDesc();
     GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
@@ -1257,7 +1257,7 @@ static void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* 
                 GXLoadPosMtxImm((const f32 (*)[4])posMtx, *posMtxIds[0]);
                 if (skip == 0 && tex != 0)
                 {
-                    GXLoadTexMtxImm((const f32 (*)[4])normalMtx, *texMtxIds, 0);
+                    GXLoadTexMtxImm((const f32 (*)[4])normalMtx, *texMtxIds, GX_MTX3x4);
                 }
                 if (skip == 0 && nrm != 0)
                 {
@@ -1276,7 +1276,7 @@ static void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* 
                     PSMTXConcat((MtxPtr)tmp, (MtxPtr)m1, (MtxPtr)tmp);
                     if (tex != 0)
                     {
-                        GXLoadTexMtxImm((const f32 (*)[4])tmp, *texMtxIds, 0);
+                        GXLoadTexMtxImm((const f32 (*)[4])tmp, *texMtxIds, GX_MTX3x4);
                     }
                     if (nrm != 0)
                     {
@@ -1916,7 +1916,7 @@ static u32 objSetupRenderOpGxState(GameObject* obj, u8* p2, int* am, MtxBitStrea
         Obj_BuildWorldTransformMatrix(obj, wm, 0);
         PSMTXConcat((MtxPtr)vm, (MtxPtr)wm, (MtxPtr)t1);
         PSMTXConcat((MtxPtr)(f32*)gCameraLightPerspectiveMatrix, (MtxPtr)t1, (MtxPtr)t2);
-        GXLoadTexMtxImm((const f32 (*)[4])t2, 0x24, 0);
+        GXLoadTexMtxImm((const f32 (*)[4])t2, 0x24, GX_MTX3x4);
         addSmallReflectionTevStage();
     }
     if (OBJPRINT_MODEL_DEF(obj)->renderFlags & OBJDEF_RENDERFLAG_DEFERRED_RENDER)
@@ -2003,7 +2003,7 @@ static u32 objSetupRenderOpGxState(GameObject* obj, u8* p2, int* am, MtxBitStrea
             gxSetPeControl_ZCompLoc_(zon);
         }
     }
-    if (op->flags & 8)
+    if (op->flags & SHADER_FLAG_BACKFACE_CULL)
     {
         GXSetCullMode(GX_CULL_BACK);
     }
@@ -2806,7 +2806,7 @@ static void modelDoRenderInstrs(GameObject* obj, GameObject* obj2, u8* m, u8 pas
             fm[11] = z;
             PSMTXConcat((MtxPtr)fm, (MtxPtr)sm, (MtxPtr)fm);
             GXLoadNrmMtxImm((const f32 (*)[4])fm, gObjGxPosMtxIdTable[9]);
-            GXLoadTexMtxImm((const f32 (*)[4])fm, gObjGxTexMtxIdTable[9], 0);
+            GXLoadTexMtxImm((const f32 (*)[4])fm, gObjGxTexMtxIdTable[9], GX_MTX3x4);
         }
     }
     shadowPass = passMaskCopy & 1;
