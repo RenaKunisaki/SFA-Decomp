@@ -7,7 +7,7 @@
 #include "main/trig.h"
 #include "stdlib.h"
 
-extern f32 lbl_803DE7C0;
+const f32 gVecMathZero[1] = {0.0f};
 
 f32 interpolate(f32 a, f32 t, f32 exp)
 {
@@ -15,7 +15,7 @@ f32 interpolate(f32 a, f32 t, f32 exp)
     {
         return a * (1.0f - powfBitEstimate(1.0f - t, exp));
     }
-    return 0.0f;
+    return gVecMathZero[0];
 }
 void basisVectorsToEulerAngles(f32* a, f32* b, s16* out0, s16* out1, s16* out2)
 {
@@ -48,12 +48,12 @@ void basisVectorsToEulerAngles(f32* a, f32* b, s16* out0, s16* out1, s16* out2)
         }
         else
         {
-            roll = -atan2f_fast(c1, c0) + (yaw = 0.0f);
+            roll = -atan2f_fast(c1, c0) + (yaw = gVecMathZero[0]);
         }
     }
     else
     {
-        roll = atan2f_fast(c1, c0) - (yaw = 0.0f);
+        roll = atan2f_fast(c1, c0) - (yaw = gVecMathZero[0]);
     }
     {
         f32 twoPi;
@@ -150,7 +150,7 @@ int atan2i(int y, int x)
 
 void initRotationMtx(f32* m, f32 a, f32 b, f32 c)
 {
-    f32 z = 0.0f;
+    f32 z = gVecMathZero[0];
     m[0] = z;
     m[1] = z;
     m[2] = z;
@@ -278,7 +278,7 @@ void mtxRotateByVec3s(f32* mtx, const void* transform)
     }
     mtx[1] = v;
     mtx[2] = -(sx * cy);
-    mtx[3] = (u = lbl_803DE7C0);
+    mtx[3] = (u = gVecMathZero[0]);
     mtx[4] = -(cy * sz);
     mtx[5] = cy * cz;
     mtx[6] = sy;
@@ -338,7 +338,6 @@ void mtx44ScaleRow1(f32* p, f32 s)
 void setMatrixFromObjectPos(f32* m, const MatrixTransform* transform)
 {
     f32 scale;
-    f32 zero;
     f32 s0;
     f32 c0;
     f32 s1;
@@ -353,16 +352,15 @@ void setMatrixFromObjectPos(f32* m, const MatrixTransform* transform)
     m[0] = scale * (s2 * (s1 * s0) + c2 * c0);
     m[1] = scale * (s2 * c1);
     m[2] = scale * (s2 * (s1 * c0) - c2 * s0);
-    zero = 0.0f;
-    m[3] = zero;
+    m[3] = gVecMathZero[0];
     m[4] = scale * (c2 * (s1 * s0) - s2 * c0);
     m[5] = scale * (c2 * c1);
     m[6] = scale * (c2 * (s1 * c0) + s2 * s0);
-    m[7] = zero;
+    m[7] = gVecMathZero[0];
     m[8] = scale * (c1 * s0);
     m[9] = -s1 * scale;
     m[10] = scale * (c1 * c0);
-    m[11] = zero;
+    m[11] = gVecMathZero[0];
     m[12] = transform->x;
     m[13] = transform->y;
     m[14] = transform->z;
@@ -398,7 +396,7 @@ int RandomTimer_UpdateRangeTrigger(void* timerp, f32 lo, f32 hi)
                 {
                     f32 acc = rv;
                     acc = acc / 4294967296.0f;
-                    acc = acc * ((1.0f + range) - (t = 0.0f));
+                    acc = acc * ((1.0f + range) - (t = gVecMathZero[0]));
                     acc = acc + t;
                     val = acc;
                 }
@@ -407,7 +405,7 @@ int RandomTimer_UpdateRangeTrigger(void* timerp, f32 lo, f32 hi)
         }
         if (trig != 0)
         {
-            *timer = 0.0f;
+            *timer = gVecMathZero[0];
         }
         return trig;
     }
@@ -539,7 +537,7 @@ void mtx44_multSafe(f32* a, f32* b, f32* out)
 
     i = 0;
     row = 0;
-    zero = lbl_803DE7C0;
+    zero = gVecMathZero[0];
     tp = tmp;
     for (; i < 4; i++)
     {
