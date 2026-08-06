@@ -164,7 +164,7 @@ void decoration11a_init(GameObject* obj, Decoration11APlacement* placement) {
             f32 boundingRadius;
 
             state = obj->extra;
-            model = (ModelFileHeader*)obj->anim.banks[0]->animDef;
+            model = obj->anim.modelBanks[0]->file;
             Model_GetVertexPosition(model, 0, &state->boundsMax.x);
             Model_GetVertexPosition(model, 0, &state->boundsMin.x);
             for (vertexIndex = 1; vertexIndex < model->vertexCount; vertexIndex++) {

@@ -589,12 +589,13 @@ void DIMCannon_init(GameObject* obj, DimCannonPlacement* placement) {
     if (obj->anim.romDefNo == DIM_CANNON_BALL_SEQUENCE_ID) {
         DimCannonBallState* state;
         ObjHitsPriorityState* hitState;
+        ObjModelState* modelState;
         obj->userData1 = 0;
-        hitState = (ObjHitsPriorityState*)obj->anim.modelState;
-        if (hitState != 0) {
-            *(int*)&hitState->secondaryRadiusY |= 0xc10;
-            hitState = (ObjHitsPriorityState*)obj->anim.modelState;
-            *(u32*)&hitState->secondaryRadiusY |= 0x8000LL;
+        modelState = obj->anim.modelState;
+        if (modelState != 0) {
+            modelState->flags |= 0xc10;
+            modelState = obj->anim.modelState;
+            modelState->flags |= 0x8000LL;
         }
         state = obj->extra;
         state->rotationZRate = randomGetRange(-0x64, 0x64);

@@ -274,7 +274,7 @@ void Obj_SetModelRenderOpAlpha(void* obj, u8 alpha)
     ObjModel* model;
 
     objAnim = (ObjAnimComponent*)obj;
-    model = (ObjModel*)objAnim->banks[objAnim->bankIndex];
+    model = objAnim->modelBanks[objAnim->bankIndex];
     if (model != NULL)
     {
         modelFile = model->file;
@@ -442,7 +442,7 @@ void Obj_Shatter(GameObject* obj)
     obj->colorFadeFrames = 0;
     obj->colorFadeFlags &= ~OBJ_COLOR_FADE_FLAG_FROZEN;
     obj->fadeCounter = 0;
-    ObjModel_ClearRenderAttachment((ObjModel*)obj->anim.banks[obj->anim.bankIndex]);
+    ObjModel_ClearRenderAttachment(obj->anim.modelBanks[obj->anim.bankIndex]);
     (*gBoneParticleEffectInterface)->spawnEffect(obj, 0x7fb, NULL, 0x50, NULL);
     (*gBoneParticleEffectInterface)->spawnEffect(obj, 0x7fc, NULL, 0x32, NULL);
 }
@@ -482,7 +482,7 @@ void Obj_StartModelFadeIn(GameObject* obj, int frames)
             obj->colorFadeFrames = frames;
             obj->colorFadeFlags = (u8)(obj->colorFadeFlags | OBJ_COLOR_FADE_FLAG_FROZEN);
             Obj_BuildWorldTransformMatrix(obj, mtx, 0);
-            ObjModel_EnableDefaultRenderCallback(obj, (ObjModel*)objAnim->banks[objAnim->bankIndex], mtx, 1,
+            ObjModel_EnableDefaultRenderCallback(obj, objAnim->modelBanks[objAnim->bankIndex], mtx, 1,
                                                  obj->anim.hitboxScale * obj->anim.rootMotionScale);
             (*gBoneParticleEffectInterface)->spawnEffect(obj, 0x7fc, NULL, 0x64, NULL);
         }
@@ -629,7 +629,7 @@ void Obj_BuildWorldTransformMatrix(GameObject* obj, f32* mtx, int flags)
 
 ObjModel* Obj_GetActiveModel(GameObject* obj)
 {
-    return (ObjModel*)obj->anim.banks[obj->anim.bankIndex];
+    return obj->anim.modelBanks[obj->anim.bankIndex];
 }
 
 GameObject* loadObjectAtObject(GameObject* src, ObjPlacement* setup)
@@ -1395,7 +1395,7 @@ void Obj_UpdateObject(GameObject* obj)
             obj->colorFadeFrames = 0;
             obj->colorFadeFlags &= ~OBJ_COLOR_FADE_FLAG_FROZEN;
             obj->fadeCounter = 0;
-            ObjModel_ClearRenderAttachment((ObjModel*)object->banks[object->bankIndex]);
+            ObjModel_ClearRenderAttachment(object->modelBanks[object->bankIndex]);
             cb = (*gBoneParticleEffectInterface)->spawnEffect;
             cb(obj, 0x7fb, NULL, 0x50, NULL);
             cb = (*gBoneParticleEffectInterface)->spawnEffect;
@@ -2451,7 +2451,7 @@ void Obj_UpdateModelBlendStates(void)
             k = 0;
             for (; k < objAnim->modelInstance->modelCount; k++)
             {
-                m = (ObjModel*)objAnim->banks[k];
+                m = objAnim->modelBanks[k];
                 if (m != 0)
                 {
                     m->bufferFlags &= ~8;
@@ -2471,7 +2471,7 @@ void Obj_UpdateModelBlendStates(void)
                     k = 0;
                     for (; k < childAnim->modelInstance->modelCount; k++)
                     {
-                        m = (ObjModel*)childAnim->banks[k];
+                        m = childAnim->modelBanks[k];
                         if (m != 0)
                         {
                             m->bufferFlags &= ~8;
