@@ -542,6 +542,34 @@ the only clean instance. The one other skeleton site, `drlasercannon_aimAtTarget
 by its adjacent redundant-`extsh` wall (the same coalesce-killer lever 11 documents there) and
 nets negative.
 
+**Second instance, 2026-08-05 — it is an OPEN vein for FLOAT clamps; the earlier screen missed
+them because it only looked for the skeleton, and a float clamp's defect shows up as a
+result-HOME flip first.** `DIMCannon_updateAim` **99.769 -> 100.000 byte-exact**, unit
+`454_DIMCannon` -> 100.00000. Retail's floor clamp is
+`fcmpo f31,f3 ; ble L1 ; b L2 ; L1: fmr f31,f3` — the empty true arm, result staying in
+`distSq`'s own home `f31`. Measured ladder on the one statement:
+
+| spelling | length | struc / recolour | note |
+|---|---|---|---|
+| `distSq = (distSq < 10.0f) ? 10.0f : distSq;` | 195/195 | 1 / 7 | baseline: `bge`, `fmr f3,f31` — result re-homed to the CONSTANT's register, and every later use of `distSq` follows it |
+| `distSq = (distSq > 10.0f) ? distSq : 10.0f;` | 195/**194** | 1 / 6 | branch polarity fixed, home still `f3`, and the skeleton's `b` disappears |
+| `if (distSq < 10.0f) { distSq = 10.0f; }` | 195/**193** | 4 / 3 | home fixed (`fmr f31,f3`) but the `if` lowering emits ONE branch — the missing `b` costs fn **98.82** |
+| `distSq = (distSq > 10.0f) ? (dx * dx + dz * dz) : 10.0f;` | 195/195 | **0 / 2** | lever 15: the true arm names distSq's DEFINITION SOURCE, the copy self-elides into `f31`, the skeleton survives |
+
+Two generalisations worth carrying: **(1)** the ternary and the `if` are NOT interchangeable —
+the ternary keeps the two-branch skeleton, the `if` collapses it, so a missing bare `b` next to
+a conditional branch is a "this was a ternary" tell; **(2)** the residual after the home is
+fixed was a compare-operand order: `launchSpeed = (0.0f > launchSpeed) ? 0.0f : launchSpeed;`
+vs retail's `(launchSpeed > 0.0f) ? launchSpeed : 0.0f` — same stream, swapped `f0`/`f1`.
+Note the sibling clamp in the same function (`distSq = (distSq > R) ? distSq : R;`) needed NO
+definition-source arm: once `distSq`'s reaching definition is itself a coalesced ternary result,
+the plain self-reference elides. So spell the arm as the variable first and only reach for the
+definition source when the home flips.
+
+**Screen for it with `tools/strucdiff.py`, not `structscan.py`** — this whole class hides inside
+recolour mass (`DIMCannon_updateAim` was `struc 1` of `ndiff 8`, but the class it headed had been
+written off as "23 clamp spellings flat").
+
 ## The signedness axis — CLOSED BOTH-SIDED by census, and three protected shapes
 
 **Do not re-run either side as a per-function hunt.** Two independent censuses, store-side and

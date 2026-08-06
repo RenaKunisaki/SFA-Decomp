@@ -29,6 +29,28 @@ Columns: `ndiff` real differing words · `struc` mnemonic changes + length delta
 GPR/FPR width from the target's `_savegpr_N`/`_savefpr_N` · `#nm` sub-100 functions left in the
 unit (1 = matching this one flips the unit).
 
+## struc column RE-DERIVED 2026-08-05 — it was massively over-reported
+
+The original `struc` numbers came from `tools/structscan.py`, which aligns the two instruction
+streams on the **reloc-masked instruction word**. A long register-recolour run therefore defeats
+difflib's alignment: every shifted row falls out as a `replace` and is miscounted as a mnemonic
+(structural) change. `tools/strucdiff.py` aligns on the **mnemonic stream** instead, which
+separates the two populations cleanly — STRUC = real stream differences (source-reachable),
+recolour = same-mnemonic operand differences (allocator, not source-reachable).
+
+Every sub-100 row below has had its `struc` cell replaced with the mnemonic-aligned count.
+Measured over-reports: `player_SeqFn` 104 -> 2 (331 recolour), `doPendingMapLoads` 100 -> 2 (161),
+`expgfx_updateActivePools` 116 -> 12 (121), `drawViewFinderHud` 84 -> 1 (119),
+`modelRenderInterpolateRootTransform` 117 -> 11 (133), `mapLoadUnloadObjects` 21 -> 1 (112),
+`sky2_run` 19 -> 0, `Objfsa_UpdateWalkGroupPatches` 48 -> 3,
+`Checkpoint_buildControlPoints` 268-by-key -> 2 (143). 30 rows dropped by >= 3.
+
+Consequence for the reading rule above: several rows previously dismissed as "huge structural
+mass" are 1-2-defect functions buried in recolour, and several `struc > 0` rows are now `struc 0`
+pure recolours. Rank by (STRUC > 0, ascending STRUC, descending size) —
+`python3 tools/strucdiff.py <unit> <symbol> [context]` prints the windows around each structural
+row. Note the mechanism cells were NOT re-derived; they still describe the diff as a whole.
+
 Reading the table: **`struc 0` = pure recolour** (rotation if band >= 5, narrow-band/scratch
 otherwise — neither is declaration-steerable, see the band model in CLAUDE.md);
 **`struc > 0` = a shape difference**, which is where source levers apply — but nearly every one
@@ -43,6 +65,27 @@ recorded mechanism, a signature-clean recolour, or an accepted/priced class. The
 walled at the function level; the open value is in the three leads below, the owner decisions
 (pool order / naming / `.sdata2` claims), and the TU-split evidence lanes — not in fresh
 function-level probing.
+
+**Amended 2026-08-05 by the struc re-derivation.** "ZERO unclassified" survives, but "walled at
+the function level" did NOT: re-ranking by true STRUC put `DIMCannon_updateAim` (the whole
+`ternary-constant-register` class, previously "23 clamp spellings flat") at the top of the
+one-defect list, and reading strucdiff's window showed the defect was a ternary result-home
+flip, not a constant-coalescing wall — closed byte-exact on the fourth probe, unit
+`454_DIMCannon` -> **100.00000** (see the row below). Probed and re-confirmed walled in the same
+pass, each with the reason now stated at instruction level: `drawViewFinderHud` (one surplus
+`frsp` in the `stfs;frsp;stfs` viewScale idiom — explicit cast, statement order and arm
+spellings all flat), `debugPrintfxy` (retail materialises `r1+115` TWICE where every scalar /
+array-of-one / mixed-type spelling CSEs it into an `mr`; **the corpus has 0 hits for two
+identical adjacent stack-address `addi`s in 38,736 functions**, so no plain-C spelling reaches
+it), `mapLoadUnloadObjects` and `boneParticleEffect_update` (already named in
+`docs/source_shape_levers.md` §7's "does not fire when" list — LICM/strength reduction owns the
+base; the grouped-constant respelling measures STRUC 1 -> 5), `babyCloudRunner_turnTowardTarget`
+(the surplus `extsh` is real and score-neutral, per the signedness census), `player_SeqFn` (its
+2 true structural rows are exactly LEAD 1's `li/and`-vs-`rlwinm` mask family),
+`Objfsa_UpdateWalkGroupPatches` (retail unrolls x32 with every displacement folded and ONE
+`addi r4,r4,1536`; we fold in groups of 8 and re-base 4x — the unrolled-IV fold law, symbol base
+at offset 0). The `struc 1` rows are dominated by the copy-survival `li`-vs-`mr` family, whose
+walls are enumerated in the copy-survival memory topic — do not re-probe those.
 
 ## LEADS — the only live threads found
 
@@ -66,19 +109,19 @@ MWCC GC/1.3+ elides a redundant load/store-forward whenever the address's proven
 | fn | unit | size | fuzzy | ndiff | struc | band | #nm | recorded mechanism |
 |---|---|---|---|---|---|---|---|---|
 | dll_98_spawnEffect | dlls/modgfx/152/152 | 1040 | 99.769 | 1 | 1 | 6G/0F | 1 | store-forward vs reload (7 spellings walled; spellfuzz.py depth-2 grammar over the defect neighbourhood: 121 legal variants incl. chain/`(s32)(a=x)`/temp-park/fresh-temp, every one still forwards — the chain spellings drop the second `extsh` and go one instruction SHORT (259/260) without producing the `lha`) |
-| mathSinCosf | main/sincosf | 320 | 98.750 | 1 | 2 | 2G/5F | 1 | un-elided parameter-home fmr copy; profile already maximal |
-| mathTanf | dolphin/MSL_C/PPCEABI/bare/H/math_8029454c | 148 | 97.297 | 1 | 2 | 0G/4F | 1 | un-elided parameter-home fmr copy; profile already maximal |
-| gameUiLoadResources | dlls/engine/0/0 | 896 | 98.661 | 4 | 6 | 7G/3F | 14 | symbol-provenance-load-cse (the 6-fn reload family) |
-| renderClouds | dlls/engine/9/9 | 1612 | 99.491 | 6 | 4 | 6G/1F | 1 | global-load-CSE volatile purge (renderClouds closed) |
-| beginLoadingMap | main/shader | 2324 | 99.776 | 7 | 4 | 3G/0F | 8 | symbol-provenance-load-cse (the 6-fn reload family) |
-| sceneDraw | main/lightmap | 1500 | 98.880 | 19 | 13 | 4G/0F | 3 | symbol-provenance-load-cse (the 6-fn reload family) |
+| mathSinCosf | main/sincosf | 320 | 98.750 | 1 | 1 | 2G/5F | 1 | un-elided parameter-home fmr copy; profile already maximal |
+| mathTanf | dolphin/MSL_C/PPCEABI/bare/H/math_8029454c | 148 | 97.297 | 1 | 1 | 0G/4F | 1 | un-elided parameter-home fmr copy; profile already maximal |
+| gameUiLoadResources | dlls/engine/0/0 | 896 | 98.661 | 4 | 3 | 7G/3F | 14 | symbol-provenance-load-cse (the 6-fn reload family) |
+| renderClouds | dlls/engine/9/9 | 1612 | 99.491 | 6 | 2 | 6G/1F | 1 | global-load-CSE volatile purge (renderClouds closed) |
+| beginLoadingMap | main/shader | 2324 | 99.776 | 7 | 1 | 3G/0F | 8 | symbol-provenance-load-cse (the 6-fn reload family) |
+| sceneDraw | main/lightmap | 1500 | 98.880 | 19 | 4 | 4G/0F | 3 | symbol-provenance-load-cse (the 6-fn reload family) |
 | loadCharacter | main/object | 2612 | 99.763 | 27 | 0 | 12G/1F | 1 | loadCharacter residual after 505db2b3ce win: copy/load swap + inverted branch |
-| worldplanet_update | dlls/objects/466_WORLDplanet/WORLDplanet | 3136 | 99.152 | 34 | 18 | 13G/9F | 1 | 4 defects, all individually walled: -1 elision (symbol-provenance); index-vs-base held (indexing spelling measured 98.871); 13G/9F rotation (120-perm flat); objId spill (escaping-local split flips the site to mr r29 but re-rotates the band 34->145 regions, 98.406 — variable-split bound) |
-| drlasercannon_aimAtTarget | dlls/objects/609_DR_LaserCan/DR_LaserCan | 940 | 97.660 | 36 | 36 | 6G/1F | 1 | double-extsh fold; fix is a main-owned getAngle prototype question |
-| voxmaps_updateActiveMap | main/voxmaps | 776 | 97.412 | 38 | 33 | 8G/0F | 3 | symbol-provenance-load-cse (the 6-fn reload family) |
-| ObjSeq_start | dlls/engine/2/2 | 2904 | 99.311 | 50 | 15 | 18G/3F | 5 | symbol-provenance-load-cse (the 6-fn reload family) |
-| ObjSeq_runBgCmds | dlls/engine/2/2 | 952 | 97.689 | 62 | 12 | 16G/0F | 5 | remainder-remat cursor unreachable (engine/2 GROUND pass) |
-| doPendingMapLoads | main/shader | 3144 | 98.458 | 164 | 100 | 14G/1F | 8 | symbol-provenance-load-cse (the 6-fn reload family) |
+| worldplanet_update | dlls/objects/466_WORLDplanet/WORLDplanet | 3136 | 99.152 | 34 | 7 | 13G/9F | 1 | 4 defects, all individually walled: -1 elision (symbol-provenance); index-vs-base held (indexing spelling measured 98.871); 13G/9F rotation (120-perm flat); objId spill (escaping-local split flips the site to mr r29 but re-rotates the band 34->145 regions, 98.406 — variable-split bound) |
+| drlasercannon_aimAtTarget | dlls/objects/609_DR_LaserCan/DR_LaserCan | 940 | 97.660 | 36 | 6 | 6G/1F | 1 | double-extsh fold; fix is a main-owned getAngle prototype question |
+| voxmaps_updateActiveMap | main/voxmaps | 776 | 97.412 | 38 | 4 | 8G/0F | 3 | symbol-provenance-load-cse (the 6-fn reload family) |
+| ObjSeq_start | dlls/engine/2/2 | 2904 | 99.311 | 50 | 3 | 18G/3F | 5 | symbol-provenance-load-cse (the 6-fn reload family) |
+| ObjSeq_runBgCmds | dlls/engine/2/2 | 952 | 97.689 | 62 | 2 | 16G/0F | 5 | remainder-remat cursor unreachable (engine/2 GROUND pass) |
+| doPendingMapLoads | main/shader | 3144 | 98.458 | 164 | 2 | 14G/1F | 8 | symbol-provenance-load-cse (the 6-fn reload family) |
 
 ### copy-survival (9)
 
@@ -89,7 +132,7 @@ The li/mr rematerialisation family (incl. the srawi/extsh u64-pair pocket and co
 | Scarab_update | dlls/objects/262/262 | 3476 | 99.931 | 1 | 1 | 6G/1F | 1 | copy-survival-first-definition-rule (walled; clause-A fix nets negative; spellfuzz.py depth-2 grammar over 316:345: 419 legal variants — swaps/parks/chains/fresh-temps/decl-moves — best is still ndiff 1, everything else strictly worse) |
 | curves_advanceCollision | dlls/engine/21/21 | 2472 | 99.903 | 1 | 1 | 6G/1F | 1 | copy-survival-first-definition-rule (walled; clause-A fix nets negative — spellfuzz.py measured it: `u32 sourceOffset[1]` flips the site's `li` to `mr` but re-rotates 54 words (struc 0); 405 legal depth-2 variants over the first preamble incl. loop-form/scope-push/dup-fold, best remains ndiff 1; `scal(outputCursor)` costs 82 words, so the existing array-of-one locals are load-bearing original source) |
 | playerStateMountBike | dlls/objects/195_Player/player | 1452 | 99.405 | 3 | 2 | 6G/0F | 22 | independent-match-ceiling: the srawi/extsh ~(u64) pocket |
-| playerState19 | dlls/objects/195_Player/player | 1396 | 99.295 | 8 | 5 | 6G/1F | 22 | independent-match-ceiling: the srawi/extsh ~(u64) pocket |
+| playerState19 | dlls/objects/195_Player/player | 1396 | 99.295 | 8 | 2 | 6G/1F | 22 | independent-match-ceiling: the srawi/extsh ~(u64) pocket |
 | Shield_setMode | dlls/objects/229/229 | 1788 | 99.709 | 15 | 1 | 7G/4F | 2 | web-class: 226/229/engine-22 copy-class placement / copy-survival textures |
 | Shield_update | dlls/objects/229/229 | 808 | 99.431 | 21 | 0 | 9G/1F | 2 | web-class: 226/229/engine-22 copy-class placement / copy-survival textures |
 | staff_setupSwipe | dlls/objects/226/226 | 1780 | 99.708 | 26 | 0 | 10G/7F | 2 | web-class: 226/229/engine-22 copy-class placement / copy-survival textures |
@@ -103,10 +146,10 @@ Retail materialises a constant zero at its store; we hoist it into a web (or vic
 | fn | unit | size | fuzzy | ndiff | struc | band | #nm | recorded mechanism |
 |---|---|---|---|---|---|---|---|---|
 | intersectModLineBuild | main/track_dolphin | 1352 | 99.822 | 1 | 1 | 8G/1F | 7 | track-objhits: textbook const-zero-remat (T mr vs C li) |
-| wispBaddieProcessAnimEvent | dlls/objects/202/sharpclaw | 1000 | 99.156 | 3 | 1 | 5G/0F | 1 | dll202 doc: retail remats li r0,0 at store, we hoist |
-| playerDoHitDetection | dlls/objects/195_Player/player | 2244 | 99.617 | 6 | 4 | 3G/2F | 22 | const-zero-remat-residual / array-clear wall |
-| playerRender | dlls/objects/195_Player/player | 1904 | 99.506 | 7 | 3 | 7G/3F | 22 | same hoist-vs-remat shape verified this session (see LEAD 1) |
-| playerState1B | dlls/objects/195_Player/player | 1636 | 99.399 | 8 | 5 | 4G/1F | 22 | same hoist-vs-remat shape verified this session (see LEAD 1) |
+| wispBaddieProcessAnimEvent | dlls/objects/202/sharpclaw | 1000 | 99.156 | 3 | 2 | 5G/0F | 1 | dll202 doc: retail remats li r0,0 at store, we hoist |
+| playerDoHitDetection | dlls/objects/195_Player/player | 2244 | 99.617 | 6 | 2 | 3G/2F | 22 | const-zero-remat-residual / array-clear wall |
+| playerRender | dlls/objects/195_Player/player | 1904 | 99.506 | 7 | 2 | 7G/3F | 22 | same hoist-vs-remat shape verified this session (see LEAD 1) |
+| playerState1B | dlls/objects/195_Player/player | 1636 | 99.399 | 8 | 2 | 4G/1F | 22 | same hoist-vs-remat shape verified this session (see LEAD 1) |
 | updateEnvironment | main/lightmap | 608 | 99.276 | 11 | 1 | 2G/0F | 3 | const-zero-remat-residual / array-clear wall |
 | textureInitGXTexObj | main/texture | 356 | 98.427 | 27 | 0 | 4G/0F | 3 | const-zero-remat-residual / array-clear wall |
 
@@ -116,9 +159,9 @@ Retail-deleted redundant extsh/extsb before a narrow store; unreachable without 
 
 | fn | unit | size | fuzzy | ndiff | struc | band | #nm | recorded mechanism |
 |---|---|---|---|---|---|---|---|---|
-| babyCloudRunner_turnTowardTarget | dlls/objects/332/332 | 352 | 98.864 | 1 | 2 | 4G/0F | 1 | priced 4b / redundant-narrowing store-truncate wall |
-| playerStateClimbOntoLadder | dlls/objects/195_Player/player | 1396 | 99.699 | 2 | 2 | 7G/1F | 22 | playerSetMoveBlendFromPlane return-type pincer (web-class 08-03); verified this session: both callers' sole real diff is one surplus extsh before sth |
-| playerStateClimbOntoWall | dlls/objects/195_Player/player | 736 | 99.429 | 2 | 2 | 4G/0F | 22 | playerSetMoveBlendFromPlane return-type pincer (web-class 08-03); verified this session: both callers' sole real diff is one surplus extsh before sth |
+| babyCloudRunner_turnTowardTarget | dlls/objects/332/332 | 352 | 98.864 | 1 | 1 | 4G/0F | 1 | priced 4b / redundant-narrowing store-truncate wall |
+| playerStateClimbOntoLadder | dlls/objects/195_Player/player | 1396 | 99.699 | 2 | 1 | 7G/1F | 22 | playerSetMoveBlendFromPlane return-type pincer (web-class 08-03); verified this session: both callers' sole real diff is one surplus extsh before sth |
+| playerStateClimbOntoWall | dlls/objects/195_Player/player | 736 | 99.429 | 2 | 1 | 4G/0F | 22 | playerSetMoveBlendFromPlane return-type pincer (web-class 08-03); verified this session: both callers' sole real diff is one surplus extsh before sth |
 
 ### unrolled-IV/unroll-CSE (4)
 
@@ -126,10 +169,10 @@ Unrolled-loop base-chunking / stack-slot + unroll interactions; retail folds str
 
 | fn | unit | size | fuzzy | ndiff | struc | band | #nm | recorded mechanism |
 |---|---|---|---|---|---|---|---|---|
-| mmFreeTick | main/mm | 788 | 98.721 | 13 | 13 | 3G/0F | 2 | unrolled-iv-fold-symbol-base-law |
-| SaveGame_gplaySetObjGroupStatus | dlls/engine/23/23 | 1056 | 97.981 | 30 | 25 | 9G/0F | 1 | priced 3 / W2 unroll base-chunking |
-| Objfsa_UpdateWalkGroupPatches | dlls/engine/20_Hcurves/Hcurves | 4776 | 99.491 | 72 | 48 | 11G/7F | 1 | priced 3 / W2 unroll base-chunking |
-| expgfx_updateActivePools | dlls/engine/10_expgfx/expgfx | 9252 | 99.219 | 122 | 116 | 18G/10F | 4 | surplus-queue: stack-slot layout + unroll block, needs dedicated session |
+| mmFreeTick | main/mm | 788 | 98.721 | 13 | 2 | 3G/0F | 2 | unrolled-iv-fold-symbol-base-law |
+| SaveGame_gplaySetObjGroupStatus | dlls/engine/23/23 | 1056 | 97.981 | 30 | 22 | 9G/0F | 1 | priced 3 / W2 unroll base-chunking |
+| Objfsa_UpdateWalkGroupPatches | dlls/engine/20_Hcurves/Hcurves | 4776 | 99.491 | 72 | 3 | 11G/7F | 1 | priced 3 / W2 unroll base-chunking |
+| expgfx_updateActivePools | dlls/engine/10_expgfx/expgfx | 9252 | 99.219 | 122 | 12 | 18G/10F | 4 | surplus-queue: stack-slot layout + unroll block, needs dedicated session |
 
 ### ternary-constant-register (1)
 
@@ -137,7 +180,7 @@ Ternary/constant coalescing: both polarities lose.
 
 | fn | unit | size | fuzzy | ndiff | struc | band | #nm | recorded mechanism |
 |---|---|---|---|---|---|---|---|---|
-| DIMCannon_updateAim | dlls/objects/454_DIMCannon/DIMCannon | 780 | 99.769 | 8 | 1 | 6G/2F | 1 | flip-frontier: 23 clamp spellings flat |
+| DIMCannon_updateAim | dlls/objects/454_DIMCannon/DIMCannon | 780 | 99.769->100 | 8->0 | 1->0 | 6G/2F | 1 | **MATCHED from source 2026-08-05 (lever 15, second instance)**: the `distSq` floor is an in-place clamp whose true arm must name distSq's DEFINITION SOURCE — `distSq = (distSq > 10.0f) ? (dx * dx + dz * dz) : 10.0f;` — so the true-arm copy self-elides into f31 and leaves retail's `ble/b` empty-true-arm skeleton (plain `? distSq :` re-homes the web to f3 and drops the `b`; the `if` form fixes the home but deletes the `b`, costing 98.82). Second site `launchSpeed` needed only the compare operand order (`launchSpeed > 0.0f`, not `0.0f > launchSpeed`). Unit -> 100.00000 |
 
 ### goto-locked (2)
 
@@ -146,7 +189,7 @@ Retail shape reachable only through goto (or its comma-condition disguise) — b
 | fn | unit | size | fuzzy | ndiff | struc | band | #nm | recorded mechanism |
 |---|---|---|---|---|---|---|---|---|
 | mmpMoonRock_update | dlls/objects/386_MMP_moonroc/MMP_moonroc | 1736 | 99.919 | 6 | 0 | 5G/1F | 1 | goto reversed by the two-return helper (7dcef9d5bd); residual is a width-5 r27/r28 rotation, two 119-perm sweeps flat |
-| playerStateClimbWall | dlls/objects/195_Player/player | 2708 | 98.647 | 144 | 21 | 9G/4F | 22 | goto-recovery-candidate-pool (144 real words, 21 mnemonic) |
+| playerStateClimbWall | dlls/objects/195_Player/player | 2708 | 98.647 | 144 | 2 | 9G/4F | 22 | goto-recovery-candidate-pool (144 real words, 21 mnemonic) |
 
 ### per-function-opt-level (9)
 
@@ -154,13 +197,13 @@ Function matches under a different opt profile (peephole/nocse/nopropagation/dea
 
 | fn | unit | size | fuzzy | ndiff | struc | band | #nm | recorded mechanism |
 |---|---|---|---|---|---|---|---|---|
-| atan2fHighPrecision | main/acosf | 480 | 99.125 | 2 | 3 | 1G/5F | 3 | priced 1 dot-compare (peephole) family |
-| atan2f | main/acosf | 272 | 98.456 | 2 | 3 | 1G/5F | 3 | priced 1 dot-compare (peephole) family |
-| atan2f_fast | main/acosf | 240 | 98.250 | 2 | 3 | 1G/5F | 3 | priced 1 dot-compare (peephole) family |
-| playerCacheMoveRootHeights | dlls/objects/195_Player/player | 352 | 97.045 | 3 | 5 | 5G/0F | 22 | player-cluster: 100.0 under nocse/nopropagation, TU-split evidence needed |
-| removeButtonObject | main/gameloop_buttonobj | 220 | 98.091 | 3 | 3 | 0G/0F | 1 | priced 1 dot-compare (peephole) family |
+| atan2fHighPrecision | main/acosf | 480 | 99.125 | 2 | 2 | 1G/5F | 3 | priced 1 dot-compare (peephole) family |
+| atan2f | main/acosf | 272 | 98.456 | 2 | 2 | 1G/5F | 3 | priced 1 dot-compare (peephole) family |
+| atan2f_fast | main/acosf | 240 | 98.250 | 2 | 2 | 1G/5F | 3 | priced 1 dot-compare (peephole) family |
+| playerCacheMoveRootHeights | dlls/objects/195_Player/player | 352 | 97.045 | 3 | 3 | 5G/0F | 22 | player-cluster: 100.0 under nocse/nopropagation, TU-split evidence needed |
+| removeButtonObject | main/gameloop_buttonobj | 220 | 98.091 | 3 | 2 | 0G/0F | 1 | priced 1 dot-compare (peephole) family |
 | moveTricky | dlls/objects/196_Tricky/tricky | 2404 | 100.0 | 0 | 0 | 7G/2F | 6 | SOLVED via redefinition tell: first abs is a non-mutating temp `(td >= 0 ? td : -td) > K`; second updates in place, spelled `td = td >= 0 ? turnDelta : -td;` so the true-arm copy self-elides into td's home (plain ternary stops coalescing once two else-if arms share td) |
-| subtitleUpdateAndDraw | main/subtitle | 536 | 97.799 | 12 | 8 | 3G/0F | 1 | biased-base follow-up: source proven original, level compromise |
+| subtitleUpdateAndDraw | main/subtitle | 536 | 97.799 | 12 | 3 | 3G/0F | 1 | biased-base follow-up: source proven original, level compromise |
 | pathcam_buildWindowSamples | dlls/engine/71/71 | 1220 | 98.820 | 52 | 0 | 18G/0F | 1 | residual pass 08-03: byte-identical under nocse |
 | playerUpdate | dlls/objects/195_Player/player | 2372 | 98.432 | 147 | 2 | 3G/1F | 22 | player-cluster: 100.0 under nocse/nopropagation, TU-split evidence needed |
 
@@ -180,9 +223,9 @@ Function matches under a different opt profile (peephole/nocse/nopropagation/dea
 | fcos16Approx | main/trig | 264 | 99.970 | 2 | 0 | 1G/2F | 8 | priced 6b/A77 + trig-cluster-stackslot: pool order + stack-slot residual |
 | CameraModeTalk_update | dlls/engine/69/69 | 1076 | 99.870 | 6 | 0 | 2G/3F | 1 | priced 8b intra-function mint order (engine/69, 64 B) |
 | drakorhoverpad_updateMain | dlls/objects/625/625 | 1532 | 99.843 | 12 | 0 | 4G/2F | 1 | web-class: retail slot is the TU's anonymous pool literal we NAMED |
-| staffUpdateSegmentTransforms | main/objprint | 664 | 97.018 | 17 | 7 | 9G/0F | 2 | pool-allocation-order class |
-| sky2_run | dlls/engine/6/6 | 2824 | 99.653 | 37 | 19 | 6G/9F | 1 | priced regression-class: fcmpo definition-order pinned (invcmp_scan) |
-| renderSunAndMoon | dlls/engine/5/5 | 1948 | 98.840 | 60 | 7 | 6G/3F | 1 | priced 18/9: residual after renderSunAndMoon 98.84 close; pool noise |
+| staffUpdateSegmentTransforms | main/objprint | 664 | 97.018 | 17 | 4 | 9G/0F | 2 | pool-allocation-order class |
+| sky2_run | dlls/engine/6/6 | 2824 | 99.653 | 37 | 0 | 6G/9F | 1 | priced regression-class: fcmpo definition-order pinned (invcmp_scan) |
+| renderSunAndMoon | dlls/engine/5/5 | 1948 | 98.840 | 60 | 1 | 6G/3F | 1 | priced 18/9: residual after renderSunAndMoon 98.84 close; pool noise |
 
 ### rotation (68)
 
@@ -191,7 +234,7 @@ Width >=5 saved band, identical mnemonic stream: the rotation-offset model — e
 | fn | unit | size | fuzzy | ndiff | struc | band | #nm | recorded mechanism |
 |---|---|---|---|---|---|---|---|---|
 | trackSweepCircleAgainstPoint | main/track_dolphin | 656 | 99.939 | 2 | 0 | 3G/7F | 7 | track-objhits-coloring-walls (T==C, derived to ground) |
-| debugPrintfxy | main/dll_80136a40 | 424 | 99.387 | 2 | 0 | 7G/0F | 4 | signature: struc 0, band >=5, no recorded lever site |
+| debugPrintfxy | main/dll_80136a40 | 424 | 99.387 | 2 | 1 | 7G/0F | 4 | signature: struc 0, band >=5, no recorded lever site |
 | trickyGuard | dlls/objects/196_Tricky/tricky | 2276 | 99.947 | 6 | 0 | 7G/0F | 6 | near100-band-census-2026-08-01 (16 dead ends) |
 | RomCurve_findShortestPathLink | dlls/engine/20_Hcurves/Hcurves_romcurve | 1572 | 99.911 | 6 | 0 | 15G/1F | 1 | refreshed-flip-frontier 08-02 (width noted per fn) |
 | ObjHitbox_SetStateIndex | main/objhits | 140 | 98.857 | 6 | 0 | 0G/0F | 9 | objhits GROUND pass 08-03: all 9 T==C recolours, no lever site |
@@ -235,7 +278,7 @@ Width >=5 saved band, identical mnemonic stream: the rotation-offset model — e
 | voxmaps_updateRoutePath | main/voxmaps | 1192 | 99.430 | 28 | 0 | 6G/0F | 3 | objseq-voxmaps-walls (rotation offset 2/3rd unreachable) |
 | Link_render | dlls/engine/60/60 | 1128 | 99.468 | 28 | 0 | 9G/1F | 1 | sole-straggler-frontier (clean saved-band swaps width 6-15) |
 | ObjModel_BlendVertexStream | main/model | 628 | 99.013 | 28 | 0 | 14G/0F | 8 | independent-match-ceiling (permsweep walls) |
-| titleScreenDrawMenuFrame | dlls/objects/704/704 | 2772 | 99.488 | 29 | 1 | 10G/2F | 1 | near100-band-census-2026-08-01 (16 dead ends) |
+| titleScreenDrawMenuFrame | dlls/objects/704/704 | 2772 | 99.488 | 29 | 2 | 10G/2F | 1 | near100-band-census-2026-08-01 (16 dead ends) |
 | ObjModel_BlendNormalStream | main/model | 880 | 99.182 | 29 | 0 | 16G/0F | 8 | signature: struc 0, band >=5, no recorded lever site |
 | trackIntersect | main/track_dolphin | 2280 | 99.553 | 32 | 1 | 16G/7F | 7 | near100-band-census-2026-08-01 (16 dead ends) |
 | trickyUpdateMovementState | dlls/objects/196_Tricky/tricky | 8764 | 99.922 | 34 | 0 | 11G/2F | 6 | transposition pass 08-03: pure r28<->r29 swap, didMove K-init vs objectWalkGroup call-copy; probed decl swap, init-as-statement, embedded call assignment, s8/int retype (stream-rejected), init reposition (stream-rejected) — all inert; no source knob found |
@@ -257,7 +300,7 @@ Width >=5 saved band, identical mnemonic stream: the rotation-offset model — e
 | playerBuildWallTransitionProbe | dlls/objects/195_Player/player | 1816 | 98.579 | 125 | 0 | 18G/3F | 22 | structural closed (12->0): loop-update order `pl; dp; cp; i`, block `dy` declared between best/best2, guard `(best2 < 0.0f || dy < best2)`; remainder is the width-18 rotation past the cliff |
 | trackBuildBlockTriangles | main/track_dolphin | 3060 | 98.476 | 148 | 2 | 18G/2F | 7 | signature: struc 0, band >=5, no recorded lever site |
 | ObjSeq_update | dlls/engine/2/2 | 3912 | 98.569 | 274 | 0 | 9G/4F | 5 | objseq-voxmaps-walls (rotation offset 2/3rd unreachable) |
-| player_SeqFn | dlls/objects/195_Player/player | 7416 | 98.971 | 334 | 104 | 11G/3F | 22 | player-cluster-walls (width 11) |
+| player_SeqFn | dlls/objects/195_Player/player | 7416 | 98.971 | 334 | 2 | 11G/3F | 22 | player-cluster-walls (width 11) |
 
 ### scratch-perm/flag-signature (33) — SUBCLASSED 2026-08-03
 
@@ -305,7 +348,7 @@ regressing, and are reclassified in place as split-lever-SPENT scratch rotations
 | newShadowsInitProceduralTextures | main/newshadows | 1480 | 98.649 | 82 | 0 | 13G/8F | 6 | true scratch rotation: width-13 band rotation (r20/r21/r25/r26/r27) + one li slide; flat 82/0, alternates worse |
 | gameTextInitBoxTextures | main/textrender_boxtex | 936 | 96.662 | 137 | 1 | 3G/0F | 1 | true scratch rotation: r0-temp routing in the unrolled lhzx/sth block (naming proven inert); heavy configured profile confirmed — removing ANY of its 4 tokens is worse; flat 137/1 across inline/mw |
 | blendTextures | main/newshadows | 924 | 94.481 | 153 | 0 | 8G/0F | 6 | true scratch rotation: whole-band recolour; flat 153/0, every alternate worse |
-| boxBlurTexture | main/newshadows | 5424 | 99.167 | 161 | 1 | 8G/0F | 6 | true scratch rotation: flat 161/1; alternates catastrophic (+nolifetimes 1109, +noloopinv 1011) |
+| boxBlurTexture | main/newshadows | 5424 | 99.167 | 161 | 2 | 8G/0F | 6 | true scratch rotation: flat 161/1; alternates catastrophic (+nolifetimes 1109, +noloopinv 1011) |
 | allocLotsOfTextures | main/newshadows | 5948 | 98.067 | 370 | 0 | 8G/16F | 6 | true scratch rotation: 8G/16F whole-band recolour; flat 370/0, +noprop 388/4, alternates worse |
 
 ### misc-compiler-wall (36) — VERIFIED 2026-08-03 at `271a7c226d`
@@ -331,24 +374,24 @@ member). No row is misfiled — every row has a live ledger/memory anchor.
 | playerState30 | dlls/objects/195_Player/player | 1500 | 99.960 | 3 | 0 | 6G/1F | 22 | STALE priced 4, re-classified 08-03: hoist landed, residual = single-home recolour (T r28 vs C r26); band 6G rotation regime |
 | playerStateShootFireball | dlls/objects/195_Player/player | 1132 | 99.947 | 3 | 0 | 6G/2F | 22 | STALE priced 4, re-classified 08-03: hoist landed, residual = single-home recolour (T r28 vs C r26); band 6G rotation regime |
 | playerStateTryCastSpell | dlls/objects/195_Player/player | 964 | 99.938 | 3 | 0 | 4G/1F | 22 | STALE priced 4, re-classified 08-03: hoist landed, residual = single-home recolour (T r30 vs C r28); 4G sub-cliff so PROBED — out-of-tree decl sweep of spawnFlags (first/2nd/3rd/4th/last) all flat 3/0: the web is propagation-fed, no named-local key reaches it. Recolour wall |
-| loadTextureFiles | main/texture | 436 | 97.248 | 3 | 6 | 1G/0F | 3 | priced 24b: retail carries an orphan duplicate inline loop-preheader (3 dead `b` at the tail), 8 callee spellings measured; verified — T is exactly the 3 `b` longer |
+| loadTextureFiles | main/texture | 436 | 97.248 | 3 | 3 | 1G/0F | 3 | priced 24b: retail carries an orphan duplicate inline loop-preheader (3 dead `b` at the tail), 8 callee spellings measured; verified — T is exactly the 3 `b` longer |
 | newclouds_run | dlls/engine/7/7 | 2376 | 99.946 | 4 | 0 | 9G/1F | 1 | sole-straggler: base+16 trilemma, 10 spellings; verified — dead intermediate web routed via r3 vs folded into r27, plus one addi slide |
-| playerCheckIfClimbingOntoWall | dlls/objects/195_Player/player | 3348 | 99.791 | 5 | 3 | 15G/5F | 22 | flags360 mask family: li/and vs rlwinm — see LEAD 1 |
+| playerCheckIfClimbingOntoWall | dlls/objects/195_Player/player | 3348 | 99.791 | 5 | 2 | 15G/5F | 22 | flags360 mask family: li/and vs rlwinm — see LEAD 1 |
 | debugTextDrawToFrameBuffer | main/dll_80136a40 | 384 | 97.656 | 6 | 2 | 7G/0F | 4 | priced 15 order bucket: param-home mr slid into the mulli gap; COLOURING; verified — mulli pair slid one slot inside the r27/r29 swap |
 | mmFreeDeferred | main/mm | 220 | 99.455 | 6 | 0 | 2G/0F | 2 | verified 08-03: pure r3/r4 scratch swap — priced 27 volatile-only class (residual entirely in r0-r13, no declaration key); §27 parse census also notes it has no 2-item decl block. Supersedes the old-worklist "dead-operand cap" phrasing |
 | playerState25 | dlls/objects/195_Player/player | 1384 | 99.884 | 7 | 0 | 4G/4F | 22 | player-cluster coloring walls; named in saved-band-rotation-model; swept inert in priced 26 (34100 orderings, no hit); verified |
-| playerStopRidingObject | dlls/objects/195_Player/player | 356 | 97.978 | 7 | 4 | 2G/0F | 22 | flags360 mask family: li/and vs rlwinm — see LEAD 1 |
-| ObjSeq_onMapSetup | dlls/engine/2/2 | 760 | 99.211 | 10 | 2 | 4G/0F | 5 | surplus-queue W6 (the duplicate `marks[0] = 0;` is LOAD-BEARING) + priced 24c: banked; verified |
+| playerStopRidingObject | dlls/objects/195_Player/player | 356 | 97.978 | 7 | 2 | 2G/0F | 22 | flags360 mask family: li/and vs rlwinm — see LEAD 1 |
+| ObjSeq_onMapSetup | dlls/engine/2/2 | 760 | 99.211 | 10 | 1 | 4G/0F | 5 | surplus-queue W6 (the duplicate `marks[0] = 0;` is LOAD-BEARING) + priced 24c: banked; verified |
 | playerStateAttack | dlls/objects/195_Player/player | 2836 | 99.908 | 11 | 0 | 5G/2F | 22 | player-cluster coloring walls (web-class-pun-effect association win landed; residual recolour); swept inert in priced 26; verified |
-| boneParticleEffect_update | dlls/engine/24/24 | 1764 | 99.649 | 11 | 9 | 15G/6F | 1 | value-home-r0 / base-mat LO-fold wall (verified: C detours the base through r0 via a surviving mr, +1 instr) + priced 23b reverse-direction li/mr member |
+| boneParticleEffect_update | dlls/engine/24/24 | 1764 | 99.649 | 11 | 1 | 15G/6F | 1 | value-home-r0 / base-mat LO-fold wall (verified: C detours the base through r0 via a surviving mr, +1 instr) + priced 23b reverse-direction li/mr member |
 | objDrawShadowCasterMesh | main/shadow_dolphin | 1132 | 99.509 | 12 | 1 | 7G/2F | 2 | priced 23b li/mr remat family (named member) + r7/r8 scratch swap and one addi slide; verified |
-| gameTextFinalizeLoad | main/textrender_run | 1592 | 99.837 | 12 | 2 | 11G/0F | 4 | add-canon words closed by biased-base form C (value-use member decay: `numStrings * 4 + (u32)stringTable->offsets` emits base-first add + trailing addi; the priced-15 verdict predated the lever); residual is the coloured hdr-sum + one scratch swap, probed and walled |
+| gameTextFinalizeLoad | main/textrender_run | 1592 | 99.837 | 12 | 0 | 11G/0F | 4 | add-canon words closed by biased-base form C (value-use member decay: `numStrings * 4 + (u32)stringTable->offsets` emits base-first add + trailing addi; the priced-15 verdict predated the lever); residual is the coloured hdr-sum + one scratch swap, probed and walled |
 | GameUI_release | dlls/engine/0/0 | 336 | 98.929 | 14 | 0 | 7G/0F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
 | pauseMenuDrawStatusPage | dlls/engine/0/0 | 2692 | 99.851 | 19 | 0 | 8G/5F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
 | pauseMenuDrawGridCell | dlls/engine/0/0 | 1012 | 99.506 | 22 | 0 | 12G/7F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
 | drawArwingHud | dlls/engine/0/0 | 1064 | 99.436 | 27 | 0 | 10G/1F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
 | hudDrawCommunicatorAlert | dlls/engine/0/0 | 632 | 99.051 | 27 | 0 | 8G/5F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
-| textureLoad | main/texture | 1932 | 98.882 | 33 | 22 | 17G/0F | 3 | priced 24b (same mechanism as loadTextureFiles: orphan inline preheaders at tail) + width-17 recolour mass; verified |
+| textureLoad | main/texture | 1932 | 98.882 | 33 | 4 | 17G/0F | 3 | priced 24b (same mechanism as loadTextureFiles: orphan inline preheaders at tail) + width-17 recolour mass; verified |
 | pauseMenuDrawStatus | dlls/engine/0/0 | 2064 | 99.641 | 34 | 0 | 6G/2F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
 | unloadMap | main/shader | 616 | 97.922 | 43 | 1 | 10G/0F | 8 | priced 23b li/mr remat family (named member) + width-10 recolour mass; verified |
 | mapScreenDrawHud | dlls/engine/0/0 | 3456 | 99.647 | 47 | 1 | 12G/5F | 14 | engine0-hud-walls cluster + priced 23b li/mr member; verified |
@@ -356,11 +399,11 @@ member). No row is misfiled — every row has a live ledger/memory anchor.
 | playerStateMoving | dlls/objects/195_Player/player | 4880 | 99.746 | 51 | 0 | 4G/3F | 22 | player-cluster coloring walls (named member: all f3/f4, f29/f30, scratch perm); verified |
 | cMenuSetItems | dlls/engine/0/0 | 1208 | 98.758 | 60 | 0 | 10G/0F | 14 | engine0-hud-walls cluster; priced 27's slot_oracle caveat names it (one swap rotates a full 6-cycle — band-membership rotation, not a decl key); verified |
 | expgfxGetSlot | dlls/engine/10_expgfx/expgfx | 792 | 95.899 | 63 | 4 | 4G/0F | 4 | expgfx-addregroup + unroll wall; priced 15 names it (the `li 1`/mask-load slide at both unrolled sites, PRICED pending owner); verified — r11/r28/r29 temp-routing perm across the unrolled block |
-| hudDrawButtons | dlls/engine/0/0 | 3684 | 99.194 | 69 | 4 | 13G/0F | 14 | engine0-hud-walls cluster + priced 23b li/mr member; verified |
+| hudDrawButtons | dlls/engine/0/0 | 3684 | 99.194 | 69 | 0 | 13G/0F | 14 | engine0-hud-walls cluster + priced 23b li/mr member; verified |
 | hudDrawMagicBar | dlls/engine/0/0 | 2472 | 99.288 | 75 | 0 | 12G/0F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
-| mapLoadUnloadObjects | main/shader | 1912 | 98.372 | 112 | 21 | 13G/0F | 8 | surplus-queue W7 (add-grouping optimal) + priced 24b/A83: a CSE asymmetry the source text has to state twice; verified |
-| drawViewFinderHud | dlls/engine/0/0 | 4980 | 99.345 | 126 | 84 | 7G/18F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
-| modelRenderInterpolateRootTransform | main/render | 2212 | 96.682 | 140 | 117 | 17G/1F | 1 | 16-18-wide multi-defect: surplus-queue W-list + toplevel-base-mat alias wall (dropping the alias local REGRESSES); verified 140/117 at HEAD after the u16 frameStreamStride commit |
+| mapLoadUnloadObjects | main/shader | 1912 | 98.372 | 112 | 1 | 13G/0F | 8 | surplus-queue W7 (add-grouping optimal) + priced 24b/A83: a CSE asymmetry the source text has to state twice; verified |
+| drawViewFinderHud | dlls/engine/0/0 | 4980 | 99.345 | 126 | 1 | 7G/18F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
+| modelRenderInterpolateRootTransform | main/render | 2212 | 96.682 | 140 | 11 | 17G/1F | 1 | 16-18-wide multi-defect: surplus-queue W-list + toplevel-base-mat alias wall (dropping the alias local REGRESSES); verified 140/117 at HEAD after the u16 frameStreamStride commit |
 | Checkpoint_buildControlPoints | dlls/engine/3/3 | 2500 | 98.464 | 268 | 2 | 12G/12F | 1 | priced 15 order bucket: LICM preheader hoist order (one lfd) + param-home perm; COLOURING; verified — param-home mr perm (r29/r31/r27 vs retail) carries the mass |
 
 ### hand-asm (5)
@@ -369,11 +412,11 @@ Not compiler output at all (custom ABI hand asm) or needs an instruction MWCC ha
 
 | fn | unit | size | fuzzy | ndiff | struc | band | #nm | recorded mechanism |
 |---|---|---|---|---|---|---|---|---|
-| setGQR6 | main/model | 8 | 50.000 | 1 | 2 | 0G/0F | 8 | priced 5: no mtgqr intrinsic |
+| setGQR6 | main/model | 8 | 50.000 | 1 | 1 | 0G/0F | 8 | priced 5: no mtgqr intrinsic |
 | setGQR7 | main/model | 8 | 70.000 | 1 | 1 | 0G/0F | 8 | priced 5: no mtgqr intrinsic |
 | videoInit | main/pi_videoinit | 2132 | 99.512 | 6 | 4 | 2G/0F | 1 | pi-videoinit wall: mfmsr/mthid0, no intrinsic |
-| modelBoneTransforms_next | main/model | 72 | 10.833 | 16 | 22 | 0G/0F | 8 | sole-straggler: custom calling convention, not C |
-| modelApplyBoneTransform | main/model | 464 | 10.784 | 107 | 127 | 18G/0F | 8 | priced 5 never-touch island (PS/private ABI) |
+| modelBoneTransforms_next | main/model | 72 | 10.833 | 16 | 15 | 0G/0F | 8 | sole-straggler: custom calling convention, not C |
+| modelApplyBoneTransform | main/model | 464 | 10.784 | 107 | 187 | 18G/0F | 8 | priced 5 never-touch island (PS/private ABI) |
 
 ### foreign-compiler (1)
 
@@ -381,4 +424,4 @@ Wrong compiler family entirely (ProDG).
 
 | fn | unit | size | fuzzy | ndiff | struc | band | #nm | recorded mechanism |
 |---|---|---|---|---|---|---|---|---|
-| zlbDecompress | main/zlb | 2352 | 53.531 | 567 | 520 | 18G/0F | 1 | zlb ProDG, capped ~53-55 |
+| zlbDecompress | main/zlb | 2352 | 53.531 | 567 | 412 | 18G/0F | 1 | zlb ProDG, capped ~53-55 |
