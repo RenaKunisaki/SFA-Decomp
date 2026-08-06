@@ -3469,3 +3469,33 @@ displacements × 0.01, i.e. **100 % volatile float colouring**. The natural
 by correctness. `main/lightmap.c updateEnvironment` (also previously unswept):
 5 cleared rewrites, inert; it is a MNEMONIC row, so expression shape was never
 its key.
+
+## 26. The zero-cost high-word knob (`| 0x1_00000000LL`) — OWNER CALL, not landed
+
+`wispBaddieProcessAnimEvent` (`dlls/objects/202/sharpclaw`) is one spelling away from taking its
+unit to **100.00000** (a linkage flip candidate). Measured, whole-unit gated, baseline verified
+byte-identical first:
+
+| spelling | fn | unit |
+|---|---|---|
+| `&= ~0x40LL` (HEAD before 2026-08-05) | 99.156 | 99.89016 |
+| `&= ~0x40` / `&= 0xFFFFFFBF` (32-bit, gives `rlwinm`) | 99.340 | 99.91411 |
+| **`= (s32)controlFlags & ~0x40LL`** — LANDED | 99.600 | 99.94795 |
+| `= (controlFlags \| 0x100000000LL) & ~0x40LL` | **100.000** | **100.00000** |
+
+Mechanism: with a `u32` LHS the widened high word is *always* the constant `0`, and the later
+`activeEventIndex = 0` store CSE-binds it, hoisting the `li`. Setting any bit above 31 **before**
+the AND makes the high word non-constant, so nothing binds. The knob is only zero-cost pre-AND
+(`(x & ~0x40LL) | 0x100000000LL` scores baseline); De Morgan, XOR-high and `(u64)` recasts all
+measure worse. So this is provably the only spelling that reaches byte-exact.
+
+**Why it is not landed:** the landed `(s32)` form has direct precedent in matched code
+(`playerStopRidingObject`, four `flags360` siblings in `player.c`), but an explicit
+`| 0x100000000LL` has **no precedent anywhere in the image**, and no 2002 developer writes it. It
+buys byte-exactness by encoding a compiler fact into the source, which is the shape of a match
+hack even though it is not on the banned list. Landing it costs one unit flip; declining it leaves
+the unit at 99.94795 and keeps the source honest.
+
+The residual `srawi` at every `(s32)` site is a `-opt nopeephole` TU artifact — with peephole on,
+the landed spelling is byte-exact to retail. That is the real fix for this whole family and it is a
+TU-profile question, not a spelling one.
