@@ -297,7 +297,7 @@ int playerBuildWallTransitionProbe(GameObject* obj, char* cam, f32* out, f32* ve
 int player_probeClimbable(GameObject* obj, int p4, TrackBBoxHit* src, int dst, int flag);
 int playerStateClimbLedge(int obj, int state, f32 fv);
 int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag);
-int playerSetMoveBlendFromPlane(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int* blendPlane,
+s16 playerSetMoveBlendFromPlane(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int* blendPlane,
                                 f32 samplePhase, f32 moveStepScale, int axis, int flags);
 
 static inline int staffCanContinueSpin(void* state)
@@ -5700,7 +5700,7 @@ void playerStagedRestoreCameraAndSyncPosition(GameObject* obj, int* stateFlags)
     ObjHits_SyncObjectPositionIfDirty(obj);
 }
 
-int playerSetMoveBlendFromPlane(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int* blendPlane,
+s16 playerSetMoveBlendFromPlane(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int* blendPlane,
                                 f32 samplePhase, f32 moveStepScale, int axis, int flags);
 
 PlayerModelChainEntry gPlayerModelChainDefault = {lbl_80332EC0, 5};
@@ -10729,7 +10729,7 @@ int playerState00(int obj, int state)
     return 2;
 }
 
-int playerSetMoveBlendFromPlane(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int* blendPlane,
+s16 playerSetMoveBlendFromPlane(int obj, int baseMoveId, int blendMoveId, int* blendAnchor, int* blendPlane,
                                 f32 samplePhase, f32 moveStepScale, int axis, int flags) {
     ObjModel* model;
     int controlFlags;
