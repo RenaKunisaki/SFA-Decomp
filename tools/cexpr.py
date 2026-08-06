@@ -442,6 +442,38 @@ _MACRO_CACHE: Optional[frozenset] = None
 _ENUM_CACHE: Optional[frozenset] = None
 
 
+def _walk_population(root):
+    """The .h and source files a project-wide harvest should read.
+
+    Sources come from the build's own answer (build.ninja plus group
+    includes) when `root` is this repo and the tree is configured: a macro,
+    enum or typedef spelled only in a source the build never compiles cannot
+    shape a cast in live code.  A foreign root, or an unconfigured tree
+    (no build.ninja yet), falls back to the filesystem walk.
+    """
+    import os
+    import pathlib
+    import sys
+    root = pathlib.Path(root)
+    files = []
+    for sub in ("include", "src"):
+        d = root / sub
+        if d.is_dir():
+            files += sorted(d.rglob("*.h"))
+    here = pathlib.Path(__file__).resolve().parent
+    if root.resolve() == here.parent and (root / "build.ninja").is_file():
+        sys.path.insert(0, str(here))
+        from source_coverage_audit import live_files_under
+        files += [pathlib.Path(p) for p in
+                  live_files_under("src", exts=(".c", ".cp", ".cpp"))]
+    else:
+        for sub in ("include", "src"):
+            d = root / sub
+            if d.is_dir():
+                files += sorted(d.rglob("*.c"))
+    return files
+
+
 def project_macros(root=None) -> frozenset:
     """Every OBJECT-like macro name defined under include/ and src/.
 
@@ -466,17 +498,12 @@ def project_macros(root=None) -> frozenset:
     pat = re.compile(r"^[ \t]*#[ \t]*define[ \t]+([A-Za-z_]\w*)(?![\w(])",
                      re.MULTILINE)
     names = set()
-    for sub in ("include", "src"):
-        d = root / sub
-        if not d.is_dir():
+    for f in _walk_population(root):
+        try:
+            names |= set(pat.findall(
+                f.read_bytes().decode("latin-1")))
+        except OSError:
             continue
-        for ext in ("*.h", "*.c"):
-            for f in d.rglob(ext):
-                try:
-                    names |= set(pat.findall(
-                        f.read_bytes().decode("latin-1")))
-                except OSError:
-                    continue
     # A name that is genuinely a typedef must stay a type even if some header
     # also #defines it; the type reading is the one that can appear in a cast.
     _MACRO_CACHE = frozenset(names - set(project_typedefs(root)))
@@ -502,24 +529,19 @@ def project_enum_constants(root=None) -> frozenset:
     root = pathlib.Path(root or pathlib.Path(__file__).resolve().parent.parent)
     body = re.compile(r"\benum\b[^{;]*\{([^}]*)\}", re.S)
     names = set()
-    for sub in ("include", "src"):
-        d = root / sub
-        if not d.is_dir():
+    for f in _walk_population(root):
+        try:
+            txt = f.read_bytes().decode("latin-1")
+        except OSError:
             continue
-        for ext in ("*.h", "*.c"):
-            for f in d.rglob(ext):
-                try:
-                    txt = f.read_bytes().decode("latin-1")
-                except OSError:
-                    continue
-                for m in body.finditer(txt):
-                    inner = re.sub(r"/\*.*?\*/", " ", m.group(1), flags=re.S)
-                    inner = re.sub(r"//[^\n]*", " ", inner)
-                    for part in inner.split(","):
-                        mm = re.match(r"\s*([A-Za-z_]\w*)\s*(?:=|$)",
-                                      part.rstrip())
-                        if mm:
-                            names.add(mm.group(1))
+        for m in body.finditer(txt):
+            inner = re.sub(r"/\*.*?\*/", " ", m.group(1), flags=re.S)
+            inner = re.sub(r"//[^\n]*", " ", inner)
+            for part in inner.split(","):
+                mm = re.match(r"\s*([A-Za-z_]\w*)\s*(?:=|$)",
+                              part.rstrip())
+                if mm:
+                    names.add(mm.group(1))
     _ENUM_CACHE = frozenset(names - set(project_typedefs(root)))
     return _ENUM_CACHE
 
@@ -552,14 +574,8 @@ def project_typedefs(root=None) -> frozenset:
     names = set()
     pat = re.compile(r"\btypedef\b")
     fnptr = re.compile(r"\(\s*\*+\s*([A-Za-z_]\w*)\s*\)")
-    for sub in ("include", "src"):
-        d = root / sub
-        if not d.is_dir():
-            continue
-        for f in d.rglob("*.h"):
-            names |= _typedefs_in(f, pat, fnptr)
-        for f in d.rglob("*.c"):
-            names |= _typedefs_in(f, pat, fnptr)
+    for f in _walk_population(root):
+        names |= _typedefs_in(f, pat, fnptr)
     _TYPEDEF_CACHE = frozenset(names)
     return _TYPEDEF_CACHE
 

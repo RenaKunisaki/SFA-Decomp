@@ -75,7 +75,11 @@ def parse_ninja(path):
         if not match:
             continue
         sources = unescape(match.group(3)).split("|")[0].split()
-        if not sources or not sources[0].endswith(".c"):
+        # every C-shaped mwcc edge, .cpp included: the build compiles one
+        # C++ unit (Runtime.PPCEABI.H/__init_cpp_exceptions.cpp) and a .c-only
+        # filter silently dropped its prototypes from the screen.  The .s
+        # units use the `as` rule and never reach this regex.
+        if not sources or not sources[0].endswith((".c", ".cp", ".cpp")):
             continue
         edges.append((unescape(match.group(1)), match.group(2), sources[0], variables))
     return edges

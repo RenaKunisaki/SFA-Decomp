@@ -45,7 +45,6 @@ Usage:
 """
 import argparse
 import collections
-import functools
 import glob
 import os
 import re
@@ -53,6 +52,8 @@ import subprocess
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, 'tools'))
+from source_coverage_audit import compiled_sources  # noqa: E402
 NM = os.path.join(ROOT, 'build/binutils/powerpc-eabi-nm')
 SYMS = os.path.join(ROOT, 'config/GSAE01/symbols.txt')
 OBJS = os.path.join(ROOT, 'build/GSAE01/src')
@@ -109,37 +110,6 @@ def retail_defines():
     return nm_defines(objs)
 
 
-GROUP_INCLUDE = re.compile(r'#\s*include\s*"([^"]+\.(?:c|cpp|cp))"')
-
-
-@functools.lru_cache(maxsize=1)
-def group_members():
-    """Sources that are #included into a group TU, keyed by repo-relative path.
-
-    A group member is never compiled on its own, so a standalone .o bearing its
-    name is an orphan even though its .c still exists.
-    """
-    members = set()
-    for src in glob.glob(os.path.join(ROOT, 'src', '**', '*.c'), recursive=True):
-        try:
-            text = open(src, 'rb').read().decode('latin-1')
-        except OSError:
-            continue
-        for inc in GROUP_INCLUDE.findall(text):
-            # A group include is written relative to the build directory
-            # ("../src/main/..."), not to the including file, so resolve it
-            # against both and keep whichever names a real source.
-            cands = [os.path.normpath(os.path.join(os.path.dirname(src), inc))]
-            if 'src/' in inc:
-                cands.append(os.path.join(ROOT, 'src', inc.split('src/', 1)[1]))
-            for path in cands:
-                rel = os.path.relpath(path, ROOT)
-                if os.path.exists(path) and not rel.startswith('..'):
-                    members.add(rel)
-                    break
-    return members
-
-
 def source_for(obj):
     """The source an object was built from, or None if it is an orphan.
 
@@ -153,8 +123,12 @@ def source_for(obj):
     stem = os.path.splitext(os.path.relpath(obj, OBJS))[0]
     for ext in ('.c', '.cpp', '.cp', '.s', '.S'):
         rel = os.path.join('src', stem + ext)
-        if os.path.exists(os.path.join(ROOT, rel)):
-            return None if rel in group_members() else rel
+        full = os.path.join(ROOT, rel)
+        if os.path.exists(full):
+            # build.ninja is the authority: a source on disk that the build
+            # never compiles (renamed away, merged into a group TU, or one of
+            # the never-compiled vendor references) cannot own a live object.
+            return rel if full in compiled_sources() else None
     return None
 
 

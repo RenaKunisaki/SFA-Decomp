@@ -113,6 +113,8 @@ import subprocess
 import sys
 
 REPO = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(REPO, "tools"))
+from source_coverage_audit import live_sources  # noqa: E402
 SCAN_ROOTS = ["src/main", "src/track", "src/dlls",
               "include/main", "include/dlls", "include/game", "include/track",
               "include/sys", "include/util",
@@ -201,30 +203,39 @@ RE_ADDR_OF_OBJECT = re.compile(r"\*\s*\(\s*volatile\b[^)]*\)\s*&"
 
 def is_c_source(path):
     # .cpp counts because src/Runtime.PPCEABI.H/__init_cpp_exceptions.cpp is
-    # compiled into the DOL and a .c/.h filter was blind to it.  It is the ONLY
-    # compiled .cpp: the other one on disk, src/dolphin/os/__ppc_eabi_init.cpp,
-    # is never compiled -- configure.py builds its sibling .c -- so admitting
-    # .cpp also admits one uncompiled file.  See tools/source_coverage_audit.py
-    # for the measured partition and what this filter still excludes: two
-    # assembled .s units the build compiles, and 66 sources on disk that it
-    # does not.  All of them are outside SCAN_ROOTS, so the GATING population
-    # of the file-type gap is 0.
+    # compiled into the DOL and a .c/.h filter was blind to it.  It is the
+    # ONLY compiled .cpp; every other C-shaped file the build does not compile
+    # is screened out by the liveness check in walk(), which asks
+    # tools/source_coverage_audit.py -- build.ninja plus group #includes --
+    # rather than trusting the extension.  The two assembled .s units stay
+    # outside: a C-shape screen has nothing to say about assembly.  Every
+    # never-compiled source is outside SCAN_ROOTS, so the GATING population
+    # of the file-type gap is 0 either way.
     return path.endswith((".c", ".h", ".cpp"))
 
 
 def walk(roots, base=REPO):
+    live = None
+    if os.path.normpath(base) == os.path.normpath(REPO):
+        live = {os.path.normpath(p) for p in live_sources()}
     for root in roots:
         full = os.path.join(base, root)
         if os.path.isfile(full):
-            # a root may name a single loose header (include/global.h)
+            # a root may name a single loose file (include/global.h)
             if is_c_source(full):
                 yield os.path.relpath(full, base)
             continue
         for dirpath, _dirs, files in os.walk(full):
             for f in sorted(files):
-                if is_c_source(f):
-                    p = os.path.join(dirpath, f)
-                    yield os.path.relpath(p, base)
+                if not is_c_source(f):
+                    continue
+                p = os.path.join(dirpath, f)
+                # headers are population regardless; a .c/.cpp is only
+                # population if its text can reach the DOL
+                if (live is not None and not f.endswith(".h")
+                        and os.path.normpath(p) not in live):
+                    continue
+                yield os.path.relpath(p, base)
 
 
 def strip_line_comment(line):
@@ -603,10 +614,13 @@ def self_test():
     chk("widening loses no previously-reported row",
         not (narrow - widened), "(%d narrow, %d wide)" % (len(narrow), len(widened)))
 
-    # .cpp coverage: the two compiled C++ units were invisible to every scanner
-    # in the tree, and one of them carries the ONLY reference to __OSFPRInit.
+    # .cpp coverage: the one compiled C++ unit was invisible to every scanner
+    # in the tree.  Its uncompiled namesake src/dolphin/os/__ppc_eabi_init.cpp
+    # -- the file whose dead text once passed for evidence that __OSFPRInit is
+    # called -- must now be OUTSIDE the population: dead text screens nothing.
     cpp = [r for r in walk(EXEMPT_ROOTS) if r.endswith(".cpp")]
-    chk("compiled .cpp units are inside the walker", len(cpp) >= 2,
+    chk("the compiled .cpp unit is inside the walker",
+        cpp == ["src/Runtime.PPCEABI.H/__init_cpp_exceptions.cpp"],
         ", ".join(cpp))
 
     # POSITIVE: the SDK really does contain the shapes, so the patterns fire

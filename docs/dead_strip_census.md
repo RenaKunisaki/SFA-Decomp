@@ -44,8 +44,9 @@ caller in anything the build compiles. Excising it alone reproduces `OS.o`'s car
 so its `0x128` is the whole of that unit's surplus.
 
 `src/dolphin/os/__ppc_eabi_init.cpp` is **not** a witness for `__OSFPRInit` and was wrongly cited as
-one: `configure.py` builds the sibling `.c`, that `.cpp` is one of the 66 sources the build never
-compiles, and its `__init_hardware` carries three `bl`s where retail's carries two — `.init:0x80003354`
+one: `configure.py` builds the sibling `.c`, that `.cpp` is one of the sources the build never
+compiles (see `docs/orphan_sources.md` for the full adjudication), and its `__init_hardware`
+carries three `bl`s where retail's carries two — `.init:0x80003354`
 is `0x20` long and calls `__OSPSInit` and `__OSCacheInit` only, which our compiled
 `Runtime.PPCEABI.H/__start.c` reproduces exactly. A file the build does not compile is not evidence
 about the link. `tools/source_coverage_audit.py` holds the partition; `dead_strip_census.py`'s
@@ -141,10 +142,14 @@ anyway, by the reference decomp above. That is the difference between "no gate s
    **every** scanner in the tree. It lives in an exempt root, so the game-code gate count did not
    move. **Corrected:** that hole was reported as *two* compiled C++ units, and
    `src/dolphin/os/__ppc_eabi_init.cpp` is not one — the build never compiles it. The measured
-   partition is 1005 compiled sources (1002 `.c`, 1 `.cpp`, 2 `.s`) against 1071 on disk, leaving 66
-   the build never compiles; the `.c`/`.h`/`.cpp` filter is still blind to the two assembled `.s`
-   units and still admits 62 uncompiled files. All of them are outside `SCAN_ROOTS`, so the gating
-   population of the whole file-type gap is **0**. See `tools/source_coverage_audit.py`.
+   partition at the pristine tree is 1005 compiled sources (1002 `.c`, 1 `.cpp`, 2 `.s`) against
+   1070 on disk, leaving 65 the build never names — of which three (the `snd3d` trio) are still
+   LIVE, `#include`d by compiled `snd3dgroup.c`, and 62 are dead (the earlier 66-of-1071 count was
+   taken in a worktree carrying one stray probe `.c`). Scanners now select their sources from
+   `live_sources()` rather than by extension, so the dead files are outside every screen's
+   population; the two assembled `.s` units stay outside C-shape screens by design. All the dead
+   files are outside `SCAN_ROOTS`, so the gating population of the whole file-type gap is **0**.
+   See `tools/source_coverage_audit.py` and `docs/orphan_sources.md`.
 
 2. **Five units report `fuzzy 100.0` and `complete: true` with no code, no data and no functions**
    — `dolphin/ax/AX`, `dolphin/TRK_MINNOW_DOLPHIN/MWCriticalSection_gc`, `dolphin/os/OSExec`,

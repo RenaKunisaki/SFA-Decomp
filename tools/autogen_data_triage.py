@@ -12,10 +12,12 @@ declarations, then writes:
 Rerun after any rebuild of build/GSAE01/report.json. Reads only; never touches
 the read-only target objects under build/GSAE01/obj/, and never touches splits.txt.
 """
-import json, subprocess, re, math, os, csv
+import json, subprocess, re, math, os, csv, sys
 from collections import Counter, defaultdict
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, 'tools'))
+from source_coverage_audit import live_files_under  # noqa: E402
 OBJDUMP = os.path.join(ROOT, "build/binutils/powerpc-eabi-objdump")
 REPORT = os.path.join(ROOT, "build/GSAE01/report.json")
 OBJDIR = os.path.join(ROOT, "build/GSAE01/obj")
@@ -107,14 +109,22 @@ def classify(sec, size, s):
 
 
 def source_identifiers():
-    """Every identifier token appearing anywhere in src/ or include/."""
+    """Every identifier token in the headers and the LIVE sources.
+
+    A name that appears only in a source the build never compiles is not
+    referenced by anything that can reach the DOL, so counting it here would
+    mislabel an auto symbol as source-known."""
     ids = set()
+    paths = []
     for base in ('src', 'include'):
         for dirpath, _, files in os.walk(os.path.join(ROOT, base)):
             for f in files:
-                if f.endswith(('.c', '.h')):
-                    blob = open(os.path.join(dirpath, f), 'rb').read()
-                    ids.update(re.findall(rb'[A-Za-z_][A-Za-z0-9_]*', blob))
+                if f.endswith('.h'):
+                    paths.append(os.path.join(dirpath, f))
+    paths += live_files_under('src', exts=('.c', '.cp', '.cpp'))
+    for p in paths:
+        blob = open(p, 'rb').read()
+        ids.update(re.findall(rb'[A-Za-z_][A-Za-z0-9_]*', blob))
     return {i.decode() for i in ids}
 
 

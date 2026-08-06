@@ -24,6 +24,8 @@ Usage:  python3 tools/sdata2_ownership_census.py [--claims] [--runs]
 import os, re, struct, sys, json, collections
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, 'tools'))
+from source_coverage_audit import live_files_under  # noqa: E402
 DOL = os.path.join(ROOT, 'orig/GSAE01/sys/main.dol')
 SPLITS = os.path.join(ROOT, 'config/GSAE01/splits.txt')
 SDA2_BASE = 0x803E6500
@@ -92,20 +94,20 @@ def main():
     decl_re = re.compile(rb'extern\s+(?:const\s+)?([A-Za-z_][A-Za-z_0-9]*)\s+(lbl_([0-9A-Fa-f]{8}))\s*(?:\[[^\]]*\])?\s*;')
     inc_re = re.compile(rb'#include\s+"([^"]*\.c)"')
     decls, hostmap = [], {}
-    for dp, dn, fns in os.walk(os.path.join(ROOT, 'src')):
-        for fn in fns:
-            if not fn.endswith(('.c', '.h', '.cpp')):
-                continue
-            p = os.path.join(dp, fn)
-            rp = os.path.relpath(p, ROOT)
-            b = open(p, 'rb').read()
-            for m in decl_re.finditer(b):
-                decls.append((rp, m.group(1).decode(), m.group(2).decode(), int(m.group(3), 16)))
-            for m in inc_re.finditer(b):
-                c = os.path.normpath(os.path.join(os.path.dirname(rp), m.group(1).decode()))
-                if not os.path.exists(os.path.join(ROOT, c)):
-                    c = os.path.normpath(os.path.join('src', m.group(1).decode()))
-                hostmap[c] = rp
+    srcpaths = [os.path.join(dp, fn)
+                for dp, dn, fns in os.walk(os.path.join(ROOT, 'src'))
+                for fn in fns if fn.endswith('.h')]
+    srcpaths += live_files_under('src', exts=('.c', '.cp', '.cpp'))
+    for p in srcpaths:
+        rp = os.path.relpath(p, ROOT)
+        b = open(p, 'rb').read()
+        for m in decl_re.finditer(b):
+            decls.append((rp, m.group(1).decode(), m.group(2).decode(), int(m.group(3), 16)))
+        for m in inc_re.finditer(b):
+            c = os.path.normpath(os.path.join(os.path.dirname(rp), m.group(1).decode()))
+            if not os.path.exists(os.path.join(ROOT, c)):
+                c = os.path.normpath(os.path.join('src', m.group(1).decode()))
+            hostmap[c] = rp
 
     file2unit = {'src/' + u: u for u in units}
     for _ in range(5):

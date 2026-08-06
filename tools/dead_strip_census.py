@@ -75,7 +75,7 @@ SRC = os.path.join(REPO, "src")
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 
-from source_coverage_audit import compiled_sources  # noqa: E402
+from source_coverage_audit import compiled_sources, live_files_under  # noqa: E402
 
 STT_FUNC = 2
 SHT_SYMTAB = 2
@@ -163,12 +163,16 @@ def stripped():
 
 
 def _srcfiles():
+    """Headers plus every LIVE source: text in a dead source cannot call,
+    define or strip anything in the DOL, so it is not population here."""
     blobs = {}
     for r, _, fs in os.walk(SRC):
         for f in fs:
-            if f.endswith((".c", ".h")):
+            if f.endswith(".h"):
                 p = os.path.join(r, f)
                 blobs[os.path.relpath(p, REPO)] = open(p, errors="replace").read()
+    for p in live_files_under("src", exts=(".c", ".cp", ".cpp")):
+        blobs[os.path.relpath(p, REPO)] = open(p, errors="replace").read()
     return blobs
 
 
