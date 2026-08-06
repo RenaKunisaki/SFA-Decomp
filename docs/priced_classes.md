@@ -3591,3 +3591,67 @@ mis-decomp-scale loop-nest structure, not a tie-break — a dedicated mis-decomp
 respelling row. `mapLoadDataFile` (8 444 B) shows per-case slwi/add temp swaps behind the MLDF
 macro puns — same tie-break family as §34c. Everything else in NOTPERM/NONFUNC should be treated
 as priced alongside §30's PERM residue.
+
+## 35. The web-structure census (C114): STRUCT-REAL is measurable, unlandable by score
+
+Method: for every sub-100 function (193 rows scanned, 0 unscanned; owner-hot and never-touch
+excluded), align target/current instruction streams positionally and compare def-use edges
+(each source operand mapped to the index of its defining instruction; branch operands are
+labels, never registers — an early parser draft mis-read hex `f08` as an FPR and inflated the
+class; fixed and re-run).
+
+### 35a. Partition (at parent 75c6e37a74, function bytes)
+
+- OWNERHOT (excluded)                43 rows / 74 544 B
+- LENDIFF (A102's censused bucket)   29 rows / 50 356 B
+- MNEM    (A102's censused bucket)   18 rows / 36 676 B
+- TIEBREAK (def-use edges identical, registers renamed) 66 rows / 94 348 B
+- COMMUTE-ONLY (operand swaps on commutative ops, same def multiset — peephole
+  commutation downstream of register numbering, seen inside otherwise-pure FPR
+  permutations: `createNewShadowDistortionTexture`, `powf`, `hudDrawMagicBar`,
+  `cMenuSetItems`, `pauseMenuDraw`, `drakorhoverpad_updateMain`) 6 rows / 12 156 B
+- STRUCT-REAL (def-use edges genuinely differ)          31 rows / 63 804 B
+
+### 35b. The scoring trap (measured, 7 independent rows)
+
+Every faithful structural fix measured REGRESSES fuzzy while converging the def-use shape,
+because objdiff charges 0.05/register and 0.01/immediate: correcting an immediate or an
+operand's def-site re-shuffles the downstream register permutation, and each luck-matched
+register lost (-0.05) outweighs each structure cell gained (+0.01). Instances:
+- blendTextures: 31/31 combination lattice of 5 derived structural edits (pa/pb add order
+  tco-before-h, rdo mullw operand order width*w, red sum redA-term-first, pc base-first `+=`
+  chain, loop2 rdo-in-read-arg) — all strictly below HEAD's 94.48; the all-faithful state is
+  mnemonic-identical at 94.24.
+- waterfx_render: retail's for-header comma order (`poolOffset += 0x1c, descriptorOffset +=
+  0x20, vertexOffset += 0x40, j++`, init `j = 0` first) converges all four latch immediates
+  positionally; fuzzy 99.428 -> 99.279.
+- Vortex_init: dropping the `GameObject* o = obj` alias converges retail's prologue save order
+  (mr r3-save before r4-save); homes recolour cyclically, 99.415 -> 98.772.
+- mapProcessRomList: retail folds the ADDR16-style HA onto the runtime base
+  (`(int*)(base + 0x83A8))[slot]`), ours onto the scaled index; all three faithful spellings
+  (flat sum, subscript, int-first paren) regress 99.643 -> 97.9-98.2.
+Landing any of these requires the WHOLE register permutation to converge at once — i.e. the
+original source — not incremental score-gated steps. No wrong computation found anywhere in the
+class (every divergence recomputes identical values), so no intended-regression exemption
+applies.
+
+### 35c. blendTextures reconstruction (derived, correct-direction, unlandable)
+
+Retail's loop-1 web structure, read from the target asm: address chains add pco, tco, h, rdo in
+that order for all three pointers; dst is built base-first (a `+=` chain, not a flat sum — MWCC
+rotates the pointer base to the END of any single-expression pointer+int chain, and full-inline
+spelling over-CSEs the whole sum into lhzx); loop-1 rdo multiplies width*w (loop 2 already
+does); the red sum takes the redA term first. Retail parks wB/pixelB/redB/i/j in saved regs and
+pco/tco/rdo/w/h in volatiles; every named-local vs CSE-temp respelling (offsets inline in `+=`
+statements, wd-cache elimination justified by loop 2's alias-forced second width reload) moves
+the saved/volatile partition but never onto retail's assignment. ~45 gated variants measured;
+best faithful state 94.24 vs HEAD 94.48. The row is structure-derived but colouring-locked.
+
+### 35d. Verdict
+
+The frontier's opnd-only residue splits 66 TIEBREAK / 6 COMMUTE / 31 STRUCT-REAL rows, and the
+STRUCT-REAL set is fully derivable from asm but unlandable row-by-row under the score gate:
+this class is priced until a lane can land a whole-function colouring convergence (or the gate
+learns to score def-use structure above register identity). Census data:
+tools-side script left with the lane's topic file; classifications in
+`aug05-C114-web-structure-census` (memory topic).
