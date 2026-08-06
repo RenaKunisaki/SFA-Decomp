@@ -15,7 +15,6 @@
 #include "src/musyx/runtime/synth_internal.h"
 #include "game/objects/object.h"
 #include "main/audio/music_trigger_ids.h"
-#include "main/gamebit_ids.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/string.h"
 #include "dolphin/ai.h"
 #include "dolphin/dvd.h"

@@ -41,7 +41,6 @@
 #include "dolphin/os/OSReport.h"
 #include "main/gameloop_api.h"
 #include "main/pad.h"
-#include "main/pi_frame_api.h"
 #include "main/pi_data_file_api.h"
 #include "main/pi_dolphin.h"
 #include "main/pi_flush_api.h"
@@ -49,11 +48,9 @@
 #include "main/textrender_api.h"
 #include "main/camera_interface.h"
 #include "main/mapEvent.h"
-#include "main/mldf_fileid.h"
 #include "main/model_render_instrs_api.h"
 #include "main/model_runtime_api.h"
 #include "main/object_transform.h"
-#include "main/loaded_file_flags.h"
 #include "main/map_load.h"
 #include "main/objprint_load_api.h"
 #include "main/objprint_api.h"
@@ -69,7 +66,6 @@
 #include "track/intersect_hud_api.h"
 #include "track/intersect_texture_api.h"
 #include "dolphin/os.h"
-#include "string.h"
 
 extern s32 gModelMtxCacheState;
 extern s32 gObjFuzzLayerIndex;

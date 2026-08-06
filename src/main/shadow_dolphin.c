@@ -5,7 +5,6 @@
 #include "track/intersect_depth_state_api.h"
 #include "track/intersect_depth_read_api.h"
 #include "track/intersect_render_setup_api.h"
-#include "main/hud_visibility_api.h"
 #include "main/lightmap_api.h"
 #include "main/shader_api.h"
 #include "main/debug.h"

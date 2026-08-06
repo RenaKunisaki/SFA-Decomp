@@ -21,7 +21,6 @@
 #include "main/sky_state.h"
 #include "main/track_dolphin_api.h"
 #include "main/mm.h"
-#include "string.h"
 #include "main/rcp_dolphin.h"
 #include "main/dll/dll_0000_gameui.h"
 #include "main/dll/dll_0031_minimap.h"

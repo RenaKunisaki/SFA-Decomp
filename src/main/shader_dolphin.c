@@ -6,7 +6,6 @@
 #include "main/texture.h"
 #include "main/model.h"
 #include "dolphin/os/OSCache.h"
-#include "string.h"
 #include "main/pad.h"
 #include "main/pi_data_file_api.h"
 #include "main/shader_dolphin.h"

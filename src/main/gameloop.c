@@ -58,7 +58,6 @@ int gAskProgressiveScanNoX = 0x16A;
 #include "main/dll/path_control_interface.h"
 #include "main/voxmaps.h"
 #include "track/intersect_api.h"
-#include "string.h"
 #include "dolphin/vi.h"
 #include "main/audio/sfx_object_system_api.h"
 #include "main/gametext_color_api.h"

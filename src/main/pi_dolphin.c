@@ -1,4 +1,3 @@
-#include "dolphin/os/OSReport.h"
 #include "dolphin/PPCArch.h"
 #include "dolphin/mtx.h"
 #include "main/frame_timing.h"
