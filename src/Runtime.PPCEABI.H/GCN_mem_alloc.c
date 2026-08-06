@@ -3,12 +3,6 @@
 
 int gDefaultHeapInitialized;
 
-const double __constants[3] = {
-    0.0,
-    4294967296.0,
-    2147483648.0,
-};
-
 inline static void InitDefaultHeap(void) {
     void* arenaLo;
     void* arenaHi;
