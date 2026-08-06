@@ -103,7 +103,7 @@ extern const HtInitData gHighTopLookInitData1;
 extern const HtInitData gHighTopLookInitData2;
 extern int gHighTopAirMeterInitValue;
 extern s16 gHighTopMovementSfxIds[2];
-extern f32 gHighTopGroundMarkerMtx[];
+extern f32 gHighTopModelMtx[];
 extern s16 gHighTopBandMoveIds[2];
 extern f32 gHighTopBandSpeedThresholds[];
 extern int gHighTopIdleSequenceWeights[];
