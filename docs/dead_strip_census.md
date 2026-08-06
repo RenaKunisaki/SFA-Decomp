@@ -33,11 +33,23 @@ The 15 carve-larger rows are not this class: 2 are unsplit gap symbols (`render.
 | **C** | **STRIPPED GLOBAL** — not static, and the link dropped it anyway | 9 | 2 788 |
 
 Class C's test is `cls = "C" if not is_static` — **linkage only**. Do not read it as "nothing
-references it": that was never measured, and three of the nine are demonstrably called —
-`__OSFPRInit` by `bl __OSFPRInit` in `src/dolphin/os/__ppc_eabi_init.cpp`, `__OSBootDol` at
-`OSExec.c:349`, `__OSSetExecParams` at `OSExec.c:80` and `:220`. All nine sit in the two units
-whose carve `.text` is 0 (`OSExec.o`, `synth_seq_queue.o`): the whole object never entered the
-link, which is what took their callers with them.
+references it": that was never measured, and three of the nine are demonstrably called in
+**compiled** sources — `__OSBootDol` at `OSExec.c:349`, `__OSBootDolSimple` at `:333`,
+`__OSSetExecParams` at `:80` and `:220`.
+
+They sit in **three** units, not two. Six are in `OSExec.o` and two in `synth_seq_queue.o`, whose
+carve `.text` is 0: the whole object never entered the link, which is what took their callers with
+it. The ninth, `__OSFPRInit`, is in `OS.o` — a **live** unit, carve `.text` `0x95c` — and it has no
+caller in anything the build compiles. Excising it alone reproduces `OS.o`'s carve byte for byte,
+so its `0x128` is the whole of that unit's surplus.
+
+`src/dolphin/os/__ppc_eabi_init.cpp` is **not** a witness for `__OSFPRInit` and was wrongly cited as
+one: `configure.py` builds the sibling `.c`, that `.cpp` is one of the 66 sources the build never
+compiles, and its `__init_hardware` carries three `bl`s where retail's carries two — `.init:0x80003354`
+is `0x20` long and calls `__OSPSInit` and `__OSCacheInit` only, which our compiled
+`Runtime.PPCEABI.H/__start.c` reproduces exactly. A file the build does not compile is not evidence
+about the link. `tools/source_coverage_audit.py` holds the partition; `dead_strip_census.py`'s
+self-test now carries both directions as controls.
 
 Class A is 58% of the population and it is **the normal fate of a small static helper at `-O4`**.
 `446.c`'s `lavaball1be_applyDebrisGravity` is the type specimen: it is called at line 167 of its own
@@ -124,11 +136,15 @@ anyway, by the reference decomp above. That is the difference between "no gate s
    decompiled, or a DLL export table. For a global the instrument is the *linker*, i.e. this
    file. Do not retry the widening.
 
-   A third, quieter hole closed with it: `is_c_source` accepted only `.c`/`.h`, so the two
-   compiled C++ units — `src/dolphin/os/__ppc_eabi_init.cpp` and
-   `src/Runtime.PPCEABI.H/__init_cpp_exceptions.cpp` — were invisible to **every** scanner in the
-   tree, and the first of them holds the only reference to `__OSFPRInit` anywhere. Both live in
-   exempt roots, so the game-code gate count did not move.
+   A third, quieter hole closed with it: `is_c_source` accepted only `.c`/`.h`, so
+   `src/Runtime.PPCEABI.H/__init_cpp_exceptions.cpp` — the one compiled `.cpp` — was invisible to
+   **every** scanner in the tree. It lives in an exempt root, so the game-code gate count did not
+   move. **Corrected:** that hole was reported as *two* compiled C++ units, and
+   `src/dolphin/os/__ppc_eabi_init.cpp` is not one — the build never compiles it. The measured
+   partition is 1005 compiled sources (1002 `.c`, 1 `.cpp`, 2 `.s`) against 1071 on disk, leaving 66
+   the build never compiles; the `.c`/`.h`/`.cpp` filter is still blind to the two assembled `.s`
+   units and still admits 62 uncompiled files. All of them are outside `SCAN_ROOTS`, so the gating
+   population of the whole file-type gap is **0**. See `tools/source_coverage_audit.py`.
 
 2. **Five units report `fuzzy 100.0` and `complete: true` with no code, no data and no functions**
    — `dolphin/ax/AX`, `dolphin/TRK_MINNOW_DOLPHIN/MWCriticalSection_gc`, `dolphin/os/OSExec`,

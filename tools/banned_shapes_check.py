@@ -200,11 +200,15 @@ RE_ADDR_OF_OBJECT = re.compile(r"\*\s*\(\s*volatile\b[^)]*\)\s*&"
 
 
 def is_c_source(path):
-    # .cpp counts: src/dolphin/os/__ppc_eabi_init.cpp and
-    # src/Runtime.PPCEABI.H/__init_cpp_exceptions.cpp are compiled into the DOL,
-    # and while they were excluded every scanner in the tree was blind to them.
-    # __ppc_eabi_init.cpp's `bl __OSFPRInit` is the only reference to that
-    # function anywhere, so excluding it made a live SDK symbol read as dead.
+    # .cpp counts because src/Runtime.PPCEABI.H/__init_cpp_exceptions.cpp is
+    # compiled into the DOL and a .c/.h filter was blind to it.  It is the ONLY
+    # compiled .cpp: the other one on disk, src/dolphin/os/__ppc_eabi_init.cpp,
+    # is never compiled -- configure.py builds its sibling .c -- so admitting
+    # .cpp also admits one uncompiled file.  See tools/source_coverage_audit.py
+    # for the measured partition and what this filter still excludes: two
+    # assembled .s units the build compiles, and 66 sources on disk that it
+    # does not.  All of them are outside SCAN_ROOTS, so the GATING population
+    # of the file-type gap is 0.
     return path.endswith((".c", ".h", ".cpp"))
 
 

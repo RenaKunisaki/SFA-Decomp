@@ -46,7 +46,7 @@ here that the target section already says.
 | **`.bss` allocates at the first use that FOLLOWS the definition** — and an object with no use after its definition is allocated at end of TU, in reverse definition order. Refines the `.bss` row above: definition order is inert only among definitions that all precede their uses. **A NonMatching unit is linked from the carve, so its `.bss` order is invisible; a Matching one is linked from our object, and a permuted `.bss` moves every DOL word that names it.** | §17 | A six-case probe battery under the live flag sets, then all 21 mis-ordered sections closed by moving definitions past their last use: `bss_order_scan` 21 -> 0, section contents identical over all 1013 objects, `complete_units` 910 -> 914. |
 | **The sign-in-the-constant class is EMPTY outside `trig`.** The `A + -C` recovery does not generalise; nothing else in the tree holds a value at retail's opposite sign. | §14 | `tools/a71_signscan.py` over all 1050 units: **0** units hold a mirror-signed float, and the opcode partition finds **0** `fnmsubs`/`fnmadds`/`fsubs`-for-`fmadds` rows outside the three never-touch PS islands. |
 | **A dead-stripped body is NOT cleanup fodder — DO NOT DELETE.** A `.text` surplus is 58% *inlining*, not fabrication; every gate in the tree is blind to its deletion. And class C is a linkage test, not a reference test. | §7b | `tools/dead_strip_census.py`: 86 fns / 12 348 B / 49 units, split 50 A / 27 B / 9 C; **excising exactly the stripped ranges reproduces the carve `.text` byte for byte in 34 of the 49 units**, with a 4-byte-shift negative control; **0 fabrications**, and 0 of the 36 class-B/C bodies carry zero relocations. |
-| **A source screen has no power over a GLOBAL function; only the linker does.** Widening the uncalled-function census to any linkage is refused, measured — do not retry it. Widening it to the exempt roots for STATICS is free and was taken. | §7b; `tools/banned_shapes_check.py` | Whole tree, any linkage: **4969 rows, 60 really dead — 1.2% precision**, because a global's reference may be a relocation in data we have not decompiled. Whole tree, statics only: 26 -> **30 rows, 27 really dead**, `lost-old=0`, and the gating hit set is byte-identical at **103**. The 4 new rows are 3 SDK `asm` exception vectors plus `synth_jobs.c streamGainFromVolume`, the one genuinely dead function that nothing in the tree screened. |
+| **A source screen has no power over a GLOBAL function; only the linker does.** Widening the uncalled-function census to any linkage is refused, measured — do not retry it. Widening it to the exempt roots for STATICS is free and was taken. | §7b; `tools/banned_shapes_check.py` | Whole tree, any linkage: **4969 rows, 60 really dead — 1.2% precision**, because a global's reference may be a relocation in data we have not decompiled. Whole tree, statics only: 26 -> **30 rows, 27 really dead**, `lost-old=0`, and the gating hit set is byte-identical at **103**. The 4 new rows are 3 SDK `asm` exception vectors plus `synth_jobs.c streamGainFromVolume`, the one uncalled function that nothing in the tree screened — dead code, LIVE POOL: deleting it costs 20 matched_data (§7). |
 | **5 of the 915 `complete_units` are VACUOUS, and they are excluded from BOTH halves of the completion figure.** A unit with no `total_code`, no `total_data` and no `total_functions` had nothing compared, so its 100.0/complete is not a statement about correctness — and its carve can never gain content, so it can neither be earned nor lost. | `tools/vacuity_audit.py --family report` | `AX`, `MWCriticalSection_gc`, `OSExec`, `synth_sequence`, `synth_seq_queue`: all five carry a **zero-length** `.text` range in `splits.txt`, and all five carve objects are `.text` size 0. Three are stub `.c` files that emit nothing; two emit real code (0x1074 and 0x194) that never entered the link. Separately, the **38 `main/auto_*` units are selected by `total_data` present / `matched_data` absent / no `total_code`** (2 342 B) and **0 of them are inside `complete_units`**. Informative completion: **910 of 1000**. |
 
 ## 1. Target-unmerged dot-compare (purge-priced)
@@ -458,11 +458,29 @@ matched_data and buy nothing; they stay, and they are in the checker baseline.**
 `203`'s `dll_CB_getStateHandler` was the one true positive: no call site, no minted slot, not
 one data byte moved. Deleted in `a21f332847`.
 
+**A ninth unit, outside the gate's reach (measured 2026-08-04).** `UNCALLED_STATIC_FN` gates on
+the game roots only, so the table above is the *game-root* population, not the tree's. The
+object-level census finds one more: `musyx/runtime/synth_jobs.c`'s `streamGainFromVolume`
+(`0x30`, class B; the census reports it as `UNCALLED_STATIC_FN_SDK`, which never gates). It is
+the sharpest specimen of the shape §7 describes, and its own commit `ee10dc4d9e` says so — it was
+written to mint `{1/127, the unsigned-conversion bias}` ahead of `streamHandle`, which creates
+`4096.0f` first and so cannot produce the retail order alone. It is load-bearing and it is
+priced: removing it drops `.sdata2` from `0x14` to `0x10` and reorders it (ours becomes
+`45800000 3c010204 43300000`, retail is `3c010204 00000000 43300000 … 45800000`), costing
+**20 matched_data** and taking the unit's data from 80/80 to 60/80. `.text` alone would
+*improve* — `0xa78` → the carve's `0xa48` — which is exactly why no code gate can see this row.
+So "genuinely dead" is true of its call graph and false of its data: **dead code, live pool.**
+It stays, and it is recorded here rather than in the checker baseline because the checker's
+gating roots do not reach it.
+
 **Gate.** `tools/banned_shapes_check.py` now carries `UNCALLED_STATIC_FN` — a source-only,
 transitive census (a cluster reachable only from other uncalled statics is itself uncalled,
 which is how `curveSpeedAt` is caught). `static inline` is out of class: an inline nothing
 calls is never expanded and never emitted. A new hit is not automatically a hack — adjudicate
-it against the unit's pool with the sharing test above before accepting or deleting it.
+it against the unit's pool with the sharing test above before accepting or deleting it. The gate
+sees game roots only; for the rest of the tree the instrument is
+`tools/dead_strip_census.py census`, and `tools/source_coverage_audit.py` states what each
+source-walking screen excludes by file type.
 
 ## 7b. The inlined-and-stripped class: DO NOT DELETE (measured 2026-08-03, re-measured 2026-08-03)
 
@@ -505,12 +523,21 @@ real data or callees.
 
 **Class C is a LINKAGE test, not a reference test.** The classifier is literally
 `cls = "C" if not is_static`, so "unreferenced global" was never measured and three of the nine
-are demonstrably called: `__OSFPRInit` by `bl __OSFPRInit` in `src/dolphin/os/__ppc_eabi_init.cpp`,
-`__OSBootDol` at `OSExec.c:349`, `__OSSetExecParams` at `OSExec.c:80` and `:220`. All nine sit in
-two units — `OSExec.o` and `synth_seq_queue.o` — whose carve `.text` is **0**: the whole object
-never entered the link, which is what took their callers with them. `OSExec.c` is settled
-independently: `reference_projects/super_mario_strikers/src/Dolphin/os/OSExec.c` has the same 18
-functions in the same order.
+are demonstrably called in **compiled** sources: `__OSBootDol` at `OSExec.c:349`,
+`__OSBootDolSimple` at `:333`, `__OSSetExecParams` at `:80` and `:220`. Eight sit in two units —
+`OSExec.o` and `synth_seq_queue.o` — whose carve `.text` is **0**: the whole object never entered
+the link, which is what took their callers with it. `OSExec.c` is settled independently:
+`reference_projects/super_mario_strikers/src/Dolphin/os/OSExec.c` has the same 18 functions in the
+same order.
+
+The ninth is `__OSFPRInit`, and it is a different row: it lives in `OS.o`, a **live** unit whose
+carve `.text` is `0x95c`, and nothing the build compiles calls it. Excising its `0x128` alone
+reproduces `OS.o`'s carve byte for byte. It was recorded as called on the strength of
+`bl __OSFPRInit` in `src/dolphin/os/__ppc_eabi_init.cpp`, which is **not compiled** —
+`configure.py` builds the sibling `.c` — and whose `__init_hardware` contradicts retail's:
+`.init:0x80003354` is `0x20` long and calls `__OSPSInit` and `__OSCacheInit` only, which our
+compiled `Runtime.PPCEABI.H/__start.c` reproduces. Keep it: it is authentic SDK `OS.c` that this
+game's link had no reference for, exactly as retail's link had none.
 
 **Genuinely undecidable: 1.** `musyx/runtime/synth_seq_queue.c` — its carve `.text` is 0, so the
 excision test compares 0 bytes with 0 and has **no power at all**, and the only reference project
