@@ -2,6 +2,7 @@
 #define MAIN_DLL_DR_CLOUDRUNNER_STATE_H_
 
 #include "global.h"
+#include "dlls/objects/common/vehicle.h"
 #include "main/byte_flags.h"
 #include "main/dll/baddie_state.h"
 #include "main/dll/curve_walker.h"
@@ -30,7 +31,7 @@ typedef struct CloudRunnerState {
     u8 padB58[0xbae - 0xb58];
     s16 unkBAE;
     s16 airTimeRemaining;
-    u8 flightState;
+    u8 mountState; /* enum VehicleMountState */
     u8 padBB3;
     u8 spawnVariant; /* 0xbb4: variant selector from spawn-setup byte +0x19; gates init (case 0 = early-out) */
     u8 padBB5;
