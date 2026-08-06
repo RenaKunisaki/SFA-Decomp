@@ -216,7 +216,7 @@ static void Rcp_SetupDistortionRenderState(void)
     GXSetDispCopyDst(32, 32);
     GXSetTexCopySrc(0, 0, 32, 32);
     C_MTXOrtho(omtx, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 15.0f);
-    GXSetProjection(omtx, 1);
+    GXSetProjection(omtx, GX_ORTHOGRAPHIC);
     GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
     gxSetZMode_(0, GX_EQUAL, 0);
     GXSetCullMode(GX_CULL_NONE);

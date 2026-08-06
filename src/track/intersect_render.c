@@ -247,11 +247,11 @@ int renderWhirlpool(void* obj_a, void** obj_b, int slot)
     GXSetTevKColor(GX_KCOLOR0, *(GXColor*)&gWhirlpoolReflectionKColor);
     GXSetTevKColorSel(GX_TEVSTAGE1, GX_TEV_KCSEL_K0);
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD2, GX_TEXMAP2);
-    GXSetIndTexCoordScale(0, 0, 0);
-    GXSetIndTexMtx(1, gWhirlpoolIndTexMtx, -1);
-    GXSetIndTexMtx(2, gWhirlpoolIndTexMtx, -2);
-    GXSetTevIndirect(0, 0, 0, 7, 1, 0, 0, 0, 0, 0);
-    GXSetTevIndirect(1, 0, 0, 7, 2, 0, 0, 0, 0, 0);
+    GXSetIndTexCoordScale(GX_INDTEXSTAGE0, GX_ITS_1, GX_ITS_1);
+    GXSetIndTexMtx(GX_ITM_0, gWhirlpoolIndTexMtx, -1);
+    GXSetIndTexMtx(GX_ITM_1, gWhirlpoolIndTexMtx, -2);
+    GXSetTevIndirect(GX_TEVSTAGE0, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_0, GX_ITW_OFF, GX_ITW_OFF, 0, 0, GX_ITBA_OFF);
+    GXSetTevIndirect(GX_TEVSTAGE1, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_1, GX_ITW_OFF, GX_ITW_OFF, 0, 0, GX_ITBA_OFF);
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP1, GX_COLOR_NULL);
     GXSetTevColorIn(GX_TEVSTAGE0, GX_CC_C2, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC);
     GXSetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO);
@@ -465,14 +465,14 @@ void screenImageDraw(u8 alpha)
     GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
 
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD1, GX_TEXMAP1);
-    GXSetIndTexCoordScale(0, 0, 0);
-    GXSetIndTexMtx(1, gScreenImageIndTexMtx1, -3);
-    GXSetTevIndirect(1, 0, 0, 7, 1, 6, 6, 0, 0, 1);
+    GXSetIndTexCoordScale(GX_INDTEXSTAGE0, GX_ITS_1, GX_ITS_1);
+    GXSetIndTexMtx(GX_ITM_0, gScreenImageIndTexMtx1, -3);
+    GXSetTevIndirect(GX_TEVSTAGE1, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_0, GX_ITW_0, GX_ITW_0, 0, 0, GX_ITBA_S);
 
     GXSetIndTexOrder(GX_INDTEXSTAGE1, GX_TEXCOORD2, GX_TEXMAP1);
-    GXSetIndTexCoordScale(1, 0, 0);
-    GXSetIndTexMtx(2, gScreenImageIndTexMtx2, -3);
-    GXSetTevIndirect(2, 1, 0, 7, 2, 0, 0, 1, 0, 1);
+    GXSetIndTexCoordScale(GX_INDTEXSTAGE1, GX_ITS_1, GX_ITS_1);
+    GXSetIndTexMtx(GX_ITM_1, gScreenImageIndTexMtx2, -3);
+    GXSetTevIndirect(GX_TEVSTAGE2, GX_INDTEXSTAGE1, GX_ITF_8, GX_ITB_STU, GX_ITM_1, GX_ITW_OFF, GX_ITW_OFF, 1, 0, GX_ITBA_S);
 
     GXSetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_ALPHA_BUMPN);
     GXSetTevColorIn(GX_TEVSTAGE1, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO);
@@ -958,12 +958,12 @@ void doDistortionFilter(f32* pos, f32 radius, u8* mod, f32 angle)
     GXSetTexCoordGen2(GX_TEXCOORD3, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX1, GX_FALSE, GX_PTIDENTITY);
 
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD3, GX_TEXMAP3);
-    GXSetIndTexCoordScale(0, 0, 0);
-    GXSetIndTexMtx(1, (f32(*)[3])indMtx, 1);
+    GXSetIndTexCoordScale(GX_INDTEXSTAGE0, GX_ITS_1, GX_ITS_1);
+    GXSetIndTexMtx(GX_ITM_0, (f32(*)[3])indMtx, 1);
 
-    GXSetTevIndirect(2, 0, 0, 7, 1, 0, 0, 0, 0, 0);
-    GXSetTevIndirect(3, 0, 0, 7, 1, 0, 0, 0, 0, 0);
-    GXSetTevIndirect(4, 0, 0, 7, 1, 0, 0, 0, 0, 0);
+    GXSetTevIndirect(GX_TEVSTAGE2, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_0, GX_ITW_OFF, GX_ITW_OFF, 0, 0, GX_ITBA_OFF);
+    GXSetTevIndirect(GX_TEVSTAGE3, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_0, GX_ITW_OFF, GX_ITW_OFF, 0, 0, GX_ITBA_OFF);
+    GXSetTevIndirect(GX_TEVSTAGE4, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_0, GX_ITW_OFF, GX_ITW_OFF, 0, 0, GX_ITBA_OFF);
 
     GXSetNumTexGens(4);
     GXSetNumIndStages(1);
@@ -1119,9 +1119,9 @@ int objFrozenRenderCb(void* obj_a, void** obj_b, int slot)
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX3x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTTEXMTX5);
 
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD1, GX_TEXMAP1);
-    GXSetIndTexCoordScale(0, 0, 0);
-    GXSetIndTexMtx(1, gFrozenObjectIndTexMtx, -1);
-    GXSetTevIndirect(0, 0, 0, 7, 1, 0, 0, 0, 0, 0);
+    GXSetIndTexCoordScale(GX_INDTEXSTAGE0, GX_ITS_1, GX_ITS_1);
+    GXSetIndTexMtx(GX_ITM_0, gFrozenObjectIndTexMtx, -1);
+    GXSetTevIndirect(GX_TEVSTAGE0, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_0, GX_ITW_OFF, GX_ITW_OFF, 0, 0, GX_ITBA_OFF);
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
     GXSetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC);
     GXSetTevAlphaIn(GX_TEVSTAGE0, GX_CA_ZERO, GX_CA_ZERO, GX_CA_ZERO, GX_CA_KONST);
@@ -1332,9 +1332,9 @@ void setupQuakeSpellRingGxState(u8 alpha)
     ind_mtx[1][1] = 0.25f;
     ind_mtx[1][2] = 0.0f;
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD1, GX_TEXMAP1);
-    GXSetIndTexCoordScale(0, 0, 0);
-    GXSetIndTexMtx(1, ind_mtx, -3);
-    GXSetTevIndirect(0, 0, 0, 7, 1, 0, 0, 0, 0, 0);
+    GXSetIndTexCoordScale(GX_INDTEXSTAGE0, GX_ITS_1, GX_ITS_1);
+    GXSetIndTexMtx(GX_ITM_0, ind_mtx, -3);
+    GXSetTevIndirect(GX_TEVSTAGE0, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_0, GX_ITW_OFF, GX_ITW_OFF, 0, 0, GX_ITBA_OFF);
     mtx[0][0] = 0.6f;
     mtx[0][1] = 0.0f;
     mtx[0][2] = 0.0f;
@@ -1613,9 +1613,9 @@ int objModelProjectedIndirectRenderCb(GameObject* object, ObjModel* model, int s
     GXSetNumTevStages(2);
     GXSetNumIndStages(2);
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD0, GX_TEXMAP2);
-    GXSetIndTexCoordScale(0, 0, 0);
-    GXSetIndTexMtx(1, (f32(*)[3])indirectMtx, 0);
-    GXSetTevIndirect(0, 0, 0, 7, 1, 0, 0, 0, 0, 0);
+    GXSetIndTexCoordScale(GX_INDTEXSTAGE0, GX_ITS_1, GX_ITS_1);
+    GXSetIndTexMtx(GX_ITM_0, (f32(*)[3])indirectMtx, 0);
+    GXSetTevIndirect(GX_TEVSTAGE0, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_0, GX_ITW_OFF, GX_ITW_OFF, 0, 0, GX_ITBA_OFF);
     selectTexture((Texture*)baseTexture, 0);
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
     GXSetTevColorIn(GX_TEVSTAGE0, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ONE);
@@ -1625,8 +1625,8 @@ int objModelProjectedIndirectRenderCb(GameObject* object, ObjModel* model, int s
     GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
 
     GXSetIndTexOrder(GX_INDTEXSTAGE1, GX_TEXCOORD0, GX_TEXMAP2);
-    GXSetIndTexCoordScale(1, 0, 0);
-    GXSetTevIndirect(1, 1, 0, 7, 1, 0, 0, 1, 0, 0);
+    GXSetIndTexCoordScale(GX_INDTEXSTAGE1, GX_ITS_1, GX_ITS_1);
+    GXSetTevIndirect(GX_TEVSTAGE1, GX_INDTEXSTAGE1, GX_ITF_8, GX_ITB_STU, GX_ITM_0, GX_ITW_OFF, GX_ITW_OFF, 1, 0, GX_ITBA_OFF);
     PSMTXScale(transformMtx, gTrackProjectedTexScale, gTrackProjectedTexScale, 1.0f);
     PSMTXConcat(transformMtx, gCameraLightPerspectiveFlipYMatrix, projectedTexMtx);
     PSMTXTrans(transformMtx, 0.5f * (1.0f - gTrackProjectedTexScale),
@@ -1846,9 +1846,9 @@ u32 objCausticReflectionRenderCb(int handle, void* model)
         indMtx_44[5] = 0.0f;
     }
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD1, GX_TEXMAP1);
-    GXSetIndTexCoordScale(0, 0, 0);
-    GXSetIndTexMtx(1, (f32(*)[3])indMtx_44, -4);
-    GXSetTevIndirect(0, 0, 0, 7, 1, 6, 6, 0, 0, 0);
+    GXSetIndTexCoordScale(GX_INDTEXSTAGE0, GX_ITS_1, GX_ITS_1);
+    GXSetIndTexMtx(GX_ITM_0, (f32(*)[3])indMtx_44, -4);
+    GXSetTevIndirect(GX_TEVSTAGE0, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_0, GX_ITW_0, GX_ITW_0, 0, 0, GX_ITBA_OFF);
 
     PSMTXScale(mtx_bc, 0.83f, 0.83f, 0.83f);
     PSMTXRotRad(mtx_5c, 'z', 0.7853982f);
@@ -1869,9 +1869,9 @@ u32 objCausticReflectionRenderCb(int handle, void* model)
         indMtx_2c[5] = 0.0f;
     }
     GXSetIndTexOrder(GX_INDTEXSTAGE1, GX_TEXCOORD2, GX_TEXMAP1);
-    GXSetIndTexCoordScale(1, 0, 0);
-    GXSetIndTexMtx(2, (f32(*)[3])indMtx_2c, -4);
-    GXSetTevIndirect(1, 1, 0, 7, 2, 0, 0, 1, 0, 0);
+    GXSetIndTexCoordScale(GX_INDTEXSTAGE1, GX_ITS_1, GX_ITS_1);
+    GXSetIndTexMtx(GX_ITM_1, (f32(*)[3])indMtx_2c, -4);
+    GXSetTevIndirect(GX_TEVSTAGE1, GX_INDTEXSTAGE1, GX_ITF_8, GX_ITB_STU, GX_ITM_1, GX_ITW_OFF, GX_ITW_OFF, 1, 0, GX_ITBA_OFF);
 
     mtx_8c[0][0] = gCausticReflectionDiskScale;
     mtx_8c[0][1] = 0.0f;
@@ -3854,9 +3854,9 @@ void doHeatEffect(u8 alpha)
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_TEX0, GX_IDENTITY, GX_FALSE, GX_PTTEXMTX0);
 
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD1, GX_TEXMAP2);
-    GXSetIndTexCoordScale(0, 0, 0);
-    GXSetIndTexMtx(1, (f32(*)[3])indMtx, -6);
-    GXSetTevIndirect(1, 0, 0, 7, 1, 0, 0, 0, 0, 0);
+    GXSetIndTexCoordScale(GX_INDTEXSTAGE0, GX_ITS_1, GX_ITS_1);
+    GXSetIndTexMtx(GX_ITM_0, (f32(*)[3])indMtx, -6);
+    GXSetTevIndirect(GX_TEVSTAGE1, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_0, GX_ITW_OFF, GX_ITW_OFF, 0, 0, GX_ITBA_OFF);
 
     GXSetTevKColor(GX_KCOLOR0, gHeatEffectKColor);
     GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
@@ -3909,7 +3909,7 @@ void doHeatEffect(u8 alpha)
         gGxZCompLocValid = 1;
     }
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
-    GXSetProjection(hudMatrix, 1);
+    GXSetProjection(hudMatrix, GX_ORTHOGRAPHIC);
     GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
     GXBegin(GX_QUADS, GX_VTXFMT0, 4);
     GXWGFifo.s16 = 0;
@@ -4382,13 +4382,13 @@ void setupWaterReflectionTev(Texture* handle1, Texture* handle2)
     ((void (*)(int, GXColor*))GXSetTevColor)(2, &tev2);
 
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD1, GX_TEXMAP1);
-    GXSetIndTexCoordScale(0, 0, 0);
-    GXSetIndTexMtx(1, indBase[0][0], -1);
-    GXSetIndTexMtx(2, indBase[0][1], -1);
-    GXSetIndTexMtx(3, indBase[0][2], -1);
-    GXSetTevIndirect(0, 0, 0, 7, 1, 0, 0, 0, 0, 0);
-    GXSetTevIndirect(1, 0, 0, 7, 2, 0, 0, 0, 0, 1);
-    GXSetTevIndirect(2, 0, 0, 7, 3, 0, 0, 0, 0, 0);
+    GXSetIndTexCoordScale(GX_INDTEXSTAGE0, GX_ITS_1, GX_ITS_1);
+    GXSetIndTexMtx(GX_ITM_0, indBase[0][0], -1);
+    GXSetIndTexMtx(GX_ITM_1, indBase[0][1], -1);
+    GXSetIndTexMtx(GX_ITM_2, indBase[0][2], -1);
+    GXSetTevIndirect(GX_TEVSTAGE0, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_0, GX_ITW_OFF, GX_ITW_OFF, 0, 0, GX_ITBA_OFF);
+    GXSetTevIndirect(GX_TEVSTAGE1, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_1, GX_ITW_OFF, GX_ITW_OFF, 0, 0, GX_ITBA_S);
+    GXSetTevIndirect(GX_TEVSTAGE2, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_2, GX_ITW_OFF, GX_ITW_OFF, 0, 0, GX_ITBA_OFF);
     GXSetNumIndStages(1);
     GXSetNumTexGens(3);
     GXSetNumTevStages(4);
@@ -4455,9 +4455,9 @@ void setupReflectionIndirectTev(u8 flag)
     mtx[4] = 0.0f;
     mtx[5] = 0.5f;
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD0, GX_TEXMAP0);
-    GXSetIndTexCoordScale(0, 0, 0);
-    GXSetIndTexMtx(1, (void*)mtx, -2);
-    GXSetTevIndirect(1, 0, 0, 7, 1, 0, 0, 0, 0, 1);
+    GXSetIndTexCoordScale(GX_INDTEXSTAGE0, GX_ITS_1, GX_ITS_1);
+    GXSetIndTexMtx(GX_ITM_0, (void*)mtx, -2);
+    GXSetTevIndirect(GX_TEVSTAGE1, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_0, GX_ITW_OFF, GX_ITW_OFF, 0, 0, GX_ITBA_S);
     GXSetNumIndStages(1);
     GXSetNumTexGens(2);
     GXSetNumTevStages(2);
@@ -4530,11 +4530,11 @@ void setupReflectionDistortTev(Texture* texHandle)
     GXSetTevKColor(GX_KCOLOR0, gReflectionKColor);
     GXSetTevKColorSel(GX_TEVSTAGE1, GX_TEV_KCSEL_K0);
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD1, GX_TEXMAP1);
-    GXSetIndTexCoordScale(0, 0, 0);
-    GXSetIndTexMtx(1, (f32(*)[3])indMtx, -1);
-    GXSetIndTexMtx(2, (f32(*)[3])indMtx, -2);
-    GXSetTevIndirect(0, 0, 0, 7, 1, 0, 0, 0, 0, 0);
-    GXSetTevIndirect(1, 0, 0, 7, 2, 0, 0, 0, 0, 1);
+    GXSetIndTexCoordScale(GX_INDTEXSTAGE0, GX_ITS_1, GX_ITS_1);
+    GXSetIndTexMtx(GX_ITM_0, (f32(*)[3])indMtx, -1);
+    GXSetIndTexMtx(GX_ITM_1, (f32(*)[3])indMtx, -2);
+    GXSetTevIndirect(GX_TEVSTAGE0, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_0, GX_ITW_OFF, GX_ITW_OFF, 0, 0, GX_ITBA_OFF);
+    GXSetTevIndirect(GX_TEVSTAGE1, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_1, GX_ITW_OFF, GX_ITW_OFF, 0, 0, GX_ITBA_S);
     GXSetNumIndStages(1);
     GXSetNumChans(1);
     GXSetNumTexGens(3);
@@ -4620,11 +4620,11 @@ void setupReflectionBumpDistortTev(void* texture)
     GXSetTevKColor(GX_KCOLOR0, gReflectionBumpKColor);
     GXSetTevKColorSel(GX_TEVSTAGE1, GX_TEV_KCSEL_K0);
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD1, GX_TEXMAP1);
-    GXSetIndTexCoordScale(0, 0, 0);
-    GXSetIndTexMtx(1, (f32(*)[3])indMtx, -1);
-    GXSetIndTexMtx(2, (f32(*)[3])indMtx, -2);
-    GXSetTevIndirect(0, 0, 0, 7, 1, 0, 0, 0, 0, 0);
-    GXSetTevIndirect(1, 0, 0, 7, 2, 0, 0, 0, 0, 3);
+    GXSetIndTexCoordScale(GX_INDTEXSTAGE0, GX_ITS_1, GX_ITS_1);
+    GXSetIndTexMtx(GX_ITM_0, (f32(*)[3])indMtx, -1);
+    GXSetIndTexMtx(GX_ITM_1, (f32(*)[3])indMtx, -2);
+    GXSetTevIndirect(GX_TEVSTAGE0, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_0, GX_ITW_OFF, GX_ITW_OFF, 0, 0, GX_ITBA_OFF);
+    GXSetTevIndirect(GX_TEVSTAGE1, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_1, GX_ITW_OFF, GX_ITW_OFF, 0, 0, GX_ITBA_U);
     GXSetNumIndStages(1);
     GXSetNumChans(1);
     GXSetNumTexGens(3);
@@ -4701,9 +4701,9 @@ void setupWaterCausticTev(void)
     indMtx_54[4] = 0.5f;
     indMtx_54[5] = 0.0f;
     GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD1, GX_TEXMAP1);
-    GXSetIndTexCoordScale(0, 0, 0);
-    GXSetIndTexMtx(1, (f32(*)[3])indMtx_54, -2);
-    GXSetTevIndirect(0, 0, 0, 7, 1, 6, 6, 0, 0, 0);
+    GXSetIndTexCoordScale(GX_INDTEXSTAGE0, GX_ITS_1, GX_ITS_1);
+    GXSetIndTexMtx(GX_ITM_0, (f32(*)[3])indMtx_54, -2);
+    GXSetTevIndirect(GX_TEVSTAGE0, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_0, GX_ITW_0, GX_ITW_0, 0, 0, GX_ITBA_OFF);
 
     PSMTXScale(mtx_9c, 0.83f, 0.83f, 0.83f);
     PSMTXRotRad(mtx_6c, 'z', 0.7853982f);
@@ -4720,9 +4720,9 @@ void setupWaterCausticTev(void)
     indMtx_3c[4] = 0.3f;
     indMtx_3c[5] = 0.0f;
     GXSetIndTexOrder(GX_INDTEXSTAGE1, GX_TEXCOORD2, GX_TEXMAP1);
-    GXSetIndTexCoordScale(1, 0, 0);
-    GXSetIndTexMtx(2, (f32(*)[3])indMtx_3c, -4);
-    GXSetTevIndirect(1, 1, 0, 7, 2, 0, 0, 1, 0, 0);
+    GXSetIndTexCoordScale(GX_INDTEXSTAGE1, GX_ITS_1, GX_ITS_1);
+    GXSetIndTexMtx(GX_ITM_1, (f32(*)[3])indMtx_3c, -4);
+    GXSetTevIndirect(GX_TEVSTAGE1, GX_INDTEXSTAGE1, GX_ITF_8, GX_ITB_STU, GX_ITM_1, GX_ITW_OFF, GX_ITW_OFF, 1, 0, GX_ITBA_OFF);
 
     if (isHeavyFogEnabled() != 0)
     {
@@ -4782,9 +4782,9 @@ void setupWaterCausticTev(void)
     indMtx_24[3] = -0.5f;
     indMtx_24[4] = 0.0f;
     indMtx_24[5] = 0.0f;
-    GXSetIndTexMtx(3, (f32(*)[3])indMtx_24, -5);
-    GXSetTevIndirect(2, 0, 0, 7, 2, 6, 6, 0, 0, 0);
-    GXSetTevIndirect(3, 1, 0, 7, 3, 0, 0, 1, 0, 0);
+    GXSetIndTexMtx(GX_ITM_2, (f32(*)[3])indMtx_24, -5);
+    GXSetTevIndirect(GX_TEVSTAGE2, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_1, GX_ITW_0, GX_ITW_0, 0, 0, GX_ITBA_OFF);
+    GXSetTevIndirect(GX_TEVSTAGE3, GX_INDTEXSTAGE1, GX_ITF_8, GX_ITB_STU, GX_ITM_2, GX_ITW_OFF, GX_ITW_OFF, 1, 0, GX_ITBA_OFF);
     GXSetTexCoordGen2(GX_TEXCOORD3, GX_TG_MTX3x4, GX_TG_POS, GX_TEXMTX1, GX_FALSE, GX_PTIDENTITY);
 
     GXSetTevOrder(GX_TEVSTAGE2, GX_TEXCOORD_NULL, GX_TEXMAP_NULL, GX_COLOR0A0);
