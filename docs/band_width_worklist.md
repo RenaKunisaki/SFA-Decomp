@@ -133,7 +133,7 @@ The li/mr rematerialisation family (incl. the srawi/extsh u64-pair pocket and co
 | curves_advanceCollision | dlls/engine/21/21 | 2472 | 99.903 | 1 | 1 | 6G/1F | 1 | copy-survival-first-definition-rule (walled; clause-A fix nets negative — spellfuzz.py measured it: `u32 sourceOffset[1]` flips the site's `li` to `mr` but re-rotates 54 words (struc 0); 405 legal depth-2 variants over the first preamble incl. loop-form/scope-push/dup-fold, best remains ndiff 1; `scal(outputCursor)` costs 82 words, so the existing array-of-one locals are load-bearing original source) |
 | playerStateMountBike | dlls/objects/195_Player/player | 1452 | 99.405 | 3 | 2 | 6G/0F | 22 | independent-match-ceiling: the srawi/extsh ~(u64) pocket |
 | playerState19 | dlls/objects/195_Player/player | 1396 | 99.295 | 8 | 2 | 6G/1F | 22 | independent-match-ceiling: the srawi/extsh ~(u64) pocket |
-| Shield_setMode | dlls/objects/229/229 | 1788 | 99.709 | 15 | 1 | 7G/4F | 2 | web-class: 226/229/engine-22 copy-class placement / copy-survival textures |
+| Shield_setMode | dlls/objects/229/229 | 1788 | 99.709 | 15 | 1 | 7G/4F | 2 | STRUC 0 IS reachable and costs 0.73: the mr r30,r25 dest is the hoisted loop-invariant 0 of phaseCursor[PHASE]=0 (clause B), CSEing only if one function-scope int i is shared by all four switch arms — 98.982. Counter-evidence against that being retail: the four arms declare the same variable set in four DIFFERENT orders and all currently match |
 | Shield_update | dlls/objects/229/229 | 808 | 99.431 | 21 | 0 | 9G/1F | 2 | web-class: 226/229/engine-22 copy-class placement / copy-survival textures |
 | staff_setupSwipe | dlls/objects/226/226 | 1780 | 99.708 | 26 | 0 | 10G/7F | 2 | web-class: 226/229/engine-22 copy-class placement / copy-survival textures |
 | textRenderStr | main/textrender | 4104 | 99.693 | 50 | 1 | 12G/10F | 1 | textRenderStr walls (copy-survival cited; other-lane file) |
@@ -145,7 +145,7 @@ Retail materialises a constant zero at its store; we hoist it into a web (or vic
 
 | fn | unit | size | fuzzy | ndiff | struc | band | #nm | recorded mechanism |
 |---|---|---|---|---|---|---|---|---|
-| intersectModLineBuild | main/track_dolphin | 1352 | 99.822 | 1 | 1 | 8G/1F | 7 | track-objhits: textbook const-zero-remat (T mr vs C li) |
+| intersectModLineBuild | main/track_dolphin | 1352 | 99.822 | 1 | 1 | 8G/1F | 7 | STRUC 0 reachable (loop 1's inner endpoint loop reusing outputLineIndex, giving site 1 an earlier definition) but costs 0.014: residual is an exact r3<->r4 swap present under all 4 offset spellings, and fn_flag_probe finds NO profile — the per-TU flag-signature reading does not cover it. The four li;mr sites are a COUPLED CHAIN, each loop's counter needing the previous loop's definition |
 | wispBaddieProcessAnimEvent | dlls/objects/202/sharpclaw | 1000 | 99.156 | 3 | 2 | 5G/0F | 1 | dll202 doc: retail remats li r0,0 at store, we hoist |
 | playerDoHitDetection | dlls/objects/195_Player/player | 2244 | 99.617 | 6 | 2 | 3G/2F | 22 | const-zero-remat-residual / array-clear wall |
 | playerRender | dlls/objects/195_Player/player | 1904 | 99.506 | 7 | 2 | 7G/3F | 22 | same hoist-vs-remat shape verified this session (see LEAD 1) |
@@ -280,7 +280,7 @@ Width >=5 saved band, identical mnemonic stream: the rotation-offset model — e
 | ObjModel_BlendVertexStream | main/model | 628 | 99.013 | 28 | 0 | 14G/0F | 8 | independent-match-ceiling (permsweep walls) |
 | titleScreenDrawMenuFrame | dlls/objects/704/704 | 2772 | 99.488 | 29 | 2 | 10G/2F | 1 | near100-band-census-2026-08-01 (16 dead ends) |
 | ObjModel_BlendNormalStream | main/model | 880 | 99.182 | 29 | 0 | 16G/0F | 8 | signature: struc 0, band >=5, no recorded lever site |
-| trackIntersect | main/track_dolphin | 2280 | 99.553 | 32 | 1 | 16G/7F | 7 | near100-band-census-2026-08-01 (16 dead ends) |
+| trackIntersect | main/track_dolphin | 2280 | 99.553 | 32 | 1 | 16G/7F | 7 | STRUC 0 reachable (sort loop reusing the block loop's sourceIndex/sourceOffset, carried on into the segment-type loop which otherwise loses ITS earlier definition) but costs 0.097 — residual is a uniform scratch rotation across all three sites, band 16G/7F. Pure derived-IV form worse (99.146) |
 | trickyUpdateMovementState | dlls/objects/196_Tricky/tricky | 8764 | 99.922 | 34 | 0 | 11G/2F | 6 | transposition pass 08-03: pure r28<->r29 swap, didMove K-init vs objectWalkGroup call-copy; probed decl swap, init-as-statement, embedded call assignment, s8/int retype (stream-rejected), init reposition (stream-rejected) — all inert; no source knob found |
 | tricky_SeqFn | dlls/objects/196_Tricky/tricky | 1168 | 99.384 | 35 | 0 | 8G/0F | 6 | surplus-queue tricky walls (5 exhaustive sweeps flat) |
 | addShaderLayerStages | main/objprint_dolphin | 1128 | 99.184 | 38 | 0 | 13G/0F | 6 | signature: struc 0, band >=5, no recorded lever site |
@@ -395,7 +395,7 @@ member). No row is misfiled — every row has a live ledger/memory anchor.
 | pauseMenuDrawStatus | dlls/engine/0/0 | 2064 | 99.641 | 34 | 0 | 6G/2F | 14 | engine0-hud-walls cluster (store-forward rule + copy-survival + recolour) |
 | unloadMap | main/shader | 616 | 97.922 | 43 | 1 | 10G/0F | 8 | priced 23b li/mr remat family (named member) + width-10 recolour mass; verified |
 | mapScreenDrawHud | dlls/engine/0/0 | 3456 | 99.647 | 47 | 1 | 12G/5F | 14 | engine0-hud-walls cluster + priced 23b li/mr member; verified |
-| headDisplayDraw | dlls/engine/0/0 | 1920 | 98.802 | 47 | 4 | 12G/5F | 14 | engine0-hud-walls cluster + priced 23b li/mr member; verified |
+| headDisplayDraw | dlls/engine/0/0 | 1920 | 98.802 | 47 | 4 | 12G/5F | 14 | MISLABELED as reused int locals: wavePhaseA/B are STRENGTH-REDUCED DERIVED IVs (retail's +0x3520/+0x1f40 = 4x lineOffset*3400 / *2000); spelling them so mints both and the second CSEs. STRUC 4->2 but 98.542 — merging viewportY to make lineOffset=0 a redefinition removes a value and rotates the width-12 band. Shape now known exactly; priced by rotation, not spelling |
 | playerStateMoving | dlls/objects/195_Player/player | 4880 | 99.746 | 51 | 0 | 4G/3F | 22 | player-cluster coloring walls (named member: all f3/f4, f29/f30, scratch perm); verified |
 | cMenuSetItems | dlls/engine/0/0 | 1208 | 98.758 | 60 | 0 | 10G/0F | 14 | engine0-hud-walls cluster; priced 27's slot_oracle caveat names it (one swap rotates a full 6-cycle — band-membership rotation, not a decl key); verified |
 | expgfxGetSlot | dlls/engine/10_expgfx/expgfx | 792 | 95.899 | 63 | 4 | 4G/0F | 4 | expgfx-addregroup + unroll wall; priced 15 names it (the `li 1`/mask-load slide at both unrolled sites, PRICED pending owner); verified — r11/r28/r29 temp-routing perm across the unrolled block |
