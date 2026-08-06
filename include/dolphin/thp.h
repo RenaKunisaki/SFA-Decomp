@@ -48,28 +48,8 @@ typedef struct _THPFileInfo {
   u8* dLC[3];
 } THPFileInfo;
 
-s32 __THPAudioGetNewSample(THPAudioDecodeInfo*);
-void __THPAudioInitialize(THPAudioDecodeInfo*, u8*);
-
-static void __THPSetupBuffers(void);
-static u8 __THPReadFrameHeader(void);
-static u8 __THPReadScaneHeader(void);
-static u8 __THPReadQuantizationTable(void);
-static u8 __THPReadHuffmanTableSpecification(void);
-static void __THPHuffGenerateSizeTable(void);
-static void __THPHuffGenerateCodeTable(void);
-static void __THPHuffGenerateDecoderTables(u8 tabIndex);
-static void __THPRestartDefinition(void);
-static void __THPPrepBitStream(void);
-static void __THPDecompressYUV(void*, void*, void*);
-static void __THPGQRRestore(void);
-static void __THPDecompressiMCURow512x448(void);
 void __THPDecompressiMCURow640x480(void);
 void __THPDecompressiMCURowNxN(void);
-static void __THPInverseDCTNoYPos(THPCoeff*, u32);
-static void __THPHuffDecodeDCTCompY(THPFileInfo*, THPCoeff*);
-static void __THPHuffDecodeDCTCompU(THPFileInfo*, THPCoeff*);
-static void __THPHuffDecodeDCTCompV(THPFileInfo*, THPCoeff*);
 
 
 #ifdef __cplusplus

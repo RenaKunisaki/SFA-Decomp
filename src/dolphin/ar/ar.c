@@ -16,7 +16,7 @@ static u32 *__AR_BlockLength;
 static volatile BOOL __AR_init_flag = FALSE;
 
 static void __ARHandler(__OSInterrupt interrupt, OSContext *context);
-static void __ARChecksize(void);
+void __ARChecksize(void);
 static void __ARClearArea(u32 start_addr, u32 length);
 
 // TODO import defines for magic numbers from other repos

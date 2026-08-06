@@ -5,10 +5,6 @@
 #include "dolphin/thp/THPAudio.h"
 #include "dolphin/thp/THPRead.h"
 
-static void* AudioDecoderForOnMemory(void* bufPtr);
-static void* AudioDecoder(void* _);
-static void AudioDecode(THPReadBuffer* readBuffer);
-
 #ifdef __cplusplus
 extern "C" {
 #endif

@@ -4,10 +4,6 @@
 #include "dolphin/thp/THPRead.h"
 #include "dolphin/thp/THPDecode.h"
 
-static void* VideoDecoder(void*);
-static void* VideoDecoderForOnMemory(void*);
-static void VideoDecode(THPReadBuffer*);
-
 #ifdef __cplusplus
 extern "C" {
 #endif // ifdef __cplusplus
