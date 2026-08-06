@@ -6130,7 +6130,7 @@ int playerState1B(GameObject* obj, int state, f32 fv)
     }
     {
         PlayerState* in2 = obj->extra;
-        in2->flags360 &= -3;
+        in2->flags360 = (s32)in2->flags360 & ~2LL;
         in2->flags360 |= 0x2000LL;
     }
     ((PlayerState*)state)->baddie.flags4 |= 0x100000;
@@ -6478,7 +6478,7 @@ int playerState19(GameObject* obj, int state)
     }
     {
         PlayerState* inner2 = obj->extra;
-        inner2->flags360 &= -3;
+        inner2->flags360 = (s32)inner2->flags360 & ~2LL;
         *(int*)&inner2->flags360 |= 0x2000;
     }
     ((PlayerState*)state)->baddie.flags4 |= 0x100000;
@@ -6730,7 +6730,7 @@ int playerStateMountBike(GameObject* obj, int state, f32 fv)
     f32 j1[3];
     f32 wpos[3];
 
-    inner->flags360 &= -3;
+    inner->flags360 = (s32)inner->flags360 & ~2LL;
     inner->flags360 |= 0x2000;
     ((PlayerState*)state)->baddie.flags4 |= 0x100000;
     {
@@ -7066,7 +7066,7 @@ int playerStateClimbWall(GameObject* obj, int stateArg)
     }
     {
         PlayerState* player = obj->extra;
-        player->flags360 &= -3;
+        player->flags360 = (s32)player->flags360 & ~2LL;
         player->flags360 |= 0x2000;
     }
     state->baddie.flags4 |= 0x100000;
@@ -17649,7 +17649,7 @@ void playerRender(int obj, int a, int b, int c, int d, int flag)
         }
         else if ((void*)gPlayerHeldObject != NULL)
         {
-            *(u32*)((char*)gPlayerHeldObject + 0x3c) &= ~0x100000LL;
+            *(u32*)((char*)gPlayerHeldObject + 0x3c) = (s32)*(u32*)((char*)gPlayerHeldObject + 0x3c) & ~0x100000LL;
             {
                 int zero = 0;
                 gPlayerHeldObject = zero;
@@ -17772,7 +17772,7 @@ void playerDoHitDetection(int obj)
     f32 y;
     f32 z;
 
-    ((PlayerState*)inner)->flags360 &= ~PLAYER_FLAG_WORLDPOS_OVERRIDE;
+    ((PlayerState*)inner)->flags360 = (s32)((PlayerState*)inner)->flags360 & ~PLAYER_FLAG_WORLDPOS_OVERRIDE;
     if (((PlayerState*)inner)->flags3F2.b20 != 0 &&
         (((GameObject*)obj)->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0)
     {
