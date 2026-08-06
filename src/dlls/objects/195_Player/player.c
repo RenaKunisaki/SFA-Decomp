@@ -10859,7 +10859,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
     sc0p[0] = 50.0f * vec[0];
     sc0p[1] = 50.0f * vec[1];
     sc0p[2] = 50.0f * vec[2];
-    ((PlayerState*)state)->flags360 &= ~PLAYER_FLAG_LEDGE_DETECTED;
+    ((PlayerState*)state)->flags360 = (s32)((PlayerState*)state)->flags360 & ~PLAYER_FLAG_LEDGE_DETECTED;
     for (i = 0; i < 13; i++) {
         if ((probeMask & dirMasks[i]) == 0)
         {
