@@ -27,7 +27,6 @@ static u32 lbl_803D3CA0[8][INP_MIDI_SLOT_COUNT];
 static u8 gInpChannelDefaultsByKey[8][INP_MIDI_SLOT_COUNT];
 static u8 gInpChannelDefaults[64];
 
-u8 inpTranslateExCtrl(u8 ctrl);
 
 static inline void inpSetRPNHi(u8 set, u8 channel, u8 value)
 {

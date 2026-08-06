@@ -54,6 +54,8 @@ def strip_comments(text: str) -> str:
 
 def norm_type(t: str) -> str:
     t = re.sub(r"\s+", " ", t.strip())
+    # storage class is not part of the type
+    t = re.sub(r"\bextern\s+", "", t)
     # `struct Foo*` and `Foo*` name the same type when Foo is a typedef'd struct
     t = re.sub(r"\b(struct|union|enum)\s+", "", t)
     t = re.sub(r"\s*\*\s*", "*", t)
@@ -108,6 +110,10 @@ def find_protos(text: str) -> list[tuple[int, str, str, str]]:
             continue
         ret, name, params = m.group(1), m.group(2), m.group(3)
         if ret.strip() in ("return", "else", "case"):
+            continue
+        # `Type var AT_ADDRESS(addr);` is a VARIABLE declaration whose macro
+        # call the PROTO regex reads as a function named AT_ADDRESS.
+        if name == "AT_ADDRESS":
             continue
         out.append((i, name, signature(ret, params), line.strip()))
     return out
@@ -172,16 +178,27 @@ def main() -> int:
             if not protos:
                 continue
             decls = header_decls(included_headers(f))
-            dup, mism = [], []
+            dup, mism, benign = [], [], []
             for ln, name, sig, raw in protos:
                 if name not in decls:
                     continue
-                (dup if sig in decls[name] else mism).append((ln, name, sig, raw))
+                if sig in decls[name]:
+                    dup.append((ln, name, sig, raw))
+                elif sig.replace("(void)", "(<unspecified>)") in decls[name]:
+                    # C89: a zero-arg `f(void)` prototype and an unspecified
+                    # `f()` declaration are compatible -- no codegen difference,
+                    # but NOT prunable (deleting the local copy would weaken the
+                    # visible declaration), so it is neither a dup nor a bug.
+                    benign.append((ln, name, sig, raw))
+                else:
+                    mism.append((ln, name, sig, raw))
             n_dup += len(dup)
             n_mismatch += len(mism)
             if args.discrepancies:
                 for ln, name, sig, raw in mism:
                     print(f"{rel}:{ln}  {name}\n    local  {sig}\n    header {sorted(decls[name])}")
+                for ln, name, sig, raw in benign:
+                    print(f"{rel}:{ln}  {name}  [benign: (void) vs () only]")
                 continue
             if dup:
                 print(f"{rel}: {len(dup)} duplicate"
