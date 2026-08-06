@@ -591,7 +591,7 @@ int playerStopRidingObject(GameObject* obj)
         (*(void (**)(int, int))((char*)*sub->anim.dll + 0x3c))((int)sub, VEHICLE_NoRider);
         (*gCameraInterface)->setFocus((void*)obj, 0);
         obj->anim.flags &= ~8;
-        obj->anim.modelState->flags = (s32)obj->anim.modelState->flags & 0xFFFFFEFFFLL;
+        obj->anim.modelState->flags = obj->anim.modelState->flags & 0xFFFFFEFFFLL;
         inner->focusObject = NULL;
         obj->anim.activeMove = -1;
         (*gPlayerInterface)->setState(obj, inner, 1);
@@ -6134,7 +6134,7 @@ int playerState1B(GameObject* obj, int state, f32 fv)
     }
     {
         PlayerState* in2 = obj->extra;
-        in2->flags360 = (s32)in2->flags360 & ~2LL;
+        in2->flags360 = in2->flags360 & ~2LL;
         in2->flags360 |= 0x2000LL;
     }
     ((PlayerState*)state)->baddie.flags4 |= 0x100000;
@@ -6482,7 +6482,7 @@ int playerState19(GameObject* obj, int state)
     }
     {
         PlayerState* inner2 = obj->extra;
-        inner2->flags360 = (s32)inner2->flags360 & ~2LL;
+        inner2->flags360 = inner2->flags360 & ~2LL;
         *(int*)&inner2->flags360 |= 0x2000;
     }
     ((PlayerState*)state)->baddie.flags4 |= 0x100000;
@@ -6734,7 +6734,7 @@ int playerStateMountBike(GameObject* obj, int state, f32 fv)
     f32 j1[3];
     f32 wpos[3];
 
-    inner->flags360 = (s32)inner->flags360 & ~2LL;
+    inner->flags360 = inner->flags360 & ~2LL;
     inner->flags360 |= 0x2000;
     ((PlayerState*)state)->baddie.flags4 |= 0x100000;
     {
@@ -7070,7 +7070,7 @@ int playerStateClimbWall(GameObject* obj, int stateArg)
     }
     {
         PlayerState* player = obj->extra;
-        player->flags360 = (s32)player->flags360 & ~2LL;
+        player->flags360 = player->flags360 & ~2LL;
         player->flags360 |= 0x2000;
     }
     state->baddie.flags4 |= 0x100000;
@@ -10863,7 +10863,7 @@ int playerCheckIfClimbingOntoWall(int obj, int state, int state2, void* out, f32
     sc0p[0] = 50.0f * vec[0];
     sc0p[1] = 50.0f * vec[1];
     sc0p[2] = 50.0f * vec[2];
-    ((PlayerState*)state)->flags360 = (s32)((PlayerState*)state)->flags360 & ~PLAYER_FLAG_LEDGE_DETECTED;
+    ((PlayerState*)state)->flags360 = ((PlayerState*)state)->flags360 & ~PLAYER_FLAG_LEDGE_DETECTED;
     for (i = 0; i < 13; i++) {
         if ((probeMask & dirMasks[i]) == 0)
         {
@@ -16484,7 +16484,7 @@ int player_SeqFn(int obj, int obj2, ObjSeqState* seq, int endFlag)
         ((PlayerState*)inner)->animState = -1;
     }
     ObjHits_DisableObject((GameObject*)obj);
-    ((PlayerState*)inner)->flags360 &= -3;
+    ((PlayerState*)inner)->flags360 &= ~2LL;
     if ((s8)seq->movementState != 0)
     {
         s8 c;
@@ -17653,7 +17653,7 @@ void playerRender(int obj, int a, int b, int c, int d, int flag)
         }
         else if ((void*)gPlayerHeldObject != NULL)
         {
-            *(u32*)((char*)gPlayerHeldObject + 0x3c) = (s32)*(u32*)((char*)gPlayerHeldObject + 0x3c) & ~0x100000LL;
+            *(u32*)((char*)gPlayerHeldObject + 0x3c) = *(u32*)((char*)gPlayerHeldObject + 0x3c) & ~0x100000LL;
             {
                 int zero = 0;
                 gPlayerHeldObject = zero;
