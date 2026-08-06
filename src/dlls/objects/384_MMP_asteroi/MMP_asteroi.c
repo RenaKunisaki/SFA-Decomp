@@ -152,9 +152,9 @@ void mmpAsteroidRe_update(GameObject* obj) {
             } else {
                 obj->anim.velocityY = -(0.051f * timeDelta - speed);
             }
-            *(s16*)&state->bobPhase = 1024.0f * timeDelta + state->bobPhase;
+            state->bobPhase = 1024.0f * timeDelta + state->bobPhase;
             state->rollPhase = 875.0f * timeDelta + state->rollPhase;
-            *(s16*)&state->pitchPhase = 512.0f * timeDelta + state->pitchPhase;
+            state->pitchPhase = 512.0f * timeDelta + state->pitchPhase;
             objMove(obj, 0.0f, obj->anim.velocityY * timeDelta, 0.0f);
             obj->anim.localPosY = obj->anim.localPosY + mathSinf((MMP_ASTEROID_RE_PI * state->bobPhase) / 32768.0f);
             if (obj->anim.localPosY < state->baseY) {

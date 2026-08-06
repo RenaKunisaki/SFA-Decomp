@@ -1143,7 +1143,7 @@ void DR_CloudRunner_updateFlightControl(GameObject* obj, f32 f, int triggerFrame
 {
     CloudRunnerState* inner;
     int flag;
-    int slot;
+    Camera* slot;
     if (triggerFrame != -1)
     {
         flag = (((framesThisStep - 1) - triggerFrame) == 0);
@@ -1152,7 +1152,7 @@ void DR_CloudRunner_updateFlightControl(GameObject* obj, f32 f, int triggerFrame
     {
         flag = 1;
     }
-    slot = (int)Camera_GetCurrent();
+    slot = Camera_GetCurrent();
     inner = (obj)->extra;
     inner->baddie.hitPoints = 0;
     inner->baddie.flags0 &= ~0x8000;
@@ -1163,7 +1163,7 @@ void DR_CloudRunner_updateFlightControl(GameObject* obj, f32 f, int triggerFrame
         inner->baddie.moveInputZ = (f32)padGetStickY(0);
         inner->baddie.pressedButtons = getButtonsJustPressed(0);
         inner->baddie.heldButtons = getButtonsHeld(0);
-        inner->baddie.cameraYaw = *(s16*)slot;
+        inner->baddie.cameraYaw = slot->yaw;
         if (inner->flagsBC0.b01 != 0)
         {
             Obj_UpdateRomCurveFollowVelocity(obj, &inner->curveWalker, inner->pathFollowSpeed,

@@ -12285,7 +12285,7 @@ void playerSyncTransformToFocusObject(int p1, int p2, int p3, int p4, int p5, in
 void playerFireCloudRunnerProjectile(GameObject* obj, int state, f32 aimInputZ, f32 zero)
 {
     GameObject* o;
-    GameObject* slot;
+    Camera* slot;
     ObjPlacement* setup;
     f32 v[3];
     f32 fov, xcomp, cot, aspect, ycomp, len;
@@ -12296,7 +12296,7 @@ void playerFireCloudRunnerProjectile(GameObject* obj, int state, f32 aimInputZ, 
     PlayerState* inner;
 
     inner = obj->extra;
-    slot = (GameObject*)Camera_GetCurrent();
+    slot = Camera_GetCurrent();
     if (Obj_IsLoadingLocked())
     {
         setup = Obj_AllocObjectSetup(0x24, 0x14b);
@@ -12304,9 +12304,9 @@ void playerFireCloudRunnerProjectile(GameObject* obj, int state, f32 aimInputZ, 
         setup->color[1] = 1;
         setup->color[2] = 0xff;
         setup->color[3] = 0xff;
-        setup->posX = slot->anim.localPosX;
-        setup->posY = slot->anim.localPosY;
-        setup->posZ = slot->anim.localPosZ;
+        setup->posX = slot->x;
+        setup->posY = slot->y;
+        setup->posZ = slot->z;
         Sfx_PlayFromObject(obj, SFXTRIG_staff_rocket_hitdirt);
         o = objSetupObject(setup, 5, -1, -1, NULL);
         if (o != NULL)
@@ -12314,7 +12314,7 @@ void playerFireCloudRunnerProjectile(GameObject* obj, int state, f32 aimInputZ, 
             o->anim.flags |= 0x2000;
             res = getScreenResolution();
             halfH = res >> 17;
-            o->anim.rotX = slot->anim.rotX;
+            o->anim.rotX = slot->yaw;
             t = Camera_GetFovY();
             t *= 91.022f;
             fov = (3.1415927f * t) / 32768.0f;
@@ -12336,13 +12336,13 @@ void playerFireCloudRunnerProjectile(GameObject* obj, int state, f32 aimInputZ, 
             o->anim.velocityZ = v[2] * scale;
             mix = 2.0f;
             o->anim.localPosX = o->anim.worldPosX =
-                mix * o->anim.velocityX + slot->anim.localPosX;
+                mix * o->anim.velocityX + slot->x;
             o->anim.localPosY = o->anim.worldPosY =
-                mix * o->anim.velocityY + slot->anim.localPosY;
+                mix * o->anim.velocityY + slot->y;
             o->anim.localPosZ = o->anim.worldPosZ =
-                mix * o->anim.velocityZ + slot->anim.localPosZ;
-            o->anim.rotY = slot->anim.rotY / 2;
-            o->anim.rotX = -slot->anim.rotX;
+                mix * o->anim.velocityZ + slot->z;
+            o->anim.rotY = slot->pitch / 2;
+            o->anim.rotX = -slot->yaw;
             o->userData1 = 0x64;
         }
     }
@@ -12398,13 +12398,13 @@ void staffShootFireball(GameObject* obj, int state, f32 unused)
     int spawned = 0;
     PlayerState* inner = obj->extra;
     GameObject* fb;
-    int slot;
+    Camera* slot;
     ObjPlacement* setup;
     f32 vec[3];
     MatrixTransform v;
     f32 mtx[16];
 
-    slot = (int)Camera_GetCurrent();
+    slot = Camera_GetCurrent();
     if (Obj_IsLoadingLocked())
     {
         Sfx_PlayFromObject(obj, SFXTRIG_wp_hitpos_6_20a);
@@ -12420,9 +12420,9 @@ void staffShootFireball(GameObject* obj, int state, f32 unused)
         }
         else
         {
-            setup->posX = *(f32*)((char*)slot + 0xc);
-            setup->posY = *(f32*)((char*)slot + 0x10);
-            setup->posZ = *(f32*)((char*)slot + 0x14);
+            setup->posX = slot->x;
+            setup->posY = slot->y;
+            setup->posZ = slot->z;
         }
         *(s8*)((char*)setup + 0x19) =
             (s8)STAFF_INTERFACE(gPlayerPathObject)->getHitReactValue((GameObject*)gPlayerPathObject);
@@ -12468,7 +12468,7 @@ void staffShootFireball(GameObject* obj, int state, f32 unused)
             fb->anim.worldPosY = fb->anim.localPosY;
             fb->anim.worldPosZ = fb->anim.localPosZ;
             fb->anim.rotX = inner->targetYaw;
-            fb->anim.rotY = *(s16*)((char*)slot + 0x2) / 2;
+            fb->anim.rotY = slot->pitch / 2;
         }
         else
         {
@@ -12478,7 +12478,7 @@ void staffShootFireball(GameObject* obj, int state, f32 unused)
             f32 cot;
             f32 fx;
             f32 mag;
-            fb->anim.rotX = *(s16*)((char*)slot + 0x0);
+            fb->anim.rotX = slot->yaw;
             fov = Camera_GetFovY();
             fov *= 91.022f;
             fov = 3.1415927f * fov / 32768.0f;
@@ -12497,11 +12497,11 @@ void staffShootFireball(GameObject* obj, int state, f32 unused)
             fb->anim.velocityX = -10.0f * vec[0];
             fb->anim.velocityY = -10.0f * vec[1];
             fb->anim.velocityZ = -10.0f * vec[2];
-            fb->anim.localPosX = fb->anim.worldPosX = 2.0f * fb->anim.velocityX + *(f32*)((char*)slot + 0xc);
-            fb->anim.localPosY = fb->anim.worldPosY = 2.0f * fb->anim.velocityY + *(f32*)((char*)slot + 0x10);
-            fb->anim.localPosZ = fb->anim.worldPosZ = 2.0f * fb->anim.velocityZ + *(f32*)((char*)slot + 0x14);
-            fb->anim.rotY = *(s16*)((char*)slot + 0x2) / 2;
-            fb->anim.rotX = -*(s16*)((char*)slot + 0x0);
+            fb->anim.localPosX = fb->anim.worldPosX = 2.0f * fb->anim.velocityX + slot->x;
+            fb->anim.localPosY = fb->anim.worldPosY = 2.0f * fb->anim.velocityY + slot->y;
+            fb->anim.localPosZ = fb->anim.worldPosZ = 2.0f * fb->anim.velocityZ + slot->z;
+            fb->anim.rotY = slot->pitch / 2;
+            fb->anim.rotX = -slot->yaw;
         }
         fb->userData1 = 0x5f;
         fb->userData2 = spawned;
@@ -18031,7 +18031,7 @@ void playerUpdateWhileTimeStopped(int obj)
 void playerUpdate(GameObject* obj)
 {
     int inner = (int)obj->extra;
-    int cam = (int)Camera_GetCurrent();
+    Camera* cam = Camera_GetCurrent();
     f32 zero;
     f32 six;
     f32 t = ((PlayerState*)inner)->cutsceneTimer;
@@ -18133,7 +18133,7 @@ void playerUpdate(GameObject* obj)
             }
             if ((s16*)obj->anim.parent != NULL)
             {
-                v = (*(s16*)obj->anim.parent & 0xffffU) - ((0x8000U - *(s16*)cam) & 0xffff);
+                v = (*(s16*)obj->anim.parent & 0xffffU) - ((0x8000U - cam->yaw) & 0xffff);
                 if (v > 0x8000)
                 {
                     v -= 0xffff;
@@ -18146,7 +18146,7 @@ void playerUpdate(GameObject* obj)
             }
             else
             {
-                ((PlayerState*)inner)->baddie.cameraYaw = *(s16*)cam;
+                ((PlayerState*)inner)->baddie.cameraYaw = cam->yaw;
             }
             ((PlayerState*)inner)->probeHitDist = 100000.0f;
             ((PlayerState*)inner)->cameraFlags = 0;
