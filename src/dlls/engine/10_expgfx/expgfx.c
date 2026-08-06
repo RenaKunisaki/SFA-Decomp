@@ -2448,15 +2448,16 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
     ambientScaled[0] = (f32)ambB8 * ambientScale;
 
     activeCountScan = runtime->poolActiveCounts;
-    for (scanIdx = 0; scanIdx < EXPGFX_POOL_COUNT || (nextActivePool = -1, 0); scanIdx++)
+    for (scanIdx = 0; scanIdx < EXPGFX_POOL_COUNT || (scanIdx = -1, 0); scanIdx++)
     {
-        if (activeCountScan[scanIdx] != 0)
+        switch (activeCountScan[scanIdx])
         {
-            nextActivePool = scanIdx;
-            break;
+        case 0:
+            continue;
         }
+        break;
     }
-    poolOrResource = nextActivePool;
+    poolOrResource = scanIdx;
     if ((s32)poolOrResource != -1)
     {
         u8 cacheParity;
@@ -2499,15 +2500,17 @@ void expgfx_updateActivePools(u8 sourceMode, int sourceId, int resetSourceFrameS
             curPoolBuf = (u8*)runtime + scanIdx;
             activeCountScan = (s8*)curPoolBuf;
             activeCountScan += EXPGFX_POOL_ACTIVE_COUNTS_OFFSET;
-            for (; scanIdx < EXPGFX_POOL_COUNT || (nextActivePool = -1, 0); scanIdx++)
+            for (; scanIdx < EXPGFX_POOL_COUNT || (scanIdx = -1, 0); scanIdx++)
             {
-                if (*activeCountScan != 0)
+                switch (*activeCountScan)
                 {
-                    nextActivePool = scanIdx;
-                    break;
+                case 0:
+                    activeCountScan++;
+                    continue;
                 }
-                activeCountScan++;
+                break;
             }
+            nextActivePool = scanIdx;
             slot = curCacheBuf;
             if (nextActivePool > -1)
             {
