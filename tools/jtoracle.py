@@ -43,6 +43,16 @@ Usage:
     jtoracle.py --text [substr]     # generalised .text relocation staircase
     jtoracle.py --json out.json     # machine-readable dump
     jtoracle.py --quiet             # only units that produced a hit
+
+CAVEAT (measured 2026-08-05): a UNIFORM hit means the ANCHOR OFFSETS moved, which
+is usually a surplus/missing instruction but is NOT always.  Constant-materialisation
+placement produces the same signature at an IDENTICAL instruction count: MWCC can
+hoist an `li rX,0` from its use up to an earlier point, and if one to three
+relocations sit inside that hoist window their offsets shift while the streams
+realign a few instructions later.  Measured on player.c, where retail and ours are
+349/349, 409/409 and 677/677 instructions yet four functions report UNIFORM.  So
+confirm the count directly (objdump both sides) before concluding "surplus
+instruction" -- the oracle localizes divergence, it does not classify it.
 """
 import json
 import os
