@@ -3321,3 +3321,151 @@ saved FPR. (The brief carried "11 rows / 13 952 B"; the measured figure is 15 / 
   auto units while 910 already has the 5 removed; the consistent pair is **910 of 1000**.
   Raw 915 of 1043 is correct.
 * The FPR-only population above.
+
+## 32. The frontier partition was float-blind, and what that voids (measured 2026-08-05, A101, at `1e25ffc15b`)
+
+`perm_class_scan.py` abstracts `\br\d{1,2}\b` and nothing else. Float register
+names are therefore literal text in its operand comparison, so every row whose
+residual is a float register operand fails `REG.sub("r#", ...)` equality and is
+filed under OPERAND — the bucket §29 read as frame size and displacement (#67).
+`tools/fp_perm_class_scan.py` abstracts `r` AND `f` names, derives the two maps
+separately (the namespaces are disjoint), and reports the old bucket beside the
+new one so the re-partition reads as a cross-tab. 20 controls, including a
+direct reproduction of the save-block trap below.
+
+### 32a. The re-partition, all 205 sub-100 rows
+
+| bucket | GPR-only classifier | float-aware |
+|---|---|---|
+| LENDIFF | 49 rows / 79 852 B | 49 / 79 852 |
+| OPERAND | 48 / 72 616 | **30 / 48 580** |
+| NONFUNC | 27 / 56 660 | **35 / 67 448** |
+| NOTPERM | 37 / 53 128 | **42 / 58 820** |
+| MNEMONIC | 22 / 43 988 | **23 / 46 584** |
+| NONINJ | 3 / 2 152 | 3 / 2 152 |
+| PERM (PARAM-HOME + LOCALS-ONLY + SCRATCH) | 19 / 34 392 | **23 / 39 352** |
+
+**18 rows / 24 036 B were in the wrong bucket**, all of them out of OPERAND:
+8 → NONFUNC, 7 → NOTPERM, 2 → PERM, 1 → MNEMONIC. The pure-permutation class
+grows 19 → 23 rows / 34 392 → 39 352 B. (The same partition at the previous
+tip `8e52163a24` read 206 rows with identical reclassification structure; one
+MNEMONIC/OPERAND row left the population under the naming lane between the two.)
+
+### 32b. What the OPERAND bucket actually holds, now that floats are visible
+
+Of the 30 rows left: 16 GPR-only / 27 796 B, 5 GPR+FPR / 17 376 B, 1 FPR-only /
+800 B, and **8 rows / 2 608 B with no differing register operand at all** —
+those 8 are the genuine frame/displacement rows, and they reproduce §28c's
+independently-derived `frame 8 / 2 608 B` exclusive class **to the byte**. So
+#67's price was right; what was wrong was the rows sitting on top of it.
+
+### 32c. The save-block trap is REAL, GENERALISES TO GPRs, and is far narrower than claimed
+
+MWCC saves callee-saved registers one instruction per register. When both sides
+save the same SET the block is byte-identical, but a whole-stream permutation
+check still applies sigma to those lines and finds `stfd sigma(f31),…` ≠
+`stfd f31,…`. The block declares the SET; it is not a use of the value, so
+sigma need not explain it.
+
+Measured on the real tree, the exemption moves **2 rows of 205**, and **both are
+GPR rows, not float ones**: `main/texture.c textureInitGXTexObj` (356 B, sigma
+= the transposition 29↔31 over an identical `stw r29/r31,…(r1)` block, 4
+exempted lines, hand-verified) and `597.c SnowBike_UpdateEngineFx` (1 080 B, 8
+exempted lines).
+
+**This voids the extrapolation, not the trap.** The "30/30 NOTPERM → 30/30 PERM"
+figure was measured entirely inside `fpr_reuse_control.py`, which is a pure
+synthetic; it never had a real-code arm, and on real code the rate is 2/205.
+"Every float colouring row in the tree sits in its OPERAND bucket" is true —
+but they do not become permutations when you look at them: only 2 of the 18
+float-only rows do.
+
+### 32d. The exemption must be BANDED, or it hides real residual
+
+The loose form — exempt any `stfd|lfd|psq_st|psq_l fN,imm(r1)` regardless of
+register band or whether the line even differs — silently swallows a genuine
+volatile-FPR spill displacement difference (`stfd f0,8(r1)` vs `stfd f0,12(r1)`
+reads as a clean PERM). Requiring the register to be callee-saved AND the line
+to be identical keeps those. Measured tree-wide the loose rule yields **21**
+PERM rows against the banded rule's **23** — it is both less safe and less
+sensitive.
+
+### 32e. Verdicts this re-partition voids
+
+* §29's reading of OPERAND as a frame/displacement bucket — right for 8 rows
+  / 2 608 B, wrong for the rest of the bucket.
+* Any NOTPERM/NONFUNC population count taken from the GPR-only scanner: the
+  totals move 37 → 42 and 27 → 35 at this tip.
+* The brief's "NONINJ 4" and "204 sub-100 rows": measured **NONINJ 3 / 2 152 B**
+  and **205 rows / 342 788 B** here (206 at the previous tip).
+
+## 33. The volatile float half: the SET is already right, only the tie-break differs (2026-08-05, A101)
+
+### 33a. The census, defined precisely
+
+30 sub-100 rows have a differing float operand (54 896 B); **18 are FLOAT-ONLY**
+with no differing GPR (21 008 B); of those, **15 are VOLATILE-ONLY** — every
+differing float operand a pair inside f0–f13 (17 564 B) — 2 saved-touching
+(2 664 B) and 1 mixed (780 B). 778 differing float operands tree-wide, 626 of
+them volatile-pair. (`tools/a101_fpr_census.py`.)
+
+### 33b. `sig` cannot fail, and that is the finding
+
+The obvious float analogue of the integer lane's callee-saved BAND SIGNATURE is
+the sequence of volatile FPRs in first-write order. It is **constant by
+construction**: MWCC fills the volatile half strictly top-down from the highest
+register a body needs, so the sequence is `[n−1 … 0]` for essentially every
+body and every axis measured with it reads INERT whether or not it moved
+anything. The signature that can fail is `vsig`, the map from the VALUE (a
+load's displacement and base) to the register it lands in.
+(`tools/a101_volatile_fpr_control.py`.)
+
+### 33c. What moves the volatile assignment — synthetic, with its vacuity flag
+
+25 variants over 6 axes, each reported with how many compile BYTE-IDENTICALLY:
+
+| axis | moves `vsig` | byte-identical (never presented a choice) |
+|---|---|---|
+| ORDER (statement order of independent loads) | 0 of 5 | **5 of 5** |
+| ASSOC (association / term order) | **2 of 4** | 2 of 4 |
+| TEMP (number of named temporaries) | 2 of 3 | 0 |
+| CSE (subexpression stated once vs twice) | 0 of 1 | 0 |
+| CALL (a call between the loads) | 2 of 2 | 0 |
+| COUNT (simultaneously live values) | 4 of 4 | 0 |
+
+### 33d. The real-code arm REFUTED the synthetic — record it
+
+The synthetic says commuting a float product is absorbed by the front end and
+compiles byte-identically, which would have made `expr_sweep`'s zero on float
+rows a vacuity result rather than a closure. **On real code it is false.**
+`tools/a101_expr_vacuity.py` replays `expr_sweep`'s own gated candidate set and
+compares object BYTES: on `mtxRotateByVec3s`, **41 of 41 cleared rewrites move
+the object, 0 are vacuous** (37 commute, 4 sign). The synthetic's loads were
+independent and the front end canonicalised them; real bodies do not offer that.
+**`expr_sweep`'s zero on the float rows is genuine.** A synthetic too uniform
+cannot fail — and this one did not, until it was paired.
+
+### 33e. The residual is a tie-break inside a CORRECT set
+
+Volatile signature, ours vs retail, over 13 workable volatile-only rows:
+**13 of 13 use the SAME volatile SET as retail**, and 6 of 13 have the same
+first-write ORDER as well yet still differ in operands. Since the set is right
+the pressure is right; since these are equal-length rows with no differing
+mnemonic the operation sequence is right. What is left is which value the
+allocator put in which register **within a set that is already correct** — the
+float-side analogue of #108, and it is reached by none of the source axes that
+have been measured (declaration — A100; statement order, association, operand
+order, CSE — here).
+
+### 33f. Yield
+
+0 bytes. `mtxRotateByVec3s` (800 B / 98.785, **not** in the previous sweep's
+set) worked to 13 hand-derived shapes plus 41 gated rewrites: its residual is
+2.43 objdiff units and decomposes as 48 float register operands × 0.05 + 3
+displacements × 0.01, i.e. **100 % volatile float colouring**. The natural
+`x,y,z` load order is the one retail's addresses ascend in and it scores
+*worse* (98.785 → 98.750), because objdiff charges 0.05 per register against
+0.01 per displacement — a reminder that the score ranks spellings by charge, not
+by correctness. `main/lightmap.c updateEnvironment` (also previously unswept):
+5 cleared rewrites, inert; it is a MNEMONIC row, so expression shape was never
+its key.
