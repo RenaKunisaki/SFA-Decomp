@@ -2506,7 +2506,7 @@ int trickyUpdateMovementState(GameObject* obj, f32 stoppingRadius, TrickyState* 
     {
         u8 movementState = state->movementState;
 
-        if (((((movementState == 0) || (movementState == 2)) || (movementState == 4)) || (movementState == 3)) &&
+        if (((((movementState == TRICKY_MOVE_WALK_WAIT) || (movementState == TRICKY_MOVE_WALK_START_PATCH)) || (movementState == TRICKY_MOVE_WALK_PATCH_EXIT)) || (movementState == TRICKY_MOVE_WALK_END_PATCH)) &&
             (0.0f == state->speed)) {
             return 2;
         }
@@ -4330,7 +4330,7 @@ void trickyFlame(GameObject* obj, TrickyState* trickyState) {
         trickyDebugPrint(strBase + 0x70c);
         trickyUpdateMovementState(obj, 5.0f, trickyState);
         if ((u8)trickyState->flameNode1->walkGroup == Objfsa_GetWalkGroupIndexAtPoint(&obj->anim.worldPosX, NULL)) {
-            trickyState->movementState = 1;
+            trickyState->movementState = TRICKY_MOVE_WALK_FREE;
             trickyState->substate = TRICKY_FLAME_GOING_TO_EDGE;
         }
         break;
@@ -4810,7 +4810,7 @@ void trickyDigTunnel(u8* obj, TrickyState* state) {
         trickyUpdateMovementState((GameObject*)obj, 5.0f, state);
         gidx = Objfsa_GetWalkGroupIndexAtPoint(&((GameObject*)obj)->anim.worldPosX, NULL);
         if (((RomCurveDef*)state->scratch708.ptr)->walkGroup == gidx) {
-            state->movementState = 1;
+            state->movementState = TRICKY_MOVE_WALK_FREE;
             state->substate = 2;
         }
         break;
@@ -5210,7 +5210,7 @@ void tricky_stateFollowPlayer(GameObject* obj, TrickyState* state) {
         obj->anim.worldPosZ = found->anim.worldPosZ;
         ObjHits_SyncObjectPosition(obj);
         obj->anim.rotX = found->anim.rotX;
-        state->movementState = 0;
+        state->movementState = TRICKY_MOVE_WALK_WAIT;
         z = 0.0f;
         state->prevSpeed = z;
         state->speed = z;

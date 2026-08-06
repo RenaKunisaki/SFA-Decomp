@@ -1188,7 +1188,7 @@ void modelLightStruct_selectBrightestAabbLights(f32 minX, f32 minY, f32 minZ, f3
     for (i = 0; i < gModelLightCount; i++)
     {
         light = gModelLightList[i];
-        if (light->enabled != 0 && light->lightKind == 2 && light->attenuationFar > 0.0f &&
+        if (light->enabled != 0 && light->lightKind == MODEL_LIGHT_KIND_POINT && light->attenuationFar > 0.0f &&
             light->affectsAabbLightSelection != 0)
         {
             PSVECSubtract((Vec*)center, &light->worldPos, (Vec*)delta);

@@ -154,11 +154,11 @@ void Sfx_SetObjectSoundsPaused(s32 paused)
         {
             if (paused != 0)
             {
-                sndFXCtrl(objectChannel->handle, 7, 0);
+                sndFXCtrl(objectChannel->handle, MCMD_CTRL_VOLUME, 0);
             }
             else if (objectChannel->paused != 0)
             {
-                sndFXCtrl(objectChannel->handle, 7, objectChannel->volume);
+                sndFXCtrl(objectChannel->handle, MCMD_CTRL_VOLUME, objectChannel->volume);
             }
             objectChannel->paused = pausedByte;
         }
@@ -247,7 +247,7 @@ void Sfx_SetObjectChannelVolume(GameObject* obj, u32 channel, u8 volume, f32 vol
                 {
                     ctrlVolume = volumeByte;
                 }
-                sndFXCtrl(objectChannel->handle, 7, (u8)ctrlVolume);
+                sndFXCtrl(objectChannel->handle, MCMD_CTRL_VOLUME, (u8)ctrlVolume);
             }
         }
 
@@ -298,7 +298,7 @@ void Sfx_SetObjectSfxVolume(GameObject* obj, u16 sfxId, u8 volume, f32 volumeSca
                 {
                     ctrlVolume = volumeByte;
                 }
-                sndFXCtrl(objectChannel->handle, 7, (u8)ctrlVolume);
+                sndFXCtrl(objectChannel->handle, MCMD_CTRL_VOLUME, (u8)ctrlVolume);
             }
         }
 
