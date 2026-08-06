@@ -3536,3 +3536,58 @@ Also refuted: non-static `inline` behaves exactly like `static inline` (mints no
 **Separate, and actionable independently of the pool:** `gObjHitsScalarZero`/`gObjHitsScalarOne` are
 declared `extern` in `include/main/objhits.h` and defined NOWHERE — `objhits.o` carries them as
 undefined externals (the carve-only-reference latent-LINKFAIL class).
+
+## 34. Structural respellings cannot reach the reuse-regime tie-break — NOTPERM/NONFUNC measured closed (2026-08-05, C113, at `529d615fce`)
+
+The one lever the exhausted order axes left standing — "a structural fix RESETS colouring" — was
+aimed at the NOTPERM (42 / 58 820 B) and NONFUNC (35 / 67 448 B) buckets. It resets the
+allocation; it does not reach retail's answer. A structural respelling of a reuse-regime row lands
+in exactly one of two states:
+
+1. **Web-multiset-preserving -> byte-identical.** The tie-break re-runs to the same answer.
+   Measured three ways on real rows: a block-scope shadow declaration of the mismatched local
+   (`pauseMenuDraw` alpha) changes nothing; merging two sequential single-assignment locals into
+   one reassigned variable (`pauseMenuDrawStatusPage` ty1->alpha) is **byte-identical** — MWCC
+   colouring is VARIABLE-IDENTITY-BLIND, a reassigned variable's second web does not inherit the
+   first web's register; a declaration-position move is inert (consistent with §31).
+2. **Web-multiset-changing -> the code moves and the score drops.** Reusing a dead parameter as
+   the scratch variable recolours the surrounding entry webs (-0.04); folding a single-use local
+   into its consumer moves the fctiwz placement (-1.2, and moves global reads across calls —
+   unsound); respelling `x += e` as an assignment breaks constant-fold chains (below).
+
+### 34a. expr_sweep zero on the GPR side (the integer analogue of §33's float zero)
+
+`expr_sweep --greedy` (semantic-equivalence-gated) over **41 unique rows** of the two buckets —
+every row not owner-hot and not A102's: 41 scanned / 0 unscanned, ~1 000 gated rewrites, 2 vacuous
+rows disclosed (`GameUI_release`, `mapBlockRender_setShader`: no parseable candidates),
+**0 improvements**. The float-side zero (§33c) now has a measured integer twin.
+
+### 34b. The `+=` / assignment fold law (probe-verified with the unit's own cmdline, `-opt nopeephole,noschedule`)
+
+- MWCC canonicalises `x = (a-b) + x` back to accumulator-first (`add rX,rX,r0`); a NAMED addend
+  (`x = w + x`) preserves source operand order (`add rX,r0,rX`) — but only while `x` is live-out.
+- At a dead-after site, ANY assignment-form update folds: the pending constant chain (`x += 10`
+  upstream) is substituted through and computed into a fresh scratch, deleting the in-place
+  `addi`. `x += e` is the only spelling that blocks the fold — and it pins accumulator-first
+  order. A retail row showing `add rX,r0,rX` with the chain intact at a dead-after site
+  (`pauseMenuDraw` x2) is unreachable by every expression spelling tried (6).
+- Comma-expression order inside a for-header is an ORDER key (slides insns, -0.1..-1.4 measured);
+  the tree is already at its optimum there.
+
+### 34c. Allocator facts with no source-side handle
+
+- Retail's consecutive same-register scratch reuse (`r28` then `r28`) versus ours' spread
+  (`r24` then `r30`) arises from the same web multiset and the same free pool; the pick survives
+  naming, merging and shadowing.
+- A parameter can lose `r31` to locals in retail (`SB_Galleon_updateFlight`: obj=r27, short
+  webs=r31). The MP4 corpus shows the identical shape (`SetEnvelopMain` param=r29 under two
+  locals; `HuPrcChildKill`) and its C shows NO declaration or order trick — the ranking input is
+  invisible in source.
+
+### 34d. What stays open
+
+`blendTextures` (main/newshadows.c, 924 B, 94.48) is the one bucket row whose divergence is
+mis-decomp-scale loop-nest structure, not a tie-break — a dedicated mis-decomp lane's row, not a
+respelling row. `mapLoadDataFile` (8 444 B) shows per-case slwi/add temp swaps behind the MLDF
+macro puns — same tie-break family as §34c. Everything else in NOTPERM/NONFUNC should be treated
+as priced alongside §30's PERM residue.
