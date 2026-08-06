@@ -1382,8 +1382,8 @@ void newShadowsInitProceduralTextures(void)
     int frame;
 
     savedHeap = testAndSet_onlyUseHeap3(1);
-    placementAttempts = 0;
     placedCount = 0;
+    placementAttempts = 0;
     placement = gNewShadowPlacements;
     while (placedCount < 0x32 && placementAttempts < 10000u)
     {
