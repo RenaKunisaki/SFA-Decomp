@@ -41,6 +41,9 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
+#include "main/game_timer_control_api.h"
+#include "main/mapEventTypes.h"
+#include "main/rcp_dolphin_api.h"
 
 #define SHOPKEEPER_GAMEBIT_HAS_MONEY        0x61D
 #define SHOPKEEPER_GAMEBIT_SCARAB_GAME_WON  0x624

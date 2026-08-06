@@ -8,6 +8,7 @@
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "main/mapEvent.h"
+#include "main/mapEventTypes.h"
 #include "main/objseq.h"
 #include "main/render_envfx_api.h"
 #include "main/sky_api.h"

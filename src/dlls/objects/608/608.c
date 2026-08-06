@@ -20,6 +20,7 @@
 #include "main/obj_path.h"
 #include "main/shader_api.h"
 #include "sys/objects/lifecycle.h"
+#include "main/model_light.h"
 
 s32 gProximityMineLifespanFrames = 40;
 f32 gProximityMineGlowScale = 50.0f;

@@ -36,6 +36,7 @@
 #include "dolphin/thp/THPPlayer.h"
 #include "main/dll/FRONT/picmenu.h"
 #include "dlls/object_descriptor.h"
+#include "main/camera_interface.h"
 
 u8 gTitleMenuPanelOpen;
 s8 gTitleMenuLoadDelay;

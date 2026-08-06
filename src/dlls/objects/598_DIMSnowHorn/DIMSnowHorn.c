@@ -40,6 +40,8 @@
 #include "main/pad.h"
 #include "main/objtype.h"
 #include "dolphin/pad.h"
+#include "main/camera.h"
+#include "main/objseq.h"
 
 f32 gDIMSnowHorn1ModelMtx[16];
 void* gDIMSnowHorn1StateHandlers[12];

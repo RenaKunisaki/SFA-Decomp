@@ -16,6 +16,7 @@
 #include "sys/objects/lifecycle.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/objhits.h"
+#include "main/vecmath.h"
 
 #define POLLEN_FRAGMENT_SETUP_SIZE          0x24
 #define POLLEN_FRAGMENT_SETUP_KIND          5

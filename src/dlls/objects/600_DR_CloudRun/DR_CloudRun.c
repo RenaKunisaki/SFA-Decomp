@@ -52,6 +52,7 @@
 #include "main/player_control_interface.h"
 #include "main/vecmath.h"
 #include "dolphin/pad.h"
+#include "main/voxmaps.h"
 
 void* gDRCloudRunnerStateHandlers[8];
 void* gDRCloudRunnerDefaultStateHandler;

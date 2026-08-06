@@ -25,6 +25,7 @@
 #include "main/camera.h"
 #include "main/resource.h"
 #include "dolphin/os/OSCache.h"
+#include "track/intersect_depth_state_api.h"
 
 u8* gWaterfxRippleVtx;
 u8* gWaterfxRippleVtxDesc;

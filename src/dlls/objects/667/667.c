@@ -36,6 +36,7 @@
 #include "main/objhits.h"
 #include "main/objtype.h"
 #include "sys/objects/lifecycle.h"
+#include "main/model_light.h"
 
 f32 gArwingAndrossRingScaleStep = 0.1f;
 f32 gArwingAndrossRingSpinStep = 500.0f;

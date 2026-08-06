@@ -39,6 +39,11 @@
 #include "dolphin/gx/GXTev.h"
 #include "dolphin/gx/GXTexture.h"
 #include "dolphin/gx/GXTransform.h"
+#include "main/hud_visibility_api.h"
+#include "main/pi_dolphin_api.h"
+#include "track/intersect_depth_state_api.h"
+#include "track/intersect_geom_api.h"
+#include "track/intersect_hud_api.h"
 
 typedef void (*GXSetAlphaCompareIntFn)(int comp0, int ref0, int op, int comp1, int ref1);
 

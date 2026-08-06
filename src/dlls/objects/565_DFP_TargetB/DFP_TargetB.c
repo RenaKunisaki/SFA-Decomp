@@ -19,6 +19,7 @@
 #include "main/dll/dll_0235_dfptargetblock.h"
 #include "main/vecmath.h"
 #include "main/frame_timing.h"
+#include "main/mapEventTypes.h"
 
 #define DFPTARGETBLOCK_POINT_OFFSET_X 0x04
 #define DFPTARGETBLOCK_POINT_OFFSET_Y 0x08

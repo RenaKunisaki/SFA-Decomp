@@ -37,6 +37,7 @@
 #include "main/pad.h"
 #include "main/sky_interface.h"
 #include "main/sky_api.h"
+#include "main/mapEventTypes.h"
 
 extern char sTrackLoadBlockOverrunError[];
 #include "main/camera.h"

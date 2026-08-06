@@ -6,6 +6,7 @@
 #include "main/dll/modgfx.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/dll_001C_effect3.h"
+#include "main/vecmath.h"
 
 PartFxSpawnParams gEffect3DefaultSpawnParams;
 ObjectDescriptor6 Effect3_funcs = {

@@ -31,6 +31,8 @@
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 #include "track/intersect_api.h"
+#include "main/dll/dll_002E_moveLib.h"
+#include "main/dll/savegame_object_api.h"
 
 #define CFGUARDIAN_AIRBORNE_OBJECT_GROUP      0x16
 #define CFGUARDIAN_TARGET_OBJECT_GROUP        3

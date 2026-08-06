@@ -33,6 +33,7 @@
 #include "main/gx_scissor_api.h"
 #include "main/pi_dolphin_api.h"
 #include "main/newclouds.h"
+#include "main/vecmath.h"
 
 CloudActionRuntime gCloudActionRuntime;
 

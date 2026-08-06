@@ -26,6 +26,7 @@
 #include "main/model.h"
 #include "main/obj_path.h"
 #include "main/objprint_render_api.h"
+#include "dolphin/mtx.h"
 
 int lbl_803DDD70;
 int gDrShackleRotZOffset = -32768;

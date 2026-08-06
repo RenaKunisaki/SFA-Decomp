@@ -27,6 +27,8 @@
 #include "main/vecmath.h"
 #include "string.h"
 #include "sys/objects.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_object_api.h"
 
 int lbl_803DD54C;
 CameraModeViewfinderState* gCameraModeViewfinderState;

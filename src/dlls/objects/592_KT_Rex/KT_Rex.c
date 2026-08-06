@@ -43,6 +43,10 @@
 #include "main/camera_shake_api.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/model.h"
+#include "main/dll/dll_005A_staffcollision.h"
+#include "main/dll/partfx_interface.h"
+#include "main/model_light.h"
+#include "main/shader_api.h"
 
 GroundBaddieState* gKTRexRuntime;
 KTRexArenaState* gKTRexState;

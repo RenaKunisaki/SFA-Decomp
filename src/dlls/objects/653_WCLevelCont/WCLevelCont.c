@@ -21,6 +21,7 @@
 #include "main/vecmath.h"
 #include "string.h"
 #include "sys/objects.h"
+#include "main/game_timer_control_api.h"
 
 #define WCLEVELCONT_OBJGROUP 0x9
 

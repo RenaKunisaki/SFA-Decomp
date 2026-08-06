@@ -10,6 +10,7 @@
 #include "main/objhits.h"
 #include "main/objtype.h"
 #include "main/spellstone_idle.h"
+#include "main/mapEventTypes.h"
 
 int spellstone_idleCallback(void)
 {

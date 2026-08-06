@@ -12,6 +12,7 @@
 #include "sys/objects/lifecycle.h"
 
 #include "main/frame_timing.h"
+#include "main/objseq.h"
 #define MMSH_SCALES_OBJECT_TYPE_ID          0xB
 #define MMSH_SCALES_CLASS_ID                0x10
 #define MMSH_SCALES_CHILD_SETUP_FLAGS       5

@@ -21,6 +21,7 @@
 #include "sys/objects.h"
 #include "main/model.h"
 #include "main/object_render.h"
+#include "main/objseq.h"
 
 
 #define WCAPERTURES_EXTRA_SIZE        8

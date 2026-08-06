@@ -44,6 +44,8 @@
 #include "main/lightmap.h"
 #include "main/track_dolphin_sky_api.h"
 #include "main/track_dolphin_shadow_api.h"
+#include "dolphin/mtx/vec.h"
+#include "main/vecmath.h"
 
 typedef struct SkyColor
 {

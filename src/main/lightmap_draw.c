@@ -37,6 +37,7 @@
 #include "dolphin/gx/GXTransform.h"
 #include "dolphin/mtx.h"
 #include "dolphin/os/OSFastCast.h"
+#include "main/dll/ppcwgpipe_struct.h"
 
 extern f32 widescreenAspect;
 

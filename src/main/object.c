@@ -48,6 +48,9 @@
 #include "string.h"
 #include "main/dll/dll_0004_dummy04.h"
 #include "main/dll/dll_0017_savegame_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/mapEventTypes.h"
 
 s16 gObjPartitionPivot;
 void* lbl_803DCBC0;

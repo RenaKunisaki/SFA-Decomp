@@ -15,6 +15,7 @@
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_stop_channel_api.h"
 #include "main/obj_path.h"
+#include "main/objseq.h"
 
 #define DLL1F4_OBJECT_SFX_CHANNEL 0x40
 #define DLL1F4_OBJECT_SFX_RANGE   100.0f

@@ -1,10 +1,12 @@
 #include "dlls/objects/366_IMAnimSpace.h"
 
 #include "main/dll/expgfx_interface.h"
+#include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "main/object_render.h"
+#include "main/objseq.h"
 #include "main/objtexture.h"
 
 #define IM_ANIM_SPACE_PARTFX_ID     0x133

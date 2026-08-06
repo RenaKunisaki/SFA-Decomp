@@ -12,6 +12,7 @@
 #include "main/gamebits_api.h"
 #include "main/maketex_timer_api.h"
 #include "main/mapEvent.h"
+#include "main/mapEventTypes.h"
 #include "main/map_load.h"
 #include "main/object_render.h"
 #include "main/pi_dolphin_api.h"

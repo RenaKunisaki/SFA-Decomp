@@ -18,6 +18,7 @@
 #include "main/mapEventTypes.h"
 #include "main/map_load.h"
 #include "main/model.h"
+#include "main/objfx.h"
 #include "main/objseq.h"
 #include "main/pad.h"
 #include "main/pi_dolphin_api.h"

@@ -9,6 +9,7 @@
 #include "main/model.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/vecmath.h"
+#include "main/dll/partfx_interface.h"
 
 typedef struct Dll5BEffectResourceView {
     ModgfxEffectVertex vertices[4];

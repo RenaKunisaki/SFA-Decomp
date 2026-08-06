@@ -40,6 +40,8 @@
 #include "main/audio/sfx.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_api.h"
 
 #define WCPUSHBLOCK_EXTRA_SIZE          0x288
 #define WCPUSHBLOCK_RENDER_TYPE_BASE    0x400

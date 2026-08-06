@@ -24,6 +24,7 @@
 #include "main/objhits.h"
 #include "main/render_lactions_api.h"
 #include "sys/objects/lifecycle.h"
+#include "main/vecmath.h"
 
 /*
  * romDefNo values resolved through the active EN OBJINDEX.bin and OBJECTS.bin.

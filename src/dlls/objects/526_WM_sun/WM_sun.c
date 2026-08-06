@@ -21,6 +21,7 @@
 #include "main/lightmap_api.h"
 #include "main/mm.h"
 #include "sys/objects/lifecycle.h"
+#include "main/objseq.h"
 
 s16 gWmSunEnvfxTimer;
 s16 lbl_803DDCAE;

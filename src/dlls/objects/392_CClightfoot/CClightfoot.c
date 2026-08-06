@@ -18,6 +18,7 @@
 #include "main/obj_trigger.h"
 #include "main/objfx.h"
 #include "main/objhits.h"
+#include "main/objseq.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"

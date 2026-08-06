@@ -29,6 +29,7 @@
 #include "track/intersect_api.h"
 #include "string.h"
 #include "main/lightmap.h"
+#include "main/audio/sfx_stop_object_api.h"
 
 TextFont* gameTextFonts;
 int gameTextCharset;

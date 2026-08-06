@@ -10,6 +10,8 @@
 #include "main/frame_timing.h"
 #include "main/vecmath.h"
 #include "sys/objects/lifecycle.h"
+#include "main/mapEventTypes.h"
+#include "main/objseq.h"
 
 typedef struct CmbSrcColorIndexPair
 {

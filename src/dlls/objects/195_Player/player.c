@@ -127,6 +127,10 @@
 #include "main/sky.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/dll/dll_0017_savegame_api.h"
+#include "dolphin/mtx/vec.h"
+#include "main/dll/dll_005A_staffcollision.h"
+#include "main/gameloop_gamebit_api.h"
+#include "track/intersect_render_setup_api.h"
 
 #define CLAMP_EXPR(value, low, high) ((value) < (low) ? (low) : ((value) > (high) ? (high) : (value)))
 

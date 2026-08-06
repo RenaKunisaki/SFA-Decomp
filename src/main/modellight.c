@@ -13,6 +13,8 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/gx/GXGet.h"
 #include "main/object_transform.h"
+#include "dolphin/mtx/vec.h"
+#include "main/vecmath.h"
 
 int gModelLightNextGXLightId;
 u8 gModelLightUseModelRelativePositions;

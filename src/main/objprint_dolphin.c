@@ -1112,7 +1112,6 @@ static void objSetupLightChannels(u8* model, GameObject* obj)
 }
 
 
-#include "main/objprint_dolphin_internal.h"
 
 extern u8 gObjGxPosMtxIdTable[12];
 
@@ -1294,7 +1293,6 @@ static void renderOpMatrix(u8* hdr, int* model, MtxBitStream* bs, f32* m1, f32* 
 
 
 
-#include "main/objprint_dolphin_internal.h"
 
 
 static void objRenderShadowModel(GameObject* obj, GameObject* obj2, u8* m, int p4);
@@ -1306,7 +1304,6 @@ static void objRenderChild(GameObject* child, GameObject* parent, u8 isShadow);
 #define OBJPRINT_MODEL_DEF(obj)         (((ObjAnimComponent*)(obj))->modelInstance)
 
 
-#include "main/dll/ppcwgpipe_struct.h"
 
 
 extern u8 gObjGxPosMtxIdTable[12];

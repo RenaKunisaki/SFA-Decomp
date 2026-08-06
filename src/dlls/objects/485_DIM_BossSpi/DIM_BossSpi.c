@@ -13,6 +13,7 @@
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/model.h"
+#include "main/model_light.h"
 #include "main/object_render.h"
 #include "main/objhits.h"
 #include "main/pad_api.h"

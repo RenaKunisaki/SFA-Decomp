@@ -53,6 +53,7 @@
 #include "dolphin/gx/GXTransform.h"
 #include "dolphin/mtx.h"
 #include "main/lightmap.h"
+#include "main/dll/ppcwgpipe_struct.h"
 
 u8 colorFilterColor[4] = {0xFF, 0x70, 0x40, 0};
 u8 colorScale = 0xFF;

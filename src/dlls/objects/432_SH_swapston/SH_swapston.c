@@ -39,6 +39,7 @@
 #include "main/textrender_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
+#include "main/mapEventTypes.h"
 
 union WarpStoneAnimEvents {
     ObjAnimEventList list;

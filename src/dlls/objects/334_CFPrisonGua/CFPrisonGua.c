@@ -14,6 +14,7 @@
 #include "main/object_render.h"
 #include "main/object_update_list.h"
 #include "main/objhits.h"
+#include "main/objprint_character_api.h"
 #include "main/objseq.h"
 #include "main/render_lactions_api.h"
 #include "main/vecmath.h"

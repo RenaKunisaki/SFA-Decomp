@@ -10,6 +10,7 @@
 #include "main/gameloop_api.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
+#include "main/hud_visibility_api.h"
 
 s16 gVortexAngleSpeed83D[4] = {8, 0x10, 0x20, 0};
 s16 gVortexAngleSpeedDefault[4] = {0x10, 0x20, 0x40, 0};

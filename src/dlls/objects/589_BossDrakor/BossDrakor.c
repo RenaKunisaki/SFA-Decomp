@@ -69,6 +69,7 @@
 #include "main/dll/dll_024D_bossdrakor.h"
 #include "main/dll/dll_024E_drakordthornbush.h"
 #include "dlls/object_descriptor.h"
+#include "main/audio/sfx_play_api.h"
 
 f32 gBossDrakorMissileTargetScatterFactor = 3.0f;
 f32 gBossDrakorMissileInitialSpeedFactor = 8.0f;

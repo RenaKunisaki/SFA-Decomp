@@ -13,6 +13,7 @@
 #include "main/obj_path.h"
 #include "main/objfx.h"
 #include "main/object_render.h"
+#include "main/objseq.h"
 
 #define WMNEWCRYSTAL_GAMEBIT_ACTIVE     0xd27
 #define WMNEWCRYSTAL_GAMEBIT_AMBIENT_FX 0xe49

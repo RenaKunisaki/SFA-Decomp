@@ -24,6 +24,10 @@
 #include "main/audio/music_api.h"
 #include "main/pi_flush_api.h"
 #include "main/audio/audio_control_api.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_looped_object_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_object_api.h"
 
 static const f32 gAudioStreamEndPosInfinite = 9.0e9f;
 static const f32 gAudioStreamFramesPerSecond = 60.0f;

@@ -21,6 +21,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
 #include "main/objtype.h"
+#include "main/objseq.h"
 
 #define WCPRESSURES_EXTRA_SIZE        0x7c
 #define WCPRESSURES_OBJECT_GROUP      0x31

@@ -40,6 +40,7 @@
 #include "dolphin/gx/GXTransform.h"
 #include "dolphin/mtx/vec.h"
 #include "main/newshadows_audio_api.h"
+#include "track/intersect_depth_state_api.h"
 
 typedef struct
 {
@@ -493,7 +494,6 @@ void waterFxDraw(void)
 }
 
 
-#include "track/intersect_internal.h"
 
 void waterFxSpawnContactEffect(u8* obj, f32* pos, u8 flip, u8 type)
 {

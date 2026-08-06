@@ -20,6 +20,7 @@
 #include "main/audio/sfx_stop_object_api.h"
 #include "main/obj_list.h"
 #include "main/objtype.h"
+#include "main/gamebit_ids.h"
 #define DOORF4_OBJECT_TYPE_ID 1
 #define DOORF4_OBJECT_GROUP   14
 

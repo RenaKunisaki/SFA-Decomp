@@ -2,6 +2,7 @@
 #include "dolphin/os.h"
 #include "main/gametext_box_api.h"
 #include "dolphin/pad.h"
+#include "main/rcp_dolphin_api.h"
 
 u8 framesThisStep = 1;
 u8 framesThisStepUnclamped = 1;

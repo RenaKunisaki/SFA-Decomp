@@ -22,6 +22,7 @@
 #include "main/audio/sfx_play_api.h"
 #include "string.h"
 #include "track/intersect_api.h"
+#include "track/intersect_render_setup_api.h"
 
 #define DFROPENODE_SEGMENT_VERTEX_COUNT   6
 #define DFROPENODE_SEGMENT_TRIANGLE_COUNT 6

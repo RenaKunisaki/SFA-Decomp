@@ -18,6 +18,13 @@
 #include "dolphin/mtx/vec.h"
 #include "main/audio/music_api.h"
 #include "main/audio/audio_control_api.h"
+#include "main/audio/sfx_channel_query_api.h"
+#include "main/audio/sfx_channel_volume_api.h"
+#include "main/audio/sfx_limited_object_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_position_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/audio/sfx_stop_object_api.h"
 
 u8 gSfxTriggerExtraTable[8] = {1, 2, 4, 8, 0x10, 0x20, 0x40, 0};
 

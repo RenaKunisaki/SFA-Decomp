@@ -33,6 +33,7 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "track/intersect_render_setup_api.h"
+#include "main/camera.h"
 
 typedef void (*ExplosionSpawnFlameSpeedFirstFn)(int obj, f32 speed, int generation, f32 x, f32 y, f32 z);
 

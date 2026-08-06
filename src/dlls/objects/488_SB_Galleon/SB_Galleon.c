@@ -40,6 +40,7 @@
 #include "main/audio/sfx_channel_query_api.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_stop_object_api.h"
+#include "main/sky_api.h"
 
 #define DBPROTECTION_GAMEBIT_CYCLE_A_PENDING  0xa3c
 #define DBPROTECTION_GAMEBIT_CYCLE_B_PENDING  0xa3d

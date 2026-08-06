@@ -11,6 +11,7 @@
 #include "dlls/object_descriptor.h"
 #include "main/gamebits.h"
 #include "main/dll/DR/dll_0253_ktlazerlight.h"
+#include "main/model_light.h"
 
 int ktlazerlight_getExtraSize(void)
 {

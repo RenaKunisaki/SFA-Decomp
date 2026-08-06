@@ -25,6 +25,7 @@
 #include "main/dll/LGT/dll_02A9_lgtpointlight.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
+#include "main/objseq.h"
 
 /* sequence event opcodes consumed by gf_levelcon_SeqFn */
 #define GFLEVELCON_SEQEV_NONE          0

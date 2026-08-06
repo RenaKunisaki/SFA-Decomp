@@ -14,6 +14,7 @@
 #include "track/intersect_api.h"
 #include "string.h"
 #include "main/lightmap.h"
+#include "track/intersect_render_setup_api.h"
 
 struct JapaneseDiscStatusResource;
 struct EnglishDiscStatusResource;

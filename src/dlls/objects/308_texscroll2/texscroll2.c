@@ -7,6 +7,7 @@
 #include "main/gamebits.h"
 #include "main/lightmap_api.h"
 #include "main/map_texscroll.h"
+#include "main/model.h"
 #include "main/object_render.h"
 #include "main/rcp_dolphin.h"
 #include "sys/objects/lifecycle.h"

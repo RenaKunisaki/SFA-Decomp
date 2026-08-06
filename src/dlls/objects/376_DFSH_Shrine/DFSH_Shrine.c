@@ -13,6 +13,7 @@
 #include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
 #include "main/mapEvent.h"
+#include "main/mapEventTypes.h"
 #include "main/map_load.h"
 #include "main/obj_message.h"
 #include "main/object_render.h"

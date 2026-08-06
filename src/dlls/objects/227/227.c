@@ -22,6 +22,7 @@
 #include "main/dll/dll_02B1_cmbsrc.h"
 #include "main/objtype.h"
 #include "sys/objects/lifecycle.h"
+#include "main/objseq.h"
 
 #define FIREBALL_HIT_VOLUME_SLOT 14
 

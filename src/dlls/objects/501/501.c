@@ -12,6 +12,7 @@
 #include "sys/objects/lifecycle.h"
 
 #include "main/frame_timing.h"
+#include "main/objseq.h"
 #define DLL1F5_OBJECT_TYPE_ID           0xB
 #define DLL1F5_FIRE_SEQ_ID              0x171
 #define DLL1F5_SEQ_INDEX_PENDING        -2

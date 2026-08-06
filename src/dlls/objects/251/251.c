@@ -18,6 +18,7 @@
 #include "main/dll/player_api.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/objseq.h"
 
 #define PRESSURESWITCHFB_PARTFX_ID                      0x7C3
 #define PRESSURESWITCHFB_ANIM_COMMAND_IDLE              0

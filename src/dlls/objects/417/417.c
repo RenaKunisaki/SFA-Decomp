@@ -33,6 +33,7 @@
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/objprint_character_api.h"
 
 typedef struct NwMammothPathParams {
     u8 values[4];

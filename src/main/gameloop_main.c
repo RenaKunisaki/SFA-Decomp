@@ -77,6 +77,8 @@
 #include "main/objprint_render_api.h"
 #include "main/pi_data_file_api.h"
 #include "main/pi_flush_api.h"
+#include "main/gameloop_gamebit_api.h"
+#include "main/hud_visibility_api.h"
 
 #define GAMEBIT_FLAG_WIDTH_MASK 0x1f /* bit-run length: (mask)+1 bits stored for this entry */
 #define GAMEBIT_FLAG_SYNC       0x20 /* request a save-sync when this bit is written */

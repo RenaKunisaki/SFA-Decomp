@@ -18,6 +18,8 @@
 #include "main/newclouds.h"
 #include "main/shader_api.h"
 #include "main/dll/dll_02BF_androssligh.h"
+#include "dolphin/mtx/vec.h"
+#include "main/camera.h"
 
 enum
 {

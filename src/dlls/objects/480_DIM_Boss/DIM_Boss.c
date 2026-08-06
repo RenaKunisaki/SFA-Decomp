@@ -50,6 +50,11 @@
 #include "sys/objects/lifecycle.h"
 #include "main/audio/music_api.h"
 #include "main/dll/dll_0000_gameui_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/partfx_interface.h"
+#include "main/gamebit_ids.h"
+#include "main/pi_dolphin_api.h"
+#include "main/rcp_dolphin_api.h"
 
 #define DIMBOSS_OBJECT_TYPE_ID 0x49
 

@@ -38,6 +38,8 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/mapEventTypes.h"
+#include "main/rcp_dolphin_api.h"
 
 #define WORLDPLANET_MAIN_MAP_ID       0x2D
 #define WORLDPLANET_MAP_PRELOAD_FLAG  0x10000000

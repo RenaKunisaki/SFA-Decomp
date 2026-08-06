@@ -101,6 +101,9 @@
 #include "main/gx_scissor_api.h"
 
 #include "main/textrender_internal.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/dll_0000_gameui_api.h"
 typedef struct HudTrickyInterface
 {
     void* unknown00[8];

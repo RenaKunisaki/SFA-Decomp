@@ -44,6 +44,7 @@
 #include "main/dll/dll_0255_snowbike.h"
 #include "main/vecmath.h"
 #include "sys/objects/lifecycle.h"
+#include "main/objseq.h"
 
 void SB_CloudRunner_onSeqFree(GameObject* obj)
 {

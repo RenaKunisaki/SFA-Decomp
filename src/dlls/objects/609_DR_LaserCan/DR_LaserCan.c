@@ -31,6 +31,7 @@
 #include "main/audio/sfx.h"
 #include "main/audio/sfx_ids.h"
 #include "main/audio/sfx_trigger_ids.h"
+#include "main/audio/sfx_play_api.h"
 
 int lbl_803DDD6C;
 f32 lbl_803DDD68;

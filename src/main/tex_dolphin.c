@@ -41,6 +41,7 @@
 #include "main/track_dolphin_api.h"
 #include "main/track_dolphin_shadow_api.h"
 #include "main/newshadows_shadow_api.h"
+#include "main/pi_dolphin_api.h"
 #define TRACK_BBOX_FLAGS_S8
 #define TRACK_BBOX_MASK_TYPE s8
 #define TRACK_BBOX_ARG10_TYPE s8

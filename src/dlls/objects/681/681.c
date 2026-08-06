@@ -22,6 +22,7 @@
 #include "main/objtype.h"
 #include "main/sky.h"
 #include "sys/objects.h"
+#include "main/model_light.h"
 
 const f32 gPointLightInitialDirection[4] = {0.0f, 0.0f, 1.0f, 0.0f};
 

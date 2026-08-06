@@ -60,6 +60,7 @@
 #include "dolphin/gx/GXFifo.h"
 #include "dolphin/os/OSThread.h"
 #include "main/asset_load.h"
+#include "main/mapEventTypes.h"
 
 u32 sPiUnused3;
 void* lbl_803DCD10;

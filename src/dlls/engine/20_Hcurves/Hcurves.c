@@ -18,6 +18,7 @@
 #include "main/dll/dll_0014_unk.h"
 #include "main/vecmath_distance_api.h"
 #include "main/shader_api.h"
+#include "string.h"
 
 static int sObjfsaUnused0;
 int gObjfsaPatchCount;

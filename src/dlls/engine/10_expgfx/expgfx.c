@@ -168,7 +168,6 @@ void viewFinderSetZoomTo50(void)
  * particle-effect resource ids; the float lbl_803DFxxx symbols are tuning
  * constants in the DLL's shared .sdata2 pool.
  */
-#include "main/dll/partfx_interface.h"
 #include "dolphin/gx/GXGeometry.h"
 
 ExpgfxPlaneOffsets gExpgfxStaticData[EXPGFX_STATIC_PLANE_OFFSET_SET_COUNT] = {

@@ -25,6 +25,7 @@
 #include "main/obj_message.h"
 #include "main/object_update_list.h"
 #include "main/objhits.h"
+#include "main/dll/path_control_interface.h"
 
 f32 gWallCrawlerSpeedCap = 0.1f;
 u8 sWallCrawlerCollisionBone[3] = {0x41, 0x20, 0};

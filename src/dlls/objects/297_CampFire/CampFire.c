@@ -20,6 +20,7 @@
 #include "main/objhits.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
+#include "main/model_light.h"
 
 #define CAMPFIRE_HIT_VOLUME_SLOT        0x1F
 #define CAMPFIRE_DAY_BURST_INTERVAL     10.0f

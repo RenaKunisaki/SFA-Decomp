@@ -6,6 +6,7 @@
 #include "main/rcp_dolphin_api.h"
 #include "main/dll/dll_0015_save_settings.h"
 #include "main/lightmap.h"
+#include "main/textrender_api.h"
 
 void* gameTextGetPhrase(int textId, int phraseIndex)
 {

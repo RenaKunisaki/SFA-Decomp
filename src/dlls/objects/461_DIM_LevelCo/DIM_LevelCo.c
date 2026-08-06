@@ -25,6 +25,7 @@
 #include "main/render_envfx_api.h"
 #include "main/sky_interface.h"
 #include "main/vecmath.h"
+#include "main/mapEventTypes.h"
 
 #define DIM_LEVEL_CONTROL_GAMEBIT_D0B 0xD0B
 #define DIM_LEVEL_CONTROL_GAMEBIT_D0C 0xD0C

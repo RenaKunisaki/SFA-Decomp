@@ -18,6 +18,7 @@
 #include "main/obj_list.h"
 #include "main/object_render.h"
 #include "main/objprint_render_api.h"
+#include "main/objseq.h"
 #include "main/shader_api.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"

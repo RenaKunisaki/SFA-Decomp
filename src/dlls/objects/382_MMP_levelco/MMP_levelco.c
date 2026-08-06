@@ -6,6 +6,7 @@
  */
 #include "dlls/objects/382_MMP_levelco.h"
 
+#include "dlls/objects/430_SH_LevelCon.h"
 #include "main/audio/music_api.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/dll/savegame_load_api.h"

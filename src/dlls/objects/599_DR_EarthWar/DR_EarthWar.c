@@ -42,6 +42,8 @@
 #include "main/vecmath.h"
 #include "dlls/objects/473_DIM2PrisonM.h"
 #include "main/newshadows_audio_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/dll_005A_staffcollision.h"
 
 #define PAD_BUTTON_A 0x100
 

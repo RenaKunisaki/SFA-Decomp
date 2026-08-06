@@ -53,6 +53,8 @@
 #include "main/objprint_api.h"
 #include "main/pad_api.h"
 #include "sys/objects.h"
+#include "main/objHitReact.h"
+#include "main/objseq.h"
 
 static const f32 gWcEarthWalkerCurveAdvanceStep = 0.5f;
 static const f32 gWcEarthWalkerApproachPlayerDistance = 200.0f;

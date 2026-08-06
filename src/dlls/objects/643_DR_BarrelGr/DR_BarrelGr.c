@@ -31,6 +31,8 @@
 #include "dlls/object_descriptor.h"
 #include "dolphin/mtx/vec.h"
 #include "sys/objects.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_api.h"
 
 f32 gDRBarrelGrThrowScale = 2.0f;
 f32 gDrBarrelGenGrabYOffset = -50.0f;

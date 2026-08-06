@@ -29,6 +29,7 @@
 #include "main/dll/dll_0263_gmmazewell.h"
 #include "main/object_render.h"
 #include "dolphin/pad.h"
+#include "main/shader_api.h"
 
 /* Quest-bit table layout (gQuestBitTable, 44 s16 entries):
  *   [0..8]   watched quest/event bits

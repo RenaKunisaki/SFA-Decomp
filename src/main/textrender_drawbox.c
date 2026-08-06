@@ -13,6 +13,7 @@
 #include "track/intersect_api.h"
 #include "main/lightmap.h"
 #include "main/gx_scissor_api.h"
+#include "track/intersect_render_setup_api.h"
 
 const GXColor gGameTextBoxFillColor = {0xFF, 0x40, 0x40, 0xFF};
 

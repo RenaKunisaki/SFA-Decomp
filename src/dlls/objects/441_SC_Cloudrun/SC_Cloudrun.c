@@ -16,6 +16,7 @@
 #include "sys/objects/lifecycle.h"
 
 #include "main/frame_timing.h"
+#include "main/objseq.h"
 #define SC_CLOUDRUNNER_A_EVENT_CREATE_CHILD      0
 #define SC_CLOUDRUNNER_A_EVENT_DEACTIVATE_CHILD  1
 #define SC_CLOUDRUNNER_A_EVENT_REMOVE_CHILD      2

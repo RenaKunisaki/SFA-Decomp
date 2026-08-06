@@ -6,6 +6,10 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/object_render.h"
 #include "main/shader_api.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/model.h"
+#include "main/objseq.h"
 
 s16 gWcTempleDiaGameBitsA[4] = {0x2F8, 0x2D1, 0x2D2, 0};
 s16 gWcTempleDiaGameBitsB[4] = {0x203, 0x2EC, 0x2EF, 0};

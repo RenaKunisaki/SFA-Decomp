@@ -17,6 +17,7 @@
 #include "main/object_render.h"
 #include "main/pi_dolphin_api.h"
 #include "main/track_dolphin_map_api.h"
+#include "main/model.h"
 
 enum DimLavaSmashPhase {
     DIM_LAVA_SMASH_PHASE_WAITING = 0,

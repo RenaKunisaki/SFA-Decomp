@@ -28,6 +28,7 @@
 #include "main/screen_transition.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
+#include "main/game_timer_control_api.h"
 
 #define SC_TOTEM_STRENGTH_MAP_LIGHTFOOT           0xE
 #define SC_TOTEM_STRENGTH_MAP_EVENT_MODE          6

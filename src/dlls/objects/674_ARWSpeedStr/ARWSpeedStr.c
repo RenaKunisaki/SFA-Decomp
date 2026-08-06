@@ -14,6 +14,8 @@
 #include "main/object_render.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/camera.h"
+#include "main/vecmath.h"
 
 static f32 ARWSpeedStr_randomSpread(f32 spread)
 {

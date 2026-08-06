@@ -18,6 +18,7 @@
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
 #include "main/sky_api.h"
+#include "main/gamebit_ids.h"
 
 int gKTRexPhaseCounter;
 

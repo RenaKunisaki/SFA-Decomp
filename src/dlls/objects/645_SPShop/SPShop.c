@@ -18,6 +18,7 @@
 #include "main/gameloop_gamebit_api.h"
 #include "main/objtype.h"
 #include "main/vecmath.h"
+#include "main/mapEventTypes.h"
 
 #define SPSHOP_OBJGROUP 9
 

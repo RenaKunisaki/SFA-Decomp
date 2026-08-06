@@ -15,6 +15,7 @@
 #include "main/texture.h"
 #include "main/dll/LGT/dll_02AB_lgtprojectedlight.h"
 #include "dlls/object_descriptor.h"
+#include "main/model_light.h"
 
 const f32 gProjectedLightInitialDirection[4] = {0.0f, 0.0f, 1.0f, 0.0f};
 

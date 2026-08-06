@@ -67,6 +67,9 @@
 #include "main/pi_dolphin_api.h"
 #include "main/audio/music_api.h"
 #include "main/maketex.h"
+#include "main/audio/sfx_looped_object_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
 
 typedef struct SeqRunFlags
 {

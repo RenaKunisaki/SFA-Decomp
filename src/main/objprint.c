@@ -60,6 +60,8 @@
 #include "dolphin/gx/GXTransform.h"
 #include "track/intersect_api.h"
 #include "main/objprint_internal.h"
+#include "main/audio/sfx_channel_query_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
 
 #define OBJLIB_BLINK_LEFT_JOINT_TAG  5
 #define OBJLIB_BLINK_RIGHT_JOINT_TAG 4

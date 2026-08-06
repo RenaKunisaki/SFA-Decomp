@@ -14,6 +14,7 @@
 #include "main/dll/blastflags4_types.h"
 #include "main/objfx.h"
 #include "main/dll/dll_0240_gcrobotblast.h"
+#include "main/objseq.h"
 
 STATIC_ASSERT(sizeof(GCRobotBlastState) == 0x8);
 STATIC_ASSERT(offsetof(GCRobotBlastState, mode) == 0x0);

@@ -28,6 +28,7 @@
 #include "main/audio/sfx_keep_alive_api.h"
 #include "main/audio/sfx_stop_channel_api.h"
 #include "main/objhits.h"
+#include "main/vecmath.h"
 
 u8 gCmbsrcColorCycleIndexTable[8] = {5, 6, 4, 0, 0, 0, 0, 0};
 

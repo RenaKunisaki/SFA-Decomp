@@ -8,6 +8,7 @@
 #include "main/gamebits.h"
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
+#include "main/objseq.h"
 
 #define DFP_STATUE1_EVENT_ACTIVATE       1
 #define DFP_STATUE1_EVENT_DEACTIVATE     2

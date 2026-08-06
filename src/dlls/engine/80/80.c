@@ -11,6 +11,7 @@
 #include "main/mm.h"
 #include "main/object_transform.h"
 #include "string.h"
+#include "main/vecmath.h"
 
 CameraModeCrawlState* gCameraModeCrawlState;
 

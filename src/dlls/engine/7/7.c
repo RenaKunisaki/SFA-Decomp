@@ -36,6 +36,9 @@
 #include "main/audio/music_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/trig_float_helpers.h"
+#include "dolphin/mtx/vec.h"
+#include "main/debug.h"
+#include "main/hud_visibility_api.h"
 
 u8 gNewCloudBlizzardActivePrev;
 void* sNewCloudsTexture;
