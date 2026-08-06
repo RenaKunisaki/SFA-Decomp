@@ -20,7 +20,7 @@ static char sDVDIllegalPathFormatMessage[] =
     "DVDConvertEntrynumToPath(possibly DVDOpen or DVDChangeDir or DVDOpenDir): "
     "specified directory or file (%s) doesn't match standard 8.3 format. This is a "
     "temporary restriction and will be removed soon\n";
-static char sDVDOpenNotFoundWarningFormat[] = "Warning: DVDOpen(): file '%s' was not found under %s.\n\0";
+static char sDVDOpenNotFoundWarningFormat[] = "Warning: DVDOpen(): file '%s' was not found under %s.\n";
 static char sDVDReadAsyncOutOfFileMessage[] = "DVDReadAsync(): specified area is out of the file  ";
 static char sDVDReadSeekStreamErrorMessages[] =
     "DVDRead(): specified area is out of the file  \0\0"
