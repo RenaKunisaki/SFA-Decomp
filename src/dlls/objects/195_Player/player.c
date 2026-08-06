@@ -3425,7 +3425,7 @@ int playerStateStaffBoost(GameObject* obj, int state, f32 fv)
     {
         ObjHits_MarkObjectPositionDirty(&obj->anim);
     }
-    if ((s16)getYButtonItem(&item) == 1 && item == 0x957)
+    if ((s16)getYButtonItem(&item) == 1 && item == GAMEBIT_STAFF_ABILITY_STAFF_BOOSTER)
     {
         mask = 0x900;
     }
@@ -12832,12 +12832,12 @@ void playerCastSpell(int a, int b, int c)
         (*gPlayerInterface)->setState((void*)a, (void*)b, 0x32);
         ((PlayerState*)b)->baddie.stateExitFn = (BaddieStateExitFn)playerStagedResetAnimStateAndSyncPosition;
         break;
-    case 0x107:
-    case 0xc55:
+    case GAMEBIT_STAFF_ABILITY_GROUND_QUAKE:
+    case GAMEBIT_STAFF_ABILITY_SUPER_QUAKE:
         (*gPlayerInterface)->setState((void*)a, (void*)b, 0x36);
         ((PlayerState*)b)->baddie.stateExitFn = (BaddieStateExitFn)playerStagedResetAnimState;
         break;
-    case 0x40:
+    case GAMEBIT_STAFF_ABILITY_SHARPCLAW_DISGUISE:
         ((PlayerState*)b)->stateTimer = 300.0f;
         {
             PlayerStatus* sub = *(PlayerStatus**)((char*)((GameObject*)a)->extra + 0x35c);
@@ -12855,7 +12855,7 @@ void playerCastSpell(int a, int b, int c)
         playerSetDisguised((GameObject*)a, 1);
         Sfx_PlayFromObject((GameObject*)a, SFXTRIG_dn_boar1_c_209);
         break;
-    case 0x5bd:
+    case GAMEBIT_STAFF_ABILITY_OPEN_PORTAL:
         c = -1;
         {
             PlayerStatus* sub = *(PlayerStatus**)((char*)((GameObject*)a)->extra + 0x35c);
@@ -12877,7 +12877,7 @@ void playerCastSpell(int a, int b, int c)
                 s16 id = cam->anim.romDefNo;
                 if (id == 0x414 || id == 0x4a9)
                 {
-                    c = 0x5bd;
+                    c = GAMEBIT_STAFF_ABILITY_OPEN_PORTAL;
                     getAngle(cam->anim.hitVolumeTransforms->jointX - ((GameObject*)a)->anim.localPosX,
                              cam->anim.hitVolumeTransforms->jointZ - ((GameObject*)a)->anim.localPosZ);
                 }
@@ -14718,7 +14718,7 @@ void playerProcessQueuedItemCommand(GameObject* obj, int state)
                 noMatch = 1;
             }
             break;
-        case 0x957:
+        case GAMEBIT_STAFF_ABILITY_STAFF_BOOSTER:
             if (playerCanUseStaffBooster(obj, state) != 0)
             {
                 playerCastSpell((int)obj, state, ((PlayerState*)state)->queuedItemCommand);
@@ -14728,8 +14728,8 @@ void playerProcessQueuedItemCommand(GameObject* obj, int state)
                 noMatch = 1;
             }
             break;
-        case 0x107:
-        case 0xc55:
+        case GAMEBIT_STAFF_ABILITY_GROUND_QUAKE:
+        case GAMEBIT_STAFF_ABILITY_SUPER_QUAKE:
             if (playerCanCastQuakeSpell(obj, state) != 0)
             {
                 playerCastSpell((int)obj, state, ((PlayerState*)state)->queuedItemCommand);
@@ -14739,7 +14739,7 @@ void playerProcessQueuedItemCommand(GameObject* obj, int state)
                 noMatch = 1;
             }
             break;
-        case 0x40:
+        case GAMEBIT_STAFF_ABILITY_SHARPCLAW_DISGUISE:
         {
             PlayerState* inner = obj->extra;
             int ok;
@@ -14766,7 +14766,7 @@ void playerProcessQueuedItemCommand(GameObject* obj, int state)
             }
             break;
         }
-        case 0x5bd:
+        case GAMEBIT_STAFF_ABILITY_OPEN_PORTAL:
             if (playerCanCastPortalOpenSpell(obj, state) != 0)
             {
                 playerCastSpell((int)obj, state, ((PlayerState*)state)->queuedItemCommand);
