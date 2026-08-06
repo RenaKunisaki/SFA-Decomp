@@ -3499,3 +3499,40 @@ the unit at 99.94795 and keeps the source honest.
 The residual `srawi` at every `(s32)` site is a `-opt nopeephole` TU artifact — with peephole on,
 the landed spelling is byte-exact to retail. That is the real fix for this whole family and it is a
 TU-profile question, not a spelling one.
+
+## 27. `tricky` pool anchors — item A is proven and byte-neutral, but parked (owner call)
+
+The 408-byte `.sdata2` gap in `dlls/objects/196_Tricky/tricky` decomposes into five items in
+`0x50..0x164`. Three were investigated to completion (2026-08-05):
+
+- **A — `skeetla_isInWater` (line 303): SOLVED and byte-neutral, NOT landed.** Making it a plain
+  `static` (emitted, dead) mints `-100000.0f, 8.0f` at retail's 0x050/0x054 and moves the first
+  divergence to 0x05c. Verified against the in-tree object: all 89 retail-paired functions have
+  identical instruction bytes AND identical relocation targets, every data section byte-identical,
+  `jtoracle --pair` clean, unit fuzzy and `matched_code` unchanged. Three of the four call sites take
+  the temp + if/else-if chain the file already uses at `tricky.c:655` and at ~24 other longhand water
+  checks — evidence that retail wrote them longhand. The fourth (`trickyUpdateCircling`) needs a
+  ternary chain, because retail elides both `li r0,1` there: the preceding
+  `substate = ANIMOBJD2_SUBSTATE_APPROACH` (=1) leaves 1 in `r0`, and MWCC's constant CSE is
+  basic-block-local, so an if/else-if chain re-materializes it (+2 instructions) while one expression
+  shares the DAG. **Why parked:** a data section scores 0 until 100%, so A alone pays nothing, and its
+  value is entirely contingent on B and C — which require inventing dead helper bodies. Patch preserved
+  at `scratchpad/deliver/itemA_skeetla_isInWater_static.patch`.
+- **D — MISDIAGNOSED, do not attempt.** `.sdata2` literals allocate in first-EMISSION order within a
+  function (verified across 31 mint-bearing functions in our own object). Retail's
+  `trickyAdvanceRouteTargetAhead` emits `1.5f` at +0xf6c BEFORE `-2.0f` at +0xf98, so it cannot have
+  minted `-2.0f` first; that slot was interned earlier by item C's dead helper.
+  `trickyAdvanceRouteTargetAhead` mints only `1.5f`. Forcing the order costs 12-13 of 63 instruction
+  words and breaks a 100% function.
+- **E — pool placement achieved, fails the byte gate.** Best shape is to make the trivial wrapper
+  `skeetla_faceMoveVector` the dead static (it still inlines the real helper, so `pi/32768/bias` mint
+  at retail's relative position) rather than the helper itself. Costs `moveTricky` 100 → 99.95840: same
+  stream, same size, one live range recoloured r26 → r28. Twelve ordering probes are identical — this
+  is the >=5-saved-register regime (7 saved GPRs) where the rotation model says every ordering knob is
+  flat. Rejected variant kept at `scratchpad/deliver/itemE_wrapper_static_REJECTED.patch`.
+
+Also refuted: non-static `inline` behaves exactly like `static inline` (mints nothing).
+
+**Separate, and actionable independently of the pool:** `gObjHitsScalarZero`/`gObjHitsScalarOne` are
+declared `extern` in `include/main/objhits.h` and defined NOWHERE — `objhits.o` carries them as
+undefined externals (the carve-only-reference latent-LINKFAIL class).
