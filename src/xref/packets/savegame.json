@@ -24,15 +24,7 @@
     "root_romlist_count": 0,
     "root_romlists": []
   },
-  "family_hint": {
-    "family": "SAVEGAME",
-    "bin_slots": [
-      57
-    ],
-    "tab_slots": [
-      58
-    ]
-  },
+  "family_hint": null,
   "map_hints": [],
   "functions": [
     {

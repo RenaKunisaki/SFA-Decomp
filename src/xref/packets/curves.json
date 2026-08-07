@@ -1,7 +1,7 @@
 {
-  "key": "hcurves",
+  "key": "curves",
   "labels": [
-    "Hcurves.c"
+    "curves.c"
   ],
   "categories": [
     "source"
@@ -24,23 +24,23 @@
   "functions": [
     {
       "function_start": "0x800E52E8",
-      "function_name": "curves_addCurveDef",
+      "function_name": "RomCurve_add",
       "xrefs": [
         {
           "xref_address": "0x800E5300",
           "pair_address": "0x800E5304",
           "target_address": "0x803116BC",
-          "target_text": "Hcurves.c: MAX_ROMCURVES exceeded!!",
+          "target_text": "curves.c: MAX_ROMCURVES exceeded!!",
           "pair_kind": "lis/addi",
-          "function_name": "curves_addCurveDef"
+          "function_name": "RomCurve_add"
         }
       ]
     }
   ],
   "strings": [
     {
-      "address": "0x803116BB",
-      "text": "Hcurves.c: MAX_ROMCURVES exceeded!!",
+      "address": "0x803116BC",
+      "text": "curves.c: MAX_ROMCURVES exceeded!!",
       "tags": [
         "source"
       ]

@@ -18,6 +18,7 @@
     "named_directories": [],
     "root_romlist_count": 124,
     "root_romlists": [
+      "KamColumn.romlist.zlb",
       "animtest.romlist.zlb",
       "arwing.romlist.zlb",
       "arwingcity.romlist.zlb",
@@ -32,8 +33,7 @@
       "cfcolumn.romlist.zlb",
       "cfdungeonblock.romlist.zlb",
       "cfgalleon.romlist.zlb",
-      "cfgangplank.romlist.zlb",
-      "cfledge.romlist.zlb"
+      "cfgangplank.romlist.zlb"
     ]
   },
   "family_hint": null,

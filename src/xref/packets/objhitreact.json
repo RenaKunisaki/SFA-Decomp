@@ -24,7 +24,7 @@
   "functions": [
     {
       "function_start": "0x800353A4",
-      "function_name": "objHitReact_update",
+      "function_name": "ObjHitReact_Update",
       "xrefs": [
         {
           "xref_address": "0x800354E4",
@@ -32,7 +32,7 @@
           "target_address": "0x802CADFC",
           "target_text": "objHitReact.c: sphere overflow! %d",
           "pair_kind": "lis/addi",
-          "function_name": "objHitReact_update"
+          "function_name": "ObjHitReact_Update"
         }
       ]
     }

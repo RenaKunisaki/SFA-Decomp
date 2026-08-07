@@ -167,17 +167,30 @@ def classify_string(text: str) -> tuple[str, ...]:
     return tuple(tags)
 
 
+def trim_pointer_glue(data: bytes, start: int) -> int:
+    while start % 4 and start > 0 and data[start - 1] != 0:
+        word = data[start & ~3 : (start & ~3) + 4]
+        if len(word) == 4 and word[0] in (0x80, 0x81):
+            start = (start & ~3) + 4
+        else:
+            break
+    return start
+
+
 def scan_strings(dol: DolFile) -> list[DolString]:
     strings: list[DolString] = []
     for match in PRINTABLE_RE.finditer(dol.data):
-        section = dol.offset_to_section(match.start())
+        start = trim_pointer_glue(dol.data, match.start())
+        if match.end() - start < 4:
+            continue
+        section = dol.offset_to_section(start)
         if section is None:
             continue
-        text = match.group().decode("ascii", "ignore")
+        text = dol.data[start : match.end()].decode("ascii", "ignore")
         tags = classify_string(text)
         if not tags:
             continue
-        strings.append(DolString(section.address + (match.start() - section.offset), section.index, text, tags))
+        strings.append(DolString(section.address + (start - section.offset), section.index, text, tags))
     return strings
 
 

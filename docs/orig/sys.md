@@ -26,9 +26,9 @@ That means the current `orig/<region>/files/` extraction is faithful to the reta
 
 The full file lists differ because PAL and JP do not have the same path set as EN. But once you ignore region-only paths, the common-path order is stable in every pair:
 
-- `GSAE01` vs `GSAP01`: 3865 shared files, stable order
+- `GSAE01` vs `GSAP01_rev1`: 3865 shared files, stable order
 - `GSAE01` vs `GSAJ01`: 3410 shared files, stable order
-- `GSAP01` vs `GSAJ01`: 3205 shared files, stable order
+- `GSAP01_rev1` vs `GSAJ01`: 3205 shared files, stable order
 
 This is the useful part for recovery work. It means file IDs from the retail FST can be compared across regions as long as you translate by path first instead of assuming the full index space is identical.
 

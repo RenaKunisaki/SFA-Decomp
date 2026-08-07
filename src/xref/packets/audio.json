@@ -21,15 +21,7 @@
     "root_romlist_count": 0,
     "root_romlists": []
   },
-  "family_hint": {
-    "family": "AUDIO",
-    "bin_slots": [
-      1
-    ],
-    "tab_slots": [
-      0
-    ]
-  },
+  "family_hint": null,
   "map_hints": [],
   "functions": [
     {

@@ -19,7 +19,7 @@ They are worth keeping around because they give one compact, retail-authored exa
 
 ### 1. The module leftovers are byte-identical across EN, PAL, and JP
 
-Both files match exactly across `GSAE01`, `GSAP01`, and `GSAJ01`.
+Both files match exactly across `GSAE01`, `GSAP01_rev1`, and `GSAJ01`.
 
 That means any loader or format work done from `testmod.rel` only needs to be solved once.
 

@@ -30,7 +30,7 @@
           "xref_address": "0x8009B1C4",
           "pair_address": "0x8009B1C8",
           "target_address": "0x8030FBF0",
-          "target_text": "@expgfx.c: mismatch in add/remove in exptab",
+          "target_text": "expgfx.c: mismatch in add/remove in exptab",
           "pair_kind": "lis/addi",
           "function_name": "expgfxRemove"
         }
@@ -44,7 +44,7 @@
           "xref_address": "0x8009B334",
           "pair_address": "0x8009B338",
           "target_address": "0x8030FBF0",
-          "target_text": "@expgfx.c: mismatch in add/remove in exptab",
+          "target_text": "expgfx.c: mismatch in add/remove in exptab",
           "pair_kind": "lis/addi",
           "function_name": "expgfxRemoveAll"
         }
@@ -97,8 +97,8 @@
   ],
   "strings": [
     {
-      "address": "0x8030FBEF",
-      "text": "@expgfx.c: mismatch in add/remove in exptab",
+      "address": "0x8030FBF0",
+      "text": "expgfx.c: mismatch in add/remove in exptab",
       "tags": [
         "source"
       ]
