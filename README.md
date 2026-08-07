@@ -60,7 +60,8 @@ When running under WSL, [objdiff](#diffing) is unable to get filesystem notifica
 
 - Copy your game's disc image to the matching version directory under `orig/`.
   The configured versions are `GSAE01` (the default EN v1.0 target),
-  `GSAE01_rev1`, `GSAJ01`, and `GSAP01`.
+  `GSAE01_rev1`, `GSAJ01`, `GSAP01` (PAL rev 0), and
+  `GSAP01_rev1` (PAL rev 1).
   - Supported formats: ISO (GCM), RVZ, WIA, WBFS, CISO, NFS, GCZ, TGC
   - After the initial build, the disc image can be deleted to save space.
 

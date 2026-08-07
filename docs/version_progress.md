@@ -1,12 +1,13 @@
 # Cross-Version Progress
 
-The project reports progress for four retail DOLs while keeping `GSAE01` (EN
+The project reports progress for five retail DOLs while keeping `GSAE01` (EN
 v1.0) as the default matching target:
 
 - `GSAE01`
 - `GSAE01_rev1`
 - `GSAJ01`
-- `GSAP01`
+- `GSAP01` (PAL rev 0)
+- `GSAP01_rev1` (PAL rev 1)
 
 The non-default splits are coherent whole-TU projections from the active EN
 config. `tools/version_progress.py` normalizes address-bearing PowerPC
@@ -34,6 +35,7 @@ Regenerate a target after the EN splits change:
 python tools/version_progress.py GSAE01_rev1 --write
 python tools/version_progress.py GSAJ01 --write
 python tools/version_progress.py GSAP01 --write
+python tools/version_progress.py GSAP01_rev1 --write
 ```
 
 Then configure and build its report normally:

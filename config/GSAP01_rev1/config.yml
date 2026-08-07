@@ -4,7 +4,7 @@
 # Files compressed with NLZSS (Nintendo LZSS) can use a `:nlzss` suffix to decompress.
 # See https://github.com/encounter/decomp-toolkit#vfs-ls for more information on the VFS.
 
-game_name: Star Fox Adventures (PAL, Rev 0)
+game_name: Star Fox Adventures (PAL, Rev 1)
 
 # (optional) Main module name. Defaults to "main".
 name: main
@@ -13,7 +13,7 @@ name: main
 object: sys/main.dol
 
 # (optional) SHA-1 hash of the main.dol file for verification.
-hash: c5bb4a7fd3c4aff48c40e282d4d54795c37155f0
+hash: c1a6ccdc61c7e719e20ea7cc59c8de09fd183e66
 
 # (optional) If set, all object paths will be relative to this directory.
 # If not set, all object paths will be relative to the root of the project.
@@ -21,7 +21,7 @@ hash: c5bb4a7fd3c4aff48c40e282d4d54795c37155f0
 # If a disc image is found, decomp-toolkit will fetch all objects from the disc image instead of the filesystem.
 # For example, if `game.iso` exists in the `object_base`, the object path would become the VFS path
 # `orig/GAMEID/game.iso:sys/main.dol`. See information on the VFS above.
-object_base: orig/GSAP01
+object_base: orig/GSAP01_rev1
 
 # (optional) If true, objects will be extracted from a disc image into `object_base`.
 # This allows users to delete the disc image after the initial build to save space.
@@ -31,12 +31,12 @@ extract_objects: true
 # (optional) Path to the symbols.txt file.
 # This file will be created if it does not exist.
 # See docs/symbols.md for more information.
-symbols: config/GSAP01/symbols.txt
+symbols: config/GSAP01_rev1/symbols.txt
 
 # (optional) Path to the splits.txt file.
 # This file will be created if it does not exist.
 # See docs/splits.md for more information.
-splits: config/GSAP01/splits.txt
+splits: config/GSAP01_rev1/splits.txt
 
 # (optional) Version used to generate `.comment` sections in the split objects.
 # If not specified, no `.comment` sections will be generated.

@@ -39,6 +39,7 @@ VERSIONS = [
     "GSAJ01",  # 1
     "GSAP01",  # 2
     "GSAE01_rev1",  # 3
+    "GSAP01_rev1",  # 4
 ]
 
 
