@@ -27,6 +27,8 @@
 #include "main/sky.h"
 #include "main/sky_interface.h"
 #include "sys/objects.h"
+#include "main/game_timer_control_api.h"
+#include "main/sky_api.h"
 
 
 #define NW_LEVEL_CONTROL_HINT_TEXT_ID       0x435

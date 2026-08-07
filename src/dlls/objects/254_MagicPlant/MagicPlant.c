@@ -27,6 +27,7 @@
 #include "main/mm.h"
 #include "main/objhits.h"
 #include "main/objtype.h"
+#include "dlls/objects/237.h"
 
 extern f32 lbl_803E385C;
 extern f32 lbl_803E3880;

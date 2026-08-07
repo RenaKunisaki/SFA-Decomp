@@ -19,6 +19,7 @@
 #include "main/object_render.h"
 #include "main/shader_api.h"
 #include "main/vecmath.h"
+#include "main/objseq.h"
 
 /* Exact anim.romDefNo value used by peer scans; this is not the retail object-definition ID. */
 #define SC_TOTEM_PUZZLE_SEQUENCE_ID       0x3c1

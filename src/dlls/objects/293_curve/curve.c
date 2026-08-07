@@ -6,6 +6,7 @@
  */
 #include "dlls/objects/293_curve.h"
 
+#include "main/dll/rom_curve_def.h"
 #include "main/object_render.h"
 
 int curve_func0B(void) {

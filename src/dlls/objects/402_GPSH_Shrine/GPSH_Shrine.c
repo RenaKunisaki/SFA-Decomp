@@ -333,7 +333,7 @@ void gpshShrine_update(GameObject* obj) {
                 break;
             case GPSH_SHRINE_PHASE_BEGIN:
                 state->phaseDelay = 31.0f;
-                (*gScreenTransitionInterface)->step(0x1e, 1);
+                (*gScreenTransitionInterface)->step(0x1e, SCREEN_TRANSITION_BLACK);
                 state->phase = GPSH_SHRINE_PHASE_WAIT_FOR_PUZZLE;
                 obj->anim.flags |= OBJANIM_FLAG_HIDDEN;
                 break;
@@ -370,7 +370,7 @@ void gpshShrine_update(GameObject* obj) {
                     gameTimerStop();
                     mainSetBits(GAMEBIT_GPSH_TestKnowledgeRunning, 0);
                     state->phaseDelay = 31.0f;
-                    (*gScreenTransitionInterface)->start(0x1e, 1);
+                    (*gScreenTransitionInterface)->start(0x1e, SCREEN_TRANSITION_BLACK);
                     Sfx_PlayFromObject(0, SFXTRIG_mpick1_b);
                 } else if (isGameTimerDisabled()) {
                     state->phase = GPSH_SHRINE_PHASE_FAIL_TRANSITION;
@@ -379,7 +379,7 @@ void gpshShrine_update(GameObject* obj) {
                         Obj_FreeObject(objects[objectCount - 1]);
                     }
                     state->phaseDelay = 31.0f;
-                    (*gScreenTransitionInterface)->start(0x1e, 1);
+                    (*gScreenTransitionInterface)->start(0x1e, SCREEN_TRANSITION_BLACK);
                 } else {
                     state->solvedCount = 0;
                 }

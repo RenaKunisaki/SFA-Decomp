@@ -14,6 +14,7 @@
 #include "main/gamebits_api.h"
 #include "main/objtype.h"
 #include "main/vecmath.h"
+#include "dlls/objects/237.h"
 
 #define MAGICMAKER_SPAWN_GAMEBIT             0x26B
 #define MAGICMAKER_MATCH_COUNT_LIMIT         10

@@ -18,9 +18,7 @@
 #include "main/frustum.h"
 #include "main/lightmap_api.h"
 #include "main/lightmap_lifecycle_api.h"
-#include "main/lightmap_render_control_api.h"
 #include "main/lightmap_render_queue_api.h"
-#include "main/lightmap_text_color_api.h"
 #include "main/model_render_instrs_api.h"
 #include "main/modellight_api.h"
 #include "main/newclouds.h"
@@ -34,7 +32,6 @@
 #include "main/sky_state.h"
 #include "main/track_dolphin_api.h"
 #include "main/mm.h"
-#include "string.h"
 #include "main/newshadows.h"
 #include "main/newshadows_shadow_api.h"
 #include "main/rcp_dolphin.h"
@@ -53,6 +50,8 @@
 #include "dolphin/gx/GXTransform.h"
 #include "dolphin/mtx.h"
 #include "main/lightmap.h"
+#include "main/dll/ppcwgpipe_struct.h"
+#include "main/lightmap_internal.h"
 
 u8 colorFilterColor[4] = {0xFF, 0x70, 0x40, 0};
 u8 colorScale = 0xFF;
@@ -60,7 +59,6 @@ u8 colorScale = 0xFF;
 void sceneDraw(void);
 void sceneDrawTransparentPolys(void);
 
-#include "main/lightmap_internal.h"
 
 
 extern f32 gLightmapDegToBamScale;
@@ -744,9 +742,9 @@ void sceneDraw(void)
     (*gSky2Interface)->applyFogColor(0);
     gLightmapDeferredObjectCount = 0;
     skyGetSunColor(0, (u8*)&c, (u8*)&c + 1, (u8*)&c + 2);
-    GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
-    GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
-    GXSetChanCtrl(GX_COLOR1A1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
+    GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
+    GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
+    GXSetChanCtrl(GX_COLOR1A1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
     GXSetChanAmbColor(GX_COLOR0, c);
     GXSetNumChans(1);
     renderSceneGeometry(0, gMapBlockDrawOrderFrontToBack);

@@ -8,6 +8,7 @@
 
 #include "game/objects/object.h"
 #include "main/dll/expgfx_interface.h"
+#include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
 #include "main/vecmath.h"

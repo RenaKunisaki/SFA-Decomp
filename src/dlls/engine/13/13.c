@@ -4,6 +4,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/dll/dll_000D_playershadow.h"
 #include "main/track_dolphin_api.h"
+#include "main/vecmath.h"
 
 s16 gPlayerShadowCamRotY;
 s16 lbl_803DD29A;

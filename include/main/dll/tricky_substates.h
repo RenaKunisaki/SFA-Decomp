@@ -3,6 +3,7 @@
 
 #include "game/objects/object.h"
 #include "types.h"
+#include "main/dll/tricky_state.h"
 
 void trickyDigTunnel(u8* obj, TrickyState* state);
 void tricky_stateFindSecretDig(GameObject* obj, TrickyState* state);

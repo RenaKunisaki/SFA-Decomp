@@ -16,6 +16,8 @@
 #include "track/intersect_api.h"
 #include "main/curve.h"
 #include "main/objlib_api.h"
+#include "main/objseq.h"
+#include "main/track_dolphin_api.h"
 #define MOVELIB_TARGET_OBJGROUP 8
 
 #define MOVELIB_CURVE_WALK_DONE 0x10

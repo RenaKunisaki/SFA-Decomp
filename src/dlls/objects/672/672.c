@@ -30,6 +30,7 @@
 #include "main/gamebits_api.h"
 #include "main/gameloop_gamebit_api.h"
 #include "main/objhits.h"
+#include "main/model_light.h"
 
 #define RING_SEQID_ARW_ARWING 0x601 /* "ARWArwing" (DLL 0x29A) */
 #define RING_OBJ_ARW_GOLD   0x060b

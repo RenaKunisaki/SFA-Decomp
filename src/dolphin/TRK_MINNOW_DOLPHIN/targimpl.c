@@ -70,7 +70,7 @@ static u16 TRK_saved_exceptionID;
 
 void __TRK_set_MSR(register u32 msr);
 u32 __TRK_get_MSR();
-void TRK_ppc_memcpy(register void* dest, register const void* src, register int n, register u32 destMsr, register u32 srcMsr);
+static void TRK_ppc_memcpy(register void* dest, register const void* src, register int n, register u32 destMsr, register u32 srcMsr);
 
 /**
  * @note Address: TODO

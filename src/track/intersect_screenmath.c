@@ -2,11 +2,11 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/mtx.h"
 #include "track/intersect.h"
+#include "track/intersect_internal.h"
 
 
 static const f32 gGxPi = 3.1415927f;
 
-#include "track/intersect_internal.h"
 
 
 /* Queues a GXPeekZ read at (x,y) tagged by an opaque requestKey (callers pass

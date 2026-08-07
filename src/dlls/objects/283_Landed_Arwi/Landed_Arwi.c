@@ -24,6 +24,7 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/mapEventTypes.h"
 
 #define LANDED_ARWING_TARGET_OBJECT_GROUP     0xF
 #define LANDED_ARWING_CHILD_OBJECT_SETUP_SIZE 0x24

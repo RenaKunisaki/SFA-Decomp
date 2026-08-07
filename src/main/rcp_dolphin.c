@@ -8,7 +8,6 @@
 #include "main/rcp_dolphin_api.h"
 #include "main/rcp_dolphin_render_api.h"
 #include "main/camera.h"
-#include "main/loaded_file_flags.h"
 #include "main/pi_dolphin.h"
 #include "main/screen_transition.h"
 #include "main/sky_api.h"
@@ -29,7 +28,6 @@
 #include "dolphin/gx/GXTransform.h"
 #include "main/pi_dolphin_texture_api.h"
 #include "main/gx_scissor_api.h"
-#include "string.h"
 #include "dolphin/gx/GXCull.h"
 #include "track/intersect_depth_state_api.h"
 #include "main/shader_init_api.h"
@@ -216,7 +214,7 @@ static void Rcp_SetupDistortionRenderState(void)
     GXSetDispCopyDst(32, 32);
     GXSetTexCopySrc(0, 0, 32, 32);
     C_MTXOrtho(omtx, 1.0f, -1.0f, 1.0f, -1.0f, 1.0f, 15.0f);
-    GXSetProjection(omtx, 1);
+    GXSetProjection(omtx, GX_ORTHOGRAPHIC);
     GXSetBlendMode(GX_BM_NONE, GX_BL_ONE, GX_BL_ZERO, GX_LO_NOOP);
     gxSetZMode_(0, GX_EQUAL, 0);
     GXSetCullMode(GX_CULL_NONE);

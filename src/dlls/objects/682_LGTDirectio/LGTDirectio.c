@@ -22,6 +22,7 @@
 #include "main/object_render.h"
 #include "main/pad.h"
 #include "main/sky.h"
+#include "main/model_light.h"
 
 const f32 gDirectionalLightInitialDirection[4] = {0.0f, 0.0f, 1.0f, 0.0f};
 const f32 gDirectionalLightInitialFadeDuration = 0.0f;

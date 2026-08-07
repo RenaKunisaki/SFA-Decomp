@@ -13,6 +13,8 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "dolphin/gx/GXGet.h"
 #include "main/object_transform.h"
+#include "dolphin/mtx/vec.h"
+#include "main/vecmath.h"
 
 int gModelLightNextGXLightId;
 u8 gModelLightUseModelRelativePositions;
@@ -1119,20 +1121,20 @@ void modelLightChannels_applyGXControls(void)
 
     if ((activeMask & 1) != 0 && (activeMask & 4) == 0)
     {
-        GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
+        GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
     }
     else if ((activeMask & 1) == 0 && (activeMask & 4) != 0)
     {
-        GXSetChanCtrl(GX_COLOR0, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
+        GXSetChanCtrl(GX_COLOR0, GX_FALSE, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
     }
 
     if ((activeMask & 2) != 0 && (activeMask & 8) == 0)
     {
-        GXSetChanCtrl(GX_ALPHA1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
+        GXSetChanCtrl(GX_ALPHA1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
     }
     else if ((activeMask & 2) == 0 && (activeMask & 8) != 0)
     {
-        GXSetChanCtrl(GX_COLOR1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
+        GXSetChanCtrl(GX_COLOR1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
     }
 
     if ((activeMask & 0x2a) != 0)
@@ -1141,13 +1143,13 @@ void modelLightChannels_applyGXControls(void)
     }
     else if ((activeMask & 0x15) != 0)
     {
-        GXSetChanCtrl(GX_COLOR1A1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
+        GXSetChanCtrl(GX_COLOR1A1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
         GXSetNumChans(1);
     }
     else
     {
-        GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
-        GXSetChanCtrl(GX_COLOR1A1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
+        GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
+        GXSetChanCtrl(GX_COLOR1A1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
         GXSetNumChans(0);
     }
 }
@@ -1188,7 +1190,7 @@ void modelLightStruct_selectBrightestAabbLights(f32 minX, f32 minY, f32 minZ, f3
     for (i = 0; i < gModelLightCount; i++)
     {
         light = gModelLightList[i];
-        if (light->enabled != 0 && light->lightKind == 2 && light->attenuationFar > 0.0f &&
+        if (light->enabled != 0 && light->lightKind == MODEL_LIGHT_KIND_POINT && light->attenuationFar > 0.0f &&
             light->affectsAabbLightSelection != 0)
         {
             PSVECSubtract((Vec*)center, &light->worldPos, (Vec*)delta);

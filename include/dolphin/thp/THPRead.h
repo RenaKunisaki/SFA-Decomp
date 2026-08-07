@@ -4,8 +4,6 @@
 #include "dolphin/thp/THPBuffer.h"
 #include "dolphin/os.h"
 
-static void* Reader(void* arg);
-
 #ifdef __cplusplus
 extern "C" {
 #endif // ifdef __cplusplus

@@ -7,6 +7,7 @@
 #include "main/gamebits_api.h"
 #include "main/gameloop_gamebit_api.h"
 #include "main/object_render.h"
+#include "main/objseq.h"
 #include "main/objtype.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"

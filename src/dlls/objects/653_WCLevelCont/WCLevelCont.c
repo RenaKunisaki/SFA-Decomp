@@ -21,6 +21,7 @@
 #include "main/vecmath.h"
 #include "string.h"
 #include "sys/objects.h"
+#include "main/game_timer_control_api.h"
 
 #define WCLEVELCONT_OBJGROUP 0x9
 
@@ -888,13 +889,13 @@ void wclevelcont_init(GameObject* obj)
     if (mainGetBit(0xcac) != 0)
         state->completionFlags |= WCLEVELCTL_FLAG_EXTRA;
     flags = state->completionFlags;
-    if (flags & 0x200)
+    if (flags & WCLEVELCTL_FLAG_EXTRA)
     {
-        state->mode = 7;
+        state->mode = WCLEVELCTL_MODE_DONE;
     }
-    else if ((flags & 0x4) && (flags & 0x8))
+    else if ((flags & WCLEVELCTL_FLAG_PUZZLE_A) && (flags & WCLEVELCTL_FLAG_PUZZLE_B))
     {
-        state->mode = 3;
+        state->mode = WCLEVELCTL_MODE_SEQUENCE;
     }
     objAddObjectType((int)obj, WCLEVELCONT_OBJGROUP);
     mainSetBits(0x226, 1);

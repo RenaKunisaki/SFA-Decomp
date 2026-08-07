@@ -17,6 +17,7 @@
 #include "main/frame_timing.h"
 #include "main/object_render.h"
 #include "main/gamebits.h"
+#include "main/mapEventTypes.h"
 
 struct DfpfloorbarPlacement
 {

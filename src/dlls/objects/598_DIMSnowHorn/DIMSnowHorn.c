@@ -40,6 +40,8 @@
 #include "main/pad.h"
 #include "main/objtype.h"
 #include "dolphin/pad.h"
+#include "main/camera.h"
+#include "main/objseq.h"
 
 f32 gDIMSnowHorn1ModelMtx[16];
 void* gDIMSnowHorn1StateHandlers[12];
@@ -1148,7 +1150,7 @@ void DIMSnowHorn1_hitDetect(void)
 void DIMSnowHorn1_ridingUpdate(GameObject* obj, int frameStep, int slot)
 {
     DIMSnowHorn1State* state;
-    int* viewSlot;
+    Camera* viewSlot;
     int matchFrame;
 
     if (slot != -1)
@@ -1159,7 +1161,7 @@ void DIMSnowHorn1_ridingUpdate(GameObject* obj, int frameStep, int slot)
     {
         matchFrame = 1;
     }
-    viewSlot = (int*)Camera_GetCurrent();
+    viewSlot = Camera_GetCurrent();
     state = (obj)->extra;
 
     state->baddie.hitPoints = 0;
@@ -1190,7 +1192,7 @@ void DIMSnowHorn1_ridingUpdate(GameObject* obj, int frameStep, int slot)
         state->baddie.moveInputZ = (f32)(s8)padGetStickY(0);
         state->baddie.pressedButtons = getButtonsJustPressed(0);
         state->baddie.heldButtons = getButtonsHeld(0);
-        state->baddie.cameraYaw = *(s16*)viewSlot;
+        state->baddie.cameraYaw = viewSlot->yaw;
     }
     else
     {

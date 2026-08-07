@@ -1,15 +1,12 @@
 #include "types.h"
 #include "track/intersect_hud_api.h"
 #include "track/intersect_render_setup_api.h"
-#include "main/hud_visibility_api.h"
 #include "main/audio/sfx.h"
 #include "main/gametext_api.h"
 #include "main/gametext_color_api.h"
 #include "main/gameloop_api.h"
 #include "main/gametext_charset_api.h"
-#include "main/gametext_show_str_api.h"
 #include "main/gametext_shared_internal.h"
-#include "main/gametext_task_api.h"
 #include "main/gx_scissor_api.h"
 #include "main/mm.h"
 #include "main/texture.h"
@@ -22,13 +19,12 @@
 #include "main/fileio.h"
 #include "main/textrender_api.h"
 #include "main/textrender_internal.h"
-#include "main/lightmap_text_color_api.h"
 #include "main/dll/dll_0000_gameui_api.h"
 #include "main/rcp_dolphin_api.h"
 #include "main/dll/dll_0015_save_settings.h"
 #include "track/intersect_api.h"
-#include "string.h"
 #include "main/lightmap.h"
+#include "main/audio/sfx_stop_object_api.h"
 
 TextFont* gameTextFonts;
 int gameTextCharset;
@@ -65,7 +61,7 @@ int gGameTextShadowOffsetY;
 int gGameTextShadowEnabled;
 u8 lbl_803DC980;
 int gGameTextBufferIndex;
-int gCurTextBuffer;
+char* gCurTextBuffer;
 u8* gGameTextLastEntry;
 int gGameTextFallbackBuf;
 GameTextDrawFunc gameTextDrawFunc;
@@ -618,7 +614,7 @@ void gameTextInitRendererState(void)
     gGameTextBufferIndex = 0;
     fallbackDef = (GameTextDef*)(gameTextBase + 0x40);
     gGameTextLastEntry = (u8*)fallbackDef;
-    gCurTextBuffer = *(int*)fallbackDef->strings;
+    gCurTextBuffer = (char*)*(int*)fallbackDef->strings;
     gGameTextShadowColorR = 0;
     gGameTextShadowColorG = 0;
     gGameTextShadowColorB = 0;

@@ -43,6 +43,10 @@
 #include "main/camera_shake_api.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/model.h"
+#include "main/dll/dll_005A_staffcollision.h"
+#include "main/dll/partfx_interface.h"
+#include "main/model_light.h"
+#include "main/shader_api.h"
 
 GroundBaddieState* gKTRexRuntime;
 KTRexArenaState* gKTRexState;
@@ -710,7 +714,7 @@ int ktrex_stateHandlerA01(GameObject* obj, GroundBaddieState* runtime)
         {
             if (obj->userData2 != 3)
             {
-                (*gScreenTransitionInterface)->start(30, 1);
+                (*gScreenTransitionInterface)->start(30, SCREEN_TRANSITION_BLACK);
                 obj->userData2 = 3;
             }
         }

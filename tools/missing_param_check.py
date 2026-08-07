@@ -34,6 +34,8 @@ import subprocess
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+from source_coverage_audit import live_files_under  # noqa: E402
 OBJDUMP = os.path.join(ROOT, "build/binutils/powerpc-eabi-objdump")
 
 # instructions whose FIRST operand is a source, not a destination
@@ -163,21 +165,24 @@ def typedef_map():
     ptr = re.compile(r"\btypedef\s+([^;{}()]+?\*+)\s*(\w+)\s*;")
     struct = re.compile(r"\btypedef\s+(struct|union)\b[^;]*?\}\s*(\w+)\s*;",
                         re.S)
+    paths = []
     for base in ("include", "src"):
         for r, _, fs in os.walk(os.path.join(ROOT, base)):
             for f in fs:
-                if not f.endswith((".h", ".c")):
-                    continue
-                try:
-                    t = open(os.path.join(r, f), errors="replace").read()
-                except OSError:
-                    continue
-                for m in struct.finditer(t):
-                    out.setdefault(m.group(2), "struct{}")
-                for m in ptr.finditer(t):
-                    out.setdefault(m.group(2), m.group(1))
-                for m in pat.finditer(t):
-                    out.setdefault(m.group(2), m.group(1))
+                if f.endswith(".h"):
+                    paths.append(os.path.join(r, f))
+    paths += live_files_under("src", exts=(".c", ".cp", ".cpp"))
+    for p in paths:
+        try:
+            t = open(p, errors="replace").read()
+        except OSError:
+            continue
+        for m in struct.finditer(t):
+            out.setdefault(m.group(2), "struct{}")
+        for m in ptr.finditer(t):
+            out.setdefault(m.group(2), m.group(1))
+        for m in pat.finditer(t):
+            out.setdefault(m.group(2), m.group(1))
     return out
 
 

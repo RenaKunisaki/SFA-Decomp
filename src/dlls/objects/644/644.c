@@ -41,6 +41,7 @@
 #include "main/obj_message.h"
 #include "main/objprint_render_api.h"
 #include "track/intersect_depth_state_api.h"
+#include "main/hud_visibility_api.h"
 
 #define SHOPITEM_TARGET_OBJGROUP 9
 

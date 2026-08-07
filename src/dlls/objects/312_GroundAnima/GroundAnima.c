@@ -18,6 +18,7 @@
 #include "main/track_dolphin_api.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/gamebit_ids.h"
 
 #define GROUND_ANIMATOR_OBJECT_GROUP     0x31
 #define GROUND_ANIMATOR_SINK_DEPTH_SCALE 100.0f

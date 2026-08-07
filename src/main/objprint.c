@@ -1,6 +1,5 @@
 #define OBJHITS_SETTERS_S16
 #define OBJHITS_STATE_INDEX_S8
-#include <string.h>
 #include "main/frame_timing.h"
 #include "main/shader_api.h"
 #include "main/debug.h"
@@ -22,7 +21,6 @@
 #include "main/objHitReact_types.h"
 #include "main/dll/dll_005A_staffcollision.h"
 #include "main/resource.h"
-#include "dolphin/os/OSReport.h"
 #include "dolphin/mtx.h"
 #include "main/dll/objpathtransform_struct.h"
 #include "main/game_ui_interface.h"
@@ -60,6 +58,8 @@
 #include "dolphin/gx/GXTransform.h"
 #include "track/intersect_api.h"
 #include "main/objprint_internal.h"
+#include "main/audio/sfx_channel_query_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
 
 #define OBJLIB_BLINK_LEFT_JOINT_TAG  5
 #define OBJLIB_BLINK_RIGHT_JOINT_TAG 4

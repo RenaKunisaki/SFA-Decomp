@@ -217,7 +217,7 @@ void sc_levelcontrol_update(GameObject* obj) {
     }
     if (state->fadeTimer && (player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
         if (state->fadeTimer == 120.0f) {
-            (*gScreenTransitionInterface)->start(0x73, 1);
+            (*gScreenTransitionInterface)->start(0x73, SCREEN_TRANSITION_BLACK);
         }
         state->fadeTimer -= timeDelta;
         if (state->fadeTimer <= 0.0f) {
@@ -234,7 +234,7 @@ void sc_levelcontrol_update(GameObject* obj) {
         }
     } else if (state->exitTimer && (player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) == 0) {
         if (state->exitTimer == 120.0f) {
-            (*gScreenTransitionInterface)->start(0x73, 1);
+            (*gScreenTransitionInterface)->start(0x73, SCREEN_TRANSITION_BLACK);
         }
         state->exitTimer -= timeDelta;
         if (state->exitTimer <= 0.0f) {
@@ -337,7 +337,7 @@ void sc_levelcontrol_update(GameObject* obj) {
                 mainSetBits(0x85, 1);
             }
             state->exitTimer = 120.0f;
-            (*gScreenTransitionInterface)->start(0x73, 1);
+            (*gScreenTransitionInterface)->start(0x73, SCREEN_TRANSITION_BLACK);
             state->animEventState = 0;
             Sfx_PlayFromObject(0, SFXTRIG_id_10a);
         }

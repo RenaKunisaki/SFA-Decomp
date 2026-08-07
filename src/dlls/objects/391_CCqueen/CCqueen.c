@@ -15,6 +15,8 @@
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 #include "main/objhits.h"
+#include "main/objprint_character_api.h"
+#include "main/dll/dll_002E_moveLib.h"
 
 #define CC_QUEEN_PROXIMITY_LATCH_GAMEBIT     0x1C2
 #define CC_QUEEN_PROXIMITY_DISTANCE_SQUARED  18225.0f

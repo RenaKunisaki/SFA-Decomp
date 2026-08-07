@@ -44,6 +44,7 @@
 #include "main/asset_load.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/dll/dll_0000_gameui_api.h"
+#include "string.h"
 
 struct CamcontrolTriggeredAction {
     s8 actionKind;

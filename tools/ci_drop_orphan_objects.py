@@ -23,7 +23,20 @@ import os
 import re
 import sys
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
 GROUP_INCLUDE = re.compile(r'#\s*include\s*"([^"]+\.(?:c|cpp|cp))"')
+
+
+def compiled_or_none():
+    """build.ninja's compiled-source set, or None when the tree is not yet
+    configured -- CI runs this step BEFORE configure.py, so the filesystem
+    heuristics below are the fallback, not the authority."""
+    try:
+        from source_coverage_audit import compiled_sources
+        return compiled_sources()
+    except (SystemExit, ImportError):
+        return None
 
 
 def group_members():
@@ -53,7 +66,8 @@ def main():
         print(__doc__)
         sys.exit(2)
     srcdir = sys.argv[1].rstrip('/')
-    merged = group_members()
+    compiled = compiled_or_none()
+    merged = group_members() if compiled is None else None
     removed = 0
     for o in glob.glob(srcdir + '/**/*.o', recursive=True):
         stem = 'src/' + o[len(srcdir) + 1:-2]
@@ -61,7 +75,10 @@ def main():
         for ext in ('.c', '.cpp', '.cp', '.s', '.S'):
             src = os.path.normpath(stem + ext)
             if os.path.exists(src):
-                live = src not in merged
+                if compiled is not None:
+                    live = os.path.abspath(src) in compiled
+                else:
+                    live = src not in merged
                 break
         if not live:
             os.remove(o)

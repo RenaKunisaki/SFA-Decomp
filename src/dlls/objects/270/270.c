@@ -18,6 +18,7 @@
 #include "main/lightmap_api.h"
 #include "main/rcp_dolphin.h"
 #include "sys/objects/lifecycle.h"
+#include "main/vecmath.h"
 
 static const f32 gDeathSeqCameraYawAngle = -0.7853982f;
 static const f32 gDeathSeqCameraPitchAngle = 0.3926991f;

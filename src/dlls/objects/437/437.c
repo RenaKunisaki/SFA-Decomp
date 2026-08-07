@@ -76,25 +76,10 @@
 #include "main/player_control_interface.h"
 #include "main/sky.h"
 
-#include "dlls/objects/437.h"
-
 #include "game/objects/object.h"
-#include "main/audio/sfx_keep_alive_api.h"
 #include "main/audio/sfx_play_api.h"
-#include "main/audio/sfx_trigger_ids.h"
-#include "main/dll/baddie_control_interface.h"
-#include "main/dll/dll_01B5_lightfoot.h"
 #include "main/dll/player_api.h"
-#include "main/frame_timing.h"
-#include "main/gamebit_ids.h"
 #include "main/gamebits_api.h"
-#include "main/object_render.h"
-#include "main/objtype.h"
-#include "main/obj_link.h"
-#include "main/objhits.h"
-#include "main/objfx.h"
-#include "main/vecmath.h"
-#include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
 
 #define DLL1B5_WEAPON_DEF_1 0x6F1

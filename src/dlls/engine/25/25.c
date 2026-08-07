@@ -6,6 +6,11 @@
 #include "sys/objects.h"
 #include "main/shader_api.h"
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
+#include "main/mapEventTypes.h"
+#include "main/mm.h"
+#include "main/vecmath.h"
+#include "main/voxmaps.h"
+#include "string.h"
 
 /* object group this object joins */
 #define DLL19_OBJGROUP        3

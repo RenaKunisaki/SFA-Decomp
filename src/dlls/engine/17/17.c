@@ -14,7 +14,7 @@
 u32 gScreenDataId;
 u32 lbl_803DD4A8;
 u32 gScreenDataSize;
-u32 gScreenDataBuffer;
+void* gScreenDataBuffer;
 
 u8 gTaskTextDirIds[0x10];
 extern s16 gTaskHintMapData[];
@@ -221,7 +221,7 @@ void screens_show(int id)
         {
             if (gScreenDataBuffer != 0)
                 mm_free((void*)gScreenDataBuffer);
-            gScreenDataBuffer = (u32)mmAlloc(size, 2, 0);
+            gScreenDataBuffer = mmAlloc(size, 2, 0);
         }
         gScreenDataSize = size;
         getTabEntry((void*)gScreenDataBuffer, MLDF_FILEID_SCREENS_BIN, offset, size);

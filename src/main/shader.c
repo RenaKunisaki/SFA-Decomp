@@ -37,8 +37,7 @@
 #include "main/pad.h"
 #include "main/sky_interface.h"
 #include "main/sky_api.h"
-
-extern char sTrackLoadBlockOverrunError[];
+#include "main/mapEventTypes.h"
 #include "main/camera.h"
 #include "main/object_transform.h"
 #include "main/mm.h"
@@ -57,20 +56,6 @@ extern char sTrackLoadBlockOverrunError[];
 #include "main/track_dolphin_api.h"
 #include "dolphin/os/OSCache.h"
 #include "dolphin/mtx/vec.h"
-extern char sShaderUnusedWordTable[];
-#define MAP_BLOCK_LAYER_COUNT 5
-#define FRUSTUM_PLANE_COUNT   5
-static void trackLoadBlockEnd(MapBlockData* block, int blockId, int slotIdx, int layer);
-/* One 0x20-byte MAPINFO.bin (fileId 0x1f) record, fetched by mapId via getTabEntry. */
-typedef struct MapInfoRecord
-{
-    char name[0x1c]; /* NUL-padded editor name; only mapType is read at runtime */
-    s8 mapType;      /* +0x1c: MapType */
-    u8 unk1d;        /* always 6 in retail */
-    s16 objType;     /* +0x1e: carrier object type for mapType-1 sub-maps, else 0 */
-} MapInfoRecord;
-extern WarpVec gCameraPosByTransformSpace[];
-
 #include "sys/objects/lifecycle.h"
 #include "game/objects/object_setup.h"
 #include "track/intersect_api.h"
@@ -85,8 +70,24 @@ extern WarpVec gCameraPosByTransformSpace[];
 #include "dolphin/gx/GXCull.h"
 #include "string.h"
 #include "main/rcp_dolphin.h"
-
 #include "main/gameloop_internal.h"
+
+extern char sTrackLoadBlockOverrunError[];
+extern char sShaderUnusedWordTable[];
+#define MAP_BLOCK_LAYER_COUNT 5
+#define FRUSTUM_PLANE_COUNT   5
+static void trackLoadBlockEnd(MapBlockData* block, int blockId, int slotIdx, int layer);
+/* One 0x20-byte MAPINFO.bin (fileId 0x1f) record, fetched by mapId via getTabEntry. */
+typedef struct MapInfoRecord
+{
+    char name[0x1c]; /* NUL-padded editor name; only mapType is read at runtime */
+    s8 mapType;      /* +0x1c: MapType */
+    u8 unk1d;        /* always 6 in retail */
+    s16 objType;     /* +0x1e: carrier object type for mapType-1 sub-maps, else 0 */
+} MapInfoRecord;
+extern WarpVec gCameraPosByTransformSpace[];
+
+
 int lbl_803DB620 = -1;
 s8 gMapLayerOffsets[8] = {0, -2, -1, 1, 2, 0, 0, 0};
 f32 gMotionBlurAmount = 0.5f;
@@ -362,7 +363,7 @@ void loadNextMap(void)
         {
             if (gArrivedWarpIndex > -1 && (s8)gRcpWarpTransitionType != 0)
             {
-                (*gScreenTransitionInterface)->step(3, 1);
+                (*gScreenTransitionInterface)->step(3, SCREEN_TRANSITION_BLACK);
             }
             gArrivedWarpIndex = -1;
             Pause_SetDisabled(0);
@@ -408,7 +409,7 @@ void warpToMap(int idx, s8 transType)
     *(s8*)&gRcpWarpTransitionType = transType;
     if (transType != 0)
     {
-        (*gScreenTransitionInterface)->start(2, 1);
+        (*gScreenTransitionInterface)->start(2, SCREEN_TRANSITION_BLACK);
     }
     Pause_SetDisabled(1);
 }

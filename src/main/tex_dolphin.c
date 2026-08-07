@@ -5,7 +5,6 @@
 #include "track/intersect_depth_state_api.h"
 #include "track/intersect_depth_read_api.h"
 #include "track/intersect_render_setup_api.h"
-#include "main/hud_visibility_api.h"
 #include "main/lightmap_api.h"
 #include "main/shader_api.h"
 #include "main/debug.h"
@@ -41,6 +40,8 @@
 #include "main/track_dolphin_api.h"
 #include "main/track_dolphin_shadow_api.h"
 #include "main/newshadows_shadow_api.h"
+#include "main/pi_dolphin_api.h"
+#include "dolphin/mtx/vec.h"
 #define TRACK_BBOX_FLAGS_S8
 #define TRACK_BBOX_MASK_TYPE s8
 #define TRACK_BBOX_ARG10_TYPE s8
@@ -61,7 +62,6 @@
 #include "main/newshadows_texture_api.h"
 #include "main/acosf_api.h"
 #include "main/tex_dolphin.h"
-#include "string.h"
 #include "main/sky_api.h"
 #include "dolphin/gx/GXDispList.h"
 #include "track/intersect_fog_api.h"
@@ -69,6 +69,7 @@
 #include "main/dll/FRONT/n_options.h"
 #include "main/lightmap_render_queue_api.h"
 #include "main/objprint_dolphin_internal.h"
+#include "main/dll/ppcwgpipe_struct.h"
 
 u8 gCloudLayerOverlayColor[4] = {0x20, 0x20, 0x20, 0};
 int gTexShaderAmbColor = -1;
@@ -990,7 +991,6 @@ typedef struct TrackTriangle
     u8 edgeOutBits; /* 0x4b per-edge outside bits from last query */
 } TrackTriangle;
 
-#include "main/dll/ppcwgpipe_struct.h"
 
 extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
 extern int sSynthFadeUnit;

@@ -49,21 +49,13 @@ typedef struct GameObject GameObject;
 #define CURVES_COLLISION_SUBTYPE_OBJECT               1
 #define CURVES_COLLISION_SUBTYPE_POINT                2
 
-typedef struct RomCurvePoint
-{
-    f32 height;
-    f32 normalX;
-    f32 normalY;
-    f32 normalZ;
-    GameObject* object;
-    u8 surfaceType;
-} RomCurvePoint;
+typedef struct TrackGroundHit TrackGroundHit;
 
 extern RomCurveDef* romCurves[ROMCURVE_MAX_CURVES];
 extern int nRomCurves;
 extern RomCurveDef* gRomCurveLastFindStart;
 extern RomCurveDef* gRomCurveLastFindEnd;
-extern RomCurvePoint sCurvesHitPoints[ROMCURVE_GETCURVES_MAX_POINTS];
+extern TrackGroundHit sCurvesHitPoints[ROMCURVE_GETCURVES_MAX_POINTS];
 extern char sCurvesMaxRomCurvesExceeded[];
 
 #include "main/dll/rom_curve_segment_projection.h"
@@ -126,9 +118,6 @@ typedef struct CurvesCollisionState
     u8 pad265[CURVES_COLLISION_STATE_SIZE - 0x265];
 } CurvesCollisionState;
 
-STATIC_ASSERT(sizeof(RomCurvePoint) == ROMCURVE_POINT_SIZE);
-STATIC_ASSERT(offsetof(RomCurvePoint, object) == 0x10);
-STATIC_ASSERT(offsetof(RomCurvePoint, surfaceType) == 0x14);
 
 STATIC_ASSERT(sizeof(RomCurveSegmentProjection) == 0x24);
 STATIC_ASSERT(offsetof(RomCurveSegmentProjection, endX) == 0x0C);
@@ -205,7 +194,7 @@ void curves_preparePointCollisionFrame(int obj, CurvesCollisionState* state);
 void curves_updateLocalPointTransforms(int obj, CurvesCollisionState* state);
 void curves_reset(GameObject* obj, CurvesCollisionState* state);
 f32 curves_sampleHeight(GameObject* obj, f32 x, f32 baseY, f32 z, f32 height);
-RomCurvePoint* curves_getCurves(GameObject* obj, f32 x, f32 z, u32* outCount, int queryAll);
+TrackGroundHit* curves_getCurves(GameObject* obj, f32 x, f32 z, u32* outCount, int queryAll);
 void curves_advanceCollision(GameObject* curveObj, CurvesCollisionState* state, f32 step);
 void curves_setSegmentCollision(CurvesCollisionState* state, int count, f32* segmentLocalPoints, f32* radii, s8* types);
 void curves_updateQueryBounds(GameObject* obj, CurvesCollisionState* state, f32 step);

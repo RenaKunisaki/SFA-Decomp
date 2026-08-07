@@ -48,11 +48,12 @@ typedef struct ObjfsaStorage
 {
     ObjfsaPatch patches[256];
     ObjfsaWalkGroup walkGroups[OBJFSA_WALKGROUP_COUNT];
-    u8 activeWalkGroups[0xB8];
+    u8 activeWalkGroups[OBJFSA_WALKGROUP_COUNT];
 } ObjfsaStorage;
 
 STATIC_ASSERT(offsetof(ObjfsaStorage, walkGroups) == 0x3000);
 STATIC_ASSERT(offsetof(ObjfsaStorage, activeWalkGroups) == OBJFSA_ACTIVE_WALKGROUPS_OFFSET);
+STATIC_ASSERT(sizeof(ObjfsaStorage) == 0x4D00);
 
 /* Type 0x26 curve records carry the walk-group outline after the common
  * RomCurveDef prefix.  Each linked edge has a pair of X/Z corner offsets. */

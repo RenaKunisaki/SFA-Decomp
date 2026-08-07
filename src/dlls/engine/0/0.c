@@ -101,6 +101,9 @@
 #include "main/gx_scissor_api.h"
 
 #include "main/textrender_internal.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/dll_0000_gameui_api.h"
 typedef struct HudTrickyInterface
 {
     void* unknown00[8];
@@ -963,7 +966,7 @@ void gameUiSetupTexturedQuadTev(void* this, u8 a, s16 b, int c)
     {
         GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
     }
-    gxSetZMode_(0, 7, 0);
+    gxSetZMode_(0, GX_ALWAYS, 0);
     gxSetPeControl_ZCompLoc_(1);
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
     GXClearVtxDesc();
@@ -999,15 +1002,15 @@ int pauseMenuHoloRenderFn(int* this, int* p2, int p3)
     m2[0][2] = 3.0f / gTrickyHudIconScale;
     m2[1][2] = 3.0f / gTrickyHudIconScale;
     PSMTXConcat(m2, m1, m1);
-    GXLoadTexMtxImm(m1, 0x1e, 1);
+    GXLoadTexMtxImm(m1, 0x1e, GX_MTX2x4);
     GXSetNumTexGens(3);
     GXSetNumTevStages(3);
     GXSetNumIndStages(2);
     GXSetNumChans(1);
-    GXSetIndTexOrder(0, 0, 2);
-    GXSetIndTexCoordScale(0, 0, 0);
-    GXSetIndTexMtx(1, (const f32(*)[3])&indmtx, 0);
-    GXSetTevIndirect(0, 0, 0, 7, 1, 0, 0, 0, 0, 0);
+    GXSetIndTexOrder(GX_INDTEXSTAGE0, GX_TEXCOORD0, GX_TEXMAP2);
+    GXSetIndTexCoordScale(GX_INDTEXSTAGE0, GX_ITS_1, GX_ITS_1);
+    GXSetIndTexMtx(GX_ITM_0, (const f32(*)[3])&indmtx, 0);
+    GXSetTevIndirect(GX_TEVSTAGE0, GX_INDTEXSTAGE0, GX_ITF_8, GX_ITB_STU, GX_ITM_0, GX_ITW_OFF, GX_ITW_OFF, 0, 0, GX_ITBA_OFF);
     selectTexture((Texture*)tex0, 0);
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_NRM, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR0A0);
@@ -1016,18 +1019,18 @@ int pauseMenuHoloRenderFn(int* this, int* p2, int p3)
     GXSetTevSwapMode(GX_TEVSTAGE0, GX_TEV_SWAP0, GX_TEV_SWAP0);
     GXSetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
-    GXSetChanCtrl(GX_COLOR0A0, GX_DISABLE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
+    GXSetChanCtrl(GX_COLOR0A0, GX_DISABLE, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
     GXSetChanMatColor(GX_COLOR0A0, chanCol);
-    GXSetIndTexOrder(1, 0, 2);
-    GXSetIndTexCoordScale(1, 0, 0);
-    GXSetTevIndirect(1, 1, 0, 7, 1, 0, 0, 1, 0, 0);
+    GXSetIndTexOrder(GX_INDTEXSTAGE1, GX_TEXCOORD0, GX_TEXMAP2);
+    GXSetIndTexCoordScale(GX_INDTEXSTAGE1, GX_ITS_1, GX_ITS_1);
+    GXSetTevIndirect(GX_TEVSTAGE1, GX_INDTEXSTAGE1, GX_ITF_8, GX_ITB_STU, GX_ITM_0, GX_ITW_OFF, GX_ITW_OFF, 1, 0, GX_ITBA_OFF);
     PSMTXConcat((MtxPtr)gCameraLightPerspectiveFlipYMatrix, (MtxPtr)lbl_803A8950, m1);
     sval = 0.5f * (gPauseMenuMapSwivelCos * gPauseMenuMapSwivelCos);
     PSMTXScale(m3, sval, sval, 1.0f);
     PSMTXConcat(m3, m1, m1);
     PSMTXTrans(m3, 0.5f * (1.0f - sval), 0.5f * (1.0f - sval), 0.0f);
     PSMTXConcat(m3, m1, m1);
-    GXLoadTexMtxImm(m1, 0x21, 0);
+    GXLoadTexMtxImm(m1, 0x21, GX_MTX3x4);
     GXSetTexCoordGen2(GX_TEXCOORD1, GX_TG_MTX3x4, GX_TG_POS, GX_TEXMTX1, GX_FALSE, GX_PTIDENTITY);
     GXSetTevOrder(GX_TEVSTAGE1, GX_TEXCOORD1, GX_TEXMAP0, GX_COLOR_NULL);
     GXSetTevColorIn(GX_TEVSTAGE1, GX_CC_ZERO, GX_CC_ZERO, GX_CC_ZERO, GX_CC_TEXC);
@@ -1047,7 +1050,7 @@ int pauseMenuHoloRenderFn(int* this, int* p2, int p3)
     mtex[2][1] = 0.0f;
     mtex[2][2] = 0.0f;
     mtex[2][3] = 1.0f;
-    GXLoadTexMtxImm((const f32(*)[4])mtex, 0x24, 1);
+    GXLoadTexMtxImm((const f32(*)[4])mtex, 0x24, GX_MTX2x4);
     GXSetTexCoordGen2(GX_TEXCOORD2, GX_TG_MTX2x4, GX_TG_NRM, GX_TEXMTX2, GX_FALSE, GX_PTIDENTITY);
     getNewShadowDiskTexture((u32*)&tex2);
     selectTexture((Texture*)((void*)tex2), 1);
@@ -1069,7 +1072,7 @@ int pauseMenuHoloRenderFn(int* this, int* p2, int p3)
         GXSetCullMode(GX_CULL_BACK);
     }
     GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
-    gxSetZMode_(0, 7, 0);
+    gxSetZMode_(0, GX_ALWAYS, 0);
     gxSetPeControl_ZCompLoc_(1);
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
     GXClearVtxDesc();
@@ -3302,7 +3305,7 @@ void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
                 textObj = gameTextGet(0x2AD);
             }
             if (icon != 0 && textObj != NULL &&
-                textObj->count > *(aPhraseIndex = &gHudButtonIcons[icon * 2 + 1]))
+                textObj->count > *(aPhraseIndex = (u8*)(icon * 2 + ((u32)gHudButtonIcons + 1))))
             {
                 aTextPtr = textObj->strings[*aPhraseIndex];
                 aPrevCharset2 = gameTextGetCharset();
@@ -3364,7 +3367,7 @@ void hudDrawButtons(int cMenuArg0, int cMenuArg1, int cMenuArg2)
             gameTextSetCharset(3, 3);
             textObj = gameTextGet(0x2AD);
             if (icon != 0 && textObj != NULL &&
-                textObj->count > *(bPhraseIndex = &gHudButtonIcons[icon * 2 + 1]))
+                textObj->count > *(bPhraseIndex = (u8*)(icon * 2 + ((u32)gHudButtonIcons + 1))))
             {
                 bTextPtr = textObj->strings[*bPhraseIndex];
                 bPrevCharset2 = gameTextGetCharset();
@@ -6561,7 +6564,7 @@ void pauseMenuUpdate(void)
                     pauseMenuSetupTitle(0x2b1, 1, 4, 3);
                     pauseMenuState = 2;
                     pauseMenuFrameCounter = 0x3c;
-                    (*gScreenTransitionInterface)->start(0x14, 1);
+                    (*gScreenTransitionInterface)->start(0x14, SCREEN_TRANSITION_BLACK);
                     gPauseMenuTransitionStarted = 1;
                     break;
                 }

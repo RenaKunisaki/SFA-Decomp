@@ -105,7 +105,11 @@ void RESTORE_GPR(29)(void);
 void RESTORE_GPR(30)(void);
 void RESTORE_GPR(31)(void);
 
-extern const u32 __constants[6];
+const double __constants[3] = {
+    0.0,
+    4294967296.0,
+    2147483648.0,
+};
 
 asm u32 __cvt_fp2unsigned(register f64 d)
 {

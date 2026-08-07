@@ -50,6 +50,12 @@
 #include "sys/objects/lifecycle.h"
 #include "main/audio/music_api.h"
 #include "main/dll/dll_0000_gameui_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/dll/partfx_interface.h"
+#include "main/gamebit_ids.h"
+#include "main/pi_dolphin_api.h"
+#include "main/rcp_dolphin_api.h"
+#include "main/dll/dll_002E_moveLib.h"
 
 #define DIMBOSS_OBJECT_TYPE_ID 0x49
 
@@ -569,7 +575,7 @@ int DIMbossHitDetect_blueWhiteCapture(GameObject* obj, BaddieState* runtime, f32
     } else if (progress > 0.25f) {
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_0040;
     }
-    if (runtime->eventFlags & 1) {
+    if (runtime->eventFlags & BADDIE_EVENT_FOOTSTEP) {
         gDIMbossSequenceFlags |= DIMBOSS_SEQUENCE_FLAG_CAPTURE_BLUE_WHITE_VELOCITY;
     }
     (*gPlayerInterface)->playSoundOnEvent0F(obj, runtime, 0, 3, lbl_80325AA0);

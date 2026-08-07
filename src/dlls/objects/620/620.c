@@ -21,6 +21,7 @@
 #include "dlls/object_descriptor.h"
 #include "main/obj_path.h"
 #include "main/objhits.h"
+#include "main/objseq.h"
 
 #define DRCAGEWITH_CHILD_OBJ 1143
 #define DRCAGEWITH_CAGE_NOROPE_OBJ 2154

@@ -45,7 +45,7 @@ typedef struct LaserBeamState {
     s16 effectHandle;
     f32 messagePayload[3];
     f32 knockbackTargetX;
-    u8 unknown44[0x48 - 0x44];
+    f32 knockbackTargetY;
     f32 knockbackTargetZ;
     u8 modgfxAttached;
     u8 blastPhase;
@@ -81,7 +81,7 @@ STATIC_ASSERT(offsetof(LaserBeamState, cyclePeriod) == 0x30);
 STATIC_ASSERT(offsetof(LaserBeamState, effectHandle) == 0x32);
 STATIC_ASSERT(offsetof(LaserBeamState, messagePayload) == 0x34);
 STATIC_ASSERT(offsetof(LaserBeamState, knockbackTargetX) == 0x40);
-STATIC_ASSERT(offsetof(LaserBeamState, unknown44) == 0x44);
+STATIC_ASSERT(offsetof(LaserBeamState, knockbackTargetY) == 0x44);
 STATIC_ASSERT(offsetof(LaserBeamState, knockbackTargetZ) == 0x48);
 STATIC_ASSERT(offsetof(LaserBeamState, modgfxAttached) == 0x4C);
 STATIC_ASSERT(offsetof(LaserBeamState, blastPhase) == 0x4D);

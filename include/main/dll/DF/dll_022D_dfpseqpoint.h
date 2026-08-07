@@ -14,10 +14,18 @@ typedef struct DfpSeqPointPlacement
     s16 sequenceId;
     s16 conditionGameBit;
     s16 disableGameBit;
+    u8 pad22[0x24 - 0x22];
+    s16 unk24;
+    u8 pad26[0x2B - 0x26];
+    u8 unk2B;
+    u8 pad2C[0x2E - 0x2C];
+    s8 unk2E;
+    u8 pad2F[0x30 - 0x2F];
 } DfpSeqPointPlacement;
 
 STATIC_ASSERT(offsetof(DfpSeqPointPlacement, spawnRot) == 0x18);
 STATIC_ASSERT(offsetof(DfpSeqPointPlacement, disableGameBit) == 0x20);
+STATIC_ASSERT(sizeof(DfpSeqPointPlacement) == 0x30);
 
 int DFP_seqpoint_getExtraSize(void);
 int DFP_seqpoint_getObjectTypeId(void);

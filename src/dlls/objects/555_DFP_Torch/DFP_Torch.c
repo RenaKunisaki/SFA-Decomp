@@ -21,6 +21,7 @@
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_stop_channel_api.h"
 #include "main/objhits.h"
+#include "main/vecmath.h"
 
 /* DfpTorchState.mode: torch behaviour selected from placement->mode */
 #define DFPTORCH_MODE_ALWAYS_LIT 0 /* permanently burning, ignited at init */

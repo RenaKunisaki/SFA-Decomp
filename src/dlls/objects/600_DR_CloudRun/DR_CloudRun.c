@@ -1,8 +1,8 @@
 /*
  * DR_CloudRun (DLL 0x258) - the rideable CloudRunner creature on
  * Dinosaur Planet. A large baddie-derived state machine that the player
- * mounts and flies. flightState selects the high-level mode (0 = grounded
- * / scripted, 1 = transition, 2 = mounted free-flight); the eight state
+ * mounts and flies. mountState is the shared VehicleMountState the player
+ * drives through VehicleInterface::setMountState; the eight state
  * handlers (gDRCloudRunnerStateHandlers[0..7]) drive idle, scripted-move,
  * flight, restart and hit responses, dispatched through the shared
  * baddie/player interface in DR_CloudRunner_updateFlightControl.
@@ -52,6 +52,7 @@
 #include "main/player_control_interface.h"
 #include "main/vecmath.h"
 #include "dolphin/pad.h"
+#include "main/voxmaps.h"
 
 void* gDRCloudRunnerStateHandlers[8];
 void* gDRCloudRunnerDefaultStateHandler;
@@ -273,11 +274,6 @@ void DR_CloudRunner_fireProjectile(GameObject* obj)
 #define PLAYER_VEHICLE_OBJGROUP               0x26
 #define DRCLOUDRUNNER_AIRMETER_BGTEXTURE 0x5de /* HUD air-meter background texture id */
 
-
-/* CloudRunnerState::flightState high-level modes */
-#define CLOUDRUNNER_FLIGHT_GROUNDED   0 /* grounded / scripted */
-#define CLOUDRUNNER_FLIGHT_TRANSITION 1 /* mounting / dismounting */
-#define CLOUDRUNNER_FLIGHT_MOUNTED    2 /* mounted free-flight */
 
 #define CLOUDRUNNER_ONCLOUD_GAMEBIT 0xed7 /* set while mounted/on cloudrunner */
 
@@ -948,7 +944,7 @@ int DR_CloudRunner_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate)
     return 0;
 }
 
-void DR_CloudRunner_setGroundMarkerMatrix(GameObject* obj)
+void DR_CloudRunner_handleRiderScale(GameObject* obj)
 {
     objSetModelMatrixOverride((f32*)ObjPath_GetPointModelMtx(obj, 2));
 }
@@ -974,11 +970,11 @@ void DR_CloudRunner_getPlayerAnim(int obj, f32* a, int* b)
     *b = 0;
 }
 
-void DR_CloudRunner_setFlightState(GameObject* obj, int param)
+void DR_CloudRunner_setMountState(GameObject* obj, int mountState)
 {
     CloudRunnerState* inner = obj->extra;
-    inner->flightState = param;
-    if (param == CLOUDRUNNER_FLIGHT_TRANSITION)
+    inner->mountState = mountState;
+    if (mountState == VEHICLE_Mounting)
     {
         s16 seqIndex;
         inner->eyeAnimState.lookAtActive = 0;
@@ -992,7 +988,7 @@ void DR_CloudRunner_setFlightState(GameObject* obj, int param)
     {
         inner->eyeAnimState.lookAtActive = 1;
     }
-    if (param == CLOUDRUNNER_FLIGHT_MOUNTED)
+    if (mountState == VEHICLE_Mounted)
     {
         mainSetBits(CLOUDRUNNER_ONCLOUD_GAMEBIT, 1);
     }
@@ -1092,7 +1088,7 @@ void DR_CloudRunner_render(GameObject* obj, int p2, int p3, int p4, int p5, s8 v
             objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
             ObjPath_GetPointWorldPosition(obj, 3, &inner->spawnPosX, &inner->spawnPosY, &inner->spawnPosZ, 0);
         }
-        if (inner->flightState != CLOUDRUNNER_FLIGHT_MOUNTED && vis != 0)
+        if (inner->mountState != VEHICLE_Mounted && vis != 0)
         {
             objRenderModelAndHitVolumes(obj, p2, p3, p4, p5, 1.0f);
             dll_2E_setTargetFromPathPoint(obj, &inner->moveLib, 0);
@@ -1108,7 +1104,7 @@ void DR_CloudRunner_hitDetect(GameObject* obj)
     s16 diff;
     if (inner->airTimeRemaining != 0 && (obj)->anim.currentMove != 0xf &&
         (hitResult = ObjHits_GetPriorityHit(obj, hits, 0, 0)) != 0 && hitResult != 0xf &&
-        inner->flightState == CLOUDRUNNER_FLIGHT_MOUNTED)
+        inner->mountState == VEHICLE_Mounted)
     {
         diff = (obj)->anim.rotX - (u16)hits[0]->anim.rotX;
         if (diff > 0x8000)
@@ -1143,7 +1139,7 @@ void DR_CloudRunner_updateFlightControl(GameObject* obj, f32 f, int triggerFrame
 {
     CloudRunnerState* inner;
     int flag;
-    int slot;
+    Camera* slot;
     if (triggerFrame != -1)
     {
         flag = (((framesThisStep - 1) - triggerFrame) == 0);
@@ -1152,18 +1148,18 @@ void DR_CloudRunner_updateFlightControl(GameObject* obj, f32 f, int triggerFrame
     {
         flag = 1;
     }
-    slot = (int)Camera_GetCurrent();
+    slot = Camera_GetCurrent();
     inner = (obj)->extra;
     inner->baddie.hitPoints = 0;
     inner->baddie.flags0 &= ~0x8000;
     inner->baddie.flags0 |= 0x200000;
-    if (inner->flightState == CLOUDRUNNER_FLIGHT_MOUNTED)
+    if (inner->mountState == VEHICLE_Mounted)
     {
         inner->baddie.moveInputX = (f32)padGetStickX(0);
         inner->baddie.moveInputZ = (f32)padGetStickY(0);
         inner->baddie.pressedButtons = getButtonsJustPressed(0);
         inner->baddie.heldButtons = getButtonsHeld(0);
-        inner->baddie.cameraYaw = *(s16*)slot;
+        inner->baddie.cameraYaw = slot->yaw;
         if (inner->flagsBC0.b01 != 0)
         {
             Obj_UpdateRomCurveFollowVelocity(obj, &inner->curveWalker, inner->pathFollowSpeed,
@@ -1204,7 +1200,7 @@ void DR_CloudRunner_update(GameObject* obj)
     inner->unkBAE = 5;
     logPrintf(sOnCloudFormat, mainGetBit(CLOUDRUNNER_ONCLOUD_GAMEBIT));
     (obj)->anim.resetHitboxFlags &= ~INTERACT_FLAG_DISABLED;
-    if (inner->flightState == CLOUDRUNNER_FLIGHT_MOUNTED)
+    if (inner->mountState == VEHICLE_Mounted)
     {
         (obj)->anim.resetHitboxFlags |= INTERACT_FLAG_DISABLED;
         DR_CloudRunner_updateFlightControl(obj, timeDelta, -1);
@@ -1225,7 +1221,7 @@ void DR_CloudRunner_update(GameObject* obj)
             inner->cooldownTimer = 0;
         }
     }
-    if (inner->flightState == CLOUDRUNNER_FLIGHT_MOUNTED)
+    if (inner->mountState == VEHICLE_Mounted)
     {
         ObjHits_MarkObjectPositionDirty(&obj->anim);
         inner->moveLib.modeBits |= 1;
@@ -1240,7 +1236,7 @@ void DR_CloudRunner_update(GameObject* obj)
     characterDoEyeAnims(obj, &inner->eyeAnimState);
     if ((obj)->anim.resetHitboxFlags & INTERACT_FLAG_ACTIVATED)
     {
-        if (inner->flightState == CLOUDRUNNER_FLIGHT_GROUNDED)
+        if (inner->mountState == VEHICLE_NoRider)
         {
             if (inner->flagsBC0.b10)
             {
@@ -1368,12 +1364,12 @@ ObjectDescriptor24 gDR_CloudRunnerObjDescriptor = {
     (ObjectDescriptorCallback)DR_CloudRunner_getDismountSide,
     (ObjectDescriptorCallback)DR_CloudRunner_getCameraPosition,
     (ObjectDescriptorCallback)DR_CloudRunner_getMountState,
-    (ObjectDescriptorCallback)DR_CloudRunner_setFlightState,
+    (ObjectDescriptorCallback)DR_CloudRunner_setMountState,
     (ObjectDescriptorCallback)DR_CloudRunner_getPlayerAnim,
     (ObjectDescriptorCallback)DR_CloudRunner_func19,
     (ObjectDescriptorCallback)DR_CloudRunner_getRacePosition,
     (ObjectDescriptorCallback)DR_CloudRunner_func21,
-    (ObjectDescriptorCallback)DR_CloudRunner_setGroundMarkerMatrix,
+    (ObjectDescriptorCallback)DR_CloudRunner_handleRiderScale,
     (ObjectDescriptorCallback)DR_CloudRunner_func23,
 };
 

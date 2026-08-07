@@ -13,7 +13,7 @@ typedef struct DFSHLaserBeamPlacement {
     s8 initialYaw;
     u8 proximityMode;
     s16 beamRange;
-    u8 unknown1C[0x1E - 0x1C];
+    s16 cyclePeriod;
     s16 disableGameBit;
 } DFSHLaserBeamPlacement;
 
@@ -37,7 +37,7 @@ typedef struct DFSHLaserBeamState {
     s16 warmupThreshold;
     f32 messagePayload[3];
     f32 knockbackTargetX;
-    f32 unknown40;
+    f32 knockbackTargetY;
     f32 knockbackTargetZ;
     u8 modgfxAttached;
     u8 blastPhase;
@@ -49,7 +49,7 @@ STATIC_ASSERT(offsetof(DFSHLaserBeamPlacement, base) == 0x00);
 STATIC_ASSERT(offsetof(DFSHLaserBeamPlacement, initialYaw) == 0x18);
 STATIC_ASSERT(offsetof(DFSHLaserBeamPlacement, proximityMode) == 0x19);
 STATIC_ASSERT(offsetof(DFSHLaserBeamPlacement, beamRange) == 0x1A);
-STATIC_ASSERT(offsetof(DFSHLaserBeamPlacement, unknown1C) == 0x1C);
+STATIC_ASSERT(offsetof(DFSHLaserBeamPlacement, cyclePeriod) == 0x1C);
 STATIC_ASSERT(offsetof(DFSHLaserBeamPlacement, disableGameBit) == 0x1E);
 
 STATIC_ASSERT(sizeof(DFSHLaserBeamState) == 0x4C);
@@ -72,7 +72,7 @@ STATIC_ASSERT(offsetof(DFSHLaserBeamState, cycleTimer) == 0x2C);
 STATIC_ASSERT(offsetof(DFSHLaserBeamState, warmupThreshold) == 0x2E);
 STATIC_ASSERT(offsetof(DFSHLaserBeamState, messagePayload) == 0x30);
 STATIC_ASSERT(offsetof(DFSHLaserBeamState, knockbackTargetX) == 0x3C);
-STATIC_ASSERT(offsetof(DFSHLaserBeamState, unknown40) == 0x40);
+STATIC_ASSERT(offsetof(DFSHLaserBeamState, knockbackTargetY) == 0x40);
 STATIC_ASSERT(offsetof(DFSHLaserBeamState, knockbackTargetZ) == 0x44);
 STATIC_ASSERT(offsetof(DFSHLaserBeamState, modgfxAttached) == 0x48);
 STATIC_ASSERT(offsetof(DFSHLaserBeamState, blastPhase) == 0x49);

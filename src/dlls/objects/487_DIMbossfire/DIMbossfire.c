@@ -13,6 +13,7 @@
 #include "main/dll/partfx_interface.h"
 #include "main/frame_timing.h"
 #include "main/gamebits_api.h"
+#include "main/model_light.h"
 #include "main/objhits.h"
 #include "main/pad_api.h"
 #include "main/vecmath.h"

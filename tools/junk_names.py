@@ -46,6 +46,7 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from byteneutral import REPO  # noqa: E402
+from source_coverage_audit import live_files_under  # noqa: E402
 
 KINDS = {
     # Ghidra value temporaries: uVar1, iVar12, fVar3, auVar2, bVar1, cVar4 ...
@@ -92,7 +93,11 @@ def main() -> int:
     files: list[Path] = []
     for r in args.roots:
         p = REPO / r
-        files += sorted(p.rglob("*.c")) if p.is_dir() else [p]
+        if p.is_dir():
+            files += [Path(f) for f in
+                      live_files_under(str(p), exts=(".c", ".cp", ".cpp"))]
+        else:
+            files.append(p)
 
     if args.list:
         p = REPO / args.list

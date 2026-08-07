@@ -23,6 +23,7 @@
 #include "dolphin/gx/GXTev.h"
 #include "main/lightmap.h"
 #include "main/track_dolphin_shadow_api.h"
+#include "main/vecmath.h"
 
 u32 lbl_803DD18C;
 u32 lbl_803DD188;

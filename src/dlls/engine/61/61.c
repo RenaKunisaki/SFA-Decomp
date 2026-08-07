@@ -11,6 +11,8 @@
 #include "main/gametext_api.h"
 #include "main/gametext_color_api.h"
 #include "main/mm.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_api.h"
 
 #define TITLE_MENU_FLAG_ENABLED          0x01
 #define TITLE_MENU_FLAG_WRAP             0x02

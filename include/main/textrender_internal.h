@@ -158,7 +158,7 @@ extern int gGameTextShadowOffsetX;
 extern int gGameTextShadowOffsetY;
 extern u8 gGameTextBase[];
 extern u8* gGameTextLastEntry;
-extern int gCurTextBuffer;
+extern char* gCurTextBuffer;
 extern int gGameTextBufferIndex;
 extern const f32 gGameTextFadeLimit;
 extern char gGameTextFontData[];

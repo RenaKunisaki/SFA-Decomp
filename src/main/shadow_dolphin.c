@@ -5,7 +5,6 @@
 #include "track/intersect_depth_state_api.h"
 #include "track/intersect_depth_read_api.h"
 #include "track/intersect_render_setup_api.h"
-#include "main/hud_visibility_api.h"
 #include "main/lightmap_api.h"
 #include "main/shader_api.h"
 #include "main/debug.h"
@@ -41,6 +40,7 @@
 #include "main/track_dolphin_api.h"
 #include "main/track_dolphin_shadow_api.h"
 #include "main/newshadows_shadow_api.h"
+#include "dolphin/mtx/vec.h"
 #define TRACK_BBOX_FLAGS_S8
 #define TRACK_BBOX_MASK_TYPE s8
 #define TRACK_BBOX_ARG10_TYPE s8
@@ -63,8 +63,9 @@
 #include "main/tex_dolphin.h"
 #include "string.h"
 #include "main/track_dolphin_sky_api.h"
+#include "main/dll/ppcwgpipe_struct.h"
 
-int gShadowVolumeBuffer;
+Vec3f* gShadowVolumeBuffer;
 void* gShadowVolumeBuffers[2];
 int lbl_803DCF20;
 int lbl_803DCF1C;
@@ -100,7 +101,6 @@ s8 gShadowVolumesDirty = 10;
 s16 gSunMagnitude = 100;
 int gSunDirChanged = 1;
 
-#include "main/dll/ppcwgpipe_struct.h"
 
 extern volatile PPCWGPipe GXWGFifo : (0xCC008000);
 
@@ -329,8 +329,8 @@ void objDrawGroundShadow(GameObject* obj, ObjModel* model)
             GXSetTevKAlphaSel(GX_TEVSTAGE0, GX_TEV_KASEL_K0_A);
             GXSetNumTevStages(1);
             GXSetNumIndStages(0);
-            GXSetChanCtrl(GX_COLOR0A0, GX_DISABLE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
-            GXSetChanCtrl(GX_COLOR1A1, GX_DISABLE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
+            GXSetChanCtrl(GX_COLOR0A0, GX_DISABLE, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
+            GXSetChanCtrl(GX_COLOR1A1, GX_DISABLE, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
             GXSetNumChans(0);
             GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
             GXSetTevDirect(GX_TEVSTAGE0);
@@ -737,13 +737,13 @@ int objShadowRender(GameObject* obj, int renderMode, int unused, int frameCount)
         trackGetTriangleBuffer(&idxOut, &triangleTable);
 
         triangleBuffer = triangleTable;
-        idxOut = collectShadowTrackTriangles(obj, triangleBuffer, gShadowDrawScratch, gShadowVolumeBuffer, idxOut, (f32)(int)vtx[0],
+        idxOut = collectShadowTrackTriangles(obj, triangleBuffer, gShadowDrawScratch, (int)gShadowVolumeBuffer, idxOut, (f32)(int)vtx[0],
                              (f32)(int)vtx[2], renderMode, modelState->flags & 0x40000);
         gShadowTrackTriangleBuffer = triangleBuffer;
         gShadowTrackTriangleCount = idxOut;
         gShadowTrackGridOrigin = (int)vtx;
         trackDolphin_buildShadowVolumePlanes((int*)obj, buf48, bufA8);
-        cullVisibleShadowTriangles(obj, buf48, bufA8, idxOut, (Vec3f*)gShadowVolumeBuffer, cache,
+        cullVisibleShadowTriangles(obj, buf48, bufA8, idxOut, gShadowVolumeBuffer, cache,
                     (TrackShadowTriangle*)gShadowDrawScratch, 0x555);
     }
     objDrawShadowCasterMesh(cache, modelState, obj, gShadowVisibleCount, &drawScratch, buf48, yOff);
@@ -969,7 +969,7 @@ void initTextures(void)
     f32* b = gShadowVolumeBoxCorners;
 
     gShadowVolumesDirty = 10;
-    gShadowVolumeBuffer = (int)mmAlloc(0xa8c0, 0x18, 0);
+    gShadowVolumeBuffer = mmAlloc(0xa8c0, 0x18, 0);
     a[0] = -1.0f;
     b[0] = -1.0f;
     a[1] = -1.0f;

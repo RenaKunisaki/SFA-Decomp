@@ -1031,7 +1031,7 @@ int trackGetLineIntersect(f32* startPos, f32* endPos, f32 radius, int flags, Tra
         dx = target->anim.localPosX - worldStart[0];
         dy = target->anim.localPosY - worldStart[1];
         dz = target->anim.localPosZ - worldStart[2];
-        modelHeader = (ModelFileHeader*)target->anim.banks[priorityState->stateIndex]->animDef;
+        modelHeader = target->anim.modelBanks[priorityState->stateIndex]->file;
         cullRadiusSq = (f32)(modelFileHeaderGetCullDistance(modelHeader) + 0x32);
         cullRadiusSq = cullRadiusSq * cullRadiusSq;
         hit = 0;

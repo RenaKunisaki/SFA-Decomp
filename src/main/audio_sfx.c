@@ -18,6 +18,13 @@
 #include "dolphin/mtx/vec.h"
 #include "main/audio/music_api.h"
 #include "main/audio/audio_control_api.h"
+#include "main/audio/sfx_channel_query_api.h"
+#include "main/audio/sfx_channel_volume_api.h"
+#include "main/audio/sfx_limited_object_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_position_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/audio/sfx_stop_object_api.h"
 
 u8 gSfxTriggerExtraTable[8] = {1, 2, 4, 8, 0x10, 0x20, 0x40, 0};
 
@@ -154,11 +161,11 @@ void Sfx_SetObjectSoundsPaused(s32 paused)
         {
             if (paused != 0)
             {
-                sndFXCtrl(objectChannel->handle, 7, 0);
+                sndFXCtrl(objectChannel->handle, MCMD_CTRL_VOLUME, 0);
             }
             else if (objectChannel->paused != 0)
             {
-                sndFXCtrl(objectChannel->handle, 7, objectChannel->volume);
+                sndFXCtrl(objectChannel->handle, MCMD_CTRL_VOLUME, objectChannel->volume);
             }
             objectChannel->paused = pausedByte;
         }
@@ -247,7 +254,7 @@ void Sfx_SetObjectChannelVolume(GameObject* obj, u32 channel, u8 volume, f32 vol
                 {
                     ctrlVolume = volumeByte;
                 }
-                sndFXCtrl(objectChannel->handle, 7, (u8)ctrlVolume);
+                sndFXCtrl(objectChannel->handle, MCMD_CTRL_VOLUME, (u8)ctrlVolume);
             }
         }
 
@@ -298,7 +305,7 @@ void Sfx_SetObjectSfxVolume(GameObject* obj, u16 sfxId, u8 volume, f32 volumeSca
                 {
                     ctrlVolume = volumeByte;
                 }
-                sndFXCtrl(objectChannel->handle, 7, (u8)ctrlVolume);
+                sndFXCtrl(objectChannel->handle, MCMD_CTRL_VOLUME, (u8)ctrlVolume);
             }
         }
 

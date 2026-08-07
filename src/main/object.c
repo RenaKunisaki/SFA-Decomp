@@ -48,6 +48,10 @@
 #include "string.h"
 #include "main/dll/dll_0004_dummy04.h"
 #include "main/dll/dll_0017_savegame_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
+#include "main/mapEventTypes.h"
+#include "dolphin/mtx/vec.h"
 
 s16 gObjPartitionPivot;
 void* lbl_803DCBC0;
@@ -83,28 +87,28 @@ typedef struct ObjListObjectDef
 typedef struct LoadedObj
 {
     u8 pad00[0x06];
-    s16 flags06;
-    f32 scale;
-    f32 x;
-    f32 y;
-    f32 z;
+    s16 flags;
+    f32 rootMotionScale;
+    f32 localPosX;
+    f32 localPosY;
+    f32 localPosZ;
     u8 pad18[0x18];
     void* parent;
     u8 pad34[0x2];
-    u8 f36;
+    u8 alpha;
     u8 pad37[0x5];
-    f32 f3c;
-    f32 f40;
-    s16 f44;
+    f32 loadDistance;
+    f32 cullDistance2;
+    s16 classId;
     s16 romDefNo;
-    s16 typeId;
+    s16 defId;
     u8 pad4a[0x2];
-    s16* data;
+    s16* placementData;
     u8* def;
     ObjHitReactState* hitReactState;
     u8 pad58[0x4];
     ObjWeaponDaTable* weaponDaTable;
-    ObjAnimEventTable* objAnimEventTable;
+    ObjAnimEventTable* eventTable;
     u8 pad64[0x4];
     int** dll;
     int f6c;
@@ -113,21 +117,21 @@ typedef struct LoadedObj
     ObjHitVolumeRuntimeBounds* hitVolumeBounds;
     u8** models;
     u8 pad80[0x22];
-    s16 fa2;
+    s16 activeMove;
     u8 pada4[0x4];
-    f32 cullDist;
-    s8 fac;
+    f32 hitboxScale;
+    s8 mapEventSlot;
     u8 padad[0x3];
-    u16 fb0;
-    s16 fb2;
-    s16 fb4;
+    u16 objectFlags;
+    s16 romListBit;
+    s16 seqIndex;
     u8 padb6[0x2];
     int fb8;
     u8 padbc[0x20];
     int fdc;
     u8 pade0[0x11];
-    u8 ff1;
-    u8 ff2;
+    u8 sphereMapIntensity;
+    u8 lightColorSlot;
     u8 padf3[0x15];
     int f108;
 } LoadedObj;
@@ -274,7 +278,7 @@ void Obj_SetModelRenderOpAlpha(void* obj, u8 alpha)
     ObjModel* model;
 
     objAnim = (ObjAnimComponent*)obj;
-    model = (ObjModel*)objAnim->banks[objAnim->bankIndex];
+    model = objAnim->modelBanks[objAnim->bankIndex];
     if (model != NULL)
     {
         modelFile = model->file;
@@ -442,7 +446,7 @@ void Obj_Shatter(GameObject* obj)
     obj->colorFadeFrames = 0;
     obj->colorFadeFlags &= ~OBJ_COLOR_FADE_FLAG_FROZEN;
     obj->fadeCounter = 0;
-    ObjModel_ClearRenderAttachment((ObjModel*)obj->anim.banks[obj->anim.bankIndex]);
+    ObjModel_ClearRenderAttachment(obj->anim.modelBanks[obj->anim.bankIndex]);
     (*gBoneParticleEffectInterface)->spawnEffect(obj, 0x7fb, NULL, 0x50, NULL);
     (*gBoneParticleEffectInterface)->spawnEffect(obj, 0x7fc, NULL, 0x32, NULL);
 }
@@ -482,7 +486,7 @@ void Obj_StartModelFadeIn(GameObject* obj, int frames)
             obj->colorFadeFrames = frames;
             obj->colorFadeFlags = (u8)(obj->colorFadeFlags | OBJ_COLOR_FADE_FLAG_FROZEN);
             Obj_BuildWorldTransformMatrix(obj, mtx, 0);
-            ObjModel_EnableDefaultRenderCallback(obj, (ObjModel*)objAnim->banks[objAnim->bankIndex], mtx, 1,
+            ObjModel_EnableDefaultRenderCallback(obj, objAnim->modelBanks[objAnim->bankIndex], mtx, 1,
                                                  obj->anim.hitboxScale * obj->anim.rootMotionScale);
             (*gBoneParticleEffectInterface)->spawnEffect(obj, 0x7fc, NULL, 0x64, NULL);
         }
@@ -629,7 +633,7 @@ void Obj_BuildWorldTransformMatrix(GameObject* obj, f32* mtx, int flags)
 
 ObjModel* Obj_GetActiveModel(GameObject* obj)
 {
-    return (ObjModel*)obj->anim.banks[obj->anim.bankIndex];
+    return obj->anim.modelBanks[obj->anim.bankIndex];
 }
 
 GameObject* loadObjectAtObject(GameObject* src, ObjPlacement* setup)
@@ -1339,7 +1343,7 @@ void Obj_UpdateObject(GameObject* obj)
             playerUpdateWhileTimeStopped((int)obj);
             break;
         case OBJECT_SEQID_STAFF:
-            playerRenderQuakeSpell(obj);
+            staffUpdateWhileTimeStopped(obj);
             break;
         case OBJECT_SEQID_DIE_DUSTER:
         case OBJECT_SEQID_DIE_FOX:
@@ -1395,7 +1399,7 @@ void Obj_UpdateObject(GameObject* obj)
             obj->colorFadeFrames = 0;
             obj->colorFadeFlags &= ~OBJ_COLOR_FADE_FLAG_FROZEN;
             obj->fadeCounter = 0;
-            ObjModel_ClearRenderAttachment((ObjModel*)object->banks[object->bankIndex]);
+            ObjModel_ClearRenderAttachment(object->modelBanks[object->bankIndex]);
             cb = (*gBoneParticleEffectInterface)->spawnEffect;
             cb(obj, 0x7fb, NULL, 0x50, NULL);
             cb = (*gBoneParticleEffectInterface)->spawnEffect;
@@ -1823,10 +1827,10 @@ void Obj_RegisterObject(GameObject* obj, int flags)
     {
         mapLoadForObject(id, obj);
     }
-    if (object->modelInstance->flags & 0x40)
+    if (object->modelInstance->flags & OBJMODEL_FLAG_SKIP_RESET_UPDATE)
     {
         objAddObjectType((u32)obj, OBJECT_OBJGROUP_HITBOX);
-        if (object->activeHitboxMode != 0x5a && (object->modelInstance->flags & 0x40))
+        if (object->activeHitboxMode != 0x5a && (object->modelInstance->flags & OBJMODEL_FLAG_SKIP_RESET_UPDATE))
         {
             object->activeHitboxMode = 0x5a;
         }
@@ -1923,46 +1927,46 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
         return NULL;
     }
     modelDef = (ObjModelInstance*)def;
-    tmpl.f44 = modelDef->category;
-    tmpl.scale = modelDef->rootMotionScaleBase;
-    tmpl.flags06 = 2;
+    tmpl.classId = modelDef->category;
+    tmpl.rootMotionScale = modelDef->rootMotionScaleBase;
+    tmpl.flags = 2;
     if (modelDef->flags & 0x80)
     {
-        tmpl.flags06 = tmpl.flags06 | 0x80;
+        tmpl.flags = tmpl.flags | 0x80;
     }
     if (modelDef->flags & 0x40000)
     {
-        tmpl.fb0 = tmpl.fb0 | 0x80;
+        tmpl.objectFlags = tmpl.objectFlags | 0x80;
     }
     if (flags & 4)
     {
-        tmpl.flags06 = tmpl.flags06 | 0x2000;
+        tmpl.flags = tmpl.flags | 0x2000;
     }
-    tmpl.x = ((ObjPlacement*)data)->posX;
-    tmpl.y = ((ObjPlacement*)data)->posY;
-    tmpl.z = ((ObjPlacement*)data)->posZ;
-    tmpl.typeId = id;
-    tmpl.data = data;
+    tmpl.localPosX = ((ObjPlacement*)data)->posX;
+    tmpl.localPosY = ((ObjPlacement*)data)->posY;
+    tmpl.localPosZ = ((ObjPlacement*)data)->posZ;
+    tmpl.defId = id;
+    tmpl.placementData = data;
     tmpl.romDefNo = seq;
-    tmpl.fb2 = arg3;
-    tmpl.fac = arg2;
-    tmpl.fa2 = -1;
-    tmpl.fb4 = -1;
-    tmpl.f36 = 0xff;
+    tmpl.romListBit = arg3;
+    tmpl.mapEventSlot = arg2;
+    tmpl.activeMove = -1;
+    tmpl.seqIndex = -1;
+    tmpl.alpha = 0xff;
     tmpl.fdc = 0;
-    tmpl.ff1 = 0xff;
-    tmpl.f3c = (f32)(int)(((ObjPlacement*)data)->loadRange << 3);
-    tmpl.f40 = (f32)(int)(((ObjPlacement*)data)->unk07 << 3);
+    tmpl.sphereMapIntensity = 0xff;
+    tmpl.loadDistance = (f32)(int)(((ObjPlacement*)data)->loadRange << 3);
+    tmpl.cullDistance2 = (f32)(int)(((ObjPlacement*)data)->unk07 << 3);
     n = (((ObjPlacement*)data)->mapActFlagsHi & 0x18) >> 3;
-    tmpl.ff2 = n;
+    tmpl.lightColorSlot = n;
     if (n == 0)
     {
-        tmpl.ff2 = ((ObjModelInstance*)tmpl.def)->defaultModelVariant;
+        tmpl.lightColorSlot = ((ObjModelInstance*)tmpl.def)->defaultModelVariant;
     }
     else
     {
         n -= 1;
-        tmpl.ff2 = n;
+        tmpl.lightColorSlot = n;
     }
     tmpl.dll = NULL;
     if ((int)modelDef->dllId != -1)
@@ -2053,7 +2057,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
                 ((ObjModelInstance*)obj->def)->flags &= ~0x800000LL;
             }
             ObjModel_LoadRenderOpTextures(obj->models[idx], (GameObject*)obj);
-            modelInitBones(obj->scale, obj->models[idx]);
+            modelInitBones(obj->rootMotionScale, obj->models[idx]);
             if (((ObjModelInstance*)obj->def)->flags & OBJDEF_FLAG_DEFERRED_RENDER)
             {
                 ObjModel_SetRenderCallback(obj->models[idx], objCausticReflectionRenderCb);
@@ -2084,7 +2088,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
                 ((ObjModelInstance*)obj->def)->flags &= ~0x800000LL;
             }
             ObjModel_LoadRenderOpTextures(obj->models[i], (GameObject*)obj);
-            modelInitBones(obj->scale, obj->models[i]);
+            modelInitBones(obj->rootMotionScale, obj->models[i]);
             if (((ObjModelInstance*)obj->def)->flags & OBJDEF_FLAG_DEFERRED_RENDER)
             {
                 ObjModel_SetRenderCallback(obj->models[i], objCausticReflectionRenderCb);
@@ -2134,10 +2138,10 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
     {
         seq2[0] = obj->romDefNo;
         alignedCursor = roundUpTo4(cursor);
-        obj->objAnimEventTable = (ObjAnimEventTable*)alignedCursor;
+        obj->eventTable = (ObjAnimEventTable*)alignedCursor;
         cursor = roundUpTo8(alignedCursor + 8);
-        obj->objAnimEventTable->entries = (s16*)cursor;
-        ObjAnim_LoadMoveEvents((u8*)obj, seq2[0], obj->objAnimEventTable, 0, 1);
+        obj->eventTable->entries = (s16*)cursor;
+        ObjAnim_LoadMoveEvents((u8*)obj, seq2[0], obj->eventTable, 0, 1);
         cursor += 0x50;
     }
     if (!(loadFlags & OBJLOAD_FLAG_WEAPON_DA) || *(void**)obj->models == NULL)
@@ -2175,7 +2179,7 @@ void* loadCharacter(s16* data, int flags, int arg2, int arg3, void* parent, int 
     {
         max = max * ((10.0f * cullScale) / 255.0f);
     }
-    obj->cullDist = max;
+    obj->hitboxScale = max;
     if (modelDef->hitboxStateCount != 0)
     {
         cursor = ObjHits_AllocObjectState((GameObject*)obj, cursor);
@@ -2451,7 +2455,7 @@ void Obj_UpdateModelBlendStates(void)
             k = 0;
             for (; k < objAnim->modelInstance->modelCount; k++)
             {
-                m = (ObjModel*)objAnim->banks[k];
+                m = objAnim->modelBanks[k];
                 if (m != 0)
                 {
                     m->bufferFlags &= ~8;
@@ -2471,7 +2475,7 @@ void Obj_UpdateModelBlendStates(void)
                     k = 0;
                     for (; k < childAnim->modelInstance->modelCount; k++)
                     {
-                        m = (ObjModel*)childAnim->banks[k];
+                        m = childAnim->modelBanks[k];
                         if (m != 0)
                         {
                             m->bufferFlags &= ~8;

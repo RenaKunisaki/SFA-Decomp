@@ -25,6 +25,7 @@
 #include "main/obj_link.h"
 #include "main/obj_message.h"
 #include "sys/objects/lifecycle.h"
+#include "dlls/objects/237.h"
 
 #define MAGICGEM_MSG_IN_RANGE    0x7000A /* Sent to the player when a gem enters pickup range. */
 #define MAGICGEM_MSG_PICKUP      0x7000B /* Awards magic and starts the collection burst. */

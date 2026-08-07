@@ -10,6 +10,7 @@
 #include "main/gamebits_api.h"
 #include "main/mapEventTypes.h"
 #include "main/object_render.h"
+#include "main/objseq.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"

@@ -358,6 +358,7 @@ typedef struct ObjAnimBank {
   u8 pad04[0x2C - 4];
   ObjAnimState *currentState;
   ObjAnimState *activeState;
+  u8 pad34[0x64 - 0x34];
 } ObjAnimBank;
 
 typedef struct ObjectShadowMesh {
@@ -395,6 +396,8 @@ typedef struct ObjModelState {
   u8 shadowAlpha;
   u8 pad41[0x44 - 0x41];
 } ObjModelState;
+
+STATIC_ASSERT(offsetof(ObjModelState, flags) == 0x30);
 
 typedef struct ObjAnimComponent {
   union {
@@ -703,7 +706,7 @@ STATIC_ASSERT(offsetof(ObjAnimMoveData, frameControl) == 0x01);
 STATIC_ASSERT(offsetof(ObjAnimMoveData, rootCurveOffset) == 0x04);
 STATIC_ASSERT(offsetof(ObjAnimMoveData, frameCommands) == OBJANIM_FRAME_COMMANDS_OFFSET);
 
-STATIC_ASSERT(sizeof(ObjAnimBank) == 0x34);
+STATIC_ASSERT(sizeof(ObjAnimBank) == 0x64);
 STATIC_ASSERT(offsetof(ObjAnimBank, animDef) == 0x00);
 STATIC_ASSERT(offsetof(ObjAnimBank, currentState) == 0x2C);
 STATIC_ASSERT(offsetof(ObjAnimBank, activeState) == 0x30);

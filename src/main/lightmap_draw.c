@@ -21,7 +21,6 @@
 #include "main/sky_state.h"
 #include "main/track_dolphin_api.h"
 #include "main/mm.h"
-#include "string.h"
 #include "main/rcp_dolphin.h"
 #include "main/dll/dll_0000_gameui.h"
 #include "main/dll/dll_0031_minimap.h"
@@ -37,19 +36,20 @@
 #include "dolphin/gx/GXTransform.h"
 #include "dolphin/mtx.h"
 #include "dolphin/os/OSFastCast.h"
+#include "main/dll/ppcwgpipe_struct.h"
+#include "main/lightmap_internal.h"
+#include "main/render_flags.h"
+#include "main/dll/player_api.h"
+#include "main/dll_000A_expgfx.h"
+#include "main/lightmap.h"
 
 extern f32 widescreenAspect;
 
 void sceneDraw(void);
 void sceneDrawTransparentPolys(void);
 
-#include "main/lightmap_internal.h"
 
 
-#include "main/render_flags.h"
-#include "main/dll/player_api.h"
-#include "main/dll_000A_expgfx.h"
-#include "main/lightmap.h"
 
 
 
@@ -605,8 +605,8 @@ void sceneDrawTransparentPolys(void)
             break;
         case 4:
             item.block = entries[i].arg1.block;
-            GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
-            GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
+            GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
+            GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
             lightmapSetObjAmbColor();
             PSMTXConcat((MtxPtr)Camera_GetViewMatrix(), item.block->transform, (MtxPtr)m);
             setupToRenderMapBlock(item.block, m);
@@ -614,8 +614,8 @@ void sceneDrawTransparentPolys(void)
             break;
         case 5:
             item.block = entries[i].arg1.block;
-            GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
-            GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
+            GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
+            GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
             lightmapSetObjAmbColor();
             PSMTXConcat((MtxPtr)Camera_GetViewMatrix(), item.block->transform, (MtxPtr)m);
             setupToRenderMapBlock(item.block, m);
@@ -623,8 +623,8 @@ void sceneDrawTransparentPolys(void)
             break;
         case 6:
             item.block = entries[i].arg1.block;
-            GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
-            GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, 0, GX_DF_NONE, GX_AF_NONE);
+            GXSetChanCtrl(GX_COLOR0, GX_TRUE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
+            GXSetChanCtrl(GX_ALPHA0, GX_FALSE, GX_SRC_REG, GX_SRC_VTX, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
             lightmapSetObjAmbColor();
             PSMTXConcat((MtxPtr)Camera_GetViewMatrix(), item.block->transform, (MtxPtr)m);
             setupToRenderMapBlock(item.block, m);

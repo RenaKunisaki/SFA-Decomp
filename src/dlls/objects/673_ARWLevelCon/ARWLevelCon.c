@@ -27,6 +27,7 @@
 #include "main/gamebit_ids.h"
 #include "main/audio/music_trigger_ids.h"
 #include "main/object_render.h"
+#include "main/objseq.h"
 
 /* env effects co-activated once with the sky preset; opaque distinct roles */
 #define ARWLEVELCON_ENVFX_A 0x21f

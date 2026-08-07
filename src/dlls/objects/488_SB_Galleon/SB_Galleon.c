@@ -40,6 +40,7 @@
 #include "main/audio/sfx_channel_query_api.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_stop_object_api.h"
+#include "main/sky_api.h"
 
 #define DBPROTECTION_GAMEBIT_CYCLE_A_PENDING  0xa3c
 #define DBPROTECTION_GAMEBIT_CYCLE_B_PENDING  0xa3d
@@ -612,7 +613,7 @@ void SB_Galleon_updateFlight(GameObject* obj) {
         if (state->stage >= 7) {
             if (state->fadeTimer == 0) {
                 ObjHits_DisableObject(obj);
-                (*gScreenTransitionInterface)->start(0x41, 1);
+                (*gScreenTransitionInterface)->start(0x41, SCREEN_TRANSITION_BLACK);
             }
             state->fadeTimer += framesThisStep;
             if (state->fadeTimer > 0x41) {
@@ -757,13 +758,13 @@ void SB_Galleon_updateShield(GameObject* obj) {
         mainGetBit(DBPROTECTION_GAMEBIT_TRANSITION_READY) != 0) {
         gSB_GalleonTransitionPending = 1;
         mainSetBits(DBPROTECTION_GAMEBIT_TRANSITION_USED, 1);
-        (*gScreenTransitionInterface)->start(0xa, 1);
+        (*gScreenTransitionInterface)->start(0xa, SCREEN_TRANSITION_BLACK);
     }
 
     SB_Galleon_updateEnvfxGameBits(state);
 
     if (gSB_GalleonTransitionPending != 0 && (*gScreenTransitionInterface)->isFinished() != 0) {
-        (*gScreenTransitionInterface)->step(0x50, 1);
+        (*gScreenTransitionInterface)->step(0x50, SCREEN_TRANSITION_BLACK);
         (*gObjectTriggerInterface)->runSequence(1, obj, -1);
         state->cameraState = 3;
         gSB_GalleonTransitionPending = 0;

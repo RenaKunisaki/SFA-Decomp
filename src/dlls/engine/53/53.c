@@ -193,7 +193,7 @@ void saveSelectSetSlot(int slot, int value)
         else
         {
             Sfx_PlayFromObject(0, SFXTRIG_wmap_name);
-            (*gScreenTransitionInterface)->start(0x14, 5);
+            (*gScreenTransitionInterface)->start(0x14, SCREEN_TRANSITION_HUD);
             gSaveSelectExitTimer = 0x23;
             gSaveSelectQuitPending = 1;
         }
@@ -202,7 +202,7 @@ void saveSelectSetSlot(int slot, int value)
     {
         gSaveSelectLaunchPending = 1;
         Sfx_PlayFromObject(0, SFXTRIG_menu_pause_up); /* confirm sfx (unnamed in sfx_ids.h) */
-        (*gScreenTransitionInterface)->start(0x14, 1);
+        (*gScreenTransitionInterface)->start(0x14, SCREEN_TRANSITION_BLACK);
         gTitleMenuControlInterface->vtable->func0A(0);
         gTitleMenuControlInterface->vtable->func0A(1);
         gTitleMenuControlInterface->vtable->func0A(2);
@@ -333,7 +333,7 @@ static void saveFileSelect_init(int sel, int slot)
     if (sel == 0)
     {
         Sfx_PlayFromObject(0, SFXTRIG_wmap_name);
-        (*gScreenTransitionInterface)->start(20, 5);
+        (*gScreenTransitionInterface)->start(20, SCREEN_TRANSITION_HUD);
         gSaveSelectExitTimer = 0x23;
         gSaveSelectQuitPending = 1;
     }
@@ -438,7 +438,7 @@ static void saveSelectGoToChapterSelect(void)
     {
         gSaveSelectLaunchPending = 1;
         Sfx_PlayFromObject(0, SFXTRIG_menu_pause_up);
-        (*gScreenTransitionInterface)->start(20, 1);
+        (*gScreenTransitionInterface)->start(20, SCREEN_TRANSITION_BLACK);
         gTitleMenuControlInterface->vtable->func0A(0);
         gTitleMenuControlInterface->vtable->func0A(1);
         gTitleMenuControlInterface->vtable->func0A(2);
@@ -780,7 +780,7 @@ int SaveSelectScreen_run(void)
         }
         else if (btn & PAD_BUTTON_B)
         {
-            (*gScreenTransitionInterface)->start(0x14, 5);
+            (*gScreenTransitionInterface)->start(0x14, SCREEN_TRANSITION_HUD);
             gSaveSelectExitTimer = 0x23;
             gSaveSelectQuitPending = 1;
         }
@@ -834,7 +834,7 @@ int SaveSelectScreen_run(void)
                 else if (sel == 1)
                 {
                     gSaveSelectLaunchPending = 1;
-                    (*gScreenTransitionInterface)->start(0x14, 5);
+                    (*gScreenTransitionInterface)->start(0x14, SCREEN_TRANSITION_HUD);
                     gTitleMenuControlInterface->vtable->func0A(0);
                     gTitleMenuControlInterface->vtable->func0A(1);
                     gTitleMenuControlInterface->vtable->func0A(2);
@@ -894,7 +894,7 @@ void SaveSelectScreen_initialise(void)
     {
         if (getPrevUiDll() != 5)
         {
-            (*gScreenTransitionInterface)->step(0x14, 5);
+            (*gScreenTransitionInterface)->step(0x14, SCREEN_TRANSITION_HUD);
         }
         saveSelectGoToChooseSlot(1);
     }

@@ -16,6 +16,7 @@
 #include "main/audio/sfx_trigger_ids.h"
 #include "main/frame_timing.h"
 #include "main/gamebits.h"
+#include "main/objseq.h"
 #include "main/vecmath.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"

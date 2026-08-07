@@ -40,6 +40,8 @@
 #include "dolphin/gx/GXTransform.h"
 #include "dolphin/mtx/vec.h"
 #include "main/newshadows_audio_api.h"
+#include "track/intersect_depth_state_api.h"
+#include "track/intersect_internal.h"
 
 typedef struct
 {
@@ -325,7 +327,6 @@ u32 gWhirlpoolReflectionKColor = 0xA0A0A080;
 static u32 sIntersectUnused1[1] = {0};
 
 
-#include "track/intersect_internal.h"
 
 /* Per-frame alpha decrement of the two water-effect pools. */
 void waterFxUpdate(f32 step) {
@@ -385,8 +386,8 @@ void waterFxDraw(void)
     GXSetTexCoordGen2(GX_TEXCOORD0, GX_TG_MTX2x4, GX_TG_TEX0, GX_TEXMTX0, GX_FALSE, GX_PTIDENTITY);
     GXSetNumTevStages(1);
     GXSetNumIndStages(0);
-    GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
-    GXSetChanCtrl(GX_COLOR1A1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, 0, GX_DF_NONE, GX_AF_NONE);
+    GXSetChanCtrl(GX_COLOR0A0, GX_FALSE, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
+    GXSetChanCtrl(GX_COLOR1A1, GX_FALSE, GX_SRC_REG, GX_SRC_REG, GX_LIGHT_NULL, GX_DF_NONE, GX_AF_NONE);
     GXSetNumChans(0);
     GXSetTevOrder(GX_TEVSTAGE0, GX_TEXCOORD0, GX_TEXMAP0, GX_COLOR_NULL);
     GXSetTevDirect(GX_TEVSTAGE0);
@@ -403,7 +404,7 @@ void waterFxDraw(void)
     PSMTXTrans(camTrans, -playerMapOffsetX, 0.0f, -playerMapOffsetZ);
     PSMTXConcat((MtxP)view, camTrans, posMtx);
     GXLoadPosMtxImm(posMtx, GX_PNMTX0);
-    gxSetZMode_(1, 3, 0);
+    gxSetZMode_(1, GX_LEQUAL, 0);
     gxSetPeControl_ZCompLoc_(1);
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
     sLeft = 0.0f;
@@ -493,7 +494,6 @@ void waterFxDraw(void)
 }
 
 
-#include "track/intersect_internal.h"
 
 void waterFxSpawnContactEffect(u8* obj, f32* pos, u8 flip, u8 type)
 {

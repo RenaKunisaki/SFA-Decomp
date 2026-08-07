@@ -19,6 +19,7 @@
 #include "main/objprint_render_api.h"
 #include "main/shader_api.h"
 #include "sys/objects.h"
+#include "main/objseq.h"
 
 typedef struct DIM2RoofRubHitEffect {
     f32 offsetX;

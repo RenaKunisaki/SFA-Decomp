@@ -4,6 +4,7 @@ import argparse
 import csv
 import re
 import struct
+import sys
 from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
@@ -354,11 +355,19 @@ def exploit_rank(category: str) -> int:
     return ranks.get(category, 7)
 
 
+def _source_population(repo_root: Path) -> list[Path]:
+    tools_dir = repo_root / "tools"
+    if (repo_root / "build.ninja").is_file() and (tools_dir / "source_coverage_audit.py").is_file():
+        sys.path.insert(0, str(tools_dir))
+        from source_coverage_audit import live_files_under
+        return [Path(p) for p in live_files_under("src", exts=(".c", ".cp", ".cpp"))]
+    return sorted((repo_root / "src").rglob("*.c"))
+
+
 def source_hits(repo_root: Path) -> list[tuple[str, int, str]]:
     hits: list[tuple[str, int, str]] = []
-    src_root = repo_root / "src"
     regex = re.compile("|".join(re.escape(pattern) for pattern in DIRECT_SOURCE_PATTERNS))
-    for path in sorted(src_root.rglob("*.c")):
+    for path in _source_population(repo_root):
         for line_no, line in enumerate(path.read_text(encoding="utf-8", errors="replace").splitlines(), 1):
             if regex.search(line) and not re.match(r"\s*(?:int|f32|void|CameraViewSlot\*)\s+(?:" + "|".join(DIRECT_SOURCE_PATTERNS) + r")\s*\(", line):
                 hits.append((path.relative_to(repo_root).as_posix(), line_no, line.strip()))

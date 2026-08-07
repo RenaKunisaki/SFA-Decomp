@@ -58,7 +58,7 @@
 #include "main/pad_api.h"
 
 void* gHighTopDefaultStateHandler;
-f32 gHighTopGroundMarkerMtx[16];
+f32 gHighTopModelMtx[16];
 void* gHighTopStateHandlers[12];
 
 u8 gHighTopAmbientSoundDef[8] = {0x04, 0x5D, 0x10, 0x00, 0x03, 0x00, 0x00, 0x00};
@@ -575,7 +575,7 @@ ObjectDescriptor24 gHighTopObjDescriptor = {
     (ObjectDescriptorCallback)hightop_func13,
     (ObjectDescriptorCallback)HighTop_getRacePosition,
     (ObjectDescriptorCallback)hightop_func15,
-    (ObjectDescriptorCallback)HighTop_renderGroundMarker,
+    (ObjectDescriptorCallback)HighTop_handleRiderScale,
     (ObjectDescriptorCallback)HighTop_getLookTargetYaw,
 };
 
@@ -889,7 +889,7 @@ void HighTop_getLookTargetYaw(GameObject* obj, int mode, int* out)
     }
 }
 
-void HighTop_renderGroundMarker(GameObject* obj, f32 scale)
+void HighTop_handleRiderScale(GameObject* obj, f32 scale)
 {
     f32* mtx;
     f32 lx, ly, lz;
@@ -903,9 +903,9 @@ void HighTop_renderGroundMarker(GameObject* obj, f32 scale)
     pos.rotY = 0;
     pos.rotZ = 0;
     pos.scale = scale / (obj)->anim.modelInstance->rootMotionScaleBase;
-    setMatrixFromObjectPos(gHighTopGroundMarkerMtx, &pos);
-    mtx44_mult(gHighTopGroundMarkerMtx, mtx, gHighTopGroundMarkerMtx);
-    objSetModelMatrixOverride(gHighTopGroundMarkerMtx);
+    setMatrixFromObjectPos(gHighTopModelMtx, &pos);
+    mtx44_mult(gHighTopModelMtx, mtx, gHighTopModelMtx);
+    objSetModelMatrixOverride(gHighTopModelMtx);
 }
 
 void hightop_func15(void)

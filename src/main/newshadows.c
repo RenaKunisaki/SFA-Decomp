@@ -40,6 +40,7 @@
 #include "main/track_dolphin_api.h"
 #include "main/track_dolphin_shadow_api.h"
 #include "main/newshadows_shadow_api.h"
+#include "dolphin/mtx/vec.h"
 #define TRACK_BBOX_FLAGS_S8
 #define TRACK_BBOX_MASK_TYPE s8
 #define TRACK_BBOX_ARG10_TYPE s8
@@ -74,6 +75,7 @@
 #include "main/shader_dolphin.h"
 #include "main/dll/modgfx.h"
 #include "dolphin/gx/GXFrameBuffer.h"
+#include "main/newshadows_internal.h"
 extern Texture* gNewShadowHeavyFogTexture;
 extern u8 gNewShadowHeavyFogIntensity;
 
@@ -295,7 +297,6 @@ u8 gNewShadowCasterCount;
 u8 gShadowCastModeTable[8] = {0xFF, 7, 6, 5, 4, 3, 2, 1};
 f32 gStandardAspectRatio = 1.3333334f;
 
-#include "main/newshadows_internal.h"
 
 /* Linear search by pointer identity through the shadow entry table.
  * Clears the active flag when the entry matches the needle. */
@@ -1382,8 +1383,8 @@ void newShadowsInitProceduralTextures(void)
     int frame;
 
     savedHeap = testAndSet_onlyUseHeap3(1);
-    placementAttempts = 0;
     placedCount = 0;
+    placementAttempts = 0;
     placement = gNewShadowPlacements;
     while (placedCount < 0x32 && placementAttempts < 10000u)
     {

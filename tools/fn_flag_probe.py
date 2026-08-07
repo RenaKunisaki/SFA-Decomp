@@ -94,8 +94,18 @@ PROFILES: dict[str, tuple[str | None, str | None]] = {
 # The token set is the measured-LIVE vocabulary (see --census).  Unknown tokens
 # are accepted and SILENTLY IGNORED by 1.2.5n exactly as w81 proved for GC/2.0,
 # so a token earns its place here only by changing some unit's output.
+#
+# MEASURED 2026-08-05, AND IT IS THE SAME FAILURE THIS COMMENT WARNS ABOUT:
+# at -O0 (the msl_math_o0_cflags units -- acosf, sincosf, math_8029454c) EVERY
+# token below is BYTE-INERT.  All seven profiles were md5-verified to produce
+# objects identical to the configured build, so this table prints an all-"-"
+# column set that is indistinguishable from a closed axis -- while the axes that
+# ARE live on those units, "peephole" and the -O level itself, are not probed at
+# all.  Do not read an all-"-" table on an -O0 unit as evidence of anything; drop
+# to a direct compile.  Adding peephole/-O columns here is the real fix.
 PROFILES_125N: dict[str, tuple[str | None, str | None]] = {
     "as-configured":    (None, None),
+    "peephole-off":     ("nopeephole", None),
     "nocse":            ("nocse", None),
     "noprop":           ("nopropagation", None),
     "nolifetimes":      ("nolifetimes", None),

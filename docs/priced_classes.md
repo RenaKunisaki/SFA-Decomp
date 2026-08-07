@@ -46,7 +46,7 @@ here that the target section already says.
 | **`.bss` allocates at the first use that FOLLOWS the definition** — and an object with no use after its definition is allocated at end of TU, in reverse definition order. Refines the `.bss` row above: definition order is inert only among definitions that all precede their uses. **A NonMatching unit is linked from the carve, so its `.bss` order is invisible; a Matching one is linked from our object, and a permuted `.bss` moves every DOL word that names it.** | §17 | A six-case probe battery under the live flag sets, then all 21 mis-ordered sections closed by moving definitions past their last use: `bss_order_scan` 21 -> 0, section contents identical over all 1013 objects, `complete_units` 910 -> 914. |
 | **The sign-in-the-constant class is EMPTY outside `trig`.** The `A + -C` recovery does not generalise; nothing else in the tree holds a value at retail's opposite sign. | §14 | `tools/a71_signscan.py` over all 1050 units: **0** units hold a mirror-signed float, and the opcode partition finds **0** `fnmsubs`/`fnmadds`/`fsubs`-for-`fmadds` rows outside the three never-touch PS islands. |
 | **A dead-stripped body is NOT cleanup fodder — DO NOT DELETE.** A `.text` surplus is 58% *inlining*, not fabrication; every gate in the tree is blind to its deletion. And class C is a linkage test, not a reference test. | §7b | `tools/dead_strip_census.py`: 86 fns / 12 348 B / 49 units, split 50 A / 27 B / 9 C; **excising exactly the stripped ranges reproduces the carve `.text` byte for byte in 34 of the 49 units**, with a 4-byte-shift negative control; **0 fabrications**, and 0 of the 36 class-B/C bodies carry zero relocations. |
-| **A source screen has no power over a GLOBAL function; only the linker does.** Widening the uncalled-function census to any linkage is refused, measured — do not retry it. Widening it to the exempt roots for STATICS is free and was taken. | §7b; `tools/banned_shapes_check.py` | Whole tree, any linkage: **4969 rows, 60 really dead — 1.2% precision**, because a global's reference may be a relocation in data we have not decompiled. Whole tree, statics only: 26 -> **30 rows, 27 really dead**, `lost-old=0`, and the gating hit set is byte-identical at **103**. The 4 new rows are 3 SDK `asm` exception vectors plus `synth_jobs.c streamGainFromVolume`, the one genuinely dead function that nothing in the tree screened. |
+| **A source screen has no power over a GLOBAL function; only the linker does.** Widening the uncalled-function census to any linkage is refused, measured — do not retry it. Widening it to the exempt roots for STATICS is free and was taken. | §7b; `tools/banned_shapes_check.py` | Whole tree, any linkage: **4969 rows, 60 really dead — 1.2% precision**, because a global's reference may be a relocation in data we have not decompiled. Whole tree, statics only: 26 -> **30 rows, 27 really dead**, `lost-old=0`, and the gating hit set is byte-identical at **103**. The 4 new rows are 3 SDK `asm` exception vectors plus `synth_jobs.c streamGainFromVolume`, the one uncalled function that nothing in the tree screened — dead code, LIVE POOL: deleting it costs 20 matched_data (§7). |
 | **5 of the 915 `complete_units` are VACUOUS, and they are excluded from BOTH halves of the completion figure.** A unit with no `total_code`, no `total_data` and no `total_functions` had nothing compared, so its 100.0/complete is not a statement about correctness — and its carve can never gain content, so it can neither be earned nor lost. | `tools/vacuity_audit.py --family report` | `AX`, `MWCriticalSection_gc`, `OSExec`, `synth_sequence`, `synth_seq_queue`: all five carry a **zero-length** `.text` range in `splits.txt`, and all five carve objects are `.text` size 0. Three are stub `.c` files that emit nothing; two emit real code (0x1074 and 0x194) that never entered the link. Separately, the **38 `main/auto_*` units are selected by `total_data` present / `matched_data` absent / no `total_code`** (2 342 B) and **0 of them are inside `complete_units`**. Informative completion: **910 of 1000**. |
 
 ## 1. Target-unmerged dot-compare (purge-priced)
@@ -458,11 +458,29 @@ matched_data and buy nothing; they stay, and they are in the checker baseline.**
 `203`'s `dll_CB_getStateHandler` was the one true positive: no call site, no minted slot, not
 one data byte moved. Deleted in `a21f332847`.
 
+**A ninth unit, outside the gate's reach (measured 2026-08-04).** `UNCALLED_STATIC_FN` gates on
+the game roots only, so the table above is the *game-root* population, not the tree's. The
+object-level census finds one more: `musyx/runtime/synth_jobs.c`'s `streamGainFromVolume`
+(`0x30`, class B; the census reports it as `UNCALLED_STATIC_FN_SDK`, which never gates). It is
+the sharpest specimen of the shape §7 describes, and its own commit `ee10dc4d9e` says so — it was
+written to mint `{1/127, the unsigned-conversion bias}` ahead of `streamHandle`, which creates
+`4096.0f` first and so cannot produce the retail order alone. It is load-bearing and it is
+priced: removing it drops `.sdata2` from `0x14` to `0x10` and reorders it (ours becomes
+`45800000 3c010204 43300000`, retail is `3c010204 00000000 43300000 … 45800000`), costing
+**20 matched_data** and taking the unit's data from 80/80 to 60/80. `.text` alone would
+*improve* — `0xa78` → the carve's `0xa48` — which is exactly why no code gate can see this row.
+So "genuinely dead" is true of its call graph and false of its data: **dead code, live pool.**
+It stays, and it is recorded here rather than in the checker baseline because the checker's
+gating roots do not reach it.
+
 **Gate.** `tools/banned_shapes_check.py` now carries `UNCALLED_STATIC_FN` — a source-only,
 transitive census (a cluster reachable only from other uncalled statics is itself uncalled,
 which is how `curveSpeedAt` is caught). `static inline` is out of class: an inline nothing
 calls is never expanded and never emitted. A new hit is not automatically a hack — adjudicate
-it against the unit's pool with the sharing test above before accepting or deleting it.
+it against the unit's pool with the sharing test above before accepting or deleting it. The gate
+sees game roots only; for the rest of the tree the instrument is
+`tools/dead_strip_census.py census`, and `tools/source_coverage_audit.py` states what each
+source-walking screen excludes by file type.
 
 ## 7b. The inlined-and-stripped class: DO NOT DELETE (measured 2026-08-03, re-measured 2026-08-03)
 
@@ -505,12 +523,21 @@ real data or callees.
 
 **Class C is a LINKAGE test, not a reference test.** The classifier is literally
 `cls = "C" if not is_static`, so "unreferenced global" was never measured and three of the nine
-are demonstrably called: `__OSFPRInit` by `bl __OSFPRInit` in `src/dolphin/os/__ppc_eabi_init.cpp`,
-`__OSBootDol` at `OSExec.c:349`, `__OSSetExecParams` at `OSExec.c:80` and `:220`. All nine sit in
-two units — `OSExec.o` and `synth_seq_queue.o` — whose carve `.text` is **0**: the whole object
-never entered the link, which is what took their callers with them. `OSExec.c` is settled
-independently: `reference_projects/super_mario_strikers/src/Dolphin/os/OSExec.c` has the same 18
-functions in the same order.
+are demonstrably called in **compiled** sources: `__OSBootDol` at `OSExec.c:349`,
+`__OSBootDolSimple` at `:333`, `__OSSetExecParams` at `:80` and `:220`. Eight sit in two units —
+`OSExec.o` and `synth_seq_queue.o` — whose carve `.text` is **0**: the whole object never entered
+the link, which is what took their callers with it. `OSExec.c` is settled independently:
+`reference_projects/super_mario_strikers/src/Dolphin/os/OSExec.c` has the same 18 functions in the
+same order.
+
+The ninth is `__OSFPRInit`, and it is a different row: it lives in `OS.o`, a **live** unit whose
+carve `.text` is `0x95c`, and nothing the build compiles calls it. Excising its `0x128` alone
+reproduces `OS.o`'s carve byte for byte. It was recorded as called on the strength of
+`bl __OSFPRInit` in `src/dolphin/os/__ppc_eabi_init.cpp`, which is **not compiled** —
+`configure.py` builds the sibling `.c` — and whose `__init_hardware` contradicts retail's:
+`.init:0x80003354` is `0x20` long and calls `__OSPSInit` and `__OSCacheInit` only, which our
+compiled `Runtime.PPCEABI.H/__start.c` reproduces. Keep it: it is authentic SDK `OS.c` that this
+game's link had no reference for, exactly as retail's link had none.
 
 **Genuinely undecidable: 1.** `musyx/runtime/synth_seq_queue.c` — its carve `.text` is 0, so the
 excision test compares 0 bytes with 0 and has **no power at all**, and the only reference project
@@ -3294,3 +3321,364 @@ saved FPR. (The brief carried "11 rows / 13 952 B"; the measured figure is 15 / 
   auto units while 910 already has the 5 removed; the consistent pair is **910 of 1000**.
   Raw 915 of 1043 is correct.
 * The FPR-only population above.
+
+## 32. The frontier partition was float-blind, and what that voids (measured 2026-08-05, A101, at `1e25ffc15b`)
+
+`perm_class_scan.py` abstracts `\br\d{1,2}\b` and nothing else. Float register
+names are therefore literal text in its operand comparison, so every row whose
+residual is a float register operand fails `REG.sub("r#", ...)` equality and is
+filed under OPERAND — the bucket §29 read as frame size and displacement (#67).
+`tools/fp_perm_class_scan.py` abstracts `r` AND `f` names, derives the two maps
+separately (the namespaces are disjoint), and reports the old bucket beside the
+new one so the re-partition reads as a cross-tab. 20 controls, including a
+direct reproduction of the save-block trap below.
+
+### 32a. The re-partition, all 205 sub-100 rows
+
+| bucket | GPR-only classifier | float-aware |
+|---|---|---|
+| LENDIFF | 49 rows / 79 852 B | 49 / 79 852 |
+| OPERAND | 48 / 72 616 | **30 / 48 580** |
+| NONFUNC | 27 / 56 660 | **35 / 67 448** |
+| NOTPERM | 37 / 53 128 | **42 / 58 820** |
+| MNEMONIC | 22 / 43 988 | **23 / 46 584** |
+| NONINJ | 3 / 2 152 | 3 / 2 152 |
+| PERM (PARAM-HOME + LOCALS-ONLY + SCRATCH) | 19 / 34 392 | **23 / 39 352** |
+
+**18 rows / 24 036 B were in the wrong bucket**, all of them out of OPERAND:
+8 → NONFUNC, 7 → NOTPERM, 2 → PERM, 1 → MNEMONIC. The pure-permutation class
+grows 19 → 23 rows / 34 392 → 39 352 B. (The same partition at the previous
+tip `8e52163a24` read 206 rows with identical reclassification structure; one
+MNEMONIC/OPERAND row left the population under the naming lane between the two.)
+
+### 32b. What the OPERAND bucket actually holds, now that floats are visible
+
+Of the 30 rows left: 16 GPR-only / 27 796 B, 5 GPR+FPR / 17 376 B, 1 FPR-only /
+800 B, and **8 rows / 2 608 B with no differing register operand at all** —
+those 8 are the genuine frame/displacement rows, and they reproduce §28c's
+independently-derived `frame 8 / 2 608 B` exclusive class **to the byte**. So
+#67's price was right; what was wrong was the rows sitting on top of it.
+
+### 32c. The save-block trap is REAL, GENERALISES TO GPRs, and is far narrower than claimed
+
+MWCC saves callee-saved registers one instruction per register. When both sides
+save the same SET the block is byte-identical, but a whole-stream permutation
+check still applies sigma to those lines and finds `stfd sigma(f31),…` ≠
+`stfd f31,…`. The block declares the SET; it is not a use of the value, so
+sigma need not explain it.
+
+Measured on the real tree, the exemption moves **2 rows of 205**, and **both are
+GPR rows, not float ones**: `main/texture.c textureInitGXTexObj` (356 B, sigma
+= the transposition 29↔31 over an identical `stw r29/r31,…(r1)` block, 4
+exempted lines, hand-verified) and `597.c SnowBike_UpdateEngineFx` (1 080 B, 8
+exempted lines).
+
+**This voids the extrapolation, not the trap.** The "30/30 NOTPERM → 30/30 PERM"
+figure was measured entirely inside `fpr_reuse_control.py`, which is a pure
+synthetic; it never had a real-code arm, and on real code the rate is 2/205.
+"Every float colouring row in the tree sits in its OPERAND bucket" is true —
+but they do not become permutations when you look at them: only 2 of the 18
+float-only rows do.
+
+### 32d. The exemption must be BANDED, or it hides real residual
+
+The loose form — exempt any `stfd|lfd|psq_st|psq_l fN,imm(r1)` regardless of
+register band or whether the line even differs — silently swallows a genuine
+volatile-FPR spill displacement difference (`stfd f0,8(r1)` vs `stfd f0,12(r1)`
+reads as a clean PERM). Requiring the register to be callee-saved AND the line
+to be identical keeps those. Measured tree-wide the loose rule yields **21**
+PERM rows against the banded rule's **23** — it is both less safe and less
+sensitive.
+
+### 32e. Verdicts this re-partition voids
+
+* §29's reading of OPERAND as a frame/displacement bucket — right for 8 rows
+  / 2 608 B, wrong for the rest of the bucket.
+* Any NOTPERM/NONFUNC population count taken from the GPR-only scanner: the
+  totals move 37 → 42 and 27 → 35 at this tip.
+* The brief's "NONINJ 4" and "204 sub-100 rows": measured **NONINJ 3 / 2 152 B**
+  and **205 rows / 342 788 B** here (206 at the previous tip).
+
+## 33. The volatile float half: the SET is already right, only the tie-break differs (2026-08-05, A101)
+
+### 33a. The census, defined precisely
+
+30 sub-100 rows have a differing float operand (54 896 B); **18 are FLOAT-ONLY**
+with no differing GPR (21 008 B); of those, **15 are VOLATILE-ONLY** — every
+differing float operand a pair inside f0–f13 (17 564 B) — 2 saved-touching
+(2 664 B) and 1 mixed (780 B). 778 differing float operands tree-wide, 626 of
+them volatile-pair. (`tools/a101_fpr_census.py`.)
+
+### 33b. `sig` cannot fail, and that is the finding
+
+The obvious float analogue of the integer lane's callee-saved BAND SIGNATURE is
+the sequence of volatile FPRs in first-write order. It is **constant by
+construction**: MWCC fills the volatile half strictly top-down from the highest
+register a body needs, so the sequence is `[n−1 … 0]` for essentially every
+body and every axis measured with it reads INERT whether or not it moved
+anything. The signature that can fail is `vsig`, the map from the VALUE (a
+load's displacement and base) to the register it lands in.
+(`tools/a101_volatile_fpr_control.py`.)
+
+### 33c. What moves the volatile assignment — synthetic, with its vacuity flag
+
+25 variants over 6 axes, each reported with how many compile BYTE-IDENTICALLY:
+
+| axis | moves `vsig` | byte-identical (never presented a choice) |
+|---|---|---|
+| ORDER (statement order of independent loads) | 0 of 5 | **5 of 5** |
+| ASSOC (association / term order) | **2 of 4** | 2 of 4 |
+| TEMP (number of named temporaries) | 2 of 3 | 0 |
+| CSE (subexpression stated once vs twice) | 0 of 1 | 0 |
+| CALL (a call between the loads) | 2 of 2 | 0 |
+| COUNT (simultaneously live values) | 4 of 4 | 0 |
+
+### 33d. The real-code arm REFUTED the synthetic — record it
+
+The synthetic says commuting a float product is absorbed by the front end and
+compiles byte-identically, which would have made `expr_sweep`'s zero on float
+rows a vacuity result rather than a closure. **On real code it is false.**
+`tools/a101_expr_vacuity.py` replays `expr_sweep`'s own gated candidate set and
+compares object BYTES: on `mtxRotateByVec3s`, **41 of 41 cleared rewrites move
+the object, 0 are vacuous** (37 commute, 4 sign). The synthetic's loads were
+independent and the front end canonicalised them; real bodies do not offer that.
+**`expr_sweep`'s zero on the float rows is genuine.** A synthetic too uniform
+cannot fail — and this one did not, until it was paired.
+
+### 33e. The residual is a tie-break inside a CORRECT set
+
+Volatile signature, ours vs retail, over 13 workable volatile-only rows:
+**13 of 13 use the SAME volatile SET as retail**, and 6 of 13 have the same
+first-write ORDER as well yet still differ in operands. Since the set is right
+the pressure is right; since these are equal-length rows with no differing
+mnemonic the operation sequence is right. What is left is which value the
+allocator put in which register **within a set that is already correct** — the
+float-side analogue of #108, and it is reached by none of the source axes that
+have been measured (declaration — A100; statement order, association, operand
+order, CSE — here).
+
+### 33f. Yield
+
+0 bytes. `mtxRotateByVec3s` (800 B / 98.785, **not** in the previous sweep's
+set) worked to 13 hand-derived shapes plus 41 gated rewrites: its residual is
+2.43 objdiff units and decomposes as 48 float register operands × 0.05 + 3
+displacements × 0.01, i.e. **100 % volatile float colouring**. The natural
+`x,y,z` load order is the one retail's addresses ascend in and it scores
+*worse* (98.785 → 98.750), because objdiff charges 0.05 per register against
+0.01 per displacement — a reminder that the score ranks spellings by charge, not
+by correctness. `main/lightmap.c updateEnvironment` (also previously unswept):
+5 cleared rewrites, inert; it is a MNEMONIC row, so expression shape was never
+its key.
+
+## 26. The zero-cost high-word knob (`| 0x1_00000000LL`) — OWNER CALL, not landed
+
+`wispBaddieProcessAnimEvent` (`dlls/objects/202/sharpclaw`) is one spelling away from taking its
+unit to **100.00000** (a linkage flip candidate). Measured, whole-unit gated, baseline verified
+byte-identical first:
+
+| spelling | fn | unit |
+|---|---|---|
+| `&= ~0x40LL` (HEAD before 2026-08-05) | 99.156 | 99.89016 |
+| `&= ~0x40` / `&= 0xFFFFFFBF` (32-bit, gives `rlwinm`) | 99.340 | 99.91411 |
+| **`= (s32)controlFlags & ~0x40LL`** — LANDED | 99.600 | 99.94795 |
+| `= (controlFlags \| 0x100000000LL) & ~0x40LL` | **100.000** | **100.00000** |
+
+Mechanism: with a `u32` LHS the widened high word is *always* the constant `0`, and the later
+`activeEventIndex = 0` store CSE-binds it, hoisting the `li`. Setting any bit above 31 **before**
+the AND makes the high word non-constant, so nothing binds. The knob is only zero-cost pre-AND
+(`(x & ~0x40LL) | 0x100000000LL` scores baseline); De Morgan, XOR-high and `(u64)` recasts all
+measure worse. So this is provably the only spelling that reaches byte-exact.
+
+**Why it is not landed:** the landed `(s32)` form has direct precedent in matched code
+(`playerStopRidingObject`, four `flags360` siblings in `player.c`), but an explicit
+`| 0x100000000LL` has **no precedent anywhere in the image**, and no 2002 developer writes it. It
+buys byte-exactness by encoding a compiler fact into the source, which is the shape of a match
+hack even though it is not on the banned list. Landing it costs one unit flip; declining it leaves
+the unit at 99.94795 and keeps the source honest.
+
+The residual `srawi` at every `(s32)` site is a `-opt nopeephole` TU artifact — with peephole on,
+the landed spelling is byte-exact to retail. That is the real fix for this whole family and it is a
+TU-profile question, not a spelling one.
+
+## 27. `tricky` pool anchors — item A is proven and byte-neutral, but parked (owner call)
+
+The 408-byte `.sdata2` gap in `dlls/objects/196_Tricky/tricky` decomposes into five items in
+`0x50..0x164`. Three were investigated to completion (2026-08-05):
+
+- **A — `skeetla_isInWater` (line 303): SOLVED and byte-neutral, NOT landed.** Making it a plain
+  `static` (emitted, dead) mints `-100000.0f, 8.0f` at retail's 0x050/0x054 and moves the first
+  divergence to 0x05c. Verified against the in-tree object: all 89 retail-paired functions have
+  identical instruction bytes AND identical relocation targets, every data section byte-identical,
+  `jtoracle --pair` clean, unit fuzzy and `matched_code` unchanged. Three of the four call sites take
+  the temp + if/else-if chain the file already uses at `tricky.c:655` and at ~24 other longhand water
+  checks — evidence that retail wrote them longhand. The fourth (`trickyUpdateCircling`) needs a
+  ternary chain, because retail elides both `li r0,1` there: the preceding
+  `substate = ANIMOBJD2_SUBSTATE_APPROACH` (=1) leaves 1 in `r0`, and MWCC's constant CSE is
+  basic-block-local, so an if/else-if chain re-materializes it (+2 instructions) while one expression
+  shares the DAG. **Why parked:** a data section scores 0 until 100%, so A alone pays nothing, and its
+  value is entirely contingent on B and C — which require inventing dead helper bodies. Patch preserved
+  at `scratchpad/deliver/itemA_skeetla_isInWater_static.patch`.
+- **D — MISDIAGNOSED, do not attempt.** `.sdata2` literals allocate in first-EMISSION order within a
+  function (verified across 31 mint-bearing functions in our own object). Retail's
+  `trickyAdvanceRouteTargetAhead` emits `1.5f` at +0xf6c BEFORE `-2.0f` at +0xf98, so it cannot have
+  minted `-2.0f` first; that slot was interned earlier by item C's dead helper.
+  `trickyAdvanceRouteTargetAhead` mints only `1.5f`. Forcing the order costs 12-13 of 63 instruction
+  words and breaks a 100% function.
+- **E — pool placement achieved, fails the byte gate.** Best shape is to make the trivial wrapper
+  `skeetla_faceMoveVector` the dead static (it still inlines the real helper, so `pi/32768/bias` mint
+  at retail's relative position) rather than the helper itself. Costs `moveTricky` 100 → 99.95840: same
+  stream, same size, one live range recoloured r26 → r28. Twelve ordering probes are identical — this
+  is the >=5-saved-register regime (7 saved GPRs) where the rotation model says every ordering knob is
+  flat. Rejected variant kept at `scratchpad/deliver/itemE_wrapper_static_REJECTED.patch`.
+
+Also refuted: non-static `inline` behaves exactly like `static inline` (mints nothing).
+
+**Separate, and actionable independently of the pool:** `gObjHitsScalarZero`/`gObjHitsScalarOne` are
+declared `extern` in `include/main/objhits.h` and defined NOWHERE — `objhits.o` carries them as
+undefined externals (the carve-only-reference latent-LINKFAIL class).
+
+## 34. Structural respellings cannot reach the reuse-regime tie-break — NOTPERM/NONFUNC measured closed (2026-08-05, C113, at `529d615fce`)
+
+The one lever the exhausted order axes left standing — "a structural fix RESETS colouring" — was
+aimed at the NOTPERM (42 / 58 820 B) and NONFUNC (35 / 67 448 B) buckets. It resets the
+allocation; it does not reach retail's answer. A structural respelling of a reuse-regime row lands
+in exactly one of two states:
+
+1. **Web-multiset-preserving -> byte-identical.** The tie-break re-runs to the same answer.
+   Measured three ways on real rows: a block-scope shadow declaration of the mismatched local
+   (`pauseMenuDraw` alpha) changes nothing; merging two sequential single-assignment locals into
+   one reassigned variable (`pauseMenuDrawStatusPage` ty1->alpha) is **byte-identical** — MWCC
+   colouring is VARIABLE-IDENTITY-BLIND, a reassigned variable's second web does not inherit the
+   first web's register; a declaration-position move is inert (consistent with §31).
+2. **Web-multiset-changing -> the code moves and the score drops.** Reusing a dead parameter as
+   the scratch variable recolours the surrounding entry webs (-0.04); folding a single-use local
+   into its consumer moves the fctiwz placement (-1.2, and moves global reads across calls —
+   unsound); respelling `x += e` as an assignment breaks constant-fold chains (below).
+
+### 34a. expr_sweep zero on the GPR side (the integer analogue of §33's float zero)
+
+`expr_sweep --greedy` (semantic-equivalence-gated) over **41 unique rows** of the two buckets —
+every row not owner-hot and not A102's: 41 scanned / 0 unscanned, ~1 000 gated rewrites, 2 vacuous
+rows disclosed (`GameUI_release`, `mapBlockRender_setShader`: no parseable candidates),
+**0 improvements**. The float-side zero (§33c) now has a measured integer twin.
+
+### 34b. The `+=` / assignment fold law (probe-verified with the unit's own cmdline, `-opt nopeephole,noschedule`)
+
+- MWCC canonicalises `x = (a-b) + x` back to accumulator-first (`add rX,rX,r0`); a NAMED addend
+  (`x = w + x`) preserves source operand order (`add rX,r0,rX`) — but only while `x` is live-out.
+- At a dead-after site, ANY assignment-form update folds: the pending constant chain (`x += 10`
+  upstream) is substituted through and computed into a fresh scratch, deleting the in-place
+  `addi`. `x += e` is the only spelling that blocks the fold — and it pins accumulator-first
+  order. A retail row showing `add rX,r0,rX` with the chain intact at a dead-after site
+  (`pauseMenuDraw` x2) is unreachable by every expression spelling tried (6).
+- Comma-expression order inside a for-header is an ORDER key (slides insns, -0.1..-1.4 measured);
+  the tree is already at its optimum there.
+
+### 34c. Allocator facts with no source-side handle
+
+- Retail's consecutive same-register scratch reuse (`r28` then `r28`) versus ours' spread
+  (`r24` then `r30`) arises from the same web multiset and the same free pool; the pick survives
+  naming, merging and shadowing.
+- A parameter can lose `r31` to locals in retail (`SB_Galleon_updateFlight`: obj=r27, short
+  webs=r31). The MP4 corpus shows the identical shape (`SetEnvelopMain` param=r29 under two
+  locals; `HuPrcChildKill`) and its C shows NO declaration or order trick — the ranking input is
+  invisible in source.
+
+### 34d. What stays open
+
+`blendTextures` (main/newshadows.c, 924 B, 94.48) is the one bucket row whose divergence is
+mis-decomp-scale loop-nest structure, not a tie-break — a dedicated mis-decomp lane's row, not a
+respelling row. `mapLoadDataFile` (8 444 B) shows per-case slwi/add temp swaps behind the MLDF
+macro puns — same tie-break family as §34c. Everything else in NOTPERM/NONFUNC should be treated
+as priced alongside §30's PERM residue.
+
+## 35. The web-structure census (C114): STRUCT-REAL is measurable, unlandable by score
+
+Method: for every sub-100 function (193 rows scanned, 0 unscanned; owner-hot and never-touch
+excluded), align target/current instruction streams positionally and compare def-use edges
+(each source operand mapped to the index of its defining instruction; branch operands are
+labels, never registers — an early parser draft mis-read hex `f08` as an FPR and inflated the
+class; fixed and re-run).
+
+### 35a. Partition (at parent 75c6e37a74, function bytes)
+
+- OWNERHOT (excluded)                43 rows / 74 544 B
+- LENDIFF (A102's censused bucket)   29 rows / 50 356 B
+- MNEM    (A102's censused bucket)   18 rows / 36 676 B
+- TIEBREAK (def-use edges identical, registers renamed) 66 rows / 94 348 B
+- COMMUTE-ONLY (operand swaps on commutative ops, same def multiset — peephole
+  commutation downstream of register numbering, seen inside otherwise-pure FPR
+  permutations: `createNewShadowDistortionTexture`, `powf`, `hudDrawMagicBar`,
+  `cMenuSetItems`, `pauseMenuDraw`, `drakorhoverpad_updateMain`) 6 rows / 12 156 B
+- STRUCT-REAL (def-use edges genuinely differ)          31 rows / 63 804 B
+
+### 35b. The scoring trap (measured, 7 independent rows)
+
+Every faithful structural fix measured REGRESSES fuzzy while converging the def-use shape,
+because objdiff charges 0.05/register and 0.01/immediate: correcting an immediate or an
+operand's def-site re-shuffles the downstream register permutation, and each luck-matched
+register lost (-0.05) outweighs each structure cell gained (+0.01). Instances:
+- blendTextures: 31/31 combination lattice of 5 derived structural edits (pa/pb add order
+  tco-before-h, rdo mullw operand order width*w, red sum redA-term-first, pc base-first `+=`
+  chain, loop2 rdo-in-read-arg) — all strictly below HEAD's 94.48; the all-faithful state is
+  mnemonic-identical at 94.24.
+- waterfx_render: retail's for-header comma order (`poolOffset += 0x1c, descriptorOffset +=
+  0x20, vertexOffset += 0x40, j++`, init `j = 0` first) converges all four latch immediates
+  positionally; fuzzy 99.428 -> 99.279.
+- Vortex_init: dropping the `GameObject* o = obj` alias converges retail's prologue save order
+  (mr r3-save before r4-save); homes recolour cyclically, 99.415 -> 98.772.
+- mapProcessRomList: retail folds the ADDR16-style HA onto the runtime base
+  (`(int*)(base + 0x83A8))[slot]`), ours onto the scaled index; all three faithful spellings
+  (flat sum, subscript, int-first paren) regress 99.643 -> 97.9-98.2.
+Landing any of these requires the WHOLE register permutation to converge at once — i.e. the
+original source — not incremental score-gated steps. No wrong computation found anywhere in the
+class (every divergence recomputes identical values), so no intended-regression exemption
+applies.
+
+### 35c. blendTextures reconstruction (derived, correct-direction, unlandable)
+
+Retail's loop-1 web structure, read from the target asm: address chains add pco, tco, h, rdo in
+that order for all three pointers; dst is built base-first (a `+=` chain, not a flat sum — MWCC
+rotates the pointer base to the END of any single-expression pointer+int chain, and full-inline
+spelling over-CSEs the whole sum into lhzx); loop-1 rdo multiplies width*w (loop 2 already
+does); the red sum takes the redA term first. Retail parks wB/pixelB/redB/i/j in saved regs and
+pco/tco/rdo/w/h in volatiles; every named-local vs CSE-temp respelling (offsets inline in `+=`
+statements, wd-cache elimination justified by loop 2's alias-forced second width reload) moves
+the saved/volatile partition but never onto retail's assignment. ~45 gated variants measured;
+best faithful state 94.24 vs HEAD 94.48. The row is structure-derived but colouring-locked.
+
+### 35d. Verdict
+
+The frontier's opnd-only residue splits 66 TIEBREAK / 6 COMMUTE / 31 STRUCT-REAL rows, and the
+STRUCT-REAL set is fully derivable from asm but unlandable row-by-row under the score gate:
+this class is priced until a lane can land a whole-function colouring convergence (or the gate
+learns to score def-use structure above register identity). Census data:
+tools-side script left with the lane's topic file; classifications in
+`aug05-C114-web-structure-census` (memory topic).
+
+## 36. Two leads closed at mechanism level (2026-08-05)
+
+**Const-zero placement — `playerState19`/`1B`/`MountBike`/`ClimbWall` (player.c).** NOT a surplus
+instruction: counts are identical (349/349, 409/409, 677/677). `flags360 & ~2LL` promotes a `u32` to
+`long long`; the high word's zero-extension emits a dead `li rX,0`. Retail DCEs it and materialises a
+fresh zero at the later `physicsActive = 0` store; our build **value-numbers that later zero onto the
+dead one**, giving it a ~20-instruction live range and pushing the `lwz` chain one register up.
+Two proofs: setting the consumer to a NONZERO value gives STRUC 0 (the dead zero is fully DCE-able, so
+the CSE partner is the whole defect), and hoisting `physicsActive = 0;` above the clear reproduces
+retail's region byte-for-byte (but puts the store in the wrong place, STRUC 4). Block separation is
+independently refuted — in `ClimbWall` the store already sits after a `bne-` in another block and still
+CSEs. **The `LL` is load-bearing and correct**: any 32-bit mask collapses to one `rlwinm`, and retail's
+`li r0,-3; and` requires the 64-bit promotion. A repo-wide scan found four 100%-matched controls with
+`~…LL` masks (`dll_19_pollCameraTarget`, `crawler_updateC`, `spittingEbaUpdateIdle`, and five sibling
+player states) — every one either has no trailing zero store in the block or has the zero BEFORE the
+clear. No matched precedent exists for "LL flag-clear then trailing `= 0`". Wall, no cost.
+
+**`playerCacheMoveRootHeights` (−2 instructions).** Retail emits an unfolded `li r0,12; slwi r0,r0,2;
+add r29,r4,r0` where we fold to `addi r29,r4,48`; the rest of the function is byte-identical and both
+sides reach the base the same way, so base provenance is not the discriminator. 21 spellings all fold
+(index arithmetic in both directions, init order, `for`-comma, `do/while`, hoisted inits, explicit
+`*4`/`<<2`/`sizeof`, three base-cast forms in both operand orders, named base, `u32` and `f32*`
+cursors, separate seeded index, `(&arr[i])[0]`). A scan of every built object AND the GC/2.0 refcorpus
+finds the shape only under two mechanisms, neither of which can occur in a 4-iteration call-bearing
+loop: an unrolled-loop remainder preheader, and a PHI-of-constants index (MP4 `MGSeqInitDraw`).
+Route to the TU-profile / `mw_version` lane; further source sweeps are provably flat.

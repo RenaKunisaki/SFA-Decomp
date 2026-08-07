@@ -23,6 +23,7 @@
 #include "main/obj_message.h"
 #include "main/objtype.h"
 #include "sys/objects/lifecycle.h"
+#include "main/objprint_character_api.h"
 
 #define DLL_CB_OBJGROUP                     3
 #define DLL_CB_FLAG400_PENDING_HIT_REACTION 0x2

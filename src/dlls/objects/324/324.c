@@ -2,6 +2,7 @@
 #include "dlls/objects/324.h"
 
 #include "main/object_render.h"
+#include "main/objseq.h"
 
 /* 1.0f model render scale from the shared scalar pool. */
 int dll_144_SeqFn(GameObject* obj, int unused, ObjSeqState* animUpdate) {

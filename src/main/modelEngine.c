@@ -479,6 +479,9 @@
 #include "main/resource.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/printf.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/string.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/hud_visibility_api.h"
 
 s32 gModelEngineHudNumber = -1;
 

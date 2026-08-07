@@ -77,6 +77,8 @@
 #include "main/objprint_render_api.h"
 #include "main/pi_data_file_api.h"
 #include "main/pi_flush_api.h"
+#include "main/gameloop_gamebit_api.h"
+#include "main/hud_visibility_api.h"
 
 #define GAMEBIT_FLAG_WIDTH_MASK 0x1f /* bit-run length: (mask)+1 bits stored for this entry */
 #define GAMEBIT_FLAG_SYNC       0x20 /* request a save-sync when this bit is written */
@@ -372,7 +374,7 @@ void checkReset(void)
         OSReport(msg + 0xd0);
         if (gGameLoopInitComplete != 0)
         {
-            (*gScreenTransitionInterface)->start(0x1e, 1);
+            (*gScreenTransitionInterface)->start(0x1e, SCREEN_TRANSITION_BLACK);
         }
         if (gameState == GAME_STATE_HARDRESETPRESSED)
         {
@@ -854,7 +856,7 @@ void init(void)
         runLoadingScreens();
         dvdCheckError();
         gameTextRun();
-        if (*(u8*)gAskProgressiveScanFlag == 0)
+        if (*gAskProgressiveScanFlag == 0)
         {
             dtv = 0;
             if (VIGetDTVStatus() != 0)
@@ -868,7 +870,7 @@ void init(void)
                     dtv = 1;
                 }
             }
-            *(u8*)gAskProgressiveScanFlag = dtv;
+            *gAskProgressiveScanFlag = dtv;
         }
         GXFlush_(1, 0);
     } while ((filesDone == 0 || (u8)audioDone == 0) && gameState == GAME_STATE_BOOTING);
@@ -942,7 +944,7 @@ void init(void)
     doNothing_beforeTitleScreen();
     doQueuedLoads();
     setDrawCloudsAndLights(0);
-    if (*(u8*)gAskProgressiveScanFlag != 0)
+    if (*gAskProgressiveScanFlag != 0)
     {
         OSSetSaveRegion(gAskProgressiveScanFlag, (u8*)gAskProgressiveScanFlag + 1);
         VISetBlack(0);

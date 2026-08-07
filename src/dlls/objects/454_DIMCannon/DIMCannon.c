@@ -236,7 +236,7 @@ void DIMCannon_updateAim(GameObject* obj, f32 targetX, f32 unusedTargetY, f32 ta
         distSq = dx * dx + dz * dz;
         dist = sqrtf(distSq);
         heightDelta = (10.0f + state->aimTargetY) - state->launchOriginY;
-        distSq = (distSq < 10.0f) ? 10.0f : distSq;
+        distSq = (distSq > 10.0f) ? (dx * dx + dz * dz) : 10.0f;
         if ((distSq < (f32)((s32)(placement->targetRadius * 2) * (s32)(placement->targetRadius * 2))) ||
             (heightDelta < lbl_803DBF14) || ((player->objectFlags & OBJECT_OBJFLAG_PARENT_SLACK) != 0)) {
             state->shouldSpawnProjectile = 0;
@@ -248,7 +248,7 @@ void DIMCannon_updateAim(GameObject* obj, f32 targetX, f32 unusedTargetY, f32 ta
         accel = (0.01f * -gDimCannonBallGravity) * distSq;
         accelDenom = 8.0f * heightDelta - 4.0f * dist;
         launchSpeed = accel / ((accelDenom < -1.0f) ? accelDenom : -1.0f);
-        launchSpeed = (0.0f > launchSpeed) ? 0.0f : launchSpeed;
+        launchSpeed = (launchSpeed > 0.0f) ? launchSpeed : 0.0f;
         launchSpeed = sqrtf(launchSpeed);
         state->launchSpeed += (launchSpeed - state->launchSpeed) / 80.0f;
     }
@@ -589,12 +589,13 @@ void DIMCannon_init(GameObject* obj, DimCannonPlacement* placement) {
     if (obj->anim.romDefNo == DIM_CANNON_BALL_SEQUENCE_ID) {
         DimCannonBallState* state;
         ObjHitsPriorityState* hitState;
+        ObjModelState* modelState;
         obj->userData1 = 0;
-        hitState = (ObjHitsPriorityState*)obj->anim.modelState;
-        if (hitState != 0) {
-            *(int*)&hitState->secondaryRadiusY |= 0xc10;
-            hitState = (ObjHitsPriorityState*)obj->anim.modelState;
-            *(u32*)&hitState->secondaryRadiusY |= 0x8000LL;
+        modelState = obj->anim.modelState;
+        if (modelState != 0) {
+            modelState->flags |= 0xc10;
+            modelState = obj->anim.modelState;
+            modelState->flags |= 0x8000LL;
         }
         state = obj->extra;
         state->rotationZRate = randomGetRange(-0x64, 0x64);

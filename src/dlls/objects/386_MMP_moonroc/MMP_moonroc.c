@@ -33,6 +33,7 @@
 #include "main/vecmath.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
+#include "main/dll/partfx_interface.h"
 
 #define MMP_MOON_ROCK_OBJECT_GROUP            4
 #define MMP_GEYSER_VENT_SEQUENCE_ID           0x518

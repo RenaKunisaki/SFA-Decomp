@@ -14,6 +14,7 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_api.h"
 #include "main/frame_timing.h"
 #include "main/dll/dll_000F_unk.h"
+#include "main/audio/sfx_play_api.h"
 
 u8 lbl_803DD450;
 u8 lbl_803DD44F;

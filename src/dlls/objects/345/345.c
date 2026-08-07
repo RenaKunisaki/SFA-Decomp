@@ -4,6 +4,7 @@
 
 #include "main/gamebits.h"
 #include "main/lightmap_api.h"
+#include "main/model.h"
 #include "main/object_render.h"
 #include "main/track_dolphin_map_api.h"
 #include "sys/objects.h"

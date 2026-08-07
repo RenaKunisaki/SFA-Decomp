@@ -716,7 +716,7 @@ int OptionsScreen_frameStart(void)
         if (selection == 0)
         {
             Sfx_PlayFromObject(0, SFXTRIG_wmap_name);
-            (*gScreenTransitionInterface)->start(0x14, 5);
+            (*gScreenTransitionInterface)->start(0x14, SCREEN_TRANSITION_HUD);
             gOptionsExitCountdown = 0x23;
             gOptionsExitRequested = 1;
         }
@@ -764,7 +764,7 @@ void OptionsScreen_release(void)
 
 void OptionsScreen_initialise(void)
 {
-    (*gScreenTransitionInterface)->step(20, 5);
+    (*gScreenTransitionInterface)->step(20, SCREEN_TRANSITION_HUD);
     gameTextLoadDir(21);
     lbl_803DD70C = 0;
     gOptionsSaveData = getSaveFileStruct();

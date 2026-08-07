@@ -15,7 +15,6 @@
 #include "src/musyx/runtime/synth_internal.h"
 #include "game/objects/object.h"
 #include "main/audio/music_trigger_ids.h"
-#include "main/gamebit_ids.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/string.h"
 #include "dolphin/ai.h"
 #include "dolphin/dvd.h"
@@ -24,6 +23,10 @@
 #include "main/audio/music_api.h"
 #include "main/pi_flush_api.h"
 #include "main/audio/audio_control_api.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_looped_object_api.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_object_api.h"
 
 static const f32 gAudioStreamEndPosInfinite = 9.0e9f;
 static const f32 gAudioStreamFramesPerSecond = 60.0f;

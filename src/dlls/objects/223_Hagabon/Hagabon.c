@@ -27,6 +27,7 @@
 #include "main/audio/sfx_stop_channel_api.h"
 #include "main/audio/sfx_stop_object_api.h"
 #include "main/objtype.h"
+#include "main/mapEventTypes.h"
 
 #define HAGABON_HIT_VOLUME_SLOT 10
 #define HAGABON_OBJECT_GROUP    3

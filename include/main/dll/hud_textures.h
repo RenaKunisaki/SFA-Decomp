@@ -2,6 +2,7 @@
 #define MAIN_DLL_HUD_TEXTURES_H_
 
 #include "global.h"
+#include "main/texture.h"
 
 /*
  * HudTextures - the 0x198 pause-menu HUD work record at hudTextures

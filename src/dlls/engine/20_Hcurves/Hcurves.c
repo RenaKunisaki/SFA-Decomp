@@ -18,13 +18,14 @@
 #include "main/dll/dll_0014_unk.h"
 #include "main/vecmath_distance_api.h"
 #include "main/shader_api.h"
+#include "string.h"
+#include "main/dll/objfsa_internal.h"
 
 static int sObjfsaUnused0;
 int gObjfsaPatchCount;
 int gObjfsaLastWalkGroupIndex;
 int gObjfsaBlockFlagsChecksum;
 
-#include "main/dll/objfsa_internal.h"
 
 extern char sObjfsaFoundNewWalkGroupPatch[];
 extern char sObjfsaIsPointWithinPatchGroupError[];

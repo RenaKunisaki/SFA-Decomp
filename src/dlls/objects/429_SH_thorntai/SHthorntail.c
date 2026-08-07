@@ -29,6 +29,8 @@
 #include "main/newshadows_audio_api.h"
 #include "main/dll/path_control_interface.h"
 #include "main/sky_interface.h"
+#include "main/audio/sfx_play_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
 
 extern u32 gSHthorntailDataTables[][4];
 extern char sSHthorntailAngleYawDebug[];

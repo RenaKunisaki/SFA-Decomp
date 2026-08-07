@@ -46,6 +46,8 @@ import sys
 import tempfile
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.path.join(ROOT, "tools"))
+from source_coverage_audit import live_files_under  # noqa: E402
 
 CC = [
     "build/tools/wibo", "build/tools/sjiswrap.exe",
@@ -187,16 +189,21 @@ def main():
     else:
         # `include/` is not the whole population: a struct declared inside a
         # game .c carries offset claims that no gate and, until this root was
-        # added, no instrument ever read.
-        headers = sorted(
+        # added, no instrument ever read.  Sources come from build.ninja's
+        # answer (plus group-included files), not a filesystem walk: an offset
+        # claim in a source the build never compiles is about nothing.
+        cands = [
             os.path.join(dp, fn)
             for base in ("include", "src")
             for dp, _, fns in os.walk(os.path.join(ROOT, base))
             for fn in fns
-            if fn.endswith((".h", ".c"))
-            and re.search(
+            if fn.endswith(".h")
+        ] + live_files_under("src", exts=(".c", ".cp", ".cpp"))
+        headers = sorted(
+            p for p in cands
+            if re.search(
                 r"/\* ?0x[0-9A-Fa-f]{1,4} ?:",
-                open(os.path.join(dp, fn), encoding="utf-8", errors="replace").read(),
+                open(p, encoding="utf-8", errors="replace").read(),
             )
         )
     total, bad = 0, 0

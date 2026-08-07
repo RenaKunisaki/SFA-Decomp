@@ -34,6 +34,8 @@
 #include "main/gamebit_ids.h"
 #include "main/object_render.h"
 #include "main/maketex_sequence_api.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_play_api.h"
 
 s16 gAndrossSwayPhaseX;
 s16 gAndrossSwayPhaseY;

@@ -25,6 +25,7 @@
 #include "main/camera.h"
 #include "main/resource.h"
 #include "dolphin/os/OSCache.h"
+#include "track/intersect_depth_state_api.h"
 
 u8* gWaterfxRippleVtx;
 u8* gWaterfxRippleVtxDesc;
@@ -88,7 +89,7 @@ volatile PPCWGPipe GXWGFifo : (0xCC008000);
 static void waterfx_setupSplashDropPointRender(void) {
     GXColor col;
     u8 ignoredLightColor;
-    GXSetPointSize(0x12, 5);
+    GXSetPointSize(0x12, GX_TO_ONE);
     GXClearVtxDesc();
     GXSetVtxDesc(GX_VA_POS, GX_DIRECT);
     GXLoadPosMtxImm((MtxPtr)Camera_GetViewMatrix(), GX_PNMTX0);
@@ -107,7 +108,7 @@ static void waterfx_setupSplashDropPointRender(void) {
     GXSetTevColorOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetTevAlphaOp(GX_TEVSTAGE0, GX_TEV_ADD, GX_TB_ZERO, GX_CS_SCALE_1, GX_TRUE, GX_TEVPREV);
     GXSetBlendMode(GX_BM_BLEND, GX_BL_SRCALPHA, GX_BL_INVSRCALPHA, GX_LO_NOOP);
-    gxSetZMode_(1, 3, 0);
+    gxSetZMode_(1, GX_LEQUAL, 0);
     gxSetPeControl_ZCompLoc_(1);
     GXSetAlphaCompare(GX_ALWAYS, 0, GX_AOP_AND, GX_ALWAYS, 0);
     GXSetCullMode(GX_CULL_NONE);
@@ -216,7 +217,7 @@ static void waterfx_buildSplashDisplayList(void) {
     void* dl;
     u8 a[1];
 
-    GXSetMisc(1, 0);
+    GXSetMisc(GX_MT_XF_FLUSH, 0);
     gWaterfxSplashPosArray = mmAlloc(192, 0, 0);
     gWaterfxSplashTexCoordArray = mmAlloc(1024, 0, 0);
     for (i = 0; i < 8; i++) {
@@ -266,7 +267,7 @@ static void waterfx_buildSplashDisplayList(void) {
         }
     }
     gWaterfxSplashDisplayListSize = GXEndDisplayList();
-    GXSetMisc(1, 8);
+    GXSetMisc(GX_MT_XF_FLUSH, 8);
 }
 
 int waterfx_consumePendingImpactNearPoint(f32* vec, f32 dist)

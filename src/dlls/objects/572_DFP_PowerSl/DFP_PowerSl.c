@@ -3,6 +3,7 @@
 #include "main/dll_000A_expgfx.h"
 #include "main/gamebits.h"
 #include "main/objhits.h"
+#include "main/objseq.h"
 
 static inline DfpPowerSlState* dfppowersl_getState(GameObject* obj)
 {
@@ -25,7 +26,7 @@ int dfppowersl_spawnSeqObjectsOnHit(GameObject* obj)
         i = 1;
         do
         {
-            (*gPartfxInterface)->spawnObject(obj, DFPPOWERSL_SPAWN_OBJECT_ID, 0, 1, 0xffffffff, 0);
+            (*gPartfxInterface)->spawnObject(obj, DFPPOWERSL_SPAWN_OBJECT_ID, 0, DFPPOWERSL_SPAWN_MODE_ACTIVE, 0xffffffff, 0);
         } while (i++ < DFPPOWERSL_SPAWN_COUNT);
     }
     return 0;

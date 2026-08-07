@@ -15,6 +15,7 @@
 #include "sys/objects.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/vecmath.h"
+#include "main/objseq.h"
 
 #define FXEMIT_DEBUG_EFFECT_ID              0x11
 #define FXEMIT_EVENT_EMIT                   1

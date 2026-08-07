@@ -25,6 +25,7 @@
 #include "main/gamebits.h"
 #include "main/object_render.h"
 #include "main/objseq.h"
+#include "main/mapEventTypes.h"
 
 #define LINKA_LEVCONTROL_LOOP_SFX_ID 0x48B
 

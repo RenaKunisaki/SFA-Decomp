@@ -41,6 +41,9 @@
 #include "dolphin/MSL_C/PPCEABI/bare/H/math_float_helpers.h"
 #include "main/object_render.h"
 #include "dlls/object_descriptor.h"
+#include "main/game_timer_control_api.h"
+#include "main/mapEventTypes.h"
+#include "main/rcp_dolphin_api.h"
 
 #define SHOPKEEPER_GAMEBIT_HAS_MONEY        0x61D
 #define SHOPKEEPER_GAMEBIT_SCARAB_GAME_WON  0x624
@@ -626,7 +629,7 @@ int ShopKeeper_handlePromptChoice(GameObject* obj, void* param2, int dispatch)
         if ((btn & SHOPKEEPER_BUTTON_CANCEL) != 0u)
         {
             state->flags9D4 = state->flags9D4 | SHOPKEEPER_FLAG_LEAVING;
-            (*gScreenTransitionInterface)->start(0x1e, 1);
+            (*gScreenTransitionInterface)->start(0x1e, SCREEN_TRANSITION_BLACK);
             return 1;
         }
     }
@@ -736,7 +739,7 @@ int ShopKeeper_SeqFn(GameObject* obj, int unused, ObjSeqState* seq, s8 advance)
     {
         if ((*gScreenTransitionInterface)->isFinished() != 0)
         {
-            (*gScreenTransitionInterface)->step(0x1E, 1);
+            (*gScreenTransitionInterface)->step(0x1E, SCREEN_TRANSITION_BLACK);
             (*gObjectTriggerInterface)->endSequence(seq->slot);
         }
         return 0;

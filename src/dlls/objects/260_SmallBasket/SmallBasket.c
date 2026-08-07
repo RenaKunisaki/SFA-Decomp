@@ -37,6 +37,7 @@
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/mapEventTypes.h"
 
 
 #define SMALLBASKET_HIT_VOLUME_SLOT 0xE

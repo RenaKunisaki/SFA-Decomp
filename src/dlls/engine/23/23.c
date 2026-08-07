@@ -24,6 +24,7 @@
 #include "main/dll/dll_0016_screentransition.h"
 #include "track/intersect_card_api.h"
 #include "main/pad.h"
+#include "main/dll/savegame_load_api.h"
 
 u32 pRestartPoint;
 u8* gSaveGameWorkBuffer;

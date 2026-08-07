@@ -63,6 +63,8 @@
 #include "track/intersect_geom_api.h"
 #include "track/intersect_render_setup_api.h"
 #include "main/dll/DR/DRcradle.h"
+#include "main/audio/sfx_keep_alive_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
 
 #define SNOWBIKE_OBJGROUP           0xa
 #define SNOWBIKE_AIRMETER_BGTEXTURE 0x5cd

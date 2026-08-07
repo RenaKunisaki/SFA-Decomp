@@ -80,6 +80,8 @@
 #include "main/dll/hagabon_mk2.h"
 #include "main/dll/snowworm.h"
 #include "main/dll/baddiewhirlpool.h"
+#include "main/audio/sfx_looped_object_api.h"
+#include "main/audio/sfx_stop_channel_api.h"
 
 /* Baddie-family animation data shared with the sequence-driver TUs. */
 

@@ -57,6 +57,7 @@
 #include "track/intersect_depth_state_api.h"
 #include "track/intersect_geom_api.h"
 #include "track/intersect_render_setup_api.h"
+#include "main/dll/partfx_interface.h"
 
 extern void* gStaffSwipeTextures[2];
 extern StaffCollisionInterface** gStaffSwipeResource;
@@ -903,7 +904,7 @@ void staff_func0A(void) {
 
 StaffQuakeSpellState gStaffQuakeSpellState;
 
-void playerRenderQuakeSpell(GameObject* obj) {
+void staffUpdateWhileTimeStopped(GameObject* obj) {
     staffUpdateAttackEffects(obj, (GameObject*)obj->ownerObj);
 }
 

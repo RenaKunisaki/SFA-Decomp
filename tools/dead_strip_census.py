@@ -24,11 +24,20 @@ THE THREE MECHANISMS, which are NOT interchangeable
        and for the pool-sharing test that adjudicates one.
     C  STRIPPED GLOBAL.  Not static, and the link dropped it anyway.  The test
        is LINKAGE ONLY -- `cls = "C" if not is_static` -- so do NOT read this
-       class as "nothing references it".  Measured: `__OSFPRInit` is called by
-       `bl __OSFPRInit` in __ppc_eabi_init.cpp, `__OSBootDol` at OSExec.c:349
-       and `__OSSetExecParams` at OSExec.c:80 and :220.  All nine live in two
-       units (OSExec.o, synth_seq_queue.o) whose carve .text is 0 -- the whole
-       object never entered the link, which is what dropped their callers too.
+       class as "nothing references it".  Measured, in COMPILED sources only:
+       `__OSBootDol` at OSExec.c:349, `__OSBootDolSimple` at :333 and
+       `__OSSetExecParams` at :80 and :220 -- three of the nine.
+       The nine live in THREE units, not two.  Six are in OSExec.o and two in
+       synth_seq_queue.o, whose carve .text is 0: the whole object never
+       entered the link, which is what dropped their callers too.  The ninth,
+       `__OSFPRInit`, is in OS.o, a LIVE unit whose carve .text is 0x95c, and
+       it has no caller anywhere the build compiles.  Do not cite
+       src/dolphin/os/__ppc_eabi_init.cpp for one: configure.py builds the
+       sibling `.c`, that `.cpp` is never compiled, and its
+       __init_hardware carries three `bl`s where retail's carries two --
+       .init:0x80003354 is 0x20 long and calls __OSPSInit and __OSCacheInit
+       only, which our compiled Runtime.PPCEABI.H/__start.c reproduces.  A file
+       the build does not compile is not evidence about the link.
        UNCALLED_STATIC_FN is static-only, so no source screen reports this
        class; and none can, because a global's reference may be a relocation in
        data we have not decompiled (measured: a whole-tree, any-linkage source
@@ -65,6 +74,8 @@ OBJDUMP = os.path.join(REPO, "build/binutils/powerpc-eabi-objdump")
 SRC = os.path.join(REPO, "src")
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+
+from source_coverage_audit import compiled_sources, live_files_under  # noqa: E402
 
 STT_FUNC = 2
 SHT_SYMTAB = 2
@@ -152,12 +163,16 @@ def stripped():
 
 
 def _srcfiles():
+    """Headers plus every LIVE source: text in a dead source cannot call,
+    define or strip anything in the DOL, so it is not population here."""
     blobs = {}
     for r, _, fs in os.walk(SRC):
         for f in fs:
-            if f.endswith((".c", ".h")):
+            if f.endswith(".h"):
                 p = os.path.join(r, f)
                 blobs[os.path.relpath(p, REPO)] = open(p, errors="replace").read()
+    for p in live_files_under("src", exts=(".c", ".cp", ".cpp")):
+        blobs[os.path.relpath(p, REPO)] = open(p, errors="replace").read()
     return blobs
 
 
@@ -306,16 +321,29 @@ def self_test():
     cglobals = {r[2] for r in rows if r[0] == "C"}
     chk("class C sees stripped globals banned_shapes_check cannot",
         "OSExecv" in cglobals or "__OSFPRInit" in cglobals)
-    # ...and class C is a LINKAGE test, not a reference test.  __OSFPRInit has a
-    # real caller (`bl __OSFPRInit` in __ppc_eabi_init.cpp), so a reader who
-    # takes "class C" to mean "unreferenced" is reading a fact that was never
-    # measured.  This control pins that: the class must contain a function the
-    # tree demonstrably references.
-    init = os.path.join(REPO, "src", "dolphin", "os", "__ppc_eabi_init.cpp")
+    # ...and class C is a LINKAGE test, not a reference test.  __OSSetExecParams
+    # has real callers, so a reader who takes "class C" to mean "unreferenced"
+    # is reading a fact that was never measured.  This control pins that: the
+    # class must contain a function the tree demonstrably references.  The
+    # witness must be a COMPILED file -- an earlier version of this control read
+    # `bl __OSFPRInit` out of src/dolphin/os/__ppc_eabi_init.cpp, which
+    # configure.py never compiles, so it passed on a fact about no binary.
+    osexec = os.path.join(REPO, "src", "dolphin", "os", "OSExec.c")
     chk("class C is linkage, not reference: it holds a CALLED function",
-        "__OSFPRInit" in cglobals
-        and os.path.isfile(init)
-        and "bl __OSFPRInit" in open(init, errors="replace").read())
+        "__OSSetExecParams" in cglobals
+        and os.path.isfile(osexec)
+        and compiled_sources() and osexec in compiled_sources()
+        and "__OSSetExecParams(params, paramsWork);" in
+        open(osexec, errors="replace").read())
+
+    # ...and the reverse control: __OSFPRInit is in the class with NO caller in
+    # any compiled source, and it sits in a LIVE unit (OS.o, carve .text 0x95c),
+    # so "class C" does not mean "its whole object was dropped" either.
+    callers = [s for s in compiled_sources()
+               if "__OSFPRInit" in open(s, errors="replace").read()
+               and not s.endswith("/OS.c")]
+    chk("class C also holds a global with no compiled caller",
+        "__OSFPRInit" in cglobals and not callers)
     print("SELF-TEST", "PASS" if ok else "FAIL")
     return 0 if ok else 1
 

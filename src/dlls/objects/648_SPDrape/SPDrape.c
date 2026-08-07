@@ -19,6 +19,7 @@
 #include "dlls/object_descriptor.h"
 #include "main/audio/sfx_play_api.h"
 #include "main/audio/sfx_stop_channel_api.h"
+#include "main/vecmath.h"
 
 u8 gSpDrapeSwingLeftMoveTable[4] = {1, 2, 3, 0};
 u8 gSpDrapeSwingRightMoveTable[4] = {4, 5, 6, 0};

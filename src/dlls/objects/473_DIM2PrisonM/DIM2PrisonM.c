@@ -19,6 +19,7 @@
 #include "main/pad_api.h"
 #include "main/player_control_interface.h"
 #include "main/vecmath.h"
+#include "main/objprint_character_api.h"
 
 #define DIM2_PRISON_MAMMOTH_STATE_FLAG_SKIP_HIT_REACT 0x08
 #define DIM2_PRISON_MAMMOTH_VARIANT_ZERO_GAME_BIT     0x224

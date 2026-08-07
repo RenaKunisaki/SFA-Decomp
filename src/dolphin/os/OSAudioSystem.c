@@ -2,7 +2,7 @@
 #include "dolphin/os/__os.h"
 #include "string.h"
 
-extern u8 DSPInitCode_8032C520[128];
+extern u8 DSPInitCode[128];
 
 #define __DSPWorkBuffer (void*)0x81000000
 
@@ -11,9 +11,9 @@ void __OSInitAudioSystem(void) {
     u16 reg16;
     u32 start_tick;
 
-    memcpy((void*)((u32)OSGetArenaHi() - 0x80), __DSPWorkBuffer, sizeof(DSPInitCode_8032C520));
-    memcpy(__DSPWorkBuffer, DSPInitCode_8032C520, sizeof(DSPInitCode_8032C520));
-    DCFlushRange(__DSPWorkBuffer, sizeof(DSPInitCode_8032C520));
+    memcpy((void*)((u32)OSGetArenaHi() - 0x80), __DSPWorkBuffer, sizeof(DSPInitCode));
+    memcpy(__DSPWorkBuffer, DSPInitCode, sizeof(DSPInitCode));
+    DCFlushRange(__DSPWorkBuffer, sizeof(DSPInitCode));
 
     __DSPRegs[9] = 0x43;
     ASSERTMSGLINE(113, !(__DSPRegs[5] & 0x200), "__OSInitAudioSystem(): ARAM DMA already in progress");
@@ -73,7 +73,7 @@ void __OSInitAudioSystem(void) {
     __DSPRegs[5] |= 1;
     while (__DSPRegs[5] & 1);
 
-    memcpy(__DSPWorkBuffer, (void*)((u32)OSGetArenaHi() - 0x80), sizeof(DSPInitCode_8032C520));
+    memcpy(__DSPWorkBuffer, (void*)((u32)OSGetArenaHi() - 0x80), sizeof(DSPInitCode));
 }
 
 void __OSStopAudioSystem(void) {

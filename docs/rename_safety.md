@@ -111,6 +111,13 @@ Renames are **not** byte-neutral and `tools/byteneutral.py` cannot gate them
    (`90cabeaf76`): the tree's baseline two FORCEACTIVE warnings became three, and renaming the
    `config.yml` entry in the same commit returned it to two. Count the warnings before and after —
    a new one is a partial rename that the gate will not otherwise catch.
+   ⚠️ **A missing warning does not mean FORCEACTIVE works.** `mwld` resolves FORCEACTIVE only
+   through the external symbol table, so an entry naming a `static` is **silently inert** — no
+   warning, and no effect either. `90cabeaf76` shipped in exactly that state: the entry was renamed
+   to `sIntersectUnused0` while the source still said `static u32 sIntersectUnused0;`, the warning
+   count returned to two, and the symbol was in fact unreachable until `1de25bbba7` removed the
+   `static`. If a FORCEACTIVE entry is meant to keep an atom alive, check the object's binding
+   (`objdump -t`, `g` not `l`) — the warning count alone cannot tell you.
 3. `tools/locked_ninja.sh` as its **own step**; read EXIT before continuing.
    ⚠️ Then rebuild **every touched object by name** —
    `tools/locked_ninja.sh build/GSAE01/src/<...>.o`. Because the re-carve is an

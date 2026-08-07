@@ -80,6 +80,7 @@
 #include "main/dll/hagabon_mk2.h"
 #include "main/dll/snowworm.h"
 #include "main/dll/baddiewhirlpool.h"
+#include "dolphin/mtx/vec.h"
 
 /* Baddie-family animation data shared with the sequence-driver TUs. */
 

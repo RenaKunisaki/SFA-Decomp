@@ -36,6 +36,7 @@
 #include "dolphin/thp/THPPlayer.h"
 #include "main/dll/FRONT/picmenu.h"
 #include "dlls/object_descriptor.h"
+#include "main/camera_interface.h"
 
 u8 gTitleMenuPanelOpen;
 s8 gTitleMenuLoadDelay;
@@ -737,12 +738,12 @@ void TitleMenu_initialise(void)
     if ((((mode == 0xd) || (mode = getPrevUiDll(), mode == 7)) || (mode = getPrevUiDll(), mode == 6)) ||
         (mode = getPrevUiDll(), mode == 5))
     {
-        (*gScreenTransitionInterface)->step(0x23, 5);
+        (*gScreenTransitionInterface)->step(0x23, SCREEN_TRANSITION_HUD);
     }
     else
     {
         audioStopByMask(0xf);
-        (*gScreenTransitionInterface)->step(0x3c, 1);
+        (*gScreenTransitionInterface)->step(0x3c, SCREEN_TRANSITION_BLACK);
     }
 
     setLinkIsRotated();
@@ -770,7 +771,7 @@ void TitleMenu_initialise(void)
         n_attractmode_prepareMovie();
         titleScreenPositionElements(-380.0f, 254.0f);
         gAttractMoviePlaybackEnabled = 1;
-        Movie_SetVolumeFade(0, 0);
+        Movie_SetVolumeFade(NATTRACTMODE_MOVIE_VOLUME_MUTED, 0);
         audioSetVolumes(0, 10, 1, 0, 0);
         gTitleMenuSelectionFade = 0;
     }
@@ -778,7 +779,7 @@ void TitleMenu_initialise(void)
     {
         titleScreenPositionElements(-380.0f, 254.0f);
         gAttractMoviePlaybackEnabled = 0;
-        Movie_SetVolumeFade(0, 1);
+        Movie_SetVolumeFade(NATTRACTMODE_MOVIE_VOLUME_MUTED, NATTRACTMODE_MOVIE_VOLUME_FADE_IMMEDIATE);
     }
     setIsOvercast(0);
     setDrawLights(0);

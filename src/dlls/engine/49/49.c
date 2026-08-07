@@ -31,6 +31,7 @@
 #include "main/gametext_charset_api.h"
 #include "main/gametext_show_api.h"
 #include "sys/objects/lifecycle.h"
+#include "main/vecmath.h"
 
 u8 gMinimapEnabled = 1;
 s8 gMinimapSavedViewMode = -1;

@@ -13,6 +13,7 @@
 #include "main/dll/rom_curve_interface.h"
 #include "main/frame_timing.h"
 #include "main/lightmap_api.h"
+#include "main/model_light.h"
 #include "main/obj_message.h"
 #include "main/object_render.h"
 #include "main/objhits.h"

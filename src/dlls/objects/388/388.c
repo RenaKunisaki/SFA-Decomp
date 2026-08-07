@@ -12,6 +12,7 @@
 #include "main/obj_link.h"
 #include "main/obj_list.h"
 #include "sys/objects.h"
+#include "main/objseq.h"
 
 #define DLL_184_ANIM_EVENT_CREATE_CHILD  1
 #define DLL_184_ANIM_EVENT_REMOVE_CHILD  2

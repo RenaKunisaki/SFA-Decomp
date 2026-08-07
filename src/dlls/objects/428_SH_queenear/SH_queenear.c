@@ -28,6 +28,7 @@
 #include "main/vecmath.h"
 #include "sys/objects.h"
 #include "sys/objects/lifecycle.h"
+#include "main/mapEventTypes.h"
 
 #define QUEEN_EARTH_WALKER_TARGET_OBJECT_GROUP 0xF
 

@@ -8,7 +8,6 @@
 #include "main/mm.h"
 #include "main/texture.h"
 #include "dolphin/os/OSInterrupt.h"
-#include "string.h"
 #include "main/pi_dolphin_texture_api.h"
 #include "main/track_dolphin_api.h"
 #include "PowerPC_EABI_Support/Msl/MSL_C/MSL_Common/printf.h"

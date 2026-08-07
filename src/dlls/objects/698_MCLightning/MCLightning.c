@@ -7,6 +7,7 @@
 #include "main/objfx.h"
 #include "main/objtype.h"
 #include "main/dll/dll_02BA_mclightning.h"
+#include "main/objseq.h"
 
 #define MCLIGHTNING_OBJGROUP 0x48
 

@@ -23,7 +23,6 @@
 #include "game/objects/object.h"
 #include "sys/objects.h"
 #include "main/newclouds.h"
-#include "main/audio/sfx_trigger_ids.h"
 #include "dolphin/mtx/vec.h"
 #include "main/objfx.h"
 #include "main/dll/baddie_state.h"

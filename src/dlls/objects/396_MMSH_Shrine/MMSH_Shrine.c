@@ -31,6 +31,7 @@
 #include "main/vecmath.h"
 #include "main/vecmath_distance_api.h"
 #include "sys/objects.h"
+#include "main/model_light.h"
 
 #define MMSH_SHRINE_CAMERA_MODE_ID 0x4C
 

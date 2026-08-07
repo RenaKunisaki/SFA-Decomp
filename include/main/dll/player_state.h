@@ -37,7 +37,7 @@ STATIC_ASSERT(sizeof(PlayerStatus) == 12);
 #define PLAYER_FLAG_LOCKED 0x200000LL                /* player controls locked (set/cleared by playerLock; gates pad-input processing) */
 #define PLAYER_FLAG_HITDETECT 0x2LL                  /* attack hit-detection active: set after ObjHitDetect setup, gates the objHitDetectFn sweep; cleared on state entry */
 #define PLAYER_FLAG_NO_POS_VELOCITY 0x2000LL         /* suppress position-derived velocity: when set, velocityY is NOT recomputed from (worldPos-previousWorldPos)/dt; set on scripted-move state entry */
-#define PLAYER_FLAG_LEDGE_DETECTED 0x100             /* nearby wall/ledge found: cleared at sweep start, set when the proximity sweep detects a blocking surface (records surfaceNormal); read via playerGetStateValue case 11 */
+#define PLAYER_FLAG_LEDGE_DETECTED 0x100LL           /* nearby wall/ledge found: cleared at sweep start, set when the proximity sweep detects a blocking surface (records surfaceNormal); read via playerGetStateValue case 11 */
 #define PLAYER_FLAG_TELEPORTED 0x800000LL            /* position/yaw hard-set: set after any teleport/pos/yaw override, gates the snap-facing-to-heading branch then consumed */
 #define PLAYER_FLAG_HEADING_LOCK 0x1000000LL         /* freeze input heading: when set, lastInputHeading is NOT updated from live input; set during committed turn/locomotion moves */
 

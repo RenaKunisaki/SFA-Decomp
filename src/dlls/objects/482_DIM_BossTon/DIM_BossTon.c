@@ -27,6 +27,9 @@
 #include "main/sky_api.h"
 #include "main/vecmath.h"
 #include "sys/objects.h"
+#include "main/dll/partfx_interface.h"
+#include "main/mapEventTypes.h"
+#include "main/model_light.h"
 extern f32 gDIMbosstonsilRouteDelayTimer;
 extern f32 gDIMbosstonsilNextRumbleTime;
 extern f32 gDIMbosstonsilRumbleElapsed;
