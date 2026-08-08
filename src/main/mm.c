@@ -17,6 +17,20 @@
 
 #include "main/gameloop_internal.h"
 #include "main/pi_dolphin.h"
+
+#define MM_STORE_COUNT 0x20
+#define MM_DEFERRED_FREE_CAPACITY 2000
+#define MM_REGION_CAPACITY 8
+#define MM_NUM_REGIONS 4
+//large region size is "everything left over"
+#define MM_MEDIUM_REGION_SIZE 0x1c0000 //1.75M
+#define MM_SMALL_REGION_SIZE 0x9ffa0 //~640K
+#define MM_REGION3_SIZE 0x45ffa0 //~4.37M
+#define MM_LARGE_REGION_SLOTS 250
+#define MM_MEDIUM_REGION_SLOTS 850
+#define MM_SMALL_REGION_SLOTS 850
+#define MM_REGION3_SLOTS 580 //typo?
+
 u8 gMmRegionCount;
 s16 gMmDeferredFreeCount;
 int gMmFreeDelay;
@@ -37,10 +51,6 @@ int mmDelay;
 int gMmRegion0SpawnEnabled = 1;
 int mmDelay2 = -1;
 char sMmStoreAllocationTag[] = "mmStore";
-
-#define MM_STORE_COUNT 0x20
-#define MM_DEFERRED_FREE_CAPACITY 2000
-#define MM_REGION_CAPACITY 8
 
 typedef struct MmRegion
 {
@@ -887,6 +897,7 @@ void* mmAlloc(int size, int type, int flag)
     {
         if (mmDelay2 == 1)
         {
+            //texture reregion happening. prefer heap 1, fall back to 2.
             result = (void*)mmAllocFromRegion(1, size, type, flag);
             if (result == 0)
             {
@@ -987,28 +998,36 @@ void mmInit(void)
     u8* lo;
     gMmRegionCount = 0;
     lo = OSGetArenaLo();
-    t = (u8*)OSGetArenaHi() - lo - 0x6c0000;
-    size = t - 0x720;
+    t = (u8*)OSGetArenaHi() - lo - (MM_MEDIUM_REGION_SIZE +
+        MM_SMALL_REGION_SIZE + MM_REGION3_SIZE + 0xC0);
+    //this "+ 0xC0" might be rounding up to 256?
+    size = t - 0x720; //XXX where does this number come from?
     gMmRegion0Size = size;
+
+    //large region (all memory not used by anything else)
     p = OSAllocFromHeap(__OSCurrHeap, size);
     DCFlushRange(p, size);
-    mmInitRegion(p, size, 0xfa);
+    mmInitRegion(p, size, MM_LARGE_REGION_SLOTS);
 
+    //savegame buffer
     p = OSAllocFromHeap(__OSCurrHeap, 0x6ed);
     gSaveGameWorkBuffer = p;
     gAskProgressiveScanFlag = (u8*)p + 0x6ec;
 
-    p = OSAllocFromHeap(__OSCurrHeap, 0x1c0000);
-    DCFlushRange(p, 0x1c0000);
-    mmInitRegion(p, 0x1c0000, 0x352);
+    //medium region
+    p = OSAllocFromHeap(__OSCurrHeap, MM_MEDIUM_REGION_SIZE);
+    DCFlushRange(p, MM_MEDIUM_REGION_SIZE);
+    mmInitRegion(p, MM_MEDIUM_REGION_SIZE, MM_MEDIUM_REGION_SLOTS);
 
-    p = OSAllocFromHeap(__OSCurrHeap, 0x9ffa0);
-    DCFlushRange(p, 0x9ffa0);
-    mmInitRegion(p, 0x9ffa0, 0x352);
+    //small region
+    p = OSAllocFromHeap(__OSCurrHeap, MM_SMALL_REGION_SIZE);
+    DCFlushRange(p, MM_SMALL_REGION_SIZE);
+    mmInitRegion(p, MM_SMALL_REGION_SIZE, MM_SMALL_REGION_SLOTS);
 
-    p = OSAllocFromHeap(__OSCurrHeap, 0x45ffa0);
-    DCFlushRange(p, 0x45ffa0);
-    mmInitRegion(p, 0x45ffa0, 0x244);
+    //extra region (need to investigate purpose)
+    p = OSAllocFromHeap(__OSCurrHeap, MM_REGION3_SIZE);
+    DCFlushRange(p, MM_REGION3_SIZE);
+    mmInitRegion(p, MM_REGION3_SIZE, MM_REGION3_SLOTS);
 
     gMmOpCount++;
     gMmFreeDelay = 2;
