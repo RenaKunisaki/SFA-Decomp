@@ -816,15 +816,15 @@ void init(void)
     setDisplayCopyFilter();
     initLoadingScreenTextures();
     mmInit();
-    mmSetDelay(1);
+    testAndSet_onlyUseHeap3(1);
     gxDisableGpuHangRecovery();
-    mmSetDelay(0);
+    testAndSet_onlyUseHeap3(0);
     Camera_InitState();
-    mmSetDelay(1);
+    testAndSet_onlyUseHeap3(1);
     gameTextInitRendererState();
-    mmSetDelay(0);
+    testAndSet_onlyUseHeap3(0);
     gameTextLoadDir(3);
-    mmSetDelay(1);
+    testAndSet_onlyUseHeap3(1);
     initControllers();
     delay = mmSetFreeDelay(0);
     do
@@ -839,17 +839,17 @@ void init(void)
         }
         if (once == 0)
         {
-            mmSetDelay(1);
+            testAndSet_onlyUseHeap3(1);
             allocSomething32bytes();
         }
         if ((u8)audioDone != 0 && filesDone == 0)
         {
-            mmSetDelay(1);
+            testAndSet_onlyUseHeap3(1);
             filesDone = initLoadFiles();
         }
         if (once == 0)
         {
-            mmSetDelay(1);
+            testAndSet_onlyUseHeap3(1);
             newShadowsInitProceduralTextures();
         }
         once = 1;
@@ -883,7 +883,7 @@ void init(void)
         GXFlush_(1, 0);
     }
     mmSetFreeDelay(delay);
-    mmSetDelay(1);
+    testAndSet_onlyUseHeap3(1);
     videoBlackScreenForFrames(5);
     errDisplayInstallHandlers();
     loadTextureFiles();
@@ -935,7 +935,7 @@ void init(void)
     gTitleMenuItemInterface = Resource_Acquire(0x3d, 0xa);
     Rcp_InitDistortionEffects();
     initSkyStars();
-    mmSetDelay(0);
+    testAndSet_onlyUseHeap3(0);
     loadAssetFileById(&gGameBitTable, MLDF_FILEID_BITTABLE_BIN);
     gGameBitCount = (s16)(getDataFileSize(MLDF_FILEID_BITTABLE_BIN) >> 1);
     gGameBitSaveData = (*gMapEventInterface)->getLast();
