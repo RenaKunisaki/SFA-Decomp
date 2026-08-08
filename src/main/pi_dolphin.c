@@ -5238,10 +5238,10 @@ u8 initLoadFiles(void)
         if (((gAssetLoadInFlightFlags & 0x100) == 0 || (gAssetLoadInFlightFlags & 0x400) == 0) &&
             ((gAssetLoadCompletedFlags & 0x100) == 0 || (gAssetLoadCompletedFlags & 0x400) == 0))
         {
-            int saved = testAndSet_onlyUseHeap3(0);
+            int saved = mmSetDelay(0);
             mapLoadDataFile(5, MLDF_FILEID_TEX0_BIN_A);
             mapLoadDataFile(5, MLDF_FILEID_TEX0_TAB_A);
-            testAndSet_onlyUseHeap3(saved);
+            mmSetDelay(saved);
         }
         else if ((gAssetLoadCompletedFlags & 0x100) != 0 && (gAssetLoadCompletedFlags & 0x400) != 0)
         {

@@ -46,10 +46,10 @@ int gMmRegion0Size;
 int gMmOpCount;
 u8 gMmTextureAllocationState;
 int gMmNextAllocId;
-int mmDelay;
+int mmDelay; //when not zero, force using heap 3 only
 
 int gMmRegion0SpawnEnabled = 1;
-int mmDelay2 = -1;
+int mmDelay2 = -1; //when == 1, force using heaps 1 and 2 only (for texture reregion)
 char sMmStoreAllocationTag[] = "mmStore";
 
 typedef struct MmRegion
