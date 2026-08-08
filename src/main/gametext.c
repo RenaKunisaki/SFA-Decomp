@@ -3,26 +3,6 @@
 #include "main/gametext_shared_internal.h"
 #include "main/textrender_api.h"
 
-char sMapDirectoryNameArwing[] = "Arwing";
-char sMapDirectoryNameBoot[] = "Boot";
-char sMapDirectoryNameCRFort[] = "CRFort";
-char sMapDirectoryNameDFPTop[] = "DFPTop";
-char sMapDirectoryNameDesert[] = "Desert";
-char sMapDirectoryNameLINKG[] = "LINKG";
-char sMapDirectoryNameLink[] = "Link";
-char sMapDirectoryNameLinkB[] = "LinkB";
-char sMapDirectoryNameLinkC[] = "LinkC";
-char sMapDirectoryNameLinkD[] = "LinkD";
-char sMapDirectoryNameLinkE[] = "LinkE";
-char sMapDirectoryNameLinkF[] = "LinkF";
-char sMapDirectoryNameLinkH[] = "LinkH";
-char sMapDirectoryNameLinkJ[] = "LinkJ";
-char sMapDirectoryNameMMPass[] = "MMPass";
-char sMapDirectoryNameNWastes[] = "NWastes";
-char sMapDirectoryNameShop[] = "Shop";
-char sMapDirectoryNameSwapHol[] = "SwapHol";
-char sMapDirectoryNameVolcano[] = "Volcano";
-char sMapDirectoryNameWarlock[] = "Warlock";
 char sLanguageNameEnglish[] = "English";
 char sLanguageNameFrench[] = "French";
 char sLanguageNameGerman[] = "German";
@@ -274,150 +254,18 @@ u8 gUtf8CharClassTable[256] = {
 
 int gUtf8ClassOffsetTable[6] = {0, 12416, 925824, 63447168, -100130688, -2113396608};
 
-char sMapDirectoryNameAnimtest[] = "Animtest";
-
-char sMapDirectoryNameBOSSAndross[] = "BOSSAndross";
-
-char sMapDirectoryNameBossDrakor[] = "BossDrakor";
-
-char sMapDirectoryNameBossGaldon[] = "BossGaldon";
-
-char sMapDirectoryNameBossTrex[] = "BossTrex";
-
-char sMapDirectoryNameCapeClaw[] = "CapeClaw";
-
-char sMapDirectoryNameCloudDungeon[] = "CloudDungeon";
-
-char sMapDirectoryNameCloudRace[] = "CloudRace";
-
-char sMapDirectoryNameCommunicator[] = "Communicator";
-
-char sMapDirectoryNameDBShrine[] = "DBShrine";
-
-char sMapDirectoryNameDFShrine[] = "DFShrine";
-
-char sMapDirectoryNameDarkIceMines[] = "DarkIceMines";
-
-char sMapDirectoryNameDarkIceMines2[] = "DarkIceMines2";
-
-char sMapDirectoryNameDragRock[] = "DragRock";
-
-char sMapDirectoryNameDragRockBot[] = "DragRockBot";
-
-char sMapDirectoryNameECShrine[] = "ECShrine";
-
-char sMapDirectoryNameFrontEnd[] = "FrontEnd";
-
-char sMapDirectoryNameGPShrine[] = "GPShrine";
-
-char sMapDirectoryNameGameMaze[] = "GameMaze";
-
-char sMapDirectoryNameIceMountain[] = "IceMountain";
-
-char sMapDirectoryNameInsideGal[] = "InsideGal";
-
-char sMapDirectoryNameLightFoot[] = "LightFoot";
-
-char sMapDirectoryNameMMShrine[] = "MMShrine";
-
-char sMapDirectoryNameMagicCave[] = "MagicCave";
-
-char sMapDirectoryNameNWShrine[] = "NWShrine";
-
-char sMapDirectoryNameSequences[] = "Sequences";
-
-char sMapDirectoryNameShipBattle[] = "ShipBattle";
-
-char sMapDirectoryNameTaskTexts000[] = "TaskTexts000";
-
-char sMapDirectoryNameTaskTexts001[] = "TaskTexts001";
-
-char sMapDirectoryNameTaskTexts002[] = "TaskTexts002";
-
-char sMapDirectoryNameTaskTexts003[] = "TaskTexts003";
-
-char sMapDirectoryNameTaskTexts004[] = "TaskTexts004";
-
-char sMapDirectoryNameTaskTexts005[] = "TaskTexts005";
-
-char sMapDirectoryNameTaskTexts006[] = "TaskTexts006";
-
-char sMapDirectoryNameTaskTexts007[] = "TaskTexts007";
-
-char sMapDirectoryNameTaskTexts008[] = "TaskTexts008";
-
-char sMapDirectoryNameTaskTexts009[] = "TaskTexts009";
-
-char sMapDirectoryNameTaskTexts010[] = "TaskTexts010";
-
-char sMapDirectoryNameTaskTexts011[] = "TaskTexts011";
-
-char sMapDirectoryNameTaskTexts012[] = "TaskTexts012";
-
-char sMapDirectoryNameTaskTexts013[] = "TaskTexts013";
-
-char sMapDirectoryNameTaskTexts014[] = "TaskTexts014";
-
-char sMapDirectoryNameTaskTexts015[] = "TaskTexts015";
-
-char sMapDirectoryNameTaskTexts016[] = "TaskTexts016";
-
-char sMapDirectoryNameTaskTexts017[] = "TaskTexts017";
-
-char sMapDirectoryNameTaskTexts018[] = "TaskTexts018";
-
-char sMapDirectoryNameTaskTexts019[] = "TaskTexts019";
-
-char sMapDirectoryNameTaskTexts021[] = "TaskTexts021";
-
-char sMapDirectoryNameTaskTexts022[] = "TaskTexts022";
-
-char sMapDirectoryNameTaskTexts023[] = "TaskTexts023";
-
-char sMapDirectoryNameTaskTexts024[] = "TaskTexts024";
-
-char sMapDirectoryNameWallCity[] = "WallCity";
-
-char sMapDirectoryNameWorldMap[] = "WorldMap";
-
 char* sMapDirectoryNameTable[74] = {
-    sMapDirectoryNameAnimtest,      sMapDirectoryNameArwing,
-    sMapDirectoryNameBOSSAndross,   sMapDirectoryNameBoot,
-    sMapDirectoryNameBossDrakor,    sMapDirectoryNameBossGaldon,
-    sMapDirectoryNameBossTrex,      sMapDirectoryNameCRFort,
-    sMapDirectoryNameCapeClaw,      sMapDirectoryNameCloudDungeon,
-    sMapDirectoryNameCloudRace,     sMapDirectoryNameCommunicator,
-    sMapDirectoryNameDBShrine,      sMapDirectoryNameDFPTop,
-    sMapDirectoryNameDFShrine,      sMapDirectoryNameDarkIceMines,
-    sMapDirectoryNameDarkIceMines2, sMapDirectoryNameDesert,
-    sMapDirectoryNameDragRock,      sMapDirectoryNameDragRockBot,
-    sMapDirectoryNameECShrine,      sMapDirectoryNameFrontEnd,
-    sMapDirectoryNameGPShrine,      sMapDirectoryNameGameMaze,
-    sMapDirectoryNameIceMountain,   sMapDirectoryNameInsideGal,
-    sMapDirectoryNameLINKG,         sMapDirectoryNameLightFoot,
-    sMapDirectoryNameLink,          sMapDirectoryNameLinkB,
-    sMapDirectoryNameLinkC,         sMapDirectoryNameLinkD,
-    sMapDirectoryNameLinkE,         sMapDirectoryNameLinkF,
-    sMapDirectoryNameLinkH,         sMapDirectoryNameLinkJ,
-    sMapDirectoryNameMMPass,        sMapDirectoryNameMMShrine,
-    sMapDirectoryNameMagicCave,     sMapDirectoryNameNWShrine,
-    sMapDirectoryNameNWastes,       sMapDirectoryNameSequences,
-    sMapDirectoryNameShipBattle,    sMapDirectoryNameShop,
-    sMapDirectoryNameSwapHol,       sMapDirectoryNameTaskTexts000,
-    sMapDirectoryNameTaskTexts001,  sMapDirectoryNameTaskTexts002,
-    sMapDirectoryNameTaskTexts003,  sMapDirectoryNameTaskTexts004,
-    sMapDirectoryNameTaskTexts005,  sMapDirectoryNameTaskTexts006,
-    sMapDirectoryNameTaskTexts007,  sMapDirectoryNameTaskTexts008,
-    sMapDirectoryNameTaskTexts009,  sMapDirectoryNameTaskTexts010,
-    sMapDirectoryNameTaskTexts011,  sMapDirectoryNameTaskTexts012,
-    sMapDirectoryNameTaskTexts013,  sMapDirectoryNameTaskTexts014,
-    sMapDirectoryNameTaskTexts015,  sMapDirectoryNameTaskTexts016,
-    sMapDirectoryNameTaskTexts017,  sMapDirectoryNameTaskTexts018,
-    sMapDirectoryNameTaskTexts019,  sMapDirectoryNameTaskTexts021,
-    sMapDirectoryNameTaskTexts022,  sMapDirectoryNameTaskTexts023,
-    sMapDirectoryNameTaskTexts024,  sMapDirectoryNameVolcano,
-    sMapDirectoryNameWallCity,      sMapDirectoryNameWarlock,
-    sMapDirectoryNameWorldMap,      NULL,
+    "Animtest",     "Arwing",       "BOSSAndross",   "Boot",         "BossDrakor",   "BossGaldon",   "BossTrex",
+    "CRFort",       "CapeClaw",     "CloudDungeon",  "CloudRace",    "Communicator", "DBShrine",     "DFPTop",
+    "DFShrine",     "DarkIceMines", "DarkIceMines2", "Desert",       "DragRock",     "DragRockBot",  "ECShrine",
+    "FrontEnd",     "GPShrine",     "GameMaze",      "IceMountain",  "InsideGal",    "LINKG",        "LightFoot",
+    "Link",         "LinkB",        "LinkC",         "LinkD",        "LinkE",        "LinkF",        "LinkH",
+    "LinkJ",        "MMPass",       "MMShrine",      "MagicCave",    "NWShrine",     "NWastes",      "Sequences",
+    "ShipBattle",   "Shop",         "SwapHol",       "TaskTexts000", "TaskTexts001", "TaskTexts002", "TaskTexts003",
+    "TaskTexts004", "TaskTexts005", "TaskTexts006",  "TaskTexts007", "TaskTexts008", "TaskTexts009", "TaskTexts010",
+    "TaskTexts011", "TaskTexts012", "TaskTexts013",  "TaskTexts014", "TaskTexts015", "TaskTexts016", "TaskTexts017",
+    "TaskTexts018", "TaskTexts019", "TaskTexts021",  "TaskTexts022", "TaskTexts023", "TaskTexts024", "Volcano",
+    "WallCity",     "Warlock",      "WorldMap",      NULL,
 };
 
 char sLanguageNameJapanese[] = "Japanese";
