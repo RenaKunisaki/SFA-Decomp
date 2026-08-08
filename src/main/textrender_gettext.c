@@ -226,8 +226,8 @@ void gameTextResetCursor(int flags)
     }
     if (flags & 2)
     {
-        int* p = &gGameTextCommandSlots[gGameTextCommandCount++].opcode;
-        *p = 0xb;
+        GameTextCommand* p = &gGameTextCommandSlots[gGameTextCommandCount++].opcode;
+        *p = GAMETEXT_COMMAND_RESET_CURSOR;
     }
 }
 
@@ -244,7 +244,7 @@ void gameTextSetCursor(u16 x, u16 y, int flags)
         GameTextSlot* cmd;
         gGameTextCommandCount = i + 1;
         cmd = &gGameTextCommandSlots[i];
-        cmd->opcode = 0xa;
+        cmd->opcode = GAMETEXT_COMMAND_SET_CURSOR;
         cmd->arg0 = x;
         cmd->arg1 = y;
     }
@@ -263,7 +263,7 @@ void gameTextSetWindowStrPos(int idx, int x, int y)
         GameTextSlot* cmd;
         gGameTextCommandCount = i + 1;
         cmd = &gGameTextCommandSlots[i];
-        cmd->opcode = 4;
+        cmd->opcode = GAMETEXT_COMMAND_SET_WINDOW_POSITION;
         cmd->arg0 = idx;
         cmd->arg1 = x;
         cmd->arg2 = y;
@@ -285,7 +285,7 @@ void gameTextSetColor(u8 r, u8 g, u8 b, u8 a)
         GameTextSlot* cmd;
         gGameTextCommandCount = i + 1;
         cmd = &gGameTextCommandSlots[i];
-        cmd->opcode = 3;
+        cmd->opcode = GAMETEXT_COMMAND_SET_COLOR;
         cmd->arg0 = r;
         cmd->arg1 = g;
         cmd->arg2 = b;

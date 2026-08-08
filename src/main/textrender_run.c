@@ -111,7 +111,7 @@ void gameTextLoadDir(int dirId)
             slotIndex = gGameTextCommandCount;
             gGameTextCommandCount = slotIndex + 1;
             cmd = &gGameTextCommandSlots[slotIndex];
-            cmd->opcode = 0xf;
+            cmd->opcode = GAMETEXT_COMMAND_SET_CHARSET;
             cmd->arg0 = GAMETEXT_SLOT_ERROR;
         }
     }
@@ -125,7 +125,7 @@ void gameTextLoadDir(int dirId)
             slotIndex = gGameTextCommandCount;
             gGameTextCommandCount = slotIndex + 1;
             cmd = &gGameTextCommandSlots[slotIndex];
-            cmd->opcode = 0xf;
+            cmd->opcode = GAMETEXT_COMMAND_SET_CHARSET;
             cmd->arg0 = GAMETEXT_SLOT_HUD;
         }
         gameTextLoadForCurMap(GAMETEXT_SLOT_HUD);
@@ -139,7 +139,7 @@ void gameTextLoadDir(int dirId)
             slotIndex = gGameTextCommandCount;
             gGameTextCommandCount = slotIndex + 1;
             cmd = &gGameTextCommandSlots[slotIndex];
-            cmd->opcode = 0xf;
+            cmd->opcode = GAMETEXT_COMMAND_SET_CHARSET;
             cmd->arg0 = GAMETEXT_SLOT_DIALOGUE;
         }
         curGameTextDir = dirId;
@@ -174,7 +174,7 @@ void gameTextSetCharset(int charset, int flags)
         GameTextSlot* cmd;
         gGameTextCommandCount = i + 1;
         cmd = &gGameTextCommandSlots[i];
-        cmd->opcode = 0xf;
+        cmd->opcode = GAMETEXT_COMMAND_SET_CHARSET;
         cmd->arg0 = charset;
     }
 }
@@ -380,7 +380,7 @@ void gameTextRun(void)
     {
         switch (cmd->opcode)
         {
-        case 3:
+        case GAMETEXT_COMMAND_SET_COLOR:
         {
             u8 c1, c2, c3;
             c3 = cmd->arg3;
@@ -392,20 +392,20 @@ void gameTextRun(void)
             gGameTextColorA = c3;
             break;
         }
-        case 4:
+        case GAMETEXT_COMMAND_SET_WINDOW_POSITION:
         {
             int t1 = cmd->arg2;
             gTextBoxes[cmd->arg0].cursorX = (s16)cmd->arg1;
             gTextBoxes[cmd->arg0].cursorY = t1;
             break;
         }
-        case 1:
+        case GAMETEXT_COMMAND_TICK_REVEAL:
             gameTextTickReveal(cmd->arg0, (struct TextDisplayState*)cmd->arg1);
             break;
-        case 2:
+        case GAMETEXT_COMMAND_RENDER_BY_ID:
             gameTextRenderById(cmd->arg0, cmd->arg1, cmd->arg2);
             break;
-        case 5:
+        case GAMETEXT_COMMAND_SHOW_TIME_STRING:
         {
             int strId = cmd->arg0;
             if (gCurTextBox != NULL)
@@ -414,10 +414,10 @@ void gameTextRun(void)
             }
             break;
         }
-        case 6:
+        case GAMETEXT_COMMAND_APPEND_STRING:
             gameTextRenderStrs((char*)cmd->arg0, cmd->arg1);
             break;
-        case 7:
+        case GAMETEXT_COMMAND_SHOW_STRING_AT:
         {
             int t3 = cmd->arg3;
             int t2 = cmd->arg1;
@@ -428,7 +428,7 @@ void gameTextRun(void)
             gameTextRenderStrs((char*)t1, t2);
             break;
         }
-        case 8:
+        case GAMETEXT_COMMAND_SET_WINDOW:
             if (cmd->arg0 == 0xff)
             {
                 gCurTextBox = NULL;
@@ -438,24 +438,24 @@ void gameTextRun(void)
                 gCurTextBox = &gTextBoxes[cmd->arg0];
             }
             break;
-        case 9:
+        case GAMETEXT_COMMAND_CALL_DRAW_FUNC:
             ((void (*)(void))cmd->arg0)();
             break;
-        case 10:
+        case GAMETEXT_COMMAND_SET_CURSOR:
         {
             u16 b1 = cmd->arg1;
             gGameTextCursorX = (u16)cmd->arg0;
             gGameTextCursorY = b1;
             break;
         }
-        case 11:
+        case GAMETEXT_COMMAND_RESET_CURSOR:
             gGameTextCursorX = 0;
             gGameTextCursorY = 0;
             break;
-        case 12:
+        case GAMETEXT_COMMAND_SET_SHADOW_ENABLED:
             gGameTextShadowEnabled = cmd->arg0;
             break;
-        case 14:
+        case GAMETEXT_COMMAND_SET_SHADOW_COLOR:
         {
             u8 e1, e2;
             e2 = cmd->arg2;
@@ -465,14 +465,14 @@ void gameTextRun(void)
             gGameTextShadowColorB = e2;
             break;
         }
-        case 13:
+        case GAMETEXT_COMMAND_SET_SHADOW_OFFSET:
         {
             int sy = cmd->arg1;
             gGameTextShadowOffsetX = cmd->arg0;
             gGameTextShadowOffsetY = sy;
             break;
         }
-        case 15:
+        case GAMETEXT_COMMAND_SET_CHARSET:
             gameTextFonts = (TextFont*)((cmd->arg0 * sizeof(TextFont) + offsetof(GameTextRuntime, fonts)) +
                                          (int)runtime);
             gameTextCharset = cmd->arg0;
