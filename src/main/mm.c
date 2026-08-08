@@ -310,12 +310,16 @@ int mmSetDelay(int v)
 }
 int printHeapStats(int wpad0)
 {
-    OSReport(sMemStatsFormat, gMmRegion0Used, gMmRegionTable[0].size, gMmRegion1Used, gMmRegionTable[1].size,
-             gMmRegion2Used, gMmRegionTable[2].size, gMmRegion3Used, gMmRegionTable[3].size,
-             gMmRegionTable[0].slotsUsed, gMmRegionTable[0].numSlots, gMmRegionTable[1].slotsUsed,
-             gMmRegionTable[1].numSlots, gMmRegionTable[2].slotsUsed, gMmRegionTable[2].numSlots,
-             gMmRegionTable[3].slotsUsed, gMmRegionTable[3].numSlots);
-    return gMmRegion0Used + (gMmRegion1Used + gMmRegion2Used + gMmRegion3Used);
+    OSReport(sMemStatsFormat,
+        gMmRegion0Used, gMmRegionTable[0].size,
+        gMmRegion1Used, gMmRegionTable[1].size,
+        gMmRegion2Used, gMmRegionTable[2].size,
+        gMmRegion3Used, gMmRegionTable[3].size,
+        gMmRegionTable[0].slotsUsed, gMmRegionTable[0].numSlots,
+        gMmRegionTable[1].slotsUsed, gMmRegionTable[1].numSlots,
+        gMmRegionTable[2].slotsUsed, gMmRegionTable[2].numSlots,
+        gMmRegionTable[3].slotsUsed, gMmRegionTable[3].numSlots);
+    return gMmRegion0Used + gMmRegion1Used + gMmRegion2Used + gMmRegion3Used;
 }
 
 extern char sMmFreeInvalidLocationError[];
