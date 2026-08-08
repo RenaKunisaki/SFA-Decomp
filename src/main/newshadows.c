@@ -1382,7 +1382,7 @@ void newShadowsInitProceduralTextures(void)
     int placedCount;
     int frame;
 
-    savedHeap = mmSetDelay(1);
+    savedHeap = testAndSet_onlyUseHeap3(1);
     placedCount = 0;
     placementAttempts = 0;
     placement = gNewShadowPlacements;
@@ -1503,7 +1503,7 @@ void newShadowsInitProceduralTextures(void)
 
     gNewShadowReflectionScrollX = 0.0f;
     gNewShadowReflectionScrollY = 0.0f;
-    mmSetDelay(savedHeap);
+    testAndSet_onlyUseHeap3(savedHeap);
 }
 
 
@@ -1779,7 +1779,7 @@ void allocLotsOfTextures(void)
     f32 v;
     int bumpRowOff;
 
-    u8 saved = mmSetDelay(1);
+    u8 saved = testAndSet_onlyUseHeap3(1);
 
     renderTargets[0] = textureAlloc(0x100, 0x100, 0, 0, 0, 0, 0, 1, 1);
     renderTargets[1] = textureAlloc(0x100, 0x100, 1, 0, 0, 0, 0, 0, 0);
@@ -2051,7 +2051,7 @@ void allocLotsOfTextures(void)
         }
     }
     GXInvalidateTexAll();
-    mmSetDelay(saved);
+    testAndSet_onlyUseHeap3(saved);
 }
 
 int surfaceSfxSelectTrigger(u8 a, u8 b)
