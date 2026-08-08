@@ -674,7 +674,7 @@ void defragMemory(int mode)
         char* p4;
         void* n;
         int i;
-        testAndSet_onlyUseHeaps1and2(1);
+        mmSetDelay2(1);
         i = 0;
         {
             char* hi = (char*)base + 0x20000;
@@ -746,7 +746,7 @@ void defragMemory(int mode)
             p4 += 1;
             i++;
         } while (i <= 0x57);
-        testAndSet_onlyUseHeaps1and2(-1);
+        mmSetDelay2(-1);
     }
     base = (u8*)((char*)base + 0x20000);
     while (done == 0 && pass < 10)

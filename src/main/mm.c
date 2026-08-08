@@ -32,10 +32,10 @@ int gMmRegion0Size;
 int gMmOpCount;
 u8 gMmTextureAllocationState;
 int gMmNextAllocId;
-int gMmUseHeap3;
+int mmDelay;
 
 int gMmRegion0SpawnEnabled = 1;
-int gMmUseHeaps1and2 = -1;
+int mmDelay2 = -1;
 char sMmStoreAllocationTag[] = "mmStore";
 
 #define MM_STORE_COUNT 0x20
@@ -287,24 +287,24 @@ int mmCreateMemoryStore(int size)
     return store->handle;
 }
 
-int testAndSet_onlyUseHeaps1and2(int v)
+int mmSetDelay2(int v)
 {
     gMmOpCount++;
     {
-        int old = gMmUseHeaps1and2;
-        gMmUseHeaps1and2 = v;
+        int old = mmDelay2;
+        mmDelay2 = v;
         return old;
     }
 }
 
 extern MmRegion gMmRegionTable[MM_REGION_CAPACITY];
 
-int testAndSet_onlyUseHeap3(int v)
+int mmSetDelay(int v)
 {
     gMmOpCount++;
     {
-        int old = gMmUseHeap3;
-        gMmUseHeap3 = v;
+        int old = mmDelay;
+        mmDelay = v;
         return old;
     }
 }
@@ -875,7 +875,7 @@ void* mmAlloc(int size, int type, int flag)
     ok = 1;
     for (i = 0; ok && i < 100; i++)
     {
-        if (gMmUseHeaps1and2 == 1)
+        if (mmDelay2 == 1)
         {
             result = (void*)mmAllocFromRegion(1, size, type, flag);
             if (result == 0)
@@ -887,7 +887,7 @@ void* mmAlloc(int size, int type, int flag)
                 return result;
             }
         }
-        else if (gMmUseHeap3 != 0)
+        else if (mmDelay != 0)
         {
             result = (void*)mmAllocFromRegion(3, size, type, flag);
             if (result == 0)
@@ -1036,10 +1036,10 @@ void* stackCreate(int count, int size)
     u8* next;
     int n;
 
-    n = testAndSet_onlyUseHeaps1and2(2);
+    n = mmSetDelay2(2);
     prev = n;
     stack = mmAlloc(size * count + sizeof(StackPool), 0x11, 0);
-    testAndSet_onlyUseHeaps1and2(prev);
+    mmSetDelay2(prev);
     stack->itemSize = size;
     stack->itemCount = count;
     stack->usedCount = 0;
