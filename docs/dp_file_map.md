@@ -41,10 +41,16 @@ Four independent lenses, all reproducible; scripts in /private/tmp/c39/.
 *** SECOND CAVEAT: SFA's src/main file NAMES are OURS, not retail's. ***
   The `.c` strings visible in the target .o files are dtk's STT_FILE symbols generated from our
   own split config, NOT retail data.  The only source file names retail itself utters are:
-    objanim.c, objHitReact.c, expgfx.c, Hcurves.c, camcontrol.c, textblock.c, laser.c,
-    n_attractmode.c, DIMBoss.c, SHthorntail.c   (plus the SDK's dvdfs.c / musyx snd3d*.c)
+    objanim.c, objHitReact.c, expgfx.c, curves.c, camcontrol.c, textblock.c, laser.c,
+    n_attractmode.c, DIMBoss.c, SHthorntail.c   (plus the SDK's dvdfs.c)
+  Byte-verified against all five retail DOLs (US 1.0/1.1, EU 1.0/1.1, JP): the older reading
+  "Hcurves.c" is a strings-tool artifact - the 'H' at US10 dol offset 0x30e6bb is the low byte
+  (0x48) of the preceding pointer 0x800DD648, and curves_addCurveDef references 0x803116BC (the
+  'c'), so retail utters "curves.c: MAX_ROMCURVES exceeded!!". snd3d*.c is uttered by no retail
+  DOL either; it came from the repo's own musyx source tree, not retail data.
   Note objhits.o carries retail's "objHitReact.c: sphere overflow! %d" -> retail's own name for
-  that TU's hit-reaction half is objHitReact.c, and `objhits.c` is a DP-derived label.
+  that TU's hit-reaction half is objHitReact.c. `objhits.c` is a DP-era original name (the DP
+  ROM utters "objhits.c: keysize overflow error"), but SFA retail itself never says it.
   => Do NOT treat a src/main filename as evidence for anything.  Several are actively
   misleading; see the src/track row below.
 
@@ -150,7 +156,9 @@ route.c           (18) main/voxmaps.c (voxmaps_*Route*)          [BODY] DP route
        pathSearchHeapSiftDown / pathSearchNodeMatchesTarget / pathSearchBuildPath.
 memory.c          (24) main/mm.c                                 [L1 35][STR][name: both use `mm`]
 curves.c          (19) main/curves.c  + dlls/engine/20_Hcurves   [L1 28][STR]
-    retail's own string is "Hcurves.c: MAX_ROMCURVES exceeded!!" - the DLL half is Hcurves.c.
+    retail's own string is "curves.c: MAX_ROMCURVES exceeded!!" (the 'H' formerly read here is
+    a pointer-low-byte artifact, see the SECOND CAVEAT block) - so the "Hcurves" DLL-half name
+    has NO retail-string backing; DP's own ROM also says curves.c.
 joypad.c          (27) main/pad.c                                [L1 16]
 vi.c              (20) main/pi_videoinit.c (+ pi_dolphin.c)      [L1 16]
 pi.c               (7) main/pi_dolphin.c                         [L1][name: SFA kept the `pi` tag]

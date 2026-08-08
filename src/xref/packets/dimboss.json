@@ -30,7 +30,7 @@
           "xref_address": "0x801BCEA8",
           "pair_address": "0x801BCEAC",
           "target_address": "0x80325B44",
-          "target_text": "@<DIMBoss.c> freeing assets for DIMBoss",
+          "target_text": "<DIMBoss.c> freeing assets for DIMBoss",
           "pair_kind": "lis/addi",
           "function_name": "DIMboss_updateState"
         },
@@ -47,8 +47,8 @@
   ],
   "strings": [
     {
-      "address": "0x80325B43",
-      "text": "@<DIMBoss.c> freeing assets for DIMBoss",
+      "address": "0x80325B44",
+      "text": "<DIMBoss.c> freeing assets for DIMBoss",
       "tags": [
         "source"
       ]

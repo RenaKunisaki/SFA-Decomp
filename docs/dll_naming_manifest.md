@@ -760,6 +760,62 @@ any of them is acted on.
 
 (none)
 
+## Appendix: Dinosaur Planet evidence (Aug 2026 ROM/kiosk census)
+
+Two new evidence sources landed with `docs/rom_census/` (see its §4 and §6d).
+Nothing below executes a rename; each entry records evidence awaiting the
+normal arbitration path.
+
+**Object-bank truncation expansions.** DP's own OBJECTS.bin (in the decomp's
+`baserom.z64`) stores object names in a 15-char field where retail stores 11.
+`docs/rom_census/dp_object_names_vs_manifest.txt` maps all 1,270 DP names onto
+this manifest: 191 exact matches, 239 rows where the DP name extends our
+truncated retail name, and direct DP evidence for 61 of the 146 RAW/GUESSED
+rows (e.g. 0x28F `WCPressureS` -> `wcpressureswitc`, with the full
+`objects/wallcity/WCpressureswitch.c` attested in the DP ROM's debug trailer;
+0x151 `CFScalesGal` -> `cfscalesgalleon`; 0x286 `SPShopKeepe` ->
+`spshopkeeper`). Caveats: DP names are themselves 15-char truncated, carry
+DP-era casing, and predate two years of drift — a RAW row adopting a DP
+expansion needs the usual SFA-side check that the expansion is consistent with
+our own symbols/exports before its status moves.
+
+**Engine-bank slot names via the kiosk DLL chain.** The E3-2002 kiosk disc's
+DLLS.bin is a late-DP MIPS container whose roster aligns 1:1 onto DP-2000
+(4 insertions, 0 deletions), and the demo GC descriptor table (764 slots, in
+the disc's stray `files/default.dol`) bridges it to retail's 705
+(`docs/rom_census/kiosk/demo_retail_engine.txt`, per-slot evidence). The chain
+gives DP-era names for engine slots this manifest lists as NO-RETAIL-NAME.
+DP-era name != retail-era name — treat as one more oracle, weighed against
+body reading:
+
+| dll | DP-chain name | current manifest proposal | reading |
+|---|---|---|---|
+| 0x005 | newday | main/sky.c | compatible (day-cycle module; `newday.c` also appears in default.dol's filename corpus) |
+| 0x008 | newstars | main/skystars.c | corroborates |
+| 0x009 | newlfx | main/dll/cloudaction.c | **contradiction** — `newlfx.c` is also DP-ROM-attested as a source file; arbitrate before either name lands |
+| 0x00B | modgfx (manager) | dll_000B_dll0b.c (unnamed) | new evidence |
+| 0x00D | DP id 16 | dll_000D_playershadow.c | corroborates (DP 16 is SFA's playershadow position) |
+| 0x010 | menu_gameplay | dll_0010_uicontroller.c | related but not identical; arbitrate |
+| 0x017 | gplay | (unnamed) | corroborated independently: the E3 sys/main.dol carries the `gplaySaveGame`/`gplayGotoRestartpoint`/... trace family for this TU's functions |
+| 0x019 | BaddieControl | (unnamed) | new; `BaddieControlDLL` also appears in default.dol identifiers |
+| 0x02E | movelib | (unnamed) | new |
+| 0x02F | pickup | (unnamed) | new |
+| 0x031 | minimap | (unnamed) | new |
+| 0x032 | post | (unnamed) | new (`_Tn_POST.c` in default.dol's filename corpus) |
+| 0x033 | rareware | (unnamed) | new |
+| 0x034 | mainmenu | n_attractmode (DOL-RECOVERED) | retail name outranks; DP name records lineage only |
+| 0x03B-0x03D | old_picmenu / picmenu / frontend | (unnamed) | new |
+| 0x03F | scarab | (unnamed) | new |
+| 0x040 | credits | (unnamed) | new |
+| 0x041 | selection | (unnamed) | new |
+| 0x042 | camnormal | (consolidated cutcam row) | arbitrate against the cutcam evidence |
+
+Chain ambiguities flagged in the census (demo d28/d29, d52/d53, d64/d67 and
+the cam block) do not touch the rows above. Retail dropped 14 demo engine
+slots and added 11; the drop list includes `dswaphollow.c` (gametext,
+subtitles, old_mainmenu, old_levelselect, old_selection...) — none of those
+map to any current retail slot, so no row here inherits them.
+
 ## Appendix: naming contradictions
 
 All 18 rows this appendix once carried (7 `cross-dll`, 11 `unrelated`)
@@ -785,7 +841,8 @@ Seven queued items were arbitrated against one discriminator:
 
 Reference counts come from `python3 tools/pairing_check.py --refs <name>`;
 carve ranges from `config/GSAE01/splits.txt`. Every rename below was applied
-to all four region `symbols.txt` files and measured byte-neutral
+to the four region `symbols.txt` files (GSAE01, GSAE01_rev1, GSAJ01,
+GSAP01_rev1) and measured byte-neutral
 (`tools/unitfuzzy.py` unchanged on every referencing unit).
 
 | dll | old brand | new brand | evidence | verdict |
@@ -799,13 +856,14 @@ to all four region `symbols.txt` files and measured byte-neutral
 | — | `SkyEnvFxRampTables` | (name kept) | Declared in `include/dlls/objects/430_SH_LevelCon.h` but referenced only by dlls 0x172, 0x173 and 0x18B; SH_LevelCon spells the same four 28-entry ramps inline inside its own `ShLevelControlTables` at +0x24/+0x5C/+0x94/+0xCC. Header-home misplacement, not a naming error. Moved to `include/main/sky.h` beside its only consumer `skySetEnvFxRampTables`. | header rehomed |
 
 The three data-symbol follow-ups deferred out of the same seven are **done**. Each
-carries the verdict of its function family, was applied to all four region
-`symbols.txt` files at that region's own address, and measured byte-neutral: every
+carries the verdict of its function family, was applied to the four region
+`symbols.txt` files (GSAE01, GSAE01_rev1, GSAJ01, GSAP01_rev1) at that region's
+own address, and measured byte-neutral: every
 referencing unit holds its pre-rename `fuzzy_match_percent`, every allocated
 section of every rebuilt object is byte-identical, `pairing_check.py` reports 0
 retail-only symbols, and the FORCEACTIVE warning list is unchanged at 17.
 
-| dll | old symbol | new symbol | section | GSAE01 | GSAE01_rev1 | GSAJ01 | GSAP01 |
+| dll | old symbol | new symbol | section | GSAE01 | GSAE01_rev1 | GSAJ01 | GSAP01_rev1 |
 |---|---|---|---|---|---|---|---|
 | 0x232 | `gSfxplayerObjDescriptor` | `gDFP_RotatePObjDescriptor` | `.data` | 0x80329AA0 | 0x8032A6E0 | 0x80329BC0 | 0x8032B420 |
 | 0x1E0 | `gDim2IcicleHitDescTemplate` | `gDIMbossHitDescTemplate` | `.rodata` | 0x802C2348 | 0x802C2AC8 | 0x802C2448 | 0x802C2CC8 |
@@ -859,11 +917,12 @@ the source-basename authority.
 | 0x2AD (24 plants) | `softbody_*` (now `SoftBody_*`) | (name kept) | Apt: the unit is the soft-body plant/cloth simulation over 24 flora/drape defs. | confirmed apt |
 | 0x2C0 (Front* seven) | `titlescreen_*` (now `titleScreen*`) | (name kept) | Apt: the seven Front* defs are the title-screen pilots/planet. | confirmed apt |
 
-Second-wave data-symbol renames (spelling only, applied to all four region
-`symbols.txt` files at each region's own address; every referencing unit holds
+Second-wave data-symbol renames (spelling only, applied to the four region
+`symbols.txt` files GSAE01, GSAE01_rev1, GSAJ01 and GSAP01_rev1 at each
+region's own address; every referencing unit holds
 its exact pre-rename `report.json` score):
 
-| dll | old symbol | new symbol | section | GSAE01 | GSAE01_rev1 | GSAJ01 | GSAP01 |
+| dll | old symbol | new symbol | section | GSAE01 | GSAE01_rev1 | GSAJ01 | GSAP01_rev1 |
 |---|---|---|---|---|---|---|---|
 | 0x0D6 | `gKaldaChompOne` | `gKaldachomOne` | `.sdata2` | 0x803E30D0 | 0x803E3D68 | 0x803E31F0 | 0x803E4AB0 |
 | 0x0D6 | `gKaldaChompZero` | `gKaldachomZero` | `.sdata2` | 0x803E30D4 | 0x803E3D6C | 0x803E31F4 | 0x803E4AB4 |
@@ -1086,7 +1145,7 @@ That is acceptable when, and only when:
   unchanged -- a *merge* is the one exception, where `complete_units`
   and `total_units` each drop by the number of units absorbed.
 
-Two housekeeping items ride along and are easy to miss: all four
+Two housekeeping items ride along and are easy to miss: all five
 `config/<version>/splits.txt` carry the unit key and must move together,
 and `tools/banned_shapes_baseline.txt` is keyed by path, so a rename
 that skips it shows up as regrowth.

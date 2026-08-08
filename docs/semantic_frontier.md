@@ -68,8 +68,8 @@ comments stripped.
 * GSAE01: **EMPTY, re-verified twice** (symbols.txt 0 rows; src/include 0
   identifiers; junk_names kind=func 0 files).
 * **PREMISE REFUTED: the census was version-scoped.** The non-default symtabs
-  still carry fn_ rows: `GSAJ01` **18**, `GSAE01_rev1` **45**, `GSAP01` **83**
-  (146 total). Sampling shows the same functions at shifted addresses across
+  still carry fn_ rows: `GSAJ01` **18**, `GSAE01_rev1` **45**, `GSAP01_rev1` **83**,
+  `GSAP01` **90** (236 total). Sampling shows the same functions at shifted addresses across
   versions (matching size runs 0x4,0x4,0xC,0xC,0x104...). Naming them needs
   cross-version content correlation against those versions' DOLs (not present in
   a standard worktree -- only `orig/GSAE01/sys/main.dol` is seeded). Size-run

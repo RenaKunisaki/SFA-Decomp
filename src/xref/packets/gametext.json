@@ -6,8 +6,8 @@
   "categories": [
     "file"
   ],
-  "direct_xref_count": 2,
-  "direct_function_count": 2,
+  "direct_xref_count": 3,
+  "direct_function_count": 3,
   "source_string_count": 0,
   "orig": {
     "root_file_count": 2,
@@ -24,15 +24,7 @@
     "root_romlist_count": 0,
     "root_romlists": []
   },
-  "family_hint": {
-    "family": "GAMETEXT",
-    "bin_slots": [
-      19
-    ],
-    "tab_slots": [
-      20
-    ]
-  },
+  "family_hint": null,
   "map_hints": [],
   "functions": [
     {
@@ -46,6 +38,20 @@
           "target_text": "gametext/%s/%s.bin",
           "pair_kind": "lis/addi",
           "function_name": "gameTextRun"
+        }
+      ]
+    },
+    {
+      "function_start": "0x8001A420",
+      "function_name": "loadGameTextSequence",
+      "xrefs": [
+        {
+          "xref_address": "0x8001A608",
+          "pair_address": "0x8001A60C",
+          "target_address": "0x802C9EC4",
+          "target_text": "gametext/Sequences/%d_%s.bin",
+          "pair_kind": "lis/addi",
+          "function_name": "loadGameTextSequence"
         }
       ]
     },
@@ -71,15 +77,14 @@
       "tags": [
         "file"
       ]
-    }
-  ],
-  "neighbor_strings": [
+    },
     {
-      "address": "0x802C9EC3",
-      "text": "(gametext/Sequences/%d_%s.bin",
+      "address": "0x802C9EC4",
+      "text": "gametext/Sequences/%d_%s.bin",
       "tags": [
         "file"
       ]
     }
-  ]
+  ],
+  "neighbor_strings": []
 }

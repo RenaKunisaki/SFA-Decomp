@@ -138,7 +138,7 @@ These are straightforward candidates for early real struct definitions instead o
 
 ### 4. Several control files are region-stable and can be analyzed once
 
-Byte-identical across `GSAE01`, `GSAP01`, and `GSAJ01`:
+Byte-identical across `GSAE01`, `GSAP01_rev1`, and `GSAJ01`:
 
 - `files/BITTABLE.bin`
 - `files/OBJECTS.bin2`

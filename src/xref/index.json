@@ -38,7 +38,7 @@
       "orig_summary": "none",
       "map_summary": "none",
       "top_strings": [
-        "@expgfx.c: mismatch in add/remove in exptab",
+        "expgfx.c: mismatch in add/remove in exptab",
         "expgfx.c: addToTable usage overflow",
         "expgfx.c: exptab is FULL"
       ]
@@ -70,15 +70,16 @@
       "categories": [
         "file"
       ],
-      "direct_xref_count": 2,
-      "direct_function_count": 2,
+      "direct_xref_count": 3,
+      "direct_function_count": 3,
       "source_string_count": 0,
       "packet_path": "src/xref/packets/gametext.json",
       "doc_path": "docs/xref/packets/gametext.md",
       "orig_summary": "root files=2, dirs=1",
       "map_summary": "none",
       "top_strings": [
-        "gametext/%s/%s.bin"
+        "gametext/%s/%s.bin",
+        "gametext/Sequences/%d_%s.bin"
       ]
     },
     {
@@ -97,7 +98,7 @@
       "orig_summary": "none",
       "map_summary": "none",
       "top_strings": [
-        "@<DIMBoss.c> freeing assets for DIMBoss",
+        "<DIMBoss.c> freeing assets for DIMBoss",
         "<DIMBoss.c> loading assets for DIMTop"
       ]
     },
@@ -178,9 +179,9 @@
       ]
     },
     {
-      "key": "hcurves",
+      "key": "curves",
       "labels": [
-        "Hcurves.c"
+        "curves.c"
       ],
       "categories": [
         "source"
@@ -188,12 +189,31 @@
       "direct_xref_count": 1,
       "direct_function_count": 1,
       "source_string_count": 1,
-      "packet_path": "src/xref/packets/hcurves.json",
-      "doc_path": "docs/xref/packets/hcurves.md",
+      "packet_path": "src/xref/packets/curves.json",
+      "doc_path": "docs/xref/packets/curves.md",
       "orig_summary": "none",
       "map_summary": "none",
       "top_strings": [
-        "Hcurves.c: MAX_ROMCURVES exceeded!!"
+        "curves.c: MAX_ROMCURVES exceeded!!"
+      ]
+    },
+    {
+      "key": "camcontrol",
+      "labels": [
+        "camcontrol.c"
+      ],
+      "categories": [
+        "source"
+      ],
+      "direct_xref_count": 1,
+      "direct_function_count": 1,
+      "source_string_count": 1,
+      "packet_path": "src/xref/packets/camcontrol.json",
+      "doc_path": "docs/xref/packets/camcontrol.md",
+      "orig_summary": "none",
+      "map_summary": "none",
+      "top_strings": [
+        "<camcontrol.c>  failed to load triggered camaction actionno %d"
       ]
     },
     {
@@ -270,25 +290,6 @@
       "map_summary": "none",
       "top_strings": [
         "dvdfs.c"
-      ]
-    },
-    {
-      "key": "camcontrol",
-      "labels": [
-        "camcontrol.c"
-      ],
-      "categories": [
-        "source"
-      ],
-      "direct_xref_count": 0,
-      "direct_function_count": 0,
-      "source_string_count": 1,
-      "packet_path": "src/xref/packets/camcontrol.json",
-      "doc_path": "docs/xref/packets/camcontrol.md",
-      "orig_summary": "none",
-      "map_summary": "none",
-      "top_strings": [
-        "/D<camcontrol.c>  failed to load triggered camaction actionno %d"
       ]
     }
   ]
