@@ -168,7 +168,7 @@ void gameTextShowStr(char* text, int box, int cursorX, int cursorY) {
     } else {
         i = gGameTextCommandCount++;
         e = &gGameTextCommandSlots[i];
-        e->opcode = 7;
+        e->opcode = GAMETEXT_COMMAND_SHOW_STRING_AT;
         buf = gGameTextCommandStringCursor;
         gGameTextCommandStringCursor = gameStrcpy(buf, text) + 1;
         e->arg0 = (int)buf;
@@ -242,7 +242,7 @@ void gameTextAppendStr(char* str, int box) {
     } else {
         i = gGameTextCommandCount++;
         e = &gGameTextCommandSlots[i];
-        e->opcode = 6;
+        e->opcode = GAMETEXT_COMMAND_APPEND_STRING;
         buf = gGameTextCommandStringCursor;
         gGameTextCommandStringCursor = gameStrcpy(buf, str) + 1;
         e->arg0 = (int)buf;
@@ -256,7 +256,7 @@ void gameTextShowTimeStr(char* str) {
     char* buf;
     i = gGameTextCommandCount++;
     e = &gGameTextCommandSlots[i];
-    e->opcode = 5;
+    e->opcode = GAMETEXT_COMMAND_SHOW_TIME_STRING;
     buf = gGameTextCommandStringCursor;
     gGameTextCommandStringCursor = gameStrcpy(buf, str) + 1;
     e->arg0 = (int)buf;

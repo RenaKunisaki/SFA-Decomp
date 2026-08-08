@@ -7,154 +7,177 @@ __declspec(section ".sdata2") const float lbl_803E7650 = 2.0f;
 __declspec(section ".sdata2") const float lbl_803E7654 = 0.0f;
 #pragma explicit_zero_data off
 
-#define FP2 fp2
-#define FP3 fp3
-#define FP4 fp4
-#define FP5 fp5
-#define FP6 fp6
-#define FP7 fp7
+#define qr0                     0
+#define LOAD_SDATA2_FLOAT(name) (*(const volatile f32*)&(name))
 
-asm void PSVECAdd(const register Vec *vec1, const register Vec *vec2, register Vec *ret)
-{
+asm void PSVECAdd(const register Vec* vec1, const register Vec* vec2, register Vec* ret) {
 #ifdef __MWERKS__ // clang-format off
 	nofralloc;
-	psq_l     FP2,  0(vec1), 0, 0;
-	psq_l     FP4,  0(vec2), 0, 0;
-	ps_add    FP6, FP2, FP4;
-	psq_st    FP6,  0(ret), 0, 0;
-	psq_l     FP3,   8(vec1), 1, 0;
-	psq_l     FP5,   8(vec2), 1, 0;
-	ps_add    FP7, FP3, FP5;
-	psq_st    FP7,   8(ret), 1, 0;
+	psq_l     f2, Vec.x(vec1), 0, qr0;
+	psq_l     f4, Vec.x(vec2), 0, qr0;
+	ps_add    f6, f2, f4;
+	psq_st    f6, Vec.x(ret), 0, qr0;
+	psq_l     f3, Vec.z(vec1), 1, qr0;
+	psq_l     f5, Vec.z(vec2), 1, qr0;
+	ps_add    f7, f3, f5;
+	psq_st    f7, Vec.z(ret), 1, qr0;
 	blr
 #endif // clang-format on
 }
 
-asm void PSVECSubtract(const register Vec *vec1, const register Vec *vec2, register Vec *ret)
-{
+asm void PSVECSubtract(const register Vec* vec1, const register Vec* vec2, register Vec* ret) {
 #ifdef __MWERKS__ // clang-format off
 	nofralloc;
-	psq_l     FP2,  0(vec1), 0, 0;
-	psq_l     FP4,  0(vec2), 0, 0;
-	ps_sub    FP6, FP2, FP4;
-	psq_st    FP6, 0(ret), 0, 0;
-	psq_l     FP3,   8(vec1), 1, 0;
-	psq_l     FP5,   8(vec2), 1, 0;
-	ps_sub    FP7, FP3, FP5;
-	psq_st    FP7,  8(ret), 1, 0;
+	psq_l     f2, Vec.x(vec1), 0, qr0;
+	psq_l     f4, Vec.x(vec2), 0, qr0;
+	ps_sub    f6, f2, f4;
+	psq_st    f6, Vec.x(ret), 0, qr0;
+	psq_l     f3, Vec.z(vec1), 1, qr0;
+	psq_l     f5, Vec.z(vec2), 1, qr0;
+	ps_sub    f7, f3, f5;
+	psq_st    f7, Vec.z(ret), 1, qr0;
 	blr
 #endif // clang-format on
 }
 
-asm void PSVECScale(register const Vec *src, register Vec *dst, register f32 scale)
-{
+void PSVECScale(register const Vec* src, register Vec* dst, register f32 scale) {
+    register f32 vxy;
+    register f32 vz;
+    register f32 rxy;
+    register f32 rz;
+
 #ifdef __MWERKS__ // clang-format off
-	nofralloc
-	psq_l        f0, 0(src), 0, 0
-    psq_l        f2, 8(src), 1, 0
-    ps_muls0     f0, f0, f1
-    psq_st       f0, 0(dst), 0, 0
-    ps_muls0     f0, f2, f1
-    psq_st       f0, 8(dst), 1, 0
-    blr
+	asm {
+		psq_l vxy, Vec.x(src), 0, qr0
+		psq_l vz, Vec.z(src), 1, qr0
+		ps_muls0 rxy, vxy, scale
+		psq_st rxy, Vec.x(dst), 0, qr0
+		ps_muls0 rz, vz, scale
+		psq_st rz, Vec.z(dst), 1, qr0
+	}
 #endif // clang-format on
 }
 
-asm void PSVECNormalize(const register Vec *vec1, register Vec *ret)
-{
+void PSVECNormalize(const register Vec* vec1, register Vec* ret) {
+    register f32 c_half = LOAD_SDATA2_FLOAT(lbl_803E7648);
+    register f32 c_three = LOAD_SDATA2_FLOAT(lbl_803E764C);
+    register f32 v1_xy;
+    register f32 v1_z;
+    register f32 xx_zz;
+    register f32 xx_yy;
+    register f32 sqsum;
+    register f32 rsqrt;
+    register f32 nwork0;
+    register f32 nwork1;
+
 #ifdef __MWERKS__ // clang-format off
-	nofralloc
-	lfs         f0, lbl_803E7648(r0)
-	lfs         f1, lbl_803E764C(r0)
-	psq_l       f2, 0(vec1), 0, 0
-	ps_mul      f5, f2, f2
-	psq_l       f3, 8(vec1), 1, 0
-	ps_madd     f4, f3, f3, f5
-	ps_sum0     f4, f4, f3, f5
-	frsqrte     f5, f4
-	fmuls       f6, f5, f5
-	fmuls       f0, f5, f0
-	fnmsubs     f6, f6, f4, f1
-	fmuls       f5, f6, f0
-	ps_muls0    f2, f2, f5
-	psq_st      f2, 0(ret), 0, 0
-	ps_muls0    f3, f3, f5
-	psq_st      f3, 8(ret), 1, 0
-	blr
+	asm {
+		psq_l v1_xy, Vec.x(vec1), 0, qr0
+		ps_mul xx_yy, v1_xy, v1_xy
+		psq_l v1_z, Vec.z(vec1), 1, qr0
+		ps_madd xx_zz, v1_z, v1_z, xx_yy
+		ps_sum0 sqsum, xx_zz, v1_z, xx_yy
+		frsqrte rsqrt, sqsum
+		fmuls nwork0, rsqrt, rsqrt
+		fmuls nwork1, rsqrt, c_half
+		fnmsubs nwork0, nwork0, sqsum, c_three
+		fmuls rsqrt, nwork0, nwork1
+		ps_muls0 v1_xy, v1_xy, rsqrt
+		psq_st v1_xy, Vec.x(ret), 0, qr0
+		ps_muls0 v1_z, v1_z, rsqrt
+		psq_st v1_z, Vec.z(ret), 1, qr0
+	}
 #endif // clang-format on
 }
 
-asm f32 PSVECSquareMag(register const Vec *v) {
+f32 PSVECSquareMag(register const Vec* v) {
+    register f32 vxy;
+    register f32 vzz;
+    register f32 sqmag;
+
 #ifdef __MWERKS__ // clang-format off
-	nofralloc
-    psq_l      f0, 0(v), 0, 0
-    ps_mul     f0, f0, f0
-    lfs        f1, 8(v)
-    ps_madd    f1, f1, f1, f0
-    ps_sum0    f1, f1, f0, f0
-    blr
+	asm {
+		psq_l vxy, Vec.x(v), 0, qr0
+		ps_mul vxy, vxy, vxy
+		lfs vzz, Vec.z(v)
+		ps_madd sqmag, vzz, vzz, vxy
+		ps_sum0 sqmag, sqmag, vxy, vxy
+	}
 #endif // clang-format on
+    return sqmag;
 }
 
-asm f32 PSVECMag(const register Vec *v)
-{
+f32 PSVECMag(const register Vec* v) {
+    register f32 vxy;
+    register f32 vzz;
+    register f32 sqmag;
+    register f32 rmag;
+    register f32 nwork0;
+    register f32 nwork1;
+    register f32 c_three;
+    register f32 c_half;
+
 #ifdef __MWERKS__ // clang-format off
-	nofralloc
-	psq_l       f0, 0(r3), 0, 0
-	ps_mul      f0, f0, f0
-	lfs         f1, 8(r3)
-	ps_madd     f1, f1, f1, f0
-	lfs         f4, lbl_803E7648(r0)
-	ps_sum0     f1, f1, f0, f0
-	frsqrte     f0, f1
-	lfs         f3, lbl_803E764C(r0)
-	fmuls       f2, f0, f0
-	fmuls       f0, f0, f4
-	fnmsubs     f2, f2, f1, f3
-	fmuls       f0, f2, f0
-	fsel        f0, f0, f0, f1
-	fmuls       f1, f1, f0
-	blr
+	asm {
+		psq_l vxy, Vec.x(v), 0, qr0
+		ps_mul vxy, vxy, vxy
+		lfs vzz, Vec.z(v)
+		ps_madd sqmag, vzz, vzz, vxy
+	}
+	c_half = LOAD_SDATA2_FLOAT(lbl_803E7648);
+	asm {
+		ps_sum0 sqmag, sqmag, vxy, vxy
+		frsqrte rmag, sqmag
+	}
+	c_three = LOAD_SDATA2_FLOAT(lbl_803E764C);
+	asm {
+		fmuls nwork0, rmag, rmag
+		fmuls nwork1, rmag, c_half
+		fnmsubs nwork0, nwork0, sqmag, c_three
+		fmuls rmag, nwork0, nwork1
+		fsel rmag, rmag, rmag, sqmag
+		fmuls sqmag, sqmag, rmag
+	}
 #endif // clang-format on
+    return sqmag;
 }
 
-asm f32 PSVECDotProduct(const register Vec *vec1, const register Vec *vec2)
-{
+asm f32 PSVECDotProduct(const register Vec* vec1, const register Vec* vec2) {
 #ifdef __MWERKS__ // clang-format off
 	nofralloc;
-    psq_l      f2, 4(r3), 0, 0 /* qr0 */
-    psq_l      f3, 4(r4), 0, 0 /* qr0 */
+    psq_l      f2, Vec.y(vec1), 0, qr0
+    psq_l      f3, Vec.y(vec2), 0, qr0
     ps_mul     f2, f2, f3
-    psq_l      f5, 0(r3), 0, 0 /* qr0 */
-    psq_l      f4, 0(r4), 0, 0 /* qr0 */
+    psq_l      f5, Vec.x(vec1), 0, qr0
+    psq_l      f4, Vec.x(vec2), 0, qr0
     ps_madd    f3, f5, f4, f2
     ps_sum0    f1, f3, f2, f2
     blr
 #endif // clang-format on
 }
 
-asm void PSVECCrossProduct(register const Vec *a, register const Vec *b, register Vec *axb)
-{
+asm void PSVECCrossProduct(register const Vec* a, register const Vec* b, register Vec* axb) {
 #ifdef __MWERKS__ // clang-format off
 	nofralloc
-    psq_l          f1, 0(b), 0, 0
-    lfs            f2, 8(a)
-    psq_l          f0, 0(a), 0, 0
+    psq_l          f1, Vec.x(b), 0, qr0
+    lfs            f2, Vec.z(a)
+    psq_l          f0, Vec.x(a), 0, qr0
     ps_merge10     f6, f1, f1
-    lfs            f3, 8(b)
+    lfs            f3, Vec.z(b)
     ps_mul         f4, f1, f2
     ps_muls0       f7, f1, f0
     ps_msub        f5, f0, f3, f4
     ps_msub        f8, f0, f6, f7
     ps_merge11     f9, f5, f5
     ps_merge01     f10, f5, f8
-    psq_st         f9, 0(axb), 1, 0
+    psq_st         f9, Vec.x(axb), 1, qr0
     ps_neg         f10, f10
-    psq_st         f10, 4(axb), 0, 0
+    psq_st         f10, Vec.y(axb), 0, qr0
     blr
 #endif // clang-format on
 }
 
+// clang-format off
 asm void C_VECHalfAngle(const Vec *a, const Vec *b, Vec *half)
 {
     nofralloc
@@ -211,46 +234,73 @@ asm void C_VECHalfAngle(const Vec *a, const Vec *b, Vec *half)
     mtlr r0
     addi r1, r1, 0x38
     blr
+} // clang-format on
+
+f32 PSVECSquareDistance(register const Vec* a, register const Vec* b) {
+    register f32 v0yz;
+    register f32 v1yz;
+    register f32 v0xy;
+    register f32 v1xy;
+    register f32 dyz;
+    register f32 dxy;
+    register f32 sqdist;
+
+#ifdef __MWERKS__ // clang-format off
+	asm {
+		psq_l v0yz, Vec.y(a), 0, qr0
+		psq_l v1yz, Vec.y(b), 0, qr0
+		ps_sub dyz, v0yz, v1yz
+		psq_l v0xy, Vec.x(a), 0, qr0
+		psq_l v1xy, Vec.x(b), 0, qr0
+		ps_mul dyz, dyz, dyz
+		ps_sub dxy, v0xy, v1xy
+		ps_madd sqdist, dxy, dxy, dyz
+		ps_sum0 sqdist, sqdist, dyz, dyz
+	}
+#endif // clang-format on
+    return sqdist;
 }
 
-asm f32 PSVECSquareDistance(register const Vec *a, register const Vec *b) {
-#ifdef __MWERKS__ // clang-format off
-	nofralloc
-    psq_l      f0, 4(a), 0, 0
-    psq_l      f1, 4(b), 0, 0
-    ps_sub     f2, f0, f1
-    psq_l      f0, 0(a), 0, 0
-    psq_l      f1, 0(b), 0, 0
-    ps_mul     f2, f2, f2
-    ps_sub     f0, f0, f1
-    ps_madd    f1, f0, f0, f2
-    ps_sum0    f1, f1, f2, f2
-    blr
-#endif // clang-format on
-}
+f32 PSVECDistance(register const Vec* a, register const Vec* b) {
+    register f32 v0yz;
+    register f32 v1yz;
+    register f32 v0xy;
+    register f32 v1xy;
+    register f32 dyz;
+    register f32 dxy;
+    register f32 sqdist;
+    register f32 rdist;
+    register f32 dist;
+    register f32 nwork0;
+    register f32 nwork1;
+    register f32 c_half;
+    register f32 c_three;
 
-asm f32 PSVECDistance(register const Vec *a, register const Vec *b)
-{
 #ifdef __MWERKS__ // clang-format off
-	nofralloc
-	psq_l       f0, 4(r3), 0, 0
-	psq_l       f1, 4(r4), 0, 0
-	ps_sub      f2, f0, f1
-	psq_l       f0, 0(r3), 0, 0
-	psq_l       f1, 0(r4), 0, 0
-	ps_mul      f2, f2, f2
-	ps_sub      f0, f0, f1
-	lfs         f3, lbl_803E7648(r0)
-	ps_madd     f0, f0, f0, f2
-	ps_sum0     f0, f0, f2, f2
-	lfs         f4, lbl_803E764C(r0)
-	frsqrte     f1, f0
-	fmuls       f2, f1, f1
-	fmuls       f1, f1, f3
-	fnmsubs     f2, f2, f0, f4
-	fmuls       f1, f2, f1
-	fsel        f1, f1, f1, f0
-	fmuls       f1, f0, f1
-	blr
+	asm {
+		psq_l v0yz, Vec.y(a), 0, qr0
+		psq_l v1yz, Vec.y(b), 0, qr0
+		ps_sub dyz, v0yz, v1yz
+		psq_l v0xy, Vec.x(a), 0, qr0
+		psq_l v1xy, Vec.x(b), 0, qr0
+		ps_mul dyz, dyz, dyz
+		ps_sub dxy, v0xy, v1xy
+	}
+	c_half = LOAD_SDATA2_FLOAT(lbl_803E7648);
+	asm {
+		ps_madd sqdist, dxy, dxy, dyz
+		ps_sum0 sqdist, sqdist, dyz, dyz
+	}
+	c_three = LOAD_SDATA2_FLOAT(lbl_803E764C);
+	asm {
+		frsqrte rdist, sqdist
+		fmuls nwork0, rdist, rdist
+		fmuls nwork1, rdist, c_half
+		fnmsubs nwork0, nwork0, sqdist, c_three
+		fmuls rdist, nwork0, nwork1
+		fsel rdist, rdist, rdist, sqdist
+		fmuls dist, sqdist, rdist
+	}
 #endif // clang-format on
+    return dist;
 }

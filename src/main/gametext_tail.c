@@ -207,7 +207,7 @@ void gameTextShowAt(int a, int b, int c)
     {
         i = gGameTextCommandCount++;
         e = &gGameTextCommandSlots[i];
-        e->opcode = 2;
+        e->opcode = GAMETEXT_COMMAND_RENDER_BY_ID;
         e->arg0 = a;
         e->arg1 = b;
         e->arg2 = c;
@@ -226,7 +226,7 @@ void gameTextShow(int a)
     {
         i = gGameTextCommandCount++;
         e = &gGameTextCommandSlots[i];
-        e->opcode = 2;
+        e->opcode = GAMETEXT_COMMAND_RENDER_BY_ID;
         e->arg0 = a;
         e->arg1 = 0;
         e->arg2 = 0;
@@ -374,7 +374,7 @@ void gameTextQueueReveal(int a, int b)
 {
     int i = gGameTextCommandCount++;
     GameTextSlot* e = &gGameTextCommandSlots[i];
-    e->opcode = 1;
+    e->opcode = GAMETEXT_COMMAND_TICK_REVEAL;
     e->arg0 = a;
     e->arg1 = b;
 }
