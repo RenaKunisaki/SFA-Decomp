@@ -666,11 +666,17 @@ void mmFreeTick(int arg)
 
     if (gMmStatsPrintCounter++ % 500 == 0)
     {
-        OSReport(sMemStatsFormat, 0, g->regions[0].size, gMmRegion1Used, g->regions[1].size, gMmRegion2Used,
-                 g->regions[2].size, gMmRegion3Used, g->regions[3].size, g->regions[0].slotsUsed,
-                 g->regions[0].numSlots, g->regions[1].slotsUsed, g->regions[1].numSlots,
-                 g->regions[2].slotsUsed, g->regions[2].numSlots, g->regions[3].slotsUsed,
-                 g->regions[3].numSlots);
+        //gMmRegion0Used gets optimized to constant 0 since
+        //it never gets updated
+        OSReport(sMemStatsFormat,
+            gMmRegion0Used, g->regions[0].size,
+            gMmRegion1Used, g->regions[1].size,
+            gMmRegion2Used, g->regions[2].size,
+            gMmRegion3Used, g->regions[3].size,
+            g->regions[0].slotsUsed, g->regions[0].numSlots,
+            g->regions[1].slotsUsed, g->regions[1].numSlots,
+            g->regions[2].slotsUsed, g->regions[2].numSlots,
+            g->regions[3].slotsUsed, g->regions[3].numSlots);
     }
 }
 
